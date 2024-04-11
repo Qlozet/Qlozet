@@ -1,3 +1,8 @@
+.section {
+  height: 100vh;
+  overflow-y: scroll;
+}
+
 .container {
   max-width: 1280px;
 }
@@ -13,7 +18,8 @@
 @media (max-width: 768px) {
   .section {
     height: 100vh;
-    /* overflow-y: scroll; */
+    overflow-y: scroll;
+    border: "1px solid red";
   }
 
   .container {
@@ -21,7 +27,7 @@
     height: 100%;
     overflow-y: scroll;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 0rem;
   }
   .first_Container {
     width: 100%;

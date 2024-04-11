@@ -12,7 +12,9 @@ import { useRouter } from "next/navigation";
 const SignUp = () => {
   const router = useRouter();
   return (
-    <section className="w-full bg-white p-4 flex items-center justify-center ">
+    <section
+      className={`${classes.section} w-full bg-white p-4 flex items-center justify-center `}
+    >
       <div className={`${classes.container} flex gap-8 max-w-7xl `}>
         <div className={`${classes.first_Container} max-w-lg	`}>
           <Logo />
