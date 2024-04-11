@@ -1,0 +1,28 @@
+.first_Container {
+  width: 41%;
+}
+
+.second_container {
+  width: 69%;
+}
+
+@media (max-width: 768px) {
+  .section {
+    height: 100vh;
+    /* overflow-y: scroll; */
+  }
+
+  .container {
+    height: 100%;
+    overflow-y: scroll;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  .first_Container {
+    width: 100%;
+  }
+
+  .second_container {
+    display: none;
+  }
+}

@@ -1,0 +1,10 @@
+.select_file_container {
+  display: flex;
+}
+
+@media (max-width: 900px) {
+  .select_file_container {
+    display: block;
+    gap: 2;
+  }
+}
