@@ -7,12 +7,12 @@ import FileUploadInput from "./components/FileUploadInput";
 import UploadSingleDocInput from "./components/UploadSingleDocInput";
 import TextInput from "./components/TextInput";
 import ProgressBar from "./components/ProgressBar";
+import { useRouter } from "next/navigation";
 export default function Home() {
+  const router = useRouter();
   return (
     <main className="bg-white w-full h-[100vh] p-20">
-      {/* <Button variant="outline" btnSize="small" disabled={false}>
-        Primary
-      </Button>{" "}
+      {/* 
       <Typography textColor="text-black" textSize="text-[46px]">
         Hello
       </Typography>
@@ -26,6 +26,16 @@ export default function Home() {
       <ProgressBar step={6} />
       <UploadSingleDocInput></UploadSingleDocInput> */}
       <h1>Homepage</h1>
+      <Button
+        variant="outline"
+        btnSize="small"
+        disabled={false}
+        clickHandler={() => {
+          router.push(`auth/businessinfo`);
+        }}
+      >
+        Veiw Signup
+      </Button>{" "}
     </main>
   );
 }

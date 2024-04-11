@@ -7,7 +7,11 @@ import ProgressBar from "@/app/components/ProgressBar";
 import TextInput from "@/app/components/TextInput";
 import Button from "@/app/components/Button";
 import classes from "./index.module.css";
+import { useRouter } from "next/navigation";
+
 const SignUp = () => {
+  const router = useRouter();
+
   return (
     <section className="w-full bg-white p-4 flex items-center justify-center ">
       <div className={`flex gap-8 max-w-7xl `}>

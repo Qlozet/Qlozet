@@ -1,6 +1,13 @@
 import React from "react";
 
-const Button = ({ variant, children, btnSize, disabled, ...rest }) => {
+const Button = ({
+  variant,
+  children,
+  btnSize,
+  disabled,
+  clickHandler,
+  ...rest
+}) => {
   let variantClasses = "";
   let sizeClasses = "";
 
@@ -35,6 +42,7 @@ const Button = ({ variant, children, btnSize, disabled, ...rest }) => {
       className={`py-2 flex items-center justify-center  ${variantClasses} ${sizeClasses} `}
       {...rest}
       disabled={disabled}
+      onClick={clickHandler}
     >
       {children}
     </button>
