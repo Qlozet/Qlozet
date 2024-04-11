@@ -21,6 +21,11 @@ function UploadSingleDocInput() {
     setShowDropDown(!showDropDown);
   };
 
+  const removeFile = (fileIndex) => {
+    const newFiles = files.filter((file, index) => index !== fileIndex);
+    setFiles(newFiles);
+  };
+
   const onDrop = useCallback((acceptedFiles) => {
     updatedItems.push(acceptedFiles[0]);
     setFiles(updatedItems);
@@ -33,22 +38,22 @@ function UploadSingleDocInput() {
 
   return (
     <div
-      className="border-[1.5px] border-dashed border-gray-200 cursor-pointer py-14 rounded-[8px] px-6"
+      className="border-[1.5px] border-dashed border-gray-200 py-14 rounded-[8px] px-6"
       {...getRootProps()}
     >
       {files.length < 1 ? (
         <div
-          className={`flex items-center bg-dark ${
+          className={`flex items-center bg-dark cursor-pointer ${
             showDropDown ? "rounded-t-lg" : "rounded-[8px]"
           }  justify-between py-2 mb-6 relative`}
           onClick={showdropDownHandler}
         >
-          <p className="text-white px-4">Choose file</p>
+          <p className="text-white px-4 ">Choose file</p>
           <span className="px-4 border-l-[1px]">
             <Image src={dropdownIcon} alt=""></Image>
           </span>
           {showDropDown && (
-            <div className={`absolute left-0 top-[100%] w-full`}>
+            <div className={`absolute left-0 top-[100%] w-full cursor-pointer`}>
               <div
                 className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid text-[16px]"
                 onClick={open}
@@ -75,14 +80,21 @@ function UploadSingleDocInput() {
       ) : (
         <div>
           <div className="my-4">
-            {files.map((item) => {
-              console.log(item);
+            {files.map((item, index) => {
               return (
-                <div className="bg-gray-300 flex items-center justify-between py-2 px-5 rounded-[8px] mt-1">
+                <div
+                  key={index}
+                  className="relative bg-gray-300 flex items-center justify-between py-2 px-5 rounded-[8px] mt-1"
+                >
                   <p className="font-bold text-[16px] pt-[3px] h-[30px]  overflow-hidden text-ellipsis">
                     {item.name}
                   </p>
-                  <div>
+                  <div
+                    className="absolute rounded-[8px] right-4 top-0  w-[20px] h-[100%] flex items-center justify-center cursor-pointer"
+                    onClick={() => {
+                      removeFile(index);
+                    }}
+                  >
                     <Image src={closeCircle} alt=""></Image>
                   </div>
                 </div>
@@ -91,13 +103,13 @@ function UploadSingleDocInput() {
           </div>
           <div className={`${classes.select_file_container} gap-4`}>
             <div
-              className={`flex-1 flex items-center bg-white border-[1.5px]  border-solid h-[50px] border-gray-200 ${
+              className={`flex-1 flex items-center bg-white border-[1.5px] cursor-pointer border-solid h-[50px] border-gray-200 ${
                 showDropDown ? "rounded-t-lg" : "rounded-[8px]"
               }  justify-between py-2 mb-6 relative`}
               onClick={showdropDownHandler}
             >
               <p className="text-dark font-medium px-4 flex  ">
-                <span className="h-[30px] flex items-center overflow-hidden truncate">
+                <span className="h-[30px] flex items-center overflow-hidden truncate ">
                   {" "}
                   Add more file
                 </span>
