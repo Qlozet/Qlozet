@@ -1,5 +1,4 @@
 .section {
-  overflow-y: scroll;
   display: flex;
   align-items: center;
   padding: 2rem;
