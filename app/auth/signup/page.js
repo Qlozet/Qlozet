@@ -11,7 +11,6 @@ import { useRouter } from "next/navigation";
 
 const SignUp = () => {
   const router = useRouter();
-
   return (
     <section className="w-full bg-white p-4 flex items-center justify-center ">
       <div className={`flex gap-8 max-w-7xl `}>
@@ -54,7 +53,14 @@ const SignUp = () => {
               setValue={(data) => {}}
             />
             <div className="mt-10">
-              <Button children="Continue" btnSize="large" variant="primary" />
+              <Button
+                children="Continue"
+                btnSize="large"
+                variant="primary"
+                clickHandler={() => {
+                  router.push(`../auth/businessinfo`);
+                }}
+              />
             </div>
           </div>
         </div>

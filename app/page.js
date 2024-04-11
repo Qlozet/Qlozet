@@ -31,7 +31,7 @@ export default function Home() {
         btnSize="small"
         disabled={false}
         clickHandler={() => {
-          router.push(`auth/businessinfo`);
+          router.push(`auth/signup`);
         }}
       >
         Veiw Signup
