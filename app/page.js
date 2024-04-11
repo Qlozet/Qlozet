@@ -8,6 +8,8 @@ import UploadSingleDocInput from "./components/UploadSingleDocInput";
 import TextInput from "./components/TextInput";
 import ProgressBar from "./components/ProgressBar";
 import { useRouter } from "next/navigation";
+import PasswordInput from "./components/PasswordInput";
+import RadioInput from "./components/RadioInput";
 export default function Home() {
   const router = useRouter();
   return (
@@ -25,6 +27,14 @@ export default function Home() {
       />
       <ProgressBar step={6} />
       <UploadSingleDocInput></UploadSingleDocInput> */}
+      <PasswordInput
+        label="Create password"
+        placeholder=""
+        setValue={(data) => {
+          console.log(data);
+        }}
+      />
+      <RadioInput />
       <h1>Homepage</h1>
       <Button
         variant="outline"

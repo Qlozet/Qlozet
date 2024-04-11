@@ -20,9 +20,12 @@ function UploadSingleDocInput() {
   const showdropDownHandler = () => {
     setShowDropDown(!showDropDown);
   };
-
   const removeFile = (fileIndex) => {
-    const newFiles = files.filter((file, index) => index !== fileIndex);
+    const newFiles = updatedItems.filter((file, index) => index !== fileIndex);
+    newFiles.map((item) => {
+      updatedItems.push(item);
+    });
+
     setFiles(newFiles);
   };
 

@@ -7,8 +7,20 @@ import ProgressBar from "@/app/components/ProgressBar";
 import TextInput from "@/app/components/TextInput";
 import Button from "@/app/components/Button";
 import classes from "./index.module.css";
+import { businessSchema } from "@/schema";
 import UploadSingleDocInput from "@/app/components/UploadSingleDocInput";
 const BusinessInfo = () => {
+  const userData = {
+    businessName: "prombxd",
+    businessEmail: "promiseejiro43@gmail.com",
+    // phoneNumber: "09030257743",
+    businessAddress: "hfedgheejhs",
+  };
+  const handleValidate = (schema, formData) => {
+    const validatedData = schema.safeParse(formData);
+    console.log("Valid data:", validatedData);
+  };
+
   return (
     <section
       className={`${classes.section} w-full bg-white p-4 flex items-center justify-center `}
@@ -41,7 +53,14 @@ const BusinessInfo = () => {
             </Typography>
             <UploadSingleDocInput />
             <div className="mt-10">
-              <Button children="Continue" btnSize="large" variant="primary" />
+              <Button
+                children="Continue"
+                btnSize="large"
+                variant="primary"
+                clickHandler={() => {
+                  handleValidate(businessSchema, userData);
+                }}
+              />
             </div>
           </div>
         </div>
