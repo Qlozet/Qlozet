@@ -10,6 +10,7 @@ import ProgressBar from "./components/ProgressBar";
 import { useRouter } from "next/navigation";
 import PasswordInput from "./components/PasswordInput";
 import RadioInput from "./components/RadioInput";
+import PasswordValidate from "./components/PasswordValidation";
 export default function Home() {
   const router = useRouter();
   return (
@@ -27,14 +28,8 @@ export default function Home() {
       />
       <ProgressBar step={6} />
       <UploadSingleDocInput></UploadSingleDocInput> */}
-      <PasswordInput
-        label="Create password"
-        placeholder=""
-        setValue={(data) => {
-          console.log(data);
-        }}
-      />
       <RadioInput />
+      <PasswordValidate text="sdfsdsjsdjj" checked={false} />
       <h1>Homepage</h1>
       <Button
         variant="outline"

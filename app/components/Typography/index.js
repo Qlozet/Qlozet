@@ -10,7 +10,7 @@ const Typography = ({
 }) => {
   return (
     <p
-      className={`${textSize} ${textColor} ${textWeight} ${horizontalPadding} ${verticalPadding}`}
+      className={`${textSize} ${textColor} ${textWeight} ${align} ${horizontalPadding} ${verticalPadding}`}
     >
       {children}
     </p>

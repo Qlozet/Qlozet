@@ -8,6 +8,7 @@ import TextInput from "@/app/components/TextInput";
 import Button from "@/app/components/Button";
 import classes from "./index.module.css";
 import { useRouter } from "next/navigation";
+import NumberInput from "@/app/components/NumberInput";
 
 const SignUp = () => {
   const router = useRouter();
@@ -44,7 +45,7 @@ const SignUp = () => {
               placeholder="Enter your business official email address"
               setValue={(data) => {}}
             />
-            <TextInput
+            <NumberInput
               label="Business phone number "
               placeholder="Enter your business official phone number "
               setValue={(data) => {}}
