@@ -89,12 +89,16 @@ function UploadSingleDocInput() {
                     {item.name}
                   </p>
                   <div
-                    className="absolute rounded-[8px] right-4 top-0  w-[20px] h-[100%] flex items-center justify-center cursor-pointer"
+                    className="absolute rounded-[8px] right-4 top-0  w-[50px] h-[100%] flex items-center justify-center cursor-pointer bg-gray-300"
                     onClick={() => {
                       removeFile(index);
                     }}
                   >
-                    <Image src={closeCircle} alt=""></Image>
+                    <Image
+                      src={closeCircle}
+                      alt=""
+                      className="w-[24px] h-[24px]"
+                    ></Image>
                   </div>
                 </div>
               );

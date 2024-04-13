@@ -13,7 +13,40 @@ import RadioInput from "./components/RadioInput";
 import PasswordValidate from "./components/PasswordValidation";
 import SideBar from "./components/SideBar";
 import DashboardTopCard from "./components/DashboardTopCard";
+import DonutChart from "./components/Chat/DoughnutChat";
+import ChatCard from "./components/Chat/ChatCard";
+import HorizontalChatBar from "./components/Chat/HorizontalChatBar";
+import HorizontalChat from "./components/Chat/HorizontalChart";
+import DasboardNavWithOutSearch from "./components/DashboardNavBarWithoutSearch";
 export default function Home() {
+  const data = [
+    {
+      location: "Warri",
+      total: "w-[70%]",
+      percentage: "w-[50%]",
+    },
+    {
+      location: "Benin",
+      total: "w-[60%]",
+      percentage: "w-[53%]",
+    },
+    {
+      location: "Aba",
+      total: "w-[44%]",
+      percentage: "w-[40%]",
+    },
+    {
+      location: "Aba",
+      total: "w-[44%]",
+      percentage: "w-[40%]",
+    },
+  ];
+  const chartData = {
+    labels: ["Male", "Female"],
+    values: [12, 19],
+    colors: ["#3E1C01", "#9C8578"],
+    borderAlign: "center",
+  };
   const router = useRouter();
   return (
     <main className="bg-white w-full h-[100vh] p-20">
@@ -31,6 +64,21 @@ export default function Home() {
       <ProgressBar step={6} />
       <UploadSingleDocInput></UploadSingleDocInput> */}
       {/* <PasswordValidate text="sdfsdsjsdjj" checked={false} /> */}
+      {/* remove the number fron the value and convert it to string */}
+      <DasboardNavWithOutSearch />
+      {/* <HorizontalChat /> */}
+      <ChatCard
+        text="Orders by gender"
+        graph={<DonutChart data={chartData} />}
+      />
+      <ChatCard
+        text="Orders by product"
+        graph={<HorizontalChat data={data} />}
+      />
+      <ChatCard
+        text="Orders by top location"
+        graph={<HorizontalChat data={data} />}
+      />
       <SideBar active="Support" />
       <DashboardTopCard
         name="Total Orders"
