@@ -34,7 +34,7 @@ const ProgressBar = ({ step }) => {
           <span
             className={`h-full bg-primary inline-block absolute top-0 left-0 rounded-[8px]
           `}
-            style={{ width: "100%" }}
+            style={{ width: "95%" }}
           ></span>
         )}
       </div>

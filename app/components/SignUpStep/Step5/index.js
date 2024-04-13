@@ -73,7 +73,7 @@ const Step4 = () => {
         >
           Create password to secure your account
         </Typography>
-        <ProgressBar step={4} />
+        <ProgressBar step={5} />
         <PasswordInput
           label="Create password"
           setValue={(data) => {
