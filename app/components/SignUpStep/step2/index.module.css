@@ -1,0 +1,38 @@
+.section {
+  display: flex;
+  align-items: center;
+  padding: 2rem;
+}
+
+.container {
+  max-width: 1280px;
+}
+
+.first_Container {
+  width: 41%;
+}
+
+.second_container {
+  width: 69%;
+}
+
+@media (max-width: 768px) {
+  .section {
+    height: 100vh;
+    border: "1px solid red";
+  }
+
+  .container {
+    max-width: 1280px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 0rem;
+  }
+  .first_Container {
+    width: 100%;
+  }
+
+  .second_container {
+    display: none;
+  }
+}

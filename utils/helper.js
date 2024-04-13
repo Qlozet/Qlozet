@@ -7,3 +7,8 @@ export const handlerContainsNumber = (str) => {
   const regex = /\d/;
   return regex.test(str);
 };
+
+export const handleContainsSymbolOrCharacter = (str) => {
+  const regex = /[^a-zA-Z0-9]/;
+  return regex.test(str);
+};

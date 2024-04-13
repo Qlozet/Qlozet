@@ -15,23 +15,19 @@ function UploadSingleDocInput() {
   // state
   const [showDropDown, setShowDropDown] = useState(false);
   const [files, setFiles] = useState([]);
-  let updatedItems = [];
   // functions
   const showdropDownHandler = () => {
     setShowDropDown(!showDropDown);
   };
   const removeFile = (fileIndex) => {
-    const newFiles = updatedItems.filter((file, index) => index !== fileIndex);
-    newFiles.map((item) => {
-      updatedItems.push(item);
-    });
-
-    setFiles(newFiles);
+    files.filter((file, index) => index !== fileIndex);
+    setFiles(files.filter((file, index) => index !== fileIndex));
   };
 
   const onDrop = useCallback((acceptedFiles) => {
-    updatedItems.push(acceptedFiles[0]);
-    setFiles(updatedItems);
+    setFiles((prevData) => {
+      return [...prevData, acceptedFiles[0]];
+    });
   }, []);
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,

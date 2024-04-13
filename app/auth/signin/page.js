@@ -16,49 +16,6 @@ const SignIn = () => {
       className={`${classes.section} w-full bg-white p-4 flex items-center justify-center `}
     >
       <div className={`${classes.container} flex gap-8 max-w-7xl `}>
-        <div className={`${classes.first_Container} max-w-lg	`}>
-          <Logo />
-          <div className="mt-16">
-            <Typography
-              textColor="text-primary"
-              textWeight="font-bold"
-              textSize="text-[32px]"
-            >
-              Sign In
-            </Typography>
-            <Typography
-              textColor="text-primary"
-              textWeight="font-normal"
-              textSize="text-[14px]"
-              verticalPadding="my-1"
-            >
-              Please enter your login details now
-            </Typography>
-
-            <TextInput
-              label="Business email address"
-              placeholder="Enter your business official email address"
-              setValue={(data) => {}}
-            />
-
-            <PasswordInput
-              label="Password "
-              placeholder="Enter your password "
-              setValue={(data) => {}}
-            />
-
-            <div className="mt-10">
-              <Button
-                children="Sign In"
-                btnSize="large"
-                variant="primary"
-                clickHandler={() => {
-                  router.push(`#`);
-                }}
-              />
-            </div>
-          </div>
-        </div>
         <div className={`${classes.second_container} `}>
           <Image src={signupImage} alt="" />
         </div>

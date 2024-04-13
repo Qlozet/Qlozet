@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import signupImage from "../../../public/assets/svg/signupImage.svg";
 import Image from "next/image";
 import Logo from "@/app/components/Logo";
@@ -9,64 +10,94 @@ import Button from "@/app/components/Button";
 import classes from "./index.module.css";
 import { useRouter } from "next/navigation";
 import NumberInput from "@/app/components/NumberInput";
+import Step1 from "@/app/components/SignUpStep/Step1";
+import Step2 from "@/app/components/SignUpStep/step2";
+import Step3 from "@/app/components/SignUpStep/Step3";
+import Step5 from "@/app/components/SignUpStep/Step5";
 
 const SignUp = () => {
+  const [step, setStep] = useState(1);
   const router = useRouter();
   return (
     <section
       className={`${classes.section} w-full bg-white p-4 flex items-center justify-center `}
     >
       <div className={`${classes.container} flex gap-8 max-w-7xl `}>
-        <div className={`${classes.first_Container} max-w-lg	`}>
-          <Logo />
-          <div className="mt-16">
-            <Typography
-              textColor="text-primary"
-              textWeight="font-bold"
-              textSize="text-[32px]"
-            >
-              Sign Up
-            </Typography>
-            <Typography
-              textWeight="font-normal"
-              textSize="text-[14px]"
-              verticalPadding="my-1"
-            >
-              Please fill in the information below to register as a vendor
-            </Typography>
-            <ProgressBar step={1} />
-            <TextInput
-              label="Business name"
-              placeholder="Enter your business name"
-              setValue={(data) => {}}
-            />
-            <TextInput
-              label="Business email "
-              placeholder="Enter your business official email address"
-              setValue={(data) => {}}
-            />
-            <NumberInput
-              label="Business phone number "
-              placeholder="Enter your business official phone number "
-              setValue={(data) => {}}
-            />
-            <TextInput
-              label="Business address"
-              placeholder="Enter your business official address"
-              setValue={(data) => {}}
-            />
+        {step === 1 && (
+          <div className={`${classes.first_Container} max-w-lg	`}>
+            <Step1 />
             <div className="mt-10">
               <Button
                 children="Continue"
                 btnSize="large"
                 variant="primary"
                 clickHandler={() => {
-                  router.push(`../auth/personalinfo`);
+                  setStep(step + 1);
                 }}
               />
             </div>
           </div>
-        </div>
+        )}
+        {step === 2 && (
+          <div className={`${classes.first_Container} max-w-lg	`}>
+            <Step2 />
+            <div className="mt-10">
+              <Button
+                children="Continue"
+                btnSize="large"
+                variant="primary"
+                clickHandler={() => {
+                  setStep(step + 1);
+                }}
+              />
+            </div>
+          </div>
+        )}
+        {step === 3 && (
+          <div className={`${classes.first_Container} max-w-lg	`}>
+            <Step3 />
+            <div className="mt-10">
+              <Button
+                children="Continue"
+                btnSize="large"
+                variant="primary"
+                clickHandler={() => {
+                  setStep(step + 1);
+                }}
+              />
+            </div>
+          </div>
+        )}
+        {step === 4 && (
+          <div className={`${classes.first_Container} max-w-lg	`}>
+            <Step3 />
+            <div className="mt-10">
+              <Button
+                children="Continue"
+                btnSize="large"
+                variant="primary"
+                clickHandler={() => {
+                  setStep(step + 1);
+                }}
+              />
+            </div>
+          </div>
+        )}
+        {step === 5 && (
+          <div className={`${classes.first_Container} max-w-lg	`}>
+            <Step5 />
+            <div className="mt-10">
+              <Button
+                children="Submit"
+                btnSize="large"
+                variant="primary"
+                clickHandler={() => {
+                  // setStep(step + 1);
+                }}
+              />
+            </div>
+          </div>
+        )}
         <div className={`${classes.second_container} `}>
           <Image src={signupImage} alt="" />
         </div>
