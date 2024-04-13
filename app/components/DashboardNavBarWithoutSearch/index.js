@@ -3,7 +3,7 @@ import Image from "next/image";
 import searchNormalicon from "../../../public/assets/svg/search-normal.svg";
 import notificationIcon from "../../../public/assets/svg/notification-bing.svg";
 import userIcon from "../../../public/assets/svg/user-octagon.svg";
-const DasboardNavWithOutSearch = ({ vendor, page }) => {
+const DasboardNavWithOutSearch = ({ addSearch, vendor, page, setValue }) => {
   return (
     <div className="flex items-center justify-between bg-white shadow-2xl py-2 px-6 rounded-[12px]">
       <Typography
@@ -14,17 +14,22 @@ const DasboardNavWithOutSearch = ({ vendor, page }) => {
         Dashboard
       </Typography>
       <div className="flex items-center justify-end gap-6">
-        <div className="relative   min-w-96">
-          <div className="absolute left-2 top-[10px]">
-            <Image alt="" src={searchNormalicon} />
-          </div>
-          <input
-            placeholder="Search"
-            className={`py-2 pl-12 w-full border-solid border-[1.5px]
+        {addSearch && (
+          <div className="relative   min-w-96">
+            <div className="absolute left-2 top-[10px]">
+              <Image alt="" src={searchNormalicon} />
+            </div>
+            <input
+              onChange={(e) => {
+                setValue(e.target.value);
+              }}
+              placeholder="Search"
+              className={`py-2 pl-12 w-full border-solid border-[1.5px]
           focus:outline-none focus:border-primary-100 border-gray-2 rounded-[12px] overflow-hidden text-[14px] text-font-light placeholder:font-300  bg-[#F8F9FA] 
           } `}
-          />
-        </div>
+            />
+          </div>
+        )}
         <div className="flex items-center justify-between gap-4">
           <div className="rounded-12px] p-2 bg-[#F8F9FA]">
             <Image alt="" src={notificationIcon} />

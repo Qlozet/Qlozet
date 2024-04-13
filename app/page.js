@@ -65,7 +65,24 @@ export default function Home() {
       <UploadSingleDocInput></UploadSingleDocInput> */}
       {/* <PasswordValidate text="sdfsdsjsdjj" checked={false} /> */}
       {/* remove the number fron the value and convert it to string */}
-      <DasboardNavWithOutSearch />
+      <h1>Homepage</h1>
+      <Button
+        variant="outline"
+        btnSize="small"
+        disabled={false}
+        clickHandler={() => {
+          router.push(`auth/signup`);
+        }}
+      >
+        Veiw Signup
+      </Button>{" "}
+      <h1>Components</h1>
+      <DasboardNavWithOutSearch
+        addSearch={true}
+        setValue={(data) => {
+          console.log(data);
+        }}
+      />
       {/* <HorizontalChat /> */}
       <ChatCard
         text="Orders by gender"
@@ -79,7 +96,7 @@ export default function Home() {
         text="Orders by top location"
         graph={<HorizontalChat data={data} />}
       />
-      <SideBar active="Support" />
+      <SideBar active="Dashboard" />
       <DashboardTopCard
         name="Total Orders"
         total="10000"
@@ -87,17 +104,6 @@ export default function Home() {
         bgColor="bg-[#57CAEB]"
         link="link"
       />
-      <h1>Homepage</h1>
-      <Button
-        variant="outline"
-        btnSize="small"
-        disabled={false}
-        clickHandler={() => {
-          router.push(`auth/signup`);
-        }}
-      >
-        Veiw Signup
-      </Button>{" "}
     </main>
   );
 }

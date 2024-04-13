@@ -77,12 +77,12 @@ const SideBar = ({ active }) => {
       </div>
 
       <div className="">
-        {sidebaritems.map((item) => (
-          <div className="flex items-center gap-4  py-3">
+        {sidebaritems.map((item, index) => (
+          <div className="flex items-center gap-4  py-3" key={index}>
             {active === item.name ? (
-              <Image src={item.activeIcon} />
+              <Image src={item.activeIcon} alt="" />
             ) : (
-              <Image src={item.defaultIcon} />
+              <Image src={item.defaultIcon} alt="" />
             )}
             <p
               className={`font-normal text-[18px] ${

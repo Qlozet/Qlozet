@@ -10,7 +10,7 @@ const DashboardTopCard = ({ name, bgColor, icon, total, percentage, link }) => {
       <div
         className={`w-[48px] h-[48px] flex items-center justify-center ${bgColor} rounded-[8px]`}
       >
-        <Image src={cartWhite} />
+        <Image src={cartWhite} alt="" />
       </div>
       <div className="pl-4">
         <div>
@@ -20,12 +20,12 @@ const DashboardTopCard = ({ name, bgColor, icon, total, percentage, link }) => {
         <div className="flex justify-between items-center gap-12">
           <div className="flex items-center gap-1">
             <p className="text-[12px] text-[#33CC33]">{percentage}</p>
-            <Image src={arrowUpSuccess} />
+            <Image src={arrowUpSuccess} alt="" />
           </div>
           {link && (
             <div className="flex items-center gap-1 cursor-pointer">
               <p className="text-[12px] text-[#33CC33]">View</p>
-              <Image src={eyeSuccess} />
+              <Image src={eyeSuccess} alt="" />
             </div>
           )}
         </div>

@@ -4,9 +4,8 @@ const HorizontalChat = ({ data }) => {
     <div>
       {data.map((item, index) => {
         return (
-          <div className="mt-8">
+          <div className="mt-8" key={index}>
             <HorizontalChatBar
-              key={index}
               text={item.location}
               total={item.total}
               percentage={item.percentage}
