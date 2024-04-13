@@ -8,7 +8,6 @@ import TextInput from "@/app/components/TextInput";
 import Button from "@/app/components/Button";
 import classes from "./index.module.css";
 import { useRouter } from "next/navigation";
-import NumberInput from "@/app/components/NumberInput";
 
 const SignUp = () => {
   const router = useRouter();
@@ -34,25 +33,21 @@ const SignUp = () => {
             >
               Please fill in the information below to register as a vendor
             </Typography>
-            <ProgressBar step={1} />
+            <ProgressBar step={2} />
             <TextInput
-              label="Business name"
-              placeholder="Enter your business name"
+              label="Personal name"
+              placeholder="Enter your name"
+              setValue={(data) => {}}
+            />
+
+            <TextInput
+              label="Phone number "
+              placeholder="Enter your phone number "
               setValue={(data) => {}}
             />
             <TextInput
-              label="Business email "
-              placeholder="Enter your business official email address"
-              setValue={(data) => {}}
-            />
-            <NumberInput
-              label="Business phone number "
-              placeholder="Enter your business official phone number "
-              setValue={(data) => {}}
-            />
-            <TextInput
-              label="Business address"
-              placeholder="Enter your business official address"
+              label="National Identity Number"
+              placeholder="Enter your business official phone number"
               setValue={(data) => {}}
             />
             <div className="mt-10">
@@ -61,7 +56,7 @@ const SignUp = () => {
                 btnSize="large"
                 variant="primary"
                 clickHandler={() => {
-                  router.push(`../auth/personalinfo`);
+                  router.push(`../auth/businessinfo`);
                 }}
               />
             </div>

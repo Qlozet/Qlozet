@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import PasswordInput from "./components/PasswordInput";
 import RadioInput from "./components/RadioInput";
 import PasswordValidate from "./components/PasswordValidation";
+import SideBar from "./components/SideBar";
+import DashboardTopCard from "./components/DashboardTopCard";
 export default function Home() {
   const router = useRouter();
   return (
@@ -28,8 +30,15 @@ export default function Home() {
       />
       <ProgressBar step={6} />
       <UploadSingleDocInput></UploadSingleDocInput> */}
-      <RadioInput />
-      <PasswordValidate text="sdfsdsjsdjj" checked={false} />
+      {/* <PasswordValidate text="sdfsdsjsdjj" checked={false} /> */}
+      <SideBar active="Support" />
+      <DashboardTopCard
+        name="Total Orders"
+        total="10000"
+        percentage="2.5"
+        bgColor="bg-[#57CAEB]"
+        link="link"
+      />
       <h1>Homepage</h1>
       <Button
         variant="outline"

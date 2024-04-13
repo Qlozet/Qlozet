@@ -3,14 +3,13 @@ import signupImage from "../../../public/assets/svg/signupImage.svg";
 import Image from "next/image";
 import Logo from "@/app/components/Logo";
 import Typography from "@/app/components/Typography";
-import ProgressBar from "@/app/components/ProgressBar";
+import PasswordInput from "@/app/components/PasswordInput";
 import TextInput from "@/app/components/TextInput";
 import Button from "@/app/components/Button";
 import classes from "./index.module.css";
 import { useRouter } from "next/navigation";
-import NumberInput from "@/app/components/NumberInput";
 
-const SignUp = () => {
+const SignIn = () => {
   const router = useRouter();
   return (
     <section
@@ -25,43 +24,36 @@ const SignUp = () => {
               textWeight="font-bold"
               textSize="text-[32px]"
             >
-              Sign Up
+              Sign In
             </Typography>
             <Typography
+              textColor="text-primary"
               textWeight="font-normal"
               textSize="text-[14px]"
               verticalPadding="my-1"
             >
-              Please fill in the information below to register as a vendor
+              Please enter your login details now
             </Typography>
-            <ProgressBar step={1} />
+
             <TextInput
-              label="Business name"
-              placeholder="Enter your business name"
-              setValue={(data) => {}}
-            />
-            <TextInput
-              label="Business email "
+              label="Business email address"
               placeholder="Enter your business official email address"
               setValue={(data) => {}}
             />
-            <NumberInput
-              label="Business phone number "
-              placeholder="Enter your business official phone number "
+
+            <PasswordInput
+              label="Password "
+              placeholder="Enter your password "
               setValue={(data) => {}}
             />
-            <TextInput
-              label="Business address"
-              placeholder="Enter your business official address"
-              setValue={(data) => {}}
-            />
+
             <div className="mt-10">
               <Button
-                children="Continue"
+                children="Sign In"
                 btnSize="large"
                 variant="primary"
                 clickHandler={() => {
-                  router.push(`../auth/personalinfo`);
+                  router.push(`#`);
                 }}
               />
             </div>
@@ -75,4 +67,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;

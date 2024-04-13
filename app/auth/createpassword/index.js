@@ -4,13 +4,13 @@ import Image from "next/image";
 import Logo from "@/app/components/Logo";
 import Typography from "@/app/components/Typography";
 import ProgressBar from "@/app/components/ProgressBar";
-import TextInput from "@/app/components/TextInput";
 import Button from "@/app/components/Button";
 import classes from "./index.module.css";
 import { useRouter } from "next/navigation";
-import NumberInput from "@/app/components/NumberInput";
+import PasswordInput from "@/app/components/PasswordInput";
+import RadioInput from "@/app/components/RadioInput";
 
-const SignUp = () => {
+const createpassword = () => {
   const router = useRouter();
   return (
     <section
@@ -25,43 +25,37 @@ const SignUp = () => {
               textWeight="font-bold"
               textSize="text-[32px]"
             >
-              Sign Up
+              Create Password
             </Typography>
             <Typography
               textWeight="font-normal"
               textSize="text-[14px]"
               verticalPadding="my-1"
             >
-              Please fill in the information below to register as a vendor
+              Create password to secure your account
             </Typography>
-            <ProgressBar step={1} />
-            <TextInput
-              label="Business name"
-              placeholder="Enter your business name"
+            <ProgressBar step={4} />
+            <PasswordInput
+              label="Create Password "
+              placeholder="Enter your name"
               setValue={(data) => {}}
             />
-            <TextInput
-              label="Business email "
-              placeholder="Enter your business official email address"
+
+            <PasswordInput
+              label="Confirm Password "
+              placeholder="Enter your phone number "
               setValue={(data) => {}}
             />
-            <NumberInput
-              label="Business phone number "
-              placeholder="Enter your business official phone number "
-              setValue={(data) => {}}
-            />
-            <TextInput
-              label="Business address"
-              placeholder="Enter your business official address"
-              setValue={(data) => {}}
-            />
+            <RadioInput label="Password must contain at least 8 characters " />
+            <RadioInput label="Password must contain a symbol or character " />
+            <RadioInput label="Password must contain a number " />
             <div className="mt-10">
               <Button
                 children="Continue"
                 btnSize="large"
                 variant="primary"
                 clickHandler={() => {
-                  router.push(`../auth/personalinfo`);
+                  router.push(`#`);
                 }}
               />
             </div>
@@ -75,4 +69,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default createpassword;
