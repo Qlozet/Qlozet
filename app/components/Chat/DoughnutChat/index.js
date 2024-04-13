@@ -54,7 +54,7 @@ const DonutChart = ({ data }) => {
   return (
     <div>
       <div>
-        <canvas ref={chartRef} width="400" height="400"></canvas>
+        <canvas ref={chartRef} width="285" height="285"></canvas>
       </div>
     </div>
   );

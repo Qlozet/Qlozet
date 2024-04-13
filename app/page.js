@@ -18,7 +18,11 @@ import ChatCard from "./components/Chat/ChatCard";
 import HorizontalChatBar from "./components/Chat/HorizontalChatBar";
 import HorizontalChat from "./components/Chat/HorizontalChart";
 import DasboardNavWithOutSearch from "./components/DashboardNavBarWithoutSearch";
+import DropDown from "./components/DropDown";
+import { useState } from "react";
 export default function Home() {
+  const [dropDownValue, setDropDownValue] = useState("");
+
   const data = [
     {
       location: "Warri",
@@ -47,6 +51,21 @@ export default function Home() {
     colors: ["#3E1C01", "#9C8578"],
     borderAlign: "center",
   };
+
+  const dropdownData = [
+    {
+      text: "View vendor’s details",
+      color: "",
+    },
+    {
+      text: "View vendor’s ",
+      color: "",
+    },
+    {
+      text: "vendor’s details",
+      color: "",
+    },
+  ];
   const router = useRouter();
   return (
     <main className="bg-white w-full h-[100vh] p-20">
@@ -75,8 +94,16 @@ export default function Home() {
         }}
       >
         Veiw Signup
-      </Button>{" "}
+      </Button>
       <h1>Components</h1>
+      <DropDown
+        placeholder={"Vendor’s status"}
+        value={dropDownValue}
+        setValue={(data) => {
+          setDropDownValue(data);
+        }}
+        data={dropdownData}
+      />
       <DasboardNavWithOutSearch
         addSearch={true}
         setValue={(data) => {

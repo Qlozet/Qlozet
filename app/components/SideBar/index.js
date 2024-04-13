@@ -14,6 +14,8 @@ import cutomerActive from "../../../public/assets/svg/cutomer-active.svg";
 import supportDefault from "../../../public/assets/svg/support-default.svg";
 import supportActive from "../../../public/assets/svg/support-active.svg";
 import loggoutDefault from "../../../public/assets/svg/logout-default.svg";
+import vendorDefault from "../../../public/assets/svg/user-octagon.svg";
+import vendorActive from "../../../public/assets/svg/user-octagon-active.svg";
 
 import Image from "next/image";
 
@@ -26,10 +28,10 @@ const SideBar = ({ active }) => {
       activeIcon: activeDashboardIcon,
     },
     {
-      name: "Orders",
-      link: "Orders",
-      defaultIcon: cart,
-      activeIcon: actiivecart,
+      name: "Vendors",
+      link: "Vendors",
+      defaultIcon: vendorDefault,
+      activeIcon: vendorActive,
     },
     {
       name: "Products",
@@ -71,11 +73,10 @@ const SideBar = ({ active }) => {
     },
   ];
   return (
-    <div className="px-10 w-[30%]">
+    <div className="px-10 bg-white h-full">
       <div className="py-10">
         <Logo />
       </div>
-
       <div className="">
         {sidebaritems.map((item, index) => (
           <div className="flex items-center gap-4  py-3" key={index}>

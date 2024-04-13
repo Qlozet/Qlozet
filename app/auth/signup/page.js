@@ -17,6 +17,7 @@ import Step5 from "@/app/components/SignUpStep/Step5";
 
 const SignUp = () => {
   const [step, setStep] = useState(1);
+
   const router = useRouter();
   return (
     <section

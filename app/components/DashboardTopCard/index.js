@@ -6,11 +6,11 @@ import cartWhite from "../../../public/assets/svg/cart-white.svg";
 
 const DashboardTopCard = ({ name, bgColor, icon, total, percentage, link }) => {
   return (
-    <div className="p-6 flex ">
+    <div className="p-6 flex bg-white rounded-[12px] mt-4 min-w-[265px]">
       <div
         className={`w-[48px] h-[48px] flex items-center justify-center ${bgColor} rounded-[8px]`}
       >
-        <Image src={cartWhite} alt="" />
+        <Image src={icon} alt="" />
       </div>
       <div className="pl-4">
         <div>
