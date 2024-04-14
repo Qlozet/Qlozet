@@ -8,7 +8,7 @@ const ChatCard = ({ text, graph }) => {
     borderAlign: "center",
   };
   return (
-    <div className="shadow-2xl bg-white rounded-[12px] p-6 w-full h-[24rem] relative z-0">
+    <div className="shadow-md bg-white rounded-[12px] p-6 w-full h-[24rem] relative z-0">
       <div>
         <Typography
           textColor="text-gray-100"
@@ -21,7 +21,6 @@ const ChatCard = ({ text, graph }) => {
       {graph}
       {text === "Vendors by gender"}
       <div className={`${text === "Vendors by gender" ? "" : ""}`}>
-        {" "}
         <ChatLabel />
       </div>
     </div>

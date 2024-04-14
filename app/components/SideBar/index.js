@@ -17,19 +17,23 @@ import loggoutDefault from "../../../public/assets/svg/logout-default.svg";
 import vendorDefault from "../../../public/assets/svg/user-octagon.svg";
 import vendorActive from "../../../public/assets/svg/user-octagon-active.svg";
 
+import { useRouter } from "next/navigation";
+
 import Image from "next/image";
 
 const SideBar = ({ active }) => {
+  const router = useRouter();
+
   const sidebaritems = [
     {
       name: "Dashboard",
-      link: "Dashboard",
+      link: "dashboard",
       defaultIcon: dashboardIcon,
       activeIcon: activeDashboardIcon,
     },
     {
       name: "Vendors",
-      link: "Vendors",
+      link: "vendors",
       defaultIcon: vendorDefault,
       activeIcon: vendorActive,
     },
@@ -79,7 +83,13 @@ const SideBar = ({ active }) => {
       </div>
       <div className="">
         {sidebaritems.map((item, index) => (
-          <div className="flex items-center gap-4  py-3" key={index}>
+          <div
+            className="flex items-center gap-4  py-3 cursor-pointer"
+            key={index}
+            onClick={() => {
+              router.push(`${item.link}`);
+            }}
+          >
             {active === item.name ? (
               <Image src={item.activeIcon} alt="" />
             ) : (

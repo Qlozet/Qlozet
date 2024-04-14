@@ -19,7 +19,11 @@ import HorizontalChatBar from "./components/Chat/HorizontalChatBar";
 import HorizontalChat from "./components/Chat/HorizontalChart";
 import DasboardNavWithOutSearch from "./components/DashboardNavBarWithoutSearch";
 import DropDown from "./components/DropDown";
+import VendorTable from "./components/Vendor/VendorTable";
 import { useState } from "react";
+import VendorStatus from "./components/Vendor/VendorStatus";
+import VendorCountLine from "./components/VendorCountLine";
+import VerticalBarGraph from "./components/VerticalBarGraph";
 export default function Home() {
   const [dropDownValue, setDropDownValue] = useState("");
 
@@ -96,6 +100,12 @@ export default function Home() {
         Veiw Signup
       </Button>
       <h1>Components</h1>
+      <VerticalBarGraph />
+      {/* <VendorStatus
+        text="Awaiting verification"
+        bgColor="bg-[#33CC331A]"
+        color="text-[#33CC33]"
+      />
       <DropDown
         placeholder={"Vendor’s status"}
         value={dropDownValue}
@@ -109,9 +119,9 @@ export default function Home() {
         setValue={(data) => {
           console.log(data);
         }}
-      />
+      /> */}
       {/* <HorizontalChat /> */}
-      <ChatCard
+      {/* <ChatCard
         text="Orders by gender"
         graph={<DonutChart data={chartData} />}
       />
@@ -130,7 +140,7 @@ export default function Home() {
         percentage="2.5"
         bgColor="bg-[#57CAEB]"
         link="link"
-      />
+      /> */}
     </main>
   );
 }

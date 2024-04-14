@@ -10,6 +10,7 @@ import DonutChart from "@/app/components/Chat/DoughnutChat";
 import DropDown from "@/app/components/DropDown";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
+import VerticalBarGraph from "@/app/components/VerticalBarGraph";
 
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
@@ -69,6 +70,7 @@ const Dashboard = () => {
             // console.log(data);
           }}
         />
+
         <div className="flex items-center gap-4">
           <DashboardTopCard
             name="Total Vendors"
@@ -82,17 +84,18 @@ const Dashboard = () => {
             name="Achieved Vendors"
             total="10000"
             percentage="2.5"
-            bgColor="bg-[#57CAEB]"
+            bgColor="bg-[#5DDAB4]"
             icon={vendorIcon}
           />
           <DashboardTopCard
             name="Total Customers"
             total="10000"
             percentage="2.5"
-            bgColor="bg-[#57CAEB]"
+            bgColor="bg-[#FF7976]"
             icon={customerIcon}
           />
         </div>
+
         <div className="relative">
           <div className="flex items-center justify-end mt-14 mb-2 ">
             <div className="">
@@ -118,7 +121,6 @@ const Dashboard = () => {
                 />
               </div>
               <div className="w-1/2">
-                {" "}
                 <ChatCard
                   text="Vendors by top location"
                   graph={<HorizontalChat data={data} />}
@@ -134,6 +136,22 @@ const Dashboard = () => {
                   graph={<HorizontalChat data={data} />}
                 />
               </div>
+            </div>
+          </div>
+
+          <div className="flex items-center w-full gap-4 z-0 mt-4">
+            <div
+              className={`${classes.first_container} flex items-center gap-4 mt-4 w-full`}
+            >
+              <div className="w-full shadow-md bg-white rounded-[12px] p-6 ">
+                <VerticalBarGraph />
+              </div>
+            </div>
+
+            <div
+              className={`${classes.second_container} flex items-center mt-4`}
+            >
+              <div className="w-full flex items-center"></div>
             </div>
           </div>
         </div>

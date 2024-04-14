@@ -11,6 +11,7 @@ import DropDown from "@/app/components/DropDown";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import Typography from "@/app/components/Typography";
+import VendorTable from "@/app/components/Vendor/VendorTable";
 
 const Vendor = () => {
   const [dropDownValue, setDropDownValue] = useState("");
@@ -58,6 +59,37 @@ const Vendor = () => {
     colors: ["#3E1C01", "#9C8578"],
     borderAlign: "center",
   };
+
+  const tableData = [
+    {
+      vendorName: "My name iss",
+      address: "My name iss",
+      dateOnboarded: "My name iss",
+      onboardedBy: "My name iss",
+      vendorStatus: "My name iss",
+    },
+    {
+      vendorName: "My name iss",
+      address: "My name iss",
+      dateOnboarded: "My name iss",
+      onboardedBy: "My name iss",
+      vendorStatus: "My name iss",
+    },
+    {
+      vendorName: "My name iss",
+      address: "My name iss",
+      dateOnboarded: "My name iss",
+      onboardedBy: "My name iss",
+      vendorStatus: "My name iss",
+    },
+    {
+      vendorName: "My name iss",
+      address: "My name iss",
+      dateOnboarded: "My name iss",
+      onboardedBy: "My name iss",
+      vendorStatus: "My name iss",
+    },
+  ];
   return (
     <div className="flex bg-[#F8F9FA]">
       <div className="">
@@ -84,7 +116,7 @@ const Vendor = () => {
             total="10000"
             percentage="2.5"
             bgColor="bg-[#57CAEB]"
-            icon={vendorIcon}
+            icon={customerIcon}
           />
           <DashboardTopCard
             name="Total Customers"
@@ -114,6 +146,8 @@ const Vendor = () => {
               />
             </div>
           </div>
+
+          <VendorTable data={tableData} />
         </div>
       </div>
     </div>
