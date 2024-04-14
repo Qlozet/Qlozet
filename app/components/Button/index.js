@@ -6,6 +6,7 @@ const Button = ({
   btnSize,
   disabled,
   clickHandler,
+  maxWidth,
   ...rest
 }) => {
   let variantClasses = "";
@@ -13,17 +14,17 @@ const Button = ({
 
   switch (variant) {
     case "primary":
-      variantClasses = `font-light hover:bg-primary-100 text-white font-bold py-3 px-4 rounded ${
+      variantClasses = `font-light hover:bg-primary-100 text-white font-bold py-3 px-4  ${
         disabled ? "bg-primary-100 cursor-not-allowed" : "bg-primary"
       }`;
       break;
     case "outline":
-      variantClasses = `font-light hover:bg-gray-400 text-gray-800 font-bold rounded-[8px] py-3 px-4 border-[1px] border-solid border-[rgba(18, 18, 18, 1)] ${
+      variantClasses = `font-light hover:bg-gray-400 text-gray-800 font-bold  py-3 px-4 border-[1px] border-solid border-[rgba(18, 18, 18, 1)] ${
         disabled ? "bg-white-100 cursor-not-allowed" : "bg-white"
       }`;
       break;
     default:
-      variantClasses = `font-light bg-gray-500 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-[8px]`;
+      variantClasses = `font-light bg-gray-500 hover:bg-gray-700 text-white font-bold py-3 px-4 `;
   }
 
   switch (btnSize) {
@@ -39,7 +40,7 @@ const Button = ({
 
   return (
     <button
-      className={`py-2 flex items-center justify-center  ${variantClasses} ${sizeClasses} `}
+      className={`py-2 flex items-center justify-center rounded-[12px] ${maxWidth} ${variantClasses} ${sizeClasses} `}
       {...rest}
       disabled={disabled}
       onClick={clickHandler}

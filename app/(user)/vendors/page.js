@@ -11,8 +11,7 @@ import DropDown from "@/app/components/DropDown";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import Typography from "@/app/components/Typography";
-import VendorTable from "@/app/components/Vendor/VendorTable";
-
+import VendorTable from "./VendorTable";
 const Vendor = () => {
   const [dropDownValue, setDropDownValue] = useState("");
 

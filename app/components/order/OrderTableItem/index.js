@@ -12,27 +12,34 @@ const OrderTableItem = ({
 }) => {
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-[14px] font-normal p-4">{date}</td>
-      <td className="text-[14px] font-normal p-4">{orderId}</td>
-      <td className="text-[14px] font-normal p-4">{productName}</td>
-      <td className="text-[14px] font-normal p-4">{productPrice}</td>
-      <td className="text-[14px] font-normal p-4">{CustomerName}</td>
-      <td className="text-[14px] font-normal p-4">{AmountPaid}</td>
-      <td className="text-[14px] font-normal p-4">
+      <td className="text-[12px] font-normal p-4">{date}</td>
+      <td className="text-[12px] font-normal p-4">{orderId}</td>
+      <td className="text-[12px] font-normal p-4">{productName}</td>
+      <td className="text-[12px] font-normal p-4">{productPrice}</td>
+      <td className="text-[12px] font-normal p-4">{CustomerName}</td>
+      <td className="text-[12px] font-normal p-4">{AmountPaid}</td>
+      <td className="text-[12px] font-normal p-4">
         <OrderStatus
           text="Out for delivery"
           bgColor="bg-[#D4CFCA]"
           color="text-[#3E1C01]"
+          addMaxWidth={true}
         />
       </td>
 
-      <td className="text-[14px] font-normal p-4">
-        <div className="border">
-          <OrderStatus text="View details" color="text-[#495057]" />
+      <td className="text-[12px] font-normal p-4 ">
+        <div
+          className="border rounded-[12px] "
+          onClick={() => {
+            console.log("Hello world");
+          }}
+        >
+          <OrderStatus
+            text="View details"
+            color="text-[#3E1C01]"
+            addMaxWidth={true}
+          />
         </div>
-      </td>
-      <td className="text-[14px] font-normal p-4">
-        <Image src={threeDotIcon} />
       </td>
     </tr>
   );

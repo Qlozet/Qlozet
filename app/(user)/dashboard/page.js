@@ -79,6 +79,7 @@ const Dashboard = () => {
             bgColor="bg-[#57CAEB]"
             link="link"
             icon={vendorIcon}
+            addMaxWidth={true}
           />
           <DashboardTopCard
             name="Achieved Vendors"
@@ -86,6 +87,7 @@ const Dashboard = () => {
             percentage="2.5"
             bgColor="bg-[#5DDAB4]"
             icon={vendorIcon}
+            addMaxWidth={true}
           />
           <DashboardTopCard
             name="Total Customers"
@@ -93,6 +95,7 @@ const Dashboard = () => {
             percentage="2.5"
             bgColor="bg-[#FF7976]"
             icon={customerIcon}
+            addMaxWidth={true}
           />
         </div>
 

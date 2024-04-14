@@ -12,7 +12,13 @@ import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import Typography from "@/app/components/Typography";
 import OrderTable from "@/app/components/order/OrderTable";
-
+import Modal from "@/app/components/Modal";
+import Image from "next/image";
+import NumberInput from "@/app/components/NumberInput";
+import Button from "@/app/components/Button";
+import SetTotalOrderPerDay from "@/app/components/SetTotalItemPerDayForm";
+import OrderDetailNav from "@/app/components/order/OrderdetailsNav";
+import OrderDetails from "@/app/components/order/OrderDetails";
 const Vendor = () => {
   const [dropDownValue, setDropDownValue] = useState("");
 
@@ -106,6 +112,13 @@ const Vendor = () => {
             bgColor="bg-[#5DDAB4]"
             icon={customerIcon}
           />
+          <DashboardTopCard
+            name="Total Customers"
+            total="10000"
+            percentage="2.5"
+            bgColor="bg-[#5DDAB4]"
+            icon={customerIcon}
+          />
         </div>
         <div className="relative">
           <div className="flex items-center justify-between mt-14 mb-2 ">
@@ -131,6 +144,8 @@ const Vendor = () => {
           <OrderTable data={tableData} />
         </div>
       </div>
+      {/* <Modal content={<SetTotalOrderPerDay />}></Modal> */}
+      <Modal content={<OrderDetails />}></Modal>
     </div>
   );
 };

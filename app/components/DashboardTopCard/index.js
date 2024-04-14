@@ -4,9 +4,21 @@ import arrowUpSuccess from "../../../public/assets/svg/arrowup-success.svg";
 import eyeSuccess from "../../../public/assets/svg/eye-success.svg";
 import cartWhite from "../../../public/assets/svg/cart-white.svg";
 
-const DashboardTopCard = ({ name, bgColor, icon, total, percentage, link }) => {
+const DashboardTopCard = ({
+  name,
+  bgColor,
+  icon,
+  total,
+  percentage,
+  link,
+  addMaxWidth,
+}) => {
   return (
-    <div className="p-6 flex bg-white rounded-[12px] mt-4 min-w-[265px]">
+    <div
+      className={`p-6 flex bg-white rounded-[12px] mt-4 ${
+        addMaxWidth ? "max-w-[260px]" : ""
+      }  w-full`}
+    >
       <div
         className={`w-[48px] h-[48px] flex items-center justify-center ${bgColor} rounded-[8px]`}
       >
