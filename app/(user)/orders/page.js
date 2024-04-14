@@ -11,7 +11,7 @@ import DropDown from "@/app/components/DropDown";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import Typography from "@/app/components/Typography";
-import VendorTable from "@/app/components/Vendor/VendorTable";
+import OrderTable from "@/app/components/order/OrderTable";
 
 const Vendor = () => {
   const [dropDownValue, setDropDownValue] = useState("");
@@ -62,32 +62,13 @@ const Vendor = () => {
 
   const tableData = [
     {
-      vendorName: "My name iss",
-      address: "My name iss",
-      dateOnboarded: "My name iss",
-      onboardedBy: "My name iss",
-      vendorStatus: "My name iss",
-    },
-    {
-      vendorName: "My name iss",
-      address: "My name iss",
-      dateOnboarded: "My name iss",
-      onboardedBy: "My name iss",
-      vendorStatus: "My name iss",
-    },
-    {
-      vendorName: "My name iss",
-      address: "My name iss",
-      dateOnboarded: "My name iss",
-      onboardedBy: "My name iss",
-      vendorStatus: "My name iss",
-    },
-    {
-      vendorName: "My name iss",
-      address: "My name iss",
-      dateOnboarded: "My name iss",
-      onboardedBy: "My name iss",
-      vendorStatus: "My name iss",
+      date: "My name iss",
+      orderId: "My name iss",
+      productName: "My name iss",
+      productPrice: "12222",
+      CustomerName: "My name iss",
+      AmountPaid: "My name iss",
+      DeliveryStatus: "My name iss",
     },
   ];
   return (
@@ -147,7 +128,7 @@ const Vendor = () => {
             </div>
           </div>
 
-          <VendorTable data={tableData} />
+          <OrderTable data={tableData} />
         </div>
       </div>
     </div>

@@ -19,9 +19,7 @@ import HorizontalChatBar from "./components/Chat/HorizontalChatBar";
 import HorizontalChat from "./components/Chat/HorizontalChart";
 import DasboardNavWithOutSearch from "./components/DashboardNavBarWithoutSearch";
 import DropDown from "./components/DropDown";
-import VendorTable from "./components/Vendor/VendorTable";
 import { useState } from "react";
-import VendorStatus from "./components/Vendor/VendorStatus";
 import VendorCountLine from "./components/VendorCountLine";
 import VerticalBarGraph from "./components/VerticalBarGraph";
 export default function Home() {

@@ -38,6 +38,12 @@ const SideBar = ({ active }) => {
       activeIcon: vendorActive,
     },
     {
+      name: "Orders",
+      link: "Orders",
+      defaultIcon: vendorDefault,
+      activeIcon: vendorActive,
+    },
+    {
       name: "Products",
       link: "Products",
       defaultIcon: shoppingBag,
