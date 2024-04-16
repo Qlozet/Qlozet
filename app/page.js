@@ -22,6 +22,10 @@ import DropDown from "./components/DropDown";
 import { useState } from "react";
 import VendorCountLine from "./components/VendorCountLine";
 import VerticalBarGraph from "./components/VerticalBarGraph";
+import OrderStep from "./components/order/OrderStep";
+import SelectInput from "./components/SelectInput";
+import TextArea from "./components/TextAreaInput";
+import RejectOrderModal from "./components/order/RejectOrderModal";
 export default function Home() {
   const [dropDownValue, setDropDownValue] = useState("");
 
@@ -68,6 +72,7 @@ export default function Home() {
       color: "",
     },
   ];
+
   const router = useRouter();
   return (
     <main className="bg-white w-full h-[100vh] p-20">
@@ -98,7 +103,30 @@ export default function Home() {
         Veiw Signup
       </Button>
       <h1>Components</h1>
+      <div className="relative z-10">
+        {" "}
+        {/* <SelectInput
+          placeholder={"Vendor’s status"}
+          value={dropDownValue}
+          setValue={(data) => {
+            setDropDownValue(data);
+          }}
+          data={dropdownData}
+          label="Why are you rejecting this order"
+        /> */}
+        <TextArea
+          placeholder="Tell us the reason you’re rejecting this order"
+          label="Enter a reason"
+        />
+        <RejectOrderModal />
+      </div>
+
+      <div className="">
+        <OrderStep step={6} />
+      </div>
+
       <VerticalBarGraph />
+
       {/* <VendorStatus
         text="Awaiting verification"
         bgColor="bg-[#33CC331A]"

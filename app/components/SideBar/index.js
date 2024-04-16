@@ -31,12 +31,12 @@ const SideBar = ({ active }) => {
       defaultIcon: dashboardIcon,
       activeIcon: activeDashboardIcon,
     },
-    {
-      name: "Vendors",
-      link: "vendors",
-      defaultIcon: vendorDefault,
-      activeIcon: vendorActive,
-    },
+    // {
+    //   name: "Vendors",
+    //   link: "vendors",
+    //   defaultIcon: vendorDefault,
+    //   activeIcon: vendorActive,
+    // },
     {
       name: "Orders",
       link: "orders",

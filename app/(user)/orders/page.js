@@ -19,6 +19,10 @@ import Button from "@/app/components/Button";
 import SetTotalOrderPerDay from "@/app/components/SetTotalItemPerDayForm";
 import OrderDetailNav from "@/app/components/order/OrderdetailsNav";
 import OrderDetails from "@/app/components/order/OrderDetails";
+import OrderStep from "@/app/components/order/OrderStep";
+import TrackOrder from "@/app/components/order/TrackOrders";
+import RejectOrderModal from "@/app/components/order/RejectOrderModal";
+import CustomerDetails from "@/app/components/order/CustomerDetails";
 const Vendor = () => {
   const [dropDownValue, setDropDownValue] = useState("");
 
@@ -145,7 +149,16 @@ const Vendor = () => {
         </div>
       </div>
       {/* <Modal content={<SetTotalOrderPerDay />}></Modal> */}
-      <Modal content={<OrderDetails />}></Modal>
+      {/* <Modal content={<OrderDetails />}></Modal> */}
+      <Modal content={<TrackOrder />}></Modal>
+      {/* <Modal content={<CustomerDetails />}></Modal> */}
+      {/* <Modal
+        content={
+          <div className="flex items-center justify-center h-[100vh]">
+            <RejectOrderModal />
+          </div>
+        }
+      ></Modal> */}
     </div>
   );
 };

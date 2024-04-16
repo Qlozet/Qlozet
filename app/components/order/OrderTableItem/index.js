@@ -1,6 +1,8 @@
 import threeDotIcon from "../../../../public/assets/svg/three-dot.svg";
 import Image from "next/image";
 import OrderStatus from "../OrderStatus";
+import Modal from "../../Modal";
+import OrderDetails from "../OrderDetails";
 const OrderTableItem = ({
   date,
   orderId,
@@ -41,6 +43,7 @@ const OrderTableItem = ({
           />
         </div>
       </td>
+      {/* <Modal content={<OrderDetails />}></Modal> */}
     </tr>
   );
 };

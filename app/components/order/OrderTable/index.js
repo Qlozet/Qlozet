@@ -43,9 +43,6 @@ const OrderTable = ({ data }) => {
             </th>
             <th className="w-[8%] p-4 text-[12px]">
               <ExportComponent />
-              {/* <div className="flex items-center justify-start font-[500]">
-                Vendor’s name
-              </div> */}
             </th>
           </tr>
         </thead>
