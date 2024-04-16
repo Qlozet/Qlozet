@@ -58,7 +58,7 @@ const SideBar = ({ active }) => {
     },
     {
       name: "Customers",
-      link: "Customers",
+      link: "customer",
       defaultIcon: cutomerDefault,
       activeIcon: cutomerActive,
     },

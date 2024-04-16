@@ -8,37 +8,37 @@ const OrderTable = ({ data }) => {
           <tr>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Vendor’s name
+                Picture
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Vendor’s name
+                Customer name
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Vendor’s name
+                Email address
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Vendor’s name
+                Phone number
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Vendor’s name
+                Total orders
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Vendor’s name
+                Last Order date
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Vendor’s name
+                Status
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
