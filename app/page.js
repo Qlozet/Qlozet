@@ -26,6 +26,7 @@ import OrderStep from "./components/order/OrderStep";
 import SelectInput from "./components/SelectInput";
 import TextArea from "./components/TextAreaInput";
 import RejectOrderModal from "./components/order/RejectOrderModal";
+import Notification from "./components/Notification/NotificationComponent";
 export default function Home() {
   const [dropDownValue, setDropDownValue] = useState("");
 
@@ -92,6 +93,7 @@ export default function Home() {
       {/* <PasswordValidate text="sdfsdsjsdjj" checked={false} /> */}
       {/* remove the number fron the value and convert it to string */}
       <h1>Homepage</h1>
+
       <Button
         variant="outline"
         btnSize="small"

@@ -22,14 +22,13 @@ const DropDown = ({ value, placeholder, setValue, data }) => {
           value={value}
           className="w-full p-2 rounded-[12px] outline-none disable"
         ></input>
-        {value === "" && (
-          <div className="absolute top-[10px] right-2 z-50">
-            <Image src={arrowDownIcon} alt="" />
-          </div>
-        )}
+
+        <div className="absolute top-[10px] right-2 z-50">
+          {value === "" && <Image src={arrowDownIcon} alt="" />}
+        </div>
       </div>
       {showDropDown && (
-        <div className="rounded-b-[12px] overflow-hidden fixed top-[350px] right-[17px] z-10 bg-white translate-y-[-47px] min-w-[190px] cursor-pointer">
+        <div className="rounded-b-[12px] overflow-hidden fixed top-[350px] right-[16px] z-10 bg-white translate-y-[-42px] min-w-[192px] cursor-pointer border-x-[1px] border-solid border-gray-200 border-b-[1px]">
           {data.map((item) => (
             <div
               className="p-2 rounded-b-[12px] border-t-[1.5px] border-solid border-gray-200 max-w-48"

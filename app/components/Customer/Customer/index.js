@@ -1,14 +1,14 @@
-import OrderDetailNav from "../OrderdetailsNav";
+import OrderDetailNav from "../../order/OrderdetailsNav";
 import defaultImage from "../../../../public/assets/image/default.png";
 import Image from "next/image";
 import Typography from "../../Typography";
-import OrderStatus from "../OrderStatus";
+import OrderStatus from "../../order/OrderStatus";
 import Button from "../../Button";
-const OrderDetails = ({ topNavData, closeModal }) => {
+const CustomerDetails = ({ topNavData, closeModal }) => {
   return (
     <div className="flex flex-col items-center justify-center w-full my-4">
       <OrderDetailNav
-        active="Order details"
+        active="Customer details"
         data={topNavData}
         closeModal={closeModal}
       />
@@ -143,4 +143,4 @@ const OrderDetails = ({ topNavData, closeModal }) => {
     </div>
   );
 };
-export default OrderDetails;
+export default CustomerDetails;

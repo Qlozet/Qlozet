@@ -5,7 +5,7 @@ import TextArea from "../../TextAreaInput";
 import Typography from "../../Typography";
 import Image from "next/image";
 import Button from "../../Button";
-const RejectOrderModal = () => {
+const RejectOrderModal = ({ closeModal }) => {
   const [dropDownValue, setDropDownValue] = useState("");
 
   const dropdownData = [
@@ -32,7 +32,9 @@ const RejectOrderModal = () => {
         >
           Reject Order
         </Typography>
-        <Image src={closeIcon} />
+        <div onClick={closeModal} className="cursor-pointer">
+          <Image src={closeIcon} />
+        </div>
       </div>
       <div className="pt-6 pb-8">
         <Typography

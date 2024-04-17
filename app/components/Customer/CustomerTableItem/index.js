@@ -1,9 +1,7 @@
 import threeDotIcon from "../../../../public/assets/svg/three-dot.svg";
 import Image from "next/image";
-import OrderStatus from "../OrderStatus";
-import Modal from "../../Modal";
-import OrderDetails from "../OrderDetails";
-const OrderTableItem = ({
+import OrderStatus from "../../order/OrderStatus";
+const CustomerTableItem = ({
   date,
   orderId,
   productName,
@@ -45,4 +43,4 @@ const OrderTableItem = ({
   );
 };
 
-export default OrderTableItem;
+export default CustomerTableItem;

@@ -1,13 +1,17 @@
-import Typography from "../../Typography";
-import OrderStatus from "../OrderStatus";
-import OrderDetailNav from "../OrderdetailsNav";
+import OrderDetailNav from "../../order/OrderdetailsNav";
 import defaultImage from "../../../../public/assets/image/default.png";
+import Image from "next/image";
+import Typography from "../../Typography";
+import OrderStatus from "../../order/OrderStatus";
 import Button from "../../Button";
-
-const CustomerDetails = () => {
+const CustomerDetails = ({ topNavData, closeModal }) => {
   return (
     <div className="flex flex-col items-center justify-center w-full my-4">
-      <OrderDetailNav active="Customer details" />
+      <OrderDetailNav
+        active="Customer details"
+        data={topNavData}
+        closeModal={closeModal}
+      />
       <div className=" w-[40%] bg-white p-4 rounded-b-[14px]">
         <div
           className="bg-auto bg-no-repeat bg-center w-[6rem] h-[6rem]"
@@ -85,6 +89,7 @@ const CustomerDetails = () => {
         </div>
 
         <div className="flex justify-end items-center gap-5  ">
+          <div className="mt-10 flex items-center justify-end"></div>
           <div className="mt-10 flex items-center justify-end">
             <Button
               children="Close"
@@ -92,6 +97,7 @@ const CustomerDetails = () => {
               variant="primary"
               clickHandler={() => {}}
               maxWidth="max-w-[14rem]"
+              minWidth="w-[7rem]"
             />
           </div>
         </div>
@@ -99,5 +105,4 @@ const CustomerDetails = () => {
     </div>
   );
 };
-
 export default CustomerDetails;

@@ -9,10 +9,14 @@ import TracKOrderCard from "../TrackOrderCard";
 import shopIcon from "../../../../public/assets/svg/order-shop.svg";
 import clockIcon from "../../../../public/assets/svg/order-clock.svg";
 import orderBag from "../../../../public/assets/svg/order-shopping-bag.svg";
-const TrackOrder = () => {
+const TrackOrder = ({ data, closeModal }) => {
   return (
     <div className="flex flex-col items-center justify-center w-full my-4">
-      <OrderDetailNav active="Track order" />
+      <OrderDetailNav
+        active="Track order"
+        data={data}
+        closeModal={closeModal}
+      />
       <div className=" w-[40%] bg-white rounded-b-[14px] pt-4 pb-12 ">
         <div className=" py-4 border-gray-300 border-solid border-[1.5px] w-[95%] m-auto rounded-[12px]">
           <div className="flex justify-between items-center border-solid border-b-[1px] border-gray-300 py-6">

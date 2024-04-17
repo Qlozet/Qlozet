@@ -10,7 +10,10 @@ import DonutChart from "@/app/components/Chat/DoughnutChat";
 import DropDown from "@/app/components/DropDown";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
+import infoIcon from "../../../public/assets/svg/Info Circle.svg";
 import VerticalBarGraph from "@/app/components/VerticalBarGraph";
+import Typography from "@/app/components/Typography";
+import Image from "next/image";
 
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
@@ -98,9 +101,32 @@ const Dashboard = () => {
             addMaxWidth={true}
           />
         </div>
-
-        <div className="relative">
-          <div className="flex items-center justify-end mt-14 mb-2 ">
+        <div>
+          <div className="flex items-center justify-between mb-2 mt-4">
+            <div className="bg-[#FFF7DE] px-12 py-2 rounded-[12px] flex items-center gap-6">
+              <div>
+                <Image src={infoIcon} alt="" />
+              </div>
+              <div>
+                <Typography
+                  textColor="text-gray-100"
+                  textWeight="font-normal"
+                  textSize="text-[14px]"
+                >
+                  To access all ALTIREs service, please complete your KYC
+                  verification process
+                </Typography>
+                <div className=" border-b-[#FFB020] border-solid border-b-[1.5px] max-w-[6.3rem]">
+                  <Typography
+                    textColor="text-[#FFB020]"
+                    textWeight="font-[600]"
+                    textSize="text-[14px]"
+                  >
+                    Update Profile
+                  </Typography>
+                </div>
+              </div>
+            </div>
             <div className="">
               <DropDown
                 placeholder={"Vendor’s status"}

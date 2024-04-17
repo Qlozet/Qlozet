@@ -1,6 +1,6 @@
 import ExportComponent from "../../ExportButton";
-import OrderTableItem from "../OrderTableItem";
-const OrderTable = ({ data, viewDetails, showRejectModal }) => {
+import CustomerTableItem from "../CustomerTableItem";
+const CustomerTable = ({ data, viewDetails, showModal }) => {
   return (
     <div className="mt-4">
       <table className="w-full">
@@ -48,11 +48,7 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
         </thead>
         <tbody>
           {data.map((item) => (
-            <OrderTableItem
-              {...item}
-              viewDetails={viewDetails}
-              showRejectModal={showRejectModal}
-            />
+            <CustomerTableItem {...item} viewDetails={showModal} />
           ))}
         </tbody>
       </table>
@@ -60,4 +56,4 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
   );
 };
 
-export default OrderTable;
+export default CustomerTable;

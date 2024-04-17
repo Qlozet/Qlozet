@@ -4,7 +4,7 @@ import closeIcon from "../../../public/assets/svg/material-symbols_close-rounded
 import NumberInput from "../NumberInput";
 import Button from "../Button";
 
-const SetTotalOrderPerDay = () => {
+const SetTotalOrderPerDay = ({ closeModal }) => {
   return (
     <div className="w-full h-screen flex items-center justify-center ">
       <div className="bg-white p-4 rounded-[12px] w-[40%]">
@@ -17,7 +17,7 @@ const SetTotalOrderPerDay = () => {
             >
               Set total order per day
             </Typography>
-            <div onClick={() => {}}>
+            <div onClick={closeModal}>
               <Image src={closeIcon} />
             </div>
           </div>

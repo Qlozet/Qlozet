@@ -26,6 +26,7 @@ import CustomerDetails from "@/app/components/order/CustomerDetails";
 // import CustomerDetails from "@/app/components/Customer/CustomerDetails";
 import OrderHistory from "@/app/components/Customer/OrderHistory";
 import CustomerTable from "@/app/components/Customer/CustomerTable";
+import Notification from "@/app/components/Notification/NotificationComponent";
 const Customer = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [viewCustomerDetails, setCustomerDetails] = useState(false);
@@ -87,8 +88,10 @@ const Customer = () => {
     },
   ];
   const closeModal = () => {
-    setCustomerDetails(false);
-    setShowHistory(false);
+    setOrderDetails(false);
+    setShowTrack(false);
+    setShowCustomer(false);
+    setShowReject(false);
   };
 
   const showModal = () => {
@@ -117,73 +120,24 @@ const Customer = () => {
   return (
     <div className="flex bg-[#F8F9FA]">
       <div className="">
-        <SideBar active="Customers" />
+        <SideBar active="" />
       </div>
       <div className="w-full p-4">
         <DasboardNavWithOutSearch
-          addSearch={true}
+          //   addSearch={true}
+          name={"Notifications"}
           setValue={(data) => {
             // console.log(data);
           }}
         />
-        <div className="flex items-center gap-4">
-          <DashboardTopCard
-            name="Total Vendors"
-            total="10000"
-            percentage="2.5"
-            bgColor="bg-[#57CAEB]"
-            link="link"
-            icon={vendorIcon}
-            addMaxWidth={true}
-          />
-          <DashboardTopCard
-            name="Achieved Vendors"
-            total="10000"
-            percentage="2.5"
-            bgColor="bg-[#5DDAB4]"
-            icon={customerIcon}
-            addMaxWidth={true}
-          />
-        </div>
-        <div className="relative">
-          <div className="flex items-center justify-between mt-14 mb-2 ">
-            <Typography
-              textColor="text-black"
-              textWeight="font-bold"
-              textSize="text-[18px]"
-            >
-              Customers
-            </Typography>
-            <div className="">
-              <DropDown
-                placeholder={"Filter by"}
-                value={dropDownValue}
-                setValue={(data) => {
-                  setDropDownValue(data);
-                }}
-                data={dropdownData}
-              />
-            </div>
-          </div>
-
-          <CustomerTable data={tableData} showModal={showModal} />
+        <div className="border-[1px] border-solid border-gray-200 rounded-[12px] py-4 mt-6 bg-white">
+          <Notification />
+          <Notification />
+          <Notification />
+          <Notification />
+          <Notification />
         </div>
       </div>
-
-      {viewCustomerDetails && (
-        <Modal
-          content={
-            <CustomerDetails topNavData={topNavData} closeModal={closeModal} />
-          }
-        ></Modal>
-      )}
-      {showHostory && (
-        <Modal
-          content={
-            <OrderHistory topNavData={topNavData} closeModal={closeModal} />
-          }
-        ></Modal>
-      )}
     </div>
   );
 };

@@ -1,9 +1,18 @@
 import Typography from "../Typography";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import searchNormalicon from "../../../public/assets/svg/search-normal.svg";
 import notificationIcon from "../../../public/assets/svg/notification-bing.svg";
 import userIcon from "../../../public/assets/svg/user-octagon.svg";
-const DasboardNavWithOutSearch = ({ addSearch, vendor, page, setValue }) => {
+const DasboardNavWithOutSearch = ({
+  name,
+  addSearch,
+  vendor,
+  page,
+  setValue,
+}) => {
+  const router = useRouter();
+
   return (
     <div className="flex items-center justify-between bg-white border-[#DDE2E5] border-solid border-[1.5px] py-2 px-6 rounded-[12px]">
       <Typography
@@ -11,7 +20,7 @@ const DasboardNavWithOutSearch = ({ addSearch, vendor, page, setValue }) => {
         textWeight="font-bold"
         textSize="text-[18px]"
       >
-        Dashboard
+        {name}
       </Typography>
       <div className="flex items-center justify-end gap-6">
         {addSearch && (
@@ -31,7 +40,12 @@ const DasboardNavWithOutSearch = ({ addSearch, vendor, page, setValue }) => {
           </div>
         )}
         <div className="flex items-center justify-between gap-4">
-          <div className="rounded-12px] p-2 bg-[#F8F9FA]">
+          <div
+            className="rounded-[12px] p-2 bg-[#F8F9FA] cursor-pointer"
+            onClick={() => {
+              router.push(`notification`);
+            }}
+          >
             <Image alt="" src={notificationIcon} />
           </div>
           <Typography
@@ -41,7 +55,7 @@ const DasboardNavWithOutSearch = ({ addSearch, vendor, page, setValue }) => {
           >
             Miskay Boutique
           </Typography>
-          <div className="rounded-[12px] p-2 bg-[#F8F9FA]">
+          <div className="rounded-[12px] p-2 bg-[#F8F9FA] cursor-pointer">
             <Image alt="" src={userIcon} />
           </div>
         </div>

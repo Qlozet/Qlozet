@@ -13,18 +13,21 @@ import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import Typography from "@/app/components/Typography";
 import OrderTable from "@/app/components/order/OrderTable";
 import Modal from "@/app/components/Modal";
-import Image from "next/image";
-import NumberInput from "@/app/components/NumberInput";
-import Button from "@/app/components/Button";
 import SetTotalOrderPerDay from "@/app/components/SetTotalItemPerDayForm";
-import OrderDetailNav from "@/app/components/order/OrderdetailsNav";
 import OrderDetails from "@/app/components/order/OrderDetails";
-import OrderStep from "@/app/components/order/OrderStep";
 import TrackOrder from "@/app/components/order/TrackOrders";
 import RejectOrderModal from "@/app/components/order/RejectOrderModal";
 import CustomerDetails from "@/app/components/order/CustomerDetails";
 const Vendor = () => {
   const [dropDownValue, setDropDownValue] = useState("");
+  const [viewOrderDetails, setOrderDetails] = useState(false);
+  const [showTrack, setShowTrack] = useState(false);
+  const [showCustomer, setShowCustomer] = useState(false);
+  const [rejectModal, setShowReject] = useState(false);
+  const [total, setShowTotal] = useState(false);
+  const handleShowViewDetailModal = () => {
+    setOrderDetails(true);
+  };
 
   const data = [
     {
@@ -81,6 +84,50 @@ const Vendor = () => {
       DeliveryStatus: "My name iss",
     },
   ];
+  const closeModal = () => {
+    setOrderDetails(false);
+    setShowTrack(false);
+    setShowCustomer(false);
+    setShowReject(false);
+  };
+
+  const showRejectModal = () => {
+    setOrderDetails(false);
+    setShowTrack(false);
+    setShowCustomer(false);
+    setShowReject(true);
+  };
+
+  const topNavData = [
+    {
+      item: "Order details",
+      link: "",
+      handleFunction: () => {
+        setOrderDetails(true);
+        setShowTrack(false);
+        setShowCustomer(false);
+      },
+    },
+    {
+      item: "Track order",
+      link: "",
+      handleFunction: () => {
+        setShowTrack(true);
+        setOrderDetails(false);
+        setShowCustomer(false);
+      },
+    },
+    {
+      item: "Customer details",
+      link: "",
+      handleFunction: () => {
+        setShowTrack(false);
+        setOrderDetails(false);
+        setShowCustomer(true);
+      },
+    },
+  ];
+
   return (
     <div className="flex bg-[#F8F9FA]">
       <div className="">
@@ -145,20 +192,56 @@ const Vendor = () => {
             </div>
           </div>
 
-          <OrderTable data={tableData} />
+          <OrderTable
+            data={tableData}
+            viewDetails={() => {
+              handleShowViewDetailModal();
+            }}
+            showRejectModal={showRejectModal}
+          />
         </div>
       </div>
       {/* <Modal content={<SetTotalOrderPerDay />}></Modal> */}
-      {/* <Modal content={<OrderDetails />}></Modal> */}
-      <Modal content={<TrackOrder />}></Modal>
-      {/* <Modal content={<CustomerDetails />}></Modal> */}
-      {/* <Modal
-        content={
-          <div className="flex items-center justify-center h-[100vh]">
-            <RejectOrderModal />
-          </div>
-        }
-      ></Modal> */}
+      {/* {showModal == true && ( */}
+      {viewOrderDetails && (
+        <Modal
+          content={
+            <OrderDetails topNavData={topNavData} closeModal={closeModal} />
+          }
+        ></Modal>
+      )}
+
+      {showTrack && (
+        <Modal
+          content={<TrackOrder data={topNavData} closeModal={closeModal} />}
+        ></Modal>
+      )}
+
+      {showCustomer && (
+        <Modal
+          content={
+            <CustomerDetails topNavData={topNavData} closeModal={closeModal} />
+          }
+        ></Modal>
+      )}
+      {rejectModal && (
+        <Modal
+          content={
+            <div className="flex items-center justify-center h-[100vh]">
+              <RejectOrderModal closeModal={closeModal} />
+            </div>
+          }
+        ></Modal>
+      )}
+      {total && (
+        <Modal
+          content={
+            <div className="flex items-center justify-center h-[100vh]">
+              <SetTotalOrderPerDay closeModal={closeModal} />
+            </div>
+          }
+        ></Modal>
+      )}
     </div>
   );
 };

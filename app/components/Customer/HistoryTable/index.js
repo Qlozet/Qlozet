@@ -1,63 +1,71 @@
 import ExportComponent from "../../ExportButton";
-import OrderTableItem from "../OrderTableItem";
-const OrderTable = ({ data, viewDetails, showRejectModal }) => {
+import HistoryTableItem from "../HistoryTableItem";
+// import OrderTableItem from "../OrderTableItem";
+const HistoryTable = ({ data, modal }) => {
   return (
-    <div className="mt-4">
+    <div className="">
       <table className="w-full">
         <thead className="w-full bg-[#F4F4F4] ">
           <tr>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Picture
+                Date
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Customer name
+                Product name
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Email address
+                Product price
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Phone number
+                Amount paid
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Total orders
+                Delivery Status
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500]">
-                Last Order date
-              </div>
-            </th>
-            <th className="w-[8%] p-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500]">
-                Status
-              </div>
-            </th>
-            <th className="w-[8%] p-4 text-[12px]">
-              <ExportComponent />
+              <div className="flex items-center justify-start font-[500]"></div>
             </th>
           </tr>
         </thead>
         <tbody>
-          {data.map((item) => (
-            <OrderTableItem
-              {...item}
-              viewDetails={viewDetails}
-              showRejectModal={showRejectModal}
-            />
-          ))}
+          <HistoryTableItem
+            modal={modal}
+            date="Hello"
+            productName="Hello"
+            productPrice="Hello"
+            AmountPaid="Hello"
+            DeliveryStatus="Hello"
+          />
+          <HistoryTableItem
+            modal={modal}
+            date="Hello"
+            productName="Hello"
+            productPrice="Hello"
+            AmountPaid="Hello"
+            DeliveryStatus="Hello"
+          />
+          <HistoryTableItem
+            modal={modal}
+            date="Hello"
+            productName="Hello"
+            productPrice="Hello"
+            AmountPaid="Hello"
+            DeliveryStatus="Hello"
+          />
         </tbody>
       </table>
     </div>
   );
 };
 
-export default OrderTable;
+export default HistoryTable;

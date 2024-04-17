@@ -1,28 +1,18 @@
 import Image from "next/image";
 import closeIcon from "../../../../public/assets/svg/material-symbols_close-rounded.svg";
 import Typography from "../../Typography";
-const OrderDetailNav = ({ active }) => {
-  const topNavData = [
-    {
-      item: "Order details",
-      link: "",
-    },
-    {
-      item: "Track order",
-      link: "",
-    },
-    {
-      item: "Order details",
-      link: "",
-    },
-  ];
+const OrderDetailNav = ({ active, data, closeModal, width }) => {
   return (
-    <div className="w-[40%] bg-white py-8 px-5 rounded-t-[18px]">
+    <div
+      className={`${
+        width ? width : "w-[40%]"
+      }  bg-white py-8 px-5 rounded-t-[18px]`}
+    >
       <div className="flex justify-between items-center border-gray-200 border-b-[1.5px] border-dashed mb-[-2px]">
         <div className="flex gap-4">
-          {topNavData.map((item) => (
-            <div>
-              <div className="flex items-center justify-between">
+          {data.map((item) => (
+            <div onClick={item.handleFunction}>
+              <div className="flex items-center justify-between cursor-pointer">
                 <div>
                   <Typography
                     textColor="text-primary"
@@ -40,7 +30,9 @@ const OrderDetailNav = ({ active }) => {
             </div>
           ))}
         </div>
-        <Image src={closeIcon} alt="" className="translate-y-[-15px]" />
+        <div onClick={closeModal} className="cursor-pointer">
+          <Image src={closeIcon} alt="" className="translate-y-[-15px]" />
+        </div>
       </div>
     </div>
   );
