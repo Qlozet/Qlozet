@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import passwordIcon from "../../../public/assets/svg/password-icon.svg";
 import Image from "next/image";
 const PasswordInput = ({
@@ -9,12 +11,13 @@ const PasswordInput = ({
   placeholder,
   disabled = false,
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
   return (
     <div className="my-3 relative">
       {leftIcon}
       <label className="text-[14px] font-light my-2"> {label}</label>
       <input
-        type="password"
+        type={showPassword ? "text" : "password"}
         className={`py-3 px-4 w-full border-solid border-[1.5px]  
             focus:outline-none focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 ${
               disabled && "border-0 bg-gray-300 cursor-not-allowed"
@@ -26,7 +29,12 @@ const PasswordInput = ({
           setValue(e.target.value);
         }}
       ></input>
-      <div className="absolute right-2 top-9 w-[24px] flex items-center justify-center">
+      <div
+        className="absolute right-2 top-9 w-[24px] flex items-center justify-center cursor-pointer"
+        onClick={() => {
+          setShowPassword(!showPassword);
+        }}
+      >
         <Image src={passwordIcon} alt="" />
       </div>
       {rightIcon}

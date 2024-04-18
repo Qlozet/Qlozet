@@ -65,7 +65,7 @@ const SideBar = ({ active }) => {
 
     {
       name: "Settings",
-      link: "Settings",
+      link: "settings",
       defaultIcon: settingsDefault,
       activeIcon: settingsActive,
     },

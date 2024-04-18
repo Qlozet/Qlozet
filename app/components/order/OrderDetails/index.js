@@ -6,17 +6,20 @@ import OrderStatus from "../OrderStatus";
 import Button from "../../Button";
 const OrderDetails = ({ topNavData, closeModal }) => {
   return (
-    <div className="flex flex-col items-center justify-center w-full my-4">
+    <div className="flex flex-col items-center justify-center w-full mt-4 mb-3">
+      <div className="px-5 "></div>
       <OrderDetailNav
         active="Order details"
         data={topNavData}
         closeModal={closeModal}
       />
       <div className=" w-[40%] bg-white p-4 rounded-b-[14px]">
-        <div
-          className="bg-auto bg-no-repeat bg-center w-[6rem] h-[6rem]"
-          style={{ backgroundImage: `url(${defaultImage})` }}
-        ></div>
+        <div className="bg-auto bg-no-contain">
+          <Image
+            src={defaultImage}
+            className="w-[148.13px] h-[203.13px] rounded-[12px]"
+          />
+        </div>
         <Typography
           textColor="text-black"
           textWeight="font-bold"

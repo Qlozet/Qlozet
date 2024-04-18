@@ -1,5 +1,5 @@
 import OrderDetailNav from "../../order/OrderdetailsNav";
-import defaultImage from "../../../../public/assets/image/default.png";
+import defaultImage from "../../../../public/assets/image/Rectangle.png";
 import Image from "next/image";
 import Typography from "../../Typography";
 import OrderStatus from "../../order/OrderStatus";
@@ -13,14 +13,15 @@ const CustomerDetails = ({ topNavData, closeModal }) => {
         closeModal={closeModal}
       />
       <div className=" w-[40%] bg-white p-4 rounded-b-[14px]">
-        <div
-          className="bg-auto bg-no-repeat bg-center w-[6rem] h-[6rem]"
-          style={{ backgroundImage: `url(${defaultImage})` }}
-        ></div>
+        <div className="bg-auto bg-no-contain">
+          <Image
+            src={defaultImage}
+            className="w-[148px] h-[115px] rounded-[12px]"
+          />
+        </div>
         <div className="flex justify-between items-center py-4">
           <div></div>
         </div>
-
         <div>
           <div className="flex items-center py-3 gap-10 border-t-[1px] border-solid border-gray-200 ">
             <Typography

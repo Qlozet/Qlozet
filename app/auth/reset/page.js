@@ -2,7 +2,7 @@ import Logo from "@/app/components/Logo";
 import classes from "./index.module.css";
 import Typography from "@/app/components/Typography";
 
-const Verication = () => {
+const Page = () => {
   return (
     <section
       className={` w-full h-screen p-4 flex justify-center bg-[#F8F9FA]`}
@@ -19,7 +19,7 @@ const Verication = () => {
               textSize="text-[24px]"
               align="text-center"
             >
-              Account created successfully
+              Reset code sent to email
             </Typography>
           </div>
           <div className="pt-6 pb-4 px-6 border-t-[1px] border-solid border-gray-200">
@@ -29,11 +29,9 @@ const Verication = () => {
               textSize="text-[16px]"
               align="text-center"
             >
-              Your Altire account has been successfully set up, and we've
-              received your information. Our team will thoroughly review the
-              details and documents provided. Your account verification status
-              will be communicated to you via the email you provided within the
-              next 48 hours.
+              We've sent a code to the email associated with your business
+              account (example@gmail.com). Please check your email inbox and
+              utilize the code provided to create a new password.
             </Typography>
           </div>
         </div>
@@ -42,4 +40,4 @@ const Verication = () => {
   );
 };
 
-export default Verication;
+export default Page;

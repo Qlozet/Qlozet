@@ -14,6 +14,7 @@ const Step4 = () => {
     containSymbol: false,
     containNumber: false,
   });
+
   const handleCheckPassword = (data) => {
     const containsCharacter = handleContainsSymbolOrCharacter(data);
     const containsNumber = handlerContainsNumber(data);
@@ -48,6 +49,7 @@ const Step4 = () => {
       });
     }
   };
+  
   return (
     <div>
       <Logo />
