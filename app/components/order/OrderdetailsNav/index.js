@@ -15,7 +15,11 @@ const OrderDetailNav = ({ active, data, closeModal, width, full, bg }) => {
           } `}
         >
           {data.map((item) => (
-            <div onClick={item.handleFunction}>
+            <div
+              onClick={() => {
+                item.handleFunction(item.item);
+              }}
+            >
               <div className="flex items-center justify-between cursor-pointer">
                 <div>
                   <Typography

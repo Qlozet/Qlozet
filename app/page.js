@@ -27,6 +27,7 @@ import SelectInput from "./components/SelectInput";
 import TextArea from "./components/TextAreaInput";
 import RejectOrderModal from "./components/order/RejectOrderModal";
 import Notification from "./components/Notification/NotificationComponent";
+import CheckBoxInput from "./components/CheckboxInput";
 export default function Home() {
   const [dropDownValue, setDropDownValue] = useState("");
 

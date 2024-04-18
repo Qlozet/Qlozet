@@ -18,63 +18,98 @@ import OrderDetailNav from "@/app/components/order/OrderdetailsNav";
 import TextInput from "@/app/components/TextInput";
 import NumberInput from "@/app/components/NumberInput";
 import FileInput from "@/app/components/uploadFileinput/UploadFileInput";
+import CompanyDetails from "@/app/components/Settings/companyDetails/companyDetails";
+import BillingAndInvioce from "@/app/components/Settings/BillingAndInvioceInfo";
 
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
+  const [showCompanyDetails, setShowComapanyDetails] = useState(false);
+  const [showBillingAndInvioce, setShowBillingAndInvioce] = useState(false);
+  const [showWarehouse, setShowWarehouse] = useState(false);
+  const [showShippingPatners, setShowShippingPatners] = useState(false);
+  const [showUserAndPermission, setShowUserAndPermission] = useState(false);
+  const [showCategory, setShowCategory] = useState(false);
+  const [currentNav, setCurrentNav] = useState("Company details");
 
   const topNavData = [
     {
       item: "Company details",
       link: "",
-      handleFunction: () => {
-        setOrderDetails(true);
-        setShowTrack(false);
-        setShowCustomer(false);
+      handleFunction: (data) => {
+        setCurrentNav(data);
+        setShowComapanyDetails(true);
+        setShowBillingAndInvioce(false);
+        setShowWarehouse(false);
+        setShowWarehouse(false);
+        setShowShippingPatners(false);
+        setShowUserAndPermission(false);
+        setShowCategory(false);
       },
     },
     {
       item: "Billing and invoice",
       link: "",
-      handleFunction: () => {
-        setShowTrack(true);
-        setOrderDetails(false);
-        setShowCustomer(false);
+      handleFunction: (data) => {
+        setCurrentNav(data);
+        setShowComapanyDetails(false);
+        setShowBillingAndInvioce(true);
+        setShowWarehouse(false);
+        setShowWarehouse(false);
+        setShowShippingPatners(false);
+        setShowUserAndPermission(false);
+        setShowCategory(false);
       },
     },
     {
       item: "Warehouses",
       link: "",
-      handleFunction: () => {
-        setShowTrack(false);
-        setOrderDetails(false);
-        setShowCustomer(true);
+      handleFunction: (data) => {
+        setCurrentNav(data);
+        setShowComapanyDetails(false);
+        setShowBillingAndInvioce(false);
+        setShowWarehouse(true);
+        setShowShippingPatners(false);
+        setShowUserAndPermission(false);
+        setShowCategory(false);
       },
     },
     {
       item: "Shipping partners",
       link: "",
-      handleFunction: () => {
-        setShowTrack(false);
-        setOrderDetails(false);
-        setShowCustomer(true);
+      handleFunction: (data) => {
+        setCurrentNav(data);
+        setShowComapanyDetails(false);
+        setShowBillingAndInvioce(false);
+        setShowWarehouse(false);
+        setShowShippingPatners(true);
+        setShowUserAndPermission(false);
+        setShowCategory(false);
       },
     },
     {
       item: "Users and permissions",
       link: "",
-      handleFunction: () => {
-        setShowTrack(false);
-        setOrderDetails(false);
-        setShowCustomer(true);
+      handleFunction: (data) => {
+        setCurrentNav(data);
+        setShowComapanyDetails(false);
+        setShowBillingAndInvioce(false);
+        setShowWarehouse(false);
+        setShowShippingPatners(false);
+        setShowUserAndPermission(true);
+        setShowCategory(false);
       },
     },
     {
       item: "Categories",
       link: "",
-      handleFunction: () => {
-        setShowTrack(false);
-        setOrderDetails(false);
-        setShowCustomer(true);
+      handleFunction: (data) => {
+        setCurrentNav(data);
+        setShowComapanyDetails(false);
+        setShowBillingAndInvioce(false);
+        setShowWarehouse(false);
+        setShowShippingPatners(false);
+        setShowUserAndPermission(false);
+        setShowCategory(true);
       },
     },
   ];
@@ -96,130 +131,12 @@ const Dashboard = () => {
             bg="bg"
             data={topNavData}
             width="w-full"
-            active="Company details"
+            active={currentNav}
             full={true}
           />
         </div>
-        <div className="bg-white w-full p-4 mx-2">
-          <div className="flex items-center justify-between">
-            <div className="border-gray-200 border-dashed border-[1px] w-full"></div>
-            <div className="min-w-[9rem] flex items-center justify-center">
-              Company info
-            </div>
-            <div className="border-gray-200 border-dashed border-[1px] w-full"></div>
-          </div>
-          <div className="flex items-center justify-between  gap-6">
-            <div className="w-full">
-              <TextInput
-                label="Company name"
-                placeholder="Company name"
-                setValue={(data) => {}}
-              />{" "}
-            </div>
-            <div className="w-full">
-              <TextInput
-                label="Address line 1"
-                placeholder="Address line 1"
-                setValue={(data) => {}}
-              />
-            </div>
-            <div className="w-full">
-              <TextInput
-                label="Address line 2"
-                placeholder="Enter Address line 2"
-                setValue={(data) => {}}
-              />
-            </div>
-          </div>
-          <div className="flex items-center justify-between  gap-6">
-            <div className="w-full">
-              <TextInput
-                label="State"
-                placeholder="Enter State"
-                setValue={(data) => {}}
-              />{" "}
-            </div>
-            <div className="w-full">
-              <TextInput
-                label="Country"
-                placeholder="EnterCountry"
-                setValue={(data) => {}}
-              />{" "}
-            </div>
-            <div className="w-full">
-              <TextInput
-                label="Timezone"
-                placeholder="Timezone Timezone"
-                setValue={(data) => {}}
-              />
-            </div>
-          </div>
-          <div className="flex items-center justify-between  gap-6">
-            <div className="w-full">
-              <TextInput
-                label="City"
-                placeholder="Enter City"
-                setValue={(data) => {}}
-              />{" "}
-            </div>
-            <div className="w-full">
-              <NumberInput
-                label="Phone number"
-                placeholder="EnterPhone number"
-                setValue={(data) => {}}
-              />{" "}
-            </div>
-            <div className="w-full">
-              <TextInput
-                label="Email address"
-                placeholder="Enter Email address"
-                setValue={(data) => {}}
-              />
-            </div>
-          </div>
-          <div className="flex items-center justify-between gap-6">
-            <div className="w-full">
-              {" "}
-              <TextInput
-                label="BVN"
-                placeholder="Enter BVN"
-                setValue={(data) => {}}
-              />{" "}
-            </div>
-            <div className="w-full">
-              <TextInput
-                label="NIN"
-                placeholder="Enter NIN"
-                setValue={(data) => {}}
-              />{" "}
-            </div>
-            <div className="w-full"></div>
-            <div></div>
-          </div>
-          <div className="flex items-center justify-between mt-6">
-            <div className="border-gray-200 border-dashed border-[1px] w-full"></div>
-            <div className="min-w-[11rem] flex items-center justify-center ">
-              Upload Documents
-            </div>
-            <div className="border-gray-200 border-dashed border-[1px] w-full"></div>
-          </div>
-
-          <div className="flex items-center justify-between gap-6">
-            <div className="w-full">
-              <FileInput
-                label="Upload company logo"
-                // placeholder="Enter NIN"
-                setValue={(data) => {}}
-              />{" "}
-            </div>
-            <div className="w-full">
-              <FileInput label="Upload CAC Document" setValue={(data) => {}} />
-            </div>
-            <div className="w-full"></div>
-            <div></div>
-          </div>
-          <div></div>
-        </div>
+        {currentNav === "Company details" && <CompanyDetails />}
+        {currentNav === "Billing and invoice" && <BillingAndInvioce />}
       </div>
     </div>
   );
