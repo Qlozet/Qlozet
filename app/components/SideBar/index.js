@@ -102,7 +102,7 @@ const SideBar = ({ active }) => {
               <Image src={item.defaultIcon} alt="" />
             )}
             <p
-              className={`font-normal text-[18px] ${
+              className={`font-normal text-[14px] ${
                 active === item.name ? "text-primary" : " text-gray-100"
               }`}
             >

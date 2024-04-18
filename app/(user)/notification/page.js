@@ -131,11 +131,11 @@ const Customer = () => {
           }}
         />
         <div className="border-[1px] border-solid border-gray-200 rounded-[12px] py-4 mt-6 bg-white">
-          <Notification />
-          <Notification />
-          <Notification />
-          <Notification />
-          <Notification />
+          <Notification shipped={true} />
+          <Notification shipped={true} />
+          <Notification shipped={false} />
+          <Notification shipped={false} />
+          <Notification shipped={false} />
         </div>
       </div>
     </div>
