@@ -26,15 +26,15 @@ const SelectInput = ({ value, placeholder, setValue, data, label }) => {
         {/* )} */}
       </div>
       {showDropDown && (
-        <div className=" border-[1px] border-solid border-primary w-full cursor-pointer absolute top-[66px] bg-white rounded-[12px]">
+        <div className="overflow-hidden border-[1px] border-solid border-primary w-full cursor-pointer absolute top-[66px] bg-white rounded-[12px]">
           <div className="p-2 rounded-b-[12px] ">
-            <p className="text-[14px] text-gray-100 font-[200]">
+            {/* <p className="text-[14px] text-gray-100 font-[200]">
               Reject order menu
-            </p>
+            </p> */}
           </div>
           {data.map((item) => (
             <div
-              className="p-2 rounded-b-[12px] border-t-[1.5px] border-solid border-gray-200 bg-white"
+              className="p-2  border-t-[1.5px] border-solid border-gray-200 bg-white hover:bg-[#F4F4F4]"
               onClick={() => {
                 setValue(item.text);
                 setShowDropDown(false);

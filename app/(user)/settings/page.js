@@ -1,25 +1,16 @@
 "use client";
 import { useState } from "react";
-import ChatCard from "@/app/components/Chat/ChatCard";
-import HorizontalChat from "@/app/components/Chat/HorizontalChart";
 import DasboardNavWithOutSearch from "@/app/components/DashboardNavBarWithoutSearch";
-import DashboardTopCard from "@/app/components/DashboardTopCard";
 import SideBar from "@/app/components/SideBar";
-import classes from "./index.module.css";
-import DonutChart from "@/app/components/Chat/DoughnutChat";
-import DropDown from "@/app/components/DropDown";
-import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
-import customerIcon from "../../../public/assets/svg/total-customer.svg";
-import infoIcon from "../../../public/assets/svg/Info Circle.svg";
-import VerticalBarGraph from "@/app/components/VerticalBarGraph";
-import Typography from "@/app/components/Typography";
-import Image from "next/image";
 import OrderDetailNav from "@/app/components/order/OrderdetailsNav";
-import TextInput from "@/app/components/TextInput";
-import NumberInput from "@/app/components/NumberInput";
-import FileInput from "@/app/components/uploadFileinput/UploadFileInput";
 import CompanyDetails from "@/app/components/Settings/companyDetails/companyDetails";
 import BillingAndInvioce from "@/app/components/Settings/BillingAndInvioceInfo";
+import Warehouse from "@/app/components/Settings/Warehouse/Warehouse";
+import Modal from "@/app/components/Modal";
+import classes from "./index.module.css";
+import AddNewWarehouseForm from "@/app/components/Settings/Warehouse/AddNewWarehouseForm";
+import Shipping from "@/app/components/Settings/Shipping/Shipping";
+import UserAndPermission from "@/app/components/Settings/UserAndPermission/UserAndPermssion";
 
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
@@ -113,6 +104,7 @@ const Dashboard = () => {
       },
     },
   ];
+
   return (
     <div className="flex bg-[#F8F9FA]">
       <div className="">
@@ -137,6 +129,9 @@ const Dashboard = () => {
         </div>
         {currentNav === "Company details" && <CompanyDetails />}
         {currentNav === "Billing and invoice" && <BillingAndInvioce />}
+        {currentNav === "Warehouses" && <Warehouse />}
+        {currentNav === "Shipping partners" && <Shipping />}
+        {currentNav === "Users and permissions" && <UserAndPermission />}
       </div>
     </div>
   );
