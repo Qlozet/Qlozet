@@ -24,6 +24,11 @@ const Button = ({
         disabled ? "bg-white-100 cursor-not-allowed" : "bg-white"
       }`;
       break;
+    case "danger":
+      variantClasses = `font-light text-white font-bold  py-3 px-4 border-[1px] border-solid border-[rgba(18, 18, 18, 1)] ${
+        disabled ? "bg-white-100 cursor-not-allowed" : "bg-[#FF3A3A]"
+      }`;
+      break;
     default:
       variantClasses = `font-light bg-gray-500 hover:bg-gray-700 text-white font-bold py-3 px-4 `;
   }

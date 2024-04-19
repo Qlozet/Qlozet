@@ -11,6 +11,7 @@ import classes from "./index.module.css";
 import AddNewWarehouseForm from "@/app/components/Settings/Warehouse/AddNewWarehouseForm";
 import Shipping from "@/app/components/Settings/Shipping/Shipping";
 import UserAndPermission from "@/app/components/Settings/UserAndPermission/UserAndPermssion";
+import Category from "@/app/components/Settings/Category/Category";
 
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
@@ -132,6 +133,7 @@ const Dashboard = () => {
         {currentNav === "Warehouses" && <Warehouse />}
         {currentNav === "Shipping partners" && <Shipping />}
         {currentNav === "Users and permissions" && <UserAndPermission />}
+        {currentNav === "Categories" && <Category />}
       </div>
     </div>
   );

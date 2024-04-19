@@ -13,14 +13,14 @@ const SelectInput = ({ value, placeholder, setValue, data, label }) => {
           setShowDropDown(true);
         }}
       >
-        <label className="text-[12px]">{label}</label>
+        <label className="text-[14px]">{label}</label>
         <input
           placeholder={placeholder}
           value={value}
-          className="w-full p-2 rounded-[12px] outline-none  border-[1px]  border-gray-200 focus:border-primary"
+          className="w-full p-3 rounded-[12px] outline-none  border-[1px]  border-gray-200 focus:border-primary focus:bg-[#DDE2E5] text-[14px]"
         ></input>
         {/* {value === "" && ( */}
-        <div className="absolute top-[35px] right-2 ">
+        <div className="absolute top-[40px] right-2 ">
           <Image src={arrowDownIcon} alt="" />
         </div>
         {/* )} */}

@@ -16,10 +16,13 @@ import supportActive from "../../../public/assets/svg/support-active.svg";
 import loggoutDefault from "../../../public/assets/svg/logout-default.svg";
 import vendorDefault from "../../../public/assets/svg/user-octagon.svg";
 import vendorActive from "../../../public/assets/svg/user-octagon-active.svg";
-
+import questionMarkIcon from "../../../public/assets/svg/question-mark 1.svg";
 import { useRouter } from "next/navigation";
 
 import Image from "next/image";
+import Modal from "../Modal";
+import Typography from "../Typography";
+import Button from "../Button";
 
 const SideBar = ({ active }) => {
   const router = useRouter();
@@ -71,7 +74,7 @@ const SideBar = ({ active }) => {
     },
     {
       name: "Support",
-      link: "Support",
+      link: "support",
       defaultIcon: supportDefault,
       activeIcon: supportActive,
     },
@@ -111,6 +114,30 @@ const SideBar = ({ active }) => {
           </div>
         ))}
       </div>
+      <Modal
+        content={
+          <div className="flex items-center justify-center h-[100%]">
+            <div className="bg-white w-[35%] rounded-[12px] flex flex-col items-center gap-6 p-6">
+              <Image src={questionMarkIcon} />
+              <Typography
+                textColor="text-black"
+                textWeight="font-bold"
+                textSize="text-[18px]"
+              >
+                Are you sure you want to logout?
+              </Typography>
+              <Button
+                children="Continue"
+                btnSize="large"
+                variant="danger"
+                clickHandler={() => {
+                  setStep(step + 1);
+                }}
+              />
+            </div>
+          </div>
+        }
+      />
     </div>
   );
 };
