@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Logo from "../Logo";
 import dashboardIcon from "../../../public/assets/svg/dashboardIcon.svg";
 import activeDashboardIcon from "../../../public/assets/svg/activeDashboardIcon.svg";
@@ -17,6 +18,7 @@ import loggoutDefault from "../../../public/assets/svg/logout-default.svg";
 import vendorDefault from "../../../public/assets/svg/user-octagon.svg";
 import vendorActive from "../../../public/assets/svg/user-octagon-active.svg";
 import questionMarkIcon from "../../../public/assets/svg/question-mark 1.svg";
+import closeIcon from "../../../public/assets/svg/close-square.svg";
 import { useRouter } from "next/navigation";
 
 import Image from "next/image";
@@ -25,6 +27,7 @@ import Typography from "../Typography";
 import Button from "../Button";
 
 const SideBar = ({ active }) => {
+  const [showLogOutModal, setShowLogOutModal] = useState(false);
   const router = useRouter();
 
   const sidebaritems = [
@@ -33,6 +36,7 @@ const SideBar = ({ active }) => {
       link: "dashboard",
       defaultIcon: dashboardIcon,
       activeIcon: activeDashboardIcon,
+      function: () => {},
     },
     // {
     //   name: "Vendors",
@@ -45,12 +49,14 @@ const SideBar = ({ active }) => {
       link: "orders",
       defaultIcon: vendorDefault,
       activeIcon: vendorActive,
+      function: () => {},
     },
     {
       name: "Products",
       link: "Products",
       defaultIcon: shoppingBag,
       activeIcon: activeshopping,
+      function: () => {},
     },
 
     {
@@ -58,12 +64,14 @@ const SideBar = ({ active }) => {
       link: "Wallet",
       defaultIcon: wallet,
       activeIcon: walletActive,
+      function: () => {},
     },
     {
       name: "Customers",
       link: "customer",
       defaultIcon: cutomerDefault,
       activeIcon: cutomerActive,
+      function: () => {},
     },
 
     {
@@ -71,18 +79,23 @@ const SideBar = ({ active }) => {
       link: "settings",
       defaultIcon: settingsDefault,
       activeIcon: settingsActive,
+      function: () => {},
     },
     {
       name: "Support",
       link: "support",
       defaultIcon: supportDefault,
       activeIcon: supportActive,
+      function: () => {},
     },
     {
       name: "Logout",
-      link: "Logout",
+      link: "",
       defaultIcon: loggoutDefault,
       activeIcon: loggoutDefault,
+      function: () => {
+        setShowLogOutModal(true);
+      },
     },
   ];
   return (
@@ -96,6 +109,7 @@ const SideBar = ({ active }) => {
             className="flex items-center gap-4  py-3 cursor-pointer"
             key={index}
             onClick={() => {
+              item.function();
               router.push(`${item.link}`);
             }}
           >
@@ -114,30 +128,40 @@ const SideBar = ({ active }) => {
           </div>
         ))}
       </div>
-      <Modal
-        content={
-          <div className="flex items-center justify-center h-[100%]">
-            <div className="bg-white w-[35%] rounded-[12px] flex flex-col items-center gap-6 p-6">
-              <Image src={questionMarkIcon} alt="" />
-              <Typography
-                textColor="text-black"
-                textWeight="font-bold"
-                textSize="text-[18px]"
-              >
-                Are you sure you want to logout?
-              </Typography>
-              <Button
-                children="Continue"
-                btnSize="large"
-                variant="danger"
-                clickHandler={() => {
-                  setStep(step + 1);
-                }}
-              />
+      {showLogOutModal && (
+        <Modal
+          content={
+            <div className="flex items-center justify-center h-[100%] ">
+              <div className="relative bg-white w-[35%] rounded-[12px] flex flex-col items-center gap-6 p-6">
+                <div
+                  className="absolute top-4 right-4 cursor-pointer"
+                  onClick={() => {
+                    setShowLogOutModal(false);
+                  }}
+                >
+                  <Image src={closeIcon} alt="" />
+                </div>
+                <Image src={questionMarkIcon} alt="" />
+                <Typography
+                  textColor="text-black"
+                  textWeight="font-bold"
+                  textSize="text-[18px]"
+                >
+                  Are you sure you want to logout?
+                </Typography>
+                <Button
+                  children="Continue"
+                  btnSize="large"
+                  variant="danger"
+                  clickHandler={() => {
+                    setShowLogOutModal(false);
+                  }}
+                />
+              </div>
             </div>
-          </div>
-        }
-      />
+          }
+        />
+      )}
     </div>
   );
 };
