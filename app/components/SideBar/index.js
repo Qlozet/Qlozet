@@ -118,7 +118,7 @@ const SideBar = ({ active }) => {
         content={
           <div className="flex items-center justify-center h-[100%]">
             <div className="bg-white w-[35%] rounded-[12px] flex flex-col items-center gap-6 p-6">
-              <Image src={questionMarkIcon} />
+              <Image src={questionMarkIcon} alt="" />
               <Typography
                 textColor="text-black"
                 textWeight="font-bold"
