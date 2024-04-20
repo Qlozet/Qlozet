@@ -18,9 +18,13 @@ import OrderDetails from "@/app/components/order/OrderDetails";
 import TrackOrder from "@/app/components/order/TrackOrders";
 import RejectOrderModal from "@/app/components/order/RejectOrderModal";
 import CustomerDetails from "@/app/components/order/CustomerDetails";
-const Order = () => {
+import Button from "@/app/components/Button";
+import WalletTable from "@/app/components/Wallet/WalletTable";
+import RequestCategoryForm from "@/app/components/Settings/Category/RequestANewProductcategoryForm";
+import SetUpAltireWallet from "@/app/components/Wallet/SetUpAltireWallet";
+const Wallet = () => {
   const [dropDownValue, setDropDownValue] = useState("");
-  const [viewOrderDetails, setOrderDetails] = useState(false);
+  const [setUpWalletWallet, setSetUpWalletWallet] = useState(false);
   const [showTrack, setShowTrack] = useState(false);
   const [showCustomer, setShowCustomer] = useState(false);
   const [rejectModal, setShowReject] = useState(false);
@@ -54,15 +58,27 @@ const Order = () => {
 
   const dropdownData = [
     {
-      text: "View vendor’s details",
+      text: "This week",
       color: "",
     },
     {
-      text: "View vendor’s ",
+      text: "Last week",
       color: "",
     },
     {
-      text: "vendor’s details",
+      text: "Last month",
+      color: "",
+    },
+    {
+      text: "This month",
+      color: "",
+    },
+    {
+      text: "Choose month",
+      color: "",
+    },
+    {
+      text: "Custom",
       color: "",
     },
   ];
@@ -75,13 +91,12 @@ const Order = () => {
 
   const tableData = [
     {
-      date: "My name iss",
-      orderId: "My name iss",
-      productName: "My name iss",
-      productPrice: "12222",
-      CustomerName: "My name iss",
-      AmountPaid: "My name iss",
-      DeliveryStatus: "My name iss",
+      date: "Hello",
+      transactionId: "Hello",
+      transactionType: "Hello",
+      narration: "Hello",
+      amount: "Hello",
+      status: "Hello",
     },
   ];
   const closeModal = () => {
@@ -131,7 +146,7 @@ const Order = () => {
   return (
     <div className="flex bg-[#F8F9FA]">
       <div className="">
-        <SideBar active="Orders" />
+        <SideBar active="Wallet" />
       </div>
       <div className="w-full p-4">
         <DasboardNavWithOutSearch
@@ -140,37 +155,48 @@ const Order = () => {
             // console.log(data);
           }}
         />
-        <div className="flex items-center gap-4">
-          <DashboardTopCard
-            name="Total Vendors"
-            total="10000"
-            percentage="2.5"
-            bgColor="bg-[#57CAEB]"
-            link="link"
-            icon={vendorIcon}
-          />
-          <DashboardTopCard
-            name="Achieved Vendors"
-            total="10000"
-            percentage="2.5"
-            bgColor="bg-[#5DDAB4]"
-            icon={customerIcon}
-          />
-          <DashboardTopCard
-            name="Total Customers"
-            total="10000"
-            percentage="2.5"
-            bgColor="bg-[#5DDAB4]"
-            icon={customerIcon}
-          />
-          <DashboardTopCard
-            name="Total Customers"
-            total="10000"
-            percentage="2.5"
-            bgColor="bg-[#5DDAB4]"
-            icon={customerIcon}
-          />
+        <div className="flex justify-between">
+          <div className="flex items-center gap-4">
+            <DashboardTopCard
+              name="Total Vendors"
+              total="10000"
+              percentage="2.5"
+              bgColor="bg-[#57CAEB]"
+              link="link"
+              icon={vendorIcon}
+              addMaxWidth={true}
+            />
+            <DashboardTopCard
+              name="Achieved Vendors"
+              total="10000"
+              percentage="2.5"
+              bgColor="bg-[#5DDAB4]"
+              icon={customerIcon}
+              addMaxWidth={true}
+            />
+          </div>
+          <div className="flex items-start gap-6 pt-5">
+            <Button
+              children="Send money"
+              btnSize="large"
+              variant="outline"
+              minWidth="min-w-[10rem]"
+              clickHandler={() => {
+                // setStep(step + 1);
+              }}
+            />
+            <Button
+              children="Fund wallet"
+              btnSize="large"
+              variant="primary"
+              minWidth="min-w-[10rem]"
+              clickHandler={() => {
+                setSetUpWalletWallet(true);
+              }}
+            />
+          </div>
         </div>
+
         <div className="relative">
           <div className="flex items-center justify-between mt-14 mb-2 ">
             <Typography
@@ -178,11 +204,11 @@ const Order = () => {
               textWeight="font-bold"
               textSize="text-[18px]"
             >
-              Vendors
+              Wallet History
             </Typography>
             <div className="">
               <DropDown
-                placeholder={"Vendor’s status"}
+                placeholder={"This week"}
                 value={dropDownValue}
                 setValue={(data) => {
                   setDropDownValue(data);
@@ -192,7 +218,7 @@ const Order = () => {
             </div>
           </div>
 
-          <OrderTable
+          <WalletTable
             data={tableData}
             viewDetails={() => {
               handleShowViewDetailModal();
@@ -203,42 +229,14 @@ const Order = () => {
       </div>
       {/* <Modal content={<SetTotalOrderPerDay />}></Modal> */}
       {/* {showModal == true && ( */}
-      {viewOrderDetails && (
+      {setUpWalletWallet && (
         <Modal
           content={
-            <OrderDetails topNavData={topNavData} closeModal={closeModal} />
-          }
-        ></Modal>
-      )}
-
-      {showTrack && (
-        <Modal
-          content={<TrackOrder data={topNavData} closeModal={closeModal} />}
-        ></Modal>
-      )}
-
-      {showCustomer && (
-        <Modal
-          content={
-            <CustomerDetails topNavData={topNavData} closeModal={closeModal} />
-          }
-        ></Modal>
-      )}
-      {rejectModal && (
-        <Modal
-          content={
-            <div className="flex items-center justify-center h-[100vh]">
-              <RejectOrderModal closeModal={closeModal} />
-            </div>
-          }
-        ></Modal>
-      )}
-      {total && (
-        <Modal
-          content={
-            <div className="flex items-center justify-center h-[100vh]">
-              <SetTotalOrderPerDay closeModal={closeModal} />
-            </div>
+            <SetUpAltireWallet
+              closeModal={() => {
+                setSetUpWalletWallet(false);
+              }}
+            />
           }
         ></Modal>
       )}
@@ -246,4 +244,4 @@ const Order = () => {
   );
 };
 
-export default Order;
+export default Wallet;

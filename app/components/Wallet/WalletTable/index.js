@@ -1,6 +1,6 @@
 import ExportComponent from "../../ExportButton";
-import OrderTableItem from "../OrderTableItem";
-const OrderTable = ({ data, viewDetails, showRejectModal }) => {
+import WalletTableItem from "../WalletTableItem";
+const WalletTable = ({ data, viewDetails, showRejectModal }) => {
   return (
     <div className="mt-4 min-h-[50vh]">
       <table className="w-full">
@@ -8,32 +8,27 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
           <tr>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Picture
+                Date
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Customer name
+                Transaction ID
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Email address
+                Transaction type
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Phone number
+                Narration
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]">
-                Total orders
-              </div>
-            </th>
-            <th className="w-[8%] p-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500]">
-                Last Order date
+                Amount
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
@@ -48,7 +43,7 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
         </thead>
         <tbody>
           {data.map((item) => (
-            <OrderTableItem
+            <WalletTableItem
               {...item}
               viewDetails={viewDetails}
               showRejectModal={showRejectModal}
@@ -60,4 +55,4 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
   );
 };
 
-export default OrderTable;
+export default WalletTable;

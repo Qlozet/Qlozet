@@ -17,8 +17,7 @@ import supportActive from "../../../public/assets/svg/support-active.svg";
 import loggoutDefault from "../../../public/assets/svg/logout-default.svg";
 import vendorDefault from "../../../public/assets/svg/user-octagon.svg";
 import vendorActive from "../../../public/assets/svg/user-octagon-active.svg";
-import questionMarkIcon from "../../../public/assets/svg/question-mark 1.svg";
-import closeIcon from "../../../public/assets/svg/close-square.svg";
+import Logout from "../Logout";
 import { useRouter } from "next/navigation";
 
 import Image from "next/image";
@@ -38,12 +37,6 @@ const SideBar = ({ active }) => {
       activeIcon: activeDashboardIcon,
       function: () => {},
     },
-    // {
-    //   name: "Vendors",
-    //   link: "vendors",
-    //   defaultIcon: vendorDefault,
-    //   activeIcon: vendorActive,
-    // },
     {
       name: "Orders",
       link: "orders",
@@ -61,7 +54,7 @@ const SideBar = ({ active }) => {
 
     {
       name: "Wallet",
-      link: "Wallet",
+      link: "wallet",
       defaultIcon: wallet,
       activeIcon: walletActive,
       function: () => {},
@@ -98,15 +91,19 @@ const SideBar = ({ active }) => {
       },
     },
   ];
+
+  const logoutFunction = () => {
+    setShowLogOutModal(false);
+  };
   return (
-    <div className="px-10 bg-white h-full">
-      <div className="py-10">
+    <div className=" bg-white h-full">
+      <div className="py-10 px-10">
         <Logo />
       </div>
       <div className="">
         {sidebaritems.map((item, index) => (
           <div
-            className="flex items-center gap-4  py-3 cursor-pointer"
+            className="px-10 flex items-center gap-4  py-3 cursor-pointer hover:bg-[#f4f4f4]"
             key={index}
             onClick={() => {
               item.function();
@@ -132,32 +129,7 @@ const SideBar = ({ active }) => {
         <Modal
           content={
             <div className="flex items-center justify-center h-[100%] ">
-              <div className="relative bg-white w-[35%] rounded-[12px] flex flex-col items-center gap-6 p-6">
-                <div
-                  className="absolute top-4 right-4 cursor-pointer"
-                  onClick={() => {
-                    setShowLogOutModal(false);
-                  }}
-                >
-                  <Image src={closeIcon} alt="" />
-                </div>
-                <Image src={questionMarkIcon} alt="" />
-                <Typography
-                  textColor="text-black"
-                  textWeight="font-bold"
-                  textSize="text-[18px]"
-                >
-                  Are you sure you want to logout?
-                </Typography>
-                <Button
-                  children="Continue"
-                  btnSize="large"
-                  variant="danger"
-                  clickHandler={() => {
-                    setShowLogOutModal(false);
-                  }}
-                />
-              </div>
+              <Logout logoutFunction={logoutFunction} />
             </div>
           }
         />

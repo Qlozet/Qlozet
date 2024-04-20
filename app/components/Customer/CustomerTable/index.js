@@ -2,7 +2,7 @@ import ExportComponent from "../../ExportButton";
 import CustomerTableItem from "../CustomerTableItem";
 const CustomerTable = ({ data, viewDetails, showModal }) => {
   return (
-    <div className="mt-4">
+    <div className="mt-4 min-h-[50vh]">
       <table className="w-full">
         <thead className="w-full bg-[#F4F4F4] ">
           <tr>
