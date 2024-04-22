@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 import classes from "./index.module.css";
 import ChatLabel from "../ChatLabel";
-const DonutChart = ({ data }) => {
+const DonutChart = ({ data, width, height }) => {
   const chartRef = useRef(null);
   let chartInstance = null;
 
@@ -54,7 +54,7 @@ const DonutChart = ({ data }) => {
   return (
     <div>
       <div>
-        <canvas ref={chartRef} width="285" height="285"></canvas>
+        <canvas ref={chartRef} width={width} height={height}></canvas>
       </div>
     </div>
   );

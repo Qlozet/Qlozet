@@ -46,7 +46,7 @@ const SideBar = ({ active }) => {
     },
     {
       name: "Products",
-      link: "Products",
+      link: "products",
       defaultIcon: shoppingBag,
       activeIcon: activeshopping,
       function: () => {},
