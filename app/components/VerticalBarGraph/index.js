@@ -1,7 +1,12 @@
+import { useEffect, useState } from "react";
 import VendorCountLine from "../VendorCountLine";
 import VerticalBar from "../VerticalBar";
 
 const VerticalBarGraph = () => {
+  const [data, setData] = useState([
+    { date: "June 4", value: 6100, per: `h-[${(6100 * 100) / 11000}%]` },
+  ]);
+
   return (
     <div className="relative">
       <div>
@@ -19,13 +24,17 @@ const VerticalBarGraph = () => {
         <VendorCountLine value={"0"} />
       </div>
       <div className="absolute right-0 bottom-[9px] w-[94%] h-[96%] flex justify-between px-10">
-        <VerticalBar />
-        <VerticalBar />
-        <VerticalBar />
-        <VerticalBar />
-        <VerticalBar />
-        <VerticalBar />
-        <VerticalBar />
+        {data.map((item) => {
+          console.log(item);
+          return (
+            <VerticalBar
+              color="bg-primary-200"
+              per={item.per}
+              value={item.value}
+              date={item.date}
+            />
+          );
+        })}
       </div>
     </div>
   );

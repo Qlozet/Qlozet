@@ -20,7 +20,7 @@ const Button = ({
       }`;
       break;
     case "outline":
-      variantClasses = `hover:border-[2px] hover:border-primary  font-light hover:bg-gray-400 text-gray-800 font-bold  py-3 px-4 border-[1px] border-solid border-[rgba(18, 18, 18, 1)] ${
+      variantClasses = `hover:border-[1px] hover:border-primary  font-light hover:bg-gray-400 text-gray-800 font-bold  py-3 px-4 border-[1px] border-solid border-[rgba(18, 18, 18, 1)] ${
         disabled ? "bg-white-100 cursor-not-allowed" : "bg-white"
       }`;
       break;

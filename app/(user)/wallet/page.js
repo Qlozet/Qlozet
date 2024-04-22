@@ -22,11 +22,14 @@ import Button from "@/app/components/Button";
 import WalletTable from "@/app/components/Wallet/WalletTable";
 import RequestCategoryForm from "@/app/components/Settings/Category/RequestANewProductcategoryForm";
 import SetUpAltireWallet from "@/app/components/Wallet/SetUpAltireWallet";
+import TransactionDetails from "@/app/components/Wallet/TransactionDetails";
+import SendMoney from "@/app/components/Wallet/SendMoney";
+import SendMoneyForm from "@/app/components/Wallet/SendMoneyForm";
 const Wallet = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [setUpWalletWallet, setSetUpWalletWallet] = useState(false);
-  const [showTrack, setShowTrack] = useState(false);
-  const [showCustomer, setShowCustomer] = useState(false);
+  const [showTransactiondetails, setShowTransactiondetails] = useState(false);
+  const [showSendMoney, setShowSendMoney] = useState(true);
   const [rejectModal, setShowReject] = useState(false);
   const [total, setShowTotal] = useState(false);
   const handleShowViewDetailModal = () => {
@@ -235,6 +238,39 @@ const Wallet = () => {
             <SetUpAltireWallet
               closeModal={() => {
                 setSetUpWalletWallet(false);
+              }}
+            />
+          }
+        ></Modal>
+      )}
+      {showTransactiondetails && (
+        <Modal
+          content={
+            <TransactionDetails
+              closeModal={() => {
+                setShowTransactiondetails(false);
+              }}
+            />
+          }
+        ></Modal>
+      )}
+      {/* {showSendMoney && (
+        <Modal
+          content={
+            <SendMoney
+              closeModal={() => {
+                setShowTransactiondetails(false);
+              }}
+            />
+          }
+        ></Modal>
+      )} */}
+      {showSendMoney && (
+        <Modal
+          content={
+            <SendMoneyForm
+              closeModal={() => {
+                setShowTransactiondetails(false);
               }}
             />
           }

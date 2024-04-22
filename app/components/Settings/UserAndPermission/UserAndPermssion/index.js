@@ -15,7 +15,7 @@ const UserAndPermission = () => {
     setShowAddModal(true);
   };
   return (
-    <div>
+    <div className="">
       <div className="flex items-center justify-end mb-4">
         <Button
           children={
