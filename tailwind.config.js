@@ -10,7 +10,7 @@ module.exports = {
     },
     colors: {
       white: "rgba(255, 255, 255, 1)",
-      dark: "rgba(18, 18, 18, 1)",
+      // dark: "rgba(18, 18, 18, 1)",
       primary: {
         DEFAULT: "rgba(62, 28, 1, 1)",
         100: "rgba(99, 72, 51, 1)",
