@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Logo from "../../Logo";
 import Typography from "../../Typography";
 import ProgressBar from "../../ProgressBar";
@@ -6,6 +7,13 @@ import NumberInput from "../../NumberInput";
 import classes from "./index.module.css";
 
 const step1 = () => {
+  const [formData, setFormData] = useState({
+    businessName: "",
+  });
+  const [requiredData, setrequiredFormaData] = useState({
+    businessName: "",
+  });
+
   return (
     <div>
       <Logo />
@@ -26,9 +34,19 @@ const step1 = () => {
         </Typography>
         <ProgressBar step={1} />
         <TextInput
+          value={formData.businessName}
           label="Business name"
           placeholder="Enter your business name"
-          setValue={(data) => {}}
+          setValue={(data) => {
+            setFormData((prevData) => {
+              return { ...prevData, businessName: data };
+            });
+            if (data) {
+              setrequiredFormaData((prevData) => {
+                return { ...prevData, businessName: true };
+              });
+            }
+          }}
         />
         <TextInput
           label="Business email "

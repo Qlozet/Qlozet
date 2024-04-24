@@ -97,13 +97,13 @@ const SideBar = ({ active }) => {
   };
   return (
     <div className=" bg-white h-full">
-      <div className="py-10 px-10">
+      <div className="py-10 px-16">
         <Logo />
       </div>
       <div className="">
         {sidebaritems.map((item, index) => (
           <div
-            className="px-10 flex items-center gap-4  py-3 cursor-pointer hover:bg-[#f4f4f4]"
+            className="px-16 flex items-center gap-4  py-3 cursor-pointer hover:bg-[#f4f4f4] min-w-[250px]"
             key={index}
             onClick={() => {
               item.function();
