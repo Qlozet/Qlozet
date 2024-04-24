@@ -7,37 +7,37 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
         <thead className="w-full bg-[#F4F4F4] ">
           <tr>
             <th className="w-[8%] p-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-[500] text-dark">
                 Picture
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-[500] text-dark">
                 Customer name
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-[500] text-dark">
                 Email address
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-[500] text-dark">
                 Phone number
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-[500] text-dark">
                 Total orders
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-[500] text-dark">
                 Last Order date
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-[500] text-dark">
                 Status
               </div>
             </th>

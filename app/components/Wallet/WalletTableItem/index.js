@@ -13,12 +13,12 @@ const WalletTableItem = ({
 }) => {
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-[12px] font-normal p-4">{date}</td>
-      <td className="text-[12px] font-normal p-4">{transactionId}</td>
-      <td className="text-[12px] font-normal p-4">{transactionType}</td>
-      <td className="text-[12px] font-normal p-4">{narration}</td>
-      <td className="text-[12px] font-normal p-4">{amount}</td>
-      <td className="text-[12px] font-normal p-4">
+      <td className="text-[12px] font-normal p-4 text-dark">{date}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">{transactionId}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">{transactionType}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">{narration}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">{amount}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">
         <OrderStatus
           text="Out for delivery"
           bgColor="bg-[#D4CFCA]"
@@ -27,7 +27,7 @@ const WalletTableItem = ({
         />
       </td>
 
-      <td className="text-[12px] font-normal p-4 ">
+      <td className="text-[12px] font-normal p-4 text-dark ">
         <div className="border rounded-[12px] ">
           <OrderStatus
             text="View details"
