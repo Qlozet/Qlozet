@@ -24,11 +24,11 @@ const UserAndPermissionTableItem = ({
 
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-[12px] font-[400] p-4">{name}</td>
-      <td className="text-[12px] font-[400] p-4">{emailAddress}</td>
-      <td className="text-[12px] font-[400] p-4">{phoneNumber}</td>
-      <td className="text-[12px] font-[400] p-4">{role}</td>
-      <td className="text-[12px] font-[400] p-4">
+      <td className="text-[12px] font-[400] p-4  text-dark">{name}</td>
+      <td className="text-[12px] font-[400] p-4  text-dark">{emailAddress}</td>
+      <td className="text-[12px] font-[400] p-4  text-dark">{phoneNumber}</td>
+      <td className="text-[12px] font-[400] p-4  text-dark">{role}</td>
+      <td className="text-[12px] font-[400] p-4  text-dark">
         <OrderStatus
           text="Out for delivery"
           bgColor="bg-[#FFF7DE]"
@@ -36,7 +36,7 @@ const UserAndPermissionTableItem = ({
           addMaxWidth={true}
         />
       </td>
-      <td className="text-[12px] font-[400] p-4 relative ">
+      <td className="text-[12px] font-[400] p-4  text-dark relative ">
         <div
           className="cursor-pointer flex items-center justify-end pr-6"
           onClick={() => {
