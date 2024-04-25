@@ -29,7 +29,7 @@ const Wallet = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [setUpWalletWallet, setSetUpWalletWallet] = useState(false);
   const [showTransactiondetails, setShowTransactiondetails] = useState(false);
-  const [showSendMoney, setShowSendMoney] = useState(true);
+  const [showSendMoney, setShowSendMoney] = useState(false);
   const [rejectModal, setShowReject] = useState(false);
   const [total, setShowTotal] = useState(false);
   const handleShowViewDetailModal = () => {
@@ -185,7 +185,7 @@ const Wallet = () => {
               variant="outline"
               minWidth="min-w-[10rem]"
               clickHandler={() => {
-                // setStep(step + 1);
+                setShowSendMoney(true);
               }}
             />
             <Button
@@ -270,7 +270,7 @@ const Wallet = () => {
           content={
             <SendMoneyForm
               closeModal={() => {
-                setShowTransactiondetails(false);
+                setShowSendMoney(false);
               }}
             />
           }

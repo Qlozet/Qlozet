@@ -17,7 +17,7 @@ const SelectInput = ({ value, placeholder, setValue, data, label }) => {
         <input
           placeholder={placeholder}
           value={value}
-          className="w-full p-3 rounded-[12px] outline-none  border-[1px]  border-gray-200 focus:border-primary focus:bg-[#DDE2E5] text-[14px]"
+          className="w-full p-3 rounded-[12px] placeholder-gray-200 text-dark outline-none  border-[1px]  border-gray-200 focus:border-primary focus:bg-[#DDE2E5] text-[14px]"
         ></input>
         {/* {value === "" && ( */}
         <div className="absolute top-[40px] right-2 ">

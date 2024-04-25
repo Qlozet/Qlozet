@@ -6,8 +6,7 @@ module.exports = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {
-    },
+    extend: {},
     colors: {
       white: "rgba(255, 255, 255, 1)",
       dark: "rgba(18, 18, 18, 1)",

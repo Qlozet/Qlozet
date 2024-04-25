@@ -22,7 +22,7 @@ const DropDown = ({ value, placeholder, setValue, data }) => {
         <input
           placeholder={placeholder}
           value={value}
-          className="w-full p-2 outline-none disable text-[12px] focus:bg-[#f4f4f4]"
+          className="w-full p-2 outline-none disable text-[12px] focus:bg-[#f4f4f4] placeholder-gray-200 text-dark  "
         ></input>
 
         <div className="absolute top-[10px] right-2 z-50">

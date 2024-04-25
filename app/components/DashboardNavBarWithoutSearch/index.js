@@ -33,7 +33,7 @@ const DasboardNavWithOutSearch = ({
                 setValue(e.target.value);
               }}
               placeholder="Search"
-              className={`py-2 pl-12 w-full border-solid border-[1.5px]
+              className={`py-2 pl-12 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  
           focus:outline-none focus:border-primary-100 border-gray-2 rounded-[12px] overflow-hidden text-[14px] text-font-light placeholder:font-300  bg-[#F8F9FA] 
           } `}
             />
