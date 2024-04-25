@@ -1,6 +1,6 @@
 "use client";
 import signupImage from "../../../public/assets/svg/signupImage.svg";
-import arrowRignt from "../../../public/assets/svg/arrow-right.svg";
+import arrowRight from "../../../public/assets/svg/arrow-right.svg";
 import Image from "next/image";
 import Logo from "@/app/components/Logo";
 import Typography from "@/app/components/Typography";
@@ -44,6 +44,7 @@ const SignIn = () => {
               />
               <PasswordInput
                 label="Create password"
+                placeholder="************"
                 setValue={(data) => {
                   console.log(data);
                 }}
@@ -56,7 +57,7 @@ const SignIn = () => {
                 >
                   Forgot password
                 </Typography>
-                <Image src={arrowRignt} />
+                <Image src={arrowRight} />
               </div>
               <div className="mt-10">
                 <Button

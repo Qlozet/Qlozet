@@ -14,6 +14,7 @@ import infoIcon from "../../../public/assets/svg/Info Circle.svg";
 import VerticalBarGraph from "@/app/components/VerticalBarGraph";
 import Typography from "@/app/components/Typography";
 import Image from "next/image";
+import RecentOrder from "@/app/components/RecentOrder";
 
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
@@ -61,6 +62,37 @@ const Dashboard = () => {
     colors: ["#3E1C01", "#9C8578"],
     borderAlign: "center",
   };
+
+  const orders = [
+    {
+      id: 1,
+      name: "Omoniyi Precious",
+      date: "01/12/2024",
+      product: "Amasi dress",
+      price: 1000,
+      quantity: 1,
+      status: "Ready to Ship",
+    },
+    {
+      id: 2,
+      name: "Kennedy Jones",
+      date: "01/12/2024",
+      product: "Kaz Kit ",
+      price: 20,
+      quantity: 2,
+      status: "Ready to Ship",
+    },
+    {
+      id: 3,
+      name: "Toyosi Adeyemi",
+      date: "01/12/2024",
+      product: "Amasi dress",
+      price: 50,
+      quantity: 1,
+      status: "Ready to Ship",
+    },
+  ];
+
   return (
     <div className="flex bg-[#F8F9FA]">
       <div className="">
@@ -180,7 +212,13 @@ const Dashboard = () => {
             <div
               className={`${classes.second_container} flex items-center mt-4`}
             >
-              <div className="w-full flex items-center"></div>
+              <div className="w-full flex items-center gap-4 mt-3">
+                {
+                  <div className="order-list shadow-md bg-white rounded-[12px] p-6 text-dark overflow-auto w-full ">
+                    <RecentOrder orders={orders} />
+                  </div>
+                }
+              </div>
             </div>
           </div>
         </div>
