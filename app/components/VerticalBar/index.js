@@ -1,14 +1,20 @@
 import { useEffect } from "react";
 import classes from "./index.module.css";
 
-const VerticalBar = ({ date, value, per, color }) => {
-  let percentage;
+const VerticalBar = ({ date, value, per, color, highest }) => {
+  const total = 11000;
 
-  useEffect(() => {}, []);
   return (
     <div>
       <div className="h-full flex items-end">
-        <div className={`${per} ${color} rounded-t-[36px] w-[36px] relative`}>
+        <div
+          style={{
+            height: `${(value * 100) / total}%`,
+          }}
+          className={`${per} ${
+            highest ? "bg-primary" : "bg-primary-200"
+          } rounded-t-[36px] w-[36px] relative`}
+        >
           <div className="absolute top-[-3.5rem] left-[-10px] font-[400] text-[14px] text-[#495057] bg-[#495057] text-white p-2 rounded-[12px] w-[60px] flex items-center justify-center">
             {value}
           </div>

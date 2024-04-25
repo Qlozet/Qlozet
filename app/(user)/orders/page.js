@@ -174,11 +174,11 @@ const Order = () => {
         <div className="relative">
           <div className="flex items-center justify-between mt-14 mb-2 ">
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-bold"
               textSize="text-[18px]"
             >
-              Vendors
+              Orders
             </Typography>
             <div className="">
               <DropDown

@@ -170,7 +170,6 @@ const Dashboard = () => {
               />
             </div>
           </div>
-
           <div className="flex items-center w-full gap-4 z-0">
             <div
               className={`${classes.first_container} flex items-center gap-4 mt-4`}
@@ -178,7 +177,9 @@ const Dashboard = () => {
               <div className="w-1/2">
                 <ChatCard
                   text="Vendors by gender"
-                  graph={<DonutChart data={chartData} />}
+                  graph={
+                    <DonutChart data={chartData} width={"285"} height={"285"} />
+                  }
                 />
               </div>
               <div className="w-1/2">

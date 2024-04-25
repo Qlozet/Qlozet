@@ -11,7 +11,8 @@ import Modal from "@/app/components/Modal";
 import CustomerDetails from "@/app/components/order/CustomerDetails";
 import OrderHistory from "@/app/components/Customer/OrderHistory";
 import CustomerTable from "@/app/components/Customer/CustomerTable";
-const Customer = () => {
+import DonutChart from "@/app/components/Chat/DoughnutChat";
+const Products = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [viewCustomerDetails, setCustomerDetails] = useState(false);
   const [showHostory, setShowHistory] = useState(false);
@@ -54,9 +55,9 @@ const Customer = () => {
     },
   ];
   const chartData = {
-    labels: ["Male", "Female"],
-    values: [12, 19],
-    colors: ["#3E1C01", "#9C8578"],
+    labels: ["Suit", "Kaftan", "Cargo", "Abgada"],
+    values: [50, 25, 25, 25],
+    colors: ["#3E1C01", "#9C8578", "#F6E9DD", "#BE7D42"],
     borderAlign: "center",
   };
 
@@ -71,6 +72,7 @@ const Customer = () => {
       DeliveryStatus: "My name iss",
     },
   ];
+
   const closeModal = () => {
     setCustomerDetails(false);
     setShowHistory(false);
@@ -129,11 +131,47 @@ const Customer = () => {
             icon={customerIcon}
             addMaxWidth={true}
           />
+          <div
+            className={`px-6 py-4 flex bg-white rounded-[12px] mt-4 max-w-[300px] w-full`}
+          >
+            <DonutChart data={chartData} width={"90"} height={"90"} />
+            <div>
+              <Typography
+                textColor="text-black"
+                textWeight="font-[400]"
+                textSize="text-[12px]"
+              >
+                Sales By Product Category
+              </Typography>
+              <div>
+                <div className="flex items-center gap-2 p-2">
+                  <span className="w-[10px] h-[10px] rounded-[50%] bg-primary"></span>
+                  <Typography
+                    textColor="text-black"
+                    textWeight="font-[400]"
+                    textSize="text-[12px]"
+                  >
+                    Suite
+                  </Typography>
+                </div>
+                <div className="flex items-center gap-2 p-2">
+                  <span className="w-[10px] h-[10px] rounded-[50%] bg-primary"></span>
+                  <Typography
+                    textColor="text-black"
+                    textWeight="font-[400]"
+                    textSize="text-[12px]"
+                  >
+                    Suite
+                  </Typography>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div className="relative">
           <div className="flex items-center justify-between mt-14 mb-2 ">
             <Typography
-              textColor="text-dark"
+             textColor="text-dark"
               textWeight="font-bold"
               textSize="text-[18px]"
             >
@@ -173,4 +211,4 @@ const Customer = () => {
   );
 };
 
-export default Customer;
+export default Products;

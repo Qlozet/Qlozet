@@ -36,37 +36,37 @@ const WearhousetTable = () => {
       <thead className="w-full bg-[#F4F4F4] ">
         <tr>
           <th className="w-[8%] p-4 text-[12px]">
-            <div className="flex items-center justify-start font-[500]">
+            <div className="flex items-center justify-start font-[500]   text-dark ">
               Warehouse name
             </div>
           </th>
           <th className="w-[8%] p-4 text-[12px]">
-            <div className="flex items-center justify-start font-[500]">
+            <div className="flex items-center justify-start font-[500]   text-dark">
               Vendor’s name
             </div>
           </th>
           <th className="w-[10%] p-4 text-[12px]">
-            <div className="flex items-center justify-start font-[500]">
+            <div className="flex items-center justify-start font-[500]   text-dark">
               Warehouse address{" "}
             </div>
           </th>
           <th className="w-[8%] p-4 text-[12px]">
-            <div className="flex items-center justify-start font-[500]">
+            <div className="flex items-center justify-start font-[500]   text-dark">
               Contact name
             </div>
           </th>
           <th className="w-[8%] p-4 text-[12px]">
-            <div className="flex items-center justify-start font-[500]">
+            <div className="flex items-center justify-start font-[500]   text-dark">
               Phone number
             </div>
           </th>
           <th className="w-[8%] p-4 text-[12px]">
-            <div className="flex items-center justify-start font-[500]">
+            <div className="flex items-center justify-start font-[500]   text-dark">
               Email
             </div>
           </th>
           <th className="w-[8%] p-4 text-[12px]">
-            <div className="flex items-center justify-start font-[500]">
+            <div className="flex items-center justify-start font-[500]   text-dark">
               Status
             </div>
           </th>

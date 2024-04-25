@@ -4,8 +4,18 @@ import VerticalBar from "../VerticalBar";
 
 const VerticalBarGraph = () => {
   const [data, setData] = useState([
-    { date: "June 4", value: 6100, per: `h-[${(6100 * 100) / 11000}%]` },
+    { date: "June 1", value: 5100 },
+    { date: "June 2", value: 4200 },
+    { date: "June 3", value: 4900 },
+    { date: "June 4", value: 4300 },
+    { date: "June 5", value: 6100 },
+    { date: "June 6", value: 5300 },
+    { date: "June 7", value: 5300 },
   ]);
+
+  const itemWithHighestValue = data.reduce((prevItem, currentItem) => {
+    return prevItem.value > currentItem.value ? prevItem : currentItem;
+  });
 
   return (
     <div className="relative">
@@ -28,7 +38,7 @@ const VerticalBarGraph = () => {
           console.log(item);
           return (
             <VerticalBar
-              color="bg-primary-200"
+              highest={item.value == itemWithHighestValue.value ? true : false}
               per={item.per}
               value={item.value}
               date={item.date}

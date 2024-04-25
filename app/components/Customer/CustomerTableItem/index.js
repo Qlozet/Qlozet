@@ -13,13 +13,13 @@ const CustomerTableItem = ({
 }) => {
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-[12px] font-normal p-4">{date}</td>
-      <td className="text-[12px] font-normal p-4">{orderId}</td>
-      <td className="text-[12px] font-normal p-4">{productName}</td>
-      <td className="text-[12px] font-normal p-4">{productPrice}</td>
-      <td className="text-[12px] font-normal p-4">{CustomerName}</td>
-      <td className="text-[12px] font-normal p-4">{AmountPaid}</td>
-      <td className="text-[12px] font-normal p-4">
+      <td className="text-[12px] font-normal p-4 text-dark ">{date}</td>
+      <td className="text-[12px] font-normal p-4 text-dark ">{orderId}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">{productName}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">{productPrice}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">{CustomerName}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">{AmountPaid}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">
         <OrderStatus
           text="Out for delivery"
           bgColor="bg-[#D4CFCA]"
@@ -28,7 +28,7 @@ const CustomerTableItem = ({
         />
       </td>
 
-      <td className="text-[12px] font-normal p-4 ">
+      <td className="text-[12px] font-normal p-4 text-dark ">
         <div className="border rounded-[12px] ">
           <OrderStatus
             text="View details"
