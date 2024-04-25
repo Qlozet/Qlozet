@@ -36,7 +36,7 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
                 Last Order date
               </div>
             </th>
-            <th className="w-[8%] p-4 text-[12px]">
+            <th className="w-[9%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
                 Status
               </div>

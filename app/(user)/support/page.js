@@ -33,7 +33,7 @@ const Support = () => {
         />
         <div className="min-h-[80vh]">
           <div className="mt-4 mx-auto ">
-            <div className="bg-white rounded-[12px] w-[40%] m-auto px-4 py-6 my-6">
+            <div className="bg-white rounded-[12px] w-[40%] m-auto px-4 py-6 my-6 shadow">
               <div>
                 <div className="flex items-center justify-between  border-dashed border-b-[1.5px] border-gray-200 pb-4">
                   <Typography

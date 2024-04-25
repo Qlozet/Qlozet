@@ -104,7 +104,7 @@ const Products = () => {
   return (
     <div className="flex bg-[#F8F9FA]">
       <div className="">
-        <SideBar active="Customers" />
+        <SideBar active="Products" />
       </div>
       <div className="w-full p-4">
         <DasboardNavWithOutSearch
@@ -171,7 +171,7 @@ const Products = () => {
         <div className="relative">
           <div className="flex items-center justify-between mt-14 mb-2 ">
             <Typography
-             textColor="text-dark"
+              textColor="text-dark"
               textWeight="font-bold"
               textSize="text-[18px]"
             >
