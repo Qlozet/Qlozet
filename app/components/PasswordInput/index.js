@@ -22,7 +22,7 @@ const PasswordInput = ({
         className={`py-3 px-4 w-full border-solid border-[1.5px]  
             focus:outline-none ${
               error && "border-danger"
-            } focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 ${
+            } focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 placeholder:text-gray-200 ${
           disabled && "border-0 bg-gray-300 cursor-not-allowed"
         } `}
         value={value}

@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import signupImage from "../../../public/assets/svg/signupImage.svg";
 import arrowRight from "../../../public/assets/svg/arrow-right.svg";
 import Image from "next/image";
@@ -11,8 +12,26 @@ import classes from "./index.module.css";
 import { useRouter } from "next/navigation";
 import ProgressBar from "@/app/components/ProgressBar";
 import NumberInput from "@/app/components/NumberInput";
-
+import EmailInptut from "@/app/components/EmailInput";
+import validator from "@/utils/validator";
+import { postRequest } from "@/api/request";
 const SignIn = () => {
+  const [formData, setFormData] = useState({ businessEmail: "", password: "" });
+  const [requiredFormData, setReqiuredFormData] = useState({
+    businessEmail: false,
+    password: false,
+  });
+
+  const handleLogin = async () => {
+    const { status, data, id } = validator(formData, requiredFormData);
+    if (status) {
+      const response =await postRequest(``)
+    } else {
+      setReqiuredFormData((prevData) => {
+        return { prevData, ...data };
+      });
+    }
+  };
   const router = useRouter();
   return (
     <section
@@ -37,17 +56,44 @@ const SignIn = () => {
               >
                 Please enter your login details below
               </Typography>
-              <TextInput
+              <EmailInptut
                 label="Business email address"
                 placeholder="Enter your business official email address"
-                setValue={(data) => {}}
+                setValue={(data) => {
+                  setFormData((prevData) => {
+                    return { ...prevData, businessEmail: data };
+                  });
+                  if (data) {
+                    setReqiuredFormData((prevData) => {
+                      return { ...prevData, businessEmail: false };
+                    });
+                  } else {
+                    setReqiuredFormData((prevData) => {
+                      return { ...prevData, businessEmail: true };
+                    });
+                  }
+                }}
+                error={requiredFormData.businessEmail}
               />
               <PasswordInput
-                label="Create password"
+                label="Password"
                 placeholder="************"
                 setValue={(data) => {
-                  console.log(data);
+                  setFormData((prevData) => {
+                    return { ...prevData, password: data };
+                  });
+
+                  if (data) {
+                    setReqiuredFormData((prevData) => {
+                      return { ...prevData, password: false };
+                    });
+                  } else {
+                    setReqiuredFormData((prevData) => {
+                      return { ...prevData, password: true };
+                    });
+                  }
                 }}
+                error={requiredFormData.password}
               />
               <div className="flex items-center justify-end gap-2">
                 <Typography
@@ -57,7 +103,7 @@ const SignIn = () => {
                 >
                   Forgot password
                 </Typography>
-                <Image src={arrowRight} />
+                <Image src={arrowRight} alt="" />
               </div>
               <div className="mt-10">
                 <Button
@@ -65,7 +111,7 @@ const SignIn = () => {
                   btnSize="large"
                   variant="primary"
                   clickHandler={() => {
-                    setStep(step + 1);
+                    handleLogin();
                   }}
                 />
               </div>

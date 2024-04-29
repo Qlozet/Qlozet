@@ -43,26 +43,38 @@ export const getRequest = async (url) => {
   }
 };
 
-export const postRequest = async (url, data) => {
+export const postRequest = async (url, data, fileAvailable) => {
   let userData;
   let token = getToken();
   let response;
   try {
     if (token) {
       userData = JSON.parse(token);
-      response = await axiosInstance.post(url, data, {
-        headers: {
-          Authorization: `Bearer ${userData?.token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      response = fileAvailable
+        ? await axiosInstance.post(url, data, {
+            headers: {
+              Authorization: `Bearer ${userData?.token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+        : await axiosInstance.post(url, data, {
+            headers: {
+              Authorization: `Bearer ${userData?.token}`,
+            },
+          });
     } else {
-      response = await axiosInstance.post(url, data, {
-        headers: {
-          Authorization: `Bearer ${userData?.token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      response = fileAvailable
+        ? await axiosInstance.post(url, data, {
+            headers: {
+              Authorization: `Bearer ${userData?.token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+        : await axiosInstance.post(url, data, {
+            headers: {
+              Authorization: `Bearer ${userData?.token}`,
+            },
+          });
     }
     return response.data;
   } catch (error) {

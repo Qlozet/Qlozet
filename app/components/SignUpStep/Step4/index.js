@@ -1,8 +1,6 @@
 import Logo from "../../Logo";
 import Typography from "../../Typography";
 import ProgressBar from "../../ProgressBar";
-import TextInput from "../../TextInput";
-import NumberInput from "../../NumberInput";
 import classes from "./index.module.css";
 import UploadDocInput from "../../UploadDocInput";
 
