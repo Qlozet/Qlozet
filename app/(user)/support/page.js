@@ -1,12 +1,12 @@
 "use client";
 import { useState } from "react";
-import DasboardNavWithOutSearch from "@/app/components/DashboardNavBarWithoutSearch";
-import SideBar from "@/app/components/SideBar";
-import SelectInput from "@/app/components/SelectInput";
-import TextInput from "@/app/components/TextInput";
-import Typography from "@/app/components/Typography";
+import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
+import SideBar from "@/components/SideBar";
+import SelectInput from "@/components/SelectInput";
+import TextInput from "@/components/TextInput";
+import Typography from "@/components/Typography";
 import classes from "./index.module.css";
-import Button from "@/app/components/Button";
+import Button from "@/components/Button";
 
 const Support = () => {
   const [dropDownValue, setDropDownValue] = useState("");

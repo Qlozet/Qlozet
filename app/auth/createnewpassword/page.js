@@ -1,12 +1,14 @@
 "use client";
 import { useState } from "react";
-import Button from "@/app/components/Button";
-import Logo from "@/app/components/Logo";
-import TextInput from "@/app/components/TextInput";
-import Typography from "@/app/components/Typography";
+import Button from "@//components/Button";
+import Logo from "@//components/Logo";
+import TextInput from "@//components/TextInput";
+import Typography from "@//components/Typography";
 import classes from "./index.module.css";
-import PasswordInput from "@/app/components/PasswordInput";
-import PasswordValidate from "@/app/components/PasswordValidation";
+import PasswordInput from "@//components/PasswordInput";
+import PasswordValidate from "@//components/PasswordValidation";
+import validator from "@/utils/validator";
+import { postRequest } from "@/api/request";
 import {
   handleContainsSymbolOrCharacter,
   handlerContainsNumber,
@@ -23,6 +25,11 @@ const Page = () => {
     resetCode: "",
     newPassword: "",
     confirmPassword: "",
+  });
+  const [requiredFormData, setRequiredFormData] = useState({
+    resetCode: false,
+    newPassword: false,
+    confirmPassword: false,
   });
 
   const handleCheckPassword = (data) => {
@@ -62,6 +69,22 @@ const Page = () => {
     }
   };
 
+  const handleSubmit = async () => {
+    const { status, data, id } = validator(formData, requiredFormData);
+    if (status) {
+      const response = await postRequest(`/vendor/forgot-password`, {
+        resetCode: formData.resetCode,
+        newPassword: formData.newPassword,
+        confirmPassword: formData.confirmPassword,
+      });
+      console.log(response);
+    } else {
+      setRequiredFormData((prevData) => {
+        return { prevData, ...data };
+      });
+    }
+  };
+
   return (
     <div className="bg-[#F8F9FA] h-screen overflow-y-scroll">
       <div className="flex items-center justify-center pt-6">
@@ -88,10 +111,22 @@ const Page = () => {
                 console.log(prevData);
                 return { ...prevData, resetCode: data };
               });
+
+              if (data) {
+                setRequiredFormData((prevData) => {
+                  return { ...prevData, resetCode: false };
+                });
+              } else {
+                setRequiredFormData((prevData) => {
+                  return { ...prevData, resetCode: true };
+                });
+              }
             }}
+            error={requiredFormData.resetCode}
           />
           <PasswordInput
             label="New password"
+            placeholder="**********"
             setValue={(data) => {
               handleCheckPassword(data);
               if (data == formData.confirmPassword) {
@@ -106,10 +141,21 @@ const Page = () => {
               setFormData((prevData) => {
                 return { ...prevData, newPassword: data };
               });
+              if (data) {
+                setRequiredFormData((prevData) => {
+                  return { ...prevData, newPassword: false };
+                });
+              } else {
+                setRequiredFormData((prevData) => {
+                  return { ...prevData, newPassword: true };
+                });
+              }
             }}
+            error={requiredFormData.newPassword}
           />
           <PasswordInput
             label="Confirm password"
+            placeholder="**********"
             setValue={(data) => {
               if (data == formData.newPassword) {
                 setCheckPassword((prevData) => {
@@ -123,8 +169,18 @@ const Page = () => {
               setFormData((prevData) => {
                 return { ...prevData, confirmPassword: data };
               });
+              if (data) {
+                setRequiredFormData((prevData) => {
+                  return { ...prevData, confirmPassword: false };
+                });
+              } else {
+                setRequiredFormData((prevData) => {
+                  return { ...prevData, confirmPassword: true };
+                });
+              }
               handleCheckPassword(data);
             }}
+            error={requiredFormData.confirmPassword}
           />
           <div className="mt-2">
             <PasswordValidate
@@ -156,7 +212,7 @@ const Page = () => {
               btnSize="large"
               variant="primary"
               clickHandler={() => {
-                setStep(step + 1);
+                handleSubmit();
               }}
             />
           </div>

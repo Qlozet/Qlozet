@@ -1,10 +1,30 @@
 "use client";
-import Button from "@/app/components/Button";
-import Logo from "@/app/components/Logo";
-import TextInput from "@/app/components/TextInput";
-import Typography from "@/app/components/Typography";
+import { useState } from "react";
+import Button from "@//components/Button";
+import Logo from "@//components/Logo";
+import TextInput from "@//components/TextInput";
+import Typography from "@//components/Typography";
 import classes from "./index.module.css";
+import validator from "@/utils/validator";
+import { postRequest } from "@/api/request";
 const Page = () => {
+  const [formData, setFormData] = useState({ businessEmail: "" });
+  const [reqiuredFormData, setRequiredFormData] = useState({
+    businessEmail: false,
+  });
+  const submitEmail = async () => {
+    const { status, data, id } = validator(formData, reqiuredFormData);
+    if (status) {
+      const response = await postRequest(`/vendor/forgot-password`, {
+        businessEmail: formData.businessEmail,
+      });
+      console.log(response);
+    } else {
+      setRequiredFormData((prevData) => {
+        return { prevData, ...data };
+      });
+    }
+  };
   return (
     <div className="bg-[#F8F9FA] h-screen">
       <div className="flex items-center justify-center pt-6">
@@ -26,7 +46,22 @@ const Page = () => {
           <TextInput
             label="Business email address"
             placeholder="Enter your business official email address"
-            setValue={(data) => {}}
+            setValue={(data) => {
+              setFormData((prevData) => {
+                return { ...prevData, businessEmail: data };
+              });
+
+              if (data) {
+                setRequiredFormData((prevData) => {
+                  return { ...prevData, businessEmail: false };
+                });
+              } else {
+                setRequiredFormData((prevData) => {
+                  return { ...prevData, businessEmail: true };
+                });
+              }
+            }}
+            error={reqiuredFormData.businessEmail}
           />
           <div className="my-[3rem]">
             <Button
@@ -34,7 +69,7 @@ const Page = () => {
               btnSize="large"
               variant="primary"
               clickHandler={() => {
-                setStep(step + 1);
+                submitEmail();
               }}
             />
           </div>

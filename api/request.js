@@ -88,8 +88,6 @@ export const postRequest = async (url, data, fileAvailable) => {
       console.log(error.response.headers);
       if (error.response.status === 401) {
         // toastError("Unauthotized! Re-login to continue");
-        deleteData();
-        window.location.href = "/login";
         return;
       }
       if (error.response.data) {

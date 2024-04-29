@@ -2,21 +2,21 @@
 import { useState } from "react";
 import signupImage from "../../../public/assets/svg/signupImage.svg";
 import Image from "next/image";
-import Logo from "@/app/components/Logo";
-import Typography from "@/app/components/Typography";
-import ProgressBar from "@/app/components/ProgressBar";
-import TextInput from "@/app/components/TextInput";
-import Button from "@/app/components/Button";
+import Logo from "@/components/Logo";
+import Typography from "@/components/Typography";
+import ProgressBar from "@/components/ProgressBar";
+import TextInput from "@/components/TextInput";
+import Button from "@/components/Button";
 import classes from "./index.module.css";
 import { useRouter } from "next/navigation";
-import NumberInput from "@/app/components/NumberInput";
-import Step1 from "@/app/components/SignUpStep/Step1";
-import Step2 from "@/app/components/SignUpStep/step2";
-import Step3 from "@/app/components/SignUpStep/Step3";
-import Step5 from "@/app/components/SignUpStep/Step5";
+import NumberInput from "@/components/NumberInput";
+import Step1 from "@/components/SignUpStep/Step1";
+import Step2 from "@/components/SignUpStep/step2";
+import Step3 from "@/components/SignUpStep/Step3";
+import Step5 from "@/components/SignUpStep/Step5";
 import { validator } from "@/utils/helper";
 import { postRequest } from "@/api/request";
-import Step4 from "@/app/components/SignUpStep/Step4";
+import Step4 from "@/components/SignUpStep/Step4";
 const SignUp = () => {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -83,7 +83,7 @@ const SignUp = () => {
   };
 
   const handleSubmit = async () => {
-    console.log('clicked');
+    console.log("clicked");
     const { status, data, id } = validator(passwordInfo, requiredFormData);
     if (status) {
       const formData = new FormData();

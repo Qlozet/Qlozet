@@ -3,19 +3,17 @@ import { useState } from "react";
 import signupImage from "../../../public/assets/svg/signupImage.svg";
 import arrowRight from "../../../public/assets/svg/arrow-right.svg";
 import Image from "next/image";
-import Logo from "@/app/components/Logo";
-import Typography from "@/app/components/Typography";
-import PasswordInput from "@/app/components/PasswordInput";
-import TextInput from "@/app/components/TextInput";
-import Button from "@/app/components/Button";
+import Logo from "@//components/Logo";
+import Typography from "@//components/Typography";
+import PasswordInput from "@//components/PasswordInput";
+import Button from "@//components/Button";
 import classes from "./index.module.css";
 import { useRouter } from "next/navigation";
-import ProgressBar from "@/app/components/ProgressBar";
-import NumberInput from "@/app/components/NumberInput";
-import EmailInptut from "@/app/components/EmailInput";
+import EmailInptut from "@//components/EmailInput";
 import validator from "@/utils/validator";
 import { postRequest } from "@/api/request";
 const SignIn = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({ businessEmail: "", password: "" });
   const [requiredFormData, setReqiuredFormData] = useState({
     businessEmail: false,
@@ -25,14 +23,19 @@ const SignIn = () => {
   const handleLogin = async () => {
     const { status, data, id } = validator(formData, requiredFormData);
     if (status) {
-      const response =await postRequest(``)
+      console.log(formData);
+      const response = await postRequest(`/vendor/login`, {
+        businessEmail: formData.businessEmail,
+        password: formData.password,
+      });
+      console.log(response);
     } else {
       setReqiuredFormData((prevData) => {
         return { prevData, ...data };
       });
     }
   };
-  const router = useRouter();
+
   return (
     <section
       className={`${classes.section} w-full bg-white p-4 flex items-center justify-center `}
@@ -95,7 +98,12 @@ const SignIn = () => {
                 }}
                 error={requiredFormData.password}
               />
-              <div className="flex items-center justify-end gap-2">
+              <div
+                className="flex items-center justify-end gap-2 cursor-pointer"
+                onClick={() => {
+                  router.push("/auth/forgetpassword");
+                }}
+              >
                 <Typography
                   textColor="text-primary"
                   textWeight="font-[400]"

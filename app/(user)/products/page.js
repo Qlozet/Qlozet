@@ -1,17 +1,17 @@
 "use client";
 import { useState } from "react";
-import DasboardNavWithOutSearch from "@/app/components/DashboardNavBarWithoutSearch";
-import DashboardTopCard from "@/app/components/DashboardTopCard";
-import SideBar from "@/app/components/SideBar";
-import DropDown from "@/app/components/DropDown";
+import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
+import DashboardTopCard from "@/components/DashboardTopCard";
+import SideBar from "@/components/SideBar";
+import DropDown from "@/components/DropDown";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
-import Typography from "@/app/components/Typography";
-import Modal from "@/app/components/Modal";
-import CustomerDetails from "@/app/components/order/CustomerDetails";
-import OrderHistory from "@/app/components/Customer/OrderHistory";
-import CustomerTable from "@/app/components/Customer/CustomerTable";
-import DonutChart from "@/app/components/Chat/DoughnutChat";
+import Typography from "@/components/Typography";
+import Modal from "@/components/Modal";
+import CustomerDetails from "@/components/order/CustomerDetails";
+import OrderHistory from "@/components/Customer/OrderHistory";
+import CustomerTable from "@/components/Customer/CustomerTable";
+import DonutChart from "@/components/Chat/DoughnutChat";
 const Products = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [viewCustomerDetails, setCustomerDetails] = useState(false);

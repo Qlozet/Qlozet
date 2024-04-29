@@ -1,20 +1,20 @@
 "use client";
 import { useState } from "react";
-import ChatCard from "@/app/components/Chat/ChatCard";
-import HorizontalChat from "@/app/components/Chat/HorizontalChart";
-import DasboardNavWithOutSearch from "@/app/components/DashboardNavBarWithoutSearch";
-import DashboardTopCard from "@/app/components/DashboardTopCard";
-import SideBar from "@/app/components/SideBar";
+import ChatCard from "@/components/Chat/ChatCard";
+import HorizontalChat from "@/components/Chat/HorizontalChart";
+import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
+import DashboardTopCard from "@/components/DashboardTopCard";
+import SideBar from "@/components/SideBar";
 import classes from "./index.module.css";
-import DonutChart from "@/app/components/Chat/DoughnutChat";
-import DropDown from "@/app/components/DropDown";
+import DonutChart from "@///components/Chat/DoughnutChat";
+import DropDown from "@/components/DropDown";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import infoIcon from "../../../public/assets/svg/Info Circle.svg";
-import VerticalBarGraph from "@/app/components/VerticalBarGraph";
-import Typography from "@/app/components/Typography";
+import VerticalBarGraph from "@/components/VerticalBarGraph";
+import Typography from "@/components/Typography";
 import Image from "next/image";
-import RecentOrder from "@/app/components/RecentOrder";
+import RecentOrder from "@/components/RecentOrder";
 
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");

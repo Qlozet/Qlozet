@@ -1,17 +1,17 @@
 "use client";
 import { useState } from "react";
-import DasboardNavWithOutSearch from "@/app/components/DashboardNavBarWithoutSearch";
-import SideBar from "@/app/components/SideBar";
-import OrderDetailNav from "@/app/components/order/OrderdetailsNav";
-import CompanyDetails from "@/app/components/Settings/companyDetails/companyDetails";
-import BillingAndInvioce from "@/app/components/Settings/BillingAndInvioceInfo";
-import Warehouse from "@/app/components/Settings/Warehouse/Warehouse";
-import Modal from "@/app/components/Modal";
+import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
+import SideBar from "@/components/SideBar";
+import OrderDetailNav from "@/components/order/OrderdetailsNav";
+import CompanyDetails from "@/components/Settings/companyDetails/companyDetails";
+import BillingAndInvioce from "@/components/Settings/BillingAndInvioceInfo";
+import Warehouse from "@/components/Settings/Warehouse/Warehouse";
+import Modal from "@/components/Modal";
 import classes from "./index.module.css";
-import AddNewWarehouseForm from "@/app/components/Settings/Warehouse/AddNewWarehouseForm";
-import Shipping from "@/app/components/Settings/Shipping/Shipping";
-import UserAndPermission from "@/app/components/Settings/UserAndPermission/UserAndPermssion";
-import Category from "@/app/components/Settings/Category/Category";
+import AddNewWarehouseForm from "@/components/Settings/Warehouse/AddNewWarehouseForm";
+import Shipping from "@/components/Settings/Shipping/Shipping";
+import UserAndPermission from "@/components/Settings/UserAndPermission/UserAndPermssion";
+import Category from "@/components/Settings/Category/Category";
 
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
