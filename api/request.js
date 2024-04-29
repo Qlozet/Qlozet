@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "./urls";
-import { toastError } from "../utils/toast";
+// import { toastError } from "../utils/toast";
 import { getToken } from "../utils/localstorage";
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -23,7 +23,7 @@ export const getRequest = async (url) => {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
       if (error.response.status === 401) {
-        toastError("Unauthotized! Re-login to continue");
+        // toastError("Unauthotized! Re-login to continue");
         deleteData();
         window.location.href = "/login";
         // return error.response.data;
@@ -35,24 +35,34 @@ export const getRequest = async (url) => {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      toastError("Error in request");
+      // toastError("Error in request");
     } else {
       // Something happened in setting up the request that triggered an Error
-      toastError("Error in request");
+      // toastError("Error in request");
     }
   }
 };
 
 export const postRequest = async (url, data) => {
+  let userData;
+  let token = getToken();
+  let response;
   try {
-    const userData = JSON.parse(getToken());
-    let response;
-    if (userData !== null) {
+    if (token) {
+      userData = JSON.parse(token);
       response = await axiosInstance.post(url, data, {
-        headers: { Authorization: `Bearer ${userData?.token}` },
+        headers: {
+          Authorization: `Bearer ${userData?.token}`,
+          "Content-Type": "multipart/form-data",
+        },
       });
     } else {
-      response = await axiosInstance.post(url, data);
+      response = await axiosInstance.post(url, data, {
+        headers: {
+          Authorization: `Bearer ${userData?.token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
     }
     return response.data;
   } catch (error) {
@@ -65,7 +75,7 @@ export const postRequest = async (url, data) => {
       console.log(error.response.status);
       console.log(error.response.headers);
       if (error.response.status === 401) {
-        toastError("Unauthotized! Re-login to continue");
+        // toastError("Unauthotized! Re-login to continue");
         deleteData();
         window.location.href = "/login";
         return;
@@ -77,10 +87,10 @@ export const postRequest = async (url, data) => {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      toastError("Error in request");
+      // toastError("Error in request");
     } else {
       // Something happened in setting up the request that triggered an Error
-      toastError("Error in request");
+      // toastError("Error in request");
     }
   }
 };
@@ -104,7 +114,7 @@ export const patchRequest = async (url, data) => {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
       if (error.response.status === 401) {
-        toastError("Error in request");
+        // toastError("Error in request");
         deleteData();
         window.location.href = "/login";
         return;
@@ -117,11 +127,11 @@ export const patchRequest = async (url, data) => {
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
       console.log(error.request);
-      toastError("Error in request");
+      // toastError("Error in request");
     } else {
       // Something happened in setting up the request that triggered an Error
       console.log("Error", error.message);
-      toastError("Error in request");
+      // toastError("Error in request");
     }
   }
 };

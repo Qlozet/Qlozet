@@ -14,11 +14,116 @@ import Step1 from "@/app/components/SignUpStep/Step1";
 import Step2 from "@/app/components/SignUpStep/step2";
 import Step3 from "@/app/components/SignUpStep/Step3";
 import Step5 from "@/app/components/SignUpStep/Step5";
-
+import { validator } from "@/utils/helper";
+import { postRequest } from "@/api/request";
+import Step4 from "@/app/components/SignUpStep/Step4";
 const SignUp = () => {
-  const [step, setStep] = useState(1);
-
   const router = useRouter();
+  const [step, setStep] = useState(1);
+  const [businessLogo, setBusinessLogo] = useState("");
+  const [businessFiles, setBusinessFiles] = useState("");
+
+  const [businessInfo, setBusinessInfo] = useState({
+    businessName: "",
+    businessEmail: "",
+    businessPhoneNumber: "",
+    businessAddress: "",
+  });
+  const [personalInfo, setPersonalInfo] = useState({
+    personalName: "",
+    phoneName: "",
+    nationalIdentityNumber: "",
+  });
+
+  const [passwordInfo, setPasswordInfo] = useState({
+    password: "",
+    confirmPassword: "",
+  });
+
+  const [requiredFormData, setrequiredFormData] = useState({
+    businessName: false,
+    businessEmail: false,
+    businessPhoneNumber: false,
+    businessAddress: false,
+    personalName: false,
+    phoneName: false,
+    nationalIdentityNumber: false,
+    password: false,
+    confirmPassword: false,
+  });
+
+  const handleBusinessInfo = () => {
+    const { status, data, id } = validator(businessInfo, requiredFormData);
+    if (status) {
+      setStep(step + 1);
+    } else {
+      setrequiredFormData((prevData) => {
+        return { prevData, ...data };
+      });
+    }
+  };
+
+  const handlePersonalInfo = () => {
+    const { status, data, id } = validator(personalInfo, requiredFormData);
+    if (status) {
+      setStep(step + 1);
+    } else {
+      setrequiredFormData((prevData) => {
+        return { prevData, ...data };
+      });
+    }
+  };
+
+  const handleSelectLogo = (file) => {
+    setBusinessLogo(file[0]);
+  };
+
+  const handleSelectFile = (files) => {
+    setBusinessFiles(files[0]);
+  };
+
+  const handleSubmit = async () => {
+    const { status, data, id } = validator(passwordInfo, requiredFormData);
+    if (status) {
+      const formData = new FormData();
+      formData.append("businessName", businessInfo.businessName);
+      formData.append("businessEmail", businessInfo.businessEmail);
+      formData.append("businessPhoneNumber", businessInfo.businessPhoneNumber);
+      formData.append("businessAddress", businessInfo.businessAddress);
+      formData.append("personalName", personalInfo.personalName);
+      formData.append("personalPhoneNumber", personalInfo.personalPhoneNumber);
+      formData.append(
+        "nationalIdentityNumber",
+        personalInfo.nationalIdentityNumber
+      );
+      formData.append("password", passwordInfo.password);
+      formData.append("confirmPassword", passwordInfo.confirmPassword);
+      formData.append("cacDocument", businessFiles);
+      formData.append("businessLogo", businessLogo);
+      const response = await postRequest(`/vendor/signup`, formData);
+      // const response = await postRequest(`/vendor/signup`, {
+      //   businessName: businessInfo.businessName,
+      //   businessEmail: businessInfo.businessEmail,
+      //   businessPhoneNumber: businessInfo.businessEmail,
+      //   businessAddress: businessInfo.businessAddress,
+      //   personalName: personalInfo.personalName,
+      //   personalPhoneNumber: personalInfo.personalPhoneNumber,
+      //   nationalIdentityNumber: personalInfo.nationalIdentityNumber,
+      //   cacDocumentUrl:
+      //     "https://plus.unsplash.com/premium_photo-1713803863170-436be4feb510?q=80&w=1888&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      //   businessLogoUrl:
+      //     "https://plus.unsplash.com/premium_photo-1713803863170-436be4feb510?q=80&w=1888&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      //   password: passwordInfo.password,
+      //   confirmPassword: passwordInfo.confirmPassword,
+      // });
+      console.log(response);
+    } else {
+      setrequiredFormData((prevData) => {
+        return { prevData, ...data };
+      });
+    }
+  };
+
   return (
     <section
       className={`${classes.section} w-full bg-white p-4 flex items-center justify-center `}
@@ -26,14 +131,19 @@ const SignUp = () => {
       <div className={`${classes.container} flex gap-8 max-w-7xl `}>
         {step === 1 && (
           <div className={`${classes.first_Container} max-w-lg	`}>
-            <Step1 />
+            <Step1
+              formData={businessInfo}
+              setFormData={setBusinessInfo}
+              setRequiredFormData={setrequiredFormData}
+              requiredFormData={requiredFormData}
+            />
             <div className="mt-10">
               <Button
                 children="Continue"
                 btnSize="large"
                 variant="primary"
                 clickHandler={() => {
-                  setStep(step + 1);
+                  handleBusinessInfo();
                 }}
               />
             </div>
@@ -41,14 +151,19 @@ const SignUp = () => {
         )}
         {step === 2 && (
           <div className={`${classes.first_Container} max-w-lg	`}>
-            <Step2 />
+            <Step2
+              formData={personalInfo}
+              setFormData={setPersonalInfo}
+              requiredData={requiredFormData}
+              setRequiredData={setrequiredFormData}
+            />
             <div className="mt-10">
               <Button
                 children="Continue"
                 btnSize="large"
                 variant="primary"
                 clickHandler={() => {
-                  setStep(step + 1);
+                  handlePersonalInfo();
                 }}
               />
             </div>
@@ -56,7 +171,7 @@ const SignUp = () => {
         )}
         {step === 3 && (
           <div className={`${classes.first_Container} max-w-lg	`}>
-            <Step3 />
+            <Step3 handleSelect={handleSelectFile} />
             <div className="mt-10">
               <Button
                 children="Continue"
@@ -71,7 +186,7 @@ const SignUp = () => {
         )}
         {step === 4 && (
           <div className={`${classes.first_Container} max-w-lg	`}>
-            <Step3 />
+            <Step4 handleSelect={handleSelectLogo} />
             <div className="mt-10">
               <Button
                 children="Continue"
@@ -84,16 +199,22 @@ const SignUp = () => {
             </div>
           </div>
         )}
+
         {step === 5 && (
           <div className={`${classes.first_Container} max-w-lg	`}>
-            <Step5 />
+            <Step5
+              formData={passwordInfo}
+              setFormData={setPasswordInfo}
+              setRequiredData={setrequiredFormData}
+              requiredData={requiredFormData}
+            />
             <div className="mt-10">
               <Button
                 children="Submit"
                 btnSize="large"
                 variant="primary"
                 clickHandler={() => {
-                  // setStep(step + 1);
+                  handleSubmit();
                 }}
               />
             </div>

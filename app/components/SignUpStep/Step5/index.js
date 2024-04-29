@@ -8,7 +8,8 @@ import {
   handlerContainsNumber,
   handleContainsSymbolOrCharacter,
 } from "@/utils/helper";
-const Step4 = () => {
+const Step5 = ({ formData, setFormData, requiredData, setRequiredData }) => {
+  console.log(requiredData);
   const [checkPassword, setCheckPassword] = useState({
     moreThan8: false,
     containSymbol: false,
@@ -49,7 +50,7 @@ const Step4 = () => {
       });
     }
   };
-  
+
   return (
     <div>
       <Logo />
@@ -80,10 +81,40 @@ const Step4 = () => {
           label="Create password"
           setValue={(data) => {
             handleCheckPassword(data);
+            setFormData((prevData) => {
+              return { ...prevData, password: data };
+            });
+            if (data) {
+              setRequiredData((prevData) => {
+                return { ...prevData, password: false };
+              });
+            } else {
+              setRequiredData((prevData) => {
+                return { ...prevData, password: true };
+              });
+            }
           }}
+          error={requiredData.password}
         />
         <div className="mt-2">
-          <PasswordInput label="Confirm password" />
+          <PasswordInput
+            label="Confirm password"
+            setValue={(data) => {
+              setFormData((prevData) => {
+                return { ...prevData, confirmPassword: data };
+              });
+              if (data) {
+                setRequiredData((prevData) => {
+                  return { ...prevData, confirmPassword: false };
+                });
+              } else {
+                setRequiredData((prevData) => {
+                  return { ...prevData, confirmPassword: true };
+                });
+              }
+            }}
+            error={requiredData.confirmPassword}
+          />
         </div>
         <div className="mt-4">
           <PasswordValidate
@@ -108,4 +139,4 @@ const Step4 = () => {
   );
 };
 
-export default Step4;
+export default Step5;

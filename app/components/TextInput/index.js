@@ -1,5 +1,6 @@
 const TextInput = ({
   label,
+  error,
   setValue,
   value,
   rightIcon,
@@ -7,6 +8,7 @@ const TextInput = ({
   placeholder,
   disabled = false,
 }) => {
+  console.log(error);
   return (
     <div className="my-3">
       {leftIcon}
@@ -14,7 +16,9 @@ const TextInput = ({
       <input
         type="text"
         className={`py-3 px-4 w-full border-solid border-[1.5px]  text-dark placeholder-gray-200
-        focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 ${
+        focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 ${
+          error && "border-danger"
+        } border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 ${
           disabled && "border-0 bg-gray-300 cursor-not-allowed "
         } `}
         value={value}
@@ -25,6 +29,11 @@ const TextInput = ({
         }}
       ></input>
       {rightIcon}
+      {error && (
+        <p className="text-danger text-[12px] font-[400]">
+          {label} cannot be empty!
+        </p>
+      )}
     </div>
   );
 };

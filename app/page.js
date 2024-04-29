@@ -4,7 +4,7 @@ import Button from "./components/Button";
 import Typography from "./components/Typography";
 import Badge from "./components/Badge";
 import FileUploadInput from "./components/FileUploadInput";
-import UploadSingleDocInput from "./components/UploadSingleDocInput";
+import UploadSingleDocInput from "./components/UploadDocInput";
 import TextInput from "./components/TextInput";
 import ProgressBar from "./components/ProgressBar";
 import { useRouter } from "next/navigation";

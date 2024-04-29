@@ -29,7 +29,7 @@ const Wallet = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [setUpWalletWallet, setSetUpWalletWallet] = useState(false);
   const [showTransactiondetails, setShowTransactiondetails] = useState(false);
-  const [showSendMoney, setShowSendMoney] = useState(false);
+  const [showSendMoney, setShowSendMoney] = useState(true);
   const [rejectModal, setShowReject] = useState(false);
   const [total, setShowTotal] = useState(false);
   const handleShowViewDetailModal = () => {
@@ -254,7 +254,7 @@ const Wallet = () => {
           }
         ></Modal>
       )}
-      {/* {showSendMoney && (
+      {showSendMoney && (
         <Modal
           content={
             <SendMoney
@@ -264,7 +264,7 @@ const Wallet = () => {
             />
           }
         ></Modal>
-      )} */}
+      )}
       {showSendMoney && (
         <Modal
           content={

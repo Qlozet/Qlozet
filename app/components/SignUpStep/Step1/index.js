@@ -5,15 +5,14 @@ import ProgressBar from "../../ProgressBar";
 import TextInput from "../../TextInput";
 import NumberInput from "../../NumberInput";
 import classes from "./index.module.css";
+import EmailInptut from "../../EmailInput";
 
-const step1 = () => {
-  const [formData, setFormData] = useState({
-    businessName: "",
-  });
-  const [requiredData, setrequiredFormaData] = useState({
-    businessName: "",
-  });
-
+const step1 = ({
+  formData,
+  setFormData,
+  requiredFormData,
+  setRequiredFormData,
+}) => {
   return (
     <div>
       <Logo />
@@ -42,26 +41,76 @@ const step1 = () => {
               return { ...prevData, businessName: data };
             });
             if (data) {
-              setrequiredFormaData((prevData) => {
+              setRequiredFormData((prevData) => {
+                return { ...prevData, businessName: false };
+              });
+            } else {
+              setRequiredFormData((prevData) => {
                 return { ...prevData, businessName: true };
               });
             }
           }}
+          error={requiredFormData.businessName}
         />
-        <TextInput
+        <EmailInptut
+          value={formData.businessEmail}
           label="Business email "
           placeholder="Enter your business official email address"
-          setValue={(data) => {}}
+          setValue={(data) => {
+            setFormData((prevData) => {
+              return { ...prevData, businessEmail: data };
+            });
+            if (data) {
+              setRequiredFormData((prevData) => {
+                return { ...prevData, businessEmail: false };
+              });
+            } else {
+              setRequiredFormData((prevData) => {
+                return { ...prevData, businessEmail: true };
+              });
+            }
+          }}
+          error={requiredFormData.businessEmail}
         />
         <NumberInput
+          value={formData.businessPhoneNumber}
           label="Business phone number "
           placeholder="Enter your business official phone number "
-          setValue={(data) => {}}
+          setValue={(data) => {
+            setFormData((prevData) => {
+              return { ...prevData, businessPhoneNumber: data };
+            });
+            if (data) {
+              setRequiredFormData((prevData) => {
+                return { ...prevData, businessPhoneNumber: false };
+              });
+            } else {
+              setRequiredFormData((prevData) => {
+                return { ...prevData, businessPhoneNumber: true };
+              });
+            }
+          }}
+          error={requiredFormData.businessPhoneNumber}
         />
         <TextInput
+          value={formData.businessAddress}
           label="Business address"
           placeholder="Enter your business official address"
-          setValue={(data) => {}}
+          setValue={(data) => {
+            setFormData((prevData) => {
+              return { ...prevData, businessAddress: data };
+            });
+            if (data) {
+              setRequiredFormData((prevData) => {
+                return { ...prevData, businessAddress: false };
+              });
+            } else {
+              setRequiredFormData((prevData) => {
+                return { ...prevData, businessAddress: true };
+              });
+            }
+          }}
+          error={requiredFormData.businessAddress}
         />
       </div>
     </div>

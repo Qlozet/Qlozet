@@ -6,7 +6,7 @@ import NumberInput from "../../NumberInput";
 import classes from "./index.module.css";
 import UploadDocInput from "../../UploadDocInput";
 
-const Step3 = ({ handleSelect }) => {
+const Step4 = ({ handleSelect }) => {
   return (
     <div>
       <Logo />
@@ -31,11 +31,11 @@ const Step3 = ({ handleSelect }) => {
           textSize="text-[14px]"
           verticalPadding="my-4"
         >
-          Upload Business CAC document
+          Upload Business Logo
         </Typography>
         <UploadDocInput handleSelect={handleSelect} />
       </div>
     </div>
   );
 };
-export default Step3;
+export default Step4;

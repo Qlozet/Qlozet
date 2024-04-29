@@ -11,7 +11,7 @@ import closeCircle from "../../../public/assets/svg/close-circle.svg";
 import Button from "../Button";
 import classes from "./index.module.css";
 
-function UploadSingleDocInput() {
+function UploadDocInput({handleSelect}) {
   // state
   const [showDropDown, setShowDropDown] = useState(false);
   const [files, setFiles] = useState([]);
@@ -21,11 +21,13 @@ function UploadSingleDocInput() {
   };
   const removeFile = (fileIndex) => {
     files.filter((file, index) => index !== fileIndex);
+    handleSelect(files.filter((file, index) => index !== fileIndex));
     setFiles(files.filter((file, index) => index !== fileIndex));
   };
 
   const onDrop = useCallback((acceptedFiles) => {
     setFiles((prevData) => {
+      handleSelect([...prevData, acceptedFiles[0]]);
       return [...prevData, acceptedFiles[0]];
     });
   }, []);
@@ -173,4 +175,4 @@ function UploadSingleDocInput() {
   );
 }
 
-export default UploadSingleDocInput;
+export default UploadDocInput;
