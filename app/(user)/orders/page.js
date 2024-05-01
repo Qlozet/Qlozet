@@ -136,6 +136,7 @@ const Order = () => {
       <div className="w-full p-4">
         <DasboardNavWithOutSearch
           addSearch={true}
+          name="Orders"
           setValue={(data) => {
             // console.log(data);
           }}

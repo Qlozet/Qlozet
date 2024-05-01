@@ -14,6 +14,7 @@ import validator from "@/utils/validator";
 import { postRequest } from "@/api/request";
 const SignIn = () => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ businessEmail: "", password: "" });
   const [requiredFormData, setReqiuredFormData] = useState({
     businessEmail: false,
@@ -23,12 +24,19 @@ const SignIn = () => {
   const handleLogin = async () => {
     const { status, data, id } = validator(formData, requiredFormData);
     if (status) {
-      console.log(formData);
-      const response = await postRequest(`/vendor/login`, {
-        businessEmail: formData.businessEmail,
-        password: formData.password,
-      });
-      console.log(response);
+      try {
+        setIsLoading(false);
+        const response = await postRequest(`/vendor/login`, {
+          businessEmail: formData.businessEmail,
+          password: formData.password,
+        });
+        console.log(response);
+        if (response) {
+          setIsLoading(true);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     } else {
       setReqiuredFormData((prevData) => {
         return { prevData, ...data };
@@ -115,6 +123,7 @@ const SignIn = () => {
               </div>
               <div className="mt-10">
                 <Button
+                  loading={isLoading}
                   children="Sign In"
                   btnSize="large"
                   variant="primary"

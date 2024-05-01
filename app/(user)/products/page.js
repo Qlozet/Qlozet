@@ -108,6 +108,7 @@ const Products = () => {
       </div>
       <div className="w-full p-4">
         <DasboardNavWithOutSearch
+          name="Products"
           addSearch={true}
           setValue={(data) => {
             // console.log(data);
@@ -175,7 +176,7 @@ const Products = () => {
               textWeight="font-bold"
               textSize="text-[18px]"
             >
-              Customers
+              Products
             </Typography>
             <div className="">
               <DropDown

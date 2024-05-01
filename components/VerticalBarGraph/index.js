@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import VendorCountLine from "../VendorCountLine";
 import VerticalBar from "../VerticalBar";
+import Typography from "../Typography";
 
 const VerticalBarGraph = () => {
   const [data, setData] = useState([
@@ -19,6 +20,15 @@ const VerticalBarGraph = () => {
 
   return (
     <div className="relative">
+      <div className="flex my-4">
+        <Typography
+          textColor="text-black"
+          textWeight="font-bold"
+          textSize="text-[16px]"
+        >
+          Total order count
+        </Typography>
+      </div>
       <div>
         <VendorCountLine value={"11,000"} />
         <VendorCountLine value={"10,000"} />

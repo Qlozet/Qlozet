@@ -96,7 +96,7 @@ const SideBar = ({ active }) => {
     setShowLogOutModal(false);
   };
   return (
-    <div className=" bg-white h-full">
+    <div className="hidden md:block bg-white h-full">
       <div className="py-10 px-16">
         <Logo />
       </div>

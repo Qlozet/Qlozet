@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Button from "@//components/Button";
 import Logo from "@//components/Logo";
 import TextInput from "@//components/TextInput";
@@ -8,17 +9,28 @@ import classes from "./index.module.css";
 import validator from "@/utils/validator";
 import { postRequest } from "@/api/request";
 const Page = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({ businessEmail: "" });
+  const [isLoading, setIsloading] = useState(false);
   const [reqiuredFormData, setRequiredFormData] = useState({
     businessEmail: false,
   });
   const submitEmail = async () => {
     const { status, data, id } = validator(formData, reqiuredFormData);
     if (status) {
-      const response = await postRequest(`/vendor/forgot-password`, {
-        businessEmail: formData.businessEmail,
-      });
-      console.log(response);
+      setIsloading(true);
+      try {
+        const response = await postRequest(`/vendor/forgot-password`, {
+          businessEmail: formData.businessEmail,
+        });
+        console.log(response);
+        if (response) {
+          router.push("/auth/createnewpassword");
+        }
+        setIsloading(false);
+      } catch (error) {
+        console.log(error);
+      }
     } else {
       setRequiredFormData((prevData) => {
         return { prevData, ...data };
@@ -65,6 +77,7 @@ const Page = () => {
           />
           <div className="my-[3rem]">
             <Button
+              loading={isLoading}
               children="Send password reset link"
               btnSize="large"
               variant="primary"

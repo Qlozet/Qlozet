@@ -22,6 +22,7 @@ const SignUp = () => {
   const [step, setStep] = useState(1);
   const [businessLogo, setBusinessLogo] = useState("");
   const [businessFiles, setBusinessFiles] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [businessInfo, setBusinessInfo] = useState({
     businessName: "",
@@ -83,30 +84,44 @@ const SignUp = () => {
   };
 
   const handleSubmit = async () => {
-    console.log("clicked");
     const { status, data, id } = validator(passwordInfo, requiredFormData);
-    if (status) {
-      const formData = new FormData();
-      formData.append("businessName", businessInfo.businessName);
-      formData.append("businessEmail", businessInfo.businessEmail);
-      formData.append("businessPhoneNumber", businessInfo.businessPhoneNumber);
-      formData.append("businessAddress", businessInfo.businessAddress);
-      formData.append("personalName", personalInfo.personalName);
-      formData.append("personalPhoneNumber", personalInfo.personalPhoneNumber);
-      formData.append(
-        "nationalIdentityNumber",
-        personalInfo.nationalIdentityNumber
-      );
-      formData.append("password", passwordInfo.password);
-      formData.append("confirmPassword", passwordInfo.confirmPassword);
-      formData.append("cacDocument", businessFiles);
-      formData.append("businessLogo", businessLogo);
-      const response = await postRequest(`/vendor/signup`, formData, true);
-      console.log(response);
-    } else {
-      setrequiredFormData((prevData) => {
-        return { prevData, ...data };
-      });
+    try {
+      if (status) {
+        setIsLoading(true);
+        const formData = new FormData();
+        formData.append("businessName", businessInfo.businessName);
+        formData.append("businessEmail", businessInfo.businessEmail);
+        formData.append(
+          "businessPhoneNumber",
+          businessInfo.businessPhoneNumber
+        );
+        formData.append("businessAddress", businessInfo.businessAddress);
+        formData.append("personalName", personalInfo.personalName);
+        formData.append(
+          "personalPhoneNumber",
+          personalInfo.personalPhoneNumber
+        );
+        formData.append(
+          "nationalIdentityNumber",
+          personalInfo.nationalIdentityNumber
+        );
+        formData.append("password", passwordInfo.password);
+        formData.append("confirmPassword", passwordInfo.confirmPassword);
+        formData.append("cacDocument", businessFiles);
+        formData.append("businessLogo", businessLogo);
+        console.log(formData);
+        const response = await postRequest(`/vendor/signup`, formData, true);
+        if (response) {
+          setIsLoading(false);
+        }
+        console.log(response);
+      } else {
+        setrequiredFormData((prevData) => {
+          return { prevData, ...data };
+        });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -196,6 +211,7 @@ const SignUp = () => {
             />
             <div className="mt-10">
               <Button
+                loading={isLoading}
                 children="Submit"
                 btnSize="large"
                 variant="primary"

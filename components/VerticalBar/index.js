@@ -13,7 +13,7 @@ const VerticalBar = ({ date, value, per, color, highest }) => {
           }}
           className={`${per} ${
             highest ? "bg-primary" : "bg-primary-200"
-          } rounded-t-[36px] w-[36px] relative`}
+          } rounded-t-[36px] md:w-[36px] relative w-[20px]`}
         >
           <div className="absolute top-[-3.5rem] left-[-10px] font-[400] text-[14px] text-[#495057] bg-[#495057] text-white p-2 rounded-[12px] w-[60px] flex items-center justify-center">
             {value}

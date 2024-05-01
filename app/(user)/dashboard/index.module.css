@@ -3,5 +3,15 @@
 }
 
 .second_container {
-  width: 33%;
+  width: 34%;
+}
+
+@media (max-width: 768px) {
+  .first_container {
+    width: 100%;
+  }
+
+  .second_container {
+    width: 100%;
+  }
 }

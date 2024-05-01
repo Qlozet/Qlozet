@@ -14,6 +14,7 @@ import {
   handlerContainsNumber,
 } from "@/utils/helper";
 const Page = () => {
+  const [isLoading, setRequesLoading] = useState(false);
   const [checkPassword, setCheckPassword] = useState({
     moreThan8: false,
     containSymbol: false,
@@ -72,12 +73,14 @@ const Page = () => {
   const handleSubmit = async () => {
     const { status, data, id } = validator(formData, requiredFormData);
     if (status) {
+      setRequesLoading(true);
       const response = await postRequest(`/vendor/forgot-password`, {
         resetCode: formData.resetCode,
         newPassword: formData.newPassword,
         confirmPassword: formData.confirmPassword,
       });
       console.log(response);
+      setRequesLoading(false);
     } else {
       setRequiredFormData((prevData) => {
         return { prevData, ...data };
@@ -211,6 +214,7 @@ const Page = () => {
               children="Create new password"
               btnSize="large"
               variant="primary"
+              loading={isLoading}
               clickHandler={() => {
                 handleSubmit();
               }}

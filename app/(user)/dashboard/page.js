@@ -94,7 +94,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="flex bg-[#F8F9FA]">
+    <div className="flex bg-[#F8F9FA] w-full">
       <div className="">
         <SideBar active="Dashboard" />
       </div>
@@ -104,9 +104,10 @@ const Dashboard = () => {
           setValue={(data) => {
             // console.log(data);
           }}
+          name="Dashboard"
         />
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 overflow-x-scroll">
           <DashboardTopCard
             name="Total Vendors"
             total="10000"
@@ -159,7 +160,7 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-            <div className="">
+            <div className="hidden md:block">
               <DropDown
                 placeholder={"Vendor’s status"}
                 value={dropDownValue}
@@ -170,11 +171,11 @@ const Dashboard = () => {
               />
             </div>
           </div>
-          <div className="flex items-center w-full gap-4 z-0">
+          <div className="block md:flex items-center w-full gap-4 z-0 border-solid solid-[1px] border-primary">
             <div
-              className={`${classes.first_container} flex items-center gap-4 mt-4`}
+              className={`${classes.first_container} block md:flex items-center gap-4 mt-4 w-full`}
             >
-              <div className="w-1/2">
+              <div className="md:w-1/2 w-full">
                 <ChatCard
                   text="Vendors by gender"
                   graph={
@@ -182,7 +183,7 @@ const Dashboard = () => {
                   }
                 />
               </div>
-              <div className="w-1/2">
+              <div className="md:w-1/2  w-full mt-4 md:mt-0">
                 <ChatCard
                   text="Vendors by top location"
                   graph={<HorizontalChat data={data} />}
@@ -190,7 +191,7 @@ const Dashboard = () => {
               </div>
             </div>
             <div
-              className={`${classes.second_container} flex items-center mt-4`}
+              className={`${classes.second_container} block md:flex items-center mt-4`}
             >
               <div className="w-full flex items-center">
                 <ChatCard
@@ -201,21 +202,19 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="flex items-center w-full gap-4 z-0 mt-4">
+          <div className="block md:flex w-full gap-4 z-0 mt-4 md:h-[32rem] h-[33rem]">
             <div
-              className={`${classes.first_container} flex items-center gap-4 mt-4 w-full`}
+              className={`${classes.first_container} flex gap-4 mt-3 w-full `}
             >
-              <div className="w-full shadow-md bg-white rounded-[12px] p-6 ">
+              <div className="w-full shadow-md bg-white rounded-[12px] p-6">
                 <VerticalBarGraph />
               </div>
             </div>
 
-            <div
-              className={`${classes.second_container} flex items-center mt-4`}
-            >
-              <div className="w-full flex items-center gap-4 mt-3">
+            <div className={`${classes.second_container} flex  mt-4`}>
+              <div className="bg-white rounded-[12px] w-full flex gap-4 h-full ">
                 {
-                  <div className="order-list shadow-md bg-white rounded-[12px] p-6 text-dark overflow-auto w-full ">
+                  <div className="p-3 text-dark overflow-auto w-full">
                     <RecentOrder orders={orders} />
                   </div>
                 }

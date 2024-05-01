@@ -8,6 +8,7 @@ const Button = ({
   clickHandler,
   maxWidth,
   minWidth,
+  loading,
   ...rest
 }) => {
   let variantClasses = "";
@@ -48,10 +49,10 @@ const Button = ({
     <button
       className={`py-2  flex items-center justify-center gap-4 rounded-[12px] ${minWidth} ${maxWidth} ${variantClasses} ${sizeClasses} text-[14px]`}
       {...rest}
-      disabled={disabled}
+      disabled={disabled || (loading && true)}
       onClick={clickHandler}
     >
-      {children}
+      {!loading ? children : "Loading..."}
     </button>
   );
 };

@@ -17,6 +17,7 @@
   }
 
   .sub_container {
+    width: 95%;
     background-image: url("../../../public//assets/image/verificationbg.jpg");
     background-size: contain;
   }
