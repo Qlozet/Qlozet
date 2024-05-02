@@ -3,9 +3,20 @@ import Logo from "@//components/Logo";
 import classes from "./index.module.css";
 import Typography from "@//components/Typography";
 import { useRouter } from "next/navigation";
+import { getRequest } from "@/api/request";
+import { useEffect } from "react";
 
-const Verication = () => {
+const Verication = ({ params }) => {
+  
+  console.log(params);
   const router = useRouter();
+  const verifyCode = async () => {
+    const response = await getRequest("/vendor/verify");
+  };
+
+  useEffect(() => {
+    verifyCode();
+  });
   return (
     <section
       className={` w-full h-screen p-4 flex justify-center bg-[#F8F9FA]`}

@@ -1,5 +1,5 @@
 import "./globals.css";
-
+import ToastProvider from "@/components/ToastComponent";
 import { Poppins } from "next/font/google";
 const poppins = Poppins({
   subsets: ["latin"],
@@ -13,7 +13,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={poppins.className}>{children}</body>
+      <body className={poppins.className}>
+        <ToastProvider>{children}</ToastProvider>
+      </body>
+
+      {/* <Toaster /> */}
     </html>
   );
 }

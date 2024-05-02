@@ -111,8 +111,9 @@ const SignUp = () => {
         formData.append("businessLogo", businessLogo);
         console.log(formData);
         const response = await postRequest(`/vendor/signup`, formData, true);
-        if (response) {
+        if (response.success) {
           setIsLoading(false);
+          alert(response.message)
         }
         console.log(response);
       } else {

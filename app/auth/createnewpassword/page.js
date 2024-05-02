@@ -9,11 +9,13 @@ import PasswordInput from "@//components/PasswordInput";
 import PasswordValidate from "@//components/PasswordValidation";
 import validator from "@/utils/validator";
 import { postRequest } from "@/api/request";
+import { useRouter } from "next/navigation";
 import {
   handleContainsSymbolOrCharacter,
   handlerContainsNumber,
 } from "@/utils/helper";
 const Page = () => {
+  const router = useRouter();
   const [isLoading, setRequesLoading] = useState(false);
   const [checkPassword, setCheckPassword] = useState({
     moreThan8: false,
@@ -74,12 +76,15 @@ const Page = () => {
     const { status, data, id } = validator(formData, requiredFormData);
     if (status) {
       setRequesLoading(true);
-      const response = await postRequest(`/vendor/forgot-password`, {
+      const response = await postRequest(`/vendor/reset-password`, {
         resetCode: formData.resetCode,
         newPassword: formData.newPassword,
         confirmPassword: formData.confirmPassword,
       });
       console.log(response);
+      if (response.success) {
+        router.push("/auth/login");
+      }
       setRequesLoading(false);
     } else {
       setRequiredFormData((prevData) => {

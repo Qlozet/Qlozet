@@ -1,8 +1,31 @@
-import Logo from "@/app/components/Logo";
+"use client";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import Logo from "@/components/Logo";
 import classes from "./index.module.css";
-import Typography from "@/app/components/Typography";
+import Typography from "@/components/Typography";
+import { getRequest } from "@/api/request";
+import { useRouter } from "next/navigation";
+const Verication = ({ params }) => {
+  toast("🦄 Wow so easy!", {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+  });
+  const router = useRouter();
+  // toast("Here is your toast.");
+  const verifyAccount = async () => {
+    const response = await getRequest(`/vendor/verify/${params.userid}`);
+  };
+  useEffect(() => {
+    verifyAccount();
+  }, []);
 
-const Verication = () => {
   return (
     <section
       className={` w-full h-screen p-4 flex justify-center bg-[#F8F9FA]`}
@@ -35,6 +58,16 @@ const Verication = () => {
               will be communicated to you via the email you provided within the
               next 48 hours.
             </Typography>
+            <div>
+              <p
+                className="text-primary font-[500] text-[14px] center cursor-pointer"
+                onClick={() => {
+                  router.push("/auth/signin");
+                }}
+              >
+                Return to login
+              </p>
+            </div>
           </div>
         </div>
       </div>

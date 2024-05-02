@@ -7,10 +7,12 @@ const axiosInstance = axios.create({
 });
 
 export const getRequest = async (url) => {
+  let userData;
+  let token = getToken();
+  let response;
   try {
-    const userData = JSON.parse(getToken());
-    let response;
-    if (userData !== null) {
+    if (token) {
+      userData = JSON.parse(token);
       response = await axiosInstance.get(url, {
         headers: { Authorization: `Bearer ${userData?.token}` },
       });
