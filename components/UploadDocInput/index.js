@@ -95,9 +95,9 @@ function UploadDocInput({ handleSelect }) {
               return (
                 <div
                   key={index}
-                  className="relative bg-gray-300 flex items-center justify-between py-2 px-5 rounded-[8px] mt-1"
+                  className="relative bg-gray-300 flex items-center justify-between py-2 px-5 rounded-[8px] mt-1 text-black"
                 >
-                  <p className="font-bold text-[16px] pt-[3px] h-[30px]  overflow-hidden text-ellipsis">
+                  <p className="font-bold text-[16px] pt-[3px] h-[30px]  overflow-hidden text-ellipsis text-black">
                     {item.name}
                   </p>
                   <div
