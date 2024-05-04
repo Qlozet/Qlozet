@@ -11,7 +11,7 @@ import closeCircle from "../../public/assets/svg/close-circle.svg";
 import Button from "../Button";
 import classes from "./index.module.css";
 
-function UploadDocInput({handleSelect}) {
+function UploadDocInput({ handleSelect }) {
   // state
   const [showDropDown, setShowDropDown] = useState(false);
   const [files, setFiles] = useState([]);
@@ -54,26 +54,36 @@ function UploadDocInput({handleSelect}) {
             <Image src={dropdownIcon} alt=""></Image>
           </span>
           {showDropDown && (
-            <div className={`absolute left-0 top-[100%] w-full cursor-pointer`}>
+            <div
+              className={`absolute left-0 top-[100%] w-full cursor-pointer text-black`}
+            >
               <div
-                className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid text-[16px]"
+                className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid text-[16px] text-black"
                 onClick={open}
               >
                 <Image src={deviceIcon} alt=""></Image>
-                <span className="text-gray-100 font-bold ">From Device</span>
+                <span className="text-gray-100 font-bold text-black">
+                  From Device
+                </span>
               </div>
               <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid">
                 <Image src={driveIcon} alt=""></Image>
-                <span className="text-gray-100 font-bold ">From Drive</span>
+                <span className="text-gray-100 font-bold text-black">
+                  From Drive
+                </span>
               </div>
               <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid">
                 <Image src={dropboxIcon} alt=""></Image>
-                <span className="text-gray-100 font-bold ">From Dropbox</span>
+                <span className="text-gray-100 font-bold text-black">
+                  From Dropbox
+                </span>
               </div>
 
               <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 rounded-b-lg border-t-[2px] border-white border-solid">
                 <Image src={fomLinkIcon} alt=""></Image>
-                <span className="text-gray-100 font-bold">From Link</span>
+                <span className="text-gray-100 font-bold text-black">
+                  From Link
+                </span>
               </div>
             </div>
           )}
