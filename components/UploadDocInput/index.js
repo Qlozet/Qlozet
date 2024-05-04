@@ -39,7 +39,7 @@ function UploadDocInput({ handleSelect }) {
 
   return (
     <div
-      className="border-[1.5px] border-dashed border-gray-200 py-14 rounded-[8px] px-6"
+      className="border-[1.5px] border-dashed border-gray-200 py-14 rounded-[8px] px-6 text-black"
       {...getRootProps()}
     >
       {files.length < 1 ? (
