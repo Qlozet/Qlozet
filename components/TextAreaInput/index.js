@@ -10,7 +10,7 @@ const TextArea = ({
   return (
     <div className="my-3">
       {leftIcon}
-      <label className="text-[14px] font-light my-2"> {label}</label>
+      <label className="text-[14px] font-light my-2 text-black"> {label}</label>
       <textarea
         type="text"
         className={`py-3 px-4 w-full border-solid border-[1.5px]  
