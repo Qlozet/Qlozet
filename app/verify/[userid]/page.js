@@ -20,13 +20,17 @@ const Verication = ({ params }) => {
   const router = useRouter();
   // toast("Here is your toast.");
   const verifyAccount = async () => {
-    const response = await getRequest(`/vendor/verify/${params.userid}`);
-    console.log(response);
+    try {
+      const response = await getRequest(`/vendor/verify/${params.userid}`);
+      alert(response);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   };
   useEffect(() => {
     verifyAccount();
   }, []);
-
   return (
     <section
       className={` w-full h-screen p-4 flex justify-center bg-[#F8F9FA]`}
