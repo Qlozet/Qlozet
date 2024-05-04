@@ -16,7 +16,7 @@ const PasswordInput = ({
   return (
     <div className="my-3 relative">
       {leftIcon}
-      <label className="text-[14px] font-light my-2"> {label}</label>
+      <label className="text-[14px] font-light my-2 text-dark"> {label}</label>
       <input
         type={showPassword ? "text" : "password"}
         className={`py-3 px-4 w-full border-solid border-[1.5px]  

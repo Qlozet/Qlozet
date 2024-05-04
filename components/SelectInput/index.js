@@ -13,7 +13,7 @@ const SelectInput = ({ value, placeholder, setValue, data, label }) => {
           setShowDropDown(true);
         }}
       >
-        <label className="text-[14px]">{label}</label>
+        <label className="text-[14px] text-dark">{label}</label>
         <input
           placeholder={placeholder}
           value={value}
