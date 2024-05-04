@@ -21,6 +21,7 @@ const Verication = ({ params }) => {
   // toast("Here is your toast.");
   const verifyAccount = async () => {
     const response = await getRequest(`/vendor/verify/${params.userid}`);
+    console.log(response);
   };
   useEffect(() => {
     verifyAccount();

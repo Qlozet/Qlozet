@@ -1,7 +1,7 @@
 "use client";
-import Logo from "@//components/Logo";
+import Logo from "@/components/Logo";
 import classes from "./index.module.css";
-import Typography from "@//components/Typography";
+import Typography from "@/components/Typography";
 import { useRouter } from "next/navigation";
 import { getRequest } from "@/api/request";
 import { useEffect } from "react";

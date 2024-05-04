@@ -1,6 +1,6 @@
-import Logo from "@/app/components/Logo";
+import Logo from "@/components/Logo";
 import classes from "./index.module.css";
-import Typography from "@/app/components/Typography";
+import Typography from "@/components/Typography";
 
 const Page = () => {
   return (
