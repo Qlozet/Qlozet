@@ -19,10 +19,10 @@ const Toast = ({ type, text }) => {
 
      border-[1px] border-solid rounded-[12px] gap-6`}
     >
-      {type === "danger" && <Image src={errorIcon} />}
-      {type === "success" && <Image src={successIcon} />}
-      {type === "warning" && <Image src={warningIcon} />}
-      {type === "notify" && <Image src={notification} />}
+      {type === "danger" && <Image src={errorIcon} alt="" />}
+      {type === "success" && <Image src={successIcon} alt="" />}
+      {type === "warning" && <Image src={warningIcon} alt="" />}
+      {type === "notify" && <Image src={notification} alt="" />}
 
       {text}
     </div>

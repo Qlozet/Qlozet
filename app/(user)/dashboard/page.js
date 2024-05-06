@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ChatCard from "@/components/Chat/ChatCard";
 import HorizontalChat from "@/components/Chat/HorizontalChart";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
@@ -15,9 +15,13 @@ import VerticalBarGraph from "@/components/VerticalBarGraph";
 import Typography from "@/components/Typography";
 import Image from "next/image";
 import RecentOrder from "@/components/RecentOrder";
-
+import { getRequest } from "@/api/request";
+import { getToken } from "@/utils/localstorage";
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
+  const [totalCustomer, setTotalCustomer] = useState("0");
+  const [totalVendor, setTotalVendor] = useState("0");
+  // const [totalCustomer, setTotalCustomer] = useState("0");
 
   const data = [
     {
@@ -93,8 +97,31 @@ const Dashboard = () => {
     },
   ];
 
+  const getTotalCustomers = async () => {
+    try {
+      const response = await getRequest(
+        "/vendor/customers/total-customers-sold-to"
+      );
+      setTotalCustomer(response.data.totalCount);
+    } catch (error) {}
+  };
+  const getLocationWithHighestCustomer = async () => {
+    try {
+      const response = await getRequest(
+        "/vendor/customers/highest-customers-by-location"
+      );
+      setTotalCustomer(response.data.totalCount);
+      console.log(response);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getLocationWithHighestCustomer();
+    getTotalCustomers();
+  }, []);
+
   return (
-    <div className="flex bg-[#F8F9FA] w-full">
+    <div className="flex bg-[#F8F9FA] w-full h-full">
       <div className="">
         <SideBar active="Dashboard" />
       </div>
@@ -110,7 +137,7 @@ const Dashboard = () => {
         <div className="flex items-center gap-4 overflow-x-scroll">
           <DashboardTopCard
             name="Total Vendors"
-            total="10000"
+            total={totalCustomer}
             percentage="2.5"
             bgColor="bg-[#57CAEB]"
             link="link"
@@ -134,7 +161,7 @@ const Dashboard = () => {
             addMaxWidth={true}
           />
         </div>
-        <div>
+        <div className=" bg-[#F8F9FA]">
           <div className="flex items-center justify-between mb-2 mt-4">
             <div className="bg-[#FFF7DE] px-12 py-2 rounded-[12px] flex items-center gap-6">
               <div>
@@ -179,7 +206,7 @@ const Dashboard = () => {
                 <ChatCard
                   text="Vendors by gender"
                   graph={
-                    <DonutChart data={chartData} width={"285"} height={"285"} />
+                    <DonutChart data={chartData} width={"200"} height={"200"} />
                   }
                 />
               </div>
@@ -214,7 +241,7 @@ const Dashboard = () => {
             <div className={`${classes.second_container} flex  mt-4`}>
               <div className="bg-white rounded-[12px] w-full flex gap-4 h-full ">
                 {
-                  <div className="p-3 text-dark overflow-auto w-full">
+                  <div className="p-3 text-dark w-full">
                     <RecentOrder orders={orders} />
                   </div>
                 }

@@ -8,6 +8,8 @@ import Typography from "@//components/Typography";
 import classes from "./index.module.css";
 import validator from "@/utils/validator";
 import { postRequest } from "@/api/request";
+import toast from "react-hot-toast";
+import Toast from "@/components/ToastComponent/toast";
 const Page = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({ businessEmail: "" });
@@ -24,12 +26,16 @@ const Page = () => {
           businessEmail: formData.businessEmail,
         });
         console.log(response);
-        if (response) {
+        if (response.success) {
+          toast(<Toast text={response.message} type="success" />);
           router.push("/auth/createnewpassword");
+        } else {
+          toast(<Toast text={response.message} type="danger" />);
         }
         setIsloading(false);
       } catch (error) {
         console.log(error);
+        toast(<Toast text={response.message} type="danger" />);
       }
     } else {
       setRequiredFormData((prevData) => {

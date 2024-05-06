@@ -113,7 +113,7 @@ const SignUp = () => {
           // toast.success(response.message);
         } else {
           setIsLoading(true);
-          toast(<Toast text={response.message} type="error" />);
+          toast(<Toast text={response.message} type="dander" />);
         }
         console.log(response);
       } else {

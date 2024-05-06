@@ -8,7 +8,6 @@ const TextInput = ({
   placeholder,
   disabled = false,
 }) => {
-  console.log(error);
   return (
     <div className="my-3">
       {leftIcon}

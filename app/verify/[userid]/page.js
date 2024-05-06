@@ -18,7 +18,7 @@ const Verication = ({ params }) => {
         toast(<Toast text={response.message} type="success" />);
         setLoading(false);
       } else {
-        // toast(<Toast text={response.message} type="danger" />);
+        toast(<Toast text={response.message} type="danger" />);
       }
     } catch (error) {
       toast(<Toast text={error.message} type="danger" />);

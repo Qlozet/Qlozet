@@ -16,6 +16,7 @@ const DonutChart = ({ data, width, height }) => {
 
       chartInstance = new Chart(ctx, {
         type: "doughnut",
+
         data: {
           datasets: [
             {
@@ -26,9 +27,12 @@ const DonutChart = ({ data, width, height }) => {
           ],
         },
         options: {
-          cutoutPercentage: 50,
+          cutout: 55,
           responsive: true,
           maintainAspectRatio: false,
+          borderWidth: 0,
+          weight: "10px",
+
           plugins: {
             legend: {
               position: "bottom", // Change the position of the labels (e.g., 'top', 'bottom', 'left', 'right')
@@ -53,7 +57,7 @@ const DonutChart = ({ data, width, height }) => {
 
   return (
     <div>
-      <div>
+      <div className="">
         <canvas ref={chartRef} width={width} height={height}></canvas>
       </div>
     </div>

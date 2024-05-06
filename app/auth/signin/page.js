@@ -12,6 +12,9 @@ import { useRouter } from "next/navigation";
 import EmailInptut from "@//components/EmailInput";
 import validator from "@/utils/validator";
 import { postRequest } from "@/api/request";
+import toast from "react-hot-toast";
+import Toast from "@/components/ToastComponent/toast";
+import { setToken } from "@/utils/localstorage";
 const SignIn = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -25,17 +28,23 @@ const SignIn = () => {
     const { status, data, id } = validator(formData, requiredFormData);
     if (status) {
       try {
-        setIsLoading(false);
+        setIsLoading(true);
         const response = await postRequest(`/vendor/login`, {
           businessEmail: formData.businessEmail,
           password: formData.password,
         });
-        console.log(response);
-        if (response) {
-          setIsLoading(true);
+        response && setIsLoading(false);
+
+        if (response.data.success === true) {
+          setToken(JSON.stringify(response.data));
+          // router.push("/dashboard");
+          toast(<Toast text={response.message} type="success" />);
+        } else {
+          toast(<Toast text={response.message} type="danger" />);
         }
       } catch (error) {
-        console.log(error);
+        setIsLoading(false);
+        toast(<Toast text={error.message} type="error" />);
       }
     } else {
       setReqiuredFormData((prevData) => {

@@ -1,10 +1,10 @@
 import HorizontalChatBar from "../HorizontalChatBar";
 const HorizontalChat = ({ data }) => {
   return (
-    <div>
+    <div className="h-[200px] ">
       {data.map((item, index) => {
         return (
-          <div className="mt-8" key={index}>
+          <div className={`${index !== 0 && "mt-8"}`} key={index}>
             <HorizontalChatBar
               text={item.location}
               total={item.total}

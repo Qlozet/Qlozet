@@ -10,6 +10,8 @@ import PasswordValidate from "@//components/PasswordValidation";
 import validator from "@/utils/validator";
 import { postRequest } from "@/api/request";
 import { useRouter } from "next/navigation";
+import Toast from "@/components/ToastComponent/toast";
+import toast from "react-hot-toast";
 import {
   handleContainsSymbolOrCharacter,
   handlerContainsNumber,
@@ -75,17 +77,25 @@ const Page = () => {
   const handleSubmit = async () => {
     const { status, data, id } = validator(formData, requiredFormData);
     if (status) {
-      setRequesLoading(true);
-      const response = await postRequest(`/vendor/reset-password`, {
-        resetCode: formData.resetCode,
-        newPassword: formData.newPassword,
-        confirmPassword: formData.confirmPassword,
-      });
-      console.log(response);
-      if (response.success) {
-        router.push("/auth/login");
+      try {
+        setRequesLoading(true);
+        const response = await postRequest(`/vendor/reset-password`, {
+          resetCode: formData.resetCode,
+          newPassword: formData.newPassword,
+          confirmPassword: formData.confirmPassword,
+        });
+        response && setRequesLoading(false);
+        console.log(response);
+        if (response.success) {
+          toast(<Toast text={response.message} type="success" />);
+          router.push("/auth/signin");
+        } else {
+          toast(<Toast text={response.message} type="danger" />);
+        }
+      } catch (error) {
+        console.log(error);
+        toast(<Toast text={error.message} type="danger" />);
       }
-      setRequesLoading(false);
     } else {
       setRequiredFormData((prevData) => {
         return { prevData, ...data };

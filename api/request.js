@@ -14,8 +14,9 @@ export const getRequest = async (url) => {
     if (token) {
       userData = JSON.parse(token);
       response = await axiosInstance.get(url, {
-        headers: { Authorization: `Bearer ${userData?.token}` },
+        headers: { Authorization: `Bearer ${userData.token}` },
       });
+      return response;
     } else {
       response = await axiosInstance.get(url);
     }
@@ -84,7 +85,7 @@ export const postRequest = async (url, data, fileAvailable) => {
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
-      console.log(error.response.data);
+      return error.response.data;
       // alert(error.response.data.data ?? error);
       console.log(error.response.status);
       console.log(error.response.headers);
