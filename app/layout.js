@@ -1,5 +1,6 @@
 import "./globals.css";
-import ToastProvider from "@/components/ToastComponent";
+import { Toaster } from "react-hot-toast";
+// import ToastProvider from "@/components/ToastComponent";
 import { Poppins } from "next/font/google";
 const poppins = Poppins({
   subsets: ["latin"],
@@ -14,10 +15,25 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={poppins.className}>
-        <ToastProvider>{children}</ToastProvider>
+        {/* <ToastProvider></ToastProvider> */}
+        {children}
+        <Toaster
+          toastOptions={{
+            duration: 4000,
+            style: {
+              padding: "0",
+              borderRadius: "0",
+              margin: "0",
+              gap: "0",
+              top: "0",
+              right: "0",
+              bottom: "0",
+              left: "0",
+              boxShadow: "none",
+            },
+          }}
+        />
       </body>
-
-      {/* <Toaster /> */}
     </html>
   );
 }

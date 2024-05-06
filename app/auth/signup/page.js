@@ -2,14 +2,10 @@
 import { useState } from "react";
 import signupImage from "../../../public/assets/svg/signupImage.svg";
 import Image from "next/image";
-import Logo from "@/components/Logo";
-import Typography from "@/components/Typography";
-import ProgressBar from "@/components/ProgressBar";
-import TextInput from "@/components/TextInput";
+import { toast } from "react-hot-toast";
 import Button from "@/components/Button";
 import classes from "./index.module.css";
 import { useRouter } from "next/navigation";
-import NumberInput from "@/components/NumberInput";
 import Step1 from "@/components/SignUpStep/Step1";
 import Step2 from "@/components/SignUpStep/step2";
 import Step3 from "@/components/SignUpStep/Step3";
@@ -17,6 +13,7 @@ import Step5 from "@/components/SignUpStep/Step5";
 import { validator } from "@/utils/helper";
 import { postRequest } from "@/api/request";
 import Step4 from "@/components/SignUpStep/Step4";
+import Toast from "@/components/ToastComponent/toast";
 const SignUp = () => {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -109,11 +106,14 @@ const SignUp = () => {
         formData.append("confirmPassword", passwordInfo.confirmPassword);
         formData.append("cacDocument", businessFiles);
         formData.append("businessLogo", businessLogo);
-        console.log(formData);
         const response = await postRequest(`/vendor/signup`, formData, true);
         if (response.success) {
           setIsLoading(false);
-          alert(response.message)
+          toast(<Toast text={response.message} type="success" />);
+          // toast.success(response.message);
+        } else {
+          setIsLoading(true);
+          toast(<Toast text={response.message} type="error" />);
         }
         console.log(response);
       } else {
@@ -122,7 +122,7 @@ const SignUp = () => {
         });
       }
     } catch (error) {
-      console.log(error);
+      toast.success("Error", error);
     }
   };
 

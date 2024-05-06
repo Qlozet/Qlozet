@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+
+import Toast from "@/components/ToastComponent/toast";
 // import Image from "next/image";
 // import Button from "./components/Button";
 // import Typography from "./components/Typography";
@@ -28,6 +30,7 @@ import { useState } from "react";
 // import RejectOrderModal from "./components/order/RejectOrderModal";
 // import Notification from "./components/Notification/NotificationComponent";
 // import CheckBoxInput from "./components/CheckboxInput";
+import toast from "react-hot-toast";
 export default function Home() {
   const [dropDownValue, setDropDownValue] = useState("");
 
@@ -77,7 +80,14 @@ export default function Home() {
 
   return (
     <main className="bg-white w-full h-[100vh] p-20">
-      <h1>Homepage</h1>
+      <h1
+        className="cursor-pointer"
+        onClick={() => {
+          toast(<Toast text={"Hello man"} type="notify" />);
+        }}
+      >
+        Homepage
+      </h1>
 
       <h1>Components</h1>
     </main>
