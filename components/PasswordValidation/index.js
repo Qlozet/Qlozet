@@ -10,7 +10,7 @@ const PasswordValidate = ({ checked, text }) => {
           ></div>
         )}
       </div>
-      <p className="font-[400] text-[12px]">{text}</p>
+      <p className="font-[400] text-[12px] text-dark">{text}</p>
     </div>
   );
 };

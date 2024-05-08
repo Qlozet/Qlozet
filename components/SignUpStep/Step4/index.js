@@ -20,6 +20,7 @@ const Step4 = ({ handleSelect }) => {
           textWeight="font-normal"
           textSize="text-[14px]"
           verticalPadding="my-2"
+          textColor="text-dark"
         >
           Please fill in the information below to register as a vendor
         </Typography>
@@ -28,6 +29,7 @@ const Step4 = ({ handleSelect }) => {
           textWeight="font-bold"
           textSize="text-[14px]"
           verticalPadding="my-4"
+          textColor="text-dark"
         >
           Upload Business Logo
         </Typography>

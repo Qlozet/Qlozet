@@ -66,6 +66,7 @@ const Step5 = ({ formData, setFormData, requiredData, setRequiredData }) => {
           textWeight="font-normal"
           textSize="text-[14px]"
           verticalPadding="my-2"
+          textColor="text-dark"
         >
           Please fill in the information below to register as a vendor
         </Typography>
@@ -73,6 +74,7 @@ const Step5 = ({ formData, setFormData, requiredData, setRequiredData }) => {
           textWeight="font-bold"
           textSize="text-[14px]"
           verticalPadding="my-4"
+          textColor="text-dark"
         >
           Create password to secure your account
         </Typography>

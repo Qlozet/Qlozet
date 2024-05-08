@@ -16,7 +16,7 @@ const DasboardNavWithOutSearch = ({
   return (
     <div className="flex items-center justify-between bg-white border-[#DDE2E5] border-solid border-[1.5px] py-2 px-6 rounded-[12px]">
       <Typography
-        textColor="text-black"
+        textColor="text-dark"
         textWeight="font-bold"
         textSize="text-[18px]"
       >
@@ -49,7 +49,7 @@ const DasboardNavWithOutSearch = ({
             <Image alt="" src={notificationIcon} />
           </div>
           <Typography
-            textColor="text-black"
+            textColor="text-dark"
             textWeight="font-normal"
             textSize="text-[16px]"
           >
