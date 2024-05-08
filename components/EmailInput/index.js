@@ -12,7 +12,7 @@ const EmailInptut = ({
   return (
     <div className="my-3">
       {leftIcon}
-      <label className="text-[14px] font-light my-2"> {label}</label>
+      <label className="text-[14px] font-light my-2 text-dark"> {label}</label>
       <input
         type="email"
         className={`py-3 px-4 w-full border-solid border-[1.5px]  text-dark placeholder-gray-200
