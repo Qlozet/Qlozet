@@ -28,6 +28,7 @@ const Step3 = ({ handleSelect }) => {
           textWeight="font-bold"
           textSize="text-[14px]"
           verticalPadding="my-4"
+          textColor="text-dark"
         >
           Upload Business CAC document
         </Typography>

@@ -62,28 +62,20 @@ function UploadDocInput({ handleSelect }) {
                 onClick={open}
               >
                 <Image src={deviceIcon} alt=""></Image>
-                <span className="text-gray-100 font-bold text-black">
-                  From Device
-                </span>
+                <span className="text-gray-100 font-bold ">From Device</span>
               </div>
               <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid">
                 <Image src={driveIcon} alt=""></Image>
-                <span className="text-gray-100 font-bold text-black">
-                  From Drive
-                </span>
+                <span className="text-gray-100 font-bold ">From Drive</span>
               </div>
               <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid">
                 <Image src={dropboxIcon} alt=""></Image>
-                <span className="text-gray-100 font-bold text-black">
-                  From Dropbox
-                </span>
+                <span className="text-gray-100 font-bold ">From Dropbox</span>
               </div>
 
               <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 rounded-b-lg border-t-[2px] border-white border-solid">
                 <Image src={fomLinkIcon} alt=""></Image>
-                <span className="text-gray-100 font-bold text-black">
-                  From Link
-                </span>
+                <span className="text-gray-100 font-bold ">From Link</span>
               </div>
             </div>
           )}
@@ -95,9 +87,9 @@ function UploadDocInput({ handleSelect }) {
               return (
                 <div
                   key={index}
-                  className="relative bg-gray-300 flex items-center justify-between py-2 px-5 rounded-[8px] mt-1 text-black"
+                  className="relative bg-gray-300 flex items-center justify-between py-2 px-5 rounded-[8px] mt-1 "
                 >
-                  <p className="font-bold text-[16px] pt-[3px] h-[30px]  overflow-hidden text-ellipsis text-black">
+                  <p className="font-bold text-[16px] pt-[3px] h-[30px]  overflow-hidden text-ellipsis text-dark">
                     {item.name}
                   </p>
                   <div
@@ -170,13 +162,15 @@ function UploadDocInput({ handleSelect }) {
 
       <input {...getInputProps()} />
       {isDragActive ? (
-        <p className="text-center font-[700] text-[14px]">
+        <p className="text-center font-[700] text-[14px] text-dark">
           Drop the files here ...
         </p>
       ) : (
         <div>
-          <p className="text-center font-[700] text-[14px]">You can also</p>
-          <p className="text-center font-[700] text-[14px]">
+          <p className="text-center font-[700] text-[14px]  text-dark">
+            You can also
+          </p>
+          <p className="text-center font-[700] text-[14px]  text-dark">
             Drag and drop your file here
           </p>
         </div>
