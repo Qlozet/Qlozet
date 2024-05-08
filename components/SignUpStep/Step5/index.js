@@ -81,6 +81,7 @@ const Step5 = ({ formData, setFormData, requiredData, setRequiredData }) => {
         <ProgressBar step={5} />
         <PasswordInput
           label="Create password"
+          placeholder="*********"
           setValue={(data) => {
             handleCheckPassword(data);
             setFormData((prevData) => {
@@ -100,6 +101,7 @@ const Step5 = ({ formData, setFormData, requiredData, setRequiredData }) => {
         />
         <div className="mt-2">
           <PasswordInput
+            placeholder="*********"
             label="Confirm password"
             setValue={(data) => {
               setFormData((prevData) => {
