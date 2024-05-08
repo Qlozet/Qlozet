@@ -133,7 +133,7 @@ const SignUp = () => {
 
   return (
     <section
-      className={`${classes.section} w-full bg-white p-4 flex items-center justify-center `}
+      className={`${classes.section} w-full bg-white p-4 flex items-center justify-center h-full overflow-y-scroll`}
     >
       <div className={`${classes.container} flex gap-8 max-w-7xl `}>
         {step === 1 && (
@@ -164,7 +164,12 @@ const SignUp = () => {
           <div className={`${classes.first_Container} max-w-lg	`}>
             <Logo />
             <div className="mt-12">
-              <Image src={previousIcon} alt="" onClick={backHandler} />
+              <Image
+                src={previousIcon}
+                alt=""
+                onClick={backHandler}
+                className="cursor-pointer"
+              />
             </div>
             <Step2
               formData={personalInfo}
@@ -188,7 +193,12 @@ const SignUp = () => {
           <div className={`${classes.first_Container} max-w-lg	`}>
             <Logo />
             <div className="mt-12">
-              <Image src={previousIcon} alt="" onClick={backHandler} />
+              <Image
+                src={previousIcon}
+                alt=""
+                onClick={backHandler}
+                className="cursor-pointer"
+              />
             </div>
             <Step3 handleSelect={handleSelectFile} />
             <div className="mt-10">
@@ -207,7 +217,12 @@ const SignUp = () => {
           <div className={`${classes.first_Container} max-w-lg	`}>
             <Logo />
             <div className="mt-12">
-              <Image src={previousIcon} alt="" onClick={backHandler} />
+              <Image
+                src={previousIcon}
+                alt=""
+                onClick={backHandler}
+                className="cursor-pointer"
+              />
             </div>
             <Step4 handleSelect={handleSelectLogo} />
             <div className="mt-10">
@@ -227,7 +242,12 @@ const SignUp = () => {
           <div className={`${classes.first_Container} max-w-lg	`}>
             <Logo />
             <div className="mt-12">
-              <Image src={previousIcon} alt="" onClick={backHandler} />
+              <Image
+                src={previousIcon}
+                alt=""
+                onClick={backHandler}
+                className="cursor-pointer"
+              />
             </div>
             <Step5
               formData={passwordInfo}
