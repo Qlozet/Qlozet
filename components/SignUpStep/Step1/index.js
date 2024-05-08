@@ -6,7 +6,7 @@ import TextInput from "../../TextInput";
 import NumberInput from "../../NumberInput";
 import classes from "./index.module.css";
 import EmailInptut from "../../EmailInput";
-
+import Image from "next/image";
 const step1 = ({
   formData,
   setFormData,
@@ -15,8 +15,8 @@ const step1 = ({
 }) => {
   return (
     <div>
-      <Logo />
-      <div className="mt-16">
+    
+      <div className="mt-4">
         <Typography
           textColor="text-primary"
           textWeight="font-bold"

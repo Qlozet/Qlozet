@@ -5,12 +5,10 @@ import TextInput from "../../TextInput";
 import NumberInput from "../../NumberInput";
 import classes from "./index.module.css";
 import Button from "../../Button";
-
 const Step2 = ({ formData, setFormData, requiredData, setRequiredData }) => {
   return (
     <div>
-      <Logo />
-      <div className="mt-16">
+      <div className="mt-4">
         <Typography
           textColor="text-primary"
           textWeight="font-bold"

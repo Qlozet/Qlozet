@@ -14,6 +14,9 @@ import { validator } from "@/utils/helper";
 import { postRequest } from "@/api/request";
 import Step4 from "@/components/SignUpStep/Step4";
 import Toast from "@/components/ToastComponent/toast";
+import Logo from "@/components/Logo";
+import previousIcon from "../../../public/assets/svg/previousicon.svg";
+
 const SignUp = () => {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -79,7 +82,9 @@ const SignUp = () => {
   const handleSelectFile = (files) => {
     setBusinessFiles(files[0]);
   };
-
+  const backHandler = () => {
+    setStep(step - 1);
+  };
   const handleSubmit = async () => {
     const { status, data, id } = validator(passwordInfo, requiredFormData);
     try {
@@ -133,6 +138,10 @@ const SignUp = () => {
       <div className={`${classes.container} flex gap-8 max-w-7xl `}>
         {step === 1 && (
           <div className={`${classes.first_Container} max-w-lg	`}>
+            <Logo />
+            <div className="mt-12">
+              {/* <Image src={previousIcon} alt="" onClick={backHandler} /> */}
+            </div>
             <Step1
               formData={businessInfo}
               setFormData={setBusinessInfo}
@@ -153,6 +162,10 @@ const SignUp = () => {
         )}
         {step === 2 && (
           <div className={`${classes.first_Container} max-w-lg	`}>
+            <Logo />
+            <div className="mt-12">
+              <Image src={previousIcon} alt="" onClick={backHandler} />
+            </div>
             <Step2
               formData={personalInfo}
               setFormData={setPersonalInfo}
@@ -173,6 +186,10 @@ const SignUp = () => {
         )}
         {step === 3 && (
           <div className={`${classes.first_Container} max-w-lg	`}>
+            <Logo />
+            <div className="mt-12">
+              <Image src={previousIcon} alt="" onClick={backHandler} />
+            </div>
             <Step3 handleSelect={handleSelectFile} />
             <div className="mt-10">
               <Button
@@ -188,6 +205,10 @@ const SignUp = () => {
         )}
         {step === 4 && (
           <div className={`${classes.first_Container} max-w-lg	`}>
+            <Logo />
+            <div className="mt-12">
+              <Image src={previousIcon} alt="" onClick={backHandler} />
+            </div>
             <Step4 handleSelect={handleSelectLogo} />
             <div className="mt-10">
               <Button
@@ -204,6 +225,10 @@ const SignUp = () => {
 
         {step === 5 && (
           <div className={`${classes.first_Container} max-w-lg	`}>
+            <Logo />
+            <div className="mt-12">
+              <Image src={previousIcon} alt="" onClick={backHandler} />
+            </div>
             <Step5
               formData={passwordInfo}
               setFormData={setPasswordInfo}

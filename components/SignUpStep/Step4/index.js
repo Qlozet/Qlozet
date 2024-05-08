@@ -3,12 +3,10 @@ import Typography from "../../Typography";
 import ProgressBar from "../../ProgressBar";
 import classes from "./index.module.css";
 import UploadDocInput from "../../UploadDocInput";
-
 const Step4 = ({ handleSelect }) => {
   return (
     <div>
-      <Logo />
-      <div className="mt-16">
+      <div className="mt-4">
         <Typography
           textColor="text-primary"
           textWeight="font-bold"
