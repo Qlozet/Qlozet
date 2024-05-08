@@ -20,6 +20,7 @@ const Step3 = ({ handleSelect }) => {
           textWeight="font-normal"
           textSize="text-[14px]"
           verticalPadding="my-2"
+          textColor="text-dark"
         >
           Please fill in the information below to register as a vendor
         </Typography>

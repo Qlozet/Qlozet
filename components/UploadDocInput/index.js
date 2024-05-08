@@ -116,7 +116,7 @@ function UploadDocInput({ handleSelect }) {
               onClick={showdropDownHandler}
             >
               <p className="text-dark font-medium px-4 flex  ">
-                <span className="h-[30px] flex items-center overflow-hidden truncate ">
+                <span className="h-[30px] flex items-center overflow-hidden truncate text-dark">
                   {" "}
                   Add more file
                 </span>
