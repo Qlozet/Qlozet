@@ -42,8 +42,9 @@ const WalletTable = ({ data, viewDetails, showRejectModal }) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((item) => (
+          {data.map((item, index) => (
             <WalletTableItem
+              key={index}
               {...item}
               viewDetails={viewDetails}
               showRejectModal={showRejectModal}

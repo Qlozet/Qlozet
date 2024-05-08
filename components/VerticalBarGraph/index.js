@@ -45,7 +45,6 @@ const VerticalBarGraph = () => {
       </div>
       <div className="absolute right-0 bottom-[9px] w-[94%] h-[96%] flex justify-between px-10">
         {data.map((item) => {
-          console.log(item);
           return (
             <VerticalBar
               highest={item.value == itemWithHighestValue.value ? true : false}

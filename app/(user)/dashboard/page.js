@@ -21,6 +21,7 @@ const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [totalCustomer, setTotalCustomer] = useState("0");
   const [totalVendor, setTotalVendor] = useState("0");
+  const [customerLocation, setCustomerLocation] = useState("");
   // const [totalCustomer, setTotalCustomer] = useState("0");
 
   const data = [
@@ -99,25 +100,27 @@ const Dashboard = () => {
 
   const getTotalCustomers = async () => {
     try {
-      const response = await getRequest(
+      const custmerResponse = await getRequest(
         "/vendor/customers/total-customers-sold-to"
       );
-      setTotalCustomer(response.data.totalCount);
+      console.log(custmerResponse.data.totalCount);
+      setTotalCustomer(custmerResponse.data.totalCount);
     } catch (error) {}
   };
+
   const getLocationWithHighestCustomer = async () => {
     try {
       const response = await getRequest(
         "/vendor/customers/highest-customers-by-location"
       );
-      setTotalCustomer(response.data.totalCount);
-      console.log(response);
+      setCustomerLocation(response.data.totalCount);
+      console.log(response.data);
     } catch (error) {}
   };
 
   useEffect(() => {
-    getLocationWithHighestCustomer();
     getTotalCustomers();
+    getLocationWithHighestCustomer();
   }, []);
 
   return (

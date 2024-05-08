@@ -14,35 +14,18 @@ export const getRequest = async (url) => {
     if (token) {
       userData = JSON.parse(token);
       response = await axiosInstance.get(url, {
-        headers: { Authorization: `Bearer ${userData.token}` },
+        headers: { Authorization: `Bearer ${userData?.token}` },
       });
       return response;
     } else {
       response = await axiosInstance.get(url);
+      return response.data;
     }
-    return response.data;
   } catch (error) {
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      if (error.response.status === 401) {
-        // toastError("Unauthotized! Re-login to continue");
-        deleteData();
-        window.location.href = "/login";
-        // return error.response.data;
-      }
-      if (error.response.data) {
-        return error.response.data;
-      }
-    } else if (error.request) {
-      // The request was made but no response was received
-      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-      // http.ClientRequest in node.js
-      // toastError("Error in request");
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      // toastError("Error in request");
-    }
+    console.log(error.response);
+    return error.response;
+    // The request was made and the server responded with a status code
+    // that falls out of the range of 2xx
   }
 };
 

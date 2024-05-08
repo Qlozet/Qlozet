@@ -1,26 +1,16 @@
 "use client";
-import { useState } from "react";
-import ChatCard from "@/components/Chat/ChatCard";
-import HorizontalChat from "@/components/Chat/HorizontalChart";
+import { useState, useEffect } from "react";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import DashboardTopCard from "@/components/DashboardTopCard";
 import SideBar from "@/components/SideBar";
-import classes from "./index.module.css";
-import DonutChart from "@/components/Chat/DoughnutChat";
 import DropDown from "@/components/DropDown";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import Typography from "@/components/Typography";
 import OrderTable from "@/components/order/OrderTable";
 import Modal from "@/components/Modal";
-import SetTotalOrderPerDay from "@/components/SetTotalItemPerDayForm";
-import OrderDetails from "@/components/order/OrderDetails";
-import TrackOrder from "@/components/order/TrackOrders";
-import RejectOrderModal from "@/components/order/RejectOrderModal";
-import CustomerDetails from "@/components/order/CustomerDetails";
 import Button from "@/components/Button";
 import WalletTable from "@/components/Wallet/WalletTable";
-import RequestCategoryForm from "@/components/Settings/Category/RequestANewProductcategoryForm";
 import SetUpAltireWallet from "@/components/Wallet/SetUpAltireWallet";
 import TransactionDetails from "@/components/Wallet/TransactionDetails";
 import SendMoney from "@/components/Wallet/SendMoney";
@@ -29,9 +19,10 @@ const Wallet = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [setUpWalletWallet, setSetUpWalletWallet] = useState(false);
   const [showTransactiondetails, setShowTransactiondetails] = useState(false);
-  const [showSendMoney, setShowSendMoney] = useState(true);
+  const [showSendMoney, setShowSendMoney] = useState(false);
   const [rejectModal, setShowReject] = useState(false);
   const [total, setShowTotal] = useState(false);
+  const [wallet, setWallet] = useState("");
   const handleShowViewDetailModal = () => {
     setOrderDetails(true);
   };
@@ -145,6 +136,17 @@ const Wallet = () => {
       },
     },
   ];
+  const getWalletBalance = async () => {
+    try {
+      const response = await getRequest("/api/vendor/wallet/balance");
+      console.log(response);
+      setTotalCustomer(response.data.totalCount);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getWalletBalance();
+  }, []);
 
   return (
     <div className="flex bg-[#F8F9FA]">
@@ -161,7 +163,7 @@ const Wallet = () => {
         <div className="flex justify-between">
           <div className="flex items-center gap-4">
             <DashboardTopCard
-              name="Total Vendors"
+              name="Wallet Balance"
               total="10000"
               percentage="2.5"
               bgColor="bg-[#57CAEB]"
@@ -170,7 +172,7 @@ const Wallet = () => {
               addMaxWidth={true}
             />
             <DashboardTopCard
-              name="Achieved Vendors"
+              name="Total Amount Received"
               total="10000"
               percentage="2.5"
               bgColor="bg-[#5DDAB4]"
