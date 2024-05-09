@@ -252,7 +252,7 @@ const Order = () => {
           />
         </div>
         <div className="">
-          <div className="my-4">
+          <div className="my-4 block md:hidden">
             <UpdateComponent />
           </div>
           <div>

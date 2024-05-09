@@ -12,6 +12,7 @@ import CustomerDetails from "@/components/order/CustomerDetails";
 import OrderHistory from "@/components/Customer/OrderHistory";
 import CustomerTable from "@/components/Customer/CustomerTable";
 import DonutChart from "@/components/Chat/DoughnutChat";
+import classes from "./index.module.css";
 const Products = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [viewCustomerDetails, setCustomerDetails] = useState(false);
