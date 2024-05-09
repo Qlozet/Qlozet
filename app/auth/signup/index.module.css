@@ -1,5 +1,4 @@
 .section {
-  display: flex;
   align-items: center;
   padding: 2rem;
 }
@@ -18,8 +17,9 @@
 
 @media (max-width: 768px) {
   .section {
-    height: 100vh;
     border: "1px solid red";
+    padding: 0;
+    background-image: url("https://buffer.com/library/content/images/2023/10/free-images.jpg");
   }
 
   .container {
@@ -27,7 +27,11 @@
     height: 100%;
     margin: 0 auto;
     padding: 0 0rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
+
   .first_Container {
     width: 100%;
   }

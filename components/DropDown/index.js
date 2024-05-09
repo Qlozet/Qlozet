@@ -9,10 +9,10 @@ const DropDown = ({ value, placeholder, setValue, data }) => {
     <div
       className={`bg-white max-w-48 ${
         showDropDown ? "shadow-2xl" : ""
-      } z-50 rounded-lg`}
+      } z-50 rounded-lg block`}
     >
       <div
-        className={`${classes.container} relative border-solid ${
+        className={`${classes.container} border-solid ${
           showDropDown ? "rounded-t-lg  border-b-0" : "rounded-[12px]"
         } border-[1px]  border-gray-200 overflow-hidden`}
         onClick={() => {
@@ -31,7 +31,7 @@ const DropDown = ({ value, placeholder, setValue, data }) => {
       </div>
       {showDropDown && (
         <div
-          className={`fixed top-[343px] right-[16px] z-10 bg-white translate-y-[-42px] min-w-[169px] cursor-pointer border-x-[1px] border-solid border-gray-200 border-b-[1px] ${
+          className={`absolute top-[343px] z-10 bg-white translate-y-[-42px] min-w-[160px] cursor-pointer border-x-[1px] border-solid border-gray-200 border-b-[1px] ${
             showDropDown && "rounded-b-lg overflow-hidden"
           } `}
         >

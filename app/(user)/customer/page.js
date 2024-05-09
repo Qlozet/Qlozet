@@ -130,7 +130,7 @@ const Customer = () => {
             addMaxWidth={true}
           />
         </div>
-        <div className="relative">
+        <div className="">
           <div className="flex items-center justify-between mt-14 mb-2 ">
             <Typography
               textColor="text-dark"
@@ -139,7 +139,7 @@ const Customer = () => {
             >
               Customers
             </Typography>
-            <div className="">
+            {/* <div className="">
               <DropDown
                 placeholder={"Filter by"}
                 value={dropDownValue}
@@ -147,8 +147,8 @@ const Customer = () => {
                   setDropDownValue(data);
                 }}
                 data={dropdownData}
-              />
-            </div>
+              /> 
+              </div>*/}
           </div>
 
           <CustomerTable data={tableData} showModal={showModal} />

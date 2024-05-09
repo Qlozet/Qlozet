@@ -13,7 +13,7 @@ const TextArea = ({
       <label className="text-[14px] font-light my-2 text-dark"> {label}</label>
       <textarea
         type="text"
-        className={`py-3 px-4 w-full border-solid border-[1.5px]  
+        className={`py-3 px-4 w-full border-solid border-[1.5px]   text-dark placeholder:text-gray-200
           focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 ${
             disabled && "border-0 bg-gray-300 cursor-not-allowed min-h-[130px]"
           } `}

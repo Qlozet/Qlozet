@@ -25,14 +25,14 @@ const CustomerDetails = ({ topNavData, closeModal }) => {
         <div>
           <div className="flex items-center py-3 gap-10 border-t-[1px] border-solid border-gray-200 ">
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-normal"
               textSize="text-[14px]"
             >
               Amasi Queen Shirt
             </Typography>
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-bold"
               textSize="text-[14px]"
             >
@@ -41,14 +41,14 @@ const CustomerDetails = ({ topNavData, closeModal }) => {
           </div>
           <div className="flex items-center py-3 gap-10 border-t-[1px] border-solid border-gray-200 ">
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-normal"
               textSize="text-[14px]"
             >
               Amasi Queen Shirt
             </Typography>
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-bold"
               textSize="text-[14px]"
             >
@@ -57,14 +57,14 @@ const CustomerDetails = ({ topNavData, closeModal }) => {
           </div>
           <div className="flex items-center py-3 gap-10 border-t-[1px] border-solid border-gray-200 ">
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-normal"
               textSize="text-[14px]"
             >
               Amasi Queen Shirt
             </Typography>
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-bold"
               textSize="text-[14px]"
             >
@@ -73,14 +73,14 @@ const CustomerDetails = ({ topNavData, closeModal }) => {
           </div>
           <div className="flex items-center py-3 gap-10 border-t-[1px] border-solid border-gray-200 ">
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-normal"
               textSize="text-[14px]"
             >
               Amasi Queen Shirt
             </Typography>
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-bold"
               textSize="text-[14px]"
             >

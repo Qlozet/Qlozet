@@ -11,7 +11,7 @@ const SetTotalOrderPerDay = ({ closeModal }) => {
         <div>
           <div className="flex items-center justify-between">
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-[500]"
               textSize="text-[14px]"
             >
@@ -24,7 +24,7 @@ const SetTotalOrderPerDay = ({ closeModal }) => {
           <div></div>
           <div className="border-dashed border-gray-200 border-t-[1px] mt-4 pt-6">
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-[300]"
               textSize="text-[14px]"
             >

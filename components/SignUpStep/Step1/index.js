@@ -15,8 +15,7 @@ const step1 = ({
 }) => {
   return (
     <div>
-    
-      <div className="mt-4">
+      <div className="mt-4 mx-4  md:mx-0 pt-5 px-2 p md:px-0 ">
         <Typography
           textColor="text-primary"
           textWeight="font-bold"

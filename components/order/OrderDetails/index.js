@@ -21,7 +21,7 @@ const OrderDetails = ({ topNavData, closeModal }) => {
           />
         </div>
         <Typography
-          textColor="text-black"
+          textColor="text-dark"
           textWeight="font-bold"
           textSize="text-[18px]"
         >
@@ -38,14 +38,14 @@ const OrderDetails = ({ topNavData, closeModal }) => {
         <div className="flex justify-between items-center py-4">
           <div>
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-bold"
               textSize="text-[14px]"
             >
               Ship Order
             </Typography>
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-normal"
               textSize="text-[14px]"
             >
@@ -58,14 +58,14 @@ const OrderDetails = ({ topNavData, closeModal }) => {
         <div>
           <div className="flex items-center py-3 gap-10 border-t-[1px] border-solid border-gray-200 ">
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-normal"
               textSize="text-[14px]"
             >
               Amasi Queen Shirt
             </Typography>
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-bold"
               textSize="text-[14px]"
             >
@@ -74,14 +74,14 @@ const OrderDetails = ({ topNavData, closeModal }) => {
           </div>
           <div className="flex items-center py-3 gap-10 border-t-[1px] border-solid border-gray-200 ">
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-normal"
               textSize="text-[14px]"
             >
               Amasi Queen Shirt
             </Typography>
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-bold"
               textSize="text-[14px]"
             >
@@ -90,14 +90,14 @@ const OrderDetails = ({ topNavData, closeModal }) => {
           </div>
           <div className="flex items-center py-3 gap-10 border-t-[1px] border-solid border-gray-200 ">
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-normal"
               textSize="text-[14px]"
             >
               Amasi Queen Shirt
             </Typography>
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-bold"
               textSize="text-[14px]"
             >
@@ -106,14 +106,14 @@ const OrderDetails = ({ topNavData, closeModal }) => {
           </div>
           <div className="flex items-center py-3 gap-10 border-t-[1px] border-solid border-gray-200 ">
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-normal"
               textSize="text-[14px]"
             >
               Amasi Queen Shirt
             </Typography>
             <Typography
-              textColor="text-black"
+              textColor="text-dark"
               textWeight="font-bold"
               textSize="text-[14px]"
             >

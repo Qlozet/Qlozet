@@ -16,6 +16,7 @@ import Step4 from "@/components/SignUpStep/Step4";
 import Toast from "@/components/ToastComponent/toast";
 import Logo from "@/components/Logo";
 import previousIcon from "../../../public/assets/svg/previousicon.svg";
+import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 
 const SignUp = () => {
   const router = useRouter();
@@ -133,12 +134,29 @@ const SignUp = () => {
 
   return (
     <section
-      className={`${classes.section} w-full bg-white p-4 flex items-center justify-center h-full overflow-y-scroll`}
+      className={`border-[4px] border-solid border-primary ${classes.section} w-full md:bg-white block md:flex items-center justify-center h-full overflow-y-scroll`}
     >
+      <div className="block md:hidden">
+        <DasboardNavWithOutSearch
+          addSearch={false}
+          setValue={(data) => {
+            // console.log(data);
+          }}
+          hideNav={true}
+        />
+      </div>
+      <div className="block mt-2 mb-4  md:hidden">
+        <Logo />
+      </div>
       <div className={`${classes.container} flex gap-8 max-w-7xl `}>
         {step === 1 && (
-          <div className={`${classes.first_Container} max-w-lg	`}>
-            <Logo />
+          <div
+            className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
+          >
+            <div className="hidden md:block">
+              <Logo />
+            </div>
+
             <div className="mt-12">
               {/* <Image src={previousIcon} alt="" onClick={backHandler} /> */}
             </div>
@@ -148,7 +166,7 @@ const SignUp = () => {
               setRequiredFormData={setrequiredFormData}
               requiredFormData={requiredFormData}
             />
-            <div className="mt-10">
+            <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
               <Button
                 children="Continue"
                 btnSize="large"
@@ -161,9 +179,14 @@ const SignUp = () => {
           </div>
         )}
         {step === 2 && (
-          <div className={`${classes.first_Container} max-w-lg	`}>
-            <Logo />
-            <div className="mt-12">
+          <div
+            className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
+          >
+            <div className="hidden md:block">
+              <Logo />
+            </div>
+
+            <div className="mt-12 ml-6 md:ml-0">
               <Image
                 src={previousIcon}
                 alt=""
@@ -177,7 +200,8 @@ const SignUp = () => {
               requiredData={requiredFormData}
               setRequiredData={setrequiredFormData}
             />
-            <div className="mt-10">
+            <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
+              {" "}
               <Button
                 children="Continue"
                 btnSize="large"
@@ -190,9 +214,15 @@ const SignUp = () => {
           </div>
         )}
         {step === 3 && (
-          <div className={`${classes.first_Container} max-w-lg	`}>
-            <Logo />
-            <div className="mt-12">
+          <div
+            className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
+          >
+            <div className="hidden md:block">
+              <Logo />
+            </div>
+
+            <div className="mt-12 ml-6 md:ml-0">
+              {" "}
               <Image
                 src={previousIcon}
                 alt=""
@@ -201,7 +231,8 @@ const SignUp = () => {
               />
             </div>
             <Step3 handleSelect={handleSelectFile} />
-            <div className="mt-10">
+            <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
+              {" "}
               <Button
                 children="Continue"
                 btnSize="large"
@@ -214,9 +245,14 @@ const SignUp = () => {
           </div>
         )}
         {step === 4 && (
-          <div className={`${classes.first_Container} max-w-lg	`}>
-            <Logo />
-            <div className="mt-12">
+          <div
+            className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
+          >
+            <div className="hidden md:block">
+              <Logo />
+            </div>
+            <div className="mt-12 ml-6 md:ml-0">
+              {" "}
               <Image
                 src={previousIcon}
                 alt=""
@@ -225,7 +261,8 @@ const SignUp = () => {
               />
             </div>
             <Step4 handleSelect={handleSelectLogo} />
-            <div className="mt-10">
+            <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
+              {" "}
               <Button
                 children="Continue"
                 btnSize="large"
@@ -239,9 +276,15 @@ const SignUp = () => {
         )}
 
         {step === 5 && (
-          <div className={`${classes.first_Container} max-w-lg	`}>
-            <Logo />
-            <div className="mt-12">
+          <div
+            className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
+          >
+            <div className="hidden md:block ">
+              <Logo />
+            </div>
+
+            <div className="mt-12 ml-6 md:ml-0">
+              {" "}
               <Image
                 src={previousIcon}
                 alt=""
@@ -249,13 +292,15 @@ const SignUp = () => {
                 className="cursor-pointer"
               />
             </div>
+
             <Step5
               formData={passwordInfo}
               setFormData={setPasswordInfo}
               setRequiredData={setrequiredFormData}
               requiredData={requiredFormData}
             />
-            <div className="mt-10">
+            <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
+              {" "}
               <Button
                 loading={isLoading}
                 children="Submit"
@@ -268,6 +313,7 @@ const SignUp = () => {
             </div>
           </div>
         )}
+
         <div className={`${classes.second_container} `}>
           <Image src={signupImage} alt="" />
         </div>

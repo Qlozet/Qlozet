@@ -57,7 +57,7 @@ const TrackOrder = ({ data, closeModal }) => {
                   +234 8103456789
                 </Typography>{" "}
                 <Typography
-                  textColor="text-black"
+                  textColor="text-dark"
                   textWeight="font-normal"
                   textSize="text-[14px]"
                   align="center"

@@ -169,7 +169,7 @@ const Products = () => {
             </div>
           </div>
         </div>
-        <div className="relative">
+        <div className="">
           <div className="flex items-center justify-between mt-14 mb-2 ">
             <Typography
               textColor="text-dark"
@@ -179,14 +179,14 @@ const Products = () => {
               Products
             </Typography>
             <div className="">
-              <DropDown
+              {/* <DropDown
                 placeholder={"Filter by"}
                 value={dropDownValue}
                 setValue={(data) => {
                   setDropDownValue(data);
                 }}
                 data={dropdownData}
-              />
+              /> */}
             </div>
           </div>
 

@@ -17,6 +17,8 @@ import Image from "next/image";
 import RecentOrder from "@/components/RecentOrder";
 import { getRequest } from "@/api/request";
 import { getToken } from "@/utils/localstorage";
+import MobileSideBar from "@/components/MobileSideBar";
+import Profile from "@/components/Profile.js";
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [totalCustomer, setTotalCustomer] = useState("0");
@@ -97,7 +99,7 @@ const Dashboard = () => {
       status: "Ready to Ship",
     },
   ];
-
+  const [showMobileNav, setShowMobileNav] = useState(false);
   const getTotalCustomers = async () => {
     try {
       const custmerResponse = await getRequest(
@@ -118,26 +120,38 @@ const Dashboard = () => {
     } catch (error) {}
   };
 
+  const showSideBar = () => {
+    setShowMobileNav(!showMobileNav);
+  };
+
   useEffect(() => {
     getTotalCustomers();
     getLocationWithHighestCustomer();
   }, []);
 
   return (
-    <div className="flex bg-[#F8F9FA] w-full h-full">
+    <div className="flex bg-gray-400 w-full h-full">
       <div className="">
         <SideBar active="Dashboard" />
+        {showMobileNav && (
+          <div className="md:hidden">
+            <MobileSideBar active="Dashboard" closeSideBar={showSideBar} />
+          </div>
+        )}
       </div>
-      <div className="w-full p-4">
+      <div className="w-full">
         <DasboardNavWithOutSearch
           addSearch={false}
           setValue={(data) => {
             // console.log(data);
           }}
           name="Dashboard"
+          showSideBar={showSideBar}
         />
 
-        <div className="flex items-center gap-4 overflow-x-scroll">
+        <div
+          className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4`}
+        >
           <DashboardTopCard
             name="Total Vendors"
             total={totalCustomer}
@@ -164,7 +178,7 @@ const Dashboard = () => {
             addMaxWidth={true}
           />
         </div>
-        <div className=" bg-[#F8F9FA]">
+        <div className=" bg-[#F8F9FA] px-4">
           <div className="flex items-center justify-between mb-2 mt-4">
             <div className="bg-[#FFF7DE] px-12 py-2 rounded-[12px] flex items-center gap-6">
               <div>
@@ -191,17 +205,18 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="hidden md:block">
-              <DropDown
+              
+              {/* <DropDown
                 placeholder={"Vendor’s status"}
                 value={dropDownValue}
                 setValue={(data) => {
                   setDropDownValue(data);
                 }}
                 data={dropdownData}
-              />
+              /> */}
             </div>
           </div>
-          <div className="block md:flex items-center w-full gap-4 z-0 border-solid solid-[1px] border-primary">
+          <div className="block md:flex items-center w-full gap-4 border-solid solid-[1px] border-primary z-[0]">
             <div
               className={`${classes.first_container} block md:flex items-center gap-4 mt-4 w-full`}
             >
@@ -232,11 +247,11 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="block md:flex w-full gap-4 z-0 mt-4 md:h-[32rem] h-[33rem]">
+          <div className="block md:flex w-full gap-4  mt-4 md:h-[32rem] h-[33rem]">
             <div
               className={`${classes.first_container} flex gap-4 mt-3 w-full `}
             >
-              <div className="w-full shadow-md bg-white rounded-[12px] p-6">
+              <div className="w-full shadow-md bg-white rounded-[12px] p-6 block">
                 <VerticalBarGraph />
               </div>
             </div>

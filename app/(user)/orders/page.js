@@ -172,7 +172,7 @@ const Order = () => {
             icon={customerIcon}
           />
         </div>
-        <div className="relative">
+        <div className="">
           <div className="flex items-center justify-between mt-14 mb-2 ">
             <Typography
               textColor="text-dark"
@@ -181,7 +181,7 @@ const Order = () => {
             >
               Orders
             </Typography>
-            <div className="">
+            {/* <div className="">
               <DropDown
                 placeholder={"Vendor’s status"}
                 value={dropDownValue}
@@ -190,7 +190,7 @@ const Order = () => {
                 }}
                 data={dropdownData}
               />
-            </div>
+            </div> */}
           </div>
 
           <OrderTable
