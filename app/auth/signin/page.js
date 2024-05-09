@@ -37,7 +37,8 @@ const SignIn = () => {
 
         if (response.data.success === true) {
           setToken(JSON.stringify(response.data));
-          // router.push("/dashboard");
+          console.log(response);
+          router.push("/dashboard");
           toast(<Toast text={response.message} type="success" />);
         } else {
           toast(<Toast text={response.message} type="danger" />);
