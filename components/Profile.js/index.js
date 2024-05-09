@@ -13,7 +13,7 @@ const Profile = ({ closeProfile }) => {
       onClick={closeProfile}
       style={{ backgroundColor: "rgba(0,0,0,.2)" }}
     >
-      <div className="w-screen relative bg-white z-30  md:max-w-[300px] ">
+      <div className="w-screen relative bg-white z-30  md:max-w-[350px] ">
         <div className="bg-white">
           <div>
             <div className="flex px-4 py-6 items-center justify-between">

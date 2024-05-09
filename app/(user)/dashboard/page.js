@@ -140,14 +140,17 @@ const Dashboard = () => {
         )}
       </div>
       <div className="w-full">
-        <DasboardNavWithOutSearch
-          addSearch={false}
-          setValue={(data) => {
-            // console.log(data);
-          }}
-          name="Dashboard"
-          showSideBar={showSideBar}
-        />
+        <div className="p-4">
+          {" "}
+          <DasboardNavWithOutSearch
+            addSearch={false}
+            setValue={(data) => {
+              // console.log(data);
+            }}
+            name="Dashboard"
+            showSideBar={showSideBar}
+          />
+        </div>
 
         <div
           className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4`}

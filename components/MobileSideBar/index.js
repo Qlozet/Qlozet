@@ -94,6 +94,7 @@ const MobileSideBar = ({ active, closeSideBar }) => {
 
   const logoutFunction = () => {
     setShowLogOutModal(false);
+    closeSideBar();
   };
   return (
     <div className="block bg-white fixed h-[100rem] z-40 top-0 left-0">
@@ -109,9 +110,8 @@ const MobileSideBar = ({ active, closeSideBar }) => {
               item.function();
               if (item.link !== "") {
                 router.push(`${item.link}`);
+                closeSideBar();
               }
-
-              closeSideBar();
             }}
           >
             {active === item.name ? (
