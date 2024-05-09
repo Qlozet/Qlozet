@@ -172,14 +172,14 @@ const Wallet = () => {
           name="Wallet"
           showSideBar={showSideBar}
         />
-        <div className="flex justify-end items-center md:hidden">
-          {" "}
-          <div className="items-start gap-6 pt-5 flex w-[80%]">
+        <div className="flex justify-end items-center md:hidden w-full">
+          <div className="items-start gap-6 pt-5 flex ">
             <Button
               children="Send money"
               btnSize="large"
               variant="outline"
               minWidth="min-w-[10rem]"
+              maxWidth="max-w-[10rem]"
               clickHandler={() => {
                 setShowSendMoney(true);
               }}
@@ -189,6 +189,7 @@ const Wallet = () => {
               btnSize="large"
               variant="primary"
               minWidth="min-w-[10rem]"
+              maxWidth="max-w-[10rem]"
               clickHandler={() => {
                 setSetUpWalletWallet(true);
               }}
@@ -241,7 +242,7 @@ const Wallet = () => {
         </div>
 
         <div className="">
-          <div className="flex items-center justify-between mt-14 mb-2 ">
+          {/* <div className="flex items-center justify-between mt-14 mb-2 ">
             <Typography
               textColor="text-black"
               textWeight="font-bold"
@@ -259,7 +260,7 @@ const Wallet = () => {
                 data={dropdownData}
               />
             </div>
-          </div>
+          </div> */}
           <div className="hidden md:block">
             <WalletTable
               data={tableData}

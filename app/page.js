@@ -31,6 +31,7 @@ import Toast from "@/components/ToastComponent/toast";
 // import Notification from "./components/Notification/NotificationComponent";
 // import CheckBoxInput from "./components/CheckboxInput";
 import toast from "react-hot-toast";
+import DropDown from "@/components/DropDown";
 export default function Home() {
   const [dropDownValue, setDropDownValue] = useState("");
 
@@ -90,6 +91,7 @@ export default function Home() {
       </h1>
 
       <h1>Components</h1>
+      
     </main>
   );
 }

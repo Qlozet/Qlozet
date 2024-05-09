@@ -19,6 +19,7 @@ import TrackOrder from "@/components/order/TrackOrders";
 import RejectOrderModal from "@/components/order/RejectOrderModal";
 import CustomerDetails from "@/components/order/CustomerDetails";
 import MobileSideBar from "@/components/MobileSideBar";
+import DropDownComponent from "@/components/DropDownComponent";
 const Order = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [viewOrderDetails, setOrderDetails] = useState(false);
@@ -79,6 +80,33 @@ const Order = () => {
   };
 
   const tableData = [
+    {
+      date: "My name iss",
+      orderId: "My name iss",
+      productName: "My name iss",
+      productPrice: "12222",
+      CustomerName: "My name iss",
+      AmountPaid: "My name iss",
+      DeliveryStatus: "My name iss",
+    },
+    {
+      date: "My name iss",
+      orderId: "My name iss",
+      productName: "My name iss",
+      productPrice: "12222",
+      CustomerName: "My name iss",
+      AmountPaid: "My name iss",
+      DeliveryStatus: "My name iss",
+    },
+    {
+      date: "My name iss",
+      orderId: "My name iss",
+      productName: "My name iss",
+      productPrice: "12222",
+      CustomerName: "My name iss",
+      AmountPaid: "My name iss",
+      DeliveryStatus: "My name iss",
+    },
     {
       date: "My name iss",
       orderId: "My name iss",
@@ -222,28 +250,9 @@ const Order = () => {
             icon={customerIcon}
           />
         </div>
+     
         <div className="">
-          <div className="flex items-center justify-between mt-14 mb-2 ">
-            <Typography
-              textColor="text-dark"
-              textWeight="font-bold"
-              textSize="text-[18px]"
-            >
-              Orders
-            </Typography>
-            {/* <div className="">
-              <DropDown
-                placeholder={"Vendor’s status"}
-                value={dropDownValue}
-                setValue={(data) => {
-                  setDropDownValue(data);
-                }}
-                data={dropdownData}
-              />
-            </div> */}
-          </div>
-          <div className="hidden md:block">
-            {" "}
+          <div>
             <OrderTable
               data={tableData}
               viewDetails={() => {
