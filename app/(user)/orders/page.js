@@ -20,6 +20,7 @@ import RejectOrderModal from "@/components/order/RejectOrderModal";
 import CustomerDetails from "@/components/order/CustomerDetails";
 import MobileSideBar from "@/components/MobileSideBar";
 import DropDownComponent from "@/components/DropDownComponent";
+import UpdateComponent from "@/components/UpdateComponent";
 const Order = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [viewOrderDetails, setOrderDetails] = useState(false);
@@ -250,7 +251,7 @@ const Order = () => {
             icon={customerIcon}
           />
         </div>
-     
+        <UpdateComponent />
         <div className="">
           <div>
             <OrderTable

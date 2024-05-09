@@ -5,7 +5,10 @@ const UpdateComponent = () => {
   return (
     <div className="bg-[#FFF7DE] px-12 py-2 rounded-[12px] flex items-center gap-6">
       <div>
-        <Image src={infoIcon} alt="" />
+        <div className="w-[3rem] h-[3rem]">
+          {" "}
+          <Image src={infoIcon} alt="" />
+        </div>
       </div>
       <div>
         <Typography

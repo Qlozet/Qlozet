@@ -10,10 +10,10 @@ import DonutChart from "@///components/Chat/DoughnutChat";
 import DropDown from "@/components/DropDown";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
-import infoIcon from "../../../public/assets/svg/Info Circle.svg";
 import VerticalBarGraph from "@/components/VerticalBarGraph";
 import Typography from "@/components/Typography";
 import Image from "next/image";
+import UpdateComponent from "@/components/UpdateComponent";
 import RecentOrder from "@/components/RecentOrder";
 import { getRequest } from "@/api/request";
 import { getToken } from "@/utils/localstorage";
@@ -180,30 +180,7 @@ const Dashboard = () => {
         </div>
         <div className=" bg-[#F8F9FA] px-4">
           <div className="flex items-center justify-between mb-2 mt-4">
-            <div className="bg-[#FFF7DE] px-12 py-2 rounded-[12px] flex items-center gap-6">
-              <div>
-                <Image src={infoIcon} alt="" />
-              </div>
-              <div>
-                <Typography
-                  textColor="text-gray-100"
-                  textWeight="font-normal"
-                  textSize="text-[14px]"
-                >
-                  To access all ALTIREs service, please complete your KYC
-                  verification process
-                </Typography>
-                <div className=" border-b-[#FFB020] border-solid border-b-[1.5px] max-w-[6.3rem]">
-                  <Typography
-                    textColor="text-[#FFB020]"
-                    textWeight="font-[600]"
-                    textSize="text-[14px]"
-                  >
-                    Update Profile
-                  </Typography>
-                </div>
-              </div>
-            </div>
+            <UpdateComponent />
             <div className="hidden md:block">
               {/* <DropDown
                 placeholder={"Vendor’s status"}
