@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import signupImage from "../../../public/assets/svg/signupImage.svg";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
@@ -131,13 +131,13 @@ const SignUp = () => {
       toast.success("Error", error);
     }
   };
-
   return (
-    <section className={`  h-screen overflow-y-scroll`}>
+    <section
+      className={`h-screen overflow-y-scroll 2xl:flex justify-center items-center`}
+    >
       <div
         className={`${classes.section} w-full md:bg-white block md:flex items-center justify-center`}
       >
-        {" "}
         <div className="block md:hidden">
           <DasboardNavWithOutSearch
             addSearch={false}
