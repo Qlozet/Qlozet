@@ -5,7 +5,7 @@ import Button from "../Button";
 import Image from "next/image";
 const Logout = ({ logoutFunction }) => {
   return (
-    <div className="relative bg-white w-[35%] rounded-[12px] flex flex-col items-center gap-6 p-6">
+    <div className="relative bg-white  w-full md:w-[35%] rounded-[12px] flex flex-col items-center gap-6 p-6">
       <div
         className="absolute top-4 right-4 cursor-pointer"
         onClick={() => {

@@ -26,7 +26,7 @@ const DasboardNavWithOutSearch = ({
     setShowProfile(!showProfile);
   };
   return (
-    <div className={`${!hideNav ? " p-4" : "pt-2"} rounded-[15px]`}>
+    <div className={`${!hideNav ? " " : "pt-2"} rounded-[15px]`}>
       <div className="block md:hidden">
         <div className=" items-center justify-between px-3 py-3 bg-gray-400 rounded-[12px] hidden">
           <Image src={transformText} alt="" />

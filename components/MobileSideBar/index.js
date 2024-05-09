@@ -107,7 +107,10 @@ const MobileSideBar = ({ active, closeSideBar }) => {
             key={index}
             onClick={() => {
               item.function();
-              router.push(`${item.link}`);
+              if (item.link !== "") {
+                router.push(`${item.link}`);
+              }
+
               closeSideBar();
             }}
           >
