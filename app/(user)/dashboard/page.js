@@ -205,7 +205,6 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="hidden md:block">
-              
               {/* <DropDown
                 placeholder={"Vendor’s status"}
                 value={dropDownValue}

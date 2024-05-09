@@ -15,6 +15,8 @@ import SetUpAltireWallet from "@/components/Wallet/SetUpAltireWallet";
 import TransactionDetails from "@/components/Wallet/TransactionDetails";
 import SendMoney from "@/components/Wallet/SendMoney";
 import SendMoneyForm from "@/components/Wallet/SendMoneyForm";
+import MobileSideBar from "@/components/MobileSideBar";
+import classes from "./index.module.css";
 const Wallet = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [setUpWalletWallet, setSetUpWalletWallet] = useState(false);
@@ -26,7 +28,10 @@ const Wallet = () => {
   const handleShowViewDetailModal = () => {
     setOrderDetails(true);
   };
-
+  const [showMobileNav, setShowMobileNav] = useState(false);
+  const showSideBar = () => {
+    setShowMobileNav(!showMobileNav);
+  };
   const data = [
     {
       location: "Warri",
@@ -152,6 +157,11 @@ const Wallet = () => {
     <div className="flex bg-[#F8F9FA]">
       <div className="">
         <SideBar active="Wallet" />
+        {showMobileNav && (
+          <div className="md:hidden">
+            <MobileSideBar active="Wallet" closeSideBar={showSideBar} />
+          </div>
+        )}
       </div>
       <div className="w-full p-4">
         <DasboardNavWithOutSearch
@@ -159,9 +169,37 @@ const Wallet = () => {
           setValue={(data) => {
             // console.log(data);
           }}
+          name="Wallet"
+          showSideBar={showSideBar}
         />
+        <div className="flex justify-end items-center md:hidden">
+          {" "}
+          <div className="items-start gap-6 pt-5 flex w-[80%]">
+            <Button
+              children="Send money"
+              btnSize="large"
+              variant="outline"
+              minWidth="min-w-[10rem]"
+              clickHandler={() => {
+                setShowSendMoney(true);
+              }}
+            />
+            <Button
+              children="Fund wallet"
+              btnSize="large"
+              variant="primary"
+              minWidth="min-w-[10rem]"
+              clickHandler={() => {
+                setSetUpWalletWallet(true);
+              }}
+            />
+          </div>
+        </div>
+
         <div className="flex justify-between">
-          <div className="flex items-center gap-4">
+          <div
+            className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
+          >
             <DashboardTopCard
               name="Wallet Balance"
               total="10000"
@@ -180,7 +218,7 @@ const Wallet = () => {
               addMaxWidth={true}
             />
           </div>
-          <div className="flex items-start gap-6 pt-5">
+          <div className="items-start gap-6 pt-5 hidden md:flex">
             <Button
               children="Send money"
               btnSize="large"
@@ -222,14 +260,15 @@ const Wallet = () => {
               />
             </div>
           </div>
-
-          <WalletTable
-            data={tableData}
-            viewDetails={() => {
-              handleShowViewDetailModal();
-            }}
-            showRejectModal={showRejectModal}
-          />
+          <div className="hidden md:block">
+            <WalletTable
+              data={tableData}
+              viewDetails={() => {
+                handleShowViewDetailModal();
+              }}
+              showRejectModal={showRejectModal}
+            />
+          </div>
         </div>
       </div>
       {/* <Modal content={<SetTotalOrderPerDay />}></Modal> */}

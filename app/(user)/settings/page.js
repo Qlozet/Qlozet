@@ -12,6 +12,7 @@ import AddNewWarehouseForm from "@/components/Settings/Warehouse/AddNewWarehouse
 import Shipping from "@/components/Settings/Shipping/Shipping";
 import UserAndPermission from "@/components/Settings/UserAndPermission/UserAndPermssion";
 import Category from "@/components/Settings/Category/Category";
+import MobileSideBar from "@/components/MobileSideBar";
 
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
@@ -21,12 +22,16 @@ const Dashboard = () => {
   const [showShippingPatners, setShowShippingPatners] = useState(false);
   const [showUserAndPermission, setShowUserAndPermission] = useState(false);
   const [showCategory, setShowCategory] = useState(false);
-  const [currentNav, setCurrentNav] = useState("Company details");
-
+  const [currentNav, setCurrentNav] = useState("Shop details");
+  const [showMobileNav, setShowMobileNav] = useState(false);
+  const showSideBar = () => {
+    setShowMobileNav(!showMobileNav);
+  };
   const topNavData = [
     {
-      item: "Company details",
+      item: "Shop details",
       link: "",
+      navWidth: "min-w-[7.5rem] md:min-w-w-[0]",
       handleFunction: (data) => {
         setCurrentNav(data);
         setShowComapanyDetails(true);
@@ -40,6 +45,7 @@ const Dashboard = () => {
     },
     {
       item: "Billing and invoice",
+      navWidth: "min-w-[10.5rem] md:min-w-w-[0]",
       link: "",
       handleFunction: (data) => {
         setCurrentNav(data);
@@ -54,6 +60,7 @@ const Dashboard = () => {
     },
     {
       item: "Warehouses",
+      navWidth: "min-w-[8rem] md:min-w-w-[0]",
       link: "",
       handleFunction: (data) => {
         setCurrentNav(data);
@@ -68,6 +75,7 @@ const Dashboard = () => {
     {
       item: "Shipping partners",
       link: "",
+      navWidth: "min-w-[10rem] md:min-w-w-[0]",
       handleFunction: (data) => {
         setCurrentNav(data);
         setShowComapanyDetails(false);
@@ -81,6 +89,7 @@ const Dashboard = () => {
     {
       item: "Users and permissions",
       link: "",
+      navWidth: "min-w-[13rem] md:min-w-w-[0]",
       handleFunction: (data) => {
         setCurrentNav(data);
         setShowComapanyDetails(false);
@@ -93,7 +102,7 @@ const Dashboard = () => {
     },
     {
       item: "Categories",
-      link: "",
+      navWidth: "min-w-[8rem] md:min-w-w-[0]",
       handleFunction: (data) => {
         setCurrentNav(data);
         setShowComapanyDetails(false);
@@ -110,6 +119,11 @@ const Dashboard = () => {
     <div className="flex bg-[#F8F9FA]">
       <div className="">
         <SideBar active="Settings" />
+        {showMobileNav && (
+          <div className="md:hidden">
+            <MobileSideBar active="Dashboard" closeSideBar={showSideBar} />
+          </div>
+        )}
       </div>
       <div className="w-full p-4">
         <DasboardNavWithOutSearch
@@ -118,6 +132,7 @@ const Dashboard = () => {
           setValue={(data) => {
             // console.log(data);
           }}
+          showSideBar={showSideBar}
         />
         <div className="mt-4">
           <OrderDetailNav
@@ -128,7 +143,7 @@ const Dashboard = () => {
             full={true}
           />
         </div>
-        {currentNav === "Company details" && <CompanyDetails />}
+        {currentNav === "Shop details" && <CompanyDetails />}
         {currentNav === "Billing and invoice" && <BillingAndInvioce />}
         {currentNav === "Warehouses" && <Warehouse />}
         {currentNav === "Shipping partners" && <Shipping />}

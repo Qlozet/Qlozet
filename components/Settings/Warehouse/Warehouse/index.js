@@ -31,7 +31,9 @@ const Warehouse = () => {
         />
         <div></div>
       </div>
-      <WearhousetTable />
+      <div className="hidden md:block">
+        <WearhousetTable />
+      </div>
       {showAddModal && (
         <Modal
           content={<AddNewWarehouseForm closeModal={closeAddWarehouseModal} />}

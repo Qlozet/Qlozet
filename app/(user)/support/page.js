@@ -7,6 +7,8 @@ import TextInput from "@/components/TextInput";
 import Typography from "@/components/Typography";
 import classes from "./index.module.css";
 import Button from "@/components/Button";
+import MobileSideBar from "@/components/MobileSideBar";
+import TextArea from "@/components/TextAreaInput";
 
 const Support = () => {
   const [dropDownValue, setDropDownValue] = useState("");
@@ -16,12 +18,19 @@ const Support = () => {
   const [showShippingPatners, setShowShippingPatners] = useState(false);
   const [showUserAndPermission, setShowUserAndPermission] = useState(false);
   const [showCategory, setShowCategory] = useState(false);
-  const [currentNav, setCurrentNav] = useState("Company details");
-
+  const [showMobileNav, setShowMobileNav] = useState(false);
+  const showSideBar = () => {
+    setShowMobileNav(!showMobileNav);
+  };
   return (
     <div className="flex bg-[#F8F9FA]">
       <div className="">
         <SideBar active="Support" />
+        {showMobileNav && (
+          <div className="md:hidden">
+            <MobileSideBar active="Support" closeSideBar={showSideBar} />
+          </div>
+        )}
       </div>
       <div className="w-full p-4">
         <DasboardNavWithOutSearch
@@ -30,10 +39,11 @@ const Support = () => {
           setValue={(data) => {
             // console.log(data);
           }}
+          showSideBar={showSideBar}
         />
         <div className="min-h-[80vh]">
           <div className="mt-4 mx-auto ">
-            <div className="bg-white rounded-[12px] w-[40%] m-auto px-4 py-6 my-6 shadow">
+            <div className="bg-white rounded-[12px] w-full  md:w-[40%] m-auto px-4 py-6 my-6 shadow">
               <div>
                 <div className="flex items-center justify-between  border-dashed border-b-[1.5px] border-gray-200 pb-4">
                   <Typography
@@ -41,7 +51,7 @@ const Support = () => {
                     textWeight="font-bold"
                     textSize="text-[14px]"
                   >
-                    Add new warehouse
+                    Get support
                   </Typography>
                   {/* <Image
                   src={closeIcon}
@@ -50,13 +60,9 @@ const Support = () => {
                   className="cursor-pointer"
                 /> */}
                 </div>
-                <TextInput
-                  label="Phone number"
-                  placeholder="Enter phone number"
-                  setValue={(data) => {}}
-                />
+
                 <SelectInput
-                  placeholder={"Select an option"}
+                  placeholder={"Issue type "}
                   // value={dropDownValue}
                   setValue={(data) => {
                     //   setDropDownValue(data);
@@ -70,9 +76,14 @@ const Support = () => {
                   ]}
                   label="User role"
                 />
-                <div className="my-6 flex items-center justify-end">
+                <TextArea
+                  label="Message"
+                  placeholder="Give a summary of the problem you are presently encountering."
+                  setValue={(data) => {}}
+                />
+                <div className="my-6 flex items-center justify-center md:justify-end ">
                   <Button
-                    children="Add user"
+                    children="Submit"
                     btnSize="small"
                     minWidth="min-w-[14rem]"
                     variant="primary"

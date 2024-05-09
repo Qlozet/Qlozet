@@ -18,6 +18,7 @@ import OrderDetails from "@/components/order/OrderDetails";
 import TrackOrder from "@/components/order/TrackOrders";
 import RejectOrderModal from "@/components/order/RejectOrderModal";
 import CustomerDetails from "@/components/order/CustomerDetails";
+import MobileSideBar from "@/components/MobileSideBar";
 const Order = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [viewOrderDetails, setOrderDetails] = useState(false);
@@ -25,6 +26,10 @@ const Order = () => {
   const [showCustomer, setShowCustomer] = useState(false);
   const [rejectModal, setShowReject] = useState(false);
   const [total, setShowTotal] = useState(false);
+  const [showMobileNav, setShowMobileNav] = useState(false);
+  const showSideBar = () => {
+    setShowMobileNav(!showMobileNav);
+  };
   const handleShowViewDetailModal = () => {
     setOrderDetails(true);
   };
@@ -132,6 +137,11 @@ const Order = () => {
     <div className="flex bg-[#F8F9FA]">
       <div className="">
         <SideBar active="Orders" />
+        {showMobileNav && (
+          <div className="md:hidden">
+            <MobileSideBar active="Dashboard" closeSideBar={showSideBar} />
+          </div>
+        )}
       </div>
       <div className="w-full p-4">
         <DasboardNavWithOutSearch
@@ -140,8 +150,48 @@ const Order = () => {
           setValue={(data) => {
             // console.log(data);
           }}
+          showSideBar={showSideBar}
         />
-        <div className="flex items-center gap-4">
+        <div
+          className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4 md:hidden`}
+        >
+          <DashboardTopCard
+            name="Total Vendors"
+            total="10000"
+            percentage="2.5"
+            bgColor="bg-[#57CAEB]"
+            link="link"
+            icon={vendorIcon}
+            addMaxWidth={true}
+          />
+          <DashboardTopCard
+            name="Achieved Vendors"
+            total="10000"
+            percentage="2.5"
+            bgColor="bg-[#5DDAB4]"
+            icon={customerIcon}
+            addMaxWidth={true}
+          />
+          <DashboardTopCard
+            name="Total Customers"
+            total="10000"
+            percentage="2.5"
+            bgColor="bg-[#5DDAB4]"
+            icon={customerIcon}
+            addMaxWidth={true}
+          />
+          <DashboardTopCard
+            name="Total Customers"
+            total="10000"
+            percentage="2.5"
+            bgColor="bg-[#5DDAB4]"
+            icon={customerIcon}
+            addMaxWidth={true}
+          />
+        </div>
+        <div
+          className={`${classes.scrollbarElement} items-center gap-4 overflow-x-scroll px-4 hidden md:flex`}
+        >
           <DashboardTopCard
             name="Total Vendors"
             total="10000"
@@ -192,14 +242,16 @@ const Order = () => {
               />
             </div> */}
           </div>
-
-          <OrderTable
-            data={tableData}
-            viewDetails={() => {
-              handleShowViewDetailModal();
-            }}
-            showRejectModal={showRejectModal}
-          />
+          <div className="hidden md:block">
+            {" "}
+            <OrderTable
+              data={tableData}
+              viewDetails={() => {
+                handleShowViewDetailModal();
+              }}
+              showRejectModal={showRejectModal}
+            />
+          </div>
         </div>
       </div>
       {/* <Modal content={<SetTotalOrderPerDay />}></Modal> */}

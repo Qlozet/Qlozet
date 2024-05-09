@@ -12,6 +12,8 @@ import CustomerDetails from "@/components/order/CustomerDetails";
 import OrderHistory from "@/components/Customer/OrderHistory";
 import CustomerTable from "@/components/Customer/CustomerTable";
 import DonutChart from "@/components/Chat/DoughnutChat";
+import MobileSideBar from "@/components/MobileSideBar";
+import classes from "./index.module.css";
 const Products = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [viewCustomerDetails, setCustomerDetails] = useState(false);
@@ -72,7 +74,10 @@ const Products = () => {
       DeliveryStatus: "My name iss",
     },
   ];
-
+  const [showMobileNav, setShowMobileNav] = useState(false);
+  const showSideBar = () => {
+    setShowMobileNav(!showMobileNav);
+  };
   const closeModal = () => {
     setCustomerDetails(false);
     setShowHistory(false);
@@ -105,6 +110,11 @@ const Products = () => {
     <div className="flex bg-[#F8F9FA]">
       <div className="">
         <SideBar active="Products" />
+        {showMobileNav && (
+          <div className="md:hidden">
+            <MobileSideBar active="Products" closeSideBar={showSideBar} />
+          </div>
+        )}
       </div>
       <div className="w-full p-4">
         <DasboardNavWithOutSearch
@@ -113,8 +123,11 @@ const Products = () => {
           setValue={(data) => {
             // console.log(data);
           }}
+          showSideBar={showSideBar}
         />
-        <div className="flex items-center gap-4">
+        <div
+          className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
+        >
           <DashboardTopCard
             name="Total Vendors"
             total="10000"
@@ -133,7 +146,7 @@ const Products = () => {
             addMaxWidth={true}
           />
           <div
-            className={`px-6 py-4 flex bg-white rounded-[12px] mt-4 max-w-[300px] w-full`}
+            className={`px-6 py-4 flex bg-white rounded-[12px] mt-4 max-w-[300px] w-full min-w-[300px]`}
           >
             <DonutChart data={chartData} width={"90"} height={"90"} />
             <div>
@@ -189,8 +202,9 @@ const Products = () => {
               /> */}
             </div>
           </div>
-
-          <CustomerTable data={tableData} showModal={showModal} />
+          <div className="hidden md:block">
+            <CustomerTable data={tableData} showModal={showModal} />
+          </div>
         </div>
       </div>
 

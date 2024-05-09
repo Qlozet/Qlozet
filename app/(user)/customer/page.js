@@ -11,6 +11,8 @@ import Modal from "@/components/Modal";
 import CustomerDetails from "@/components/order/CustomerDetails";
 import OrderHistory from "@/components/Customer/OrderHistory";
 import CustomerTable from "@/components/Customer/CustomerTable";
+import MobileSideBar from "@/components/MobileSideBar";
+import classes from "./index.module.css";
 const Customer = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [viewCustomerDetails, setCustomerDetails] = useState(false);
@@ -60,6 +62,11 @@ const Customer = () => {
     borderAlign: "center",
   };
 
+  const [showMobileNav, setShowMobileNav] = useState(false);
+  const showSideBar = () => {
+    setShowMobileNav(!showMobileNav);
+  };
+
   const tableData = [
     {
       date: "My name iss",
@@ -104,14 +111,23 @@ const Customer = () => {
       <div className="">
         <SideBar active="Customers" />
       </div>
+      {showMobileNav && (
+        <div className="md:hidden">
+          <MobileSideBar active="Customers" closeSideBar={showSideBar} />
+        </div>
+      )}
       <div className="w-full p-4">
         <DasboardNavWithOutSearch
           addSearch={true}
           setValue={(data) => {
             // console.log(data);
           }}
+          showSideBar={showSideBar}
+          name="Customers"
         />
-        <div className="flex items-center gap-4">
+        <div
+          className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
+        >
           <DashboardTopCard
             name="Total Vendors"
             total="10000"
@@ -150,8 +166,10 @@ const Customer = () => {
               /> 
               </div>*/}
           </div>
-
-          <CustomerTable data={tableData} showModal={showModal} />
+          <div className="md:block hidden">
+            {" "}
+            <CustomerTable data={tableData} showModal={showModal} />
+          </div>
         </div>
       </div>
 

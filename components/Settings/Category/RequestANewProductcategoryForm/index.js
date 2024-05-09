@@ -8,7 +8,7 @@ import Button from "../../../Button";
 
 const RequestCategoryForm = ({ closeModal }) => {
   return (
-    <div className="bg-white rounded-[12px] w-[40%] m-auto px-4 py-6 my-6">
+    <div className="bg-white rounded-[12px] w-full md:w-[40%] m-auto px-4 py-6 my-6">
       <div>
         <div className="flex items-center justify-between  border-dashed border-b-[1.5px] border-gray-200 pb-4">
           <Typography
@@ -35,7 +35,7 @@ const RequestCategoryForm = ({ closeModal }) => {
           placeholder="Enter category type"
           setValue={(data) => {}}
         />
-        <div className="mb-[10rem] mt-6 flex items-center justify-end">
+        <div className="mb-[10rem] mt-6 flex items-center justify-center md:justify-end">
           <Button
             children="Add user"
             btnSize="small"

@@ -28,7 +28,7 @@ const DasboardNavWithOutSearch = ({
   return (
     <div className={`${!hideNav ? " p-4" : "pt-2"} rounded-[15px]`}>
       <div className="block md:hidden">
-        <div className="flex items-center justify-between px-3 py-3 bg-gray-400 rounded-[12px]">
+        <div className=" items-center justify-between px-3 py-3 bg-gray-400 rounded-[12px] hidden">
           <Image src={transformText} alt="" />
           <Image src={altireicon} alt="" />
           <Image src={clockwise} alt="" />

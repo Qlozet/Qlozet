@@ -15,7 +15,7 @@ const DashboardTopCard = ({
 }) => {
   return (
     <div
-      className={` p-6 flex bg-white rounded-[12px] mt-4 ${
+      className={`p-6 flex bg-white rounded-[12px] mt-4 ${
         addMaxWidth ? "min-w-[260px] max-w-[260px]" : ""
       }  w-full`}
     >
