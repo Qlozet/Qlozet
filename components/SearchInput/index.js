@@ -15,10 +15,7 @@ const SearchInput = ({
     <div className="block">
       <div className="my-3 relative">
         <Image src={searchIcon} className="absolute top-[0.8rem] left-2.5" />
-        <label className="text-[14px] font-light my-2 text-dark">
-          {" "}
-          {label}
-        </label>
+        <label className="text-[14px] font-light my-2 text-dark">{label}</label>
         <input
           type="text"
           className={`py-3 pl-10 pr-4 w-full border-solid border-[1.5px]  text-dark placeholder-gray-200

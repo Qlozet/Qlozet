@@ -67,8 +67,7 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
       <div>
         <div className="block md:hidden">
           <div className="flex items-center justify-between">
-            <div className="w-[70%]">
-              {" "}
+            <div className="w-[70%] block">
               <SearchInput placeholder="Search" />
             </div>
             <div className="flex items-center justify-center">

@@ -251,8 +251,10 @@ const Order = () => {
             icon={customerIcon}
           />
         </div>
-        <UpdateComponent />
         <div className="">
+          <div className="my-4">
+            <UpdateComponent />
+          </div>
           <div>
             <OrderTable
               data={tableData}
