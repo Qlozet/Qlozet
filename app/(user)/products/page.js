@@ -3,7 +3,6 @@ import { useState } from "react";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import DashboardTopCard from "@/components/DashboardTopCard";
 import SideBar from "@/components/SideBar";
-import DropDown from "@/components/DropDown";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import Typography from "@/components/Typography";
@@ -13,6 +12,7 @@ import OrderHistory from "@/components/Customer/OrderHistory";
 import CustomerTable from "@/components/Customer/CustomerTable";
 import DonutChart from "@/components/Chat/DoughnutChat";
 import classes from "./index.module.css";
+import MobileSideBar from "@/components/MobileSideBar";
 const Products = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [viewCustomerDetails, setCustomerDetails] = useState(false);
