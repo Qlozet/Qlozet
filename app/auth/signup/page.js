@@ -116,18 +116,18 @@ const SignUp = () => {
         if (response.success) {
           setIsLoading(false);
           toast(<Toast text={response.message} type="success" />);
-          // toast.success(response.message);
         } else {
-          setIsLoading(true);
+          setIsLoading(false);
           toast(<Toast text={response.message} type="dander" />);
         }
-        console.log(response);
       } else {
+        setIsLoading(false);
         setrequiredFormData((prevData) => {
           return { prevData, ...data };
         });
       }
     } catch (error) {
+      setIsLoading(false);
       toast.success("Error", error);
     }
   };
