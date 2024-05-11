@@ -3,7 +3,7 @@ import Typography from "../../Typography";
 import ProgressBar from "../../ProgressBar";
 import classes from "./index.module.css";
 import UploadDocInput from "../../UploadDocInput";
-const Step4 = ({ handleSelect }) => {
+const Step4 = ({ handleSelect, businessLogo }) => {
   return (
     <div>
       <div className="mt-4 mx-4  md:mx-0 pt-5 px-2 p md:px-0 ">
@@ -31,7 +31,10 @@ const Step4 = ({ handleSelect }) => {
         >
           Upload Business Logo
         </Typography>
-        <UploadDocInput handleSelect={handleSelect} />
+        <UploadDocInput
+          handleSelect={handleSelect}
+          uploadfiles={businessLogo}
+        />
       </div>
     </div>
   );

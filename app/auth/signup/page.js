@@ -21,10 +21,9 @@ import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch"
 const SignUp = () => {
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [businessLogo, setBusinessLogo] = useState("");
-  const [businessFiles, setBusinessFiles] = useState("");
+  const [businessLogo, setBusinessLogo] = useState([]);
+  const [businessFiles, setBusinessFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
   const [businessInfo, setBusinessInfo] = useState({
     businessName: "",
     businessEmail: "",
@@ -77,11 +76,11 @@ const SignUp = () => {
   };
 
   const handleSelectLogo = (file) => {
-    setBusinessLogo(file[0]);
+    setBusinessLogo(file);
   };
 
   const handleSelectFile = (files) => {
-    setBusinessFiles(files[0]);
+    setBusinessFiles(files);
   };
   const backHandler = () => {
     setStep(step - 1);
@@ -110,8 +109,10 @@ const SignUp = () => {
         );
         formData.append("password", passwordInfo.password);
         formData.append("confirmPassword", passwordInfo.confirmPassword);
-        formData.append("cacDocument", businessFiles);
-        formData.append("businessLogo", businessLogo);
+        formData.append("cacDocument", businessFiles[0]);
+        formData.append("businessLogo", businessLogo[0]);
+        console.log(businessFiles);
+        console.log(businessLogo);
         const response = await postRequest(`/vendor/signup`, formData, true);
         if (response.success) {
           setIsLoading(false);
@@ -230,7 +231,10 @@ const SignUp = () => {
                   className="cursor-pointer"
                 />
               </div>
-              <Step3 handleSelect={handleSelectFile} />
+              <Step3
+                handleSelect={handleSelectFile}
+                businessFiles={businessFiles}
+              />
               <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
                 {" "}
                 <Button
@@ -260,7 +264,10 @@ const SignUp = () => {
                   className="cursor-pointer"
                 />
               </div>
-              <Step4 handleSelect={handleSelectLogo} />
+              <Step4
+                handleSelect={handleSelectLogo}
+                businessLogo={businessLogo}
+              />
               <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
                 {" "}
                 <Button

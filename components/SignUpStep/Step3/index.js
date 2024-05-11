@@ -2,11 +2,10 @@ import Logo from "../../Logo";
 import Typography from "../../Typography";
 import ProgressBar from "../../ProgressBar";
 import UploadDocInput from "../../UploadDocInput";
-const Step3 = ({ handleSelect }) => {
+const Step3 = ({ handleSelect, businessFiles }) => {
   return (
     <div>
-     
-     <div className="mt-4 mx-4  md:mx-0 pt-5 px-2 p md:px-0 ">
+      <div className="mt-4 mx-4  md:mx-0 pt-5 px-2 p md:px-0 ">
         <Typography
           textColor="text-primary"
           textWeight="font-bold"
@@ -31,7 +30,10 @@ const Step3 = ({ handleSelect }) => {
         >
           Upload Business CAC document
         </Typography>
-        <UploadDocInput handleSelect={handleSelect} />
+        <UploadDocInput
+          handleSelect={handleSelect}
+          uploadfiles={businessFiles}
+        />
       </div>
     </div>
   );

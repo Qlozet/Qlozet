@@ -64,6 +64,7 @@ const Step2 = ({ formData, setFormData, requiredData, setRequiredData }) => {
               });
             }
           }}
+          value={formData.phoneName}
         />
         <TextInput
           label="National Identity Number"
@@ -83,6 +84,7 @@ const Step2 = ({ formData, setFormData, requiredData, setRequiredData }) => {
               });
             }
           }}
+          value={formData.nationalIdentityNumber}
         />
       </div>
     </div>
