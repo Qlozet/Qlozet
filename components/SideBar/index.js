@@ -19,7 +19,7 @@ import vendorDefault from "../../public/assets/svg/user-octagon.svg";
 import vendorActive from "../../public/assets/svg/user-octagon-active.svg";
 import Logout from "../Logout";
 import { useRouter } from "next/navigation";
-
+import { clearToken } from "@/utils/localstorage";
 import Image from "next/image";
 import Modal from "../Modal";
 import Typography from "../Typography";

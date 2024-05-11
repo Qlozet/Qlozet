@@ -11,4 +11,5 @@ export const getToken = () => {
 
 export const clearToken = (data) => {
   localStorage.clear(token);
+  return true;
 };

@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 import classes from "./index.module.css";
 import ChatLabel from "../ChatLabel";
-const DonutChart = ({ data, width, height }) => {
+const DonutChart = ({ data, width, height, cutout }) => {
   const chartRef = useRef(null);
   let chartInstance = null;
 
@@ -27,7 +27,7 @@ const DonutChart = ({ data, width, height }) => {
           ],
         },
         options: {
-          cutout: 55,
+          cutout: cutout && 55,
           responsive: true,
           maintainAspectRatio: false,
           borderWidth: 0,

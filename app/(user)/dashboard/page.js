@@ -198,7 +198,12 @@ const Dashboard = () => {
                 <ChatCard
                   text="Vendors by gender"
                   graph={
-                    <DonutChart data={chartData} width={"200"} height={"200"} />
+                    <DonutChart
+                      data={chartData}
+                      width={"200"}
+                      height={"200"}
+                      cutout={true}
+                    />
                   }
                 />
               </div>
@@ -221,7 +226,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="block md:flex w-full gap-4  mt-4 md:h-[32rem] h-[33rem]">
+          <div className="block md:flex w-full gap-4  mt-4 md:h-[32rem] h-[35rem]">
             <div
               className={`${classes.first_container} flex gap-4 mt-3 w-full `}
             >

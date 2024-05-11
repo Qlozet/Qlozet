@@ -3,7 +3,10 @@ import closeIcon from "../../public/assets/svg/close-square.svg";
 import Typography from "../Typography";
 import Button from "../Button";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { clearToken } from "@/utils/localstorage";
 const Logout = ({ logoutFunction }) => {
+  const router = useRouter();
   return (
     <div className="relative bg-white  w-full md:w-[35%] rounded-[12px] flex flex-col items-center gap-6 p-6">
       <div
@@ -27,7 +30,8 @@ const Logout = ({ logoutFunction }) => {
         btnSize="large"
         variant="danger"
         clickHandler={() => {
-          logoutFunction();
+          router.push("/auth/signin");
+          clearToken() && logoutFunction();
         }}
       />
     </div>
