@@ -146,7 +146,9 @@ const SignUp = () => {
                 hideNav={true}
               />
             </div>
-         
+            <div className="block mt-2 mb-4  md:hidden">
+              <Logo />
+            </div>
             <div className={`${classes.container} flex gap-8 max-w-7xl `}>
               {step === 1 && (
                 <div
