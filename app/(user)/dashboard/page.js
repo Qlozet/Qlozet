@@ -7,18 +7,13 @@ import DashboardTopCard from "@/components/DashboardTopCard";
 import SideBar from "@/components/SideBar";
 import classes from "./index.module.css";
 import DonutChart from "@///components/Chat/DoughnutChat";
-import DropDown from "@/components/DropDown";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import VerticalBarGraph from "@/components/VerticalBarGraph";
-import Typography from "@/components/Typography";
-import Image from "next/image";
 import UpdateComponent from "@/components/UpdateComponent";
 import RecentOrder from "@/components/RecentOrder";
 import { getRequest } from "@/api/request";
-import { getToken } from "@/utils/localstorage";
 import MobileSideBar from "@/components/MobileSideBar";
-import Profile from "@/components/Profile.js";
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [totalCustomer, setTotalCustomer] = useState("0");

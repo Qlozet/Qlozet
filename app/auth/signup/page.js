@@ -118,7 +118,7 @@ const SignUp = () => {
           toast(<Toast text={response.message} type="success" />);
         } else {
           setIsLoading(false);
-          toast(<Toast text={response.message} type="dander" />);
+          toast(<Toast text={response.message} type="danger" />);
         }
       } else {
         setIsLoading(false);
@@ -141,9 +141,7 @@ const SignUp = () => {
         <div className="block md:hidden">
           <DasboardNavWithOutSearch
             addSearch={false}
-            setValue={(data) => {
-              // console.log(data);
-            }}
+            setValue={(data) => {}}
             hideNav={true}
           />
         </div>
