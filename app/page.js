@@ -84,7 +84,7 @@ export default function Home() {
       <h1
         className="cursor-pointer"
         onClick={() => {
-          toast(<Toast text={"Hello man"} type="success" />);
+          toast(<Toast text={"gdfgdggdgggghdhjjdHello man"} type="success" />);
         }}
       >
         Homepage

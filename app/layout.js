@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
         {children}
         <Toaster
           toastOptions={{
-            duration: 4000,
+            duration: 40000,
             style: {
               padding: "0",
               borderRadius: "0",
@@ -30,6 +30,7 @@ export default function RootLayout({ children }) {
               bottom: "0",
               left: "0",
               boxShadow: "none",
+              background: "transparent",
             },
           }}
         />

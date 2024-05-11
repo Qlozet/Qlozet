@@ -15,6 +15,7 @@ import { postRequest } from "@/api/request";
 import toast from "react-hot-toast";
 import Toast from "@/components/ToastComponent/toast";
 import { setToken } from "@/utils/localstorage";
+import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 const SignIn = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -55,101 +56,115 @@ const SignIn = () => {
   };
 
   return (
-    <section
-      className={`h-screen overflow-y-scroll 2xl:flex justify-center items-center`}
-    >
+    <section className={`h-screen overflow-hidden`}>
       <div
-        className={`${classes.section} w-full md:bg-white block md:flex items-center justify-center`}
+        className={`${classes.section}  md:bg-white block md:flex items-center justify-center`}
       >
-        <div className={`${classes.container} flex gap-6 max-w-7xl `}>
-          <div className={`${classes.first_Container} max-w-lg	`}>
-            <Logo />
-            <div className="flex  h-[100%]  items-center translate-y-[-20%]">
-              <div className="mt-16">
-                <Typography
-                  textColor="text-primary"
-                  textWeight="font-bold"
-                  textSize="text-[32px]"
-                >
-                  Sign In
-                </Typography>
-                <Typography
-                  textWeight="font-normal"
-                  textSize="text-[14px]"
-                  verticalPadding="my-1"
-                >
-                  Please enter your login details below
-                </Typography>
-                <EmailInptut
-                  label="Business email address"
-                  placeholder="Enter your business official email address"
-                  setValue={(data) => {
-                    setFormData((prevData) => {
-                      return { ...prevData, businessEmail: data };
-                    });
-                    if (data) {
-                      setReqiuredFormData((prevData) => {
-                        return { ...prevData, businessEmail: false };
-                      });
-                    } else {
-                      setReqiuredFormData((prevData) => {
-                        return { ...prevData, businessEmail: true };
-                      });
-                    }
-                  }}
-                  error={requiredFormData.businessEmail}
-                />
-                <PasswordInput
-                  label="Password"
-                  placeholder="************"
-                  setValue={(data) => {
-                    setFormData((prevData) => {
-                      return { ...prevData, password: data };
-                    });
+        <div className="bg-[rgba(0,0,0,.7)] md:bg-white h-screen w-screen 2xl:flex justify-center items-center overflow-y-scroll md:p-4">
+          <div>
+            <div className="block md:hidden">
+              <DasboardNavWithOutSearch
+                addSearch={false}
+                setValue={(data) => {}}
+                hideNav={true}
+              />
+            </div>
+            <div className="block mt-2 mb-4  md:hidden">
+              <Logo />
+            </div>
+            <div className={`${classes.container} flex md:gap-8 max-w-7xl `}>
+              <div
+                className={`${classes.first_Container} max-w-lg	p-4 md:p-0  rounded-[12px]	bg-white mx-4 mb-10`}
+              >
+                <Logo />
+                <div className="flex  h-[100%]  items-center translate-y-[-20%]">
+                  <div className="mt-16">
+                    <Typography
+                      textColor="text-primary"
+                      textWeight="font-bold"
+                      textSize="text-[32px]"
+                    >
+                      Sign In
+                    </Typography>
+                    <Typography
+                      textWeight="font-normal"
+                      textSize="text-[14px]"
+                      verticalPadding="my-1"
+                    >
+                      Please enter your login details below
+                    </Typography>
+                    <EmailInptut
+                      label="Business email address"
+                      placeholder="Enter your business official email address"
+                      setValue={(data) => {
+                        setFormData((prevData) => {
+                          return { ...prevData, businessEmail: data };
+                        });
+                        if (data) {
+                          setReqiuredFormData((prevData) => {
+                            return { ...prevData, businessEmail: false };
+                          });
+                        } else {
+                          setReqiuredFormData((prevData) => {
+                            return { ...prevData, businessEmail: true };
+                          });
+                        }
+                      }}
+                      error={requiredFormData.businessEmail}
+                    />
+                    <PasswordInput
+                      label="Password"
+                      placeholder="************"
+                      setValue={(data) => {
+                        setFormData((prevData) => {
+                          return { ...prevData, password: data };
+                        });
 
-                    if (data) {
-                      setReqiuredFormData((prevData) => {
-                        return { ...prevData, password: false };
-                      });
-                    } else {
-                      setReqiuredFormData((prevData) => {
-                        return { ...prevData, password: true };
-                      });
-                    }
-                  }}
-                  error={requiredFormData.password}
-                />
-                <div
-                  className="flex items-center justify-end gap-2 cursor-pointer"
-                  onClick={() => {
-                    router.push("/auth/forgetpassword");
-                  }}
-                >
-                  <Typography
-                    textColor="text-primary"
-                    textWeight="font-[400]"
-                    textSize="text-[12px]"
-                  >
-                    Forgot password
-                  </Typography>
-                  <Image src={arrowRight} alt="" />
-                </div>
-                <div className="mt-10">
-                  <Button
-                    loading={isLoading}
-                    children="Sign In"
-                    btnSize="large"
-                    variant="primary"
-                    clickHandler={() => {
-                      handleLogin();
-                    }}
-                  />
+                        if (data) {
+                          setReqiuredFormData((prevData) => {
+                            return { ...prevData, password: false };
+                          });
+                        } else {
+                          setReqiuredFormData((prevData) => {
+                            return { ...prevData, password: true };
+                          });
+                        }
+                      }}
+                      error={requiredFormData.password}
+                    />
+                    <div
+                      className="flex items-center justify-end gap-2 cursor-pointer"
+                      onClick={() => {
+                        router.push("/auth/forgetpassword");
+                      }}
+                    >
+                      <Typography
+                        textColor="text-primary"
+                        textWeight="font-[400]"
+                        textSize="text-[12px]"
+                      >
+                        Forgot password
+                      </Typography>
+                      <Image src={arrowRight} alt="" />
+                    </div>
+                    <div className="mt-10">
+                      <Button
+                        loading={isLoading}
+                        children="Sign In"
+                        btnSize="large"
+                        variant="primary"
+                        clickHandler={() => {
+                          handleLogin();
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
+              <div className={`${classes.second_container} `}>
+                <Image src={signupImage} alt="" />
+              </div>
             </div>
-          </div>
-          <div className={`${classes.second_container} `}>
-            <Image src={signupImage} alt="" />
           </div>
         </div>
       </div>
