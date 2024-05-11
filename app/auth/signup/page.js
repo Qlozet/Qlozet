@@ -128,7 +128,7 @@ const SignUp = () => {
       }
     } catch (error) {
       setIsLoading(false);
-      toast.success("Error", error);
+      // toast.success("Error", error);
     }
   };
   return (
