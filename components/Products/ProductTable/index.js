@@ -1,44 +1,49 @@
 import ExportComponent from "../../ExportButton";
-import CustomerTableItem from "../CustomerTableItem";
-const CustomerTable = ({ data, viewDetails, showModal }) => {
+import ProductTableItem from "../ProductTableItem";
+const ProductTable = ({ data, viewDetails, showModal }) => {
   return (
     <div className="mt-4 min-h-[50vh]">
       <table className="w-full">
         <thead className="w-full bg-[#F4F4F4] text-dark ">
           <tr>
-            <th className="w-[8%] px-2 py-4 text-[12px]">
+            <th className="w-[5%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]  text-dark">
                 Picture
               </div>
             </th>
-            <th className="w-[8%] px-2 py-4 text-[12px]">
+            <th className="w-[11%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]  text-dark">
-                Customer name
+                Product Name
               </div>
             </th>
             <th className="w-[8%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]  text-dark">
-                Email address
+                Product price
               </div>
             </th>
             <th className="w-[8%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]  text-dark">
-                Phone number
+                Category
               </div>
             </th>
             <th className="w-[8%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]  text-dark">
-                Total orders
+                Product type
               </div>
             </th>
             <th className="w-[8%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]  text-dark">
-                Last Order date
+                Tag
               </div>
             </th>
             <th className="w-[9%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]  text-dark">
-                Status
+                Quantity
+              </div>
+            </th>
+            <th className="w-[9%] px-2 py-4 text-[12px]">
+              <div className="flex items-center justify-start font-[500]  text-dark">
+                Product Status
               </div>
             </th>
             <th className="w-[8%] px-2 py-4 text-[12px]">
@@ -48,7 +53,7 @@ const CustomerTable = ({ data, viewDetails, showModal }) => {
         </thead>
         <tbody>
           {data.map((item) => (
-            <CustomerTableItem {...item} viewDetails={showModal} />
+            <ProductTableItem {...item} viewDetails={showModal} />
           ))}
         </tbody>
       </table>
@@ -56,4 +61,4 @@ const CustomerTable = ({ data, viewDetails, showModal }) => {
   );
 };
 
-export default CustomerTable;
+export default ProductTable;

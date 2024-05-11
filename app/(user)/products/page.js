@@ -13,6 +13,8 @@ import CustomerTable from "@/components/Customer/CustomerTable";
 import DonutChart from "@/components/Chat/DoughnutChat";
 import classes from "./index.module.css";
 import MobileSideBar from "@/components/MobileSideBar";
+import UpdateComponent from "@/components/UpdateComponent";
+import ProductTable from "@/components/Products/ProductTable";
 const Products = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [viewCustomerDetails, setCustomerDetails] = useState(false);
@@ -64,13 +66,14 @@ const Products = () => {
 
   const tableData = [
     {
-      date: "My name iss",
-      orderId: "My name iss",
+      picture: "My name iss",
       productName: "My name iss",
-      productPrice: "12222",
-      CustomerName: "My name iss",
-      AmountPaid: "My name iss",
-      DeliveryStatus: "My name iss",
+      productPrice: "My name iss",
+      category: "12222",
+      productType: "My name iss",
+      tag: "My name iss",
+      quiantity: "5662",
+      ProductStatus: "My name iss",
     },
   ];
   const [showMobileNav, setShowMobileNav] = useState(false);
@@ -201,12 +204,12 @@ const Products = () => {
               /> */}
             </div>
           </div>
-          <div className="hidden md:block">
-            <CustomerTable data={tableData} showModal={showModal} />
+          <div className="my-4 block md:hidden">
+            <UpdateComponent />
           </div>
+          <ProductTable data={tableData} showModal={showModal} />
         </div>
       </div>
-
       {viewCustomerDetails && (
         <Modal
           content={
