@@ -5,6 +5,7 @@ import TextInput from "../../TextInput";
 import FileInput from "../../uploadFileinput/UploadFileInput";
 import userIcon from "../../../public/assets/svg/Frame.svg";
 import Typography from "@/components/Typography";
+import DashedComponent from "@/components/DashedComponent";
 const CompanyDetails = () => {
   return (
     <div className="bg-white w-full p-4 mx-0 md:mx-2">
@@ -38,13 +39,7 @@ const CompanyDetails = () => {
           </Typography>
         </div>
       </div>
-      <div className="items-center justify-between my-4 hidden md:flex">
-        <div className="border-gray-200 border-dashed border-[1px] w-full"></div>
-        <div className="min-w-[9rem] flex items-center justify-center">
-          Company info
-        </div>
-        <div className="border-gray-200 border-dashed border-[1px] w-full"></div>
-      </div>
+      <DashedComponent name={"Company info"} />
       <div className="block md:flex items-center justify-between gap-6 ">
         <div className="w-full">
           <TextInput
@@ -147,7 +142,7 @@ const CompanyDetails = () => {
             label="Upload company logo"
             // placeholder="Enter NIN"
             setValue={(data) => {}}
-          />{" "}
+          />
         </div>
         <div className="w-full">
           <FileInput label="Upload CAC Document" setValue={(data) => {}} />
