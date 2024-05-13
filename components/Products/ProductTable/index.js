@@ -70,90 +70,92 @@ const ProductTable = ({ data, viewDetails, showModal }) => {
           </tbody>
         </table>
       </div>
-
-      <div className="flex items-center justify-between">
-        <div className="w-[70%] block">
-          <SearchInput placeholder="Search" />
-        </div>
-        <div className="flex items-center justify-center">
-          <Image src={icon} />
-        </div>
-        <div className="flex items-center justify-center">
-          <div className="w-[3rem] h-[3rem] bg-primary rounded-[12px] flex items-center justify-center">
-            <Image src={exportIcon} />
+      <div className="block md:hidden">
+        {" "}
+        <div className="flex items-center justify-between ">
+          <div className="w-[70%] block">
+            <SearchInput placeholder="Search" />
+          </div>
+          <div className="flex items-center justify-center">
+            <Image src={icon} />
+          </div>
+          <div className="flex items-center justify-center">
+            <div className="w-[3rem] h-[3rem] bg-primary rounded-[12px] flex items-center justify-center">
+              <Image src={exportIcon} />
+            </div>
           </div>
         </div>
-      </div>
-      <div>
         <div>
-          <div className="flex items-center justify-between">
-            <Image
-              src={defaultImage}
-              alt=""
-              className="w-[5rem] h-[5rem] rounded-[12px]"
-            />
-            <Image src={moreIcon} alt="" />
-          </div>
           <div>
             <div className="flex items-center justify-between">
-              <div className="flex flex-col gap-1 mt-2">
-                <Typography
-                  textColor="text-gray-100"
-                  textWeight="font-normal"
-                  textSize="text-[12px]"
-                >
-                  Product
-                </Typography>
-                <Typography
-                  textColor="text-dark"
-                  textWeight="font-normal"
-                  textSize="text-[14px]"
-                >
-                  Hakeem Mensah
-                </Typography>
-              </div>
-              <div className="flex flex-col gap-1 mt-2 items-end">
-                <Typography
-                  textColor="text-gray-100"
-                  textWeight="font-normal"
-                  textSize="text-[12px]"
-                >
-                  Category
-                </Typography>
-                <Typography
-                  textColor="text-dark"
-                  textWeight="font-normal"
-                  textSize="text-[14px]"
-                >
-                  Gown
-                </Typography>
-              </div>
+              <Image
+                src={defaultImage}
+                alt=""
+                className="w-[5rem] h-[5rem] rounded-[12px]"
+              />
+              <Image src={moreIcon} alt="" />
             </div>
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col gap-1 mt-2">
-                <Typography
-                  textColor="text-gray-100"
-                  textWeight="font-normal"
-                  textSize="text-[12px]"
-                >
-                  Quantity
-                </Typography>
-                <Quantity />
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-1 mt-2">
+                  <Typography
+                    textColor="text-gray-100"
+                    textWeight="font-normal"
+                    textSize="text-[12px]"
+                  >
+                    Product
+                  </Typography>
+                  <Typography
+                    textColor="text-dark"
+                    textWeight="font-normal"
+                    textSize="text-[14px]"
+                  >
+                    Hakeem Mensah
+                  </Typography>
+                </div>
+                <div className="flex flex-col gap-1 mt-2 items-end">
+                  <Typography
+                    textColor="text-gray-100"
+                    textWeight="font-normal"
+                    textSize="text-[12px]"
+                  >
+                    Category
+                  </Typography>
+                  <Typography
+                    textColor="text-dark"
+                    textWeight="font-normal"
+                    textSize="text-[14px]"
+                  >
+                    Gown
+                  </Typography>
+                </div>
               </div>
-              <div className="flex flex-col gap-1 mt-2 items-end justify-center">
-                <Typography
-                  textColor="text-gray-100"
-                  textWeight="font-normal"
-                  textSize="text-[12px]"
-                >
-                  Status
-                </Typography>
-                <OrderStatus
-                  text="Active"
-                  bgColor="bg-success-300"
-                  color="text-success"
-                  addMaxWidth={true}
-                />
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-1 mt-2">
+                  <Typography
+                    textColor="text-gray-100"
+                    textWeight="font-normal"
+                    textSize="text-[12px]"
+                  >
+                    Quantity
+                  </Typography>
+                  <Quantity />
+                </div>
+                <div className="flex flex-col gap-1 mt-2 items-end justify-center">
+                  <Typography
+                    textColor="text-gray-100"
+                    textWeight="font-normal"
+                    textSize="text-[12px]"
+                  >
+                    Status
+                  </Typography>
+                  <OrderStatus
+                    text="Active"
+                    bgColor="bg-success-300"
+                    color="text-success"
+                    addMaxWidth={true}
+                  />
+                </div>
               </div>
             </div>
           </div>

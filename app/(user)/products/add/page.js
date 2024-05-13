@@ -21,16 +21,11 @@ import Quantity from "@/components/Quantity";
 import Typography from "@/components/Typography";
 import CustomiSationButton from "@/components/CustomizationButton";
 import CustomizeOrder from "@/components/Products/CustomizeOrder";
+import VariantTable from "./VariantTable";
 
 const AddProduct = () => {
-  const [dropDownValue, setDropDownValue] = useState("");
-  const [showCustomiseOrder, setShowCustomiseOrder] = useState(true);
-  const [showBillingAndInvioce, setShowBillingAndInvioce] = useState(false);
-  const [showWarehouse, setShowWarehouse] = useState(false);
-  const [showShippingPatners, setShowShippingPatners] = useState(false);
-  const [showUserAndPermission, setShowUserAndPermission] = useState(false);
-  const [showCategory, setShowCategory] = useState(false);
-  const [currentNav, setCurrentNav] = useState("Shop details");
+  const [showCustomiseOrder, setShowCustomiseOrder] = useState(false);
+
   const [showMobileNav, setShowMobileNav] = useState(false);
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
@@ -39,41 +34,32 @@ const AddProduct = () => {
     setCustomerDetails(false);
     setShowHistory(false);
   };
-
-  const topNavData = [
+  const tableData = [
     {
-      item: "Tops",
-      link: "",
-      handleFunction: (data) => {},
+      date: "Hello",
+      transactionId: "Hello",
+      transactionType: "Hello",
+      narration: "Hello",
+      amount: "Hello",
+      status: "Hello",
     },
     {
-      item: "Bottoms",
-      link: "",
-      handleFunction: (data) => {},
+      date: "Hello",
+      transactionId: "Hello",
+      transactionType: "Hello",
+      narration: "Hello",
+      amount: "Hello",
+      status: "Hello",
     },
     {
-      item: "Dresses",
-      navWidth: "min-w-[8rem] md:min-w-w-[0]",
-      link: "",
-      handleFunction: (data) => {},
+      date: "Hello",
+      transactionId: "Hello",
+      transactionType: "Hello",
+      narration: "Hello",
+      amount: "Hello",
+      status: "Hello",
     },
-    {
-      item: "Outfits",
-      link: "",
-      navWidth: "min-w-[10rem] md:min-w-w-[0]",
-      handleFunction: (data) => {},
-    },
-    {
-      item: "Skirts",
-      link: "",
-      navWidth: "min-w-[13rem] md:min-w-w-[0]",
-      handleFunction: (data) => {
-       
-      },
-    },
-  
   ];
-
   return (
     <div className="flex bg-[#F8F9FA]">
       <div className="">
@@ -190,13 +176,10 @@ const AddProduct = () => {
                 />
               </div>
             </div>
-
             <div className="my-4">
               <DashedComponent name={"Customization"} />
             </div>
-
             <div>
-              {" "}
               <div className="">
                 <Typography
                   textWeight="font-[700]"
@@ -209,8 +192,65 @@ const AddProduct = () => {
               </div>
             </div>
             <div>
-              <CustomiSationButton />
+              <CustomiSationButton
+                handleClick={() => {
+                  setShowCustomiseOrder(true);
+                }}
+              />
             </div>
+            <div className="my-4">
+              <DashedComponent name={"Product variants"} />
+            </div>
+
+            <div className="flex items-center">
+              <Typography
+                textWeight="font-[700]"
+                textSize="text-[18px]"
+                verticalPadding="my-2"
+                textColor="text-dark"
+              >
+                Add options
+              </Typography>
+              <Typography
+                textWeight="font-[500]"
+                textSize="text-[16px]"
+                verticalPadding="my-2"
+                textColor="text-gray-200"
+              >
+                (Variants)
+              </Typography>
+            </div>
+            <div>
+              <div className="w-full">
+                <SelectInput
+                  placeholder={"Tags"}
+                  // value={dropDownValue}
+                  setValue={(data) => {
+                    //   setDropDownValue(data);
+                  }}
+                  data={[{ text: "Male" }, { text: "Female" }]}
+                  label="Enter tags"
+                />
+              </div>
+              <div className="w-full">
+                <ColorInput
+                  label="Colour"
+                  placeholder="Choose  colours available for this product"
+                  setValue={(data) => {}}
+                />
+              </div>
+            </div>
+            <div className="flex items-center">
+              <Typography
+                textWeight="font-[700]"
+                textSize="text-[18px]"
+                verticalPadding="my-2"
+                textColor="text-dark"
+              >
+                Set variants
+              </Typography>
+            </div>
+            <VariantTable data={tableData} />
             <div className="my-4">
               <Button
                 children="Save"
@@ -227,16 +267,14 @@ const AddProduct = () => {
         {showCustomiseOrder && (
           <Modal
             content={
-              <CustomizeOrder topNavData={topNavData} closeModal={closeModal} />
+              <CustomizeOrder
+                closeModal={() => {
+                  setShowCustomiseOrder(false);
+                }}
+              />
             }
           ></Modal>
         )}
-        {/* {currentNav === "Shop details" && <CompanyDetails />}
-        {currentNav === "Billing and invoice" && <BillingAndInvioce />}
-        {currentNav === "Warehouses" && <Warehouse />}
-        {currentNav === "Shipping partners" && <Shipping />}
-        {currentNav === "Users and permissions" && <UserAndPermission />}
-        {currentNav === "Categories" && <Category />} */}
       </div>
     </div>
   );

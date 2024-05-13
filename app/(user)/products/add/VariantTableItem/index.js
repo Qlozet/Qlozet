@@ -1,0 +1,58 @@
+import OrderStatus from "@/components/order/OrderStatus";
+import AddQuantity from "../Quantity";
+import AvailableSize from "../AvailableSize";
+import Variant from "../Variant";
+import Image from "next/image";
+import icon from "../../../../../public/assets/svg/image-frame.svg";
+import checkboxIcon from "../../../../../public/assets/svg/checkbox-gray.svg";
+import trashGray from "../../../../../public/assets/svg/trash-gray.svg";
+const VariantTableItem = ({
+  date,
+  transactionId,
+  transactionType,
+  narration,
+  amount,
+  status,
+  viewDetails,
+}) => {
+  return (
+    <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
+      <td className="text-[12px] font-normal p-4 text-dark border-solid border-r-[1px] border-gray-300">
+        <Variant bg="red" />
+      </td>
+      <td className="text-[12px] font-normal p-4 text-dark border-solid border-r-[1px] border-gray-300">
+        <AddQuantity />
+      </td>
+      <td className="text-[12px] font-normal p-4 text-dark border-solid border-r-[1px] border-gray-300">
+        <AvailableSize />
+      </td>
+      <td className="text-[12px] font-normal p-4 text-dark border-solid border-r-[1px] border-gray-300">
+        <div className="flex items-center gap-3">
+          <Image src={icon} alt="" />
+          <Image src={icon} alt="" />
+          <Image src={icon} alt="" />
+          <Image src={icon} alt="" />
+          <Image src={icon} alt="" />
+        </div>
+      </td>
+      <td className="text-[12px] font-normal p-4 text-dark  border-solid border-r-[1px] border-gray-300">
+        <div className="flex w-[100%] justify-between px-4">
+          <div className="w-[50%] flex items-center justify-center">
+            <div>
+              <Image src={checkboxIcon} alt="" />
+            </div>
+          </div>
+          <div className="w-[50%]  border-solid border-r-[1px] border-gray-300">
+            <div>
+              <Image src={trashGray} alt="" />
+            </div>
+          </div>
+        </div>
+      </td>
+
+      {/* <Modal content={<OrderDetails />}></Modal> */}
+    </tr>
+  );
+};
+
+export default VariantTableItem;

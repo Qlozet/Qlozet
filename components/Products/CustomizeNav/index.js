@@ -6,6 +6,7 @@ const CustomizeNav = ({
   active,
   data,
   closeModal,
+  clickCurrentNav,
   width,
   full,
   bg,
@@ -37,11 +38,14 @@ const CustomizeNav = ({
         >
           {data.map((item) => (
             <div
-              className={`${
+              className={`cursor-pointer ${
                 active === item.item
                   ? "border-solid border-b-[2px] border-primary"
                   : ""
               }`}
+              onClick={() => {
+                clickCurrentNav(item.item);
+              }}
             >
               <Typography
                 textColor={`${
