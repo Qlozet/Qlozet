@@ -12,7 +12,8 @@ const Shipping = () => {
 
   return (
     <div>
-      <ShippingTable />
+        <ShippingTable />
+   
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Logo from "@/components/Logo";
 import classes from "./index.module.css";
 import Typography from "@/components/Typography";
-import { getRequest } from "@/api/request";
+import { getRequest } from "@/api/method";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/Loader";
 import Toast from "@/components/ToastComponent/toast";

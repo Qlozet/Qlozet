@@ -12,8 +12,9 @@ import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import VerticalBarGraph from "@/components/VerticalBarGraph";
 import UpdateComponent from "@/components/UpdateComponent";
 import RecentOrder from "@/components/RecentOrder";
-import { getRequest } from "@/api/request";
+import { getRequest } from "@/api/method";
 import MobileSideBar from "@/components/MobileSideBar";
+import getVendorDetails from "@/api/request";
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [totalCustomer, setTotalCustomer] = useState("0");
@@ -124,6 +125,14 @@ const Dashboard = () => {
     getLocationWithHighestCustomer();
   }, []);
 
+  const getVendorDetailshandler = async () => {
+    const response = await getVendorDetails();
+    console.log(response);
+  };
+
+  useEffect(() => {
+    getVendorDetailshandler();
+  }, []);
   return (
     <div className="flex bg-gray-400 w-full h-full">
       <div className="">

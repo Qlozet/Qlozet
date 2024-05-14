@@ -11,7 +11,7 @@ import Step2 from "@/components/SignUpStep/step2";
 import Step3 from "@/components/SignUpStep/Step3";
 import Step5 from "@/components/SignUpStep/Step5";
 import { validator } from "@/utils/helper";
-import { postRequest } from "@/api/request";
+import { postRequest } from "@/api/method";
 import Step4 from "@/components/SignUpStep/Step4";
 import Toast from "@/components/ToastComponent/toast";
 import Logo from "@/components/Logo";

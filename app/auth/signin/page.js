@@ -11,7 +11,7 @@ import classes from "./index.module.css";
 import { useRouter } from "next/navigation";
 import EmailInptut from "@//components/EmailInput";
 import validator from "@/utils/validator";
-import { postRequest } from "@/api/request";
+import { postRequest } from "@/api/method";
 import toast from "react-hot-toast";
 import Toast from "@/components/ToastComponent/toast";
 import { setToken } from "@/utils/localstorage";
@@ -34,6 +34,7 @@ const SignIn = () => {
           businessEmail: formData.businessEmail,
           password: formData.password,
         });
+        console.log(response);
         response && setIsLoading(false);
 
         if (response.data.success === true) {
