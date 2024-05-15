@@ -125,6 +125,7 @@ const AddProduct = () => {
               </div>
               <div className="w-full">
                 <SelectInput
+                  index={"30"}
                   placeholder={"Enter product type"}
                   // value={dropDownValue}
                   setValue={(data) => {
@@ -166,7 +167,7 @@ const AddProduct = () => {
               </div>
             </div>
             <div className="block md:flex items-center justify-between gap-6">
-              <div className="w-[32%]">
+              <div className="w-[100%] md:w-[32%]">
                 <Quantity
                   label="Available quantity"
                   placeholder="Enter available quantity"
@@ -228,6 +229,7 @@ const AddProduct = () => {
                   }}
                   data={[{ text: "Male" }, { text: "Female" }]}
                   label="Enter tags"
+                  index="z-40"
                 />
               </div>
               <div className="w-full">
@@ -248,7 +250,10 @@ const AddProduct = () => {
                 Set variants
               </Typography>
             </div>
-            <VariantTable data={tableData} />
+            <div className="overflow-x-scroll">
+              <VariantTable data={tableData} />
+            </div>
+
             <div className="my-4">
               <Button
                 children="Save"

@@ -5,11 +5,11 @@ const AvailableSize = () => {
     <div>
       <div>
         <div className="flex items-center gap-2">
-          <div className=" flex items-center justify-center w-[3rem] h-[1.7rem] border-gray-300 border-solid border-[1.5px] rounded-[6px]">
+          <div className=" flex items-center justify-center w-[2.5rem] h-[1.7rem] border-gray-300 border-solid border-[1.5px] rounded-[6px]">
             <Typography
               textColor="text-primary"
               textWeight="font-[500]"
-              textSize="text-[16px]"
+              textSize="text-[14px]"
             >
               S
             </Typography>
@@ -18,7 +18,7 @@ const AvailableSize = () => {
             <Typography
               textColor="text-primary"
               textWeight="font-[500]"
-              textSize="text-[16px]"
+              textSize="text-[14px]"
             >
               M
             </Typography>
@@ -27,7 +27,7 @@ const AvailableSize = () => {
             <Typography
               textColor="text-primary"
               textWeight="font-[500]"
-              textSize="text-[16px]"
+              textSize="text-[14px]"
             >
               L
             </Typography>
@@ -36,7 +36,7 @@ const AvailableSize = () => {
             <Typography
               textColor="text-primary"
               textWeight="font-[500]"
-              textSize="text-[16px]"
+              textSize="text-[14px]"
             >
               XL
             </Typography>
@@ -45,7 +45,7 @@ const AvailableSize = () => {
             <Typography
               textColor="text-primary"
               textWeight="font-[500]"
-              textSize="text-[16px]"
+              textSize="text-[14px]"
             >
               XXL
             </Typography>

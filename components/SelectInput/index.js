@@ -3,10 +3,10 @@ const { default: Image } = require("next/image");
 import arrowDownIcon from "../../public/assets/svg/arrow-down.svg";
 import Typography from "../Typography";
 import classes from "./index.module.css";
-const SelectInput = ({ value, placeholder, setValue, data, label }) => {
+const SelectInput = ({ value, placeholder, setValue, data, label, index }) => {
   const [showDropDown, setShowDropDown] = useState(false);
   return (
-    <div className={`bg-white w-full relative z-50`}>
+    <div className={`bg-white w-full relative ${index ? index : "z-10"}`}>
       <div
         className={`${classes.container}  border-solid   `}
         onClick={() => {
@@ -26,7 +26,7 @@ const SelectInput = ({ value, placeholder, setValue, data, label }) => {
         {/* )} */}
       </div>
       {showDropDown && (
-        <div className="overflow-hidden border-[1px] border-solid border-primary w-full cursor-pointer absolute top-[66px] bg-white rounded-[12px]">
+        <div className="overflow-hidden border-[1px] border-solid border-primary w-full cursor-pointer absolute top-[70px] bg-white rounded-[12px]">
           <div className="p-2 rounded-b-[12px] ">
             {/* <p className="text-[14px] text-gray-100 font-[200]">
               Reject order menu

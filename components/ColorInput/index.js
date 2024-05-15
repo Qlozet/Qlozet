@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ColorPicker, useColor } from "react-color-palette";
 import ColorInputContainer from "../ColorPicker";
 import Typography from "../Typography";
+import classes from "./index.module.css";
 import { useState } from "react";
 const ColorInput = ({
   label,
@@ -15,6 +16,8 @@ const ColorInput = ({
   disabled = false,
 }) => {
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [currentColor, setCurrentColor] = useState("#561ecb");
+  const [selectedColors, setSelectedColors] = useState([]);
   var colorArray = [
     "#FF6633",
     "#FFB399",
@@ -64,14 +67,14 @@ const ColorInput = ({
   ];
   const [color, setColor] = useColor("#561ecb");
   return (
-    <div className="relative z-10">
-      <div className="my-3 ">
+    <div className="relative z-30">
+      <div className="my-3">
         {leftIcon}
         <label className="text-[14px] font-light my-2 text-dark">{label}</label>
         <div className="flex items-center w-full">
           <div
             type="text"
-            className={`min-h-[2.8rem] py-3 cursor-pointer px-4 w-full border-solid border-[1.5px]  text-dark placeholder-gray-200
+            className={` min-h-[2.8rem] cursor-pointer px-4 w-full border-solid border-[1.5px]  text-dark placeholder-gray-200
           focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 ${
             error && "border-danger"
           } border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 ${
@@ -82,11 +85,36 @@ const ColorInput = ({
             // placeholder={placeholder}
             // onChange={(e) => {
             //   setValue(e.target.value);
-            // }}
+            //}}
             onClick={() => {
               setShowColorPicker(true);
             }}
-          ></div>
+          >
+            <div
+              className={`${classes.scrollbarElement} overflow-x-scroll absolute top-[2rem] flex items-center gap-4 w-[75%]`}
+            >
+              {showColorPicker && (
+                <div>
+                  <div
+                    className="w-[4rem] h-[2rem] rounded"
+                    style={{
+                      backgroundColor: currentColor,
+                    }}
+                  ></div>
+                </div>
+              )}
+              {selectedColors.map((color) => (
+                <div>
+                  <div
+                    className="w-[4rem] h-[2rem] rounded"
+                    style={{
+                      backgroundColor: color,
+                    }}
+                  ></div>
+                </div>
+              ))}
+            </div>
+          </div>
           <div className="absolute top-[2.2rem] right-[-1.5rem] cursor-pointer">
             <Image src={colourIcon} className="translate-x-[-2rem]" />
           </div>
@@ -108,7 +136,37 @@ const ColorInput = ({
       >
         {showColorPicker && (
           <div className="mx-w-[300px] absolute top-[4.5rem] right-0 bg-[#2c2c2c] p-b-3 border-[2px] border-solid border-gray-200">
-            <ColorPicker color={color} onChange={setColor} />
+            <div className="p-4 flex items-center justify-between">
+              <Typography
+                textColor="text-white"
+                textWeight="font-[600]"
+                textSize="text-[14px]"
+              >
+                Custom
+              </Typography>
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  setSelectedColors([currentColor, ...selectedColors]);
+                  setShowColorPicker(false);
+                }}
+              >
+                <Typography
+                  textColor="text-white"
+                  textWeight="font-[600]"
+                  textSize="text-[14px]"
+                >
+                  X
+                </Typography>
+              </div>
+            </div>
+            <ColorPicker
+              color={color}
+              onChange={(currentColor) => {
+                setColor(currentColor);
+                setCurrentColor(currentColor.hex);
+              }}
+            />
             <div className="border-solid border-gray-200 border-b-[1px] px-2 pb-4">
               <div className="flex items-center">
                 <div className="w-[25%] h-[2rem] flex items-center justify-center px-2">
@@ -123,8 +181,7 @@ const ColorInput = ({
                 <div className="w-[75%]  h-[2rem] border-solid border-[2px] border-[rgba(13,153,255)] flex items-center">
                   <div className="w-[75%] flex items-center">
                     <p className="font-[500] text-[12px] text-white bg-[rgba(13,153,255,.2)] ml-[1px]">
-                      {" "}
-                      EEEEEE
+                      {currentColor}
                     </p>
                   </div>
                   <div className="w-[25%] border-l-[1px] border-solid border-gray-400">
@@ -148,6 +205,9 @@ const ColorInput = ({
                   <div className="grid grid-cols-9 gap-2 mt-4">
                     {colorArray.map((col) => (
                       <div
+                        onClick={() => {
+                          setCurrentColor(col);
+                        }}
                         style={{ backgroundColor: col }}
                         className="w-[1.5rem] h-[1.5rem]"
                       ></div>

@@ -17,35 +17,35 @@ const VariantTableItem = ({
 }) => {
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-[12px] font-normal p-4 text-dark border-solid border-r-[1px] border-gray-300">
+      <td className="text-[12px] font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
         <Variant bg="red" />
       </td>
-      <td className="text-[12px] font-normal p-4 text-dark border-solid border-r-[1px] border-gray-300">
+      <td className="text-[12px] font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
         <AddQuantity />
       </td>
-      <td className="text-[12px] font-normal p-4 text-dark border-solid border-r-[1px] border-gray-300">
+      <td className="text-[12px] font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
         <AvailableSize />
       </td>
-      <td className="text-[12px] font-normal p-4 text-dark border-solid border-r-[1px] border-gray-300">
+      <td className="text-[12px] font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
         <div className="flex items-center gap-3">
-          <Image src={icon} alt="" />
-          <Image src={icon} alt="" />
-          <Image src={icon} alt="" />
-          <Image src={icon} alt="" />
-          <Image src={icon} alt="" />
+          <Image src={icon} alt="" className="w-[2.5rem]" />
+          <Image src={icon} alt="" className="w-[2.5rem]" />
+          <Image src={icon} alt="" className="w-[2.5rem]" />
+          <Image src={icon} alt="" className="w-[2.5rem]" />
+          <Image src={icon} alt="" className="w-[2.5rem]" />
         </div>
       </td>
-      <td className="text-[12px] font-normal p-4 text-dark  border-solid border-r-[1px] border-gray-300">
+      <td className="text-[12px] font-normal px-1  text-dark  border-solid border-r-[1px] border-gray-300">
         <div className="flex w-[100%] justify-between px-4">
-          <div className="w-[50%] flex items-center justify-center">
-            <div>
-              <Image src={checkboxIcon} alt="" />
-            </div>
+          <div>
+            <Image src={checkboxIcon} alt="" />
           </div>
-          <div className="w-[50%]  border-solid border-r-[1px] border-gray-300">
-            <div>
-              <Image src={trashGray} alt="" />
-            </div>
+        </div>
+      </td>
+      <td className="text-[12px] font-normal px-1  text-dark  border-solid border-r-[1px] border-gray-300">
+        <div className="flex w-[100%] justify-between px-4">
+          <div>
+            <Image src={trashGray} alt="" />
           </div>
         </div>
       </td>
