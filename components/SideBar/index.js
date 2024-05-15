@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Logo from "../Logo";
 import dashboardIcon from "../../public/assets/svg/dashboardIcon.svg";
 import activeDashboardIcon from "../../public/assets/svg/activeDashboardIcon.svg";
@@ -19,11 +19,12 @@ import vendorDefault from "../../public/assets/svg/user-octagon.svg";
 import vendorActive from "../../public/assets/svg/user-octagon-active.svg";
 import Logout from "../Logout";
 import { useRouter } from "next/navigation";
-
+import { clearToken } from "@/utils/localstorage";
 import Image from "next/image";
 import Modal from "../Modal";
 import Typography from "../Typography";
 import Button from "../Button";
+import getVendorDetails from "@/api/request";
 
 const SideBar = ({ active }) => {
   const [showLogOutModal, setShowLogOutModal] = useState(false);
@@ -107,7 +108,9 @@ const SideBar = ({ active }) => {
             key={index}
             onClick={() => {
               item.function();
-              router.push(`${item.link}`);
+              if (item.link !== "") {
+                router.push(`../${item.link}`);
+              }
             }}
           >
             {active === item.name ? (

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Typography from "../Typography";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,7 @@ import userIcon from "../../public/assets/svg/user-octagon.svg";
 import menuIcon from "../../public/assets/svg/menu-icon.svg";
 import mobileProfile from "../../public/assets/svg/mobile-oct-icon.svg";
 import Profile from "../Profile.js";
+import getVendorDetails from "@/api/request";
 const DasboardNavWithOutSearch = ({
   name,
   addSearch,
@@ -25,6 +26,34 @@ const DasboardNavWithOutSearch = ({
   const showProfileHandler = () => {
     setShowProfile(!showProfile);
   };
+
+  const [userDetails, setUserDetails] = useState({
+    businessName: "",
+    profileImage: "",
+    personalName: "",
+  });
+
+  const getVendorDetailshandler = async () => {
+    const response = await getVendorDetails();
+    if (response.data) {
+      setUserDetails(response.data.data);
+      // setUserDetails({
+      //   businessName: response.data.data.businessName
+      //     ? response.data.data.businessName
+      //     : "",
+      //   personalName: response.data.data.personalName
+      //     ? response.data.data.personalName
+      //     : "",
+      //   profileImage: response.data.data.profileImage
+      //     ? response.data.data.profileImage
+      //     : "",
+      // });
+    }
+  };
+
+  useEffect(() => {
+    getVendorDetailshandler();
+  }, []);
   return (
     <div className={`${!hideNav ? " " : "pt-2"} rounded-[15px]`}>
       <div className="block md:hidden">
@@ -111,7 +140,7 @@ const DasboardNavWithOutSearch = ({
               textWeight="font-normal"
               textSize="text-[16px]"
             >
-              Miskay Boutique
+              {/* {userDetails.businessName} */}
             </Typography>
             <div className="rounded-[12px] p-2 bg-[#F8F9FA] cursor-pointer">
               <Image

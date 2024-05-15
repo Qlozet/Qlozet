@@ -6,14 +6,30 @@ import Image from "next/image";
 import ReactStars from "react-stars";
 import Performance from "../Performance";
 import Rating from "../Rating";
+import { getGetUserDetails } from "@/utils/localstorage";
+import { useEffect, useState } from "react";
 const Profile = ({ closeProfile }) => {
+  const [userDetails, setUserDetails] = useState({
+    businessName: "",
+    profileImage: "",
+    personalName: "",
+  });
+  console.log(getGetUserDetails());
+  useEffect(() => {
+    console.log(getGetUserDetails().profilePicture);
+    setUserDetails({
+      businessName: getGetUserDetails().businessName,
+      profileImage: getGetUserDetails().profilePicture,
+      personalName: getGetUserDetails().personalName,
+    });
+  }, []);
   return (
     <div
       className={`fixed h-screen overflow-y-scroll w-screen top-0 right-0 flex justify-end`}
       onClick={closeProfile}
       style={{ backgroundColor: "rgba(0,0,0,.2)" }}
     >
-      <div className="w-screen relative bg-white z-30  md:max-w-[350px] ">
+      <div className="w-screen relative bg-white z-50  md:max-w-[350px] ">
         <div className="bg-white">
           <div>
             <div className="flex px-4 py-6 items-center justify-between">
@@ -33,14 +49,20 @@ const Profile = ({ closeProfile }) => {
             </div>
             <div>
               <div className="items-center justify-center">
-                <Image src={userIcon} alt="" className="my-2 mx-auto" />
+                <Image
+                  src={userIcon}
+                  width={30}
+                  height={30}
+                  alt=""
+                  className="my-2 mx-auto"
+                />
                 <div className="p-1 flex justify-center items-center">
                   <Typography
                     textColor="text-primary"
                     textWeight="font-bold"
                     textSize="text-[18px]"
                   >
-                    Kennedy Odogwu
+                    {userDetails.personalName}
                   </Typography>
                 </div>
                 <div className="flex justify-center items-center">
@@ -49,7 +71,7 @@ const Profile = ({ closeProfile }) => {
                     textWeight="font-normal"
                     textSize="text-[16px]"
                   >
-                    Miskay Boutique
+                    {userDetails.businessName}
                   </Typography>
                 </div>
                 <div className="border-b-[1px] border-solid border-gray-100 mx-4">

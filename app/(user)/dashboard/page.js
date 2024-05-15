@@ -7,18 +7,15 @@ import DashboardTopCard from "@/components/DashboardTopCard";
 import SideBar from "@/components/SideBar";
 import classes from "./index.module.css";
 import DonutChart from "@///components/Chat/DoughnutChat";
-import DropDown from "@/components/DropDown";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import VerticalBarGraph from "@/components/VerticalBarGraph";
-import Typography from "@/components/Typography";
-import Image from "next/image";
 import UpdateComponent from "@/components/UpdateComponent";
 import RecentOrder from "@/components/RecentOrder";
-import { getRequest } from "@/api/request";
-import { getToken } from "@/utils/localstorage";
+import { getRequest } from "@/api/method";
 import MobileSideBar from "@/components/MobileSideBar";
-import Profile from "@/components/Profile.js";
+import getVendorDetails from "@/api/request";
+import { setUserDetails } from "@/utils/localstorage";
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [totalCustomer, setTotalCustomer] = useState("0");
@@ -129,6 +126,8 @@ const Dashboard = () => {
     getLocationWithHighestCustomer();
   }, []);
 
+
+
   return (
     <div className="flex bg-gray-400 w-full h-full">
       <div className="">
@@ -203,7 +202,12 @@ const Dashboard = () => {
                 <ChatCard
                   text="Vendors by gender"
                   graph={
-                    <DonutChart data={chartData} width={"200"} height={"200"} />
+                    <DonutChart
+                      data={chartData}
+                      width={"200"}
+                      height={"200"}
+                      cutout={true}
+                    />
                   }
                 />
               </div>
@@ -226,7 +230,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="block md:flex w-full gap-4  mt-4 md:h-[32rem] h-[33rem]">
+          <div className="block md:flex w-full gap-4  mt-4 md:h-[32rem] h-[35rem]">
             <div
               className={`${classes.first_container} flex gap-4 mt-3 w-full `}
             >

@@ -10,7 +10,6 @@ import DonutChart from "@/components/Chat/DoughnutChat";
 import DropDown from "@/components/DropDown";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
-import Typography from "@/components/Typography";
 import OrderTable from "@/components/order/OrderTable";
 import Modal from "@/components/Modal";
 import SetTotalOrderPerDay from "@/components/SetTotalItemPerDayForm";
@@ -19,8 +18,6 @@ import TrackOrder from "@/components/order/TrackOrders";
 import RejectOrderModal from "@/components/order/RejectOrderModal";
 import CustomerDetails from "@/components/order/CustomerDetails";
 import MobileSideBar from "@/components/MobileSideBar";
-import DropDownComponent from "@/components/DropDownComponent";
-import UpdateComponent from "@/components/UpdateComponent";
 const Order = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [viewOrderDetails, setOrderDetails] = useState(false);
@@ -252,9 +249,6 @@ const Order = () => {
           />
         </div>
         <div className="">
-          <div className="my-4 block md:hidden">
-            <UpdateComponent />
-          </div>
           <div>
             <OrderTable
               data={tableData}

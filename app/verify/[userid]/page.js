@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Logo from "@/components/Logo";
 import classes from "./index.module.css";
 import Typography from "@/components/Typography";
-import { getRequest } from "@/api/request";
+import { getRequest } from "@/api/method";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/Loader";
 import Toast from "@/components/ToastComponent/toast";
@@ -14,14 +14,14 @@ const Verication = ({ params }) => {
   const verifyAccount = async () => {
     try {
       const response = await getRequest(`/vendor/verify/${params.userid}`);
-      if (response.success === true) {
-        toast(<Toast text={response.message} type="success" />);
+      if (response.data.success) {
+        toast(<Toast text={response.data.message} type="success" />);
         setLoading(false);
       } else {
-        toast(<Toast text={response.message} type="danger" />);
+        toast(<Toast text={response.data.message} type="danger" />);
       }
     } catch (error) {
-      toast(<Toast text={error.message} type="danger" />);
+      // toast(<Toast text={error.data.message} type="danger" />);
     }
   };
   useEffect(() => {

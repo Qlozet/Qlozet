@@ -11,10 +11,10 @@ import closeCircle from "../../public/assets/svg/close-circle.svg";
 import Button from "../Button";
 import classes from "./index.module.css";
 
-function UploadDocInput({ handleSelect }) {
+function UploadDocInput({ handleSelect, uploadfiles }) {
   // state
   const [showDropDown, setShowDropDown] = useState(false);
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState(uploadfiles);
   // functions
   const showdropDownHandler = () => {
     setShowDropDown(!showDropDown);

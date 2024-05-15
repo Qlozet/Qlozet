@@ -8,7 +8,7 @@ import classes from "./index.module.css";
 import PasswordInput from "@//components/PasswordInput";
 import PasswordValidate from "@//components/PasswordValidation";
 import validator from "@/utils/validator";
-import { postRequest } from "@/api/request";
+import { postRequest } from "@/api/method";
 import { useRouter } from "next/navigation";
 import Toast from "@/components/ToastComponent/toast";
 import toast from "react-hot-toast";

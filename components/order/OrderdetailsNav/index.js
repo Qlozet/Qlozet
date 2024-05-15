@@ -11,7 +11,6 @@ const OrderDetailNav = ({
   bg,
   navWidth,
 }) => {
-  console.log(data);
   return (
     <div
       className={`${width ? width : "w-full md:w-[40%]"} ${

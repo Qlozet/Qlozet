@@ -46,7 +46,7 @@ const Step2 = ({ formData, setFormData, requiredData, setRequiredData }) => {
           }}
         />
 
-        <TextInput
+        <NumberInput
           label="Phone number "
           placeholder="Enter your phone number "
           error={requiredData.phoneName}
@@ -64,8 +64,9 @@ const Step2 = ({ formData, setFormData, requiredData, setRequiredData }) => {
               });
             }
           }}
+          value={formData.phoneName}
         />
-        <TextInput
+        <NumberInput
           label="National Identity Number"
           placeholder="Enter your business official phone number"
           error={requiredData.nationalIdentityNumber}
@@ -83,6 +84,7 @@ const Step2 = ({ formData, setFormData, requiredData, setRequiredData }) => {
               });
             }
           }}
+          value={formData.nationalIdentityNumber}
         />
       </div>
     </div>

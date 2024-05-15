@@ -11,7 +11,7 @@ import Step2 from "@/components/SignUpStep/step2";
 import Step3 from "@/components/SignUpStep/Step3";
 import Step5 from "@/components/SignUpStep/Step5";
 import { validator } from "@/utils/helper";
-import { postRequest } from "@/api/request";
+import { postRequest } from "@/api/method";
 import Step4 from "@/components/SignUpStep/Step4";
 import Toast from "@/components/ToastComponent/toast";
 import Logo from "@/components/Logo";
@@ -21,10 +21,9 @@ import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch"
 const SignUp = () => {
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [businessLogo, setBusinessLogo] = useState("");
-  const [businessFiles, setBusinessFiles] = useState("");
+  const [businessLogo, setBusinessLogo] = useState([]);
+  const [businessFiles, setBusinessFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
   const [businessInfo, setBusinessInfo] = useState({
     businessName: "",
     businessEmail: "",
@@ -77,11 +76,11 @@ const SignUp = () => {
   };
 
   const handleSelectLogo = (file) => {
-    setBusinessLogo(file[0]);
+    setBusinessLogo(file);
   };
 
   const handleSelectFile = (files) => {
-    setBusinessFiles(files[0]);
+    setBusinessFiles(files);
   };
   const backHandler = () => {
     setStep(step - 1);
@@ -110,215 +109,223 @@ const SignUp = () => {
         );
         formData.append("password", passwordInfo.password);
         formData.append("confirmPassword", passwordInfo.confirmPassword);
-        formData.append("cacDocument", businessFiles);
-        formData.append("businessLogo", businessLogo);
+        formData.append("cacDocument", businessFiles[0]);
+        formData.append("businessLogo", businessLogo[0]);
+        console.log(businessFiles);
+        console.log(businessLogo);
         const response = await postRequest(`/vendor/signup`, formData, true);
         console.log(response);
         if (response.success) {
           setIsLoading(false);
           toast(<Toast text={response.message} type="success" />);
-          // toast.success(response.message);
         } else {
-          setIsLoading(true);
-          toast(<Toast text={response.message} type="dander" />);
+          setIsLoading(false);
+          toast(<Toast text={response.message} type="danger" />);
         }
-        console.log(response);
       } else {
+        setIsLoading(false);
         setrequiredFormData((prevData) => {
           return { prevData, ...data };
         });
       }
     } catch (error) {
-      toast.success("Error", error);
+      setIsLoading(false);
+      // toast.success("Error", error);
     }
   };
   return (
-    <section
-      className={`h-screen overflow-y-scroll 2xl:flex justify-center items-center`}
-    >
+    <section className={`h-screen overflow-hidden`}>
       <div
-        className={`${classes.section} w-full md:bg-white block md:flex items-center justify-center`}
+        className={`${classes.section}  md:bg-white block md:flex items-center justify-center`}
       >
-        <div className="block md:hidden">
-          <DasboardNavWithOutSearch
-            addSearch={false}
-            setValue={(data) => {
-              // console.log(data);
-            }}
-            hideNav={true}
-          />
-        </div>
-        <div className="block mt-2 mb-4  md:hidden">
-          <Logo />
-        </div>
-        <div className={`${classes.container} flex gap-8 max-w-7xl `}>
-          {step === 1 && (
-            <div
-              className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
-            >
-              <div className="hidden md:block">
-                <Logo />
-              </div>
-
-              <div className="mt-12">
-                {/* <Image src={previousIcon} alt="" onClick={backHandler} /> */}
-              </div>
-              <Step1
-                formData={businessInfo}
-                setFormData={setBusinessInfo}
-                setRequiredFormData={setrequiredFormData}
-                requiredFormData={requiredFormData}
+        <div className="bg-[rgba(0,0,0,.7)] md:bg-white h-screen w-screen 2xl:flex justify-center items-center overflow-y-scroll md:p-4">
+          <div>
+            <div className="block md:hidden">
+              <DasboardNavWithOutSearch
+                addSearch={false}
+                setValue={(data) => {}}
+                hideNav={true}
               />
-              <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
-                <Button
-                  children="Continue"
-                  btnSize="large"
-                  variant="primary"
-                  clickHandler={() => {
-                    handleBusinessInfo();
-                  }}
-                />
+            </div>
+            <div className="block mt-2 mb-4  md:hidden">
+              <Logo />
+            </div>
+            <div className={`${classes.container} flex gap-8 max-w-7xl `}>
+              {step === 1 && (
+                <div
+                  className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
+                >
+                  <div className="hidden md:block">
+                    <Logo />
+                  </div>
+
+                  <div className="mt-12">
+                    {/* <Image src={previousIcon} alt="" onClick={backHandler} /> */}
+                  </div>
+                  <Step1
+                    formData={businessInfo}
+                    setFormData={setBusinessInfo}
+                    setRequiredFormData={setrequiredFormData}
+                    requiredFormData={requiredFormData}
+                  />
+                  <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
+                    <Button
+                      children="Continue"
+                      btnSize="large"
+                      variant="primary"
+                      clickHandler={() => {
+                        handleBusinessInfo();
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+              {step === 2 && (
+                <div
+                  className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
+                >
+                  <div className="hidden md:block">
+                    <Logo />
+                  </div>
+
+                  <div className="mt-12 ml-6 md:ml-0">
+                    <Image
+                      src={previousIcon}
+                      alt=""
+                      onClick={backHandler}
+                      className="cursor-pointer"
+                    />
+                  </div>
+                  <Step2
+                    formData={personalInfo}
+                    setFormData={setPersonalInfo}
+                    requiredData={requiredFormData}
+                    setRequiredData={setrequiredFormData}
+                  />
+                  <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
+                    {" "}
+                    <Button
+                      children="Continue"
+                      btnSize="large"
+                      variant="primary"
+                      clickHandler={() => {
+                        handlePersonalInfo();
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+              {step === 3 && (
+                <div
+                  className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
+                >
+                  <div className="hidden md:block">
+                    <Logo />
+                  </div>
+
+                  <div className="mt-12 ml-6 md:ml-0">
+                    {" "}
+                    <Image
+                      src={previousIcon}
+                      alt=""
+                      onClick={backHandler}
+                      className="cursor-pointer"
+                    />
+                  </div>
+                  <Step3
+                    handleSelect={handleSelectFile}
+                    businessFiles={businessFiles}
+                  />
+                  <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
+                    {" "}
+                    <Button
+                      children="Continue"
+                      btnSize="large"
+                      variant="primary"
+                      clickHandler={() => {
+                        setStep(step + 1);
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+              {step === 4 && (
+                <div
+                  className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
+                >
+                  <div className="hidden md:block">
+                    <Logo />
+                  </div>
+                  <div className="mt-12 ml-6 md:ml-0">
+                    {" "}
+                    <Image
+                      src={previousIcon}
+                      alt=""
+                      onClick={backHandler}
+                      className="cursor-pointer"
+                    />
+                  </div>
+                  <Step4
+                    handleSelect={handleSelectLogo}
+                    businessLogo={businessLogo}
+                  />
+                  <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
+                    {" "}
+                    <Button
+                      children="Continue"
+                      btnSize="large"
+                      variant="primary"
+                      clickHandler={() => {
+                        setStep(step + 1);
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {step === 5 && (
+                <div
+                  className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
+                >
+                  <div className="hidden md:block ">
+                    <Logo />
+                  </div>
+
+                  <div className="mt-12 ml-6 md:ml-0">
+                    {" "}
+                    <Image
+                      src={previousIcon}
+                      alt=""
+                      onClick={backHandler}
+                      className="cursor-pointer"
+                    />
+                  </div>
+
+                  <Step5
+                    formData={passwordInfo}
+                    setFormData={setPasswordInfo}
+                    setRequiredData={setrequiredFormData}
+                    requiredData={requiredFormData}
+                  />
+                  <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
+                    {" "}
+                    <Button
+                      loading={isLoading}
+                      children="Submit"
+                      btnSize="large"
+                      variant="primary"
+                      clickHandler={() => {
+                        handleSubmit();
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className={`${classes.second_container} `}>
+                <Image src={signupImage} alt="" />
               </div>
             </div>
-          )}
-          {step === 2 && (
-            <div
-              className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
-            >
-              <div className="hidden md:block">
-                <Logo />
-              </div>
-
-              <div className="mt-12 ml-6 md:ml-0">
-                <Image
-                  src={previousIcon}
-                  alt=""
-                  onClick={backHandler}
-                  className="cursor-pointer"
-                />
-              </div>
-              <Step2
-                formData={personalInfo}
-                setFormData={setPersonalInfo}
-                requiredData={requiredFormData}
-                setRequiredData={setrequiredFormData}
-              />
-              <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
-                {" "}
-                <Button
-                  children="Continue"
-                  btnSize="large"
-                  variant="primary"
-                  clickHandler={() => {
-                    handlePersonalInfo();
-                  }}
-                />
-              </div>
-            </div>
-          )}
-          {step === 3 && (
-            <div
-              className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
-            >
-              <div className="hidden md:block">
-                <Logo />
-              </div>
-
-              <div className="mt-12 ml-6 md:ml-0">
-                {" "}
-                <Image
-                  src={previousIcon}
-                  alt=""
-                  onClick={backHandler}
-                  className="cursor-pointer"
-                />
-              </div>
-              <Step3 handleSelect={handleSelectFile} />
-              <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
-                {" "}
-                <Button
-                  children="Continue"
-                  btnSize="large"
-                  variant="primary"
-                  clickHandler={() => {
-                    setStep(step + 1);
-                  }}
-                />
-              </div>
-            </div>
-          )}
-          {step === 4 && (
-            <div
-              className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
-            >
-              <div className="hidden md:block">
-                <Logo />
-              </div>
-              <div className="mt-12 ml-6 md:ml-0">
-                {" "}
-                <Image
-                  src={previousIcon}
-                  alt=""
-                  onClick={backHandler}
-                  className="cursor-pointer"
-                />
-              </div>
-              <Step4 handleSelect={handleSelectLogo} />
-              <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
-                {" "}
-                <Button
-                  children="Continue"
-                  btnSize="large"
-                  variant="primary"
-                  clickHandler={() => {
-                    setStep(step + 1);
-                  }}
-                />
-              </div>
-            </div>
-          )}
-
-          {step === 5 && (
-            <div
-              className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
-            >
-              <div className="hidden md:block ">
-                <Logo />
-              </div>
-
-              <div className="mt-12 ml-6 md:ml-0">
-                {" "}
-                <Image
-                  src={previousIcon}
-                  alt=""
-                  onClick={backHandler}
-                  className="cursor-pointer"
-                />
-              </div>
-
-              <Step5
-                formData={passwordInfo}
-                setFormData={setPasswordInfo}
-                setRequiredData={setrequiredFormData}
-                requiredData={requiredFormData}
-              />
-              <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
-                {" "}
-                <Button
-                  loading={isLoading}
-                  children="Submit"
-                  btnSize="large"
-                  variant="primary"
-                  clickHandler={() => {
-                    handleSubmit();
-                  }}
-                />
-              </div>
-            </div>
-          )}
-
-          <div className={`${classes.second_container} `}>
-            <Image src={signupImage} alt="" />
           </div>
         </div>
       </div>

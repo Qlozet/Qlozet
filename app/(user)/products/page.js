@@ -9,11 +9,18 @@ import Typography from "@/components/Typography";
 import Modal from "@/components/Modal";
 import CustomerDetails from "@/components/order/CustomerDetails";
 import OrderHistory from "@/components/Customer/OrderHistory";
-import CustomerTable from "@/components/Customer/CustomerTable";
 import DonutChart from "@/components/Chat/DoughnutChat";
 import classes from "./index.module.css";
 import MobileSideBar from "@/components/MobileSideBar";
+import UpdateComponent from "@/components/UpdateComponent";
+import ProductTable from "@/components/Products/ProductTable";
+import addIcon from "../../../public/assets/svg/add-square.svg";
+import Button from "@/components/Button";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 const Products = () => {
+  const router = useRouter();
   const [dropDownValue, setDropDownValue] = useState("");
   const [viewCustomerDetails, setCustomerDetails] = useState(false);
   const [showHostory, setShowHistory] = useState(false);
@@ -64,13 +71,14 @@ const Products = () => {
 
   const tableData = [
     {
-      date: "My name iss",
-      orderId: "My name iss",
+      picture: "https://inaction.photos/images/31.png",
       productName: "My name iss",
-      productPrice: "12222",
-      CustomerName: "My name iss",
-      AmountPaid: "My name iss",
-      DeliveryStatus: "My name iss",
+      productPrice: "My name iss",
+      category: "12222",
+      productType: "My name iss",
+      tag: "My name iss",
+      quiantity: "5662",
+      ProductStatus: "My name iss",
     },
   ];
   const [showMobileNav, setShowMobileNav] = useState(false);
@@ -124,6 +132,40 @@ const Products = () => {
           }}
           showSideBar={showSideBar}
         />
+        <div className="flex items-center justify-end py-6 gap-6">
+          <div>
+            <Button
+              children={
+                <span className="flex justify-center items-center">
+                  <span>Import Products</span>
+                  <Image src={addIcon} className="ml-4" />
+                </span>
+              }
+              btnSize="small"
+              minWidth="min-w-[14rem]"
+              variant="primary"
+              clickHandler={() => {
+                setShowAddModal(true);
+              }}
+            />
+          </div>
+          <div>
+            <Button
+              children={
+                <span className="flex justify-center items-center">
+                  <span>Add new product</span>
+                  <Image src={addIcon} className="ml-4" />
+                </span>
+              }
+              btnSize="small"
+              minWidth="min-w-[14rem]"
+              variant="primary"
+              clickHandler={() => {
+                router.push("/products/add");
+              }}
+            />
+          </div>
+        </div>
         <div
           className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
         >
@@ -201,12 +243,12 @@ const Products = () => {
               /> */}
             </div>
           </div>
-          <div className="hidden md:block">
-            <CustomerTable data={tableData} showModal={showModal} />
+          <div className="my-4 block md:hidden">
+            <UpdateComponent />
           </div>
+          <ProductTable data={tableData} showModal={showModal} />
         </div>
       </div>
-
       {viewCustomerDetails && (
         <Modal
           content={

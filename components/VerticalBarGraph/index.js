@@ -29,7 +29,7 @@ const VerticalBarGraph = () => {
           Total order count
         </Typography>
       </div>
-      <div>
+      <div className="">
         <VendorCountLine value={"11,000"} />
         <VendorCountLine value={"10,000"} />
         <VendorCountLine value={"9,000"} />
@@ -41,9 +41,11 @@ const VerticalBarGraph = () => {
         <VendorCountLine value={"3,000"} />
         <VendorCountLine value={"2,000"} />
         <VendorCountLine value={"1,000"} />
-        <VendorCountLine value={"0"} />
+        <div className="mb-[1rem] md:mb-0">
+          <VendorCountLine value={"0"} />
+        </div>
       </div>
-      <div className="absolute right-0 bottom-[9px] w-[94%] h-[96%] flex justify-between px-10">
+      <div className="absolute right-0 bottom-[.6rem] md:bottom-[9px]  w-[94%] h-[96%] flex justify-between px-10">
         {data.map((item) => {
           return (
             <VerticalBar

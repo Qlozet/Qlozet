@@ -6,7 +6,7 @@ import classes from "./index.module.css";
 const SelectInput = ({ value, placeholder, setValue, data, label }) => {
   const [showDropDown, setShowDropDown] = useState(false);
   return (
-    <div className={`bg-white w-full relative`}>
+    <div className={`bg-white w-full relative z-50`}>
       <div
         className={`${classes.container}  border-solid   `}
         onClick={() => {

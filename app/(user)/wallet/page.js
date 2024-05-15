@@ -26,7 +26,7 @@ const Wallet = () => {
   const [total, setShowTotal] = useState(false);
   const [wallet, setWallet] = useState("");
   const handleShowViewDetailModal = () => {
-    setOrderDetails(true);
+    setShowTransactiondetails(true);
   };
   const [showMobileNav, setShowMobileNav] = useState(false);
   const showSideBar = () => {
@@ -301,13 +301,13 @@ const Wallet = () => {
           content={
             <SendMoney
               closeModal={() => {
-                setShowTransactiondetails(false);
+                setShowSendMoney(false);
               }}
             />
           }
         ></Modal>
       )}
-      {showSendMoney && (
+      {/* {showSendMoney && (
         <Modal
           content={
             <SendMoneyForm
@@ -317,7 +317,7 @@ const Wallet = () => {
             />
           }
         ></Modal>
-      )}
+      )} */}
     </div>
   );
 };
