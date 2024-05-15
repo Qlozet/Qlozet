@@ -113,6 +113,7 @@ const SignUp = () => {
         formData.append("cacDocument", businessFiles);
         formData.append("businessLogo", businessLogo);
         const response = await postRequest(`/vendor/signup`, formData, true);
+        console.log(response);
         if (response.success) {
           setIsLoading(false);
           toast(<Toast text={response.message} type="success" />);
