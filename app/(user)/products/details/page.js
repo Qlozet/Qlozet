@@ -10,47 +10,63 @@ import chatIcon from "../../../../public/assets/svg/productdetailschat.svg";
 import productImage from "../../../../public/assets/image/productimage.png";
 import Image from "next/image";
 import Button from "@/components/Button";
+import Typography from "@/components/Typography";
 
 const ProductDetails = () => {
   return (
-    <div className="flex min-h-[100dvh] bg-[#F8F9FA]">
+    <div className="flex min-h-[100dvh] bg-gray-400">
       <div className="">
         <SideBar active="Products" />
       </div>
-      <div className="w-full p-4">
+      <div className="w-full">
         <DasboardNavWithOutSearch name="Products" addSearch={true} />
         <div className="px-4">
-          <div className="flex items-center gap-4 mb-5">
+          <div className="hidden  md:flex  items-center gap-2 mb-5">
             <Image src={arrowLeftIcon} />
-            <h2 className="font-bold text-[18px] leading-[27px]">
+            <h2
+              className="font-bold text-[18px] 
+            my-4"
+            >
               View Product
             </h2>
           </div>
-          <div className="bg-white p-6 w-full">
-            <div className="flex gap-8">
+          <div className="md:bg-white w-full md:p-4 md:rounded-[12px]">
+            <div className="bg-gray-300 p-4 rounded-t-[12px] md:hidden mt-[2rem]">
+              <Typography
+                textColor="text-dark"
+                textWeight="font-[700]"
+                textSize="text-[16px]"
+              >
+                Product Info
+              </Typography>
+            </div>
+            <div className="block md:flex">
               <Image
                 src={productImage}
                 alt="product image"
-                className="rounded-xl"
+                className="rounded-b-[12px]"
                 style={{
-                  width: "438px",
-                  height: "550px",
+                  width: "100%",
+                  height: "auto",
                 }}
               />
-              <div className="w-full text-[#3E1C01]">
+              <div className="w-full p-8">
                 <div className="flex items-center justify-between w-full">
-                  <p className="text-[14px] leading-[20px]">MISKAY BOUTIQUE</p>
-                  <div className="flex items-center">
-                    <p className="text-[12px] leading-[18px] underline font-bold">
+                  <p className="text-[14px] ">MISKAY BOUTIQUE</p>
+                  <div className="items-center hidden md:flex">
+                    <p className="text-[12px] leading-[18px] underline font-bold ">
                       View product in main site
                     </p>
                     <Image src={arrowRightIcon} />
                   </div>
                 </div>
-                <h1 className="text-[42px] leading-[63px] font-bold mb-4">
+                <h1 className="text-[16px] md:text-[32px] font-bold my-2">
                   Amasi two piece dress
                 </h1>
-                <div className="flex items-center gap-6 mb-6">
+                <h2 className="block md:hidden font-bold text-[14px] leading-[36px] text-primary md:text-[#33CC33]">
+                  1,000 items delivered
+                </h2>
+                <div className="flex items-center gap-6 my-4">
                   <div className="flex items-center gap-2">
                     <Image src={starIcon} />
                     <span className="font-bold text-[14px] leading-[20px]">
@@ -74,11 +90,11 @@ const ProductDetails = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between w-full mb-[30px]">
-                  <h2 className="font-bold text-[24px] leading-[36px]">
+                <div className="hidden md:flex items-center justify-between w-full mb-[30px]">
+                  <h2 className="hidden md:block font-bold text-[24px] leading-[36px]">
                     NGN 120,000
                   </h2>
-                  <h2 className="font-bold text-[24px] leading-[36px] text-[#33CC33]">
+                  <h2 className="font-bold text-[14px] md:text-[24px] leading-[36px] text-primary md:text-[#33CC33]">
                     1,000 items delivered
                   </h2>
                 </div>

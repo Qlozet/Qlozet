@@ -9,7 +9,7 @@ import DashedComponent from "@/components/DashedComponent";
 const CompanyDetails = () => {
   return (
     <div className=" w-full mx-0 md:mx-2 py-2 md:bg-white">
-      <div className="block items-center justify-center md:hidden p-4 shadow my-4 rounded-[12px] bg-white">
+      <div className="block items-center justify-center md:hidden p-4 shadow my-4 rounded-[12px] ">
         <Image src={userIcon} alt="" className="my-2 mx-auto" />
         <div className="p-1 flex justify-center items-center">
           <Typography
