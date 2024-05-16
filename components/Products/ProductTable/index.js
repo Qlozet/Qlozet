@@ -15,15 +15,17 @@ import DeleteProduct from "../Delete";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ShecduleProduct from "../ScheduleProduct";
+import ProductItemDropDown from "../ProductItemDropDown";
 
 const ProductTable = ({ data, viewDetails, showModal }) => {
   const router = useRouter();
 
   const [dropdownOption, setDropDownOption] = useState("");
+  const [showDropDown, setShowDropDown] = useState(false);
+
   return (
     <div className="mt-4 min-h-[50vh] ">
       <div className="hidden md:block">
-        {" "}
         <table className="w-full">
           <thead className="w-full bg-[#F4F4F4] text-dark ">
             <tr>
@@ -114,7 +116,34 @@ const ProductTable = ({ data, viewDetails, showModal }) => {
                 alt=""
                 className="w-[5rem] h-[5rem] rounded-[12px]"
               />
-              <Image src={moreIcon} alt="" />
+              <div className="relative">
+                <Image
+                  src={moreIcon}
+                  alt=""
+                  className="cursor-pointer "
+                  onClick={() => {
+                    setShowDropDown(true);
+                  }}
+                />
+                {showDropDown && (
+                  <div className="absolute right-[0rem] top-[2rem]">
+                    <ProductItemDropDown
+                      handleSelect={() => {
+                        setShowDropDown(false);
+                      }}
+                      data={[
+                        "View product",
+                        "Edit product",
+                        "Feature product",
+                        "Activate product",
+                        "Schedule activation",
+                        "Deactivate product",
+                        "Delete product",
+                      ]}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
             <div>
               <div className="flex items-center justify-between">

@@ -17,11 +17,12 @@ import SendMoney from "@/components/Wallet/SendMoney";
 import SendMoneyForm from "@/components/Wallet/SendMoneyForm";
 import MobileSideBar from "@/components/MobileSideBar";
 import classes from "./index.module.css";
+import Beneficiary from "@/components/Wallet/Beneficiary";
 const Wallet = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [setUpWalletWallet, setSetUpWalletWallet] = useState(false);
   const [showTransactiondetails, setShowTransactiondetails] = useState(false);
-  const [showSendMoney, setShowSendMoney] = useState(false);
+  const [showSendMoney, setShowSendMoney] = useState("");
   const [rejectModal, setShowReject] = useState(false);
   const [total, setShowTotal] = useState(false);
   const [wallet, setWallet] = useState("");
@@ -181,7 +182,7 @@ const Wallet = () => {
               minWidth="min-w-[10rem]"
               maxWidth="max-w-[10rem]"
               clickHandler={() => {
-                setShowSendMoney(true);
+                setShowSendMoney("Send Money");
               }}
             />
             <Button
@@ -226,7 +227,7 @@ const Wallet = () => {
               variant="outline"
               minWidth="min-w-[10rem]"
               clickHandler={() => {
-                setShowSendMoney(true);
+                setShowSendMoney("Send Money");
               }}
             />
             <Button
@@ -242,26 +243,7 @@ const Wallet = () => {
         </div>
 
         <div className="">
-          {/* <div className="flex items-center justify-between mt-14 mb-2 ">
-            <Typography
-              textColor="text-black"
-              textWeight="font-bold"
-              textSize="text-[18px]"
-            >
-              Wallet History
-            </Typography>
-            <div className="">
-              <DropDown
-                placeholder={"This week"}
-                value={dropDownValue}
-                setValue={(data) => {
-                  setDropDownValue(data);
-                }}
-                data={dropdownData}
-              />
-            </div>
-          </div> */}
-          <div className="hidden md:block">
+         
             <WalletTable
               data={tableData}
               viewDetails={() => {
@@ -269,7 +251,7 @@ const Wallet = () => {
               }}
               showRejectModal={showRejectModal}
             />
-          </div>
+        
         </div>
       </div>
       {/* <Modal content={<SetTotalOrderPerDay />}></Modal> */}
@@ -296,18 +278,19 @@ const Wallet = () => {
           }
         ></Modal>
       )}
-      {showSendMoney && (
+      {showSendMoney === "Send Money" && (
         <Modal
           content={
             <SendMoney
-              closeModal={() => {
-                setShowSendMoney(false);
+              closeModal={(name) => {
+                console.log(name);
+                setShowSendMoney(name);
               }}
             />
           }
         ></Modal>
       )}
-      {/* {showSendMoney && (
+      {showSendMoney === "Manually" && (
         <Modal
           content={
             <SendMoneyForm
@@ -317,7 +300,18 @@ const Wallet = () => {
             />
           }
         ></Modal>
-      )} */}
+      )}
+      {showSendMoney === "Beneficiaries" && (
+        <Modal
+          content={
+            <Beneficiary
+              closeModal={() => {
+                setShowSendMoney(false);
+              }}
+            />
+          }
+        ></Modal>
+      )}
     </div>
   );
 };

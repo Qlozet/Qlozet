@@ -55,11 +55,12 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((item) => (
+          {data.map((item, index) => (
             <OrderTableItem
               {...item}
               viewDetails={viewDetails}
               showRejectModal={showRejectModal}
+              key={index}
             />
           ))}
         </tbody>
@@ -79,7 +80,7 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
               </div>
             </div>
           </div>
-          <div className=" pb-4 flex items-center justify-between mt-14 mb-2 border-b-[2px] border-dashed border-gray-200 ">
+          <div className="p-2 flex items-center justify-between mt-14  bg-gray-300 rounded-t-[12px] ">
             <Typography
               textColor="text-dark"
               textWeight="font-bold"
@@ -100,10 +101,10 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
               setValue={(data) => {}}
             />
           </div>
-          {data.map((item) => {
+          {data.map((item, index) => {
             return (
-              <div className="py-4">
-                <div className="flex justify-between items-center">
+              <div className="" key={index}>
+                <div className="flex justify-between items-center bg-white p-4">
                   <div>
                     <Typography
                       textColor="text-gray-200"

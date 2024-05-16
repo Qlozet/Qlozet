@@ -133,7 +133,7 @@ const Products = () => {
           showSideBar={showSideBar}
         />
         <div className="flex items-center justify-end py-6 gap-6">
-          <div>
+          <div className="hidden md:block">
             <Button
               children={
                 <span className="flex justify-center items-center">
@@ -144,6 +144,21 @@ const Products = () => {
               btnSize="small"
               minWidth="min-w-[14rem]"
               variant="primary"
+              clickHandler={() => {
+                setShowAddModal(true);
+              }}
+            />
+          </div>
+          <div className="block md:hidden">
+            <Button
+              children={
+                <span className="flex justify-center items-center">
+                  <span>Import</span>
+                  <Image src={addIcon} className="ml-4" />
+                </span>
+              }
+              btnSize="small"
+              variant="=outline"
               clickHandler={() => {
                 setShowAddModal(true);
               }}

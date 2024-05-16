@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ChatCard from "@/components/Chat/ChatCard";
 import HorizontalChat from "@/components/Chat/HorizontalChart";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
@@ -18,6 +18,7 @@ import TrackOrder from "@/components/order/TrackOrders";
 import RejectOrderModal from "@/components/order/RejectOrderModal";
 import CustomerDetails from "@/components/order/CustomerDetails";
 import MobileSideBar from "@/components/MobileSideBar";
+import { getRequest } from "@/api/method";
 const Order = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [viewOrderDetails, setOrderDetails] = useState(false);
@@ -159,6 +160,16 @@ const Order = () => {
     },
   ];
 
+  const getOrders = async () => {
+    try {
+      const response = await getRequest("/vendor/orders");
+      console.log(response);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getOrders();
+  }, []);
   return (
     <div className="flex bg-[#F8F9FA]">
       <div className="">
