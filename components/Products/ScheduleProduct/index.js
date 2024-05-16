@@ -1,13 +1,15 @@
 import Button from "@/components/Button";
+import DateInput from "@/components/DateInput";
 import SelectInput from "@/components/SelectInput";
 import TextArea from "@/components/TextAreaInput";
+import TimeInput from "@/components/TimeInput";
 import Typography from "@/components/Typography";
-
-const ShecduleProduct = ({closeSchedule}) => {
+import "react-calendar/dist/Calendar.css";
+const ShecduleProduct = ({ closeSchedule }) => {
   return (
     <div>
-      <div className="mt-4 mx-auto ">
-        <div className="bg-white rounded-[12px] w-full   m-auto px-4 py-6 my-6 shadow">
+      <div className="mt-4 mx-auto md:max-w-[30%]">
+        <div className="bg-white rounded-[12px] w-full  m-auto px-4 py-6 my-6 shadow md:min-w-[50%]">
           <div>
             <div className="flex items-center justify-between  border-dashed border-b-[1.5px] border-gray-200 pb-4">
               <Typography
@@ -25,24 +27,17 @@ const ShecduleProduct = ({closeSchedule}) => {
                 /> */}
             </div>
 
-            <SelectInput
-              placeholder={"Issue type "}
+            <DateInput
+              placeholder={"Select Date"}
               // value={dropDownValue}
               setValue={(data) => {
                 //   setDropDownValue(data);
               }}
-              data={[
-                { text: "General inquiry" },
-                { text: "Pricing" },
-                { text: "Feature request" },
-                { text: "Bugs and issues" },
-                { text: "Others" },
-              ]}
-              label="User role"
+              label="Date"
             />
-            <TextArea
-              label="Message"
-              placeholder="Give a summary of the problem you are presently encountering."
+            <TimeInput
+              label="Time"
+              placeholder="Select Time"
               setValue={(data) => {}}
             />
             <div className="my-6 flex items-center justify-center md:justify-end ">
@@ -52,7 +47,7 @@ const ShecduleProduct = ({closeSchedule}) => {
                 minWidth="min-w-[100%]"
                 variant="primary"
                 clickHandler={() => {
-                    closeSchedule()
+                  closeSchedule();
                 }}
               />
             </div>

@@ -128,8 +128,14 @@ const ProductTable = ({ data, viewDetails, showModal }) => {
                 {showDropDown && (
                   <div className="absolute right-[0rem] top-[2rem]">
                     <ProductItemDropDown
-                      handleSelect={() => {
-                        setShowDropDown(false);
+                      handleSelect={(item) => {
+                        setDropDownOption(item);
+                        if (item === "View product") {
+                          router.push("/products/details");
+                        }
+                        if (item === "Edit product") {
+                          router.push("/products/add");
+                        }
                       }}
                       data={[
                         "View product",
@@ -223,7 +229,7 @@ const ProductTable = ({ data, viewDetails, showModal }) => {
       {dropdownOption === "Schedule activation" && (
         <Modal
           content={
-            <div className="flex items-center justify-center h-[100%] ">
+            <div className="">
               <ShecduleProduct
                 closeSchedule={() => {
                   setDropDownOption("");
