@@ -1,13 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
-import ChatCard from "@/components/Chat/ChatCard";
-import HorizontalChat from "@/components/Chat/HorizontalChart";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import DashboardTopCard from "@/components/DashboardTopCard";
 import SideBar from "@/components/SideBar";
 import classes from "./index.module.css";
-import DonutChart from "@/components/Chat/DoughnutChat";
-import DropDown from "@/components/DropDown";
+import moment from "moment";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import OrderTable from "@/components/order/OrderTable";
@@ -20,13 +17,13 @@ import CustomerDetails from "@/components/order/CustomerDetails";
 import MobileSideBar from "@/components/MobileSideBar";
 import { getRequest } from "@/api/method";
 const Order = () => {
-  const [dropDownValue, setDropDownValue] = useState("");
   const [viewOrderDetails, setOrderDetails] = useState(false);
   const [showTrack, setShowTrack] = useState(false);
   const [showCustomer, setShowCustomer] = useState(false);
   const [rejectModal, setShowReject] = useState(false);
   const [total, setShowTotal] = useState(false);
   const [showMobileNav, setShowMobileNav] = useState(false);
+  const [orders, setOrders] = useState([]);
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
   };
@@ -161,9 +158,41 @@ const Order = () => {
   ];
 
   const getOrders = async () => {
+    const calculatePrice = (data) => {
+      let sum = 0;
+
+      for (let i = 0; i < data.length; i++) {
+        sum += data[i].product.price;
+      }
+      return sum;
+    };
     try {
       const response = await getRequest("/vendor/orders");
-      console.log(response);
+      let ordersData = [];
+
+      response.data.data.map((order) => {
+        let DeliveryStatus;
+        if (order.status === "out-for-delivery") {
+          DeliveryStatus = { name: "Out for delivery", bg: "bg-[#D4CFCA]" };
+        } else if (order.status === "return") {
+          DeliveryStatus = { name: "Return", bg: "bg-[#D4CFCA]" };
+        } else {
+          DeliveryStatus = { name: "Return", bg: "bg-[#D4CFCA]" };
+        }
+        let orderItem = {
+          date: moment(order.orderDate).format("YYYY-MM-DD"),
+          productName: order.orderItems.map((product) => {
+            return product.product.name;
+          }),
+          productPrice: calculatePrice(order.orderItems),
+          CustomerName: order.customer.fullName,
+          AmountPaid: calculatePrice(order.orderItems),
+          DeliveryStatus: DeliveryStatus,
+        };
+
+        ordersData.push(orderItem);
+      });
+      setOrders(ordersData);
     } catch (error) {}
   };
 
@@ -262,7 +291,7 @@ const Order = () => {
         <div className="">
           <div>
             <OrderTable
-              data={tableData}
+              data={orders}
               viewDetails={() => {
                 handleShowViewDetailModal();
               }}

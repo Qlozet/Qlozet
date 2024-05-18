@@ -14,6 +14,7 @@ const ColorInput = ({
   leftIcon,
   placeholder,
   disabled = false,
+  index,
 }) => {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [currentColor, setCurrentColor] = useState("#561ecb");
@@ -67,7 +68,12 @@ const ColorInput = ({
   ];
   const [color, setColor] = useColor("#561ecb");
   return (
-    <div className="relative z-30">
+    <div
+      className="relative"
+      style={{
+        zIndex: index ? index : 2,
+      }}
+    >
       <div className="my-3">
         {leftIcon}
         <label className="text-[14px] font-light my-2 text-dark">{label}</label>

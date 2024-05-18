@@ -111,8 +111,7 @@ const SignUp = () => {
         formData.append("confirmPassword", passwordInfo.confirmPassword);
         formData.append("cacDocument", businessFiles[0]);
         formData.append("businessLogo", businessLogo[0]);
-        console.log(businessFiles);
-        console.log(businessLogo);
+        console.log([...formData.entries()]);
         const response = await postRequest(`/vendor/signup`, formData, true);
         console.log(response);
         if (response.success) {

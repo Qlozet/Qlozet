@@ -16,7 +16,22 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
           <tr>
             <th className="w-[8%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
-                Picture
+                Date
+              </div>
+            </th>
+            <th className="w-[8%] px-2 py-4 text-[12px]">
+              <div className="flex items-center justify-start font-[500] text-dark">
+                Order ID{" "}
+              </div>
+            </th>
+            <th className="w-[8%] px-2 py-4 text-[12px]">
+              <div className="flex items-center justify-start font-[500] text-dark">
+                Product name
+              </div>
+            </th>
+            <th className="w-[8%] px-2 py-4 text-[12px]">
+              <div className="flex items-center justify-start font-[500] text-dark">
+                Product price
               </div>
             </th>
             <th className="w-[8%] px-2 py-4 text-[12px]">
@@ -26,27 +41,12 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
             </th>
             <th className="w-[8%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
-                Email address
-              </div>
-            </th>
-            <th className="w-[8%] px-2 py-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500] text-dark">
-                Phone number
-              </div>
-            </th>
-            <th className="w-[8%] px-2 py-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500] text-dark">
-                Total orders
-              </div>
-            </th>
-            <th className="w-[8%] px-2 py-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500] text-dark">
-                Last Order date
+                Amount paid
               </div>
             </th>
             <th className="w-[9%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
-                Status
+                Delivery Status
               </div>
             </th>
             <th className="w-[8%] px-2 py-4 text-[12px]">

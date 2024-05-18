@@ -22,7 +22,7 @@ export const getRequest = async (url) => {
       return response.data;
     }
   } catch (error) {
-    console.log(error.response);
+    console.log(error);
     return error.response;
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx

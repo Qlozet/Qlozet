@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import DashboardTopCard from "@/components/DashboardTopCard";
 import SideBar from "@/components/SideBar";
@@ -113,6 +113,49 @@ const Products = () => {
       },
     },
   ];
+
+  const getProducts = async () => {
+    const calculatePrice = (data) => {
+      let sum = 0;
+
+      for (let i = 0; i < data.length; i++) {
+        sum += data[i].product.price;
+      }
+      return sum;
+    };
+    try {
+      const response = await getRequest("/vendor/orders");
+      let ordersData = [];
+      console.log(response);
+      // response.data.data.map((order) => {
+      //   let DeliveryStatus;
+      //   if (order.status === "out-for-delivery") {
+      //     DeliveryStatus = { name: "Out for delivery", bg: "bg-[#D4CFCA]" };
+      //   } else if (order.status === "return") {
+      //     DeliveryStatus = { name: "Return", bg: "bg-[#D4CFCA]" };
+      //   } else {
+      //     DeliveryStatus = { name: "Return", bg: "bg-[#D4CFCA]" };
+      //   }
+      //   let orderItem = {
+      //     date: moment(order.orderDate).format("YYYY-MM-DD"),
+      //     productName: order.orderItems.map((product) => {
+      //       return product.product.name;
+      //     }),
+      //     productPrice: calculatePrice(order.orderItems),
+      //     CustomerName: order.customer.fullName,
+      //     AmountPaid: calculatePrice(order.orderItems),
+      //     DeliveryStatus: DeliveryStatus,
+      //   };
+
+      //   ordersData.push(orderItem);
+      // });
+      // setOrders(ordersData);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getProducts();
+  }, []);
   return (
     <div className="flex bg-[#F8F9FA]">
       <div className="">

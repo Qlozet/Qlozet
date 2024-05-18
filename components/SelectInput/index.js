@@ -6,7 +6,10 @@ import classes from "./index.module.css";
 const SelectInput = ({ value, placeholder, setValue, data, label, index }) => {
   const [showDropDown, setShowDropDown] = useState(false);
   return (
-    <div className={`bg-white w-full relative ${index ? index : "z-10"}`}>
+    <div
+      className={`bg-white w-full relative `}
+      style={{ zIndex: index ? index : 10 }}
+    >
       <div
         className={`${classes.container}  border-solid   `}
         onClick={() => {
@@ -17,13 +20,11 @@ const SelectInput = ({ value, placeholder, setValue, data, label, index }) => {
         <input
           placeholder={placeholder}
           value={value}
-          className="w-full p-3 rounded-[12px] placeholder-gray-200 text-dark outline-none  border-[1px]  border-gray-200 focus:border-primary focus:bg-[#DDE2E5] text-[14px]"
+          className="w-full p-3 rounded-[12px] placeholder-gray-200 text-dark outline-none  border-[1.5px]  border-gray-200 focus:border-primary focus:bg-[#DDE2E5] text-[14px]"
         ></input>
-        {/* {value === "" && ( */}
         <div className="absolute top-[40px] right-2 ">
           <Image src={arrowDownIcon} alt="" />
         </div>
-        {/* )} */}
       </div>
       {showDropDown && (
         <div className="overflow-hidden border-[1px] border-solid border-primary w-full cursor-pointer absolute top-[70px] bg-white rounded-[12px]">
