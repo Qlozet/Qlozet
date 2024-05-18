@@ -96,7 +96,9 @@ const ProductDetails = () => {
             <SideBar active="Products" />
           </div>
           <div className="w-full">
-            <DasboardNavWithOutSearch name="Products" addSearch={true} />
+            <div className="px-4">
+              <DasboardNavWithOutSearch name="Products" addSearch={true} />
+            </div>
             <div className="px-4">
               <div className="hidden  md:flex  items-center gap-2 mb-5">
                 <Image src={arrowLeftIcon} />
