@@ -12,7 +12,7 @@ export const getToken = () => {
 };
 
 export const clearToken = (data) => {
-  localStorage.clear(token);
+  localStorage.removeItem(token);
   return true;
 };
 
@@ -26,7 +26,7 @@ export const getGetUserDetails = () => {
 };
 
 export const clearUserDetails = (data) => {
-  localStorage.clear(userDetails);
+  localStorage.removeItem(userDetails);
   return true;
 };
 export const setProductId = (data) => {
@@ -39,6 +39,6 @@ export const getProductId = () => {
 };
 
 export const clearProductId = (data) => {
-  localStorage.clear(productId);
+  localStorage.removeItem(productId);
   return true;
 };

@@ -73,9 +73,9 @@ const ProductDetails = () => {
         //     quantity: 5,
         //   },
         // ],
-        images: response.data.data.images.map((image) => {
-          return image.url;
-        }),
+        // images: response.data.data.images.map((image) => {
+        //   return image.url;
+        // }),
       });
       // clearProductId();
       setPageLoading(false);

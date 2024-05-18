@@ -139,19 +139,20 @@ const AddProduct = () => {
       });
       try {
         setIsLoading(true);
-        const response = await postRequest("/vendor/products", formData, true);
-        // : putRequest(`/vendor/products/${productId}/update`, {
-        //     name: productFormData.productName,
-        //     description: productFormData.description,
-        //     price: productFormData.productPrice,
-        //     quantity: productFormData.productQuantity,
-        //     productTag: productFormData.productTag,
-        //     productCategory: JSON.stringify(productFormData.productCategory),
-        //     productType: productFormData.productType,
-        //     discount: productFormData.discount,
-        //     isFeatured: productFormData.isFeatured,
-        //     colors: JSON.stringify(productFormData.colors),
-        //   });
+        const response = !productId
+          ? await postRequest("/vendor/products", formData, true)
+          : putRequest(`/vendor/products/${productId}/update`, {
+              name: productFormData.productName,
+              description: productFormData.description,
+              price: productFormData.productPrice,
+              quantity: productFormData.productQuantity,
+              productTag: productFormData.productTag,
+              productCategory: JSON.stringify(productFormData.productCategory),
+              productType: productFormData.productType,
+              discount: productFormData.discount,
+              isFeatured: productFormData.isFeatured,
+              colors: JSON.stringify(productFormData.colors),
+            });
         response && setIsLoading(false);
         if (response?.data) {
           router.push("../products");

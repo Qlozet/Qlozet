@@ -33,6 +33,7 @@ export const postRequest = async (url, data, fileAvailable) => {
   let userData;
   let token = getToken();
   let response;
+  console.log(userData?.token);
   try {
     if (token) {
       userData = JSON.parse(token);
