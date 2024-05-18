@@ -140,7 +140,7 @@ const AddProduct = () => {
       try {
         setIsLoading(true);
         const response = await postRequest("/vendor/products", formData, true);
-        //  putRequest(`/vendor/products/${productId}/update`, {
+        // : putRequest(`/vendor/products/${productId}/update`, {
         //     name: productFormData.productName,
         //     description: productFormData.description,
         //     price: productFormData.productPrice,
@@ -218,6 +218,7 @@ const AddProduct = () => {
   }, []);
   return (
     <div>
+      {" "}
       {pageLoading ? (
         <Loader></Loader>
       ) : (
