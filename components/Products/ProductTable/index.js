@@ -1,7 +1,6 @@
 import ExportComponent from "../../ExportButton";
 import ProductTableItem from "../ProductTableItem";
 import defaultImage from "../../../public/assets/image/default.png";
-import moreIcon from "../../../public/assets/svg/more.svg";
 import Image from "next/image";
 import Typography from "@/components/Typography";
 import Quantity from "../Quantity";
@@ -16,12 +15,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ShecduleProduct from "../ScheduleProduct";
 import ProductItemDropDown from "../ProductItemDropDown";
+import { setProductId } from "@/utils/localstorage";
+import MobileTable from "../mobileTable";
 
 const ProductTable = ({ data, viewDetails, showModal }) => {
   const router = useRouter();
 
   const [dropdownOption, setDropDownOption] = useState("");
-  const [showDropDown, setShowDropDown] = useState(false);
 
   return (
     <div className="mt-4 min-h-[50vh] ">
@@ -34,12 +34,12 @@ const ProductTable = ({ data, viewDetails, showModal }) => {
                   Picture
                 </div>
               </th>
-              <th className="w-[11%] px-2 py-4 text-[12px]">
+              <th className="w-[8%] px-2 py-4 text-[12px]">
                 <div className="flex items-center justify-start font-[500]  text-dark">
                   Product Name
                 </div>
               </th>
-              <th className="w-[10%] px-2 py-4 text-[12px]">
+              <th className="w-[12%] px-2 py-4 text-[12px]">
                 <div className="flex items-center justify-start font-[500]  text-dark">
                   Product price
                 </div>
@@ -49,12 +49,12 @@ const ProductTable = ({ data, viewDetails, showModal }) => {
                   Category
                 </div>
               </th>
-              <th className="w-[8%] px-2 py-4 text-[12px]">
+              <th className="w-[10%] px-2 py-4 text-[12px]">
                 <div className="flex items-center justify-start font-[500]  text-dark">
                   Product type
                 </div>
               </th>
-              <th className="w-[6%] px-2 py-4 text-[12px]">
+              <th className="w-[4%] px-2 py-4 text-[12px]">
                 <div className="flex items-center justify-start font-[500]  text-dark">
                   Tag
                 </div>
@@ -64,12 +64,12 @@ const ProductTable = ({ data, viewDetails, showModal }) => {
                   Quantity
                 </div>
               </th>
-              <th className="w-[9%] px-2 py-4 text-[12px]">
+              <th className="w-[12%] px-2 py-4 text-[12px]">
                 <div className="flex items-center justify-start font-[500]  text-dark">
                   Product Status
                 </div>
               </th>
-              <th className="w-[8%] px-2 py-4 text-[12px]">
+              <th className="w-[12%] px-2 py-4 text-[12px]">
                 <ExportComponent />
               </th>
             </tr>
@@ -80,7 +80,9 @@ const ProductTable = ({ data, viewDetails, showModal }) => {
                 {...item}
                 viewDetails={showModal}
                 handleSelect={(item) => {
+                  console.log(item);
                   setDropDownOption(item);
+                  console.log(item);
                   if (item === "View product") {
                     router.push("/products/details");
                   }
@@ -94,7 +96,6 @@ const ProductTable = ({ data, viewDetails, showModal }) => {
         </table>
       </div>
       <div className="block md:hidden">
-        {" "}
         <div className="flex items-center justify-between ">
           <div className="w-[70%] block">
             <SearchInput placeholder="Search" />
@@ -108,120 +109,31 @@ const ProductTable = ({ data, viewDetails, showModal }) => {
             </div>
           </div>
         </div>
-        <div>
-          <div>
-            <div className="flex items-center justify-between">
-              <Image
-                src={defaultImage}
-                alt=""
-                className="w-[5rem] h-[5rem] rounded-[12px]"
-              />
-              <div className="relative">
-                <Image
-                  src={moreIcon}
-                  alt=""
-                  className="cursor-pointer "
-                  onClick={() => {
-                    setShowDropDown(true);
-                  }}
-                />
-                {showDropDown && (
-                  <div className="absolute right-[0rem] top-[2rem]">
-                    <ProductItemDropDown
-                      handleSelect={(item) => {
-                        setDropDownOption(item);
-                        if (item === "View product") {
-                          router.push("/products/details");
-                        }
-                        if (item === "Edit product") {
-                          router.push("/products/add");
-                        }
-                      }}
-                      data={[
-                        "View product",
-                        "Edit product",
-                        "Feature product",
-                        "Activate product",
-                        "Schedule activation",
-                        "Deactivate product",
-                        "Delete product",
-                      ]}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center justify-between">
-                <div className="flex flex-col gap-1 mt-2">
-                  <Typography
-                    textColor="text-gray-100"
-                    textWeight="font-normal"
-                    textSize="text-[12px]"
-                  >
-                    Product
-                  </Typography>
-                  <Typography
-                    textColor="text-dark"
-                    textWeight="font-normal"
-                    textSize="text-[14px]"
-                  >
-                    Hakeem Mensah
-                  </Typography>
-                </div>
-                <div className="flex flex-col gap-1 mt-2 items-end">
-                  <Typography
-                    textColor="text-gray-100"
-                    textWeight="font-normal"
-                    textSize="text-[12px]"
-                  >
-                    Category
-                  </Typography>
-                  <Typography
-                    textColor="text-dark"
-                    textWeight="font-normal"
-                    textSize="text-[14px]"
-                  >
-                    Gown
-                  </Typography>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex flex-col gap-1 mt-2">
-                  <Typography
-                    textColor="text-gray-100"
-                    textWeight="font-normal"
-                    textSize="text-[12px]"
-                  >
-                    Quantity
-                  </Typography>
-                  <Quantity />
-                </div>
-                <div className="flex flex-col gap-1 mt-2 items-end justify-center">
-                  <Typography
-                    textColor="text-gray-100"
-                    textWeight="font-normal"
-                    textSize="text-[12px]"
-                  >
-                    Status
-                  </Typography>
-                  <OrderStatus
-                    text="Active"
-                    bgColor="bg-success-300"
-                    color="text-success"
-                    addMaxWidth={true}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        {data.map((item) => (
+          <MobileTable
+            {...item}
+            handleSelect={(item) => {
+              setDropDownOption(item);
+              console.log(item);
+              if (item === "View product") {
+                router.push("/products/details");
+              }
+              if (item === "Edit product") {
+                router.push("/products/add");
+              }
+            }}
+          />
+        ))}
       </div>
       {dropdownOption === "Delete product" && (
         <Modal
           content={
             <div className="flex items-center justify-center h-[100%] ">
-              <DeleteProduct logoutFunction={() => {}} />
+              <DeleteProduct
+                deleteFunction={() => {
+                  setDropDownOption("");
+                }}
+              />
             </div>
           }
         />

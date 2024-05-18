@@ -9,7 +9,9 @@ import Quantity from "../Quantity";
 import DeleteProduct from "../Delete";
 import DropDown from "@/components/DropDown";
 import ProductItemDropDown from "../ProductItemDropDown";
+import { setProductId } from "@/utils/localstorage";
 const ProductTableItem = ({
+  id,
   picture,
   productName,
   productPrice,
@@ -22,13 +24,14 @@ const ProductTableItem = ({
 }) => {
   const [showDropDown, setShowDropDown] = useState(false);
   const closeDropDown = (item) => {
+    setProductId(id);
     setShowDropDown(false);
     handleSelect(item);
   };
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
       <td className="text-[12px] font-normal p-4 text-dark">
-        <Image src={defaultImage} alt="" />
+        <img src={picture} alt="" className="w-[2rem] h-[auto]" />
       </td>
       <td className="text-[12px] font-normal p-4 text-dark">{productName}</td>
       <td className="text-[12px] font-normal p-4 text-dark">{productPrice}</td>
@@ -56,9 +59,14 @@ const ProductTableItem = ({
             className="cursor-pointer"
           />
           {showDropDown && (
-            <div className="absolute right-[0rem] top-[2rem]">
+            <div
+              className="absolute right-[0rem] top-[2rem] "
+              style={{ zIndex: 10 }}
+            >
               <ProductItemDropDown
-                handleSelect={closeDropDown}
+                handleSelect={(item) => {
+                  closeDropDown(item);
+                }}
                 data={[
                   "View product",
                   "Edit product",

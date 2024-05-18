@@ -18,13 +18,19 @@ import addIcon from "../../../public/assets/svg/add-square.svg";
 import Button from "@/components/Button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { getRequest } from "@/api/method";
+import toast from "react-hot-toast";
+import Toast from "@/components/ToastComponent/toast";
+import Loader from "@/components/Loader";
+import { clearProductId } from "@/utils/localstorage";
 
 const Products = () => {
   const router = useRouter();
   const [dropDownValue, setDropDownValue] = useState("");
   const [viewCustomerDetails, setCustomerDetails] = useState(false);
   const [showHostory, setShowHistory] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState([]);
   const data = [
     {
       location: "Warri",
@@ -68,19 +74,6 @@ const Products = () => {
     colors: ["#3E1C01", "#9C8578", "#F6E9DD", "#BE7D42"],
     borderAlign: "center",
   };
-
-  const tableData = [
-    {
-      picture: "https://inaction.photos/images/31.png",
-      productName: "My name iss",
-      productPrice: "My name iss",
-      category: "12222",
-      productType: "My name iss",
-      tag: "My name iss",
-      quiantity: "5662",
-      ProductStatus: "My name iss",
-    },
-  ];
   const [showMobileNav, setShowMobileNav] = useState(false);
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
@@ -115,183 +108,181 @@ const Products = () => {
   ];
 
   const getProducts = async () => {
-    const calculatePrice = (data) => {
-      let sum = 0;
-
-      for (let i = 0; i < data.length; i++) {
-        sum += data[i].product.price;
-      }
-      return sum;
-    };
     try {
-      const response = await getRequest("/vendor/orders");
-      let ordersData = [];
-      console.log(response);
-      // response.data.data.map((order) => {
-      //   let DeliveryStatus;
-      //   if (order.status === "out-for-delivery") {
-      //     DeliveryStatus = { name: "Out for delivery", bg: "bg-[#D4CFCA]" };
-      //   } else if (order.status === "return") {
-      //     DeliveryStatus = { name: "Return", bg: "bg-[#D4CFCA]" };
-      //   } else {
-      //     DeliveryStatus = { name: "Return", bg: "bg-[#D4CFCA]" };
-      //   }
-      //   let orderItem = {
-      //     date: moment(order.orderDate).format("YYYY-MM-DD"),
-      //     productName: order.orderItems.map((product) => {
-      //       return product.product.name;
-      //     }),
-      //     productPrice: calculatePrice(order.orderItems),
-      //     CustomerName: order.customer.fullName,
-      //     AmountPaid: calculatePrice(order.orderItems),
-      //     DeliveryStatus: DeliveryStatus,
-      //   };
-
-      //   ordersData.push(orderItem);
-      // });
-      // setOrders(ordersData);
-    } catch (error) {}
+      let response = await getRequest("/vendor/products/all");
+      let productData = [];
+      if (response?.data) {
+      } else {
+        toast(<Toast text={response.message} type="danger" />);
+      }
+      response?.data?.data?.map((product) => {
+        console.log(product.categories[0]);
+        let orderItem = {
+          id: product._id,
+          picture: product.images[0]?.url ? product.images[0]?.url : "",
+          productName: product.name,
+          productPrice: product.price,
+          category: "Two Piece",
+          productType: product.type,
+          tag: product.tag,
+          quiantity: product.quantity,
+          ProductStatus: "active",
+        };
+        productData.push(orderItem);
+      });
+      setProducts(productData);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      error?.message && toast(<Toast text={error?.message} type="danger" />);
+      error?.data && toast(<Toast text={error?.data} type="danger" />);
+    }
   };
 
   useEffect(() => {
     getProducts();
   }, []);
   return (
-    <div className="flex bg-[#F8F9FA]">
-      <div className="">
-        <SideBar active="Products" />
-        {showMobileNav && (
-          <div className="md:hidden">
-            <MobileSideBar active="Products" closeSideBar={showSideBar} />
+    <div>
+      {isLoading ? (
+        <Loader></Loader>
+      ) : (
+        <div className="flex bg-[#F8F9FA]">
+          <div className="">
+            <SideBar active="Products" />
+            {showMobileNav && (
+              <div className="md:hidden">
+                <MobileSideBar active="Products" closeSideBar={showSideBar} />
+              </div>
+            )}
           </div>
-        )}
-      </div>
-      <div className="w-full p-4">
-        <DasboardNavWithOutSearch
-          name="Products"
-          addSearch={true}
-          setValue={(data) => {
-            // console.log(data);
-          }}
-          showSideBar={showSideBar}
-        />
-        <div className="flex items-center justify-end py-6 gap-6">
-          <div className="hidden md:block">
-            <Button
-              children={
-                <span className="flex justify-center items-center">
-                  <span>Import Products</span>
-                  <Image src={addIcon} className="ml-4" />
-                </span>
-              }
-              btnSize="small"
-              minWidth="min-w-[14rem]"
-              variant="primary"
-              clickHandler={() => {
-                setShowAddModal(true);
+          <div className="w-full p-4">
+            <DasboardNavWithOutSearch
+              name="Products"
+              addSearch={true}
+              setValue={(data) => {
+                // console.log(data);
               }}
+              showSideBar={showSideBar}
             />
-          </div>
-          <div className="block md:hidden">
-            <Button
-              children={
-                <span className="flex justify-center items-center">
-                  <span>Import</span>
-                  <Image src={addIcon} className="ml-4" />
-                </span>
-              }
-              btnSize="small"
-              variant="=outline"
-              clickHandler={() => {
-                setShowAddModal(true);
-              }}
-            />
-          </div>
-          <div>
-            <Button
-              children={
-                <span className="flex justify-center items-center">
-                  <span>Add new product</span>
-                  <Image src={addIcon} className="ml-4" />
-                </span>
-              }
-              btnSize="small"
-              minWidth="min-w-[14rem]"
-              variant="primary"
-              clickHandler={() => {
-                router.push("/products/add");
-              }}
-            />
-          </div>
-        </div>
-        <div
-          className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
-        >
-          <DashboardTopCard
-            name="Total Vendors"
-            total="10000"
-            percentage="2.5"
-            bgColor="bg-[#57CAEB]"
-            link="link"
-            icon={vendorIcon}
-            addMaxWidth={true}
-          />
-          <DashboardTopCard
-            name="Achieved Vendors"
-            total="10000"
-            percentage="2.5"
-            bgColor="bg-[#5DDAB4]"
-            icon={customerIcon}
-            addMaxWidth={true}
-          />
-          <div
-            className={`px-6 py-4 flex bg-white rounded-[12px] mt-4 max-w-[300px] w-full min-w-[300px]`}
-          >
-            <DonutChart data={chartData} width={"90"} height={"90"} />
-            <div>
-              <Typography
-                textColor="text-black"
-                textWeight="font-[400]"
-                textSize="text-[12px]"
-              >
-                Sales By Product Category
-              </Typography>
+            <div className="flex items-center justify-end py-6 gap-6">
+              <div className="hidden md:block">
+                <Button
+                  children={
+                    <span className="flex justify-center items-center">
+                      <span>Import Products</span>
+                      <Image src={addIcon} className="ml-4" />
+                    </span>
+                  }
+                  btnSize="small"
+                  minWidth="min-w-[14rem]"
+                  variant="primary"
+                  clickHandler={() => {
+                    setShowAddModal(true);
+                  }}
+                />
+              </div>
+              <div className="block md:hidden">
+                <Button
+                  children={
+                    <span className="flex justify-center items-center">
+                      <span>Import</span>
+                      <Image src={addIcon} className="ml-4" />
+                    </span>
+                  }
+                  btnSize="small"
+                  variant="=outline"
+                  clickHandler={() => {
+                    setShowAddModal(true);
+                  }}
+                />
+              </div>
               <div>
-                <div className="flex items-center gap-2 p-2">
-                  <span className="w-[10px] h-[10px] rounded-[50%] bg-primary"></span>
+                <Button
+                  children={
+                    <span className="flex justify-center items-center">
+                      <span>Add new product</span>
+                      <Image src={addIcon} className="ml-4" />
+                    </span>
+                  }
+                  btnSize="small"
+                  minWidth="min-w-[14rem]"
+                  variant="primary"
+                  clickHandler={() => {
+                    router.push("/products/add");
+                    clearProductId();
+                  }}
+                />
+              </div>
+            </div>
+            <div
+              className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
+            >
+              <DashboardTopCard
+                name="Total Vendors"
+                total="10000"
+                percentage="2.5"
+                bgColor="bg-[#57CAEB]"
+                link="link"
+                icon={vendorIcon}
+                addMaxWidth={true}
+              />
+              <DashboardTopCard
+                name="Achieved Vendors"
+                total="10000"
+                percentage="2.5"
+                bgColor="bg-[#5DDAB4]"
+                icon={customerIcon}
+                addMaxWidth={true}
+              />
+              <div
+                className={`px-6 py-4 flex bg-white rounded-[12px] mt-4 max-w-[300px] w-full min-w-[300px]`}
+              >
+                <DonutChart data={chartData} width={"90"} height={"90"} />
+                <div>
                   <Typography
                     textColor="text-black"
                     textWeight="font-[400]"
                     textSize="text-[12px]"
                   >
-                    Suite
+                    Sales By Product Category
                   </Typography>
-                </div>
-                <div className="flex items-center gap-2 p-2">
-                  <span className="w-[10px] h-[10px] rounded-[50%] bg-primary"></span>
-                  <Typography
-                    textColor="text-black"
-                    textWeight="font-[400]"
-                    textSize="text-[12px]"
-                  >
-                    Suite
-                  </Typography>
+                  <div>
+                    <div className="flex items-center gap-2 p-2">
+                      <span className="w-[10px] h-[10px] rounded-[50%] bg-primary"></span>
+                      <Typography
+                        textColor="text-black"
+                        textWeight="font-[400]"
+                        textSize="text-[12px]"
+                      >
+                        Suite
+                      </Typography>
+                    </div>
+                    <div className="flex items-center gap-2 p-2">
+                      <span className="w-[10px] h-[10px] rounded-[50%] bg-primary"></span>
+                      <Typography
+                        textColor="text-black"
+                        textWeight="font-[400]"
+                        textSize="text-[12px]"
+                      >
+                        Suite
+                      </Typography>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        <div className="">
-          <div className="flex items-center justify-between mt-14 mb-2 ">
-            <Typography
-              textColor="text-dark"
-              textWeight="font-bold"
-              textSize="text-[18px]"
-            >
-              Products
-            </Typography>
             <div className="">
-              {/* <DropDown
+              <div className="flex items-center justify-between mt-14 mb-2 ">
+                <Typography
+                  textColor="text-dark"
+                  textWeight="font-bold"
+                  textSize="text-[18px]"
+                >
+                  Products
+                </Typography>
+                <div className="">
+                  {/* <DropDown
                 placeholder={"Filter by"}
                 value={dropDownValue}
                 setValue={(data) => {
@@ -299,27 +290,32 @@ const Products = () => {
                 }}
                 data={dropdownData}
               /> */}
+                </div>
+              </div>
+              <div className="my-4 block md:hidden">
+                <UpdateComponent />
+              </div>
+              <ProductTable data={products} showModal={showModal} />
             </div>
           </div>
-          <div className="my-4 block md:hidden">
-            <UpdateComponent />
-          </div>
-          <ProductTable data={tableData} showModal={showModal} />
+          {viewCustomerDetails && (
+            <Modal
+              content={
+                <CustomerDetails
+                  topNavData={topNavData}
+                  closeModal={closeModal}
+                />
+              }
+            ></Modal>
+          )}
+          {showHostory && (
+            <Modal
+              content={
+                <OrderHistory topNavData={topNavData} closeModal={closeModal} />
+              }
+            ></Modal>
+          )}
         </div>
-      </div>
-      {viewCustomerDetails && (
-        <Modal
-          content={
-            <CustomerDetails topNavData={topNavData} closeModal={closeModal} />
-          }
-        ></Modal>
-      )}
-      {showHostory && (
-        <Modal
-          content={
-            <OrderHistory topNavData={topNavData} closeModal={closeModal} />
-          }
-        ></Modal>
       )}
     </div>
   );

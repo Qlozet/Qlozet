@@ -5,14 +5,37 @@ import Button from "@/components/Button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { clearToken } from "@/utils/localstorage";
-const DeleteProduct = ({ logoutFunction }) => {
+import { getProductId } from "@/utils/localstorage";
+import { deleteRequest } from "@/api/method";
+import toast from "react-hot-toast";
+import { useState } from "react";
+import Toast from "@/components/ToastComponent/toast";
+const DeleteProduct = ({ deleteFunction }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const handleDelete = async () => {
+    const productId = getProductId();
+    try {
+      setIsLoading(true);
+      const response = await deleteRequest(`/vendor/products/${productId}`);
+      response && setIsLoading(false);
+
+      if (response?.code === 200) {
+        toast(<Toast text={response?.message} type="success" />);
+        deleteFunction();
+      } else {
+      }
+    } catch (error) {
+      error && setIsLoading(false);
+      toast(<Toast text={error?.message} type="success" />);
+    }
+  };
   const router = useRouter();
   return (
     <div className="relative bg-white  w-full md:w-[35%] rounded-[12px] flex flex-col items-center gap-6 p-6">
       <div
         className="absolute top-4 right-4 cursor-pointer"
         onClick={() => {
-          logoutFunction();
+          deleteFunction();
         }}
       >
         <Image src={closeIcon} alt="" />
@@ -36,12 +59,12 @@ const DeleteProduct = ({ logoutFunction }) => {
         your dashboard.
       </Typography>
       <Button
+        loading={isLoading}
         children="Delete Product"
         btnSize="large"
         variant="danger"
         clickHandler={() => {
-          router.push("/auth/signin");
-          clearToken() && logoutFunction();
+          handleDelete();
         }}
       />
     </div>

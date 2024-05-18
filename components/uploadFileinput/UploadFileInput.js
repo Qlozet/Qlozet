@@ -28,7 +28,13 @@ const FileInput = ({
         ) : (
           <div className="flex items-center gap-4">
             {value.map((item) => {
-              const dataUrl = URL.createObjectURL(item);
+              let dataUrl;
+              if (typeof item === "string") {
+                dataUrl = item;
+              } else {
+                dataUrl = URL.createObjectURL(item);
+              }
+
               return (
                 <div>
                   <img src={dataUrl} className="w-[5rem] h-[auto]" />

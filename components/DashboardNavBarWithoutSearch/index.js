@@ -35,8 +35,8 @@ const DasboardNavWithOutSearch = ({
 
   const getVendorDetailshandler = async () => {
     const response = await getVendorDetails();
-    if (response.data) {
-      setUserDetails(response.data.data);
+    if (response?.data) {
+      setUserDetails(response?.data?.data);
       // setUserDetails({
       //   businessName: response.data.data.businessName
       //     ? response.data.data.businessName

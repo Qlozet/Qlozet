@@ -17,7 +17,7 @@ const ProductItemDropDown = ({ data, handleSelect }) => {
   return (
     <div
       className={`border-[1px] border-solid border-gray-200 bg-white rounded-[8px] min-w-[12rem]`}
-    >
+     >
       <div>
         <div className="">
           {/* {options === "" && <Image src={arrowDownIcon} alt="" />} */}

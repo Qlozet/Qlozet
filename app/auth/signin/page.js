@@ -44,8 +44,9 @@ const SignIn = () => {
           toast(<Toast text={response.message} type="danger" />);
         }
       } catch (error) {
+        console.log(error);
         setIsLoading(false);
-        toast(<Toast text={error.message} type="error" />);
+        toast(<Toast text={error.message} type="danger" />);
       }
     } else {
       setReqiuredFormData((prevData) => {
@@ -61,13 +62,7 @@ const SignIn = () => {
       >
         <div className="bg-[rgba(0,0,0,.7)] md:bg-white h-screen w-screen 2xl:flex justify-center items-center overflow-y-scroll md:p-4">
           <div>
-            <div className="block md:hidden">
-              <DasboardNavWithOutSearch
-                addSearch={false}
-                setValue={(data) => {}}
-                hideNav={true}
-              />
-            </div>
+            <div className="block md:hidden"></div>
             <div className="block mt-2 mb-4  md:hidden">
               <Logo />
             </div>

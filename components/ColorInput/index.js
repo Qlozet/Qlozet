@@ -18,7 +18,7 @@ const ColorInput = ({
 }) => {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [currentColor, setCurrentColor] = useState("#561ecb");
-  const [selectedColors, setSelectedColors] = useState([]);
+  const [selectedColors, setSelectedColors] = useState(value);
   var colorArray = [
     "#FF6633",
     "#FFB399",
@@ -125,7 +125,6 @@ const ColorInput = ({
             <Image src={colourIcon} className="translate-x-[-2rem]" />
           </div>
         </div>
-
         {rightIcon}
         {error && (
           <p className="text-danger text-[12px] font-[400]">
@@ -153,6 +152,7 @@ const ColorInput = ({
               <div
                 className="cursor-pointer"
                 onClick={() => {
+                  setValue([currentColor, ...selectedColors]);
                   setSelectedColors([currentColor, ...selectedColors]);
                   setShowColorPicker(false);
                 }}
@@ -170,6 +170,7 @@ const ColorInput = ({
               color={color}
               onChange={(currentColor) => {
                 setColor(currentColor);
+
                 setCurrentColor(currentColor.hex);
               }}
             />
