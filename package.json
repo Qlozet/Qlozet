@@ -24,6 +24,7 @@
     "react-pick-color": "^2.0.0",
     "react-stars": "^2.2.5",
     "react-toastify": "^10.0.5",
+    "sharp": "^0.33.4",
     "uuid": "^9.0.1",
     "zod": "^3.22.4"
   },

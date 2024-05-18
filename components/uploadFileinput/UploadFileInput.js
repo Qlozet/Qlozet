@@ -37,7 +37,14 @@ const FileInput = ({
 
               return (
                 <div>
-                  <img src={dataUrl} className="w-[5rem] h-[auto]" />
+                  <Image
+                    width={500}
+                    height={500}
+                    src={dataUrl}
+                    style={{ width: "5rem", height: "auto" }}
+                    alt=""
+                    className="w-[2rem] h-[auto]"
+                  />
                 </div>
               );
             })}

@@ -31,7 +31,14 @@ const ProductTableItem = ({
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
       <td className="text-[12px] font-normal p-4 text-dark">
-        <img src={picture} alt="" className="w-[2rem] h-[auto]" />
+        <Image
+          width={500}
+          height={500}
+          src={picture}
+          style={{ width: "5rem", height: "auto" }}
+          alt=""
+          className="w-[2rem] h-[auto]"
+        />
       </td>
       <td className="text-[12px] font-normal p-4 text-dark">{productName}</td>
       <td className="text-[12px] font-normal p-4 text-dark">{productPrice}</td>

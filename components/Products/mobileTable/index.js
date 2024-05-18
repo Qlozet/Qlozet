@@ -28,7 +28,14 @@ const MobileTable = ({
       <div>
         <div className="flex items-center justify-between py-6  ">
           <div className="flex justify-between w-full">
-            <img src={picture} alt="" className="w-[8rem] h-[auto]" />
+            <Image
+              width={500}
+              height={500}
+              src={picture}
+              style={{ width: "5rem", height: "auto" }}
+              alt=""
+              className="w-[2rem] h-[auto]"
+            />
             <div
               className="w-[1.5rem] h-[1.5rem]"
               onClick={() => {
