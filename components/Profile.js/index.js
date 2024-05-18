@@ -3,25 +3,11 @@ import closeIcon from "../../public/assets/svg/close-square-icon.svg";
 import userIcon from "../../public/assets/svg/Frame.svg";
 import rotate from "../../public/assets/svg/rotate-icon.svg";
 import Image from "next/image";
-import ReactStars from "react-stars";
 import Performance from "../Performance";
 import Rating from "../Rating";
-import { getGetUserDetails } from "@/utils/localstorage";
 import { useEffect, useState } from "react";
-const Profile = ({ closeProfile }) => {
-  const [userDetails, setUserDetails] = useState({
-    businessName: "",
-    profileImage: "",
-    personalName: "",
-  });
-  console.log(getGetUserDetails());
-  useEffect(() => {
-    // setUserDetails({
-    //   businessName: getGetUserDetails().businessName,
-    //   profileImage: getGetUserDetails().profilePicture,
-    //   personalName: getGetUserDetails().personalName,
-    // });
-  }, []);
+const Profile = ({ closeProfile, userDetails }) => {
+  console.log(userDetails);
   return (
     <div
       className={`fixed h-screen overflow-y-scroll w-screen top-0 right-0 flex justify-end z-50`}
@@ -53,6 +39,10 @@ const Profile = ({ closeProfile }) => {
                     src={userIcon}
                     width={30}
                     height={30}
+                    style={{
+                      width: "5rem",
+                      height: "auto",
+                    }}
                     alt=""
                     className="my-2 mx-auto"
                   />

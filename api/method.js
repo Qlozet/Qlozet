@@ -16,7 +16,6 @@ export const getRequest = async (url) => {
       response = await axiosInstance.get(url, {
         headers: { Authorization: `Bearer ${userData?.token}` },
       });
-      console.log(response);
       return response;
     } else {
       response = await axiosInstance.get(url);

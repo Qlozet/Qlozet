@@ -102,6 +102,7 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
             />
           </div>
           {data.map((item, index) => {
+            console.log(item);
             return (
               <div className="" key={index}>
                 <div className="flex justify-between items-center bg-white p-4">
@@ -125,14 +126,14 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
                       textWeight="font-normal"
                       textSize="text-[14px]"
                     >
-                      Account
+                      Amount
                     </Typography>
                     <Typography
                       textColor="text-dark"
                       textWeight="font-normal"
                       textSize="text-[16px]"
                     >
-                      $123,476,000
+                      {item.AmountPaid}
                     </Typography>
                   </div>
                   <div className="flex flex-col items-end">
@@ -156,7 +157,7 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
                       textWeight="font-normal"
                       textSize="text-[16px]"
                     >
-                      12345678910
+                      {item.productName}
                     </Typography>
                   </div>
                 </div>

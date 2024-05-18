@@ -17,7 +17,7 @@ const DropDown = ({ placeholder, setValue, data }) => {
     <div
       className={`block bg-white max-w-48 ${
         showDropDown ? "shadow-2xl" : ""
-      } z-50 rounded-lg `}
+      } rounded-lg `}
     >
       <div
         className={`relative`}

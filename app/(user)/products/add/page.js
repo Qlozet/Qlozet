@@ -219,7 +219,7 @@ const AddProduct = () => {
   }, []);
   return (
     <div>
-      {" "}
+    
       {pageLoading ? (
         <Loader></Loader>
       ) : (

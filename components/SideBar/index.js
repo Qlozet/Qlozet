@@ -22,10 +22,6 @@ import { useRouter } from "next/navigation";
 import { clearToken } from "@/utils/localstorage";
 import Image from "next/image";
 import Modal from "../Modal";
-import Typography from "../Typography";
-import Button from "../Button";
-import getVendorDetails from "@/api/request";
-
 const SideBar = ({ active }) => {
   const [showLogOutModal, setShowLogOutModal] = useState(false);
   const router = useRouter();

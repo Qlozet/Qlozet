@@ -12,6 +12,7 @@ import menuIcon from "../../public/assets/svg/menu-icon.svg";
 import mobileProfile from "../../public/assets/svg/mobile-oct-icon.svg";
 import Profile from "../Profile.js";
 import getVendorDetails from "@/api/request";
+import { setUserData } from "@/utils/localstorage";
 const DasboardNavWithOutSearch = ({
   name,
   addSearch,
@@ -36,18 +37,30 @@ const DasboardNavWithOutSearch = ({
   const getVendorDetailshandler = async () => {
     const response = await getVendorDetails();
     if (response?.data) {
-      setUserDetails(response?.data?.data);
-      // setUserDetails({
-      //   businessName: response.data.data.businessName
-      //     ? response.data.data.businessName
-      //     : "",
-      //   personalName: response.data.data.personalName
-      //     ? response.data.data.personalName
-      //     : "",
-      //   profileImage: response.data.data.profileImage
-      //     ? response.data.data.profileImage
-      //     : "",
-      // });
+      setUserDetails(response?.data);
+      // console.log(response?.data);
+      setUserData({
+        businessName: response?.data?.data?.businessName
+          ? response?.data?.data?.businessName
+          : "",
+        personalName: response?.data?.data?.personalName
+          ? response?.data?.data?.personalName
+          : "",
+        profileImage: response?.data?.data?.profileImage
+          ? response?.data?.data?.profileImage
+          : "",
+      });
+      setUserDetails({
+        businessName: response?.data?.data?.businessName
+          ? response?.data?.data?.businessName
+          : "",
+        personalName: response?.data?.data?.personalName
+          ? response?.data?.data?.personalName
+          : "",
+        profileImage: response?.data?.data?.profileImage
+          ? response?.data?.data?.profileImage
+          : "",
+      });
     }
   };
 
@@ -140,7 +153,7 @@ const DasboardNavWithOutSearch = ({
               textWeight="font-normal"
               textSize="text-[16px]"
             >
-              {/* {userDetails.businessName} */}
+              {userDetails.personalName}
             </Typography>
             <div className="rounded-[12px] p-2 bg-[#F8F9FA] cursor-pointer">
               <Image
@@ -153,7 +166,9 @@ const DasboardNavWithOutSearch = ({
           </div>
         </div>
       </div>
-      {showProfile && <Profile closeProfile={showProfileHandler} />}
+      {showProfile && (
+        <Profile closeProfile={showProfileHandler} userDetails={userDetails} />
+      )}
     </div>
   );
 };

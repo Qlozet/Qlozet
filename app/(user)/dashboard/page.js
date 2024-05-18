@@ -17,7 +17,6 @@ import MobileSideBar from "@/components/MobileSideBar";
 import getVendorDetails from "@/api/request";
 import { setUserDetails } from "@/utils/localstorage";
 const Dashboard = () => {
-  const [dropDownValue, setDropDownValue] = useState("");
   const [totalCustomer, setTotalCustomer] = useState("0");
   const [totalVendor, setTotalVendor] = useState("0");
   const [customerLocation, setCustomerLocation] = useState("");

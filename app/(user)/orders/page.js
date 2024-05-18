@@ -169,7 +169,7 @@ const Order = () => {
     try {
       const response = await getRequest("/vendor/orders");
       let ordersData = [];
-
+      console.log(response);
       response.data.data.map((order) => {
         let DeliveryStatus;
         if (order.status === "out-for-delivery") {
@@ -189,7 +189,6 @@ const Order = () => {
           AmountPaid: calculatePrice(order.orderItems),
           DeliveryStatus: DeliveryStatus,
         };
-
         ordersData.push(orderItem);
       });
       setOrders(ordersData);

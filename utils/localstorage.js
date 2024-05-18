@@ -16,7 +16,7 @@ export const clearToken = (data) => {
   return true;
 };
 
-export const setUserDetails = (data) => {
+export const setUserData = (data) => {
   localStorage.setItem(userDetails, JSON.stringify(data));
 };
 
