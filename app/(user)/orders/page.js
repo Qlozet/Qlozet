@@ -204,7 +204,7 @@ const Order = () => {
         <SideBar active="Orders" />
         {showMobileNav && (
           <div className="md:hidden">
-            <MobileSideBar active="Dashboard" closeSideBar={showSideBar} />
+            <MobileSideBar active="Orders" closeSideBar={showSideBar} />
           </div>
         )}
       </div>

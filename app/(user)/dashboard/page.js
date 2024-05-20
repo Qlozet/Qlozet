@@ -20,6 +20,7 @@ const Dashboard = () => {
   const [totalCustomer, setTotalCustomer] = useState("0");
   const [totalVendor, setTotalVendor] = useState("0");
   const [customerLocation, setCustomerLocation] = useState("");
+  const [loadPage, setPage] = useState(false);
   // const [totalCustomer, setTotalCustomer] = useState("0");
 
   const data = [
@@ -96,6 +97,9 @@ const Dashboard = () => {
     },
   ];
   const [showMobileNav, setShowMobileNav] = useState(false);
+  const showSideBar = () => {
+    setShowMobileNav(!showMobileNav);
+  };
   const getTotalCustomers = async () => {
     try {
       const custmerResponse = await getRequest(
@@ -116,16 +120,21 @@ const Dashboard = () => {
     } catch (error) {}
   };
 
-  const showSideBar = () => {
-    setShowMobileNav(!showMobileNav);
+  const get4TopLocation = async () => {
+    try {
+      const response = await getRequest(
+        "/vendor/dashboard/orders/top-locations"          
+      );
+      setCustomerLocation(response.data.totalCount);
+      console.log(response.data);
+    } catch (error) {}
   };
 
   useEffect(() => {
     getTotalCustomers();
     getLocationWithHighestCustomer();
+    get4TopLocation();
   }, []);
-
-
 
   return (
     <div className="flex bg-gray-400 w-full h-full">

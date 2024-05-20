@@ -15,12 +15,12 @@ const DropDown = ({ placeholder, setValue, data }) => {
   }, [options]);
   return (
     <div
-      className={`block bg-white max-w-48 ${
+      className={`block bg-gray-300 max-w-48 ${
         showDropDown ? "shadow-2xl" : ""
       } rounded-lg `}
     >
       <div
-        className={`relative`}
+        className={`relative bg-gray-300`}
         onClick={() => {
           setShowDropDown(true);
         }}
@@ -34,7 +34,7 @@ const DropDown = ({ placeholder, setValue, data }) => {
           value={options}
           className={`${
             showDropDown ? "rounded-t-lg bg-gray-300" : "rounded-[10px]"
-          }  w-full p-2 outline-none disable text-[12px] focus:bg-[#f4f4f4] placeholder-gray-200 text-dark border-[1px] border-solid border-gray-200`}
+          } bg-gray-400 w-full p-2 outline-none disable text-[12px] focus:bg-[#f4f4f4] placeholder-gray-200 text-dark border-[1px] border-solid border-gray-200`}
         ></input>
 
         <div className="absolute top-[10px] right-2 z-50">
