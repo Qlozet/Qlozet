@@ -14,6 +14,7 @@ const Verication = ({ params }) => {
   const verifyAccount = async () => {
     try {
       const response = await getRequest(`/vendor/verify/${params.userid}`);
+      console.log(response);
       if (response.data.success) {
         toast(<Toast text={response.data.message} type="success" />);
         setLoading(false);

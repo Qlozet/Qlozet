@@ -24,8 +24,6 @@ export const getRequest = async (url) => {
   } catch (error) {
     console.log(error);
     return error.response;
-    // The request was made and the server responded with a status code
-    // that falls out of the range of 2xx
   }
 };
 
@@ -134,23 +132,20 @@ export const patchRequest = async (url, data) => {
 };
 
 export const putRequest = async (url, data) => {
+  console.log(data);
+  let userData;
+  let token = getToken();
+  let response;
   try {
-    const userData = JSON.parse(getToken());
-    let response;
-    if (userData !== null) {
-      response = await axiosInstance.put(url, data, {
-        headers: { Authorization: `Bearer ${userData?.token}` },
-      });
-    } else {
-      response = await axiosInstance.post(url, data);
-    }
+    userData = JSON.parse(token);
+    response = await axiosInstance.put(url, data, {
+      headers: { Authorization: `Bearer ${userData?.token}` },
+    });
+    console.log(response);
     return response.data;
   } catch (error) {
-    // alert(error);
     console.log(error);
     if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
       if (error.response.status === 401) {
         toastError("Unauthotized! Re-login to continue");
         deleteData();

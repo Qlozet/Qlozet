@@ -107,6 +107,9 @@ const Products = () => {
     },
   ];
 
+
+
+  const removeItemfromArray = (itemId) => {};
   const getProducts = async () => {
     try {
       let response = await getRequest("/vendor/products/all");
@@ -137,9 +140,6 @@ const Products = () => {
       error?.data && toast(<Toast text={error?.data} type="danger" />);
     }
   };
-
-  const removeItemfromArray = (itemId) => {};
-
   useEffect(() => {
     getProducts();
   }, []);

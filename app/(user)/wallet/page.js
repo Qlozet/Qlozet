@@ -3,11 +3,8 @@ import { useState, useEffect } from "react";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import DashboardTopCard from "@/components/DashboardTopCard";
 import SideBar from "@/components/SideBar";
-import DropDown from "@/components/DropDown";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
-import Typography from "@/components/Typography";
-import OrderTable from "@/components/order/OrderTable";
 import Modal from "@/components/Modal";
 import Button from "@/components/Button";
 import WalletTable from "@/components/Wallet/WalletTable";
@@ -18,14 +15,12 @@ import SendMoneyForm from "@/components/Wallet/SendMoneyForm";
 import MobileSideBar from "@/components/MobileSideBar";
 import classes from "./index.module.css";
 import Beneficiary from "@/components/Wallet/Beneficiary";
+import { getRequest } from "@/api/method";
 const Wallet = () => {
-  const [dropDownValue, setDropDownValue] = useState("");
   const [setUpWalletWallet, setSetUpWalletWallet] = useState(false);
   const [showTransactiondetails, setShowTransactiondetails] = useState(false);
   const [showSendMoney, setShowSendMoney] = useState("");
   const [rejectModal, setShowReject] = useState(false);
-  const [total, setShowTotal] = useState(false);
-  const [wallet, setWallet] = useState("");
   const handleShowViewDetailModal = () => {
     setShowTransactiondetails(true);
   };
@@ -154,6 +149,40 @@ const Wallet = () => {
     getWalletBalance();
   }, []);
 
+  const getTransaction = async () => {
+    try {
+      let response = await getRequest("/vendor/products/all");
+      let productData = [];
+      if (response?.data) {
+      } else {
+        toast(<Toast text={response.message} type="danger" />);
+      }
+      response?.data?.data?.map((product) => {
+        let orderItem = {
+          id: product._id,
+          picture: product.images[0]?.url ? product.images[0]?.url : "",
+          productName: product.name,
+          productPrice: product.price,
+          category: "Two Piece",
+          productType: product.type,
+          tag: product.tag,
+          quiantity: product.quantity,
+          ProductStatus: "active",
+        };
+        productData.push(orderItem);
+      });
+      // setProducts(productData);
+      pageLoading(false);
+    } catch (error) {
+      console.log(error);
+      error?.message && toast(<Toast text={error?.message} type="danger" />);
+      error?.data && toast(<Toast text={error?.data} type="danger" />);
+    }
+  };
+  useEffect(() => {
+    getTransaction();
+  }, []);
+
   return (
     <div className="flex bg-[#F8F9FA]">
       <div className="">
@@ -243,15 +272,13 @@ const Wallet = () => {
         </div>
 
         <div className="">
-         
-            <WalletTable
-              data={tableData}
-              viewDetails={() => {
-                handleShowViewDetailModal();
-              }}
-              showRejectModal={showRejectModal}
-            />
-        
+          <WalletTable
+            data={tableData}
+            viewDetails={() => {
+              handleShowViewDetailModal();
+            }}
+            showRejectModal={showRejectModal}
+          />
         </div>
       </div>
       {/* <Modal content={<SetTotalOrderPerDay />}></Modal> */}

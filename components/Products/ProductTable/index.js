@@ -130,7 +130,6 @@ const ProductTable = ({ data, viewDetails, showModal }) => {
             <div className="flex items-center justify-center h-[100%] ">
               <DeleteProduct
                 deleteFunction={(productId) => {
-                  console.log(productId);
                   setDropDownOption("");
                   setProductData(
                     productData.filter((item) => item.id !== productId)

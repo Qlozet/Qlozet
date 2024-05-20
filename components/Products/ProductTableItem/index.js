@@ -57,7 +57,7 @@ const ProductTableItem = ({
         />
       </td>
       <td className="text-[12px] font-normal p-4 text-dark">
-        <div className="flex items-center justify-center relative">
+        <div className="flex items-center justify-center">
           <Image
             src={dottedIcon}
             onClick={() => {
