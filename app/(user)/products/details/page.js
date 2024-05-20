@@ -73,9 +73,9 @@ const ProductDetails = () => {
         //     quantity: 5,
         //   },
         // ],
-        // images: response.data.data.images.map((image) => {
-        //   return image.url;
-        // }),
+        images: response.data.data.images.map((image) => {
+          return image.url;
+        }),
       });
       // clearProductId();
       setPageLoading(false);
@@ -97,7 +97,7 @@ const ProductDetails = () => {
           </div>
           <div className="w-full">
             <div className="px-4">
-              <DasboardNavWithOutSearch name="Products" addSearch={true} />
+              <DasboardNavWithOutSearch name="Products" addSearch={false} />
             </div>
             <div className="px-4">
               <div className="hidden  md:flex  items-center gap-2 mb-5">
