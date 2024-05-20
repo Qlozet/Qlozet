@@ -15,11 +15,11 @@ const Verication = ({ params }) => {
     try {
       const response = await getRequest(`/vendor/verify/${params.userid}`);
       console.log(response);
-      if (response.data.success) {
-        toast(<Toast text={response.data.message} type="success" />);
+      if (response.success) {
+        toast(<Toast text={response.message} type="success" />);
         setLoading(false);
       } else {
-        toast(<Toast text={response.data.message} type="danger" />);
+        toast(<Toast text={response.message} type="danger" />);
       }
     } catch (error) {
       // toast(<Toast text={error.data.message} type="danger" />);
