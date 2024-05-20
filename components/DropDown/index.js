@@ -3,7 +3,7 @@ import arrowDownIcon from "../../public/assets/svg/arrow-down.svg";
 import Typography from "../Typography";
 import classes from "./index.module.css";
 import Image from "next/image";
-const DropDown = ({ placeholder, setValue, data }) => {
+const DropDown = ({ placeholder, setValue, data, maxWidth, bg }) => {
   const [options, setOption] = useState("");
   const [showDropDown, setShowDropDown] = useState(true);
   const handleSetValue = (value) => {
@@ -15,12 +15,15 @@ const DropDown = ({ placeholder, setValue, data }) => {
   }, [options]);
   return (
     <div
-      className={`block bg-gray-300 max-w-48 ${
+      className={`${maxWidth} block bg-gray-300 max-w-48 ${
         showDropDown ? "shadow-2xl" : ""
       } rounded-lg `}
+      style={{
+        zIndex: 20,
+      }}
     >
       <div
-        className={`relative bg-gray-300`}
+        className={`relative ${bg ? bg : "bg-gray-300"}`}
         onClick={() => {
           setShowDropDown(true);
         }}

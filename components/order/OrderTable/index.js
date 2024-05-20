@@ -80,7 +80,7 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
               </div>
             </div>
           </div>
-          <div className="p-2 flex items-center justify-between mt-14  bg-gray-300 rounded-t-[12px] ">
+          <div className="p-2 flex items-center justify-between mt-8  bg-gray-300 rounded-t-[12px] ">
             <Typography
               textColor="text-dark"
               textWeight="font-bold"
@@ -97,6 +97,7 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
                 "Choose month",
                 "Custom",
               ]}
+              maxWidth={"max-w-[10rem]"}
               placeholder="Time Range"
               setValue={(data) => {}}
             />

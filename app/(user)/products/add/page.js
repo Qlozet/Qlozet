@@ -296,7 +296,7 @@ const AddProduct = () => {
                   <div className="w-full">
                     <SelectInput
                       index={30}
-                      placeholder={"Tags"}
+                      placeholder={"Product Tags"}
                       label="Tags"
                       value={productFormData.productTag}
                       setValue={(data) => {
@@ -491,6 +491,14 @@ const AddProduct = () => {
                     }}
                   />
                 </div>
+                <div className="w-full">
+                  <ColorInput
+                    value={["red"]}
+                    label="Colour"
+                    placeholder="Choose  colours available for this product"
+                    setValue={(data) => {}}
+                  />
+                </div>
                 <div className="my-4">
                   <DashedComponent name={"Product variants"} />
                 </div>
@@ -516,22 +524,14 @@ const AddProduct = () => {
                 <div>
                   <div className="w-full">
                     <SelectInput
-                      placeholder={"Tags"}
+                      placeholder={"Enter roduct tags"}
                       // value={dropDownValue}
                       setValue={(data) => {
                         //   setDropDownValue(data);
                       }}
                       data={[{ text: "Male" }, { text: "Female" }]}
-                      label="Enter tags"
+                      label="Product tags"
                       index={20}
-                    />
-                  </div>
-                  <div className="w-full">
-                    <ColorInput
-                      value={["red"]}
-                      label="Colour"
-                      placeholder="Choose  colours available for this product"
-                      setValue={(data) => {}}
                     />
                   </div>
                 </div>

@@ -62,7 +62,7 @@ const Support = () => {
                 </div>
 
                 <SelectInput
-                  placeholder={"Issue type "}
+                  placeholder={"User type "}
                   // value={dropDownValue}
                   setValue={(data) => {
                     //   setDropDownValue(data);
@@ -74,7 +74,7 @@ const Support = () => {
                     { text: "Bugs and issues" },
                     { text: "Others" },
                   ]}
-                  label="User role"
+                  label="User type"
                 />
                 <TextArea
                   label="Message"

@@ -15,7 +15,7 @@ const SelectInput = ({
   const [showDropDown, setShowDropDown] = useState(false);
   return (
     <div
-      className={`bg-white w-full relative `}
+      className={`bg-white w-full relative my-2`}
       style={{ zIndex: index ? index : 10 }}
     >
       <div
@@ -44,12 +44,7 @@ const SelectInput = ({
         )}
       </div>
       {showDropDown && (
-        <div className="overflow-hidden border-[1px] border-solid border-primary w-full cursor-pointer absolute top-[70px] bg-white rounded-[12px]">
-          <div className="p-2 rounded-b-[12px] ">
-            {/* <p className="text-[14px] text-gray-100 font-[200]">
-              Reject order menu
-            </p> */}
-          </div>
+        <div className="overflow-hidden border-[2px] border-solid border-primary w-full cursor-pointer absolute top-[72px] bg-white rounded-[12px]">
           {data.map((item) => (
             <div
               className="p-2  border-t-[1.5px] border-solid border-gray-200 bg-white hover:bg-[#F4F4F4]"

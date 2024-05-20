@@ -123,7 +123,7 @@ const Dashboard = () => {
   const get4TopLocation = async () => {
     try {
       const response = await getRequest(
-        "/vendor/dashboard/orders/top-locations"          
+        "/vendor/dashboard/orders/top-locations"
       );
       setCustomerLocation(response.data.totalCount);
       console.log(response.data);
@@ -163,7 +163,7 @@ const Dashboard = () => {
           className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4`}
         >
           <DashboardTopCard
-            name="Total Vendors"
+            name="Total Order"
             total={totalCustomer}
             percentage="2.5"
             bgColor="bg-[#57CAEB]"
@@ -172,7 +172,7 @@ const Dashboard = () => {
             addMaxWidth={true}
           />
           <DashboardTopCard
-            name="Achieved Vendors"
+            name="Achieved Order"
             total="10000"
             percentage="2.5"
             bgColor="bg-[#5DDAB4]"
@@ -208,7 +208,7 @@ const Dashboard = () => {
             >
               <div className="md:w-1/2 w-full">
                 <ChatCard
-                  text="Vendors by gender"
+                  text="Order by gender"
                   graph={
                     <DonutChart
                       data={chartData}
@@ -221,7 +221,7 @@ const Dashboard = () => {
               </div>
               <div className="md:w-1/2  w-full mt-4 md:mt-0">
                 <ChatCard
-                  text="Vendors by top location"
+                  text="Order by top location"
                   graph={<HorizontalChat data={data} />}
                 />
               </div>

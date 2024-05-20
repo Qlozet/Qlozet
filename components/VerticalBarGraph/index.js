@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import VendorCountLine from "../VendorCountLine";
 import VerticalBar from "../VerticalBar";
 import Typography from "../Typography";
+import DropDown from "../DropDown";
 
 const VerticalBarGraph = () => {
   const [data, setData] = useState([
@@ -20,7 +21,7 @@ const VerticalBarGraph = () => {
 
   return (
     <div className="relative">
-      <div className="flex my-4">
+      <div className="flex my-4 items-center justify-between">
         <Typography
           textColor="text-black"
           textWeight="font-bold"
@@ -28,6 +29,20 @@ const VerticalBarGraph = () => {
         >
           Total order count
         </Typography>
+        <DropDown
+          data={[
+            "This week",
+            "Last week",
+            "Last month",
+            "This month",
+            "Choose month",
+            "Custom",
+          ]}
+          maxWidth={"max-w-[10rem]"}
+          placeholder="Time Range"
+          setValue={(data) => {}}
+          bg={"bg-white"}
+        />
       </div>
       <div className="">
         <VendorCountLine value={"11,000"} />
