@@ -116,7 +116,6 @@ const Products = () => {
         toast(<Toast text={response.message} type="danger" />);
       }
       response?.data?.data?.map((product) => {
-        console.log(product.categories[0]);
         let orderItem = {
           id: product._id,
           picture: product.images[0]?.url ? product.images[0]?.url : "",
@@ -138,6 +137,8 @@ const Products = () => {
       error?.data && toast(<Toast text={error?.data} type="danger" />);
     }
   };
+
+  const removeItemfromArray = (itemId) => {};
 
   useEffect(() => {
     getProducts();

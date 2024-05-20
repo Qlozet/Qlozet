@@ -19,6 +19,7 @@ import { setProductId } from "@/utils/localstorage";
 import MobileTable from "../mobileTable";
 
 const ProductTable = ({ data, viewDetails, showModal }) => {
+  const [productData, setProductData] = useState(data);
   const router = useRouter();
 
   const [dropdownOption, setDropDownOption] = useState("");
@@ -75,12 +76,11 @@ const ProductTable = ({ data, viewDetails, showModal }) => {
             </tr>
           </thead>
           <tbody>
-            {data.map((item) => (
+            {productData.map((item) => (
               <ProductTableItem
                 {...item}
                 viewDetails={showModal}
                 handleSelect={(item) => {
-                  console.log(item);
                   setDropDownOption(item);
                   console.log(item);
                   if (item === "View product") {
@@ -109,12 +109,11 @@ const ProductTable = ({ data, viewDetails, showModal }) => {
             </div>
           </div>
         </div>
-        {data.map((item) => (
+        {productData.map((item) => (
           <MobileTable
             {...item}
             handleSelect={(item) => {
               setDropDownOption(item);
-              console.log(item);
               if (item === "View product") {
                 router.push("/products/details");
               }
@@ -130,8 +129,12 @@ const ProductTable = ({ data, viewDetails, showModal }) => {
           content={
             <div className="flex items-center justify-center h-[100%] ">
               <DeleteProduct
-                deleteFunction={() => {
+                deleteFunction={(productId) => {
+                  console.log(productId);
                   setDropDownOption("");
+                  setProductData(
+                    productData.filter((item) => item.id !== productId)
+                  );
                 }}
               />
             </div>

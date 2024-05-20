@@ -34,7 +34,7 @@ const MobileTable = ({
               src={picture}
               style={{ width: "5rem", height: "auto" }}
               alt=""
-              className="w-[2rem] h-[auto]"
+              className="w-[2rem] h-[auto] ml-4"
             />
             <div
               className="w-[1.5rem] h-[1.5rem]"

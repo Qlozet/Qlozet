@@ -21,7 +21,7 @@ const DeleteProduct = ({ deleteFunction }) => {
 
       if (response?.code === 200) {
         toast(<Toast text={response?.message} type="success" />);
-        deleteFunction();
+        deleteFunction(productId);
       } else {
       }
     } catch (error) {
