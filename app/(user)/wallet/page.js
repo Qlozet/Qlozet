@@ -16,14 +16,22 @@ import MobileSideBar from "@/components/MobileSideBar";
 import classes from "./index.module.css";
 import Beneficiary from "@/components/Wallet/Beneficiary";
 import { getRequest } from "@/api/method";
+import toast from "react-hot-toast";
+import Toast from "@/components/ToastComponent/toast";
+import Loader from "@/components/Loader";
 const Wallet = () => {
   const [setUpWalletWallet, setSetUpWalletWallet] = useState(false);
   const [showTransactiondetails, setShowTransactiondetails] = useState(false);
+  const [walletBalance, setWalletBalance] = useState(0);
   const [showSendMoney, setShowSendMoney] = useState("");
+  const [transactionId, setransactionId] = useState("");
+  const [loadPage, setLoadPage] = useState(true);
+  const [transactionData, setTransactionData] = useState([]);
   const [rejectModal, setShowReject] = useState(false);
   const handleShowViewDetailModal = () => {
     setShowTransactiondetails(true);
   };
+
   const [showMobileNav, setShowMobileNav] = useState(false);
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
@@ -83,17 +91,6 @@ const Wallet = () => {
     colors: ["#3E1C01", "#9C8578"],
     borderAlign: "center",
   };
-
-  const tableData = [
-    {
-      date: "Hello",
-      transactionId: "Hello",
-      transactionType: "Hello",
-      narration: "Hello",
-      amount: "Hello",
-      status: "Hello",
-    },
-  ];
   const closeModal = () => {
     setOrderDetails(false);
     setShowTrack(false);
@@ -139,9 +136,12 @@ const Wallet = () => {
   ];
   const getWalletBalance = async () => {
     try {
-      const response = await getRequest("/api/vendor/wallet/balance");
-      console.log(response);
-      setTotalCustomer(response.data.totalCount);
+      const response = await getRequest("/vendor/wallet/balance");
+      if (response?.data) {
+        console.log(response?.data);
+        setWalletBalance(response?.data?.data);
+      } else {
+      }
     } catch (error) {}
   };
 
@@ -151,28 +151,39 @@ const Wallet = () => {
 
   const getTransaction = async () => {
     try {
-      let response = await getRequest("/vendor/products/all");
-      let productData = [];
+      let response = await getRequest("/vendor/wallet/transactions");
+      let transactionDataArray = [];
+      response?.data && setLoadPage(false);
       if (response?.data) {
+        response?.data?.data.map((item) => {
+          let status;
+          if ((item.status = "Successful")) {
+            status = {
+              text: item.status,
+              bgColor: "bg-success-300",
+              color: "text-[#33CC33]",
+            };
+          } else if ((item.status = "Failed")) {
+            status = {
+              text: item.status,
+              bgColor: "bg-[#FFF5F5]",
+              color: "text-[#FF3A3A]",
+            };
+          }
+          const transactionItem = {
+            amount: item?.amount,
+            date: item?.date,
+            transactionId: item.id,
+            narration: item.narration,
+            status: status,
+            transactionType: item.transType,
+          };
+          transactionDataArray.push(transactionItem);
+        });
+        setTransactionData(transactionDataArray);
       } else {
         toast(<Toast text={response.message} type="danger" />);
       }
-      response?.data?.data?.map((product) => {
-        let orderItem = {
-          id: product._id,
-          picture: product.images[0]?.url ? product.images[0]?.url : "",
-          productName: product.name,
-          productPrice: product.price,
-          category: "Two Piece",
-          productType: product.type,
-          tag: product.tag,
-          quiantity: product.quantity,
-          ProductStatus: "active",
-        };
-        productData.push(orderItem);
-      });
-      // setProducts(productData);
-      pageLoading(false);
     } catch (error) {
       console.log(error);
       error?.message && toast(<Toast text={error?.message} type="danger" />);
@@ -184,160 +195,170 @@ const Wallet = () => {
   }, []);
 
   return (
-    <div className="flex bg-[#F8F9FA]">
-      <div className="">
-        <SideBar active="Wallet" />
-        {showMobileNav && (
-          <div className="md:hidden">
-            <MobileSideBar active="Wallet" closeSideBar={showSideBar} />
+    <div>
+      {loadPage ? (
+        <Loader></Loader>
+      ) : (
+        <div className="flex bg-[#F8F9FA]">
+          <div className="">
+            <SideBar active="Wallet" />
+            {showMobileNav && (
+              <div className="md:hidden">
+                <MobileSideBar active="Wallet" closeSideBar={showSideBar} />
+              </div>
+            )}
           </div>
-        )}
-      </div>
-      <div className="w-full p-4">
-        <DasboardNavWithOutSearch
-          addSearch={true}
-          setValue={(data) => {
-            // console.log(data);
-          }}
-          name="Wallet"
-          showSideBar={showSideBar}
-        />
-        <div className="flex justify-end items-center md:hidden w-full">
-          <div className="items-start gap-6 pt-5 flex ">
-            <Button
-              children="Send money"
-              btnSize="large"
-              variant="outline"
-              minWidth="min-w-[10rem]"
-              maxWidth="max-w-[10rem]"
-              clickHandler={() => {
-                setShowSendMoney("Send Money");
-              }}
+          <div className="w-full p-4">
+            <DasboardNavWithOutSearch
+              addSearch={true}
+              setValue={(data) => {}}
+              name="Wallet"
+              showSideBar={showSideBar}
             />
-            <Button
-              children="Fund wallet"
-              btnSize="large"
-              variant="primary"
-              minWidth="min-w-[10rem]"
-              maxWidth="max-w-[10rem]"
-              clickHandler={() => {
-                setSetUpWalletWallet(true);
-              }}
-            />
-          </div>
-        </div>
+            <div className="flex justify-end items-center md:hidden w-full">
+              <div className="items-start gap-6 pt-5 flex ">
+                <Button
+                  children="Send money"
+                  btnSize="large"
+                  variant="outline"
+                  minWidth="min-w-[10rem]"
+                  maxWidth="max-w-[10rem]"
+                  clickHandler={() => {
+                    setShowSendMoney("Send Money");
+                  }}
+                />
+                <Button
+                  children="Fund wallet"
+                  btnSize="large"
+                  variant="primary"
+                  minWidth="min-w-[10rem]"
+                  maxWidth="max-w-[10rem]"
+                  clickHandler={() => {
+                    setSetUpWalletWallet(true);
+                  }}
+                />
+              </div>
+            </div>
 
-        <div className="flex justify-between">
-          <div
-            className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
-          >
-            <DashboardTopCard
-              name="Wallet Balance"
-              total="10000"
-              percentage="2.5"
-              bgColor="bg-[#57CAEB]"
-              link="link"
-              icon={vendorIcon}
-              addMaxWidth={true}
-            />
-            <DashboardTopCard
-              name="Total Amount Received"
-              total="10000"
-              percentage="2.5"
-              bgColor="bg-[#5DDAB4]"
-              icon={customerIcon}
-              addMaxWidth={true}
-            />
-          </div>
-          <div className="items-start gap-6 pt-5 hidden md:flex">
-            <Button
-              children="Send money"
-              btnSize="large"
-              variant="outline"
-              minWidth="min-w-[10rem]"
-              clickHandler={() => {
-                setShowSendMoney("Send Money");
-              }}
-            />
-            <Button
-              children="Fund wallet"
-              btnSize="large"
-              variant="primary"
-              minWidth="min-w-[10rem]"
-              clickHandler={() => {
-                setSetUpWalletWallet(true);
-              }}
-            />
-          </div>
-        </div>
+            <div className="flex justify-between">
+              <div
+                className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
+              >
+                <DashboardTopCard
+                  name="Wallet Balance"
+                  total={walletBalance}
+                  percentage="2.5"
+                  bgColor="bg-[#57CAEB]"
+                  link="link"
+                  icon={vendorIcon}
+                  addMaxWidth={true}
+                />
+                <DashboardTopCard
+                  name="Total Amount Received"
+                  total="10000"
+                  percentage="2.5"
+                  bgColor="bg-[#5DDAB4]"
+                  icon={customerIcon}
+                  addMaxWidth={true}
+                />
+              </div>
+              <div className="items-start gap-6 pt-5 hidden md:flex">
+                <Button
+                  children="Send money"
+                  btnSize="large"
+                  variant="outline"
+                  minWidth="min-w-[10rem]"
+                  clickHandler={() => {
+                    setShowSendMoney("Send Money");
+                  }}
+                />
+                <Button
+                  children="Fund wallet"
+                  btnSize="large"
+                  variant="primary"
+                  minWidth="min-w-[10rem]"
+                  clickHandler={() => {
+                    setSetUpWalletWallet(true);
+                  }}
+                />
+              </div>
+            </div>
 
-        <div className="">
-          <WalletTable
-            data={tableData}
-            viewDetails={() => {
-              handleShowViewDetailModal();
-            }}
-            showRejectModal={showRejectModal}
-          />
+            <div className="">
+              <WalletTable
+                data={transactionData}
+                viewDetails={(id) => {
+                  setransactionId(id);
+                  handleShowViewDetailModal();
+                }}
+                showRejectModal={showRejectModal}
+              />
+            </div>
+          </div>
+          {/* <Modal content={<SetTotalOrderPerDay />}></Modal> */}
+          {/* {showModal == true && ( */}
+          {setUpWalletWallet && (
+            <Modal
+              content={
+                <SetUpAltireWallet
+                  closeModal={() => {
+                    setSetUpWalletWallet(false);
+                  }}
+                />
+              }
+            ></Modal>
+          )}
+          {showTransactiondetails && (
+            <Modal
+              content={
+                <TransactionDetails
+                  closeModal={() => {
+                    setShowTransactiondetails(false);
+                  }}
+                  details={
+                    transactionData.filter(
+                      (item) => item.transactionId == transactionId
+                    )[0]
+                  }
+                />
+              }
+            ></Modal>
+          )}
+          {showSendMoney === "Send Money" && (
+            <Modal
+              content={
+                <SendMoney
+                  closeModal={(name) => {
+                    console.log(name);
+                    setShowSendMoney(name);
+                  }}
+                />
+              }
+            ></Modal>
+          )}
+          {showSendMoney === "Manually" && (
+            <Modal
+              content={
+                <SendMoneyForm
+                  closeModal={() => {
+                    setShowSendMoney(false);
+                  }}
+                />
+              }
+            ></Modal>
+          )}
+          {showSendMoney === "Beneficiaries" && (
+            <Modal
+              content={
+                <Beneficiary
+                  closeModal={() => {
+                    setShowSendMoney(false);
+                  }}
+                />
+              }
+            ></Modal>
+          )}
         </div>
-      </div>
-      {/* <Modal content={<SetTotalOrderPerDay />}></Modal> */}
-      {/* {showModal == true && ( */}
-      {setUpWalletWallet && (
-        <Modal
-          content={
-            <SetUpAltireWallet
-              closeModal={() => {
-                setSetUpWalletWallet(false);
-              }}
-            />
-          }
-        ></Modal>
-      )}
-      {showTransactiondetails && (
-        <Modal
-          content={
-            <TransactionDetails
-              closeModal={() => {
-                setShowTransactiondetails(false);
-              }}
-            />
-          }
-        ></Modal>
-      )}
-      {showSendMoney === "Send Money" && (
-        <Modal
-          content={
-            <SendMoney
-              closeModal={(name) => {
-                console.log(name);
-                setShowSendMoney(name);
-              }}
-            />
-          }
-        ></Modal>
-      )}
-      {showSendMoney === "Manually" && (
-        <Modal
-          content={
-            <SendMoneyForm
-              closeModal={() => {
-                setShowSendMoney(false);
-              }}
-            />
-          }
-        ></Modal>
-      )}
-      {showSendMoney === "Beneficiaries" && (
-        <Modal
-          content={
-            <Beneficiary
-              closeModal={() => {
-                setShowSendMoney(false);
-              }}
-            />
-          }
-        ></Modal>
       )}
     </div>
   );

@@ -61,13 +61,14 @@ const VerticalBarGraph = () => {
         </div>
       </div>
       <div className="absolute right-0 bottom-[.6rem] md:bottom-[9px]  w-[94%] h-[96%] flex justify-between px-10">
-        {data.map((item) => {
+        {data.map((item, index) => {
           return (
             <VerticalBar
               highest={item.value == itemWithHighestValue.value ? true : false}
               per={item.per}
               value={item.value}
               date={item.date}
+              key={index}
             />
           );
         })}

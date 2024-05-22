@@ -28,7 +28,7 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg }) => {
           setShowDropDown(true);
         }}
       >
-        <Image src={arrowDownIcon} className="absolute top-2 right-3" />
+        <Image src={arrowDownIcon} className="absolute top-2 right-3" alt="" />
         <input
           onClick={() => {
             // setShowDropDown(true);

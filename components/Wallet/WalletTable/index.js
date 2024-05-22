@@ -7,6 +7,7 @@ import DropDown from "@/components/DropDown";
 import OrderStatus from "@/components/order/OrderStatus";
 import icon from "../../../public/assets/svg/Icon container.svg";
 import exportIcon from "../../../public/assets/svg/Content.svg";
+import MobileItem from "../MobileTableItem";
 const WalletTable = ({ data, viewDetails, showRejectModal }) => {
   return (
     <div className="mt-4 min-h-[50vh]">
@@ -49,14 +50,16 @@ const WalletTable = ({ data, viewDetails, showRejectModal }) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => (
-            <WalletTableItem
-              key={index}
-              {...item}
-              viewDetails={viewDetails}
-              showRejectModal={showRejectModal}
-            />
-          ))}
+          {data.map((item, index) => {
+            return (
+              <WalletTableItem
+                key={index}
+                {...item}
+                viewDetails={viewDetails}
+                showRejectModal={showRejectModal}
+              />
+            );
+          })}
         </tbody>
       </table>
 
@@ -67,7 +70,7 @@ const WalletTable = ({ data, viewDetails, showRejectModal }) => {
               <SearchInput placeholder="Search" />
             </div>
             <div className="flex items-center justify-center">
-              <Image src={icon} />
+              <Image src={icon} alt="" />
             </div>
             <div className="flex items-center justify-center">
               <div className="w-[3rem] h-[3rem] bg-primary rounded-[12px] flex items-center justify-center">
@@ -97,66 +100,7 @@ const WalletTable = ({ data, viewDetails, showRejectModal }) => {
             />
           </div>
           {data.map((item, index) => {
-            return (
-              <div className="p-4 bg-white" key={index}>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <Typography
-                      textColor="text-gray-200"
-                      textWeight="font-normal"
-                      textSize="text-[14px]"
-                    >
-                      Ref ID
-                    </Typography>
-                    <Typography
-                      textColor="text-dark"
-                      textWeight="font-normal"
-                      textSize="text-[16px]"
-                    >
-                      12345678910
-                    </Typography>
-                    <Typography
-                      textColor="text-gray-200"
-                      textWeight="font-normal"
-                      textSize="text-[14px]"
-                    >
-                      Account
-                    </Typography>
-                    <Typography
-                      textColor="text-dark"
-                      textWeight="font-normal"
-                      textSize="text-[16px]"
-                    >
-                      $123,476,000
-                    </Typography>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <OrderStatus
-                      text="Out for delivery"
-                      bgColor="bg-[#DEF1FF]"
-                      color="text-[#3893FE]"
-                      addMaxWidth={true}
-                    />
-                    <div className="my-2">
-                      <Typography
-                        textColor="text-gray-200"
-                        textWeight="font-normal"
-                        textSize="text-[14px]"
-                      >
-                        Product
-                      </Typography>
-                    </div>
-                    <Typography
-                      textColor="text-dark"
-                      textWeight="font-normal"
-                      textSize="text-[16px]"
-                    >
-                      12345678910
-                    </Typography>
-                  </div>
-                </div>
-              </div>
-            );
+            return <MobileItem item={item} index={index} />;
           })}
         </div>
       </div>

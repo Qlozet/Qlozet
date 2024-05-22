@@ -132,9 +132,9 @@ const MobileTable = ({
                 Status
               </Typography>
               <OrderStatus
-                text="Active"
-                bgColor="bg-success-300"
-                color="text-success"
+                text={ProductStatus.text}
+                bgColor={ProductStatus.bgColor}
+                color={ProductStatus.color}
                 addMaxWidth={true}
               />
             </div>

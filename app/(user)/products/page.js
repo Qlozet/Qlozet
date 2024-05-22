@@ -31,50 +31,13 @@ const Products = () => {
   const [showHostory, setShowHistory] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);
-  const data = [
-    {
-      location: "Warri",
-      total: "w-[70%]",
-      percentage: "w-[50%]",
-    },
-    {
-      location: "Benin",
-      total: "w-[60%]",
-      percentage: "w-[53%]",
-    },
-    {
-      location: "Aba",
-      total: "w-[44%]",
-      percentage: "w-[40%]",
-    },
-    {
-      location: "Aba",
-      total: "w-[44%]",
-      percentage: "w-[40%]",
-    },
-  ];
-
-  const dropdownData = [
-    {
-      text: "View vendor’s details",
-      color: "",
-    },
-    {
-      text: "View vendor’s ",
-      color: "",
-    },
-    {
-      text: "vendor’s details",
-      color: "",
-    },
-  ];
+  const [showMobileNav, setShowMobileNav] = useState(false);
   const chartData = {
     labels: ["Suit", "Kaftan", "Cargo", "Abgada"],
     values: [50, 25, 25, 25],
     colors: ["#3E1C01", "#9C8578", "#F6E9DD", "#BE7D42"],
     borderAlign: "center",
   };
-  const [showMobileNav, setShowMobileNav] = useState(false);
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
   };
@@ -86,6 +49,9 @@ const Products = () => {
   const showModal = () => {
     setCustomerDetails(true);
     setShowHistory(false);
+  };
+  const toggleStatus = () => {
+    setIsLoading(true);
   };
 
   const topNavData = [
@@ -107,33 +73,45 @@ const Products = () => {
     },
   ];
 
-
-
   const removeItemfromArray = (itemId) => {};
   const getProducts = async () => {
     try {
       let response = await getRequest("/vendor/products/all");
       let productData = [];
       if (response?.data) {
+        response?.data?.data?.map((product) => {
+          let productStatus;
+          if (product.status) {
+            productStatus = {
+              text: "Active",
+              bgColor: "bg-success-300",
+              color: "text-[#33CC33]",
+            };
+          } else {
+            productStatus = {
+              text: "Inactive",
+              bgColor: "bg-[#FFF5F5]",
+              color: "text-[#FF3A3A]",
+            };
+          }
+          let orderItem = {
+            id: product._id,
+            picture: product.images[0]?.url ? product.images[0]?.url : "",
+            productName: product.name,
+            productPrice: product.price,
+            category: "Two Piece",
+            productType: product.type,
+            tag: product.tag,
+            quiantity: product.quantity,
+            ProductStatus: productStatus,
+          };
+          productData.push(orderItem);
+        });
+        setProducts(productData);
+        setIsLoading(false);
       } else {
         toast(<Toast text={response.message} type="danger" />);
       }
-      response?.data?.data?.map((product) => {
-        let orderItem = {
-          id: product._id,
-          picture: product.images[0]?.url ? product.images[0]?.url : "",
-          productName: product.name,
-          productPrice: product.price,
-          category: "Two Piece",
-          productType: product.type,
-          tag: product.tag,
-          quiantity: product.quantity,
-          ProductStatus: "active",
-        };
-        productData.push(orderItem);
-      });
-      setProducts(productData);
-      setIsLoading(false);
     } catch (error) {
       console.log(error);
       error?.message && toast(<Toast text={error?.message} type="danger" />);
@@ -142,7 +120,7 @@ const Products = () => {
   };
   useEffect(() => {
     getProducts();
-  }, []);
+  }, [isLoading]);
   return (
     <div>
       {isLoading ? (
@@ -296,7 +274,11 @@ const Products = () => {
               <div className="my-4 block md:hidden">
                 <UpdateComponent />
               </div>
-              <ProductTable data={products} showModal={showModal} />
+              <ProductTable
+                data={products}
+                showModal={showModal}
+                statusChangeHandler={toggleStatus}
+              />
             </div>
           </div>
           {viewCustomerDetails && (

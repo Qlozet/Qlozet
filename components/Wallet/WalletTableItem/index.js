@@ -3,6 +3,7 @@ import Image from "next/image";
 import OrderStatus from "../../order/OrderStatus";
 import Modal from "../../Modal";
 const WalletTableItem = ({
+  id,
   date,
   transactionId,
   transactionType,
@@ -15,14 +16,16 @@ const WalletTableItem = ({
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
       <td className="text-[12px] font-normal p-4 text-dark">{date}</td>
       <td className="text-[12px] font-normal p-4 text-dark">{transactionId}</td>
-      <td className="text-[12px] font-normal p-4 text-dark">{transactionType}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">
+        {transactionType}
+      </td>
       <td className="text-[12px] font-normal p-4 text-dark">{narration}</td>
       <td className="text-[12px] font-normal p-4 text-dark">{amount}</td>
       <td className="text-[12px] font-normal p-4 text-dark">
         <OrderStatus
-          text="Out for delivery"
-          bgColor="bg-[#D4CFCA]"
-          color="text-[#3E1C01]"
+          text={status.text}
+          bgColor={status.bgColor}
+          color={status.color}
           addMaxWidth={true}
         />
       </td>
@@ -33,7 +36,9 @@ const WalletTableItem = ({
             text="View details"
             color="text-[#3E1C01]"
             addMaxWidth={true}
-            clickHandler={viewDetails}
+            clickHandler={() => {
+              viewDetails(transactionId);
+            }}
           />
         </div>
       </td>

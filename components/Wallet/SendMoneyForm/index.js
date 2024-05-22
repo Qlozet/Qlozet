@@ -6,8 +6,11 @@ import TextInput from "../../TextInput";
 import SelectInput from "../../SelectInput";
 import NumberInput from "../../NumberInput";
 import CheckBoxInput from "../../CheckboxInput";
+import { useState } from "react";
 // import classes from "./index.module.css";
 const SendMoneyForm = ({ closeModal }) => {
+  const [formData, setFormData] = useState({});
+  const [requiredFormData, setRequiredFormData] = useState({});
   const dropdownData = [
     {
       text: "Set as default warehouse",
@@ -30,7 +33,6 @@ const SendMoneyForm = ({ closeModal }) => {
             >
               Send Money
             </Typography>
-
             <div onClick={closeModal} className="cursor-pointer">
               <Image src={closeIcon} />
             </div>

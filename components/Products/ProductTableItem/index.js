@@ -50,9 +50,9 @@ const ProductTableItem = ({
       </td>
       <td className="text-[12px] font-normal p-4 text-dark">
         <OrderStatus
-          text="Active"
-          bgColor="bg-success-300"
-          color="text-success"
+          text={ProductStatus.text}
+          bgColor={ProductStatus.bgColor}
+          color={ProductStatus.color}
           addMaxWidth={true}
         />
       </td>

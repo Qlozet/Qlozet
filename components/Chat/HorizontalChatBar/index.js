@@ -1,9 +1,11 @@
-const HorizontalChatBar = ({ text, total, percentage }) => {
+const HorizontalChatBar = ({ location, male, female }) => {
   return (
     <div className="mb-4">
-      <div className={`${total} bg-primary-200 rounded-r-[40px]`}>
-        <div className={`bg-primary ${percentage}  rounded-r-[40px]`}>
-          <p className="py-1 px-2 text-white text-[12px] font-[500]">{text}</p>
+      <div className={`${male} bg-primary-200 rounded-r-[40px]`}>
+        <div className={`bg-primary ${female}  rounded-r-[40px]`}>
+          <p className="py-1 px-2 text-white text-[12px] font-[500]">
+            {location}
+          </p>
         </div>
       </div>
     </div>

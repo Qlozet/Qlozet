@@ -15,15 +15,33 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ShecduleProduct from "../ScheduleProduct";
 import ProductItemDropDown from "../ProductItemDropDown";
-import { setProductId } from "@/utils/localstorage";
+import { getProductId, setProductId } from "@/utils/localstorage";
 import MobileTable from "../mobileTable";
+import { putRequest } from "@/api/method";
+import Toast from "@/components/ToastComponent/toast";
+import toast from "react-hot-toast";
 
-const ProductTable = ({ data, viewDetails, showModal }) => {
+const ProductTable = ({
+  data,
+  viewDetails,
+  showModal,
+  statusChangeHandler,
+}) => {
   const [productData, setProductData] = useState(data);
   const router = useRouter();
-
   const [dropdownOption, setDropDownOption] = useState("");
-
+  const toggleStatus = async () => {
+    const productId = getProductId();
+    try {
+      const response = await putRequest(`/vendor/products/${productId}/toggle`);
+      response && statusChangeHandler();
+      console.log(response);
+      if (response?.data) {
+        toast(<Toast text={response?.message} type="success" />);
+      } else {
+      }
+    } catch (error) {}
+  };
   return (
     <div className="mt-4 min-h-[50vh] ">
       <div className="hidden md:block">
@@ -80,14 +98,23 @@ const ProductTable = ({ data, viewDetails, showModal }) => {
               <ProductTableItem
                 {...item}
                 viewDetails={showModal}
-                handleSelect={(item) => {
-                  setDropDownOption(item);
-                  console.log(item);
-                  if (item === "View product") {
+                handleSelect={(option) => {
+                  console.log();
+                  setDropDownOption(option);
+                  if (option === "View product") {
                     router.push("/products/details");
-                  }
-                  if (item === "Edit product") {
+                  } else if (option === "Edit product") {
                     router.push("/products/add");
+                  } else if (option === "Deactivate product") {
+                    if (item.ProductStatus.text === "Inactive") {
+                    } else {
+                      toggleStatus();
+                    }
+                  } else if (option === "Activate product") {
+                    if (item.ProductStatus.text === "Active") {
+                    } else {
+                      toggleStatus();
+                    }
                   }
                 }}
               />
@@ -112,13 +139,23 @@ const ProductTable = ({ data, viewDetails, showModal }) => {
         {productData.map((item) => (
           <MobileTable
             {...item}
-            handleSelect={(item) => {
-              setDropDownOption(item);
-              if (item === "View product") {
+            handleSelect={(option) => {
+              console.log();
+              setDropDownOption(option);
+              if (option === "View product") {
                 router.push("/products/details");
-              }
-              if (item === "Edit product") {
+              } else if (option === "Edit product") {
                 router.push("/products/add");
+              } else if (option === "Deactivate product") {
+                if (item.ProductStatus.text === "Inactive") {
+                } else {
+                  toggleStatus();
+                }
+              } else if (option === "Activate product") {
+                if (item.ProductStatus.text === "Active") {
+                } else {
+                  toggleStatus();
+                }
               }
             }}
           />

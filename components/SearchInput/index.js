@@ -14,7 +14,11 @@ const SearchInput = ({
   return (
     <div className="block">
       <div className="my-3 relative">
-        <Image src={searchIcon} className="absolute top-[0.8rem] left-2.5" />
+        <Image
+          src={searchIcon}
+          className="absolute top-[0.8rem] left-2.5"
+          alt=""
+        />
         <label className="text-[14px] font-light my-2 text-dark">{label}</label>
         <input
           type="text"

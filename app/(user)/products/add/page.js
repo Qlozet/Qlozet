@@ -120,6 +120,16 @@ const AddProduct = () => {
         "productCategory",
         JSON.stringify([productFormData.productCategory])
       );
+      formData.append(
+        "variant",
+        JSON.stringify([
+          {
+            colors: ["#808080", "#FFFF00"],
+            size: "M",
+            quantity: 5,
+          },
+        ])
+      );
       formData.append("colors", JSON.stringify(productFormData.colors));
       formData.append(
         "productTag",
@@ -139,38 +149,9 @@ const AddProduct = () => {
       });
       try {
         setIsLoading(true);
-        console.log(productId);
         const response = !productId
           ? await postRequest("/vendor/products", formData, true)
-          : putRequest(`/vendor/products/${productId}/update`, {
-              // name: productFormData.productName,
-              // description: productFormData.description,
-              // price: productFormData.productPrice,
-              // quantity: productFormData.productQuantity,
-              // productTag: productFormData.productTag,
-              // productCategory: JSON.stringify(productFormData.productCategory),
-              // productType: productFormData.productType,
-              // discount: productFormData.discount,
-              // isFeatured: productFormData.isFeatured,
-              // colors: JSON.stringify(productFormData.colors),
-              name: "Dulvan No Color",
-              description: "Ankara Warriors",
-              price: 49.99,
-              quantity: 65,
-              productTag: "male",
-              productCategory: ["string"],
-              productType: "customizable",
-              discount: 0,
-              isFeatured: true,
-              colors: ["#808080", "#FFFF00"],
-              variants: [
-                {
-                  colors: ["#808080", "#FFFF00"],
-                  size: "M",
-                  quantity: 5,
-                },
-              ],
-            });
+          : putRequest(`/vendor/products/${productId}/update`, formData, true);
         response && setIsLoading(false);
         if (response?.data) {
           router.push("../products");

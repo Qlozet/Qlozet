@@ -6,7 +6,8 @@ import Button from "../../Button";
 import TextInput from "../../TextInput";
 import OrderStatus from "../../order/OrderStatus";
 
-const TransactionDetails = ({ closeModal }) => {
+const TransactionDetails = ({ closeModal, details }) => {
+  console.log(details);
   return (
     <div className="w-full flex items-center justify-center mt-6">
       <div className="bg-white p-4 rounded-[12px] w-[40%]">
@@ -21,7 +22,7 @@ const TransactionDetails = ({ closeModal }) => {
             </Typography>
 
             <div onClick={closeModal} className="cursor-pointer">
-              <Image src={closeIcon} />
+              <Image src={closeIcon} alt="" />
             </div>
           </div>
 
@@ -42,7 +43,7 @@ const TransactionDetails = ({ closeModal }) => {
                 textWeight="font-[700]"
                 textSize="text-[14px]"
               >
-                AT123456778
+                {details.transactionId}
               </Typography>
             </div>
             <div className="flex items-center gap-8 border-b-[1.5px] border-solid border-gray-300 py-4">
@@ -61,7 +62,7 @@ const TransactionDetails = ({ closeModal }) => {
                 textWeight="font-[700]"
                 textSize="text-[14px]"
               >
-                NGN 20,000
+                {details.amount}
               </Typography>
             </div>
             <div className="flex items-center gap-8 border-b-[1.5px] border-solid border-gray-300 py-4">
@@ -79,7 +80,7 @@ const TransactionDetails = ({ closeModal }) => {
                 textWeight="font-[700]"
                 textSize="text-[14px]"
               >
-                23/07/2023
+                {details.date}
               </Typography>
             </div>
             <div className="flex items-center gap-8 border-b-[1.5px] border-solid border-gray-300 py-4">
@@ -97,7 +98,7 @@ const TransactionDetails = ({ closeModal }) => {
                 textWeight="font-[700]"
                 textSize="text-[14px]"
               >
-                Transfer
+                {details.transactionType}
               </Typography>
             </div>
             <div className="flex items-center gap-8 border-b-[1.5px] border-solid border-gray-300 py-4">
@@ -151,7 +152,7 @@ const TransactionDetails = ({ closeModal }) => {
                 textWeight="font-[700]"
                 textSize="text-[14px]"
               >
-                Nil
+                {details.narration}
               </Typography>
             </div>
             <div className="flex items-center gap-8 border-b-[1.5px] border-solid border-gray-300 py-4">

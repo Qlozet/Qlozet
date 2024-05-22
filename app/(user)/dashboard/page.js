@@ -26,9 +26,9 @@ const Dashboard = () => {
 
   const data = [
     {
-      location: "Warri",
-      total: "w-[70%]",
-      percentage: "w-[50%]",
+      male: "Warri",
+      female: "w-[70%]",
+      male: "w-[50%]",
     },
     {
       location: "Benin",
