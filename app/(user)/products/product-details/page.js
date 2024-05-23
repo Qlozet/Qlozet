@@ -4,9 +4,10 @@ import SideBar from "@/components/SideBar";
 import arrowLeftIcon from "../../../../public/assets/svg/arrow-left.svg";
 import arrowRightIcon from "../../../../public/assets/svg/arrow-right.svg";
 import starIcon from "../../../../public/assets/svg/productdetailstar.svg";
+
+import arrowRIcon from "../../../../public/assets/svg/arrowright.svg";
 import heartIcon from "../../../../public/assets/svg/productdetailsheart.svg";
 import chatIcon from "../../../../public/assets/svg/productdetailschat.svg";
-
 import productImage from "../../../../public/assets/image/productimage.png";
 import Image from "next/image";
 import Button from "@/components/Button";
@@ -40,11 +41,11 @@ const ProductDetails = () => {
               <div className="w-full text-[#3E1C01]">
                 <div className="flex items-center justify-between w-full">
                   <p className="text-[14px] leading-[20px]">MISKAY BOUTIQUE</p>
-                  <div className="flex items-center">
+                  <div className="flex items-center gap-1">
                     <p className="text-[12px] leading-[18px] underline font-bold">
                       View product in main site
                     </p>
-                    <Image src={arrowRightIcon} />
+                    <Image src={arrowRIcon} />
                   </div>
                 </div>
                 <h1 className="text-[42px] leading-[63px] font-bold mb-4">
@@ -78,7 +79,7 @@ const ProductDetails = () => {
                   <h2 className="font-bold text-[24px] leading-[36px]">
                     NGN 120,000
                   </h2>
-                  <h2 className="font-bold text-[24px] leading-[36px] text-[#33CC33]">
+                  <h2 className="font-bold text-[18px] leading-[27px] text-[#33CC33]">
                     1,000 items delivered
                   </h2>
                 </div>
