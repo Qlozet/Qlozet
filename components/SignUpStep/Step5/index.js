@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Logo from "../../Logo";
 import Typography from "../../Typography";
 import ProgressBar from "../../ProgressBar";
@@ -51,6 +51,9 @@ const Step5 = ({ formData, setFormData, requiredData, setRequiredData }) => {
     }
   };
 
+  useEffect(() => {
+    handleCheckPassword(formData.password);
+  }, []);
   return (
     <div>
       <div className="mt-4 mx-4  md:mx-0 pt-5 px-2 p md:px-0 ">
@@ -101,7 +104,7 @@ const Step5 = ({ formData, setFormData, requiredData, setRequiredData }) => {
         />
         <div className="mt-2">
           <PasswordInput
-            value={formData.checkPassword}
+            value={formData.confirmPassword}
             placeholder="*********"
             label="Confirm password"
             setValue={(data) => {

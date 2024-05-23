@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import arrowDownIcon from "../../public/assets/svg/arrow-down.svg";
-import Typography from "../Typography";
-import classes from "./index.module.css";
 import Image from "next/image";
 const DropDown = ({ placeholder, setValue, data, maxWidth, bg }) => {
   const [options, setOption] = useState("");
@@ -30,6 +28,7 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg }) => {
       >
         <Image src={arrowDownIcon} className="absolute top-2 right-3" alt="" />
         <input
+          onChange={() => {}}
           onClick={() => {
             // setShowDropDown(true);
           }}

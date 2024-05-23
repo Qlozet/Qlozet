@@ -7,8 +7,8 @@ const HorizontalChat = ({ data }) => {
           <div className={`${index !== 0 && "mt-8"}`} key={index}>
             <HorizontalChatBar
               location={item.location}
-              male={item.total}
-              female={item.percentage}
+              male={item.male}
+              female={item.female}
             />
           </div>
         );

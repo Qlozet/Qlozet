@@ -109,7 +109,9 @@ const SignUp = () => {
         );
         formData.append("password", passwordInfo.password);
         formData.append("confirmPassword", passwordInfo.confirmPassword);
-        formData.append("cacDocument", businessFiles[0]);
+        businessFiles.map((image) => {
+          formData.append("cacDocument", image);
+        });
         formData.append("businessLogo", businessLogo[0]);
         console.log([...formData.entries()]);
         const response = await postRequest(`/vendor/signup`, formData, true);
@@ -223,7 +225,6 @@ const SignUp = () => {
                   </div>
 
                   <div className="mt-12 ml-6 md:ml-0">
-                    {" "}
                     <Image
                       src={previousIcon}
                       alt=""

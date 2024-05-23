@@ -48,9 +48,11 @@ const Button = ({
 
   return (
     <button
-      className={`py-2  flex items-center justify-center gap-4 rounded-[12px] ${minWidth} ${maxWidth} ${variantClasses} ${sizeClasses} text-[14px] ${className}`}
+      className={`py-2  flex items-center justify-center gap-4 rounded-[12px] ${minWidth} ${maxWidth} ${variantClasses} ${sizeClasses} text-[14px] ${className} ${
+        loading && "cursor-not-allowed"
+      }`}
       {...rest}
-      disabled={disabled || (loading && true)}
+      disabled={loading ? true : false}
       onClick={clickHandler}
     >
       {!loading ? children : "Loading..."}

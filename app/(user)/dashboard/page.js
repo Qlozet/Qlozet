@@ -22,30 +22,8 @@ const Dashboard = () => {
   const [totalVendor, setTotalVendor] = useState("0");
   const [customerLocation, setCustomerLocation] = useState("");
   const [loadPage, setLoadPage] = useState(true);
+  const [top4Location, setTop4Location] = useState([]);
   // const [totalCustomer, setTotalCustomer] = useState("0");
-
-  const data = [
-    {
-      male: "Warri",
-      female: "w-[70%]",
-      male: "w-[50%]",
-    },
-    {
-      location: "Benin",
-      total: "w-[60%]",
-      percentage: "w-[53%]",
-    },
-    {
-      location: "Aba",
-      total: "w-[44%]",
-      percentage: "w-[40%]",
-    },
-    {
-      location: "Aba",
-      total: "w-[44%]",
-      percentage: "w-[40%]",
-    },
-  ];
 
   const dropdownData = [
     {
@@ -123,11 +101,22 @@ const Dashboard = () => {
 
   const get4TopLocation = async () => {
     try {
+      const locationData = [];
       const response = await getRequest(
         "/vendor/dashboard/orders/top-locations"
       );
       setCustomerLocation(response.data.totalCount);
-      console.log(response.data);
+
+      console.log(response?.data?.data);
+      response?.data?.data?.locations.map((location) => {
+        const singleLocatin = {
+          location: location.location,
+          female: (location.female / response?.data?.data?.totalOrders) * 100,
+          male: (location.male / response?.data?.data?.totalOrders) * 100,
+        };
+        locationData.push(singleLocatin);
+      });
+      setTop4Location(locationData);
     } catch (error) {}
   };
 
@@ -227,7 +216,7 @@ const Dashboard = () => {
                   <div className="md:w-1/2  w-full mt-4 md:mt-0">
                     <ChatCard
                       text="Order by top location"
-                      graph={<HorizontalChat data={data} />}
+                      graph={<HorizontalChat data={top4Location} />}
                     />
                   </div>
                 </div>
@@ -237,7 +226,7 @@ const Dashboard = () => {
                   <div className="w-full flex items-center">
                     <ChatCard
                       text="Orders by product"
-                      graph={<HorizontalChat data={data} />}
+                      graph={<HorizontalChat data={top4Location} />}
                     />
                   </div>
                 </div>
