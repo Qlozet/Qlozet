@@ -1,9 +1,17 @@
+import SearchInput from "@/components/SearchInput";
 import ExportComponent from "../../ExportButton";
 import WalletTableItem from "../WalletTableItem";
+import Image from "next/image";
+import Typography from "@/components/Typography";
+import DropDown from "@/components/DropDown";
+import OrderStatus from "@/components/order/OrderStatus";
+import icon from "../../../public/assets/svg/Icon container.svg";
+import exportIcon from "../../../public/assets/svg/Content.svg";
+import MobileItem from "../MobileTableItem";
 const WalletTable = ({ data, viewDetails, showRejectModal }) => {
   return (
     <div className="mt-4 min-h-[50vh]">
-      <table className="w-full">
+      <table className="w-full hidden md:block">
         <thead className="w-full bg-[#F4F4F4] ">
           <tr>
             <th className="w-[8%] p-4 text-[12px]">
@@ -42,16 +50,60 @@ const WalletTable = ({ data, viewDetails, showRejectModal }) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => (
-            <WalletTableItem
-              key={index}
-              {...item}
-              viewDetails={viewDetails}
-              showRejectModal={showRejectModal}
-            />
-          ))}
+          {data.map((item, index) => {
+            return (
+              <WalletTableItem
+                key={index}
+                {...item}
+                viewDetails={viewDetails}
+                showRejectModal={showRejectModal}
+              />
+            );
+          })}
         </tbody>
       </table>
+
+      <div>
+        <div className="block md:hidden">
+          <div className="flex items-center justify-between">
+            <div className="w-[70%] block">
+              <SearchInput placeholder="Search" />
+            </div>
+            <div className="flex items-center justify-center">
+              <Image src={icon} alt="" />
+            </div>
+            <div className="flex items-center justify-center">
+              <div className="w-[3rem] h-[3rem] bg-primary rounded-[12px] flex items-center justify-center">
+                <Image src={exportIcon} />
+              </div>
+            </div>
+          </div>
+          <div className="p-2 flex items-center justify-between mt-14  bg-gray-300 rounded-t-[12px]">
+            <Typography
+              textColor="text-dark"
+              textWeight="font-bold"
+              textSize="text-[18px]"
+            >
+              Wallet
+            </Typography>
+            <DropDown
+              data={[
+                "This week",
+                "Last week",
+                "Last month",
+                "This month",
+                "Choose month",
+                "Custom",
+              ]}
+              placeholder="Time Range"
+              setValue={(data) => {}}
+            />
+          </div>
+          {data.map((item, index) => {
+            return <MobileItem item={item} index={index} />;
+          })}
+        </div>
+      </div>
     </div>
   );
 };

@@ -23,8 +23,8 @@ const OrderTableItem = ({
       <td className="text-[12px] font-normal p-4 text-dark">{AmountPaid}</td>
       <td className="text-[12px] font-normal p-4 text-dark">
         <OrderStatus
-          text="Out for delivery"
-          bgColor="bg-[#D4CFCA]"
+          text={DeliveryStatus.name}
+          bgColor={"bg-[#D4CFCA]"}
           color="text-[#3E1C01]"
           addMaxWidth={true}
         />

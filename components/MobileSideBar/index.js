@@ -97,7 +97,10 @@ const MobileSideBar = ({ active, closeSideBar }) => {
     closeSideBar();
   };
   return (
-    <div className="block bg-white fixed h-[100rem] z-40 top-0 left-0">
+    <div
+      className="block bg-white fixed h-[100rem] z-40 top-0 left-0"
+      style={{ zIndex: 50 }}
+    >
       <div className="py-10 px-16">
         <Logo />
       </div>

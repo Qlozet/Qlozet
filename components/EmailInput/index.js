@@ -8,7 +8,6 @@ const EmailInptut = ({
   placeholder,
   disabled = false,
 }) => {
-  console.log(error);
   return (
     <div className="my-3">
       {leftIcon}

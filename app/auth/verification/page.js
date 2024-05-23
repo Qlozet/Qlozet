@@ -3,11 +3,10 @@ import Logo from "@/components/Logo";
 import classes from "./index.module.css";
 import Typography from "@/components/Typography";
 import { useRouter } from "next/navigation";
-import { getRequest } from "@/api/request";
+import { getRequest } from "@/api/method";
 import { useEffect } from "react";
 
 const Verication = ({ params }) => {
-  
   console.log(params);
   const router = useRouter();
   const verifyCode = async () => {

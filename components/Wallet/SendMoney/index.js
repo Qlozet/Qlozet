@@ -10,7 +10,7 @@ import classes from "./index.module.css";
 const SendMoney = ({ closeModal }) => {
   return (
     <div className="w-full flex items-center justify-center mt-6 min-h-[50vh]">
-      <div className="bg-white p-4 rounded-[12px] w-[35%]  min-h-[80vh]">
+      <div className="bg-white p-4 rounded-[12px] w-full  md:w-[35%]  min-h-[80vh]">
         <div>
           <div className="flex items-center justify-between">
             <Typography
@@ -21,7 +21,12 @@ const SendMoney = ({ closeModal }) => {
               Transaction details
             </Typography>
 
-            <div onClick={closeModal} className="cursor-pointer">
+            <div
+              onClick={() => {
+                closeModal("");
+              }}
+              className="cursor-pointer"
+            >
               <Image src={closeIcon} />
             </div>
           </div>
@@ -33,7 +38,12 @@ const SendMoney = ({ closeModal }) => {
             >
               <Image src={topImage} className="absolute top-0 right-2" />
               <div className="absolute top-0 left-0">
-                <div className="flex items-center gap-5 h-[77px] pl-6">
+                <div
+                  className="flex items-center gap-5 h-[77px] pl-6"
+                  onClick={() => {
+                    closeModal("Manually");
+                  }}
+                >
                   <Image src={groupIcon} />
                   <Typography
                     textColor="text-white"
@@ -53,7 +63,12 @@ const SendMoney = ({ closeModal }) => {
             <div className={`flex items-center gap-4 relative cursor-pointer`}>
               <Image src={topImage} className="absolute top-0 right-2" />
               <div className="absolute top-0 left-0">
-                <div className="flex items-center gap-5 h-[77px] pl-6">
+                <div
+                  className="flex items-center gap-5 h-[77px] pl-6"
+                  onClick={() => {
+                    closeModal("Beneficiaries");
+                  }}
+                >
                   <Image src={customerIcon} />
                   <Typography
                     textColor="text-white"

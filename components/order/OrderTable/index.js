@@ -16,7 +16,22 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
           <tr>
             <th className="w-[8%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
-                Picture
+                Date
+              </div>
+            </th>
+            <th className="w-[8%] px-2 py-4 text-[12px]">
+              <div className="flex items-center justify-start font-[500] text-dark">
+                Order ID{" "}
+              </div>
+            </th>
+            <th className="w-[8%] px-2 py-4 text-[12px]">
+              <div className="flex items-center justify-start font-[500] text-dark">
+                Product name
+              </div>
+            </th>
+            <th className="w-[8%] px-2 py-4 text-[12px]">
+              <div className="flex items-center justify-start font-[500] text-dark">
+                Product price
               </div>
             </th>
             <th className="w-[8%] px-2 py-4 text-[12px]">
@@ -26,27 +41,12 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
             </th>
             <th className="w-[8%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
-                Email address
-              </div>
-            </th>
-            <th className="w-[8%] px-2 py-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500] text-dark">
-                Phone number
-              </div>
-            </th>
-            <th className="w-[8%] px-2 py-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500] text-dark">
-                Total orders
-              </div>
-            </th>
-            <th className="w-[8%] px-2 py-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500] text-dark">
-                Last Order date
+                Amount paid
               </div>
             </th>
             <th className="w-[9%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
-                Status
+                Delivery Status
               </div>
             </th>
             <th className="w-[8%] px-2 py-4 text-[12px]">
@@ -55,11 +55,12 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((item) => (
+          {data.map((item, index) => (
             <OrderTableItem
               {...item}
               viewDetails={viewDetails}
               showRejectModal={showRejectModal}
+              key={index}
             />
           ))}
         </tbody>
@@ -79,7 +80,7 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
               </div>
             </div>
           </div>
-          <div className=" pb-4 flex items-center justify-between mt-14 mb-2 border-b-[2px] border-dashed border-gray-200 ">
+          <div className="p-2 flex items-center justify-between mt-8  bg-gray-300 rounded-t-[12px] ">
             <Typography
               textColor="text-dark"
               textWeight="font-bold"
@@ -96,14 +97,16 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
                 "Choose month",
                 "Custom",
               ]}
+              maxWidth={"max-w-[10rem]"}
               placeholder="Time Range"
               setValue={(data) => {}}
             />
           </div>
-          {data.map((item) => {
+          {data.map((item, index) => {
+            console.log(item);
             return (
-              <div className="py-4">
-                <div className="flex justify-between items-center">
+              <div className="" key={index}>
+                <div className="flex justify-between items-center bg-white p-4">
                   <div>
                     <Typography
                       textColor="text-gray-200"
@@ -124,14 +127,14 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
                       textWeight="font-normal"
                       textSize="text-[14px]"
                     >
-                      Account
+                      Amount
                     </Typography>
                     <Typography
                       textColor="text-dark"
                       textWeight="font-normal"
                       textSize="text-[16px]"
                     >
-                      $123,476,000
+                      {item.AmountPaid}
                     </Typography>
                   </div>
                   <div className="flex flex-col items-end">
@@ -155,7 +158,7 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
                       textWeight="font-normal"
                       textSize="text-[16px]"
                     >
-                      12345678910
+                      {item.productName}
                     </Typography>
                   </div>
                 </div>

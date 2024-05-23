@@ -31,3 +31,58 @@
     text-wrap: balance;
   }
 }
+
+.rcp {
+  border-radius: 0px !important;
+}
+
+.rcp-body {
+  padding: 10px 0 !important;
+  background-color: rgb(44, 44, 44) !important;
+}
+
+.rcp-root {
+  border-radius: 0px !important;
+}
+
+.rcp-interactive {
+  border-radius: 0px !important;
+}
+
+.rcp-saturation {
+  border-radius: 0px !important;
+  /* border-radius: 10px 10px 10px 10px !important; */
+  height: 210px !important;
+}
+
+.rcp-section {
+  gap: 20px !important;
+  position: relative !important;
+  width: 80% !important;
+  right: -18% !important;
+}
+
+.rcp-hue,
+.rcp-alpha {
+  height: 15px !important;
+}
+
+.rcp-hue-cursor,
+.rcp-alpha-cursor {
+  /* height: 30px !important;
+  width: 30px !important; */
+  transform: translate(-10px, -3px) !important ;
+}
+
+.rcp-field {
+  display: none !important;
+}
+
+.rcp-hue-cursor,
+.rcp-saturation-cursor {
+  cursor: pointer;
+}
+
+.rcp-fields {
+  display: block !important;
+}

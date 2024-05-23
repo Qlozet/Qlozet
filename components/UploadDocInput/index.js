@@ -11,7 +11,7 @@ import closeCircle from "../../public/assets/svg/close-circle.svg";
 import Button from "../Button";
 import classes from "./index.module.css";
 
-function UploadDocInput({ handleSelect, uploadfiles }) {
+function UploadDocInput({ handleSelect, uploadfiles, singleUpload }) {
   // state
   const [showDropDown, setShowDropDown] = useState(false);
   const [files, setFiles] = useState(uploadfiles);
@@ -108,71 +108,79 @@ function UploadDocInput({ handleSelect, uploadfiles }) {
               );
             })}
           </div>
-          <div className={`${classes.select_file_container} gap-4`}>
-            <div
-              className={`flex-1 flex items-center bg-white border-[1.5px] cursor-pointer border-solid h-[50px] border-gray-200 ${
-                showDropDown ? "rounded-t-lg" : "rounded-[8px]"
-              }  justify-between py-2 mb-6 relative`}
-              onClick={showdropDownHandler}
-            >
-              <p className="text-dark font-medium px-4 flex  ">
-                <span className="h-[30px] flex items-center overflow-hidden truncate text-dark">
-                  {" "}
-                  Add more file
+          {!singleUpload && (
+            <div className={`${classes.select_file_container} gap-4`}>
+              <div
+                className={`flex-1 flex items-center bg-white border-[1.5px] cursor-pointer border-solid h-[50px] border-gray-200 ${
+                  showDropDown ? "rounded-t-lg" : "rounded-[8px]"
+                }  justify-between py-2 mb-6 relative`}
+                onClick={showdropDownHandler}
+              >
+                <p className="text-dark font-medium px-4 flex  ">
+                  <span className="h-[30px] flex items-center overflow-hidden truncate text-dark">
+                    {" "}
+                    Add more file
+                  </span>
+                </p>
+                <span className="px-4  border-l-[1.5px] border-dark">
+                  <Image src={dropdownDarkIcon} alt=""></Image>
                 </span>
-              </p>
-              <span className="px-4  border-l-[1.5px] border-dark">
-                <Image src={dropdownDarkIcon} alt=""></Image>
-              </span>
-              {showDropDown && (
-                <div className={`absolute left-0 top-[100%] w-full`}>
-                  <div
-                    className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid text-[16px]"
-                    onClick={open}
-                  >
-                    <Image src={deviceIcon} alt=""></Image>
-                    <span className="text-gray-100 font-bold ">
-                      From Device
-                    </span>
-                  </div>
-                  <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid">
-                    <Image src={driveIcon} alt=""></Image>
-                    <span className="text-gray-100 font-bold ">From Drive</span>
-                  </div>
-                  <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid">
-                    <Image src={dropboxIcon} alt=""></Image>
-                    <span className="text-gray-100 font-bold ">
-                      From Dropbox
-                    </span>
-                  </div>
+                {showDropDown && (
+                  <div className={`absolute left-0 top-[100%] w-full`}>
+                    <div
+                      className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid text-[16px]"
+                      onClick={open}
+                    >
+                      <Image src={deviceIcon} alt=""></Image>
+                      <span className="text-gray-100 font-bold ">
+                        From Device
+                      </span>
+                    </div>
+                    <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid">
+                      <Image src={driveIcon} alt=""></Image>
+                      <span className="text-gray-100 font-bold ">
+                        From Drive
+                      </span>
+                    </div>
+                    <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid">
+                      <Image src={dropboxIcon} alt=""></Image>
+                      <span className="text-gray-100 font-bold ">
+                        From Dropbox
+                      </span>
+                    </div>
 
-                  <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 rounded-b-lg border-t-[2px] border-white border-solid">
-                    <Image src={fomLinkIcon} alt=""></Image>
-                    <span className="text-gray-100 font-bold">From Link</span>
+                    <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 rounded-b-lg border-t-[2px] border-white border-solid">
+                      <Image src={fomLinkIcon} alt=""></Image>
+                      <span className="text-gray-100 font-bold">From Link</span>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+              <div className="flex-1">
+                <Button children="Continue" btnSize="large" variant="primary" />
+              </div>
             </div>
-            <div className="flex-1">
-              <Button children="Continue" btnSize="large" variant="primary" />
-            </div>
-          </div>
+          )}
         </div>
       )}
-
-      <input {...getInputProps()} />
-      {isDragActive ? (
-        <p className="text-center font-[700] text-[14px] text-dark">
-          Drop the files here ...
-        </p>
-      ) : (
+      {!singleUpload && (
         <div>
-          <p className="text-center font-[700] text-[14px]  text-dark">
-            You can also
-          </p>
-          <p className="text-center font-[700] text-[14px]  text-dark">
-            Drag and drop your file here
-          </p>
+          {" "}
+          <input {...getInputProps()} />
+          {isDragActive ? (
+            <p className="text-center font-[700] text-[14px] text-dark">
+              Drop the files here ...
+            </p>
+          ) : (
+            <div>
+              <p className="text-center font-[700] text-[14px]  text-dark">
+                You can also
+              </p>
+              <p className="text-center font-[700] text-[14px]  text-dark">
+                Drag and drop your file here
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>

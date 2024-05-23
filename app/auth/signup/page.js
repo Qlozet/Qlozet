@@ -11,7 +11,7 @@ import Step2 from "@/components/SignUpStep/step2";
 import Step3 from "@/components/SignUpStep/Step3";
 import Step5 from "@/components/SignUpStep/Step5";
 import { validator } from "@/utils/helper";
-import { postRequest } from "@/api/request";
+import { postRequest } from "@/api/method";
 import Step4 from "@/components/SignUpStep/Step4";
 import Toast from "@/components/ToastComponent/toast";
 import Logo from "@/components/Logo";
@@ -109,11 +109,13 @@ const SignUp = () => {
         );
         formData.append("password", passwordInfo.password);
         formData.append("confirmPassword", passwordInfo.confirmPassword);
-        formData.append("cacDocument", businessFiles[0]);
+        businessFiles.map((image) => {
+          formData.append("cacDocument", image);
+        });
         formData.append("businessLogo", businessLogo[0]);
-        console.log(businessFiles);
-        console.log(businessLogo);
+        console.log([...formData.entries()]);
         const response = await postRequest(`/vendor/signup`, formData, true);
+        console.log(response);
         if (response.success) {
           setIsLoading(false);
           toast(<Toast text={response.message} type="success" />);
@@ -223,7 +225,6 @@ const SignUp = () => {
                   </div>
 
                   <div className="mt-12 ml-6 md:ml-0">
-                    {" "}
                     <Image
                       src={previousIcon}
                       alt=""

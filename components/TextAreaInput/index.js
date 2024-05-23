@@ -6,6 +6,7 @@ const TextArea = ({
   leftIcon,
   placeholder,
   disabled = false,
+  error,
 }) => {
   return (
     <div className="my-3">
@@ -13,9 +14,11 @@ const TextArea = ({
       <label className="text-[14px] font-light my-2 text-dark"> {label}</label>
       <div>
         <textarea
-          style={{ minHeight: "150px" }}
+          style={{ minHeight: "110px" }}
           type="text"
-          className={`py-3 px-4 w-full border-solid border-[1.5px] block  text-dark placeholder:text-gray-200
+          className={`   ${
+            error && "border-danger"
+          } py-3 px-4 w-full border-solid border-[1.5px] block  text-dark placeholder:text-gray-200
           focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 ${
             disabled && "border-0 bg-gray-300 cursor-not-allowed h-full"
           } `}
@@ -26,9 +29,12 @@ const TextArea = ({
             setValue(e.target.value);
           }}
         ></textarea>
+        {error && (
+          <p className="text-danger text-[12px] font-[400]">
+            {label} cannot be empty!
+          </p>
+        )}
       </div>
-
-      {rightIcon}
     </div>
   );
 };

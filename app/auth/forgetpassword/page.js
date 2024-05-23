@@ -7,7 +7,7 @@ import TextInput from "@//components/TextInput";
 import Typography from "@//components/Typography";
 import classes from "./index.module.css";
 import validator from "@/utils/validator";
-import { postRequest } from "@/api/request";
+import { postRequest } from "@/api/method";
 import toast from "react-hot-toast";
 import Toast from "@/components/ToastComponent/toast";
 const Page = () => {
@@ -44,7 +44,9 @@ const Page = () => {
     }
   };
   return (
-    <section className={`  h-screen overflow-y-scroll 2xl:flex justify-center items-center`}>
+    <section
+      className={`  h-screen overflow-y-scroll 2xl:flex justify-center items-center`}
+    >
       <div className={`${classes.section} w-full md:bg-white block`}>
         <div className="flex items-center justify-center pt-6">
           <Logo />

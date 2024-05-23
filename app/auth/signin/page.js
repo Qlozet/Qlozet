@@ -11,7 +11,7 @@ import classes from "./index.module.css";
 import { useRouter } from "next/navigation";
 import EmailInptut from "@//components/EmailInput";
 import validator from "@/utils/validator";
-import { postRequest } from "@/api/request";
+import { postRequest } from "@/api/method";
 import toast from "react-hot-toast";
 import Toast from "@/components/ToastComponent/toast";
 import { setToken } from "@/utils/localstorage";
@@ -35,8 +35,7 @@ const SignIn = () => {
           password: formData.password,
         });
         response && setIsLoading(false);
-
-        if (response.data.success === true) {
+        if (response.success === true) {
           setToken(JSON.stringify(response.data));
           console.log(response);
           router.push("/dashboard");
@@ -45,8 +44,9 @@ const SignIn = () => {
           toast(<Toast text={response.message} type="danger" />);
         }
       } catch (error) {
+        console.log(error);
         setIsLoading(false);
-        toast(<Toast text={error.message} type="error" />);
+        toast(<Toast text={error.message} type="danger" />);
       }
     } else {
       setReqiuredFormData((prevData) => {
@@ -62,13 +62,7 @@ const SignIn = () => {
       >
         <div className="bg-[rgba(0,0,0,.7)] md:bg-white h-screen w-screen 2xl:flex justify-center items-center overflow-y-scroll md:p-4">
           <div>
-            <div className="block md:hidden">
-              <DasboardNavWithOutSearch
-                addSearch={false}
-                setValue={(data) => {}}
-                hideNav={true}
-              />
-            </div>
+            <div className="block md:hidden"></div>
             <div className="block mt-2 mb-4  md:hidden">
               <Logo />
             </div>

@@ -3,10 +3,21 @@ const { default: Image } = require("next/image");
 import arrowDownIcon from "../../public/assets/svg/arrow-down.svg";
 import Typography from "../Typography";
 import classes from "./index.module.css";
-const SelectInput = ({ value, placeholder, setValue, data, label }) => {
+const SelectInput = ({
+  value,
+  placeholder,
+  setValue,
+  data,
+  label,
+  index,
+  error,
+}) => {
   const [showDropDown, setShowDropDown] = useState(false);
   return (
-    <div className={`bg-white w-full relative z-50`}>
+    <div
+      className={`bg-white w-full relative my-2`}
+      style={{ zIndex: index ? index : 10 }}
+    >
       <div
         className={`${classes.container}  border-solid   `}
         onClick={() => {
@@ -17,21 +28,23 @@ const SelectInput = ({ value, placeholder, setValue, data, label }) => {
         <input
           placeholder={placeholder}
           value={value}
-          className="w-full p-3 rounded-[12px] placeholder-gray-200 text-dark outline-none  border-[1px]  border-gray-200 focus:border-primary focus:bg-[#DDE2E5] text-[14px]"
+          className={`py-3 ${
+            error && "border-danger"
+          } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  
+            focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 
+           `}
         ></input>
-        {/* {value === "" && ( */}
         <div className="absolute top-[40px] right-2 ">
           <Image src={arrowDownIcon} alt="" />
         </div>
-        {/* )} */}
+        {error && (
+          <p className="text-danger text-[12px] font-[400]">
+            {label} cannot be empty!
+          </p>
+        )}
       </div>
       {showDropDown && (
-        <div className="overflow-hidden border-[1px] border-solid border-primary w-full cursor-pointer absolute top-[66px] bg-white rounded-[12px]">
-          <div className="p-2 rounded-b-[12px] ">
-            {/* <p className="text-[14px] text-gray-100 font-[200]">
-              Reject order menu
-            </p> */}
-          </div>
+        <div className="overflow-hidden border-[2px] border-solid border-primary w-full cursor-pointer absolute top-[72px] bg-white rounded-[12px]">
           {data.map((item) => (
             <div
               className="p-2  border-t-[1.5px] border-solid border-gray-200 bg-white hover:bg-[#F4F4F4]"
