@@ -9,6 +9,9 @@ import classes from "./index.module.css";
 import DonutChart from "@///components/Chat/DoughnutChat";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
+import TotalOrderIcon from "../../../public/assets/svg/TotalOrder-Icon.svg";
+import TotalearningIcon from "../../../public/assets/svg/Totalearning-icon.svg";
+import CartIcon from "../../../public/assets/svg/customer-carticon.svg";
 import VerticalBarGraph from "@/components/VerticalBarGraph";
 import UpdateComponent from "@/components/UpdateComponent";
 import RecentOrder from "@/components/RecentOrder";
@@ -17,6 +20,8 @@ import MobileSideBar from "@/components/MobileSideBar";
 import getVendorDetails from "@/api/request";
 import { setUserDetails } from "@/utils/localstorage";
 import Loader from "@/components/Loader";
+import DropDown from "@/components/DropDown";
+
 const Dashboard = () => {
   const [totalCustomer, setTotalCustomer] = useState("0");
   const [totalVendor, setTotalVendor] = useState("0");
@@ -24,6 +29,7 @@ const Dashboard = () => {
   const [loadPage, setLoadPage] = useState(true);
   const [top4Location, setTop4Location] = useState([]);
   // const [totalCustomer, setTotalCustomer] = useState("0");
+  const [showMobileNav, setShowMobileNav] = useState(false);
 
   const dropdownData = [
     {
@@ -75,7 +81,6 @@ const Dashboard = () => {
       status: "Ready to Ship",
     },
   ];
-  const [showMobileNav, setShowMobileNav] = useState(false);
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
   };
@@ -154,7 +159,7 @@ const Dashboard = () => {
             </div>
 
             <div
-              className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4`}
+              className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4 `}
             >
               <DashboardTopCard
                 name="Total Order"
@@ -162,15 +167,15 @@ const Dashboard = () => {
                 percentage="2.5"
                 bgColor="bg-[#57CAEB]"
                 link="link"
-                icon={vendorIcon}
+                icon={TotalOrderIcon}
                 addMaxWidth={true}
               />
               <DashboardTopCard
-                name="Achieved Order"
-                total="10000"
+                name="Total earnings"
+                total="N 50,000"
                 percentage="2.5"
                 bgColor="bg-[#5DDAB4]"
-                icon={vendorIcon}
+                icon={TotalearningIcon}
                 addMaxWidth={true}
               />
               <DashboardTopCard
@@ -181,19 +186,42 @@ const Dashboard = () => {
                 icon={customerIcon}
                 addMaxWidth={true}
               />
+
+              <DashboardTopCard
+                name="Total returns"
+                total="10"
+                percentage="2.5"
+                bgColor="bg-[#FF3A3A]"
+                icon={CartIcon}
+                addMaxWidth={true}
+              />
             </div>
             <div className=" bg-[#F8F9FA] px-4">
               <div className="flex items-center justify-between mb-2 mt-4">
                 <UpdateComponent />
                 <div className="hidden md:block">
                   {/* <DropDown
-              placeholder={"Vendor’s status"}
-              value={dropDownValue}
-              setValue={(data) => {
-                setDropDownValue(data);
-              }}
-              data={dropdownData}
-            /> */}
+                    placeholder={"Vendor’s status"}
+                    value={dropDownValue}
+                    setValue={(data) => {
+                      setDropDownValue(data);
+                    }}
+                    data={dropdownData}
+                  /> */}
+                  <DropDown
+                    data={[
+                      "This week",
+                      "Last week",
+                      "Last month",
+                      "This month",
+                      "Choose month",
+                      "Custom",
+                    ]}
+                    maxWidth={"max-w-[10rem]"}
+                    placeholder="Time Range"
+                    setValue={(data) => {}}
+                    bg={"bg-white"}
+                  />
                 </div>
               </div>
               <div className="block md:flex items-center w-full gap-4 border-solid solid-[1px] border-primary z-[0]">
