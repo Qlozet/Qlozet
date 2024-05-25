@@ -67,7 +67,7 @@ const ProductTableItem = ({
           />
           {showDropDown && (
             <div
-              className="absolute right-[0rem] top-[2rem] "
+              className="absolute right-[6rem] top-[50%] "
               style={{ zIndex: 10 }}
             >
               <ProductItemDropDown

@@ -5,10 +5,10 @@ import logo2 from "../../public/assets/svg/altire2.svg";
 const Logo = () => {
   return (
     <div>
-      <div className=" items-center justify-center md:justify-start hidden md:flex">
+      <div className=" items-center justify-center lg:justify-start hidden lg:flex">
         <Image src={logo} alt="" />
       </div>
-      <div className=" items-center justify-center md:justify-start flex md:hidden">
+      <div className="items-center justify-center lg:justify-start flex lg:hidden">
         <Image src={logo2} alt="" />
       </div>
     </div>

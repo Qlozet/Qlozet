@@ -2,9 +2,8 @@ import Typography from "../../Typography";
 
 const Notification = ({ shipped }) => {
   return (
-    <div className="block md:flex items-center justify-between border-b-[1px] border-solid border-gray-300 py-4 px-6">
+    <div className="block lg:flex items-center justify-between border-b-[1px] border-solid border-gray-300 py-4 px-6">
       <div className="flex items-center gap-2">
-      
         <div className="flex items-start">
           <div
             className={`w-[1rem] h-[1rem] ${
@@ -13,7 +12,7 @@ const Notification = ({ shipped }) => {
           ></div>
         </div>
 
-        <div className="ml-4 md:ml-0">
+        <div className="ml-4 lg:ml-0">
           <Typography
             textColor="text-primary"
             textWeight="font-bold"
@@ -31,7 +30,7 @@ const Notification = ({ shipped }) => {
           </Typography>
         </div>
       </div>
-      <div className="ml-10 md:ml-0 py-3 md:py-0">
+      <div className="ml-10 lg:ml-0 py-3 lg:py-0">
         <Typography
           textColor="text-gray-1"
           textWeight="font-normal"

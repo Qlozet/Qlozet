@@ -8,7 +8,7 @@ import TextInput from "../../TextInput";
 const SetUpAltireWallet = ({ closeModal }) => {
   return (
     <div className="w-full h-screen flex items-center justify-center ">
-      <div className="bg-white p-4 rounded-[12px] w-full md:w-[40%] mx-4 md:mx-0">
+      <div className="bg-white p-4 rounded-[12px] w-full lg:w-[40%] mx-4 lg:mx-0">
         <div>
           <div className="flex items-center justify-between">
             <Typography

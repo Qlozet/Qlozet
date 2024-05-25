@@ -59,6 +59,7 @@ const AddProduct = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [files, setFile] = useState([]);
   const [productFormData, setProductFormData] = useState({
     productName: "",
     productPrice: "",
@@ -92,6 +93,7 @@ const AddProduct = () => {
     colors: false,
   });
   const handleSelectFile = (files) => {
+    setFile(files);
     setProductFormData((prevData) => {
       return { ...prevData, images: files };
     });
@@ -111,6 +113,23 @@ const AddProduct = () => {
       productFormData,
       requiredproductFormData
     );
+    const variantData = {
+      old: [
+        {
+          id: "u02u3209u320u32",
+          data: {
+            color: "red",
+            size: "small",
+            qty: 2,
+          },
+        },
+      ],
+      new: {
+        color: "red",
+        size: "small",
+        qty: 2,
+      },
+    };
     if (status) {
       formData.append("name", productFormData.productName);
       formData.append("description", productFormData.description);
@@ -120,16 +139,7 @@ const AddProduct = () => {
         "productCategory",
         JSON.stringify([productFormData.productCategory])
       );
-      formData.append(
-        "variant",
-        JSON.stringify([
-          {
-            colors: ["#808080", "#FFFF00"],
-            size: "M",
-            quantity: 5,
-          },
-        ])
-      );
+      // formData.append("variants", variantData);
       formData.append("colors", JSON.stringify(productFormData.colors));
       formData.append(
         "productTag",
@@ -144,14 +154,18 @@ const AddProduct = () => {
       );
       formData.append("discount", productFormData.discount);
       formData.append("isFeatured", true);
-      productFormData.images.map((item) => {
+      files.map((item) => {
         formData.append("images", item);
       });
       try {
         setIsLoading(true);
         const response = !productId
           ? await postRequest("/vendor/products", formData, true)
-          : putRequest(`/vendor/products/${productId}/update`, formData, true);
+          : await putRequest(
+              `/vendor/products/${productId}/update`,
+              formData,
+              true
+            );
         response && setIsLoading(false);
         if (response?.data) {
           router.push("../products");
@@ -225,11 +239,11 @@ const AddProduct = () => {
         <div className="flex bg-[#F8F9FA]">
           <div className="">
             <SideBar active="Products" />
-            {showMobileNav && (
-              <div className="md:hidden">
-                <MobileSideBar active="Dashboard" closeSideBar={showSideBar} />
-              </div>
-            )}
+            <MobileSideBar
+              showMobileNav={showMobileNav}
+              active="Products"
+              closeSideBar={showSideBar}
+            />
           </div>
           <div className="w-full p-4">
             <DasboardNavWithOutSearch
@@ -242,12 +256,12 @@ const AddProduct = () => {
             />
             <div className="mt-4"></div>
             <div className="">
-              <div className="mx-0 bg-gray-300 md:bg-white p-4  rounded-t-lg md:translate-x-2">
+              <div className="mx-0 bg-gray-300 lg:bg-white p-4  rounded-t-lg lg:translate-x-2">
                 <CheckBoxInput label="Billing address same as company details" />
               </div>
-              <div className="bg-white w-full p-4 mx-0 md:mx-2">
+              <div className="bg-white w-full p-4 mx-0 lg:mx-2">
                 <DashedComponent name={"Product info"} />
-                <div className="block md:flex items-center justify-between  gap-6">
+                <div className="block lg:flex items-center justify-between  gap-6">
                   <div className="w-full">
                     <TextInput
                       value={productFormData.productName}
@@ -317,7 +331,7 @@ const AddProduct = () => {
                     />
                   </div>
                 </div>
-                <div className="block md:flex items-center justify-between  gap-6">
+                <div className="block lg:flex items-center justify-between  gap-6">
                   <div className="w-full">
                     <SelectInput
                       placeholder={"Category"}
@@ -389,7 +403,7 @@ const AddProduct = () => {
                     />
                   </div>
                 </div>
-                <div className="block md:flex  justify-between  gap-6">
+                <div className="block lg:flex  justify-between  gap-6">
                   <div className="w-full">
                     <FileInput
                       handleSelect={handleSelectFile}
@@ -443,7 +457,7 @@ const AddProduct = () => {
                     />
                   </div>
                 </div>
-                <div className="block md:flex  justify-between  gap-6">
+                <div className="block lg:flex  justify-between  gap-6">
                   <div className="w-full flex items-start justify-start">
                     <NumberInput
                       label="Available quantity"
@@ -467,7 +481,7 @@ const AddProduct = () => {
                     />
                   </div>
                 </div>
-                <div className="block md:flex items-center justify-between gap-6"></div>
+                <div className="block lg:flex items-center justify-between gap-6"></div>
                 <div className="my-4">
                   <DashedComponent name={"Customization"} />
                 </div>

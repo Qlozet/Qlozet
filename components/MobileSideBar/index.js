@@ -22,13 +22,10 @@ import { useRouter } from "next/navigation";
 
 import Image from "next/image";
 import Modal from "../Modal";
-import Typography from "../Typography";
-import Button from "../Button";
-
-const MobileSideBar = ({ active, closeSideBar }) => {
+import logo from "../../public/assets/svg/logo.svg";
+const MobileSideBar = ({ active, closeSideBar, showMobileNav }) => {
   const [showLogOutModal, setShowLogOutModal] = useState(false);
   const router = useRouter();
-
   const sidebaritems = [
     {
       name: "Dashboard",
@@ -98,49 +95,58 @@ const MobileSideBar = ({ active, closeSideBar }) => {
   };
   return (
     <div
-      className="block bg-white fixed h-[100rem] z-40 top-0 left-0"
+      className={`w-screen ${
+        showMobileNav ? "block" : "hidden"
+      } bg-[rgba(0,0,0,.2)] fixed h-[100rem] z-40 top-0 `}
       style={{ zIndex: 50 }}
+      onClick={() => {
+        closeSideBar();
+      }}
     >
-      <div className="py-10 px-16">
-        <Logo />
-      </div>
-      <div className="">
-        {sidebaritems.map((item, index) => (
-          <div
-            className="px-16 flex items-center gap-4  py-3 cursor-pointer hover:bg-[#f4f4f4] min-w-[250px]"
-            key={index}
-            onClick={() => {
-              item.function();
-              if (item.link !== "") {
-                router.push(`${item.link}`);
-                closeSideBar();
-              }
-            }}
-          >
-            {active === item.name ? (
-              <Image src={item.activeIcon} alt="" />
-            ) : (
-              <Image src={item.defaultIcon} alt="" />
-            )}
-            <p
-              className={`font-normal text-[14px] ${
-                active === item.name ? "text-primary" : " text-gray-100"
-              }`}
-            >
-              {item.name}
-            </p>
+      <div className="bg-white h-screen w-[250px]">
+        <div className="py-10 px-16">
+          <div className="flex items-center justify-center">
+            <Image src={logo} alt="" />
           </div>
-        ))}
-      </div>
-      {showLogOutModal && (
-        <Modal
-          content={
-            <div className="flex items-center justify-center h-[100%] ">
-              <Logout logoutFunction={logoutFunction} />
+        </div>
+        <div className="">
+          {sidebaritems.map((item, index) => (
+            <div
+              className="px-16 flex items-center gap-4  py-3 cursor-pointer hover:bg-[#f4f4f4] min-w-[250px]"
+              key={index}
+              onClick={() => {
+                item.function();
+                if (item.link !== "") {
+                  router.push(`${item.link}`);
+                  closeSideBar();
+                }
+              }}
+            >
+              {active === item.name ? (
+                <Image src={item.activeIcon} alt="" />
+              ) : (
+                <Image src={item.defaultIcon} alt="" />
+              )}
+              <p
+                className={`font-normal text-[14px] ${
+                  active === item.name ? "text-primary" : " text-gray-100"
+                }`}
+              >
+                {item.name}
+              </p>
             </div>
-          }
-        />
-      )}
+          ))}
+        </div>
+        {showLogOutModal && (
+          <Modal
+            content={
+              <div className="flex items-center justify-center h-[100%] ">
+                <Logout logoutFunction={logoutFunction} />
+              </div>
+            }
+          />
+        )}
+      </div>
     </div>
   );
 };

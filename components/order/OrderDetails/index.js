@@ -13,7 +13,7 @@ const OrderDetails = ({ topNavData, closeModal }) => {
         data={topNavData}
         closeModal={closeModal}
       />
-      <div className=" w-full md:w-[40%] bg-white p-4 rounded-b-[14px]">
+      <div className=" w-full lg:w-[40%] bg-white p-4 rounded-b-[14px]">
         <div className="bg-auto bg-no-contain">
           <Image
             src={defaultImage}

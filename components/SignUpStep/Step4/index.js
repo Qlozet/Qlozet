@@ -6,7 +6,7 @@ import UploadDocInput from "../../UploadDocInput";
 const Step4 = ({ handleSelect, businessLogo }) => {
   return (
     <div className="mx-4">
-      <div className="mt-4 mx-4  md:mx-0 pt-5 px-2 p md:px-0 ">
+      <div className="mt-4 mx-4  lg:mx-0 pt-5 px-2 p lg:px-0 ">
         <Typography
           textColor="text-primary"
           textWeight="font-bold"

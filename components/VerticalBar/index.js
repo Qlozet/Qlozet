@@ -25,7 +25,7 @@ const VerticalBar = ({ date, value, per, color, highest }) => {
           }}
           className={`${per} ${
             highest ? "bg-primary" : "bg-primary-200"
-          } rounded-t-[36px] md:w-[36px] relative w-[20px]`}
+          } rounded-t-[36px] lg:w-[36px] relative w-[20px]`}
           onMouseEnter={() => {
             setShowValue(true);
           }}

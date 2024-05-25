@@ -26,11 +26,11 @@ const Support = () => {
     <div className="flex bg-[#F8F9FA]">
       <div className="">
         <SideBar active="Support" />
-        {showMobileNav && (
-          <div className="md:hidden">
-            <MobileSideBar active="Support" closeSideBar={showSideBar} />
-          </div>
-        )}
+        <MobileSideBar
+          showMobileNav={showMobileNav}
+          active="Support"
+          closeSideBar={showSideBar}
+        />
       </div>
       <div className="w-full p-4">
         <DasboardNavWithOutSearch
@@ -43,7 +43,7 @@ const Support = () => {
         />
         <div className="min-h-[80vh]">
           <div className="mt-4 mx-auto ">
-            <div className="bg-white rounded-[12px] w-full  md:w-[40%] m-auto px-4 py-6 my-6 shadow">
+            <div className="bg-white rounded-[12px] w-full  lg:w-[40%] m-auto px-4 py-6 my-6 shadow">
               <div>
                 <div className="flex items-center justify-between  border-dashed border-b-[1.5px] border-gray-200 pb-4">
                   <Typography
@@ -81,7 +81,7 @@ const Support = () => {
                   placeholder="Give a summary of the problem you are presently encountering."
                   setValue={(data) => {}}
                 />
-                <div className="my-6 flex items-center justify-center md:justify-end ">
+                <div className="my-6 flex items-center justify-center lg:justify-end ">
                   <Button
                     children="Submit"
                     btnSize="small"

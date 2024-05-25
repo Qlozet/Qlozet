@@ -56,11 +56,11 @@ const VerticalBarGraph = () => {
         <VendorCountLine value={"3,000"} />
         <VendorCountLine value={"2,000"} />
         <VendorCountLine value={"1,000"} />
-        <div className="mb-[1rem] md:mb-0">
+        <div className="mb-[1rem] lg:mb-0">
           <VendorCountLine value={"0"} />
         </div>
       </div>
-      <div className="absolute right-0 bottom-[.6rem] md:bottom-[9px]  w-[94%] h-[96%] flex justify-between px-10">
+      <div className="absolute right-0 bottom-[.6rem] lg:bottom-[9px]  w-[94%] h-[96%] flex justify-between px-10">
         {data.map((item, index) => {
           return (
             <VerticalBar

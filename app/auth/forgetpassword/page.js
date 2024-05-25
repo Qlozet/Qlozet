@@ -47,7 +47,7 @@ const Page = () => {
     <section
       className={`  h-screen overflow-y-scroll 2xl:flex justify-center items-center`}
     >
-      <div className={`${classes.section} w-full md:bg-white block`}>
+      <div className={`${classes.section} w-full lg:bg-white block`}>
         <div className="flex items-center justify-center pt-6">
           <Logo />
         </div>

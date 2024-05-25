@@ -34,7 +34,7 @@ const AddNewUserAndPermissionForm = ({ closeModal }) => {
     },
   ];
   return (
-    <div className="bg-white rounded-[12px] w-full md:w-[40%] m-auto px-4 py-6 my-6">
+    <div className="bg-white rounded-[12px] w-full lg:w-[40%] m-auto px-4 py-6 my-6">
       <div>
         <div className="flex items-center justify-between  border-dashed border-b-[1.5px] border-gray-200 pb-4">
           <Typography

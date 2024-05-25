@@ -202,11 +202,11 @@ const Order = () => {
     <div className="flex bg-[#F8F9FA]">
       <div className="">
         <SideBar active="Orders" />
-        {showMobileNav && (
-          <div className="md:hidden">
-            <MobileSideBar active="Orders" closeSideBar={showSideBar} />
-          </div>
-        )}
+        <MobileSideBar
+          showMobileNav={showMobileNav}
+          active="Orders"
+          closeSideBar={showSideBar}
+        />
       </div>
       <div className="w-full p-4">
         <DasboardNavWithOutSearch
@@ -218,7 +218,7 @@ const Order = () => {
           showSideBar={showSideBar}
         />
         <div
-          className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4 md:hidden`}
+          className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4 lg:hidden`}
         >
           <DashboardTopCard
             name="Total Vendors"
@@ -255,7 +255,7 @@ const Order = () => {
           />
         </div>
         <div
-          className={`${classes.scrollbarElement} items-center gap-4 overflow-x-scroll px-4 hidden md:flex`}
+          className={`${classes.scrollbarElement} items-center gap-4 overflow-x-scroll px-4 hidden lg:flex`}
         >
           <DashboardTopCard
             name="Total Vendors"

@@ -8,7 +8,7 @@ import { clearToken } from "@/utils/localstorage";
 const Logout = ({ logoutFunction }) => {
   const router = useRouter();
   return (
-    <div className="relative bg-white  w-full md:w-[35%] rounded-[12px] flex flex-col items-center gap-6 p-6">
+    <div className="relative bg-white  w-full lg:w-[35%] rounded-[12px] flex flex-col items-center gap-6 p-6">
       <div
         className="absolute top-4 right-4 cursor-pointer"
         onClick={() => {

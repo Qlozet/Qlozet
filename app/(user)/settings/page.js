@@ -31,7 +31,7 @@ const Dashboard = () => {
     {
       item: "Shop details",
       link: "",
-      navWidth: "min-w-[7.5rem] md:min-w-w-[0]",
+      navWidth: "min-w-[7.5rem] lg:min-w-w-[0]",
       handleFunction: (data) => {
         setCurrentNav(data);
         setShowComapanyDetails(true);
@@ -45,7 +45,7 @@ const Dashboard = () => {
     },
     {
       item: "Billing and invoice",
-      navWidth: "min-w-[10.5rem] md:min-w-w-[0]",
+      navWidth: "min-w-[10.5rem] lg:min-w-w-[0]",
       link: "",
       handleFunction: (data) => {
         setCurrentNav(data);
@@ -60,7 +60,7 @@ const Dashboard = () => {
     },
     {
       item: "Warehouses",
-      navWidth: "min-w-[8rem] md:min-w-w-[0]",
+      navWidth: "min-w-[8rem] lg:min-w-w-[0]",
       link: "",
       handleFunction: (data) => {
         setCurrentNav(data);
@@ -75,7 +75,7 @@ const Dashboard = () => {
     {
       item: "Shipping partners",
       link: "",
-      navWidth: "min-w-[10rem] md:min-w-w-[0]",
+      navWidth: "min-w-[10rem] lg:min-w-w-[0]",
       handleFunction: (data) => {
         setCurrentNav(data);
         setShowComapanyDetails(false);
@@ -89,7 +89,7 @@ const Dashboard = () => {
     {
       item: "Users and permissions",
       link: "",
-      navWidth: "min-w-[13rem] md:min-w-w-[0]",
+      navWidth: "min-w-[13rem] lg:min-w-w-[0]",
       handleFunction: (data) => {
         setCurrentNav(data);
         setShowComapanyDetails(false);
@@ -102,7 +102,7 @@ const Dashboard = () => {
     },
     {
       item: "Categories",
-      navWidth: "min-w-[8rem] md:min-w-w-[0]",
+      navWidth: "min-w-[8rem] lg:min-w-w-[0]",
       handleFunction: (data) => {
         setCurrentNav(data);
         setShowComapanyDetails(false);
@@ -119,11 +119,11 @@ const Dashboard = () => {
     <div className="flex bg-[#F8F9FA]">
       <div className="">
         <SideBar active="Settings" />
-        {showMobileNav && (
-          <div className="md:hidden">
-            <MobileSideBar active="Dashboard" closeSideBar={showSideBar} />
-          </div>
-        )}
+        <MobileSideBar
+          showMobileNav={showMobileNav}
+          active="Settings"
+          closeSideBar={showSideBar}
+        />
       </div>
       <div className="w-full p-4">
         <DasboardNavWithOutSearch

@@ -26,7 +26,6 @@ import { clearProductId } from "@/utils/localstorage";
 
 const Products = () => {
   const router = useRouter();
-  const [dropDownValue, setDropDownValue] = useState("");
   const [viewCustomerDetails, setCustomerDetails] = useState(false);
   const [showHostory, setShowHistory] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -129,11 +128,11 @@ const Products = () => {
         <div className="flex bg-[#F8F9FA]">
           <div className="">
             <SideBar active="Products" />
-            {showMobileNav && (
-              <div className="md:hidden">
-                <MobileSideBar active="Products" closeSideBar={showSideBar} />
-              </div>
-            )}
+            <MobileSideBar
+              showMobileNav={showMobileNav}
+              active="Products"
+              closeSideBar={showSideBar}
+            />
           </div>
           <div className="w-full p-4">
             <DasboardNavWithOutSearch
@@ -145,12 +144,12 @@ const Products = () => {
               showSideBar={showSideBar}
             />
             <div className="flex items-center justify-end py-6 gap-6">
-              <div className="hidden md:block">
+              <div className="hidden lg:block">
                 <Button
                   children={
                     <span className="flex justify-center items-center">
                       <span>Import Products</span>
-                      <Image src={addIcon} className="ml-4" />
+                      <Image src={addIcon} className="ml-4" alt="" />
                     </span>
                   }
                   btnSize="small"
@@ -161,12 +160,12 @@ const Products = () => {
                   }}
                 />
               </div>
-              <div className="block md:hidden">
+              <div className="block lg:hidden">
                 <Button
                   children={
                     <span className="flex justify-center items-center">
                       <span>Import</span>
-                      <Image src={addIcon} className="ml-4" />
+                      <Image src={addIcon} className="ml-4" alt="" />
                     </span>
                   }
                   btnSize="small"
@@ -181,7 +180,7 @@ const Products = () => {
                   children={
                     <span className="flex justify-center items-center">
                       <span>Add new product</span>
-                      <Image src={addIcon} className="ml-4" />
+                      <Image src={addIcon} className="ml-4" alt="" />
                     </span>
                   }
                   btnSize="small"
@@ -271,7 +270,7 @@ const Products = () => {
               /> */}
                 </div>
               </div>
-              <div className="my-4 block md:hidden">
+              <div className="my-4 block lg:hidden">
                 <UpdateComponent />
               </div>
               <ProductTable

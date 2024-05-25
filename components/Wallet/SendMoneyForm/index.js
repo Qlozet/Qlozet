@@ -23,7 +23,7 @@ const SendMoneyForm = ({ closeModal }) => {
   ];
   return (
     <div className="w-full flex items-center justify-center mt-6 min-h-[50vh]">
-      <div className="bg-white p-4 rounded-[12px] w-full md:w-[35%]  min-h-[80vh] mx-4 md:mx-0">
+      <div className="bg-white p-4 rounded-[12px] w-full lg:w-[35%]  min-h-[80vh] mx-4 lg:mx-0">
         <div>
           <div className="flex items-center justify-between">
             <Typography

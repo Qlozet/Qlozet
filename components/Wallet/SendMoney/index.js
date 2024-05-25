@@ -10,7 +10,7 @@ import classes from "./index.module.css";
 const SendMoney = ({ closeModal }) => {
   return (
     <div className="w-full flex items-center justify-center mt-6 min-h-[50vh]">
-      <div className="bg-white p-4 rounded-[12px] w-full  md:w-[35%]  min-h-[80vh]">
+      <div className="bg-white p-4 rounded-[12px] w-full  lg:w-[35%]  min-h-[80vh]">
         <div>
           <div className="flex items-center justify-between">
             <Typography

@@ -8,8 +8,8 @@ import "react-calendar/dist/Calendar.css";
 const ShecduleProduct = ({ closeSchedule }) => {
   return (
     <div>
-      <div className="mt-4 mx-auto md:max-w-[30%]">
-        <div className="bg-white rounded-[12px] w-full  m-auto px-4 py-6 my-6 shadow md:min-w-[50%]">
+      <div className="mt-4 mx-auto lg:max-w-[30%]">
+        <div className="bg-white rounded-[12px] w-full  m-auto px-4 py-6 my-6 shadow lg:min-w-[50%]">
           <div>
             <div className="flex items-center justify-between  border-dashed border-b-[1.5px] border-gray-200 pb-4">
               <Typography
@@ -40,7 +40,7 @@ const ShecduleProduct = ({ closeSchedule }) => {
               placeholder="Select Time"
               setValue={(data) => {}}
             />
-            <div className="my-6 flex items-center justify-center md:justify-end ">
+            <div className="my-6 flex items-center justify-center lg:justify-end ">
               <Button
                 children="Schedule activation"
                 btnSize="small"

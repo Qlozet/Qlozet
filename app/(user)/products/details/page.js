@@ -1,4 +1,6 @@
 "use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import SideBar from "@/components/SideBar";
 import arrowLeftIcon from "../../../../public/assets/svg/arrow-left.svg";
@@ -6,17 +8,16 @@ import arrowRightIcon from "../../../../public/assets/svg/arrow-right.svg";
 import starIcon from "../../../../public/assets/svg/productdetailstar.svg";
 import heartIcon from "../../../../public/assets/svg/productdetailsheart.svg";
 import chatIcon from "../../../../public/assets/svg/productdetailschat.svg";
-
-import productImage from "../../../../public/assets/image/productimage.png";
 import Image from "next/image";
 import Button from "@/components/Button";
 import Typography from "@/components/Typography";
-import { useEffect, useState } from "react";
 import { getProductId } from "@/utils/localstorage";
 import { getRequest } from "@/api/method";
 import Loader from "@/components/Loader";
 
 const ProductDetails = () => {
+  const router = useRouter();
+
   const [pageLoading, setPageLoading] = useState(true);
   const [productFormData, setProductFormData] = useState({
     productName: "",
@@ -100,7 +101,12 @@ const ProductDetails = () => {
               <DasboardNavWithOutSearch name="Products" addSearch={false} />
             </div>
             <div className="px-4">
-              <div className="hidden  md:flex  items-center gap-2 mb-5">
+              <div
+                className="hidden  lg:flex  items-center gap-2 mb-5 cursor-pointer"
+                onClick={() => {
+                  router.push("../products");
+                }}
+              >
                 <Image src={arrowLeftIcon} />
                 <h2
                   className="font-bold text-[18px] 
@@ -109,8 +115,8 @@ const ProductDetails = () => {
                   View Product
                 </h2>
               </div>
-              <div className="md:bg-white w-full md:p-4 md:rounded-[12px]">
-                <div className="bg-gray-300 p-4 rounded-t-[12px] md:hidden mt-[2rem]">
+              <div className="lg:bg-white w-full lg:p-4 lg:rounded-[12px]">
+                <div className="bg-gray-300 p-4 rounded-t-[12px] lg:hidden mt-[2rem]">
                   <Typography
                     textColor="text-dark"
                     textWeight="font-[700]"
@@ -119,7 +125,7 @@ const ProductDetails = () => {
                     Product Info
                   </Typography>
                 </div>
-                <div className="block md:flex">
+                <div className="block lg:flex">
                   <Image
                     height={500}
                     width={500}
@@ -134,17 +140,17 @@ const ProductDetails = () => {
                   <div className="w-full p-8">
                     <div className="flex items-center justify-between w-full">
                       <p className="text-[14px] ">MISKAY BOUTIQUE</p>
-                      <div className="items-center hidden md:flex">
+                      <div className="items-center hidden lg:flex">
                         <p className="text-[12px] leading-[18px] underline font-bold ">
                           View product in main site
                         </p>
                         <Image src={arrowRightIcon} />
                       </div>
                     </div>
-                    <h1 className="text-[16px] md:text-[32px] font-bold my-2">
+                    <h1 className="text-[16px] lg:text-[32px] font-bold my-2">
                       {productFormData.productName}
                     </h1>
-                    <h2 className="block md:hidden font-bold text-[14px] leading-[36px] text-primary md:text-[#33CC33]">
+                    <h2 className="block lg:hidden font-bold text-[14px] leading-[36px] text-primary lg:text-[#33CC33]">
                       {productFormData.quantity} Quantity
                     </h2>
                     <div className="flex items-center gap-6 my-4">
@@ -171,11 +177,11 @@ const ProductDetails = () => {
                       </div>
                     </div>
 
-                    <div className="hidden md:flex items-center justify-between w-full mb-[30px]">
-                      <h2 className="hidden md:block font-bold text-[24px] leading-[36px]">
+                    <div className="hidden lg:flex items-center justify-between w-full mb-[30px]">
+                      <h2 className="hidden lg:block font-bold text-[24px] leading-[36px]">
                         {productFormData.productPrice}
                       </h2>
-                      <h2 className="font-bold text-[14px] md:text-[24px] leading-[36px] text-primary md:text-[#33CC33]">
+                      <h2 className="font-bold text-[14px] lg:text-[24px] leading-[36px] text-primary lg:text-[#33CC33]">
                         1,000 items delivered
                       </h2>
                     </div>

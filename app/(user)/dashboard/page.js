@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ChatCard from "@/components/Chat/ChatCard";
 import HorizontalChat from "@/components/Chat/HorizontalChart";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
@@ -18,11 +18,13 @@ import getVendorDetails from "@/api/request";
 import { setUserDetails } from "@/utils/localstorage";
 import Loader from "@/components/Loader";
 const Dashboard = () => {
+  const mobileNavRef = useRef();
   const [totalCustomer, setTotalCustomer] = useState("0");
-  const [totalVendor, setTotalVendor] = useState("0");
   const [customerLocation, setCustomerLocation] = useState("");
   const [loadPage, setLoadPage] = useState(true);
   const [top4Location, setTop4Location] = useState([]);
+  const [top4Product, setTop4Product] = useState([]);
+
   // const [totalCustomer, setTotalCustomer] = useState("0");
 
   const dropdownData = [
@@ -76,7 +78,8 @@ const Dashboard = () => {
     },
   ];
   const [showMobileNav, setShowMobileNav] = useState(false);
-  const showSideBar = () => {
+  const showSideBar = (e) => {
+    console.log(e);
     setShowMobileNav(!showMobileNav);
   };
   const getTotalCustomers = async () => {
@@ -84,7 +87,6 @@ const Dashboard = () => {
       const custmerResponse = await getRequest(
         "/vendor/customers/total-customers-sold-to"
       );
-      console.log(custmerResponse.data.totalCount);
       setTotalCustomer(custmerResponse.data.totalCount);
     } catch (error) {}
   };
@@ -106,8 +108,6 @@ const Dashboard = () => {
         "/vendor/dashboard/orders/top-locations"
       );
       setCustomerLocation(response.data.totalCount);
-
-      console.log(response?.data?.data);
       response?.data?.data?.locations.map((location) => {
         const singleLocatin = {
           location: location.location,
@@ -119,11 +119,47 @@ const Dashboard = () => {
       setTop4Location(locationData);
     } catch (error) {}
   };
+  const get4Topproduct = async () => {
+    try {
+      const productData = [];
+      const response = await getRequest(
+        "/vendor/dashboard/orders/top-products"
+      );
+      response?.data?.data?.topProducts.map((product) => {
+        console.log(product);
+        const singleProduct = {
+          location: product.name,
+          female: (product.female / response?.data?.data?.totalOrders) * 100,
+          male: (product.male / response?.data?.data?.totalOrders) * 100,
+        };
+        productData.push(singleProduct);
+      });
+
+      console.log(productData);
+      setTop4Product(productData);
+      // const singleLocatin = {
+      //   location: location.location,
+      //   female: (location.female / response?.data?.data?.totalOrders) * 100,
+      //   male: (location.male / response?.data?.data?.totalOrders) * 100,
+      // };
+      // setCustomerLocation(response.data.totalCount);
+      // response?.data?.data?.locations.map((location) => {
+      //   const singleLocatin = {
+      //     location: location.location,
+      //     female: (location.female / response?.data?.data?.totalOrders) * 100,
+      //     male: (location.male / response?.data?.data?.totalOrders) * 100,
+      //   };
+      //   locationData.push(singleLocatin);
+      // });
+      // setTop4Location(locationData);
+    } catch (error) {}
+  };
 
   useEffect(() => {
     getTotalCustomers();
     getLocationWithHighestCustomer();
     get4TopLocation();
+    get4Topproduct();
   }, []);
 
   return (
@@ -134,15 +170,10 @@ const Dashboard = () => {
         <div className="flex bg-gray-400 w-full h-full">
           <div className="">
             <SideBar active="Dashboard" />
-            {showMobileNav && (
-              <div className="md:hidden">
-                <MobileSideBar active="Dashboard" closeSideBar={showSideBar} />
-              </div>
-            )}
+              <MobileSideBar showMobileNav={showMobileNav} active="Dashboard" closeSideBar={showSideBar} />
           </div>
           <div className="w-full">
             <div className="p-4">
-              {" "}
               <DasboardNavWithOutSearch
                 addSearch={false}
                 setValue={(data) => {
@@ -185,7 +216,7 @@ const Dashboard = () => {
             <div className=" bg-[#F8F9FA] px-4">
               <div className="flex items-center justify-between mb-2 mt-4">
                 <UpdateComponent />
-                <div className="hidden md:block">
+                <div className="hidden lg:block">
                   {/* <DropDown
               placeholder={"Vendor’s status"}
               value={dropDownValue}
@@ -196,11 +227,11 @@ const Dashboard = () => {
             /> */}
                 </div>
               </div>
-              <div className="block md:flex items-center w-full gap-4 border-solid solid-[1px] border-primary z-[0]">
+              <div className="block lg:flex items-center w-full gap-4 border-solid solid-[1px] border-primary z-[0]">
                 <div
-                  className={`${classes.first_container} block md:flex items-center gap-4 mt-4 w-full`}
+                  className={`${classes.first_container} block lg:flex items-center gap-4 mt-4 w-full`}
                 >
-                  <div className="md:w-1/2 w-full">
+                  <div className="lg:w-1/2 w-full">
                     <ChatCard
                       text="Order by gender"
                       graph={
@@ -213,7 +244,7 @@ const Dashboard = () => {
                       }
                     />
                   </div>
-                  <div className="md:w-1/2  w-full mt-4 md:mt-0">
+                  <div className="lg:w-1/2  w-full mt-4 lg:mt-0">
                     <ChatCard
                       text="Order by top location"
                       graph={<HorizontalChat data={top4Location} />}
@@ -221,18 +252,18 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div
-                  className={`${classes.second_container} block md:flex items-center mt-4`}
+                  className={`${classes.second_container} block lg:flex items-center mt-4`}
                 >
                   <div className="w-full flex items-center">
                     <ChatCard
                       text="Orders by product"
-                      graph={<HorizontalChat data={top4Location} />}
+                      graph={<HorizontalChat data={top4Product} />}
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="block md:flex w-full gap-4  mt-4 md:h-[32rem] h-[35rem]">
+              <div className="block lg:flex w-full gap-4  mt-4 lg:h-[32rem] h-[35rem]">
                 <div
                   className={`${classes.first_container} flex gap-4 mt-3 w-full `}
                 >

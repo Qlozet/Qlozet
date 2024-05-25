@@ -5,7 +5,7 @@ const TracKOrderCard = ({ item, text, icon, bgColor }) => {
   return (
     <div className="flex items-center justify-center flex-col">
       <div
-        className={`${bgColor} flex items-center justify-center w-[2rem] md:w-[3rem] h-[2rem] md:h-[3rem] rounded-[50%]`}
+        className={`${bgColor} flex items-center justify-center w-[2rem] lg:w-[3rem] h-[2rem] lg:h-[3rem] rounded-[50%]`}
       >
         <Image src={icon} alt="" />
       </div>

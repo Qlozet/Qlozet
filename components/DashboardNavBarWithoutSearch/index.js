@@ -69,7 +69,7 @@ const DasboardNavWithOutSearch = ({
   }, []);
   return (
     <div className={`${!hideNav ? " " : "pt-2"} rounded-[15px]`}>
-      <div className="block md:hidden">
+      <div className="block lg:hidden">
         <div className=" items-center justify-between px-3 py-3 bg-gray-400 rounded-[12px] hidden">
           <Image src={transformText} alt="" />
           <Image src={altireicon} alt="" />
@@ -114,7 +114,7 @@ const DasboardNavWithOutSearch = ({
           </div>
         )}
       </div>
-      <div className="hidden md:flex items-center justify-between bg-white border-[#DDE2E5] border-solid border-[1.5px] py-2 px-6 rounded-[12px]">
+      <div className="hidden lg:flex items-center justify-between bg-white border-[#DDE2E5] border-solid border-[1.5px] py-2 px-6 rounded-[12px]">
         <Typography
           textColor="text-dark"
           textWeight="font-bold"

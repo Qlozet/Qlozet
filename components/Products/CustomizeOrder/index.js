@@ -24,20 +24,20 @@ const CustomizeOrder = ({ closeModal }) => {
     },
     {
       item: "Dresses",
-      navWidth: "min-w-[8rem] md:min-w-w-[0]",
+      navWidth: "min-w-[8rem] lg:min-w-w-[0]",
       link: "",
       handleFunction: (data) => {},
     },
     {
       item: "Outfits",
       link: "",
-      navWidth: "min-w-[10rem] md:min-w-w-[0]",
+      navWidth: "min-w-[10rem] lg:min-w-w-[0]",
       handleFunction: (data) => {},
     },
     {
       item: "Skirts",
       link: "",
-      navWidth: "min-w-[13rem] md:min-w-w-[0]",
+      navWidth: "min-w-[13rem] lg:min-w-w-[0]",
       handleFunction: (data) => {},
     },
   ];

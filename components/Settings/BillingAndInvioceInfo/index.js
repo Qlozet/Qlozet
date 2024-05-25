@@ -8,11 +8,11 @@ import FileInput from "../../uploadFileinput/UploadFileInput";
 const BillingAndInvioce = () => {
   return (
     <div className="">
-      <div className="mx-0 bg-gray-300 md:bg-white p-4  rounded-t-lg md:translate-x-2">
+      <div className="mx-0 bg-gray-300 lg:bg-white p-4  rounded-t-lg lg:translate-x-2">
         <CheckBoxInput label="Billing address same as company details" />
       </div>
-      <div className="bg-white w-full p-4 mx-0 md:mx-2">
-        <div className="block md:flex items-center justify-between  gap-6">
+      <div className="bg-white w-full p-4 mx-0 lg:mx-2">
+        <div className="block lg:flex items-center justify-between  gap-6">
           <div className="w-full">
             <TextInput
               label="Billing contact name"
@@ -35,7 +35,7 @@ const BillingAndInvioce = () => {
             />
           </div>
         </div>
-        <div className="block md:flex items-center justify-between  gap-6">
+        <div className="block lg:flex items-center justify-between  gap-6">
           <div className="w-full">
             <TextInput
               label="State"
@@ -58,7 +58,7 @@ const BillingAndInvioce = () => {
             />
           </div>
         </div>
-        <div className="block md:flex items-center justify-between  gap-6">
+        <div className="block lg:flex items-center justify-between  gap-6">
           <div className="w-full">
             <TextInput
               label="Billing city"
@@ -81,7 +81,7 @@ const BillingAndInvioce = () => {
             />
           </div>
         </div>
-        <div className="block md:flex items-center justify-between gap-6">
+        <div className="block lg:flex items-center justify-between gap-6">
           <div className="w-full">
             {" "}
             <NumberInput
@@ -109,7 +109,7 @@ const BillingAndInvioce = () => {
         <div className="my-4">
           <CheckBoxInput label="Billing address same as company details" />
         </div>
-        <div className="block md:flex items-center justify-between gap-6">
+        <div className="block lg:flex items-center justify-between gap-6">
           <div className="w-full">
             {" "}
             <TextInput
@@ -134,7 +134,7 @@ const BillingAndInvioce = () => {
           </div>
         </div>
         <div className="my-4"></div>
-        <div className="block md:flex items-center justify-between gap-6">
+        <div className="block lg:flex items-center justify-between gap-6">
           <div className="w-full">
             <TextArea
               label="Invoice message 1"

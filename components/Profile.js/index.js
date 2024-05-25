@@ -7,7 +7,6 @@ import Performance from "../Performance";
 import Rating from "../Rating";
 import { useEffect, useState } from "react";
 const Profile = ({ closeProfile, userDetails }) => {
-  console.log(userDetails);
   return (
     <div
       className={`fixed h-screen overflow-y-scroll w-screen top-0 right-0 flex justify-end z-50`}
@@ -15,7 +14,7 @@ const Profile = ({ closeProfile, userDetails }) => {
       style={{ backgroundColor: "rgba(0,0,0,.2)" }}
     >
       <div className="relative">
-        <div className="w-screen  bg-white  md:max-w-[350px] ">
+        <div className="w-screen  bg-white  lg:max-w-[350px] ">
           <div className="bg-white">
             <div>
               <div className="flex px-4 py-6 items-center justify-between">

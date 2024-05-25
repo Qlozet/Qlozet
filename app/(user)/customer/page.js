@@ -111,17 +111,15 @@ const Customer = () => {
       <div className="">
         <SideBar active="Customers" />
       </div>
-      {showMobileNav && (
-        <div className="md:hidden">
-          <MobileSideBar active="Customers" closeSideBar={showSideBar} />
-        </div>
-      )}
+      <MobileSideBar
+        showMobileNav={showMobileNav}
+        active="Customers"
+        closeSideBar={showSideBar}
+      />
       <div className="w-full p-4">
         <DasboardNavWithOutSearch
           addSearch={true}
-          setValue={(data) => {
-            // console.log(data);
-          }}
+          setValue={(data) => {}}
           showSideBar={showSideBar}
           name="Customers"
         />
@@ -166,7 +164,7 @@ const Customer = () => {
               /> 
               </div>*/}
           </div>
-          <div className="md:block hidden">
+          <div className="lg:block hidden">
             {" "}
             <CustomerTable data={tableData} showModal={showModal} />
           </div>

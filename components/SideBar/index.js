@@ -92,15 +92,16 @@ const SideBar = ({ active }) => {
   const logoutFunction = () => {
     setShowLogOutModal(false);
   };
+
   return (
-    <div className="hidden md:block bg-white h-full">
-      <div className="py-10 px-16">
+    <div className="hidden lg:block bg-white h-full">
+      <div className="py-10 lg:px-16 md:px-4">
         <Logo />
       </div>
       <div className="">
         {sidebaritems.map((item, index) => (
           <div
-            className="px-16 flex items-center gap-4  py-3 cursor-pointer hover:bg-[#f4f4f4] min-w-[250px]"
+            className="lg:px-16 md:px-4 flex items-center gap-4  py-3 cursor-pointer hover:bg-[#f4f4f4] min-w-[90px] md:min-w-[90px] lg:min-w-[250px]"
             key={index}
             onClick={() => {
               item.function();
@@ -115,7 +116,7 @@ const SideBar = ({ active }) => {
               <Image src={item.defaultIcon} alt="" />
             )}
             <p
-              className={`font-normal text-[14px] ${
+              className={`hidden md:hidden lg:block font-normal text-[14px] ${
                 active === item.name ? "text-primary" : " text-gray-100"
               }`}
             >

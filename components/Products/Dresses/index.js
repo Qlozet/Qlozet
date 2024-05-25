@@ -23,7 +23,7 @@ import icon25 from "../../../public/assets/image/icon25.jpg";
 
 const Dresses = () => {
   return (
-    <div className="w-full md:w-[50%] bg-white px-5 rounded-b-[14px] min-h-[25rem]">
+    <div className="w-full lg:w-[50%] bg-white px-5 rounded-b-[14px] min-h-[25rem]">
       <Typography
         textColor="text-dark"
         textWeight="font-[600]"
@@ -33,7 +33,7 @@ const Dresses = () => {
         customers.
       </Typography>
       <div>
-        <div className="grid grid-cols-3 md:grid-cols-7 gap-4 py-4">
+        <div className="grid grid-cols-3 lg:grid-cols-7 gap-4 py-4">
           <Design image={icon23} />
           <Design image={icon25} />
         </div>

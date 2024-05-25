@@ -46,7 +46,7 @@ const SignIn = () => {
       } catch (error) {
         console.log(error);
         setIsLoading(false);
-        toast(<Toast text={error.message} type="danger" />);
+        // toast(<Toast text={error.message} type="danger" />);
       }
     } else {
       setReqiuredFormData((prevData) => {
@@ -58,17 +58,17 @@ const SignIn = () => {
   return (
     <section className={`h-screen overflow-hidden`}>
       <div
-        className={`${classes.section}  md:bg-white block md:flex items-center justify-center`}
+        className={`${classes.section}  lg:bg-white block lg:flex items-center justify-center`}
       >
-        <div className="bg-[rgba(0,0,0,.7)] md:bg-white h-screen w-screen 2xl:flex justify-center items-center overflow-y-scroll md:p-4">
+        <div className="bg-[rgba(0,0,0,.7)] lg:bg-white h-screen w-screen 2xl:flex justify-center items-center overflow-y-scroll lg:p-4">
           <div>
-            <div className="block md:hidden"></div>
-            <div className="block mt-2 mb-4  md:hidden">
+            <div className="block lg:hidden"></div>
+            <div className="block mt-2 mb-4  lg:hidden">
               <Logo />
             </div>
-            <div className={`${classes.container} flex md:gap-8 max-w-7xl `}>
+            <div className={`${classes.container} flex lg:gap-8 max-w-7xl `}>
               <div
-                className={`${classes.first_Container} max-w-lg	p-4 md:p-0  rounded-[12px]	bg-white mx-4 mb-10`}
+                className={`${classes.first_Container} max-w-lg	p-4 lg:p-0  rounded-[12px]	bg-white mx-4 mb-10`}
               >
                 <Logo />
                 <div className="flex  h-[100%]  items-center translate-y-[-20%]">

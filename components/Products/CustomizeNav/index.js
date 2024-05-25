@@ -14,7 +14,7 @@ const CustomizeNav = ({
 }) => {
   return (
     <div
-      className={`${width ? width : "w-full md:w-[50%]"} ${
+      className={`${width ? width : "w-full lg:w-[50%]"} ${
         bg ? bg : "bg-white "
       } py-1 px-5 rounded-t-[12px] `}
     >

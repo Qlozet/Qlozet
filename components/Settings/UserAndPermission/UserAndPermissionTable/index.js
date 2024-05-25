@@ -33,7 +33,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
   ];
   return (
     <div>
-      <table className="w-full hidden md:block">
+      <table className="w-full hidden lg:block">
         <thead className="w-full bg-[#F4F4F4] ">
           <tr>
             <th className="w-[8%] p-4  text-dark text-[12px]">
@@ -75,7 +75,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
           ))}
         </tbody>
       </table>
-      <div className="block md:hidden">
+      <div className="block lg:hidden">
         <div className="flex items-center justify-between">
           <div className="w-[70%] block">
             <SearchInput placeholder="Search" />
@@ -90,7 +90,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
           </div>
         </div>
         <div className="">
-          <div className="bg-gray-300 p-4 rounded-t-[12px] md:hidden">
+          <div className="bg-gray-300 p-4 rounded-t-[12px] lg:hidden">
             <Typography
               textColor="text-dark"
               textWeight="font-[700]"

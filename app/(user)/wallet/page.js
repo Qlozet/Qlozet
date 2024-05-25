@@ -202,11 +202,11 @@ const Wallet = () => {
         <div className="flex bg-[#F8F9FA]">
           <div className="">
             <SideBar active="Wallet" />
-            {showMobileNav && (
-              <div className="md:hidden">
-                <MobileSideBar active="Wallet" closeSideBar={showSideBar} />
-              </div>
-            )}
+            <MobileSideBar
+              showMobileNav={showMobileNav}
+              active="Wallet"
+              closeSideBar={showSideBar}
+            />
           </div>
           <div className="w-full p-4">
             <DasboardNavWithOutSearch
@@ -215,7 +215,7 @@ const Wallet = () => {
               name="Wallet"
               showSideBar={showSideBar}
             />
-            <div className="flex justify-end items-center md:hidden w-full">
+            <div className="flex justify-end items-center lg:hidden w-full">
               <div className="items-start gap-6 pt-5 flex ">
                 <Button
                   children="Send money"
@@ -262,7 +262,7 @@ const Wallet = () => {
                   addMaxWidth={true}
                 />
               </div>
-              <div className="items-start gap-6 pt-5 hidden md:flex">
+              <div className="items-start gap-6 pt-5 hidden lg:flex">
                 <Button
                   children="Send money"
                   btnSize="large"

@@ -131,24 +131,23 @@ const SignUp = () => {
       }
     } catch (error) {
       setIsLoading(false);
-      // toast.success("Error", error);
     }
   };
   return (
     <section className={`h-screen overflow-hidden`}>
       <div
-        className={`${classes.section}  md:bg-white block md:flex items-center justify-center`}
+        className={`${classes.section}  lg:bg-white block lg:flex items-center justify-center`}
       >
-        <div className="bg-[rgba(0,0,0,.7)] md:bg-white h-screen w-screen 2xl:flex justify-center items-center overflow-y-scroll md:p-4">
+        <div className="bg-[rgba(0,0,0,.7)] lg:bg-white h-screen w-screen 2xl:flex justify-center items-center overflow-y-scroll lg:p-4">
           <div>
-            <div className="block md:hidden">
+            <div className="block lg:hidden">
               <DasboardNavWithOutSearch
                 addSearch={false}
                 setValue={(data) => {}}
                 hideNav={true}
               />
             </div>
-            <div className="block mt-2 mb-4  md:hidden">
+            <div className="block mt-2 mb-4  lg:hidden">
               <Logo />
             </div>
             <div className={`${classes.container} flex gap-8 max-w-7xl `}>
@@ -156,7 +155,7 @@ const SignUp = () => {
                 <div
                   className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
                 >
-                  <div className="hidden md:block">
+                  <div className="hidden lg:block">
                     <Logo />
                   </div>
 
@@ -169,7 +168,7 @@ const SignUp = () => {
                     setRequiredFormData={setrequiredFormData}
                     requiredFormData={requiredFormData}
                   />
-                  <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
+                  <div className="py-10 flex items-center justify-center m-auto max-w-[200px] lg:max-w-full ">
                     <Button
                       children="Continue"
                       btnSize="large"
@@ -185,11 +184,11 @@ const SignUp = () => {
                 <div
                   className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
                 >
-                  <div className="hidden md:block">
+                  <div className="hidden lg:block">
                     <Logo />
                   </div>
 
-                  <div className="mt-12 ml-6 md:ml-0">
+                  <div className="mt-12 ml-6 lg:ml-0">
                     <Image
                       src={previousIcon}
                       alt=""
@@ -203,7 +202,7 @@ const SignUp = () => {
                     requiredData={requiredFormData}
                     setRequiredData={setrequiredFormData}
                   />
-                  <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
+                  <div className="py-10 flex items-center justify-center m-auto max-w-[200px] lg:max-w-full ">
                     {" "}
                     <Button
                       children="Continue"
@@ -220,11 +219,11 @@ const SignUp = () => {
                 <div
                   className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
                 >
-                  <div className="hidden md:block">
+                  <div className="hidden lg:block">
                     <Logo />
                   </div>
 
-                  <div className="mt-12 ml-6 md:ml-0">
+                  <div className="mt-12 ml-6 lg:ml-0">
                     <Image
                       src={previousIcon}
                       alt=""
@@ -236,7 +235,7 @@ const SignUp = () => {
                     handleSelect={handleSelectFile}
                     businessFiles={businessFiles}
                   />
-                  <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
+                  <div className="py-10 flex items-center justify-center m-auto max-w-[200px] lg:max-w-full ">
                     {" "}
                     <Button
                       children="Continue"
@@ -253,10 +252,10 @@ const SignUp = () => {
                 <div
                   className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
                 >
-                  <div className="hidden md:block">
+                  <div className="hidden lg:block">
                     <Logo />
                   </div>
-                  <div className="mt-12 ml-6 md:ml-0">
+                  <div className="mt-12 ml-6 lg:ml-0">
                     {" "}
                     <Image
                       src={previousIcon}
@@ -269,7 +268,7 @@ const SignUp = () => {
                     handleSelect={handleSelectLogo}
                     businessLogo={businessLogo}
                   />
-                  <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
+                  <div className="py-10 flex items-center justify-center m-auto max-w-[200px] lg:max-w-full ">
                     {" "}
                     <Button
                       children="Continue"
@@ -287,11 +286,11 @@ const SignUp = () => {
                 <div
                   className={`${classes.first_Container} max-w-lg rounded-[12px]	bg-white mx-4 mb-10`}
                 >
-                  <div className="hidden md:block ">
+                  <div className="hidden lg:block ">
                     <Logo />
                   </div>
 
-                  <div className="mt-12 ml-6 md:ml-0">
+                  <div className="mt-12 ml-6 lg:ml-0">
                     {" "}
                     <Image
                       src={previousIcon}
@@ -307,7 +306,7 @@ const SignUp = () => {
                     setRequiredData={setrequiredFormData}
                     requiredData={requiredFormData}
                   />
-                  <div className="py-10 flex items-center justify-center m-auto max-w-[200px] md:max-w-full ">
+                  <div className="py-10 flex items-center justify-center m-auto max-w-[200px] lg:max-w-full ">
                     {" "}
                     <Button
                       loading={isLoading}

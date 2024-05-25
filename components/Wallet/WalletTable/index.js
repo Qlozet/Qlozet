@@ -11,7 +11,7 @@ import MobileItem from "../MobileTableItem";
 const WalletTable = ({ data, viewDetails, showRejectModal }) => {
   return (
     <div className="mt-4 min-h-[50vh]">
-      <table className="w-full hidden md:block">
+      <table className="w-full hidden lg:block">
         <thead className="w-full bg-[#F4F4F4] ">
           <tr>
             <th className="w-[8%] p-4 text-[12px]">
@@ -64,7 +64,7 @@ const WalletTable = ({ data, viewDetails, showRejectModal }) => {
       </table>
 
       <div>
-        <div className="block md:hidden">
+        <div className="block lg:hidden">
           <div className="flex items-center justify-between">
             <div className="w-[70%] block">
               <SearchInput placeholder="Search" />

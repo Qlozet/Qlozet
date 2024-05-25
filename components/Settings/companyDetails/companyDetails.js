@@ -8,8 +8,8 @@ import Typography from "@/components/Typography";
 import DashedComponent from "@/components/DashedComponent";
 const CompanyDetails = () => {
   return (
-    <div className=" w-full mx-0 md:mx-2 py-2 md:bg-white">
-      <div className="block items-center justify-center md:hidden p-4 shadow my-4 rounded-[12px] bg-white">
+    <div className=" w-full mx-0 lg:mx-2 py-2 lg:bg-white">
+      <div className="block items-center justify-center lg:hidden p-4 shadow my-4 rounded-[12px] bg-white">
         <Image src={userIcon} alt="" className="my-2 mx-auto" />
         <div className="p-1 flex justify-center items-center">
           <Typography
@@ -42,7 +42,7 @@ const CompanyDetails = () => {
       <DashedComponent name={"Company info"} />
 
       <div className="showdow bg-white">
-        <div className="bg-gray-300 p-4 rounded-t-[12px] md:hidden">
+        <div className="bg-gray-300 p-4 rounded-t-[12px] lg:hidden">
           <Typography
             textColor="text-dark"
             textWeight="font-[700]"
@@ -51,7 +51,7 @@ const CompanyDetails = () => {
             Company Info
           </Typography>
         </div>
-        <div className="block md:flex items-center justify-between gap-6 mx-2">
+        <div className="block lg:flex items-center justify-between gap-6 mx-2">
           <div className="w-full">
             <TextInput
               label="Company name"
@@ -74,7 +74,7 @@ const CompanyDetails = () => {
             />
           </div>
         </div>
-        <div className="block md:flex items-center justify-between  gap-6 mx-2">
+        <div className="block lg:flex items-center justify-between  gap-6 mx-2">
           <div className="w-full">
             <TextInput
               label="State"
@@ -97,7 +97,7 @@ const CompanyDetails = () => {
             />
           </div>
         </div>
-        <div className="block md:flex items-center justify-between  gap-6 mx-2">
+        <div className="block lg:flex items-center justify-between  gap-6 mx-2">
           <div className="w-full">
             <TextInput
               label="City"
@@ -120,7 +120,7 @@ const CompanyDetails = () => {
             />
           </div>
         </div>
-        <div className="block md:flex items-center justify-between gap-6 mx-2">
+        <div className="block lg:flex items-center justify-between gap-6 mx-2">
           <div className="w-full">
             {" "}
             <TextInput
@@ -146,7 +146,7 @@ const CompanyDetails = () => {
           </div>
           <div className="border-gray-200 border-dashed border-[1px] w-full"></div>
         </div>
-        <div className="block md:flex items-center justify-between gap-6 mx-2">
+        <div className="block lg:flex items-center justify-between gap-6 mx-2">
           <div className="w-full">
             <FileInput
               label="Upload company logo"

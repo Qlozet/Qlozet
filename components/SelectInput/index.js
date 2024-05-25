@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 const { default: Image } = require("next/image");
 import arrowDownIcon from "../../public/assets/svg/arrow-down.svg";
 import Typography from "../Typography";
@@ -13,19 +13,23 @@ const SelectInput = ({
   error,
 }) => {
   const [showDropDown, setShowDropDown] = useState(false);
+  const dropDownRef = useRef();
   return (
     <div
       className={`bg-white w-full relative my-2`}
       style={{ zIndex: index ? index : 10 }}
     >
-      <div
-        className={`${classes.container}  border-solid   `}
-        onClick={() => {
-          setShowDropDown(true);
-        }}
-      >
+      <div className={`${classes.container}  border-solid   `}>
         <label className="text-[14px] text-dark">{label}</label>
         <input
+          onClick={() => {
+            setShowDropDown(true);
+          }}
+          onBlur={(e) => {
+            if (!dropDownRef.current.contains(e.relatedTarget)) {
+              setShowDropDown(false);
+            }
+          }}
           placeholder={placeholder}
           value={value}
           className={`py-3 ${
@@ -44,11 +48,16 @@ const SelectInput = ({
         )}
       </div>
       {showDropDown && (
-        <div className="overflow-hidden border-[2px] border-solid border-primary w-full cursor-pointer absolute top-[72px] bg-white rounded-[12px]">
+        <div
+          className="overflow-hidden border-[2px] border-solid border-primary w-full cursor-pointer absolute top-[72px] bg-white rounded-[12px]"
+          ref={dropDownRef}
+        >
           {data.map((item) => (
             <div
+              tabIndex={0}
               className="p-2  border-t-[1.5px] border-solid border-gray-200 bg-white hover:bg-[#F4F4F4]"
               onClick={() => {
+                console.log(item.text);
                 setValue(item.text);
                 setShowDropDown(false);
               }}

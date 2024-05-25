@@ -32,6 +32,7 @@ const ProductTable = ({
   const [dropdownOption, setDropDownOption] = useState("");
   const toggleStatus = async () => {
     const productId = getProductId();
+    console.log(productId);
     try {
       const response = await putRequest(`/vendor/products/${productId}/toggle`);
       response && statusChangeHandler();
@@ -44,7 +45,7 @@ const ProductTable = ({
   };
   return (
     <div className="mt-4 min-h-[50vh] ">
-      <div className="hidden md:block">
+      <div className="hidden lg:block">
         <table className="w-full">
           <thead className="w-full bg-[#F4F4F4] text-dark ">
             <tr>
@@ -53,7 +54,7 @@ const ProductTable = ({
                   Picture
                 </div>
               </th>
-              <th className="w-[8%] px-2 py-4 text-[12px]">
+              <th className="w-[12%] px-2 py-4 text-[12px]">
                 <div className="flex items-center justify-start font-[500]  text-dark">
                   Product Name
                 </div>
@@ -122,7 +123,7 @@ const ProductTable = ({
           </tbody>
         </table>
       </div>
-      <div className="block md:hidden">
+      <div className="block lg:hidden">
         <div className="flex items-center justify-between ">
           <div className="w-[70%] block">
             <SearchInput placeholder="Search" />
