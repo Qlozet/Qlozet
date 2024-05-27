@@ -11,6 +11,7 @@ import OrderTable from "@/components/order/OrderTable";
 import Modal from "@/components/Modal";
 import SetTotalOrderPerDay from "@/components/SetTotalItemPerDayForm";
 import OrderDetails from "@/components/order/OrderDetails";
+import TotalOrderIcon from "../../../public/assets/svg/TotalOrder-Icon.svg";
 import TrackOrder from "@/components/order/TrackOrders";
 import RejectOrderModal from "@/components/order/RejectOrderModal";
 import CustomerDetails from "@/components/order/CustomerDetails";
@@ -222,16 +223,15 @@ const Order = () => {
         >
           <DashboardTopCard
             name="Total Vendors"
-            total="10000"
+            total="1000"
             percentage="2.5"
             bgColor="bg-[#57CAEB]"
-            link="link"
-            icon={vendorIcon}
+            icon={TotalOrderIcon}
             addMaxWidth={true}
           />
           <DashboardTopCard
             name="Achieved Vendors"
-            total="10000"
+            total="100"
             percentage="2.5"
             bgColor="bg-[#5DDAB4]"
             icon={customerIcon}
@@ -239,7 +239,7 @@ const Order = () => {
           />
           <DashboardTopCard
             name="Total Customers"
-            total="10000"
+            total="100"
             percentage="2.5"
             bgColor="bg-[#5DDAB4]"
             icon={customerIcon}
@@ -247,7 +247,7 @@ const Order = () => {
           />
           <DashboardTopCard
             name="Total Customers"
-            total="10000"
+            total="1000"
             percentage="2.5"
             bgColor="bg-[#5DDAB4]"
             icon={customerIcon}
