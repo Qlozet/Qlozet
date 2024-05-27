@@ -7,7 +7,7 @@ const CustomiSationButton = ({ handleClick }) => {
       onClick={handleClick}
     >
       <div>
-        <Image src={customisationIcon} />
+        <Image src={customisationIcon} alt="" />
       </div>
     </div>
   );

@@ -59,6 +59,7 @@ const ProductTableItem = ({
       <td className="text-[12px] font-normal p-4 text-dark">
         <div className="flex items-center justify-center">
           <Image
+            alt="Product Image"
             src={dottedIcon}
             onClick={() => {
               setShowDropDown(true);

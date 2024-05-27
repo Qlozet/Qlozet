@@ -95,8 +95,9 @@ const ProductTable = ({
             </tr>
           </thead>
           <tbody>
-            {productData.map((item) => (
+            {productData.map((item, index) => (
               <ProductTableItem
+                key={index}
                 {...item}
                 viewDetails={showModal}
                 handleSelect={(option) => {

@@ -113,8 +113,8 @@ const Products = () => {
       }
     } catch (error) {
       console.log(error);
-      error?.message && toast(<Toast text={error?.message} type="danger" />);
-      error?.data && toast(<Toast text={error?.data} type="danger" />);
+      // error?.message && toast(<Toast text={error?.message} type="danger" />);
+      // error?.data && toast(<Toast text={error?.data} type="danger" />);
     }
   };
   useEffect(() => {

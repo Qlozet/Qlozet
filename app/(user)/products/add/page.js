@@ -71,13 +71,6 @@ const AddProduct = () => {
     discount: "",
     isFeatured: false,
     colors: [],
-    // variants: [
-    //   {
-    //     colors: ["#808080", "#FFFF00"],
-    //     size: "M",
-    //     quantity: 5,
-    //   },
-    // ],
     images: [],
   });
 
@@ -92,6 +85,7 @@ const AddProduct = () => {
     productCategory: false,
     colors: false,
   });
+
   const handleSelectFile = (files) => {
     setFile(files);
     setProductFormData((prevData) => {
@@ -139,7 +133,14 @@ const AddProduct = () => {
         "productCategory",
         JSON.stringify([productFormData.productCategory])
       );
-      // formData.append("variants", variantData);
+      formData.append(
+        "variants",
+        JSON.stringify({
+          colors: ["#808080", "#FFFF00"],
+          size: "M",
+          quantity: 5,
+        })
+      );
       formData.append("colors", JSON.stringify(productFormData.colors));
       formData.append(
         "productTag",
@@ -153,10 +154,14 @@ const AddProduct = () => {
           : "outright"
       );
       formData.append("discount", productFormData.discount);
-      formData.append("isFeatured", true);
-      files.map((item) => {
-        formData.append("images", item);
-      });
+      formData.append("isFeatured", 1);
+      // I'm filtering because of editing, cus image url would
+      // be added to files state when trying to update, so I'm fitering the string out
+      files
+        .filter((item) => item instanceof File)
+        .map((item) => {
+          formData.append("images", item);
+        });
       try {
         setIsLoading(true);
         const response = !productId

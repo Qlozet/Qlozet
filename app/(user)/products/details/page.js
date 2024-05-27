@@ -65,7 +65,7 @@ const ProductDetails = () => {
         }),
         productType: response.data.data.type,
         discount: response.data.data.discount,
-        isFeatured: false,
+        isFeatured: 0,
         colors: colors,
         // variants: [
         //   {
@@ -97,7 +97,7 @@ const ProductDetails = () => {
             <SideBar active="Products" />
           </div>
           <div className="w-full">
-            <div className="px-4">
+            <div className="px-4 mt-4">
               <DasboardNavWithOutSearch name="Products" addSearch={false} />
             </div>
             <div className="px-4">

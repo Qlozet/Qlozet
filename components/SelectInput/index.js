@@ -22,6 +22,7 @@ const SelectInput = ({
       <div className={`${classes.container}  border-solid   `}>
         <label className="text-[14px] text-dark">{label}</label>
         <input
+          onChange={() => {}}
           onClick={() => {
             setShowDropDown(true);
           }}

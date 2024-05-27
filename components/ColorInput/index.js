@@ -122,7 +122,7 @@ const ColorInput = ({
             </div>
           </div>
           <div className="absolute top-[2.2rem] right-[-1.5rem] cursor-pointer">
-            <Image src={colourIcon} className="translate-x-[-2rem]" />
+            <Image src={colourIcon} className="translate-x-[-2rem]" alt="" />
           </div>
         </div>
         {rightIcon}
@@ -210,8 +210,9 @@ const ColorInput = ({
                     Document Colors
                   </Typography>
                   <div className="grid grid-cols-9 gap-2 mt-4">
-                    {colorArray.map((col) => (
+                    {colorArray.map((col, index) => (
                       <div
+                        key={index}
                         onClick={() => {
                           setCurrentColor(col);
                         }}
