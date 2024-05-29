@@ -56,22 +56,22 @@
 }
 
 .rcp-section {
-  gap: 20px !important;
+  gap: 15px !important;
   position: relative !important;
-  width: 80% !important;
+  width: 70% !important;
   right: -18% !important;
 }
 
 .rcp-hue,
 .rcp-alpha {
-  height: 15px !important;
+  height: 9px !important;
 }
 
 .rcp-hue-cursor,
 .rcp-alpha-cursor {
   /* height: 30px !important;
   width: 30px !important; */
-  transform: translate(-10px, -3px) !important ;
+  transform: translate(-15px, -5px) !important ;
 }
 
 .rcp-field {

@@ -83,6 +83,7 @@ const Dashboard = () => {
       status: "Ready to Ship",
     },
   ];
+
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
   };
@@ -202,7 +203,6 @@ const Dashboard = () => {
                 bgColor="bg-[#57CAEB]"
                 link="link"
                 icon={TotalOrderIcon}
-                addMaxWidth={true}
               />
               <DashboardTopCard
                 name="Total earnings"
@@ -210,7 +210,6 @@ const Dashboard = () => {
                 percentage="2.5"
                 bgColor="bg-[#5DDAB4]"
                 icon={TotalearningIcon}
-                addMaxWidth={true}
               />
               <DashboardTopCard
                 name="Total Customers"
@@ -218,7 +217,6 @@ const Dashboard = () => {
                 percentage="2.5"
                 bgColor="bg-[#FF7976]"
                 icon={customerIcon}
-                addMaxWidth={true}
               />
 
               <DashboardTopCard
@@ -227,7 +225,6 @@ const Dashboard = () => {
                 percentage="2.5"
                 bgColor="bg-[#FF3A3A]"
                 icon={CartIcon}
-                addMaxWidth={true}
               />
             </div>
             <div className=" bg-[#F8F9FA] px-4">
@@ -258,9 +255,9 @@ const Dashboard = () => {
                   />
                 </div>
               </div>
-              <div className="block lg:flex items-center w-full gap-4 border-solid solid-[1px] border-primary z-[0]">
+              <div className="md:flex  block lg:flex items-center w-full gap-4 border-solid solid-[1px] border-primary z-[0]">
                 <div
-                  className={`${classes.first_container} block lg:flex items-center gap-4 mt-4 w-full`}
+                  className={`${classes.first_container} block lg:flex items-center gap-4 mt-4 w-full md:flex`}
                 >
                   <div className="lg:w-1/2 w-full">
                     <ChatCard
@@ -293,8 +290,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-
-              <div className="block lg:flex w-full gap-4  mt-4 lg:h-[32rem] h-[35rem]">
+              <div className="block md:flex lg:flex w-full gap-4  mt-4 lg:h-[32rem] h-[35rem]">
                 <div
                   className={`${classes.first_container} flex gap-4 mt-3 w-full `}
                 >

@@ -2,11 +2,57 @@ import colourIcon from "../../public/assets/svg/colour-icon.svg";
 import closeIcon from "../../public/assets/svg/material-symbol-close-icon.svg";
 import Image from "next/image";
 import { ColorPicker, useColor } from "react-color-palette";
-import ColorInputContainer from "../ColorPicker";
 import Typography from "../Typography";
 import classes from "./index.module.css";
 import { useState } from "react";
-const ColorInput = ({
+var colorArray = [
+  "#FF6633",
+  "#FFB399",
+  "#FF33FF",
+  "#FFFF99",
+  "#00B3E6",
+  "#E6B333",
+  "#3366E6",
+  "#999966",
+  "#99FF99",
+  "#B34D4D",
+  "#80B300",
+  "#809900",
+  "#E6B3B3",
+  "#6680B3",
+  "#66991A",
+  "#FF99E6",
+  "#CCFF1A",
+  "#FF1A66",
+  "#E6331A",
+  "#33FFCC",
+  "#66994D",
+  "#B366CC",
+  "#4D8000",
+  "#B33300",
+  "#CC80CC",
+  "#66664D",
+  "#991AFF",
+  "#E666FF",
+  "#4DB3FF",
+  "#1AB399",
+  "#E666B3",
+  "#33991A",
+  "#CC9999",
+  "#B3B31A",
+  "#00E680",
+  "#4D8066",
+  "#809980",
+  "#E6FF80",
+  "#1AFF33",
+  "#999933",
+  "#FF3380",
+  "#CCCC00",
+  "#66E64D",
+  "#4D80CC",
+  "#9900B3",
+];
+const VariantInput = ({
   label,
   error,
   setValue,
@@ -20,54 +66,12 @@ const ColorInput = ({
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [currentColor, setCurrentColor] = useState("#561ecb");
   const [selectedColors, setSelectedColors] = useState(value);
-  var colorArray = [
-    "#FF6633",
-    "#FFB399",
-    "#FF33FF",
-    "#FFFF99",
-    "#00B3E6",
-    "#E6B333",
-    "#3366E6",
-    "#999966",
-    "#99FF99",
-    "#B34D4D",
-    "#80B300",
-    "#809900",
-    "#E6B3B3",
-    "#6680B3",
-    "#66991A",
-    "#FF99E6",
-    "#CCFF1A",
-    "#FF1A66",
-    "#E6331A",
-    "#33FFCC",
-    "#66994D",
-    "#B366CC",
-    "#4D8000",
-    "#B33300",
-    "#CC80CC",
-    "#66664D",
-    "#991AFF",
-    "#E666FF",
-    "#4DB3FF",
-    "#1AB399",
-    "#E666B3",
-    "#33991A",
-    "#CC9999",
-    "#B3B31A",
-    "#00E680",
-    "#4D8066",
-    "#809980",
-    "#E6FF80",
-    "#1AFF33",
-    "#999933",
-    "#FF3380",
-    "#CCCC00",
-    "#66E64D",
-    "#4D80CC",
-    "#9900B3",
-  ];
   const [color, setColor] = useColor("#561ecb");
+
+  const handleSelectFile = (e) => {
+    console.log("Hello");
+    console.log(e.target.files);
+  };
   return (
     <div
       className="relative"
@@ -78,6 +82,11 @@ const ColorInput = ({
       <div className="my-3">
         {leftIcon}
         <label className="text-[14px] font-light my-2 text-dark">{label}</label>
+        <index
+          type="file"
+          id="fileInput"
+          onChange={(e) => console.log("hello")}
+        />
         <div className="flex items-center w-full">
           <div
             type="text"
@@ -122,8 +131,12 @@ const ColorInput = ({
               ))}
             </div>
           </div>
-          <div className="absolute top-[2.2rem] right-[-1.5rem] cursor-pointer">
-            <Image src={colourIcon} className="translate-x-[-2rem]" alt="" />
+          <div className="absolute top-[2.2rem] right-[1.5rem] cursor-pointer flex items-center gap-4 border-[1px] border-solid border-primary">
+            <Image src={colourIcon} alt="" />
+            <label htmlFor="fileInput">
+              <Image src={colourIcon} />
+            </label>
+            <Image src={colourIcon} alt="" />
           </div>
         </div>
         {rightIcon}
@@ -230,4 +243,4 @@ const ColorInput = ({
   );
 };
 
-export default ColorInput;
+export default VariantInput;

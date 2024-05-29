@@ -25,6 +25,7 @@ import { useRouter } from "next/navigation";
 import { getProductId } from "@/utils/localstorage";
 import Loader from "@/components/Loader";
 import { putRequest } from "@/api/method";
+import VariantInput from "@/components/VariantInput";
 
 const AddProduct = () => {
   const router = useRouter();
@@ -107,23 +108,7 @@ const AddProduct = () => {
       productFormData,
       requiredproductFormData
     );
-    const variantData = {
-      old: [
-        {
-          id: "u02u3209u320u32",
-          data: {
-            color: "red",
-            size: "small",
-            qty: 2,
-          },
-        },
-      ],
-      new: {
-        color: "red",
-        size: "small",
-        qty: 2,
-      },
-    };
+
     if (status) {
       formData.append("name", productFormData.productName);
       formData.append("description", productFormData.description);
@@ -135,11 +120,14 @@ const AddProduct = () => {
       );
       formData.append(
         "variants",
-        JSON.stringify({
-          colors: ["#808080", "#FFFF00"],
-          size: "M",
-          quantity: 5,
-        })
+        JSON.stringify([
+          {
+            colors: "808080",
+            size: ["M"],
+            quantity: 5,
+            image: [{ ImageId: "", ImageUrl: "url" }],
+          },
+        ])
       );
       formData.append("colors", JSON.stringify(productFormData.colors));
       formData.append(
@@ -510,7 +498,7 @@ const AddProduct = () => {
                   />
                 </div>
                 <div className="w-full">
-                  <ColorInput
+                  <VariantInput
                     value={["red"]}
                     label="Colour"
                     placeholder="Choose  colours available for this product"

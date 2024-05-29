@@ -45,7 +45,7 @@ const SignIn = () => {
         }
       } catch (error) {
         console.log(error);
-        setIsLoading(false);
+        error && setIsLoading(false);
         // toast(<Toast text={error.message} type="danger" />);
       }
     } else {
