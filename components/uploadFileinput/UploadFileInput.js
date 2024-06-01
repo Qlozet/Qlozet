@@ -1,6 +1,7 @@
 import Image from "next/image";
 import documentIcon from "../../public/assets/svg/document-upload.svg";
 import { useState } from "react";
+import classes from "./index.module.css";
 const FileInput = ({
   label,
   handleSelect,
@@ -26,17 +27,18 @@ const FileInput = ({
             <Image src={documentIcon} />
           </div>
         ) : (
-          <div className="flex items-center gap-4">
-            {value.map((item) => {
+          <div
+            className={`${classes.scrollbarElement} flex items-center gap-4 mt-[16px] px-4`}
+          >
+            {value.map((item, index) => {
               let dataUrl;
               if (typeof item === "string") {
                 dataUrl = item;
               } else {
                 dataUrl = URL.createObjectURL(item);
               }
-
               return (
-                <div>
+                <div key={index}>
                   <Image
                     width={500}
                     height={500}

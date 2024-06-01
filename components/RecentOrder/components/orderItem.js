@@ -4,7 +4,7 @@ import "./index.module.css";
 const OrderItem = ({ order }) => {
   return (
     <div className="flex bg-gray-400 items-center my-4 rounded-[12px] justify-between">
-      <div className="p-5 mb-2 flex rounded-md items-end w-[80%]">
+      <div className="px-4 py-3 mb-2 flex rounded-md items-end w-[80%]">
         <div className="flex flex-col w-[70%]">
           <Typography
             textColor="text-primary"
@@ -38,8 +38,8 @@ const OrderItem = ({ order }) => {
           </Typography>
         </div>
       </div>
-      <div className="w-[20%] flex items-end py-5">
-        <div className="bg-gray-300 rounded-[15px] px-[7px] justify-end">
+      <div className="w-[20%] flex items-center py-5">
+        <div className="bg-gray-300 rounded-[15px] px-[7px] flex items-center">
           <button className="text-[12px]">More</button>
         </div>
       </div>

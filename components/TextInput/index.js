@@ -1,3 +1,4 @@
+import Loader from "../Loader";
 const TextInput = ({
   label,
   error,
@@ -7,9 +8,10 @@ const TextInput = ({
   leftIcon,
   placeholder,
   disabled = false,
+  isLoading,
 }) => {
   return (
-    <div className="my-3">
+    <div className="my-3 relative">
       {leftIcon}
       <label className="text-[14px] font-light my-2 text-dark"> {label}</label>
       <input
@@ -32,6 +34,11 @@ const TextInput = ({
         <p className="text-danger text-[12px] font-[400]">
           {label} cannot be empty!
         </p>
+      )}
+      {isLoading && (
+        <div className="absolute top-[2rem] right-4">
+          <Loader small={true} width={30} height={30} />
+        </div>
       )}
     </div>
   );

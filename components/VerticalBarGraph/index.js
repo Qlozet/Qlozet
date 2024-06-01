@@ -27,7 +27,7 @@ const VerticalBarGraph = () => {
           textWeight="font-bold"
           textSize="text-[16px]"
         >
-          Total order count
+          Order Count
         </Typography>
         <DropDown
           data={[
@@ -45,11 +45,11 @@ const VerticalBarGraph = () => {
         />
       </div>
       <div className="">
-        <VendorCountLine value={"11,000"} />
+        {/* <VendorCountLine value={"11,000"} />
         <VendorCountLine value={"10,000"} />
         <VendorCountLine value={"9,000"} />
-        <VendorCountLine value={"8,000"} />
-        <VendorCountLine value={"7,000"} />
+        <VendorCountLine value={"8,000"} /> */}
+        {/* <VendorCountLine value={"7,000"} /> */}
         <VendorCountLine value={"6,000"} />
         <VendorCountLine value={"5,000"} />
         <VendorCountLine value={"4,000"} />
@@ -60,7 +60,7 @@ const VerticalBarGraph = () => {
           <VendorCountLine value={"0"} />
         </div>
       </div>
-      <div className="absolute right-0 bottom-[.6rem] lg:bottom-[9px]  w-[94%] h-[96%] flex justify-between px-10">
+      <div className="absolute right-0 bottom-[.6rem] lg:bottom-[9px]  w-[94%] h-[96%] flex justify-between pl-10">
         {data.map((item, index) => {
           return (
             <VerticalBar

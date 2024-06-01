@@ -29,10 +29,13 @@ const Dashboard = () => {
   const [loadPage, setLoadPage] = useState(true);
   const [top4Location, setTop4Location] = useState([]);
   const [top4Product, setTop4Product] = useState([]);
-
-  // const [totalCustomer, setTotalCustomer] = useState("0");
   const [showMobileNav, setShowMobileNav] = useState(false);
-
+  const [genderByOrder, setGenderByOrder] = useState({
+    labels: ["Male", "Female"],
+    values: [12, 19],
+    colors: ["#3E1C01", "#9C8578"],
+    borderAlign: "center",
+  });
   const dropdownData = [
     {
       text: "View vendor’s details",
@@ -47,12 +50,6 @@ const Dashboard = () => {
       color: "",
     },
   ];
-  const chartData = {
-    labels: ["Male", "Female"],
-    values: [12, 19],
-    colors: ["#3E1C01", "#9C8578"],
-    borderAlign: "center",
-  };
 
   const orders = [
     {
@@ -124,6 +121,7 @@ const Dashboard = () => {
       setTop4Location(locationData);
     } catch (error) {}
   };
+
   const get4Topproduct = async () => {
     try {
       const productData = [];
@@ -140,8 +138,36 @@ const Dashboard = () => {
         productData.push(singleProduct);
       });
 
-      console.log(productData);
       setTop4Product(productData);
+      // const singleLocatin = {
+      //   location: location.location,
+      //   female: (location.female / response?.data?.data?.totalOrders) * 100,
+      //   male: (location.male / response?.data?.data?.totalOrders) * 100,
+      // };
+      // setCustomerLocation(response.data.totalCount);
+      // response?.data?.data?.locations.map((location) => {
+      //   const singleLocatin = {
+      //     location: location.location,
+      //     female: (location.female / response?.data?.data?.totalOrders) * 100,
+      //     male: (location.male / response?.data?.data?.totalOrders) * 100,
+      //   };
+      //   locationData.push(singleLocatin);
+      // });
+      // setTop4Location(locationData);
+    } catch (error) {}
+  };
+
+  const getOrderByGender = async () => {
+    try {
+      const productData = [];
+      const response = await getRequest("/vendor/dashboard/orders/tag");
+      console.log(response);
+      if (response?.data) {
+        console.log(response?.data);
+        setGenderByOrder((prevData) => {
+          return { prevData, values: [] };
+        });
+      }
       // const singleLocatin = {
       //   location: location.location,
       //   female: (location.female / response?.data?.data?.totalOrders) * 100,
@@ -165,6 +191,7 @@ const Dashboard = () => {
     getLocationWithHighestCustomer();
     get4TopLocation();
     get4Topproduct();
+    getOrderByGender();
   }, []);
 
   return (
@@ -255,16 +282,16 @@ const Dashboard = () => {
                   />
                 </div>
               </div>
-              <div className="md:flex  block lg:flex items-center w-full gap-4 border-solid solid-[1px] border-primary z-[0]">
+              <div className="md:flex block lg:flex items-center w-full md:gap-2 gap-4 border-solid solid-[1px] border-primary z-[0]">
                 <div
-                  className={`${classes.first_container} block lg:flex items-center gap-4 mt-4 w-full md:flex`}
+                  className={`${classes.first_container} block lg:flex items-center md:gap-2 gap-4 mt-4 w-full md:flex`}
                 >
                   <div className="lg:w-1/2 w-full">
                     <ChatCard
                       text="Order by gender"
                       graph={
                         <DonutChart
-                          data={chartData}
+                          data={genderByOrder}
                           width={"200"}
                           height={"200"}
                           cutout={true}
@@ -290,11 +317,14 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-              <div className="block md:flex lg:flex w-full gap-4  mt-4 lg:h-[32rem] h-[35rem]">
+              <div className="block md:flex lg:flex w-full gap-4  mt-4 ">
                 <div
-                  className={`${classes.first_container} flex gap-4 mt-3 w-full `}
+                  className={`${classes.first_container} block md:flex md:gap-4 mt-3 w-full `}
                 >
                   <div className="w-full shadow-md bg-white rounded-[12px] p-6 block">
+                    <VerticalBarGraph />
+                  </div>
+                  <div className="w-full shadow-md bg-white rounded-[12px] p-6 block mt-4 md:mt-0">
                     <VerticalBarGraph />
                   </div>
                 </div>

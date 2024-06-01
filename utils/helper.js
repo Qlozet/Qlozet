@@ -1,5 +1,3 @@
-
-
 export const handlerContainsNumber = (str) => {
   const regex = /\d/;
   return regex.test(str);
@@ -39,4 +37,14 @@ export const validator = (formData, requiredFormData) => {
     }
   }
   return result;
+};
+
+export const filterSelectedItems = (arr1, arr2) => {
+  let res = [];
+  res = arr1.filter((el) => {
+    return !arr2.find((element) => {
+      return element.text === el.text;
+    });
+  });
+  return res;
 };

@@ -14,6 +14,15 @@ const SelectInput = ({
 }) => {
   const [showDropDown, setShowDropDown] = useState(false);
   const dropDownRef = useRef();
+  const [list, setList] = useState(data);
+  const filterList = (e) => {
+    setValue(e.target.value);
+    setList(
+      data.filter((bank) =>
+        bank.text.toLowerCase().includes(e.target.value.toLowerCase())
+      )
+    );
+  };
   return (
     <div
       className={`bg-white w-full relative my-2`}
@@ -22,7 +31,7 @@ const SelectInput = ({
       <div className={`${classes.container}  border-solid   `}>
         <label className="text-[14px] text-dark">{label}</label>
         <input
-          onChange={() => {}}
+          onChange={filterList}
           onClick={() => {
             setShowDropDown(true);
           }}
@@ -50,13 +59,17 @@ const SelectInput = ({
       </div>
       {showDropDown && (
         <div
-          className="overflow-hidden border-[2px] border-solid border-primary w-full cursor-pointer absolute top-[72px] bg-white rounded-[12px]"
+          className={`border-[2px] border-solid border-primary w-full cursor-pointer absolute top-[72px] bg-white rounded-[12px] max-h-[15rem] ${classes.datalist}`}
           ref={dropDownRef}
         >
-          {data.map((item) => (
+          {list.map((item, index) => (
             <div
               tabIndex={0}
-              className="p-2  border-t-[1.5px] border-solid border-gray-200 bg-white hover:bg-[#F4F4F4]"
+              className={`p-2 ${
+                index !== 0
+                  ? "border-t-[1.5px] border-solid border-gray-200"
+                  : ""
+              } bg-white hover:bg-[#F4F4F4]`}
               onClick={() => {
                 console.log(item.text);
                 setValue(item.text);

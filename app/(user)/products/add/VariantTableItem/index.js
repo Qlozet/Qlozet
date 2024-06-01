@@ -14,6 +14,7 @@ const VariantTableItem = ({
   amount,
   status,
   viewDetails,
+  QuantityHandler,
 }) => {
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
@@ -21,7 +22,7 @@ const VariantTableItem = ({
         <Variant bg="red" />
       </td>
       <td className="text-[12px] font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
-        <AddQuantity />
+        <AddQuantity QuantityHandler={QuantityHandler} />
       </td>
       <td className="text-[12px] font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
         <AvailableSize />

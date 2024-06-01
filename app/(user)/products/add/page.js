@@ -26,41 +26,20 @@ import { getProductId } from "@/utils/localstorage";
 import Loader from "@/components/Loader";
 import { putRequest } from "@/api/method";
 import VariantInput from "@/components/VariantInput";
+import MaterialInput from "@/components/MaterialInput";
+import MAterialInput from "@/components/MaterialInput";
+import SizeInput from "@/components/SizeInput";
 
 const AddProduct = () => {
+  const [variantTable, setVariantTable] = useState([]);
   const router = useRouter();
-
-  const tableData = [
-    {
-      date: "Hello",
-      transactionId: "Hello",
-      transactionType: "Hello",
-      narration: "Hello",
-      amount: "Hello",
-      status: "Hello",
-    },
-    {
-      date: "Hello",
-      transactionId: "Hello",
-      transactionType: "Hello",
-      narration: "Hello",
-      amount: "Hello",
-      status: "Hello",
-    },
-    {
-      date: "Hello",
-      transactionId: "Hello",
-      transactionType: "Hello",
-      narration: "Hello",
-      amount: "Hello",
-      status: "Hello",
-    },
-  ];
   const [showCustomiseOrder, setShowCustomiseOrder] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [files, setFile] = useState([]);
+  const [upladedFiles, setUploadeFiles] = useState([]);
+  const [variantFiles, setVariantFiles] = useState([]);
   const [productFormData, setProductFormData] = useState({
     productName: "",
     productPrice: "",
@@ -74,7 +53,6 @@ const AddProduct = () => {
     colors: [],
     images: [],
   });
-
   const [requiredproductFormData, setrequiredproductFormData] = useState({
     productName: false,
     productPrice: false,
@@ -87,8 +65,37 @@ const AddProduct = () => {
     colors: false,
   });
 
-  const handleSelectFile = (files) => {
+  const uploadSingleImage = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const response = await postRequest(
+        "/vendor/products/single-image",
+        formData,
+        true
+      );
+      console.log(response);
+      return {
+        asset_id: response?.data.asset_id,
+        public_id: response?.data.public_id,
+        secure_url: response?.data.secure_url,
+      };
+    } catch (error) {}
+  };
+
+  const handleSelectFile = async (files) => {
+    const ImageInfo = await uploadSingleImage(files[0]);
+    setUploadeFiles((prevData) => {
+      return [...prevData, ImageInfo];
+    });
     setFile(files);
+    setProductFormData((prevData) => {
+      return { ...prevData, images: files };
+    });
+  };
+
+  const handleSelecVarianttFile = (files) => {
+    setVariantFiles(files);
     setProductFormData((prevData) => {
       return { ...prevData, images: files };
     });
@@ -108,57 +115,38 @@ const AddProduct = () => {
       productFormData,
       requiredproductFormData
     );
-
+    console.log(productFormData);
     if (status) {
-      formData.append("name", productFormData.productName);
-      formData.append("description", productFormData.description);
-      formData.append("price", productFormData.productPrice);
-      formData.append("quantity", productFormData.productQuantity);
-      formData.append(
-        "productCategory",
-        JSON.stringify([productFormData.productCategory])
-      );
-      formData.append(
-        "variants",
-        JSON.stringify([
-          {
-            colors: "808080",
-            size: ["M"],
-            quantity: 5,
-            image: [{ ImageId: "", ImageUrl: "url" }],
-          },
-        ])
-      );
-      formData.append("colors", JSON.stringify(productFormData.colors));
-      formData.append(
-        "productTag",
-        productFormData.productTag === "Male" ? "male" : "female"
-      );
-
-      formData.append(
-        "productType",
-        productFormData.productType === "Customizable"
-          ? "customizable"
-          : "outright"
-      );
-      formData.append("discount", productFormData.discount);
-      formData.append("isFeatured", 1);
-      // I'm filtering because of editing, cus image url would
-      // be added to files state when trying to update, so I'm fitering the string out
-      files
-        .filter((item) => item instanceof File)
-        .map((item) => {
-          formData.append("images", item);
-        });
       try {
         setIsLoading(true);
+        const formData = {
+          name: productFormData.productName,
+          description: productFormData.description,
+          price: productFormData.productPrice,
+          quantity: productFormData.productQuantity,
+          productTag: productFormData.productTag === "Male" ? "male" : "female",
+          productCategory: JSON.stringify([productFormData.productCategory]),
+          colors: JSON.stringify(productFormData.colors),
+          discount: productFormData.discount,
+          isFeatured: 0,
+          images: {
+            retained: upladedFiles,
+            deleted: [],
+          },
+          variants: {
+            colors: ["#808080", "#FFFF00"],
+            size: "M",
+            quantity: 5,
+            images: {
+              retained: upladedFiles,
+              deleted: [],
+            },
+          },
+        };
         const response = !productId
-          ? await postRequest("/vendor/products", formData, true)
-          : await putRequest(
-              `/vendor/products/${productId}/update`,
-              formData,
-              true
-            );
+          ? await postRequest("/vendor/products", formData)
+          : await putRequest(`/vendor/products/${productId}/update`, formData);
+        console.log(response);
         response && setIsLoading(false);
         if (response?.data) {
           router.push("../products");
@@ -183,6 +171,7 @@ const AddProduct = () => {
     const productId = getProductId();
     try {
       const response = await getRequest(`/vendor/products/${productId}`);
+      console.log(response);
       let colors = [];
       response.data.data.colors.map((item) => {
         colors.push(item.hex);
@@ -203,29 +192,32 @@ const AddProduct = () => {
         discount: response.data.data.discount,
         isFeatured: false,
         colors: colors,
-        // variants: [
-        //   {
-        //     colors: ["#808080", "#FFFF00"],
-        //     size: "M",
-        //     quantity: 5,
-        //   },
-        // ],
         images: response.data.data.images.map((image) => {
-          return image.url;
+          return image.secure_url;
         }),
       });
-      // clearProductId();
+
       setPageLoading(false);
     } catch (error) {
       setPageLoading(false);
     }
   };
+
+  const addToVariantTable = (data) => {
+    console.log(data);
+    setVariantTable((prevData) => {
+      return [
+        ...prevData,
+        { color: "red", images: [""], sizes: [], quantity: 2 },
+      ];
+    });
+  };
+
   useEffect(() => {
     fetchProduct();
   }, []);
   return (
     <div>
-      {" "}
       {pageLoading ? (
         <Loader></Loader>
       ) : (
@@ -301,7 +293,7 @@ const AddProduct = () => {
                   </div>
                   <div className="w-full">
                     <SelectInput
-                      index={30}
+                      index={50}
                       placeholder={"Product Tags"}
                       label="Tags"
                       value={productFormData.productTag}
@@ -346,7 +338,7 @@ const AddProduct = () => {
                       error={requiredproductFormData.productCategory}
                       data={[{ text: "Two Piece" }, { text: "Dress" }]}
                       label="Category"
-                      index={20}
+                      index={40}
                     />
                   </div>
                   <div className="w-full">
@@ -370,11 +362,12 @@ const AddProduct = () => {
                       error={requiredproductFormData.productType}
                       data={[{ text: "Customizable" }, { text: "Outright" }]}
                       label="Product type"
-                      index={10}
+                      index={20}
                     />
                   </div>
                   <div className="w-full ">
                     <ColorInput
+                      index={80}
                       label="Colour"
                       placeholder="Choose  colours available for this product"
                       value={productFormData.colors}
@@ -499,10 +492,52 @@ const AddProduct = () => {
                 </div>
                 <div className="w-full">
                   <VariantInput
-                    value={["red"]}
+                    index={50}
+                    value={variantTable.map((item) => {
+                      console.log(item);
+                      return item.color;
+                    })}
                     label="Colour"
-                    placeholder="Choose  colours available for this product"
-                    setValue={(data) => {}}
+                    placeholder="Choose colours available for this product"
+                    setValue={addToVariantTable}
+                  />
+                </div>
+                <div className="w-full">
+                  <MaterialInput
+                    label="Material"
+                    placeholder="Choose available for this product"
+                    handleSelect={addToVariantTable}
+                    value={variantFiles}
+                  />
+                </div>
+                <div className="w-full">
+                  <SizeInput
+                    placeholder={"Enter product type"}
+                    value={productFormData.productType}
+                    setValue={(data) => {
+                      setProductFormData((prevData) => {
+                        return { ...prevData, productType: data };
+                      });
+                      if (data) {
+                        setrequiredproductFormData((prevData) => {
+                          return { ...prevData, productType: false };
+                        });
+                      } else {
+                        setrequiredproductFormData((prevData) => {
+                          return { ...prevData, productType: true };
+                        });
+                      }
+                    }}
+                    error={requiredproductFormData.productType}
+                    data={[
+                      { text: "Extra small" },
+                      { text: "Small" },
+                      { text: "Medium" },
+                      { text: "Large" },
+                      { text: "Extra large" },
+                    ]}
+                    label="Sizes"
+                    index={40}
                   />
                 </div>
                 <div className="my-4">
@@ -552,7 +587,10 @@ const AddProduct = () => {
                   </Typography>
                 </div>
                 <div className="overflow-x-scroll">
-                  <VariantTable data={tableData} />
+                  <VariantTable
+                    data={variantTable}
+                    // QuantityHandler={variantQuantityHandler}
+                  />
                 </div>
 
                 <div className="my-4">

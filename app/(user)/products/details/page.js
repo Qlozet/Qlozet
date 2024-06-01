@@ -53,7 +53,6 @@ const ProductDetails = () => {
       const categories = response.data.data.categories.map((item) => {
         return item.name;
       });
-      console.log(categories);
       setProductFormData({
         productName: response.data.data.name,
         productPrice: response.data.data.price,
@@ -75,7 +74,8 @@ const ProductDetails = () => {
         //   },
         // ],
         images: response.data.data.images.map((image) => {
-          return image.url;
+          console.log(image);
+          return image?.secure_url;
         }),
       });
       // clearProductId();
@@ -176,7 +176,6 @@ const ProductDetails = () => {
                         </p>
                       </div>
                     </div>
-
                     <div className="hidden lg:flex items-center justify-between w-full mb-[30px]">
                       <h2 className="hidden lg:block font-bold text-[24px] leading-[36px]">
                         {productFormData.productPrice}

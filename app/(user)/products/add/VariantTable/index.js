@@ -1,7 +1,7 @@
 import ExportComponent from "@/components/ExportButton";
 import VariantTableItem from "../VariantTableItem";
 
-const VariantTable = ({ data }) => {
+const VariantTable = ({ data, QuantityHandler }) => {
   return (
     <div className="mt-4 min-h-[50vh] ">
       <table className="w-full shadow py-4">
@@ -38,6 +38,7 @@ const VariantTable = ({ data }) => {
         <tbody>
           {data.map((item, index) => (
             <VariantTableItem
+              QuantityHandler={QuantityHandler}
               key={index}
               {...item}
               //   viewDetails={viewDetails}

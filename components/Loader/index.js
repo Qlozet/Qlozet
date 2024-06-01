@@ -1,10 +1,14 @@
 import { BallTriangle } from "react-loader-spinner";
-const Loader = () => {
+const Loader = ({ small, height, width }) => {
   return (
-    <div className="bg-[#F8F9FA] h-screen w-screen flex items-center justify-center">
+    <div
+      className={`${
+        small ? "bg-[#DDE2E5]" : "h-screen w-screen bg-[#F8F9FA]"
+      }  flex items-center justify-center`}
+    >
       <BallTriangle
-        height={100}
-        width={100}
+        height={height ? height : 100}
+        width={width ? width : 100}
         radius={5}
         color="rgba(62, 28, 1, 1)"
         ariaLabel="ball-triangle-loading"

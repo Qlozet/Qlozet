@@ -72,7 +72,6 @@ const Products = () => {
     },
   ];
 
-  const removeItemfromArray = (itemId) => {};
   const getProducts = async () => {
     try {
       let response = await getRequest("/vendor/products/all");
@@ -95,7 +94,9 @@ const Products = () => {
           }
           let orderItem = {
             id: product._id,
-            picture: product.images[0]?.url ? product.images[0]?.url : "",
+            picture: product.images[0]?.secure_url
+              ? product.images[0]?.secure_url
+              : "",
             productName: product.name,
             productPrice: product.price,
             category: "Two Piece",
@@ -113,8 +114,6 @@ const Products = () => {
       }
     } catch (error) {
       console.log(error);
-      // error?.message && toast(<Toast text={error?.message} type="danger" />);
-      // error?.data && toast(<Toast text={error?.data} type="danger" />);
     }
   };
   useEffect(() => {

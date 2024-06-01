@@ -25,6 +25,7 @@ const Wallet = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const [showSendMoney, setShowSendMoney] = useState("");
   const [transactionId, setransactionId] = useState("");
+  const [allBanks, setAllBanks] = useState([]);
   const [loadPage, setLoadPage] = useState(true);
   const [transactionData, setTransactionData] = useState([]);
   const [rejectModal, setShowReject] = useState(false);
@@ -190,8 +191,18 @@ const Wallet = () => {
       error?.data && toast(<Toast text={error?.data} type="danger" />);
     }
   };
+
+  const getBanks = async () => {
+    try {
+      let response = await getRequest("/vendor/transfer/banks");
+      if (response?.data) {
+        setAllBanks(response?.data?.data?.data);
+      }
+    } catch (error) {}
+  };
   useEffect(() => {
     getTransaction();
+    getBanks();
   }, []);
 
   return (
@@ -255,7 +266,7 @@ const Wallet = () => {
                 />
                 <DashboardTopCard
                   name="Total Amount Received"
-                  total="10000"
+                  total="0"
                   percentage="2.5"
                   bgColor="bg-[#5DDAB4]"
                   icon={customerIcon}
@@ -340,6 +351,7 @@ const Wallet = () => {
             <Modal
               content={
                 <SendMoneyForm
+                  banks={allBanks}
                   closeModal={() => {
                     setShowSendMoney(false);
                   }}
