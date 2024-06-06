@@ -16,43 +16,43 @@ const FileInput = ({
     setFiles(files.filter((file, index) => index !== fileIndex));
   };
   return (
-    <div className="my-3">
+    <div className="my-3 w-full">
       <label>{label}</label>
-      <label
-        className="border-[1px] border-solid border-primary-200 block w-[100%] h-[7rem] rounded-[12px]"
-        htmlFor="file"
-      >
-        {value.length < 1 ? (
-          <div className="border-[1px] border-solid border-gray-200 h-[100%] cursor-pointer rounded-[12px] flex justify-center items-center">
-            <Image src={documentIcon} />
-          </div>
-        ) : (
-          <div
-            className={`${classes.scrollbarElement} flex items-center gap-4 mt-[16px] px-4`}
+      <div className="overflow-hidden">
+        <div
+          className={`${classes.scrollbarElement} w-full h-[7rem] flex items-center gap-4 px-4 border-[1.5px] border-solid border-primary-200 rounded-[12px]`}
+        >
+          {files.map((item, index) => {
+            let dataUrl;
+            if (typeof item === "string") {
+              dataUrl = item;
+            } else {
+              dataUrl = URL.createObjectURL(item);
+            }
+            return (
+              <div key={index}>
+                <Image
+                  width={500}
+                  height={500}
+                  src={dataUrl}
+                  style={{ width: "5rem", height: "auto" }}
+                  alt=""
+                  className="min-w-[5rem] h-[auto]"
+                />
+              </div>
+            );
+          })}
+          <label
+            className="border-[1px] border-solid border-primary-200 block min-w-[5rem] h-[5rem] rounded-[12px]"
+            htmlFor="file"
           >
-            {value.map((item, index) => {
-              let dataUrl;
-              if (typeof item === "string") {
-                dataUrl = item;
-              } else {
-                dataUrl = URL.createObjectURL(item);
-              }
-              return (
-                <div key={index}>
-                  <Image
-                    width={500}
-                    height={500}
-                    src={dataUrl}
-                    style={{ width: "5rem", height: "auto" }}
-                    alt=""
-                    className="w-[2rem] h-[auto]"
-                  />
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </label>
+            <div className="border-[1px] border-solid border-gray-200 h-[100%] cursor-pointer rounded-[12px] flex justify-center items-center">
+              <Image src={documentIcon} />
+            </div>
+          </label>
+        </div>
+      </div>
+
       <input
         type="file"
         id="file"

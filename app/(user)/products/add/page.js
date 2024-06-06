@@ -389,8 +389,8 @@ const AddProduct = () => {
                     />
                   </div>
                 </div>
-                <div className="block lg:flex  justify-between  gap-6">
-                  <div className="w-full">
+                <div className="block lg:flex  justify-between gap-6">
+                  <div className="w-full ">
                     <FileInput
                       handleSelect={handleSelectFile}
                       label="Upload product image"
