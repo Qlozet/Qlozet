@@ -32,7 +32,7 @@ const Dashboard = () => {
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [genderByOrder, setGenderByOrder] = useState({
     labels: ["Male", "Female"],
-    values: [12, 19],
+    values: [0, 0],
     colors: ["#3E1C01", "#9C8578"],
     borderAlign: "center",
   });
@@ -163,9 +163,12 @@ const Dashboard = () => {
       const response = await getRequest("/vendor/dashboard/orders/tag");
       console.log(response);
       if (response?.data) {
-        console.log(response?.data);
-        setGenderByOrder((prevData) => {
-          return { prevData, values: [] };
+        console.log(response?.data?.data.female);
+        setGenderByOrder({
+          labels: ["Male", "Female"],
+          values: [response?.data.data.male, response?.data.data.female],
+          colors: ["#3E1C01", "#9C8578"],
+          borderAlign: "center",
         });
       }
       // const singleLocatin = {
