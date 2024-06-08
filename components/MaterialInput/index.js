@@ -23,11 +23,11 @@ const MaterialInput = ({
         <div className="absolute top-2 right-2 cursor-pointer  gap-4 flex justify-center items-center">
           <label className="" htmlFor="material">
             <div className="">
-              <Image src={imageicon} />
+              <Image src={imageicon} alt="" />
             </div>
           </label>
           <div className="">
-            <Image src={trashIcon} />
+            <Image src={trashIcon} alt="" />
           </div>
         </div>
         <div

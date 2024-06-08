@@ -64,14 +64,14 @@ const SizeInput = ({
         <div className="absolute top-[2rem] left-[0.5rem] flex items-center gap-2 ">
           {selectedList.map((item, index) => (
             <div className="bg-gray-300 rounded-[5px] p-1 w-[6rem] flex items-center justify-center relative">
-              {item.text}
+              {item}
               <div
                 className="absolute right-[-0.3rem] top-[-0.3rem] bg-primary-200 rounded-[50%] cursor-pointer"
                 onClick={() => {
                   removeItemFromList(index);
                 }}
               >
-                <Image src={closeIcon} alt={item.text} width={15} height={15} />
+                <Image src={closeIcon} alt={item} width={15} height={15} />
               </div>
             </div>
           ))}
@@ -101,10 +101,11 @@ const SizeInput = ({
               } bg-white hover:bg-[#F4F4F4]`}
               onClick={() => {
                 setSelectedList((prevData) => [...prevData, item]);
+                setValue([...selectedList, item]);
                 setShowDropDown(false);
               }}
             >
-              <p className="rounded-b-[12px] overflow-hidden">{item.text}</p>
+              <p className="rounded-b-[12px] overflow-hidden">{item}</p>
             </div>
           ))}
         </div>

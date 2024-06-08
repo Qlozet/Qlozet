@@ -1,7 +1,7 @@
 import ExportComponent from "@/components/ExportButton";
 import VariantTableItem from "../VariantTableItem";
 
-const VariantTable = ({ data, QuantityHandler }) => {
+const VariantTable = ({ data, QuantityHandler, submitVariantImage }) => {
   return (
     <div className="mt-4 min-h-[50vh] ">
       <table className="w-full shadow py-4">
@@ -40,7 +40,9 @@ const VariantTable = ({ data, QuantityHandler }) => {
             <VariantTableItem
               QuantityHandler={QuantityHandler}
               key={index}
-              {...item}
+              item={item}
+              index={index}
+              submitImage={submitVariantImage}
               //   viewDetails={viewDetails}
               //   showRejectModal={showRejectModal}
             />

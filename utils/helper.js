@@ -43,7 +43,7 @@ export const filterSelectedItems = (arr1, arr2) => {
   let res = [];
   res = arr1.filter((el) => {
     return !arr2.find((element) => {
-      return element.text === el.text;
+      return element === el;
     });
   });
   return res;

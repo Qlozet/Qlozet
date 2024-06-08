@@ -37,6 +37,7 @@ const AddProduct = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentVariantColor, setCurrentVariantColor] = useState("");
   const [files, setFile] = useState([]);
   const [upladedFiles, setUploadeFiles] = useState([]);
   const [variantFiles, setVariantFiles] = useState([]);
@@ -103,9 +104,46 @@ const AddProduct = () => {
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
   };
-  const closeModal = () => {
-    setCustomerDetails(false);
-    setShowHistory(false);
+
+  const submitVariantImage = async (file, listIndex, imageIndex) => {
+    const imageUrl = await uploadSingleImage(file);
+    let prevVariantTable = variantTable;
+    console.log(imageUrl?.secure_url);
+    if (imageUrl?.secure_url) {
+      console.log(imageUrl.secure_url);
+      let images = variantTable[listIndex].images;
+      images[imageIndex] = imageUrl;
+      const newVariantItem = {
+        color: variantTable[listIndex].color,
+        images: images,
+        sizes: variantTable[listIndex].sizes,
+        quantity: variantTable[listIndex].quantity,
+      };
+      // update the list with this index listIndex
+      prevVariantTable[listIndex] = newVariantItem;
+      setVariantTable(prevVariantTable);
+      console.log(prevVariantTable);
+    }
+  };
+
+  const addToVariantTable = (data) => {
+    console.log(data);
+    setCurrentVariantColor(data[0]);
+  };
+
+  const addSizeToVariant = (size) => {
+    console.log(size[0]);
+    setVariantTable((prevData) => {
+      return [
+        ...prevData,
+        {
+          color: currentVariantColor,
+          images: ["", "", "", "", ""],
+          sizes: [size[0]],
+          quantity: 2,
+        },
+      ];
+    });
   };
 
   const handleSubmit = async () => {
@@ -201,16 +239,6 @@ const AddProduct = () => {
     } catch (error) {
       setPageLoading(false);
     }
-  };
-
-  const addToVariantTable = (data) => {
-    console.log(data);
-    setVariantTable((prevData) => {
-      return [
-        ...prevData,
-        { color: "red", images: [""], sizes: [], quantity: 2 },
-      ];
-    });
   };
 
   useEffect(() => {
@@ -512,9 +540,11 @@ const AddProduct = () => {
                 </div>
                 <div className="w-full">
                   <SizeInput
-                    placeholder={"Enter product type"}
+                    // placeholder={"Enter product size"}
                     value={productFormData.productType}
                     setValue={(data) => {
+                      console.log(data);
+                      addSizeToVariant(data);
                       setProductFormData((prevData) => {
                         return { ...prevData, productType: data };
                       });
@@ -530,11 +560,11 @@ const AddProduct = () => {
                     }}
                     error={requiredproductFormData.productType}
                     data={[
-                      { text: "Extra small" },
-                      { text: "Small" },
-                      { text: "Medium" },
-                      { text: "Large" },
-                      { text: "Extra large" },
+                      "Extra small",
+                      "Small",
+                      "Medium",
+                      "Large",
+                      "Extra large",
                     ]}
                     label="Sizes"
                     index={40}
@@ -590,6 +620,7 @@ const AddProduct = () => {
                   <VariantTable
                     data={variantTable}
                     // QuantityHandler={variantQuantityHandler}
+                    submitVariantImage={submitVariantImage}
                   />
                 </div>
 

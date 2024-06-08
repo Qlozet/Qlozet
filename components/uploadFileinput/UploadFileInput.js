@@ -47,7 +47,7 @@ const FileInput = ({
             htmlFor="file"
           >
             <div className="border-[1px] border-solid border-gray-200 h-[100%] cursor-pointer rounded-[12px] flex justify-center items-center">
-              <Image src={documentIcon} />
+              <Image src={documentIcon} alt="" />
             </div>
           </label>
         </div>
