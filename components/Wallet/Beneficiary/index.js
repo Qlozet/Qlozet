@@ -29,23 +29,21 @@ const Beneficiary = ({ closeModal }) => {
     try {
       const response = await getRequest("/vendor/beneficiaries");
       console.log(response?.data.beneficiaries);
-      let savedBen = [];
+      let savedBeneneficiaries = [];
       if (response?.data) {
         response?.data?.beneficiaries.map((item) => {
-          setBeneficairy((prevData) => [
-            ...prevData,
-            {
-              bankName: item?.bank,
-              accountNumber: item?.accountNumber,
-              accountName: item?.accountName,
-              amount: `${item?.amount}`,
-              naration: item?.naration,
-              schedulePayment: item?.schedulePayment,
-              billingAddress: false,
-            },
-          ]);
-          clear;
+          const beneficairy = {
+            bankName: item?.bank,
+            accountNumber: item?.accountNumber,
+            accountName: item?.accountName,
+            amount: `${item?.amount}`,
+            naration: item?.naration,
+            schedulePayment: item?.schedulePayment,
+            billingAddress: false,
+          };
+          savedBeneneficiaries.push(beneficairy);
         });
+        setBeneficairy(savedBeneneficiaries);
       }
     } catch (error) {}
   };

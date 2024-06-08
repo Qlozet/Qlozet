@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import DashboardTopCard from "@/components/DashboardTopCard";
 import SideBar from "@/components/SideBar";
-import DropDown from "@/components/DropDown";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import Typography from "@/components/Typography";
@@ -14,9 +13,11 @@ import CustomerTable from "@/components/Customer/CustomerTable";
 import MobileSideBar from "@/components/MobileSideBar";
 import classes from "./index.module.css";
 import { getRequest } from "@/api/method";
+import Loader from "@/components/Loader";
 const Customer = () => {
   const [viewCustomerDetails, setCustomerDetails] = useState(false);
   const [showHostory, setShowHistory] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [custmers, setCustomers] = useState([]);
 
   const [showMobileNav, setShowMobileNav] = useState(false);
@@ -56,7 +57,7 @@ const Customer = () => {
     try {
       let response = await getRequest("/vendor/customers");
       let Customers = [];
-
+      response && setPageLoading(false);
       if (response.data) {
         response?.data?.data.map((item) => {
           const customer = {
@@ -81,53 +82,57 @@ const Customer = () => {
     getCustomers();
   }, []);
   return (
-    <div className="flex bg-[#F8F9FA]">
-      <div className="">
-        <SideBar active="Customers" />
-      </div>
-      <MobileSideBar
-        showMobileNav={showMobileNav}
-        active="Customers"
-        closeSideBar={showSideBar}
-      />
-      <div className="w-full p-4">
-        <DasboardNavWithOutSearch
-          addSearch={true}
-          setValue={(data) => {}}
-          showSideBar={showSideBar}
-          name="Customers"
-        />
-        <div
-          className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
-        >
-          <DashboardTopCard
-            name="Total Vendors"
-            total="10000"
-            percentage="2.5"
-            bgColor="bg-[#57CAEB]"
-            link="link"
-            icon={vendorIcon}
-            addMaxWidth={true}
+    <div>
+      {pageLoading ? (
+        <Loader></Loader>
+      ) : (
+        <div className="flex bg-[#F8F9FA]">
+          <div className="">
+            <SideBar active="Customers" />
+          </div>
+          <MobileSideBar
+            showMobileNav={showMobileNav}
+            active="Customers"
+            closeSideBar={showSideBar}
           />
-          <DashboardTopCard
-            name="Achieved Vendors"
-            total="10000"
-            percentage="2.5"
-            bgColor="bg-[#5DDAB4]"
-            icon={customerIcon}
-            addMaxWidth={true}
-          />
-        </div>
-        <div className="">
-          <div className="flex items-center justify-between mt-14 mb-2 ">
-            <Typography
-              textColor="text-dark"
-              textWeight="font-bold"
-              textSize="text-[18px]"
+          <div className="w-full p-4">
+            <DasboardNavWithOutSearch
+              addSearch={true}
+              setValue={(data) => {}}
+              showSideBar={showSideBar}
+              name="Customers"
+            />
+            <div
+              className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
             >
-              Customers
-            </Typography>
-            {/* <div className="">
+              <DashboardTopCard
+                name="Total Customers"
+                total={`${custmers.length}`}
+                percentage="2.5"
+                bgColor="bg-[#57CAEB]"
+                link="link"
+                icon={vendorIcon}
+                addMaxWidth={true}
+              />
+              <DashboardTopCard
+                name="Achieved Vendors"
+                total="10000"
+                percentage="2.5"
+                bgColor="bg-[#5DDAB4]"
+                icon={customerIcon}
+                addMaxWidth={true}
+              />
+            </div>
+            <div className="">
+              <div className="flex items-center justify-between mt-14 mb-2 ">
+                <Typography
+                  textColor="text-dark"
+                  textWeight="font-bold"
+                  textSize="text-[18px]"
+                >
+                  Customers
+                </Typography>
+                {/* <div className="">
               <DropDown
                 placeholder={"Filter by"}
                 value={dropDownValue}
@@ -137,28 +142,33 @@ const Customer = () => {
                 data={dropdownData}
               /> 
               </div>*/}
+              </div>
+              <div className="lg:block hidden">
+                {" "}
+                <CustomerTable data={custmers} showModal={showModal} />
+              </div>
+            </div>
           </div>
-          <div className="lg:block hidden">
-            {" "}
-            <CustomerTable data={custmers} showModal={showModal} />
-          </div>
-        </div>
-      </div>
 
-      {viewCustomerDetails && (
-        <Modal
-          content={
-            <CustomerDetails topNavData={topNavData} closeModal={closeModal} />
-          }
-        ></Modal>
-      )}
-      {showHostory && (
-        <Modal
-          content={
-            <OrderHistory topNavData={topNavData} closeModal={closeModal} />
-          }
-        ></Modal>
-      )}
+          {viewCustomerDetails && (
+            <Modal
+              content={
+                <CustomerDetails
+                  topNavData={topNavData}
+                  closeModal={closeModal}
+                />
+              }
+            ></Modal>
+          )}
+          {showHostory && (
+            <Modal
+              content={
+                <OrderHistory topNavData={topNavData} closeModal={closeModal} />
+              }
+            ></Modal>
+          )}
+        </div>
+      )}{" "}
     </div>
   );
 };
