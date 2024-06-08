@@ -76,6 +76,7 @@ const Products = () => {
     try {
       let response = await getRequest("/vendor/products/all");
       let productData = [];
+      console.log(response?.data);
       if (response?.data) {
         response?.data?.data?.map((product) => {
           let productStatus;

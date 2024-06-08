@@ -41,7 +41,7 @@ const ProductDetails = () => {
   });
   const fetchProduct = async () => {
     const productId = getProductId();
-    console.log(productId);
+
     try {
       const response = await getRequest(`/vendor/products/${productId}`);
       console.log(response);
@@ -74,7 +74,6 @@ const ProductDetails = () => {
         //   },
         // ],
         images: response.data.data.images.map((image) => {
-          console.log(image);
           return image?.secure_url;
         }),
       });
@@ -107,7 +106,7 @@ const ProductDetails = () => {
                   router.push("../products");
                 }}
               >
-                <Image src={arrowLeftIcon} />
+                <Image src={arrowLeftIcon} alt="" />
                 <h2
                   className="font-bold text-[18px] 
           my-4"
@@ -144,7 +143,7 @@ const ProductDetails = () => {
                         <p className="text-[12px] leading-[18px] underline font-bold ">
                           View product in main site
                         </p>
-                        <Image src={arrowRightIcon} />
+                        <Image src={arrowRightIcon} alt="" />
                       </div>
                     </div>
                     <h1 className="text-[16px] lg:text-[32px] font-bold my-2">
@@ -155,19 +154,19 @@ const ProductDetails = () => {
                     </h2>
                     <div className="flex items-center gap-6 my-4">
                       <div className="flex items-center gap-2">
-                        <Image src={starIcon} />
+                        <Image src={starIcon} alt="" />
                         <span className="font-bold text-[14px] leading-[20px]">
                           4.8
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Image src={heartIcon} />
+                        <Image src={heartIcon} alt="" />
                         <span className="font-bold text-[14px] leading-[20px]">
                           200
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Image src={chatIcon} />
+                        <Image src={chatIcon} alt="" />
                         <span className="font-bold text-[14px] leading-[20px] mr-1">
                           100
                         </span>
@@ -187,8 +186,10 @@ const ProductDetails = () => {
 
                     <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[18px]">
                       <p className="font-light col-span-1">Category</p>
-                      {productFormData.productCategory.map((item) => (
-                        <p className="font-bold col-span-2">{item}</p>
+                      {productFormData.productCategory.map((item, index) => (
+                        <p className="font-bold col-span-2" key={index}>
+                          {item}
+                        </p>
                       ))}
                     </div>
                     <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[18px]">
@@ -201,10 +202,11 @@ const ProductDetails = () => {
                       <p className="font-light col-span-1">Available colours</p>
 
                       <div className="font-bold col-span-2 flex items-center gap-2">
-                        {productFormData.colors.map((item) => {
+                        {productFormData.colors.map((item, index) => {
                           console.log(item);
                           return (
                             <div
+                              key={index}
                               className="w-[20px] h-[20px] rounded-full"
                               style={{
                                 backgroundColor: `${item}`,

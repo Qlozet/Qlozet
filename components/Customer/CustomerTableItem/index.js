@@ -1,29 +1,33 @@
 import threeDotIcon from "../../../public/assets/svg/three-dot.svg";
 import Image from "next/image";
+import moment from "moment";
 import OrderStatus from "../../order/OrderStatus";
 const CustomerTableItem = ({
-  date,
-  orderId,
-  productName,
-  productPrice,
-  CustomerName,
-  AmountPaid,
-  DeliveryStatus,
+  picture,
+  customerName,
+  status,
+  totalOrders,
+  lastOrderDate,
+  phone,
+  emailAddress,
   viewDetails,
 }) => {
+  const date = new Date(lastOrderDate);
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-[12px] font-normal p-4 text-dark ">{date}</td>
-      <td className="text-[12px] font-normal p-4 text-dark ">{orderId}</td>
-      <td className="text-[12px] font-normal p-4 text-dark">{productName}</td>
-      <td className="text-[12px] font-normal p-4 text-dark">{productPrice}</td>
-      <td className="text-[12px] font-normal p-4 text-dark">{CustomerName}</td>
-      <td className="text-[12px] font-normal p-4 text-dark">{AmountPaid}</td>
+      <td className="text-[12px] font-normal p-4 text-dark ">{picture}</td>
+      <td className="text-[12px] font-normal p-4 text-dark ">{customerName}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">{emailAddress}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">{phone}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">{totalOrders}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">
+        {moment(date).format("DD/MM/YYYY")}
+      </td>
       <td className="text-[12px] font-normal p-4 text-dark">
         <OrderStatus
-          text="Out for delivery"
-          bgColor="bg-[#D4CFCA]"
-          color="text-[#3E1C01]"
+          text="Active"
+          bgColor="bg-success-300"
+          color="bg-success"
           addMaxWidth={true}
         />
       </td>

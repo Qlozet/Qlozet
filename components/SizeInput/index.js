@@ -5,7 +5,7 @@ import classes from "./index.module.css";
 import { filterSelectedItems } from "@/utils/helper";
 const SizeInput = ({
   value,
-  placeholder,
+  // placeholder,
   setValue,
   data,
   label,
@@ -27,15 +27,13 @@ const SizeInput = ({
   };
 
   const removeItemFromList = (sizeIndex) => {
-    const remainingSizes = selectedList.filter(
-      (file, index) => index !== sizeIndex
-    );
-    setValue(remainingSizes);
+    const remainingSizes = value.filter((file, index) => index !== sizeIndex);
+    setValue(remainingSizes, sizeIndex);
     setSelectedList(remainingSizes);
   };
   useEffect(() => {
-    setList(filterSelectedItems(list, selectedList));
-  }, [selectedList]);
+    setList(filterSelectedItems(data, value));
+  }, [value]);
 
   return (
     <div
@@ -54,7 +52,7 @@ const SizeInput = ({
               setShowDropDown(false);
             }
           }}
-          placeholder={selectedList.length < 1 && placeholder}
+          // placeholder={value.length < 1 && placeholder}
           className={`py-3 ${
             error && "border-danger"
           } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  absolute top-[1.5rem] left-0
@@ -62,8 +60,11 @@ const SizeInput = ({
            `}
         ></input>
         <div className="absolute top-[2rem] left-[0.5rem] flex items-center gap-2 ">
-          {selectedList.map((item, index) => (
-            <div className="bg-gray-300 rounded-[5px] p-1 w-[6rem] flex items-center justify-center relative">
+          {value.map((item, index) => (
+            <div
+              className="bg-gray-300 rounded-[5px] p-1 w-[6rem] flex items-center justify-center relative"
+              key={index}
+            >
               {item}
               <div
                 className="absolute right-[-0.3rem] top-[-0.3rem] bg-primary-200 rounded-[50%] cursor-pointer"
@@ -93,6 +94,7 @@ const SizeInput = ({
         >
           {list.map((item, index) => (
             <div
+              key={index}
               tabIndex={0}
               className={`p-2 ${
                 index !== 0
@@ -101,7 +103,7 @@ const SizeInput = ({
               } bg-white hover:bg-[#F4F4F4]`}
               onClick={() => {
                 setSelectedList((prevData) => [...prevData, item]);
-                setValue([...selectedList, item]);
+                setValue([...value, item]);
                 setShowDropDown(false);
               }}
             >

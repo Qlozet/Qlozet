@@ -38,6 +38,7 @@ const AddProduct = () => {
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentVariantColor, setCurrentVariantColor] = useState("");
+  const [currentVariantFile, setCurrentVariantFile] = useState("");
   const [files, setFile] = useState([]);
   const [upladedFiles, setUploadeFiles] = useState([]);
   const [variantFiles, setVariantFiles] = useState([]);
@@ -46,13 +47,14 @@ const AddProduct = () => {
     productPrice: "",
     productTag: "",
     description: "",
-    productQuantity: "",
+    productQuantity: "0",
     productCategory: "",
     productType: "",
     discount: "",
     isFeatured: false,
     colors: [],
     images: [],
+    variantSizes: [],
   });
   const [requiredproductFormData, setrequiredproductFormData] = useState({
     productName: false,
@@ -126,24 +128,66 @@ const AddProduct = () => {
     }
   };
 
-  const addToVariantTable = (data) => {
+  const addToVariantTable = async (data) => {
     console.log(data);
-    setCurrentVariantColor(data[0]);
+
+    if (data[0] instanceof File) {
+      console.log("Item is file");
+      const imageUrl = await uploadSingleImage(data[0]);
+      setCurrentVariantFile(imageUrl.secure_url);
+      setCurrentVariantColor("");
+    } else {
+      setProductFormData((prevData) => {
+        return { ...prevData, variantSizes: [] };
+      });
+      setCurrentVariantColor(data[0]);
+      setCurrentVariantFile("");
+    }
   };
 
   const addSizeToVariant = (size) => {
-    console.log(size[0]);
     setVariantTable((prevData) => {
       return [
         ...prevData,
         {
-          color: currentVariantColor,
-          images: ["", "", "", "", ""],
-          sizes: [size[0]],
-          quantity: 2,
+          color: currentVariantFile ? currentVariantFile : currentVariantColor,
+          images: [
+            { asset_id: "", public_id: "", secure_url: "" },
+            { asset_id: "", public_id: "", secure_url: "" },
+            { asset_id: "", public_id: "", secure_url: "" },
+            { asset_id: "", public_id: "", secure_url: "" },
+            { asset_id: "", public_id: "", secure_url: "" },
+          ],
+          prize: productFormData.productPrice,
+          sizes: [size[size.length - 1]],
+          quantity: eval(productFormData.productQuantity),
         },
       ];
     });
+  };
+
+  const removeVariant = (variantIndex) => {
+    setVariantTable(
+      variantTable.filter((item, index) => index !== variantIndex)
+    );
+  };
+
+  const VariantQuantityHandler = (index, action) => {
+    let prevVariantTable = variantTable;
+
+    if (action == "increase") {
+      prevVariantTable[index].quantity = prevVariantTable[index].quantity + 1;
+    } else {
+      prevVariantTable[index].quantity = prevVariantTable[index].quantity - 1;
+    }
+    setVariantTable(prevVariantTable);
+  };
+
+  const priceHandler = (value, index) => {
+    let prevVariantTable = variantTable;
+    prevVariantTable[index].prize = value;
+    console.log(prevVariantTable);
+    setVariantTable(prevVariantTable);
   };
 
   const handleSubmit = async () => {
@@ -153,7 +197,6 @@ const AddProduct = () => {
       productFormData,
       requiredproductFormData
     );
-    console.log(productFormData);
     if (status) {
       try {
         setIsLoading(true);
@@ -171,15 +214,18 @@ const AddProduct = () => {
             retained: upladedFiles,
             deleted: [],
           },
-          variants: {
-            colors: ["#808080", "#FFFF00"],
-            size: "M",
-            quantity: 5,
-            images: {
-              retained: upladedFiles,
-              deleted: [],
-            },
-          },
+          variants: variantTable.map((item) => {
+            let varantItem = {
+              colors: [item.color],
+              size: item.sizes[0],
+              quantity: item.quantity,
+              images: {
+                retained: item.images,
+                deleted: [],
+              },
+            };
+            return varantItem;
+          }),
         };
         const response = !productId
           ? await postRequest("/vendor/products", formData)
@@ -540,25 +586,28 @@ const AddProduct = () => {
                 </div>
                 <div className="w-full">
                   <SizeInput
-                    // placeholder={"Enter product size"}
-                    value={productFormData.productType}
-                    setValue={(data) => {
-                      console.log(data);
-                      addSizeToVariant(data);
+                    value={productFormData.variantSizes}
+                    setValue={(data, index) => {
+                      if (index !== undefined) {
+                        removeVariant(index);
+                      } else {
+                        console.log(index);
+                        addSizeToVariant(data);
+                      }
                       setProductFormData((prevData) => {
-                        return { ...prevData, productType: data };
+                        return { ...prevData, variantSizes: data };
                       });
                       if (data) {
                         setrequiredproductFormData((prevData) => {
-                          return { ...prevData, productType: false };
+                          return { ...prevData, variantSizes: false };
                         });
                       } else {
                         setrequiredproductFormData((prevData) => {
-                          return { ...prevData, productType: true };
+                          return { ...prevData, variantSizes: true };
                         });
                       }
                     }}
-                    error={requiredproductFormData.productType}
+                    error={requiredproductFormData.variantSizes}
                     data={[
                       "Extra small",
                       "Small",
@@ -621,6 +670,8 @@ const AddProduct = () => {
                     data={variantTable}
                     // QuantityHandler={variantQuantityHandler}
                     submitVariantImage={submitVariantImage}
+                    quantityHandler={VariantQuantityHandler}
+                    priceHandler={priceHandler}
                   />
                 </div>
 

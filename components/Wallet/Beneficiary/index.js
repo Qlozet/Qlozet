@@ -8,8 +8,12 @@ import NumberInput from "../../NumberInput";
 import CheckBoxInput from "../../CheckboxInput";
 import SearchInput from "@/components/SearchInput";
 import ArrowRightIcon from "../../../public/assets/svg/forward.svg";
+import { useEffect, useState } from "react";
+import { getRequest } from "@/api/method";
 // import classes from "./index.module.css";
 const Beneficiary = ({ closeModal }) => {
+  const [beneficairy, setBeneficairy] = useState([]);
+
   const dropdownData = [
     {
       text: "Set as default warehouse",
@@ -20,6 +24,34 @@ const Beneficiary = ({ closeModal }) => {
       color: "",
     },
   ];
+
+  const getBeneficiary = async () => {
+    try {
+      const response = await getRequest("/vendor/beneficiaries");
+      console.log(response?.data.beneficiaries);
+      let savedBen = [];
+      if (response?.data) {
+        response?.data?.beneficiaries.map((item) => {
+          setBeneficairy((prevData) => [
+            ...prevData,
+            {
+              bankName: item?.bank,
+              accountNumber: item?.accountNumber,
+              accountName: item?.accountName,
+              amount: `${item?.amount}`,
+              naration: item?.naration,
+              schedulePayment: item?.schedulePayment,
+              billingAddress: false,
+            },
+          ]);
+          clear;
+        });
+      }
+    } catch (error) {}
+  };
+  useEffect(() => {
+    getBeneficiary();
+  }, []);
   return (
     <div className="w-full flex items-center justify-center mt-6 min-h-[50vh]">
       <div className="bg-white p-4 rounded-[12px] w-full lg:w-[35%]  min-h-[80vh] mx-4 lg:mx-0">
@@ -41,50 +73,56 @@ const Beneficiary = ({ closeModal }) => {
             className={`border-dashed border-gray-200 border-t-[1.5px] mt-4 pt-6`}
           >
             <SearchInput placeholder="Search" />
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="flex items-center gap-4">
-                  <div>
-                    <div className=" w-[2rem] h-[2rem] rounded-[50%] bg-[#FF9E57] flex items-center justify-center text-white font-[500] text-[14px]">
-                      JD
-                    </div>
-                  </div>
-                  <div>
-                    <Typography
-                      textColor="text-dark"
-                      textWeight="font-bold"
-                      textSize="text-[14px]"
-                    >
-                      ADEYEMI OLUWATOYOSI ELIZABETH
-                    </Typography>
-                    <div className="flex items-center gap-3">
-                      <Typography
-                        textColor="text-gray-100"
-                        textWeight="font-bold"
-                        textSize="text-[12px]"
-                      >
-                        1289748957
-                      </Typography>
+            {beneficairy.map((item) => {
+              console.log(item);
+              return (
+                <div className="flex items-center justify-between my-4">
+                  <div className="flex items-center">
+                    <div className="flex items-center gap-4">
                       <div>
-                        <div className="w-[.3rem] h-[.3rem] rounded-[50%] bg-gray-200">
-                          {" "}
+                        <div className=" w-[2rem] h-[2rem] rounded-[50%] bg-[#FF9E57] flex items-center justify-center text-white font-[500] text-[14px]">
+                          {item.accountName.slice(0, 2)}
                         </div>
                       </div>
-                      <Typography
-                        textColor="text-gray-100"
-                        textWeight="font-bold"
-                        textSize="text-[12px]"
-                      >
-                        1289748957
-                      </Typography>
+                      <div>
+                        <Typography
+                          textColor="text-dark"
+                          textWeight="font-bold"
+                          textSize="text-[14px]"
+                        >
+                          {item.accountName}
+                        </Typography>
+                        <div className="flex items-center gap-3">
+                          <Typography
+                            textColor="text-gray-100"
+                            textWeight="font-bold"
+                            textSize="text-[12px]"
+                          >
+                            {item.accountNumber}
+                          </Typography>
+                          <div>
+                            <div className="w-[.3rem] h-[.3rem] rounded-[50%] bg-gray-200">
+                              {" "}
+                            </div>
+                          </div>
+                          <Typography
+                            textColor="text-gray-100"
+                            textWeight="font-bold"
+                            textSize="text-[12px]"
+                          >
+                            {item.bankName}
+                          </Typography>
+                        </div>
+                      </div>
                     </div>
                   </div>
+                  <div>
+                    <Image src={ArrowRightIcon} alt="" />
+                  </div>
                 </div>
-              </div>
-              <div>
-                <Image src={ArrowRightIcon} />
-              </div>
-            </div>
+              );
+            })}
+
             <div className="flex items-center justify-end mt-10 gap-4">
               <Button
                 children="Close"

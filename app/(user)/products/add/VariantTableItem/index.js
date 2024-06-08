@@ -3,13 +3,19 @@ import AddQuantity from "../Quantity";
 import AvailableSize from "../AvailableSize";
 import Variant from "../Variant";
 import Image from "next/image";
-import icon from "../../../../../public/assets/svg/image-frame.svg";
 import checkboxIcon from "../../../../../public/assets/svg/checkbox-gray.svg";
 import trashGray from "../../../../../public/assets/svg/trash-gray.svg";
 import Size from "@/components/Size.js";
 import VariantImage from "@/components/Products/VariantImage";
-const VariantTableItem = ({ item, index, QuantityHandler, submitImage }) => {
-  console.log(item.sizes);
+import PriceComp from "../PriceComponent";
+const VariantTableItem = ({
+  item,
+  index,
+  quantityHandler,
+  submitImage,
+  priceHandler,
+}) => {
+  console.log(item);
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
       <td className="text-[12px] font-normal px-4 py-3 text-dark border-solid border-r-[1px] border-gray-300 flex items-center gap-2">
@@ -17,10 +23,18 @@ const VariantTableItem = ({ item, index, QuantityHandler, submitImage }) => {
         <Size value={item.sizes[0]} />
       </td>
       <td className="text-[12px] font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
-        <AddQuantity QuantityHandler={QuantityHandler} />
+        <AddQuantity
+          quantityHandler={quantityHandler}
+          quantity={item.quantity}
+          listIndex={index}
+        />
       </td>
       <td className="text-[12px] font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
-        <AvailableSize />
+        <PriceComp
+          listIndex={index}
+          productAmount={item.prize}
+          priceHandler={priceHandler}
+        />
       </td>
       <td className="text-[12px] font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
         <div className="flex items-center gap-3">

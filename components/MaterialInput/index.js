@@ -33,7 +33,7 @@ const MaterialInput = ({
         <div
           className={` ${classes.scrollbarElement} flex items-center gap-4 h-full pl-4`}
         >
-          {files.map((item) => {
+          {files.map((item, index) => {
             console.log(item);
             let dataUrl;
             if (typeof item === "string") {
@@ -42,7 +42,7 @@ const MaterialInput = ({
               dataUrl = URL.createObjectURL(item);
             }
             return (
-              <div>
+              <div key={index}>
                 <Image
                   width={500}
                   height={500}

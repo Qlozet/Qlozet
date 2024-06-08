@@ -1,7 +1,13 @@
 import ExportComponent from "@/components/ExportButton";
 import VariantTableItem from "../VariantTableItem";
 
-const VariantTable = ({ data, QuantityHandler, submitVariantImage }) => {
+const VariantTable = ({
+  data,
+  QuantityHandler,
+  submitVariantImage,
+  quantityHandler,
+  priceHandler = { priceHandler },
+}) => {
   return (
     <div className="mt-4 min-h-[50vh] ">
       <table className="w-full shadow py-4">
@@ -19,7 +25,7 @@ const VariantTable = ({ data, QuantityHandler, submitVariantImage }) => {
             </th>
             <th className="w-[25%] p-4 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
-                Available Sizes
+                Price
               </div>
             </th>
             <th className="w-[35%] p-4 text-[12px] min-w-[17rem]">
@@ -43,6 +49,8 @@ const VariantTable = ({ data, QuantityHandler, submitVariantImage }) => {
               item={item}
               index={index}
               submitImage={submitVariantImage}
+              quantityHandler={quantityHandler}
+              priceHandler={priceHandler}
               //   viewDetails={viewDetails}
               //   showRejectModal={showRejectModal}
             />

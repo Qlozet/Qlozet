@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import DashboardTopCard from "@/components/DashboardTopCard";
 import SideBar from "@/components/SideBar";
@@ -13,71 +13,16 @@ import OrderHistory from "@/components/Customer/OrderHistory";
 import CustomerTable from "@/components/Customer/CustomerTable";
 import MobileSideBar from "@/components/MobileSideBar";
 import classes from "./index.module.css";
+import { getRequest } from "@/api/method";
 const Customer = () => {
-  const [dropDownValue, setDropDownValue] = useState("");
   const [viewCustomerDetails, setCustomerDetails] = useState(false);
   const [showHostory, setShowHistory] = useState(false);
-
-  const data = [
-    {
-      location: "Warri",
-      total: "w-[70%]",
-      percentage: "w-[50%]",
-    },
-    {
-      location: "Benin",
-      total: "w-[60%]",
-      percentage: "w-[53%]",
-    },
-    {
-      location: "Aba",
-      total: "w-[44%]",
-      percentage: "w-[40%]",
-    },
-    {
-      location: "Aba",
-      total: "w-[44%]",
-      percentage: "w-[40%]",
-    },
-  ];
-
-  const dropdownData = [
-    {
-      text: "View vendor’s details",
-      color: "",
-    },
-    {
-      text: "View vendor’s ",
-      color: "",
-    },
-    {
-      text: "vendor’s details",
-      color: "",
-    },
-  ];
-  const chartData = {
-    labels: ["Male", "Female"],
-    values: [12, 19],
-    colors: ["#3E1C01", "#9C8578"],
-    borderAlign: "center",
-  };
+  const [custmers, setCustomers] = useState([]);
 
   const [showMobileNav, setShowMobileNav] = useState(false);
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
   };
-
-  const tableData = [
-    {
-      date: "My name iss",
-      orderId: "My name iss",
-      productName: "My name iss",
-      productPrice: "12222",
-      CustomerName: "My name iss",
-      AmountPaid: "My name iss",
-      DeliveryStatus: "My name iss",
-    },
-  ];
   const closeModal = () => {
     setCustomerDetails(false);
     setShowHistory(false);
@@ -106,6 +51,35 @@ const Customer = () => {
       },
     },
   ];
+
+  const getCustomers = async () => {
+    try {
+      let response = await getRequest("/vendor/customers");
+      let Customers = [];
+
+      if (response.data) {
+        response?.data?.data.map((item) => {
+          const customer = {
+            picture: "",
+            customerName: "",
+            status: item.status,
+            totalOrders: item.totalOrders,
+            lastOrderDate: item.lastOrderDate,
+            phone: item.phoneNumber,
+            emailAddress: item.email,
+          };
+          Customers.push(customer);
+        });
+        setCustomers(Customers);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getCustomers();
+  }, []);
   return (
     <div className="flex bg-[#F8F9FA]">
       <div className="">
@@ -166,7 +140,7 @@ const Customer = () => {
           </div>
           <div className="lg:block hidden">
             {" "}
-            <CustomerTable data={tableData} showModal={showModal} />
+            <CustomerTable data={custmers} showModal={showModal} />
           </div>
         </div>
       </div>

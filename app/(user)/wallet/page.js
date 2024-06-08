@@ -183,12 +183,12 @@ const Wallet = () => {
         });
         setTransactionData(transactionDataArray);
       } else {
-        toast(<Toast text={response.message} type="danger" />);
+        // toast(<Toast text={response.message} type="danger" />);
       }
     } catch (error) {
       console.log(error);
       error?.message && toast(<Toast text={error?.message} type="danger" />);
-      error?.data && toast(<Toast text={error?.data} type="danger" />);
+      // error?.data && toast(<Toast text={error?.data} type="danger" />);
     }
   };
 

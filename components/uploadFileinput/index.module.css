@@ -10,7 +10,7 @@
 }
 
 .scrollbarElement::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
   border-radius: 50px;
   max-width: 90%;
 }

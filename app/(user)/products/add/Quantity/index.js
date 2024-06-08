@@ -1,9 +1,16 @@
 import Typography from "@/components/Typography";
-
-const AddQuantity = ({QuantityHandler,quantity}) => {
+import { useState } from "react";
+const AddQuantity = ({ quantityHandler, quantity, listIndex }) => {
+  const [qty, setQty] = useState(quantity);
   return (
     <div className="flex items-center py-1 px-4 rounded-[6px] justify-between border-[1px] border-solid border-gray-300">
-      <div>
+      <div
+        className="cursor-pointer"
+        onClick={() => {
+          setQty(qty - 1);
+          quantityHandler(listIndex, "decrease");
+        }}
+      >
         <Typography
           textColor="text-primary"
           textWeight="font-[500]"
@@ -18,10 +25,16 @@ const AddQuantity = ({QuantityHandler,quantity}) => {
           textWeight="font-[500]"
           textSize="text-[16px]"
         >
-          0
+          {qty}
         </Typography>
       </div>
-      <div>
+      <div
+        className="cursor-pointer"
+        onClick={() => {
+          setQty(qty + 1);
+          quantityHandler(listIndex, "increase");
+        }}
+      >
         <Typography
           textColor="text-primary"
           textWeight="font-[500]"

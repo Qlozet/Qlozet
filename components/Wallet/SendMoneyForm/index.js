@@ -7,10 +7,14 @@ import SelectInput from "../../SelectInput";
 import NumberInput from "../../NumberInput";
 import CheckBoxInput from "../../CheckboxInput";
 import { useEffect, useState } from "react";
-import { getRequest } from "@/api/method";
+import { getRequest, postRequest } from "@/api/method";
+import Toast from "@/components/ToastComponent/toast";
+import toast from "react-hot-toast";
 // import classes from "./index.module.css";
 const SendMoneyForm = ({ closeModal, banks }) => {
   const [fetchingAccountName, setFetchingAccountName] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(false);
   const [formData, setFormData] = useState({
     bankName: "",
     accountNumber: "",
@@ -20,6 +24,7 @@ const SendMoneyForm = ({ closeModal, banks }) => {
     schedulePayment: "",
     billingAddress: false,
   });
+
   const [requiredFormData, setRequiredFormData] = useState({
     bankName: false,
     accountNumber: false,
@@ -29,6 +34,23 @@ const SendMoneyForm = ({ closeModal, banks }) => {
     schedulePayment: false,
   });
   const [bankCode, setBankCode] = useState("");
+  const addBeneficiary = async () => {
+    try {
+      console.log(formData);
+      const response = await postRequest("/vendor/beneficiaries", {
+        bank: formData.bankName,
+        accountNumber: formData.accountNumber,
+        accountName: formData.accountName,
+        amount: formData.amount,
+        naration: formData.naration,
+        schedulePayment: formData.schedulePayment,
+      });
+      if (response.data) {
+        closeModal("");
+        toast(<Toast text={response?.message} type="success" />);
+      }
+    } catch (error) {}
+  };
 
   const getUserAccountName = async () => {
     if (formData.accountNumber.length === 10) {
@@ -51,19 +73,6 @@ const SendMoneyForm = ({ closeModal, banks }) => {
     }
   };
   useEffect(() => {
-    // getAccountName();
-    // try {
-    //   console.log("reufn");
-    //   const response = await getRequest(
-    //     `/vendor/transfer/name-enquiry?bankCode=${bankCode}&accountNumber=${formData.accountNumber}`
-    //   );
-    //   console.log("check");
-    //   if (response?.data) {
-    //   } else {
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
     getUserAccountName();
   }, [formData.accountNumber]);
   return (
@@ -131,7 +140,6 @@ const SendMoneyForm = ({ closeModal, banks }) => {
               error={requiredFormData.accountNumber}
               value={formData.accountNumber}
               isLoading={fetchingAccountName}
-
             />
 
             <TextInput
@@ -214,15 +222,17 @@ const SendMoneyForm = ({ closeModal, banks }) => {
               error={requiredFormData.schedulePayment}
               value={formData.schedulePayment}
             />
-            <CheckBoxInput label="Billing address same as company details" />
+            <CheckBoxInput label="Save recipient as beneficiary" />
+
             <div className="flex items-center justify-end mt-10">
               <Button
+                loading={isLoading}
                 children="Continue"
                 btnSize="large"
                 variant="primary"
                 maxWidth="max-w-[8rem]"
                 clickHandler={() => {
-                  getUserAccountName();
+                  addBeneficiary();
                 }}
               />
             </div>

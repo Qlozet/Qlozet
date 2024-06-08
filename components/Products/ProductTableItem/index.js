@@ -29,7 +29,7 @@ const ProductTableItem = ({
     handleSelect(item);
   };
   return (
-    <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
+    <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white relative">
       <td className="text-[12px] font-normal p-4 text-dark">
         <Image
           width={500}
