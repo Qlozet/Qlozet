@@ -1,13 +1,14 @@
+import moment from "moment";
 import Typography from "../../Typography";
 
-const Notification = ({ shipped }) => {
+const Notification = ({ read, title, desc, date }) => {
   return (
     <div className="block lg:flex items-center justify-between border-b-[1px] border-solid border-gray-300 py-4 px-6">
       <div className="flex items-center gap-2">
         <div className="flex items-start">
           <div
             className={`w-[1rem] h-[1rem] ${
-              shipped ? "bg-dark" : "bg-[#DDE2E5]"
+              read ? "bg-dark" : "bg-[#DDE2E5]"
             }  rounded-[50%] `}
           ></div>
         </div>
@@ -18,15 +19,14 @@ const Notification = ({ shipped }) => {
             textWeight="font-bold"
             textSize="text-[18px]"
           >
-            Order Shipped
+            {title}
           </Typography>
           <Typography
             textColor="text-primary"
             textWeight="font-normal"
             textSize="text-[14px]"
           >
-            Amasi’s dress has been shipped to 15b, Kenny street, Lagos Nigeria
-            to Doyin Oyinkansola
+            {desc}
           </Typography>
         </div>
       </div>
@@ -36,7 +36,7 @@ const Notification = ({ shipped }) => {
           textWeight="font-normal"
           textSize="text-[14px]"
         >
-          May 25, 2023 . 12:25pm
+          {moment(date).format("DD/MM/YYYY")}
         </Typography>
       </div>
     </div>

@@ -6,7 +6,8 @@ import FileInput from "../../uploadFileinput/UploadFileInput";
 import userIcon from "../../../public/assets/svg/Frame.svg";
 import Typography from "@/components/Typography";
 import DashedComponent from "@/components/DashedComponent";
-const CompanyDetails = () => {
+const CompanyDetails = ({ shopDetails }) => {
+  console.log(shopDetails);
   return (
     <div className=" w-full mx-0 lg:mx-2 py-2 lg:bg-white">
       <div className="block items-center justify-center lg:hidden p-4 shadow my-4 rounded-[12px] bg-white">
@@ -56,6 +57,7 @@ const CompanyDetails = () => {
             <TextInput
               label="Company name"
               placeholder="Company name"
+              value={shopDetails.companyName}
               setValue={(data) => {}}
             />{" "}
           </div>
@@ -63,6 +65,7 @@ const CompanyDetails = () => {
             <TextInput
               label="Address line 1"
               placeholder="Address line 1"
+              value={shopDetails.addressLine1}
               setValue={(data) => {}}
             />
           </div>
@@ -70,6 +73,7 @@ const CompanyDetails = () => {
             <TextInput
               label="Address line 2"
               placeholder="Enter Address line 2"
+              value={shopDetails.addressLine2}
               setValue={(data) => {}}
             />
           </div>
@@ -80,10 +84,12 @@ const CompanyDetails = () => {
               label="State"
               placeholder="Enter State"
               setValue={(data) => {}}
+              value={shopDetails.state}
             />{" "}
           </div>
           <div className="w-full">
             <TextInput
+              value={shopDetails.country}
               label="Country"
               placeholder="EnterCountry"
               setValue={(data) => {}}
@@ -102,6 +108,7 @@ const CompanyDetails = () => {
             <TextInput
               label="City"
               placeholder="Enter City"
+              value={shopDetails.city}
               setValue={(data) => {}}
             />{" "}
           </div>
@@ -110,13 +117,15 @@ const CompanyDetails = () => {
               label="Phone number"
               placeholder="EnterPhone number"
               setValue={(data) => {}}
-            />{" "}
+              value={shopDetails.Phone}
+            />
           </div>
           <div className="w-full">
             <TextInput
               label="Email address"
               placeholder="Enter Email address"
               setValue={(data) => {}}
+              value={shopDetails.email}
             />
           </div>
         </div>
@@ -127,13 +136,15 @@ const CompanyDetails = () => {
               label="BVN"
               placeholder="Enter BVN"
               setValue={(data) => {}}
-            />{" "}
+              value={shopDetails.bvn}
+            />
           </div>
           <div className="w-full">
             <TextInput
               label="NIN"
               placeholder="Enter NIN"
               setValue={(data) => {}}
+              value={shopDetails.nin}
             />{" "}
           </div>
           <div className="w-full"></div>

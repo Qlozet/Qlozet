@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import SideBar from "@/components/SideBar";
 import OrderDetailNav from "@/components/order/OrderdetailsNav";
@@ -13,9 +13,26 @@ import Shipping from "@/components/Settings/Shipping/Shipping";
 import UserAndPermission from "@/components/Settings/UserAndPermission/UserAndPermssion";
 import Category from "@/components/Settings/Category/Category";
 import MobileSideBar from "@/components/MobileSideBar";
+import { getRequest } from "@/api/method";
+import Loader from "@/components/Loader";
 
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
+  const [pageLoading, setPageLoading] = useState(true);
+  const [shopDetails, setShopDetails] = useState({
+    companyName: "",
+    addressLine1: "",
+    addressLine2: "",
+    state: "",
+    timeZone: "",
+    Phone: "",
+    email: "",
+    city: "",
+    nin: "",
+    bvn: "",
+    logo: [""],
+    cacDocs: [""],
+  });
   const [showCompanyDetails, setShowComapanyDetails] = useState(false);
   const [showBillingAndInvioce, setShowBillingAndInvioce] = useState(false);
   const [showWarehouse, setShowWarehouse] = useState(false);
@@ -115,41 +132,82 @@ const Dashboard = () => {
     },
   ];
 
+  const getNotification = async () => {
+    try {
+      let response = await getRequest("/vendor/settings");
+      let vandorInfo = [];
+
+      if (response?.data) {
+        console.log(response?.data?.data);
+        setPageLoading(false);
+        setShopDetails({
+          companyName: response?.data?.data?.businessName,
+          addressLine1: response?.data?.data?.addressLine2,
+          state: response?.data?.data.state,
+          timeZone: response?.data?.data,
+          Phone: response?.data?.data?.businessPhoneNumber,
+          email: response?.data?.data?.businessEmail,
+          city: response?.data?.data?.city,
+          country: response?.data?.data?.country,
+          nin: response?.data?.data?.nin,
+          bvn: response?.data?.data?.bvn,
+          logo: [""],
+          cacDocs: [""],
+        });
+      } else {
+        toast(<Toast text={response.message} type="danger" />);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getNotification();
+  }, []);
+
   return (
-    <div className="flex bg-[#F8F9FA]">
-      <div className="">
-        <SideBar active="Settings" />
-        <MobileSideBar
-          showMobileNav={showMobileNav}
-          active="Settings"
-          closeSideBar={showSideBar}
-        />
-      </div>
-      <div className="w-full p-4">
-        <DasboardNavWithOutSearch
-          addSearch={false}
-          name="Settings"
-          setValue={(data) => {
-            // console.log(data);
-          }}
-          showSideBar={showSideBar}
-        />
-        <div className="mt-4">
-          <OrderDetailNav
-            bg="bg"
-            data={topNavData}
-            width="w-full"
-            active={currentNav}
-            full={true}
-          />
+    <div>
+      {pageLoading ? (
+        <Loader></Loader>
+      ) : (
+        <div className="flex bg-[#F8F9FA]">
+          <div className="">
+            <SideBar active="Settings" />
+            <MobileSideBar
+              showMobileNav={showMobileNav}
+              active="Settings"
+              closeSideBar={showSideBar}
+            />
+          </div>
+          <div className="w-full p-4">
+            <DasboardNavWithOutSearch
+              addSearch={false}
+              name="Settings"
+              setValue={(data) => {
+                // console.log(data);
+              }}
+              showSideBar={showSideBar}
+            />
+            <div className="mt-4">
+              <OrderDetailNav
+                bg="bg"
+                data={topNavData}
+                width="w-full"
+                active={currentNav}
+                full={true}
+              />
+            </div>
+            {currentNav === "Shop details" && (
+              <CompanyDetails shopDetails={shopDetails} />
+            )}
+            {currentNav === "Billing and invoice" && <BillingAndInvioce />}
+            {currentNav === "Warehouses" && <Warehouse />}
+            {currentNav === "Shipping partners" && <Shipping />}
+            {currentNav === "Users and permissions" && <UserAndPermission />}
+            {currentNav === "Categories" && <Category />}
+          </div>
         </div>
-        {currentNav === "Shop details" && <CompanyDetails />}
-        {currentNav === "Billing and invoice" && <BillingAndInvioce />}
-        {currentNav === "Warehouses" && <Warehouse />}
-        {currentNav === "Shipping partners" && <Shipping />}
-        {currentNav === "Users and permissions" && <UserAndPermission />}
-        {currentNav === "Categories" && <Category />}
-      </div>
+      )}
     </div>
   );
 };
