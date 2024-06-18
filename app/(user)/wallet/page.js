@@ -37,67 +37,6 @@ const Wallet = () => {
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
   };
-  const data = [
-    {
-      location: "Warri",
-      total: "w-[70%]",
-      percentage: "w-[50%]",
-    },
-    {
-      location: "Benin",
-      total: "w-[60%]",
-      percentage: "w-[53%]",
-    },
-    {
-      location: "Aba",
-      total: "w-[44%]",
-      percentage: "w-[40%]",
-    },
-    {
-      location: "Aba",
-      total: "w-[44%]",
-      percentage: "w-[40%]",
-    },
-  ];
-
-  const dropdownData = [
-    {
-      text: "This week",
-      color: "",
-    },
-    {
-      text: "Last week",
-      color: "",
-    },
-    {
-      text: "Last month",
-      color: "",
-    },
-    {
-      text: "This month",
-      color: "",
-    },
-    {
-      text: "Choose month",
-      color: "",
-    },
-    {
-      text: "Custom",
-      color: "",
-    },
-  ];
-  const chartData = {
-    labels: ["Male", "Female"],
-    values: [12, 19],
-    colors: ["#3E1C01", "#9C8578"],
-    borderAlign: "center",
-  };
-  const closeModal = () => {
-    setOrderDetails(false);
-    setShowTrack(false);
-    setShowCustomer(false);
-    setShowReject(false);
-  };
 
   const showRejectModal = () => {
     setOrderDetails(false);
@@ -106,35 +45,6 @@ const Wallet = () => {
     setShowReject(true);
   };
 
-  const topNavData = [
-    {
-      item: "Order details",
-      link: "",
-      handleFunction: () => {
-        setOrderDetails(true);
-        setShowTrack(false);
-        setShowCustomer(false);
-      },
-    },
-    {
-      item: "Track order",
-      link: "",
-      handleFunction: () => {
-        setShowTrack(true);
-        setOrderDetails(false);
-        setShowCustomer(false);
-      },
-    },
-    {
-      item: "Customer details",
-      link: "",
-      handleFunction: () => {
-        setShowTrack(false);
-        setOrderDetails(false);
-        setShowCustomer(true);
-      },
-    },
-  ];
   const getWalletBalance = async () => {
     try {
       const response = await getRequest("/vendor/wallet/balance");
@@ -157,6 +67,7 @@ const Wallet = () => {
       response?.data && setLoadPage(false);
       if (response?.data) {
         response?.data?.data.map((item) => {
+          console.log(item);
           let status;
           if ((item.status = "Successful")) {
             status = {
@@ -172,9 +83,9 @@ const Wallet = () => {
             };
           }
           const transactionItem = {
+            transactionId: item?.transactionId,
             amount: item?.amount,
             date: item?.date,
-            transactionId: item.id,
             narration: item.narration,
             status: status,
             transactionType: item.transType,

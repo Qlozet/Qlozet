@@ -8,7 +8,7 @@ const OrderTableItem = ({
   orderId,
   productName,
   productPrice,
-  CustomerName,
+  customerName,
   AmountPaid,
   DeliveryStatus,
   viewDetails,
@@ -19,7 +19,7 @@ const OrderTableItem = ({
       <td className="text-[12px] font-normal p-4 text-dark">{orderId}</td>
       <td className="text-[12px] font-normal p-4 text-dark">{productName}</td>
       <td className="text-[12px] font-normal p-4 text-dark">{productPrice}</td>
-      <td className="text-[12px] font-normal p-4 text-dark">{CustomerName}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">{customerName}</td>
       <td className="text-[12px] font-normal p-4 text-dark">{AmountPaid}</td>
       <td className="text-[12px] font-normal p-4 text-dark">
         <OrderStatus
@@ -29,14 +29,15 @@ const OrderTableItem = ({
           addMaxWidth={true}
         />
       </td>
-
       <td className="text-[12px] font-normal p-4 text-dark ">
-        <div className="border rounded-[12px] ">
+        <div className="border rounded-[5px] ">
           <OrderStatus
             text="View details"
             color="text-[#3E1C01]"
             addMaxWidth={true}
-            clickHandler={viewDetails}
+            clickHandler={() => {
+              viewDetails(orderId);
+            }}
           />
         </div>
       </td>

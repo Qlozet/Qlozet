@@ -19,7 +19,7 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
                 Date
               </div>
             </th>
-            <th className="w-[8%] px-2 py-4 text-[12px]">
+            <th className="w-[5%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
                 Order ID{" "}
               </div>
@@ -34,7 +34,7 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
                 Product price
               </div>
             </th>
-            <th className="w-[8%] px-2 py-4 text-[12px]">
+            <th className="w-[10%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
                 Customer name
               </div>
@@ -49,7 +49,7 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
                 Delivery Status
               </div>
             </th>
-            <th className="w-[8%] px-2 py-4 text-[12px]">
+            <th className="w-[10%] px-2 py-4 text-[12px]">
               <ExportComponent />
             </th>
           </tr>
@@ -72,11 +72,11 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
               <SearchInput placeholder="Search" />
             </div>
             <div className="flex items-center justify-center">
-              <Image src={icon} />
+              <Image src={icon} alt="" />
             </div>
             <div className="flex items-center justify-center">
               <div className="w-[3rem] h-[3rem] bg-primary rounded-[12px] flex items-center justify-center">
-                <Image src={exportIcon} />
+                <Image src={exportIcon} alt="" />
               </div>
             </div>
           </div>

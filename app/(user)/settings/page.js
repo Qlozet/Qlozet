@@ -6,16 +6,14 @@ import OrderDetailNav from "@/components/order/OrderdetailsNav";
 import CompanyDetails from "@/components/Settings/companyDetails/companyDetails";
 import BillingAndInvioce from "@/components/Settings/BillingAndInvioceInfo";
 import Warehouse from "@/components/Settings/Warehouse/Warehouse";
-import Modal from "@/components/Modal";
 import classes from "./index.module.css";
-import AddNewWarehouseForm from "@/components/Settings/Warehouse/AddNewWarehouseForm";
 import Shipping from "@/components/Settings/Shipping/Shipping";
 import UserAndPermission from "@/components/Settings/UserAndPermission/UserAndPermssion";
 import Category from "@/components/Settings/Category/Category";
 import MobileSideBar from "@/components/MobileSideBar";
-import { getRequest } from "@/api/method";
+import { getRequest, postRequest, putRequest } from "@/api/method";
 import Loader from "@/components/Loader";
-
+import { settingNav } from "@/utils/navdata";
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [pageLoading, setPageLoading] = useState(true);
@@ -28,10 +26,26 @@ const Dashboard = () => {
     Phone: "",
     email: "",
     city: "",
+    country: "",
     nin: "",
     bvn: "",
     logo: [""],
     cacDocs: [""],
+  });
+  const [requiredShopDetails, setRequiredShopDetails] = useState({
+    companyName: false,
+    addressLine1: false,
+    addressLine2: false,
+    state: false,
+    timeZone: false,
+    Phone: false,
+    email: false,
+    city: false,
+    country: false,
+    nin: false,
+    bvn: false,
+    logo: false,
+    cacDocs: false,
   });
   const [showCompanyDetails, setShowComapanyDetails] = useState(false);
   const [showBillingAndInvioce, setShowBillingAndInvioce] = useState(false);
@@ -41,10 +55,8 @@ const Dashboard = () => {
   const [showCategory, setShowCategory] = useState(false);
   const [currentNav, setCurrentNav] = useState("Shop details");
   const [showMobileNav, setShowMobileNav] = useState(false);
-  const showSideBar = () => {
-    setShowMobileNav(!showMobileNav);
-  };
-  const topNavData = [
+
+  const settingNav = [
     {
       item: "Shop details",
       link: "",
@@ -90,20 +102,6 @@ const Dashboard = () => {
       },
     },
     {
-      item: "Shipping partners",
-      link: "",
-      navWidth: "min-w-[10rem] lg:min-w-w-[0]",
-      handleFunction: (data) => {
-        setCurrentNav(data);
-        setShowComapanyDetails(false);
-        setShowBillingAndInvioce(false);
-        setShowWarehouse(false);
-        setShowShippingPatners(true);
-        setShowUserAndPermission(false);
-        setShowCategory(false);
-      },
-    },
-    {
       item: "Users and permissions",
       link: "",
       navWidth: "min-w-[13rem] lg:min-w-w-[0]",
@@ -131,12 +129,35 @@ const Dashboard = () => {
       },
     },
   ];
+  const showSideBar = () => {
+    setShowMobileNav(!showMobileNav);
+  };
 
-  const getNotification = async () => {
+  const submitCompanyInfo = async () => {
     try {
-      let response = await getRequest("/vendor/settings");
-      let vandorInfo = [];
+      const response = await putRequest("/vendor/settings", {
+        businessName: shopDetails.companyName,
+        businessAddress: shopDetails.addressLine1,
+        businessPhoneNumber: shopDetails.Phone,
+        businessEmail: shopDetails.email,
+        addressLine2: shopDetails.addressLine2,
+        state: shopDetails.state,
+        country: shopDetails.country,
+        timeZone: shopDetails.timeZone,
+        city: shopDetails.city,
+        bvn: shopDetails.bvn,
+        nin: shopDetails.nin,
+      });
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  const getCompanyInfo = async () => {
+    try {
+      let response = await getRequest("/vendor/settings/vendor-details");
+      let vandorInfo = [];
       if (response?.data) {
         console.log(response?.data?.data);
         setPageLoading(false);
@@ -162,7 +183,7 @@ const Dashboard = () => {
     }
   };
   useEffect(() => {
-    getNotification();
+    getCompanyInfo();
   }, []);
 
   return (
@@ -183,26 +204,30 @@ const Dashboard = () => {
             <DasboardNavWithOutSearch
               addSearch={false}
               name="Settings"
-              setValue={(data) => {
-                // console.log(data);
-              }}
+              setValue={(data) => {}}
               showSideBar={showSideBar}
             />
             <div className="mt-4">
               <OrderDetailNav
                 bg="bg"
-                data={topNavData}
+                data={settingNav}
                 width="w-full"
                 active={currentNav}
                 full={true}
               />
             </div>
             {currentNav === "Shop details" && (
-              <CompanyDetails shopDetails={shopDetails} />
+              <CompanyDetails
+                shopDetails={shopDetails}
+                setShopDetails={setShopDetails}
+                requiredShopDetails={requiredShopDetails}
+                setRequiredShopDetails={setRequiredShopDetails}
+                submitCompanyInfo={submitCompanyInfo}
+              />
             )}
             {currentNav === "Billing and invoice" && <BillingAndInvioce />}
             {currentNav === "Warehouses" && <Warehouse />}
-            {currentNav === "Shipping partners" && <Shipping />}
+            {/* {currentNav === "Shipping partners" && <Shipping />} */}
             {currentNav === "Users and permissions" && <UserAndPermission />}
             {currentNav === "Categories" && <Category />}
           </div>

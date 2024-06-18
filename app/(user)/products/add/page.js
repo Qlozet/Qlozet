@@ -160,7 +160,7 @@ const AddProduct = () => {
           ],
           prize: productFormData.productPrice,
           sizes: [size[size.length - 1]],
-          quantity: eval(productFormData.productQuantity),
+          quantity: productFormData.productQuantity,
         },
       ];
     });

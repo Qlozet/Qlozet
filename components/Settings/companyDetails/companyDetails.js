@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Image from "next/image";
 import Button from "../../Button";
 import NumberInput from "../../NumberInput";
@@ -6,8 +7,15 @@ import FileInput from "../../uploadFileinput/UploadFileInput";
 import userIcon from "../../../public/assets/svg/Frame.svg";
 import Typography from "@/components/Typography";
 import DashedComponent from "@/components/DashedComponent";
-const CompanyDetails = ({ shopDetails }) => {
+const CompanyDetails = ({
+  shopDetails,
+  setShopDetails,
+  requiredShopDetails,
+  setRequiredShopDetails,
+  submitCompanyInfo,
+}) => {
   console.log(shopDetails);
+
   return (
     <div className=" w-full mx-0 lg:mx-2 py-2 lg:bg-white">
       <div className="block items-center justify-center lg:hidden p-4 shadow my-4 rounded-[12px] bg-white">
@@ -58,15 +66,43 @@ const CompanyDetails = ({ shopDetails }) => {
               label="Company name"
               placeholder="Company name"
               value={shopDetails.companyName}
-              setValue={(data) => {}}
-            />{" "}
+              setValue={(data) => {
+                setShopDetails((prevData) => {
+                  return { ...prevData, companyName: data };
+                });
+                if (data) {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, companyName: false };
+                  });
+                } else {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, companyName: true };
+                  });
+                }
+              }}
+              error={requiredShopDetails.companyName}
+            />
           </div>
           <div className="w-full">
             <TextInput
               label="Address line 1"
               placeholder="Address line 1"
               value={shopDetails.addressLine1}
-              setValue={(data) => {}}
+              setValue={(data) => {
+                setShopDetails((prevData) => {
+                  return { ...prevData, addressLine1: data };
+                });
+                if (data) {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, addressLine1: false };
+                  });
+                } else {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, addressLine1: true };
+                  });
+                }
+              }}
+              error={requiredShopDetails.addressLine1}
             />
           </div>
           <div className="w-full">
@@ -74,7 +110,21 @@ const CompanyDetails = ({ shopDetails }) => {
               label="Address line 2"
               placeholder="Enter Address line 2"
               value={shopDetails.addressLine2}
-              setValue={(data) => {}}
+              setValue={(data) => {
+                setShopDetails((prevData) => {
+                  return { ...prevData, addressLine2: data };
+                });
+                if (data) {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, addressLine2: false };
+                  });
+                } else {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, addressLine2: true };
+                  });
+                }
+              }}
+              error={requiredShopDetails.addressLine2}
             />
           </div>
         </div>
@@ -83,7 +133,21 @@ const CompanyDetails = ({ shopDetails }) => {
             <TextInput
               label="State"
               placeholder="Enter State"
-              setValue={(data) => {}}
+              setValue={(data) => {
+                setShopDetails((prevData) => {
+                  return { ...prevData, state: data };
+                });
+                if (data) {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, state: false };
+                  });
+                } else {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, state: true };
+                  });
+                }
+              }}
+              error={requiredShopDetails.state}
               value={shopDetails.state}
             />{" "}
           </div>
@@ -92,14 +156,42 @@ const CompanyDetails = ({ shopDetails }) => {
               value={shopDetails.country}
               label="Country"
               placeholder="EnterCountry"
-              setValue={(data) => {}}
+              setValue={(data) => {
+                setShopDetails((prevData) => {
+                  return { ...prevData, country: data };
+                });
+                if (data) {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, country: false };
+                  });
+                } else {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, country: true };
+                  });
+                }
+              }}
+              error={requiredShopDetails.country}
             />{" "}
           </div>
           <div className="w-full">
             <TextInput
               label="Timezone"
               placeholder="Timezone Timezone"
-              setValue={(data) => {}}
+              setValue={(data) => {
+                setShopDetails((prevData) => {
+                  return { ...prevData, country: data };
+                });
+                if (data) {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, country: false };
+                  });
+                } else {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, country: true };
+                  });
+                }
+              }}
+              error={requiredShopDetails.country}
             />
           </div>
         </div>
@@ -109,14 +201,28 @@ const CompanyDetails = ({ shopDetails }) => {
               label="City"
               placeholder="Enter City"
               value={shopDetails.city}
-              setValue={(data) => {}}
+              setValue={(data) => {
+                setShopDetails((prevData) => {
+                  return { ...prevData, Phone: data };
+                });
+                if (data) {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, Phone: false };
+                  });
+                } else {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, Phone: true };
+                  });
+                }
+              }}
+              error={requiredShopDetails.Phone}
             />{" "}
           </div>
           <div className="w-full">
             <NumberInput
               label="Phone number"
               placeholder="EnterPhone number"
-              setValue={(data) => {}}
+              city
               value={shopDetails.Phone}
             />
           </div>
@@ -124,18 +230,45 @@ const CompanyDetails = ({ shopDetails }) => {
             <TextInput
               label="Email address"
               placeholder="Enter Email address"
-              setValue={(data) => {}}
+              setValue={(data) => {
+                setShopDetails((prevData) => {
+                  return { ...prevData, email: data };
+                });
+                if (data) {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, email: false };
+                  });
+                } else {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, email: true };
+                  });
+                }
+              }}
+              error={requiredShopDetails.email}
               value={shopDetails.email}
             />
           </div>
         </div>
         <div className="block lg:flex items-center justify-between gap-6 mx-2">
           <div className="w-full">
-            {" "}
             <TextInput
               label="BVN"
               placeholder="Enter BVN"
-              setValue={(data) => {}}
+              setValue={(data) => {
+                setShopDetails((prevData) => {
+                  return { ...prevData, bvn: data };
+                });
+                if (data) {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, bvn: false };
+                  });
+                } else {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, bvn: true };
+                  });
+                }
+              }}
+              error={requiredShopDetails.bvn}
               value={shopDetails.bvn}
             />
           </div>
@@ -143,9 +276,23 @@ const CompanyDetails = ({ shopDetails }) => {
             <TextInput
               label="NIN"
               placeholder="Enter NIN"
-              setValue={(data) => {}}
+              setValue={(data) => {
+                setShopDetails((prevData) => {
+                  return { ...prevData, nin: data };
+                });
+                if (data) {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, nin: false };
+                  });
+                } else {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, nin: true };
+                  });
+                }
+              }}
+              error={requiredShopDetails.nin}
               value={shopDetails.nin}
-            />{" "}
+            />
           </div>
           <div className="w-full"></div>
           <div></div>
@@ -183,7 +330,7 @@ const CompanyDetails = ({ shopDetails }) => {
             variant="primary"
             maxWidth="max-w-[10rem]"
             clickHandler={() => {
-              // setStep(step + 1);
+              submitCompanyInfo();
             }}
           />
         </div>

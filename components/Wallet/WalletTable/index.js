@@ -4,11 +4,19 @@ import WalletTableItem from "../WalletTableItem";
 import Image from "next/image";
 import Typography from "@/components/Typography";
 import DropDown from "@/components/DropDown";
-import OrderStatus from "@/components/order/OrderStatus";
 import icon from "../../../public/assets/svg/Icon container.svg";
 import exportIcon from "../../../public/assets/svg/Content.svg";
 import MobileItem from "../MobileTableItem";
+import { JsonToCsv } from "react-json-to-csv";
+import exportFromJSON from "export-from-json";
+import { useState } from "react";
+// import { JsonToCsv } from "react-json-to-csv";
 const WalletTable = ({ data, viewDetails, showRejectModal }) => {
+  const handleExport = () => {
+    const fileName = "download";
+    const exportType = exportFromJSON.types.csv;
+    exportFromJSON({ data, fileName, exportType });
+  };
   return (
     <div className="mt-4 min-h-[50vh]">
       <table className="w-full hidden lg:block">
@@ -45,7 +53,7 @@ const WalletTable = ({ data, viewDetails, showRejectModal }) => {
               </div>
             </th>
             <th className="w-[8%] p-4 text-[12px]">
-              <ExportComponent />
+              <ExportComponent handleExport={handleExport} />
             </th>
           </tr>
         </thead>

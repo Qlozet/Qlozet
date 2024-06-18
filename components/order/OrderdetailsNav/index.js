@@ -25,8 +25,9 @@ const OrderDetailNav = ({
             full ? "w-full" : "gap-4"
           } `}
         >
-          {data.map((item) => (
+          {data.map((item, index) => (
             <div
+              key={index}
               onClick={() => {
                 item.handleFunction(item.item);
               }}

@@ -1,38 +1,13 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Toast from "@/components/ToastComponent/toast";
-// import Image from "next/image";
-// import Button from "./components/Button";
-// import Typography from "./components/Typography";
-// import Badge from "./components/Badge";
-// import FileUploadInput from "./components/FileUploadInput";
-// import UploadSingleDocInput from "./components/UploadDocInput";
-// import TextInput from "./components/TextInput";
-// import ProgressBar from "./components/ProgressBar";
-// import { useRouter } from "next/navigation";
-// import PasswordInput from "./components/PasswordInput";
-// import RadioInput from "./components/RadioInput";
-// import PasswordValidate from "./components/PasswordValidation";
-// import SideBar from "./components/SideBar";
-// import DashboardTopCard from "./components/DashboardTopCard";
-// import DonutChart from "./components/Chat/DoughnutChat";
-// import ChatCard from "./components/Chat/ChatCard";
-// import HorizontalChatBar from "./components/Chat/HorizontalChatBar";
-// import HorizontalChat from "./components/Chat/HorizontalChart";
-// import DasboardNavWithOutSearch from "./components/DashboardNavBarWithoutSearch";
-// import DropDown from "./components/DropDown";
-// import VendorCountLine from "./components/VendorCountLine";
-// import VerticalBarGraph from "./components/VerticalBarGraph";
-// import OrderStep from "./components/order/OrderStep";
-// import SelectInput from "./components/SelectInput";
-// import TextArea from "./components/TextAreaInput";
-// import RejectOrderModal from "./components/order/RejectOrderModal";
-// import Notification from "./components/Notification/NotificationComponent";
-// import CheckBoxInput from "./components/CheckboxInput";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import DropDown from "@/components/DropDown";
 export default function Home() {
+  const router = useRouter();
+
   const [dropDownValue, setDropDownValue] = useState("");
 
   const data = [
@@ -78,6 +53,10 @@ export default function Home() {
       color: "",
     },
   ];
+
+  useEffect(() => {
+    router.push("/auth/signin");
+  }, []);
 
   return (
     <main className="bg-white w-full h-[100vh] p-20">

@@ -48,31 +48,35 @@ const NotificationPage = () => {
   }, []);
 
   return (
-    <div className="flex bg-[#F8F9FA]">
-      <div className="">
-        <SideBar active="" />
-        <MobileSideBar
-          showMobileNav={showMobileNav}
-          active="Settings"
-          closeSideBar={showSideBar}
-        />
-      </div>
-      <div className="w-full p-4">
-        <DasboardNavWithOutSearch
-          name={"Notifications"}
-          showSideBar={showSideBar}
-        />
-        {pageLoading ? (
-          <Loader></Loader>
-        ) : (
-          <div className="border-[1px] border-solid border-gray-200 rounded-[12px] py-4 mt-6 bg-white">
-            {notification.map((item, index) => (
-              <Notification {...item} key={index} />
-            ))}
+    <section>
+      {" "}
+      {pageLoading ? (
+        <Loader></Loader>
+      ) : (
+        <div className="flex bg-[#F8F9FA]">
+          <div className="">
+            <SideBar active="" />
+            <MobileSideBar
+              showMobileNav={showMobileNav}
+              active="Settings"
+              closeSideBar={showSideBar}
+            />
           </div>
-        )}
-      </div>
-    </div>
+          <div className="w-full p-4">
+            <DasboardNavWithOutSearch
+              name={"Notifications"}
+              showSideBar={showSideBar}
+            />
+
+            <div className="border-[1px] border-solid border-gray-200 rounded-[12px] py-4 mt-6 bg-white">
+              {notification.map((item, index) => (
+                <Notification {...item} key={index} />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
   );
 };
 

@@ -17,7 +17,7 @@ const TrackOrder = ({ data, closeModal }) => {
         data={data}
         closeModal={closeModal}
       />
-      <div className="w-full lg:w-[40%] bg-white rounded-b-[14px] pt-4 pb-12 ">
+      <div className="w-full lg:w-[40%] bg-white rounded-b-[8px] pt-4 pb-12 ">
         <div className=" py-4 border-gray-300 border-solid border-[1.5px] w-[95%] m-auto rounded-[12px]">
           <div className="flex justify-between items-center border-solid border-b-[1px] border-gray-300 py-6">
             <TracKOrderCard

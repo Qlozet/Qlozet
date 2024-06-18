@@ -35,6 +35,7 @@ const SignIn = () => {
           password: formData.password,
         });
         response && setIsLoading(false);
+        console.log(response);
         if (response.success === true) {
           setToken(JSON.stringify(response.data));
           console.log(response);

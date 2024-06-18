@@ -17,18 +17,23 @@ import RejectOrderModal from "@/components/order/RejectOrderModal";
 import CustomerDetails from "@/components/order/CustomerDetails";
 import MobileSideBar from "@/components/MobileSideBar";
 import { getRequest } from "@/api/method";
+import { calculatePrice } from "@/utils/helper";
+import Loader from "@/components/Loader";
 const Order = () => {
   const [viewOrderDetails, setOrderDetails] = useState(false);
   const [showTrack, setShowTrack] = useState(false);
   const [showCustomer, setShowCustomer] = useState(false);
   const [rejectModal, setShowReject] = useState(false);
   const [total, setShowTotal] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [orders, setOrders] = useState([]);
+  const [order, setOrder] = useState({});
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
   };
-  const handleShowViewDetailModal = () => {
+  const handleShowViewDetailModal = (orderId) => {
+    setOrder(orders.filter((item) => item.orderId == orderId)[0]);
     setOrderDetails(true);
   };
 
@@ -76,44 +81,6 @@ const Order = () => {
     borderAlign: "center",
   };
 
-  const tableData = [
-    {
-      date: "My name iss",
-      orderId: "My name iss",
-      productName: "My name iss",
-      productPrice: "12222",
-      CustomerName: "My name iss",
-      AmountPaid: "My name iss",
-      DeliveryStatus: "My name iss",
-    },
-    {
-      date: "My name iss",
-      orderId: "My name iss",
-      productName: "My name iss",
-      productPrice: "12222",
-      CustomerName: "My name iss",
-      AmountPaid: "My name iss",
-      DeliveryStatus: "My name iss",
-    },
-    {
-      date: "My name iss",
-      orderId: "My name iss",
-      productName: "My name iss",
-      productPrice: "12222",
-      CustomerName: "My name iss",
-      AmountPaid: "My name iss",
-      DeliveryStatus: "My name iss",
-    },
-    {
-      date: "My name iss",
-      orderId: "My name iss",
-      productName: "My name iss",
-      productPrice: "12222",
-      CustomerName: "My name iss",
-      AmountPaid: "My name iss",
-      DeliveryStatus: "My name iss",
-    },
-  ];
   const closeModal = () => {
     setOrderDetails(false);
     setShowTrack(false);
@@ -159,19 +126,11 @@ const Order = () => {
   ];
 
   const getOrders = async () => {
-    const calculatePrice = (data) => {
-      let sum = 0;
-
-      for (let i = 0; i < data.length; i++) {
-        sum += data[i].product.price;
-      }
-      return sum;
-    };
     try {
       const response = await getRequest("/vendor/orders");
       let ordersData = [];
-      console.log(response);
       response.data.data.map((order) => {
+        console.log(order);
         let DeliveryStatus;
         if (order.status === "out-for-delivery") {
           DeliveryStatus = { name: "Out for delivery", bg: "bg-[#D4CFCA]" };
@@ -181,18 +140,24 @@ const Order = () => {
           DeliveryStatus = { name: "Return", bg: "bg-[#D4CFCA]" };
         }
         let orderItem = {
+          orderId: order._id,
           date: moment(order.orderDate).format("YYYY-MM-DD"),
           productName: order.orderItems.map((product) => {
             return product.product.name;
           }),
           productPrice: calculatePrice(order.orderItems),
-          CustomerName: order.customer.fullName,
-          AmountPaid: calculatePrice(order.orderItems),
+          customerName: `${order.customer.firstName} ${order.customer.lastName}`,
+          customerPhoneNumber: order.customer.phoneNumber,
+          customerEmail: order.customer.email,
+          AmountPaid: order.amountPaid,
+          shippingAddress: order.shippingAddress,
+          custmerAddress: order.shippingAddress,
           DeliveryStatus: DeliveryStatus,
         };
         ordersData.push(orderItem);
       });
       setOrders(ordersData);
+      setPageLoading(false);
     } catch (error) {}
   };
 
@@ -200,147 +165,157 @@ const Order = () => {
     getOrders();
   }, []);
   return (
-    <div className="flex bg-[#F8F9FA]">
-      <div className="">
-        <SideBar active="Orders" />
-        <MobileSideBar
-          showMobileNav={showMobileNav}
-          active="Orders"
-          closeSideBar={showSideBar}
-        />
-      </div>
-      <div className="w-full p-4">
-        <DasboardNavWithOutSearch
-          addSearch={true}
-          name="Orders"
-          setValue={(data) => {
-            // console.log(data);
-          }}
-          showSideBar={showSideBar}
-        />
-        <div
-          className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4 lg:hidden`}
-        >
-          <DashboardTopCard
-            name="Total Vendors"
-            total="1000"
-            percentage="2.5"
-            bgColor="bg-[#57CAEB]"
-            icon={TotalOrderIcon}
-            addMaxWidth={true}
-          />
-          <DashboardTopCard
-            name="Achieved Vendors"
-            total="100"
-            percentage="2.5"
-            bgColor="bg-[#5DDAB4]"
-            icon={customerIcon}
-            addMaxWidth={true}
-          />
-          <DashboardTopCard
-            name="Total Customers"
-            total="100"
-            percentage="2.5"
-            bgColor="bg-[#5DDAB4]"
-            icon={customerIcon}
-            addMaxWidth={true}
-          />
-          <DashboardTopCard
-            name="Total Customers"
-            total="1000"
-            percentage="2.5"
-            bgColor="bg-[#5DDAB4]"
-            icon={customerIcon}
-            addMaxWidth={true}
-          />
-        </div>
-        <div
-          className={`${classes.scrollbarElement} items-center gap-4 overflow-x-scroll px-4 hidden lg:flex`}
-        >
-          <DashboardTopCard
-            name="Total Vendors"
-            total="10000"
-            percentage="2.5"
-            bgColor="bg-[#57CAEB]"
-            link="link"
-            icon={vendorIcon}
-          />
-          <DashboardTopCard
-            name="Achieved Vendors"
-            total="10000"
-            percentage="2.5"
-            bgColor="bg-[#5DDAB4]"
-            icon={customerIcon}
-          />
-          <DashboardTopCard
-            name="Total Customers"
-            total="10000"
-            percentage="2.5"
-            bgColor="bg-[#5DDAB4]"
-            icon={customerIcon}
-          />
-          <DashboardTopCard
-            name="Total Customers"
-            total="10000"
-            percentage="2.5"
-            bgColor="bg-[#5DDAB4]"
-            icon={customerIcon}
-          />
-        </div>
-        <div className="">
-          <div>
-            <OrderTable
-              data={orders}
-              viewDetails={() => {
-                handleShowViewDetailModal();
-              }}
-              showRejectModal={showRejectModal}
+    <section>
+      {pageLoading ? (
+        <Loader></Loader>
+      ) : (
+        <div className="flex bg-[#F8F9FA]">
+          <div className="">
+            <SideBar active="Orders" />
+            <MobileSideBar
+              showMobileNav={showMobileNav}
+              active="Orders"
+              closeSideBar={showSideBar}
             />
           </div>
+          <div className="w-full p-4">
+            <DasboardNavWithOutSearch
+              addSearch={true}
+              name="Orders"
+              setValue={(data) => {}}
+              showSideBar={showSideBar}
+            />
+            <div
+              className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4 lg:hidden`}
+            >
+              <DashboardTopCard
+                name="Total Vendors"
+                total="1000"
+                percentage="2.5"
+                bgColor="bg-[#57CAEB]"
+                icon={TotalOrderIcon}
+                addMaxWidth={true}
+              />
+              <DashboardTopCard
+                name="Achieved Vendors"
+                total="100"
+                percentage="2.5"
+                bgColor="bg-[#5DDAB4]"
+                icon={customerIcon}
+                addMaxWidth={true}
+              />
+              <DashboardTopCard
+                name="Total Customers"
+                total="100"
+                percentage="2.5"
+                bgColor="bg-[#5DDAB4]"
+                icon={customerIcon}
+                addMaxWidth={true}
+              />
+              <DashboardTopCard
+                name="Total Customers"
+                total="1000"
+                percentage="2.5"
+                bgColor="bg-[#5DDAB4]"
+                icon={customerIcon}
+                addMaxWidth={true}
+              />
+            </div>
+            <div
+              className={`${classes.scrollbarElement} items-center gap-4 overflow-x-scroll px-4 hidden lg:flex`}
+            >
+              <DashboardTopCard
+                name="Total Vendors"
+                total="10000"
+                percentage="2.5"
+                bgColor="bg-[#57CAEB]"
+                link="link"
+                icon={vendorIcon}
+              />
+              <DashboardTopCard
+                name="Achieved Vendors"
+                total="10000"
+                percentage="2.5"
+                bgColor="bg-[#5DDAB4]"
+                icon={customerIcon}
+              />
+              <DashboardTopCard
+                name="Total Customers"
+                total="10000"
+                percentage="2.5"
+                bgColor="bg-[#5DDAB4]"
+                icon={customerIcon}
+              />
+              <DashboardTopCard
+                name="Total Customers"
+                total="10000"
+                percentage="2.5"
+                bgColor="bg-[#5DDAB4]"
+                icon={customerIcon}
+              />
+            </div>
+            <div className="">
+              <div>
+                <OrderTable
+                  data={orders}
+                  viewDetails={(orderId) => {
+                    handleShowViewDetailModal(orderId);
+                  }}
+                  showRejectModal={showRejectModal}
+                />
+              </div>
+            </div>
+          </div>
+          {viewOrderDetails && (
+            <Modal
+              content={
+                <OrderDetails
+                  topNavData={topNavData}
+                  closeModal={closeModal}
+                  order={order}
+                />
+              }
+            ></Modal>
+          )}
+
+          {showTrack && (
+            <Modal
+              content={<TrackOrder data={topNavData} closeModal={closeModal} />}
+            ></Modal>
+          )}
+
+          {showCustomer && (
+            <Modal
+              content={
+                <CustomerDetails
+                  topNavData={topNavData}
+                  closeModal={closeModal}
+                  order={order}
+                />
+              }
+            ></Modal>
+          )}
+          {rejectModal && (
+            <Modal
+              content={
+                <div className="flex items-center justify-center h-[100vh]">
+                  <RejectOrderModal closeModal={closeModal} />
+                </div>
+              }
+            ></Modal>
+          )}
+          {total && (
+            <Modal
+              content={
+                <div className="flex items-center justify-center h-[100vh]">
+                  <SetTotalOrderPerDay closeModal={closeModal} />
+                </div>
+              }
+            ></Modal>
+          )}
         </div>
-      </div>
-      {/* <Modal content={<SetTotalOrderPerDay />}></Modal> */}
-      {/* {showModal == true && ( */}
-      {viewOrderDetails && (
-        <Modal
-          content={
-            <OrderDetails topNavData={topNavData} closeModal={closeModal} />
-          }
-        ></Modal>
       )}
-
-      {showTrack && (
-        <Modal
-          content={<TrackOrder data={topNavData} closeModal={closeModal} />}
-        ></Modal>
-      )}
-
-      {showCustomer && (
-        <Modal
-          content={
-            <CustomerDetails topNavData={topNavData} closeModal={closeModal} />
-          }
-        ></Modal>
-      )}
-      {rejectModal && (
-        <Modal
-          content={
-            <div className="flex items-center justify-center h-[100vh]">
-              <RejectOrderModal closeModal={closeModal} />
-            </div>
-          }
-        ></Modal>
-      )}
-      {total && (
-        <Modal
-          content={
-            <div className="flex items-center justify-center h-[100vh]">
-              <SetTotalOrderPerDay closeModal={closeModal} />
-            </div>
-          }
-        ></Modal>
-      )}
-    </div>
+    </section>
   );
 };
 

@@ -4,7 +4,8 @@ import Image from "next/image";
 import Typography from "../../Typography";
 import OrderStatus from "../OrderStatus";
 import Button from "../../Button";
-const OrderDetails = ({ topNavData, closeModal }) => {
+const OrderDetails = ({ topNavData, closeModal, order }) => {
+  console.log(order);
   return (
     <div className="flex flex-col items-center justify-center w-full mt-4 mb-3">
       <div className="px-5 "></div>
@@ -16,6 +17,7 @@ const OrderDetails = ({ topNavData, closeModal }) => {
       <div className=" w-full lg:w-[40%] bg-white p-4 rounded-b-[14px]">
         <div className="bg-auto bg-no-contain">
           <Image
+            alt="Product Image"
             src={defaultImage}
             className="w-[148.13px] h-[203.13px] rounded-[12px]"
           />
@@ -27,7 +29,7 @@ const OrderDetails = ({ topNavData, closeModal }) => {
         >
           Amasi Queen Shirt
         </Typography>
-        <div className="max-w-[13rem]">
+        <div className="max-w-[13rem] my-2">
           <OrderStatus
             text="View customization details"
             color="text-[#3E1C01]"
@@ -35,7 +37,7 @@ const OrderDetails = ({ topNavData, closeModal }) => {
             bgColor="bg-[#D4CFCA]"
           />
         </div>
-        <div className="flex justify-between items-center py-4">
+        {/* <div className="flex justify-between items-center py-4">
           <div>
             <Typography
               textColor="text-dark"
@@ -53,71 +55,172 @@ const OrderDetails = ({ topNavData, closeModal }) => {
             </Typography>
           </div>
           <div></div>
-        </div>
+        </div> */}
 
-        <div>
-          <div className="flex items-center py-3 gap-10 border-t-[1px] border-solid border-gray-200 ">
+        <div className="mt-8">
+          <div className="flex items-center justify-between py-3 gap-10 border-t-[.5px] border-solid border-gray-200 ">
+            <div className="w-[35%]">
+              {" "}
+              <Typography
+                textColor="text-dark"
+                textWeight="font-[400]"
+                textSize="text-[12px]"
+              >
+                Order date:
+              </Typography>
+            </div>
+            <div className="flex-1">
+              <Typography
+                textColor="text-dark"
+                textWeight="font-[700]"
+                textSize="text-[12px]"
+              >
+                {order.date}
+              </Typography>
+            </div>
+          </div>
+          <div className="flex items-center py-3 gap-10 border-t-[0.5px] border-solid border-gray-200 ">
+            <div className="w-[35%]">
+              <Typography
+                textColor="text-dark"
+                textWeight="font-[400]"
+                textSize="text-[12px]"
+              >
+                Order ID:
+              </Typography>
+            </div>
+            <div className="flex-1">
+              {" "}
+              <Typography
+                textColor="text-dark"
+                textWeight="font-[700]"
+                textSize="text-[12px]"
+              >
+                {order.orderId}
+              </Typography>
+            </div>
+          </div>
+          <div className="flex items-center py-3 gap-10 border-t-[0.5px] border-solid border-gray-200 ">
+            <div className="w-[35%]">
+              <Typography
+                textColor="text-dark"
+                textWeight="font-[400]"
+                textSize="text-[12px]"
+              >
+                Preferred outfit measurement
+              </Typography>
+            </div>
+            <div className="flex-1">
+              <Typography
+                textColor="text-dark"
+                textWeight="font-[700]"
+                textSize="text-[12px]"
+              >
+                {order.orderId}
+              </Typography>
+            </div>
+          </div>
+          <div className="flex items-center py-3 gap-10 border-t-[0.5px] border-solid border-gray-200 ">
+            <div className="w-[35%]">
+              {" "}
+              <Typography
+                textColor="text-dark"
+                textWeight="font-[400]"
+                textSize="text-[12px]"
+              >
+                Preferred color
+              </Typography>
+            </div>
+            <div className="flex-1">
+              <Typography
+                textColor="text-dark"
+                textWeight="font-[700]"
+                textSize="text-[12px]"
+              >
+                {order.orderId}
+              </Typography>
+            </div>
+          </div>
+          <div className="flex items-center py-3 gap-10 border-t-[0.5px] border-solid border-gray-200 ">
+            <div className="w-[35%]">
+              {" "}
+              <Typography
+                textColor="text-dark"
+                textWeight="font-[400]"
+                textSize="text-[12px]"
+              >
+                Customer’s name:
+              </Typography>
+            </div>
+            <div className="flex-1">
+              <Typography
+                textColor="text-dark"
+                textWeight="font-[700]"
+                textSize="text-[12px]"
+              >
+                {order.customerName}
+              </Typography>
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center py-3 gap-10 border-t-[0.5px] border-solid border-gray-200 ">
+          <div className="w-[35%]">
+            {" "}
             <Typography
               textColor="text-dark"
-              textWeight="font-normal"
-              textSize="text-[14px]"
+              textWeight="font-[400]"
+              textSize="text-[12px]"
             >
-              Amasi Queen Shirt
-            </Typography>
-            <Typography
-              textColor="text-dark"
-              textWeight="font-bold"
-              textSize="text-[14px]"
-            >
-              Amasi Queen Shirt
+              Customer’s address:
             </Typography>
           </div>
-          <div className="flex items-center py-3 gap-10 border-t-[1px] border-solid border-gray-200 ">
+          <div className="flex-1">
             <Typography
               textColor="text-dark"
-              textWeight="font-normal"
-              textSize="text-[14px]"
+              textWeight="font-[700]"
+              textSize="text-[12px]"
             >
-              Amasi Queen Shirt
-            </Typography>
-            <Typography
-              textColor="text-dark"
-              textWeight="font-bold"
-              textSize="text-[14px]"
-            >
-              Amasi Queen Shirt
+              {order.shippingAddress}
             </Typography>
           </div>
-          <div className="flex items-center py-3 gap-10 border-t-[1px] border-solid border-gray-200 ">
+        </div>
+        <div className="flex items-center py-3 gap-10 border-t-[0.5px] border-solid border-gray-200 ">
+          <div className="w-[35%]">
             <Typography
               textColor="text-dark"
-              textWeight="font-normal"
-              textSize="text-[14px]"
+              textWeight="font-[400]"
+              textSize="text-[12px]"
             >
-              Amasi Queen Shirt
-            </Typography>
-            <Typography
-              textColor="text-dark"
-              textWeight="font-bold"
-              textSize="text-[14px]"
-            >
-              Amasi Queen Shirt
+              Shipping address{" "}
             </Typography>
           </div>
-          <div className="flex items-center py-3 gap-10 border-t-[1px] border-solid border-gray-200 ">
+          <div className="flex-1">
             <Typography
               textColor="text-dark"
-              textWeight="font-normal"
-              textSize="text-[14px]"
+              textWeight="font-[700]"
+              textSize="text-[12px]"
             >
-              Amasi Queen Shirt
+              {order.shippingAddress}
             </Typography>
+          </div>
+        </div>
+        <div className="flex items-center py-3 gap-10 border-t-[0.5px] border-solid border-gray-200 ">
+          <div className="w-[35%]">
             <Typography
               textColor="text-dark"
-              textWeight="font-bold"
-              textSize="text-[14px]"
+              textWeight="font-[400]"
+              textSize="text-[12px]"
             >
-              Amasi Queen Shirt
+              Customer’s phone number
+            </Typography>
+          </div>
+          <div className="flex-1">
+            <Typography
+              textColor="text-dark"
+              textWeight="font-[700]"
+              textSize="text-[12px]"
+            >
+              {order.customerPhoneNumber}
             </Typography>
           </div>
         </div>
