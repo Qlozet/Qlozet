@@ -1,6 +1,7 @@
 const token = "token";
 const userDetails = "AltireuserDetails";
 const productId = "productId";
+const customer = "customer";
 
 export const setToken = (data) => {
   localStorage.setItem(token, data);
@@ -29,6 +30,7 @@ export const clearUserDetails = (data) => {
   localStorage.removeItem(userDetails);
   return true;
 };
+
 export const setProductId = (data) => {
   localStorage.setItem(productId, JSON.stringify(data));
 };
@@ -40,5 +42,19 @@ export const getProductId = () => {
 
 export const clearProductId = (data) => {
   localStorage.removeItem(productId);
+  return true;
+};
+
+export const setCustomerId = (data) => {
+  localStorage.setItem(customer, JSON.stringify(data));
+};
+
+export const getCustomerId = () => {
+  const data = localStorage.getItem(customer);
+  return JSON.parse(data);
+};
+
+export const clearCustomerId = (data) => {
+  localStorage.removeItem(customer);
   return true;
 };

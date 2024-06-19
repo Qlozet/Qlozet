@@ -19,6 +19,7 @@ const Customer = () => {
   const [showHostory, setShowHistory] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [custmers, setCustomers] = useState([]);
+  const [customer, setCustomer] = useState({});
 
   const [showMobileNav, setShowMobileNav] = useState(false);
   const showSideBar = () => {
@@ -29,7 +30,8 @@ const Customer = () => {
     setShowHistory(false);
   };
 
-  const showModal = () => {
+  const showModal = (customerId) => {
+    setCustomer(custmers.filter((item) => item.customerId === customerId)[0]);
     setCustomerDetails(true);
     setShowHistory(false);
   };
@@ -60,9 +62,11 @@ const Customer = () => {
       response && setPageLoading(false);
       if (response.data) {
         response?.data?.data.map((item) => {
+          console.log(item);
           const customer = {
+            customerId: item.customerId,
             picture: "",
-            customerName: "",
+            customerName: `${item.firstName} ${item.lastName}`,
             status: item.status,
             totalOrders: item.totalOrders,
             lastOrderDate: item.lastOrderDate,
@@ -113,14 +117,16 @@ const Customer = () => {
                 link="link"
                 icon={vendorIcon}
                 addMaxWidth={true}
+                minHeight="min-h-[8.5rem]"
               />
               <DashboardTopCard
-                name="Achieved Vendors"
-                total="10000"
+                name="Highest customer by location"
+                total="Lagos state"
                 percentage="2.5"
                 bgColor="bg-[#5DDAB4]"
                 icon={customerIcon}
                 addMaxWidth={true}
+                minHeight="min-h-[8.5rem]"
               />
             </div>
             <div className="">
@@ -154,6 +160,7 @@ const Customer = () => {
             <Modal
               content={
                 <CustomerDetails
+                  customer={customer}
                   topNavData={topNavData}
                   closeModal={closeModal}
                 />

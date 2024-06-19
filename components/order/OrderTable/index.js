@@ -8,6 +8,7 @@ import Typography from "@/components/Typography";
 import DropDown from "@/components/DropDown";
 import OrderStatus from "../OrderStatus";
 import userInfo from "../../../public/assets/svg/Info Circle.svg";
+import { handleExport } from "@/utils/helper";
 const OrderTable = ({ data, viewDetails, showRejectModal }) => {
   return (
     <div className=" mt-4 min-h-[50vh]">
@@ -50,7 +51,11 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
               </div>
             </th>
             <th className="w-[10%] px-2 py-4 text-[12px]">
-              <ExportComponent />
+            <ExportComponent
+                handleExport={() => {
+                  handleExport(data);
+                }}
+              />
             </th>
           </tr>
         </thead>

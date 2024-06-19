@@ -12,12 +12,13 @@ const DashboardTopCard = ({
   percentage,
   link,
   addMaxWidth,
+  minHeight,
 }) => {
   return (
     <div
       className={`min-w-[260px] lg:min-w-[0] p-6 flex bg-white rounded-[12px] mt-4 ${
         addMaxWidth ? "min-w-[260px] max-w-[260px]" : ""
-      }  w-full`}
+      }  w-full ${minHeight ? minHeight : ""}`}
     >
       <div
         className={`w-[48px] h-[48px] flex items-center justify-center ${bgColor} rounded-[8px]`}

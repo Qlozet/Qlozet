@@ -4,7 +4,7 @@ import Image from "next/image";
 import Typography from "../../Typography";
 import OrderStatus from "../../order/OrderStatus";
 import Button from "../../Button";
-const CustomerDetails = ({ topNavData, closeModal, order }) => {
+const CustomerDetails = ({ topNavData, closeModal, customer }) => {
   return (
     <div className="flex flex-col items-center justify-center w-full my-4">
       <OrderDetailNav
@@ -40,7 +40,7 @@ const CustomerDetails = ({ topNavData, closeModal, order }) => {
                 textWeight="font-bold"
                 textSize="text-[12px]"
               >
-                {order.customerName}
+                {customer.customerName}
               </Typography>
             </div>
           </div>
@@ -60,7 +60,7 @@ const CustomerDetails = ({ topNavData, closeModal, order }) => {
                 textWeight="font-bold"
                 textSize="text-[12px]"
               >
-                {order.customerEmail}
+                {customer.emailAddress}
               </Typography>
             </div>
           </div>
@@ -80,7 +80,7 @@ const CustomerDetails = ({ topNavData, closeModal, order }) => {
                 textWeight="font-bold"
                 textSize="text-[12px]"
               >
-                {order.customerPhoneNumber}
+                {customer.phone}
               </Typography>
             </div>
           </div>
@@ -100,7 +100,7 @@ const CustomerDetails = ({ topNavData, closeModal, order }) => {
                 textWeight="font-bold"
                 textSize="text-[12px]"
               >
-                {order.customerPhoneNumber}
+                {customer.phone}
               </Typography>
             </div>
           </div>
@@ -120,7 +120,7 @@ const CustomerDetails = ({ topNavData, closeModal, order }) => {
                 textWeight="font-bold"
                 textSize="text-[12px]"
               >
-                {order.custmerAddress}
+                {/* {customer.custmerAddress} */}
               </Typography>
             </div>
           </div>

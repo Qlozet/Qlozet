@@ -13,9 +13,8 @@ const CompanyDetails = ({
   requiredShopDetails,
   setRequiredShopDetails,
   submitCompanyInfo,
+  isLoading,
 }) => {
-  console.log(shopDetails);
-
   return (
     <div className=" w-full mx-0 lg:mx-2 py-2 lg:bg-white">
       <div className="block items-center justify-center lg:hidden p-4 shadow my-4 rounded-[12px] bg-white">
@@ -26,7 +25,7 @@ const CompanyDetails = ({
             textWeight="font-[500]"
             textSize="text-[20px]"
           >
-            Agate Sator
+            {shopDetails.vendorName}
           </Typography>
         </div>
         <div className="flex justify-center items-center">
@@ -35,7 +34,7 @@ const CompanyDetails = ({
             textWeight="font-[500]"
             textSize="text-[20px]"
           >
-            ALTIRE-115009
+            {shopDetails.companyName}
           </Typography>
         </div>
         <div className="flex justify-center items-center">
@@ -44,7 +43,7 @@ const CompanyDetails = ({
             textWeight="font-normal"
             textSize="text-[16px]"
           >
-            www.altire.cloth/agate-sator
+            {shopDetails.email}
           </Typography>
         </div>
       </div>
@@ -131,6 +130,28 @@ const CompanyDetails = ({
         <div className="block lg:flex items-center justify-between  gap-6 mx-2">
           <div className="w-full">
             <TextInput
+              value={shopDetails.country}
+              label="Country"
+              placeholder="EnterCountry"
+              setValue={(data) => {
+                setShopDetails((prevData) => {
+                  return { ...prevData, country: data };
+                });
+                if (data) {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, country: false };
+                  });
+                } else {
+                  setRequiredShopDetails((prevData) => {
+                    return { ...prevData, country: true };
+                  });
+                }
+              }}
+              error={requiredShopDetails.country}
+            />
+          </div>
+          <div className="w-full">
+            <TextInput
               label="State"
               placeholder="Enter State"
               setValue={(data) => {
@@ -153,54 +174,53 @@ const CompanyDetails = ({
           </div>
           <div className="w-full">
             <TextInput
-              value={shopDetails.country}
-              label="Country"
-              placeholder="EnterCountry"
+              label="City"
+              placeholder="Enter City"
+              value={shopDetails.city}
               setValue={(data) => {
                 setShopDetails((prevData) => {
-                  return { ...prevData, country: data };
+                  return { ...prevData, city: data };
                 });
                 if (data) {
                   setRequiredShopDetails((prevData) => {
-                    return { ...prevData, country: false };
+                    return { ...prevData, city: false };
                   });
                 } else {
                   setRequiredShopDetails((prevData) => {
-                    return { ...prevData, country: true };
+                    return { ...prevData, city: true };
                   });
                 }
               }}
-              error={requiredShopDetails.country}
+              error={requiredShopDetails.city}
             />{" "}
           </div>
+        </div>
+        <div className="block lg:flex items-center justify-between  gap-6 mx-2">
           <div className="w-full">
             <TextInput
               label="Timezone"
               placeholder="Timezone Timezone"
               setValue={(data) => {
                 setShopDetails((prevData) => {
-                  return { ...prevData, country: data };
+                  return { ...prevData, timeZone: data };
                 });
                 if (data) {
                   setRequiredShopDetails((prevData) => {
-                    return { ...prevData, country: false };
+                    return { ...prevData, timeZone: false };
                   });
                 } else {
                   setRequiredShopDetails((prevData) => {
-                    return { ...prevData, country: true };
+                    return { ...prevData, timeZone: true };
                   });
                 }
               }}
-              error={requiredShopDetails.country}
+              error={requiredShopDetails.timeZone}
             />
           </div>
-        </div>
-        <div className="block lg:flex items-center justify-between  gap-6 mx-2">
           <div className="w-full">
-            <TextInput
-              label="City"
-              placeholder="Enter City"
-              value={shopDetails.city}
+            <NumberInput
+              label="Phone number"
+              placeholder="EnterPhone number"
               setValue={(data) => {
                 setShopDetails((prevData) => {
                   return { ...prevData, Phone: data };
@@ -216,13 +236,6 @@ const CompanyDetails = ({
                 }
               }}
               error={requiredShopDetails.Phone}
-            />{" "}
-          </div>
-          <div className="w-full">
-            <NumberInput
-              label="Phone number"
-              placeholder="EnterPhone number"
-              city
               value={shopDetails.Phone}
             />
           </div>
@@ -325,6 +338,7 @@ const CompanyDetails = ({
         </div>
         <div className="my-4">
           <Button
+            loading={isLoading}
             children="Save"
             btnSize="large"
             variant="primary"

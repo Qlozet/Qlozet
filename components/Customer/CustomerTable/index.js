@@ -1,3 +1,4 @@
+import { handleExport } from "@/utils/helper";
 import ExportComponent from "../../ExportButton";
 import CustomerTableItem from "../CustomerTableItem";
 const CustomerTable = ({ data, viewDetails, showModal }) => {
@@ -42,13 +43,17 @@ const CustomerTable = ({ data, viewDetails, showModal }) => {
               </div>
             </th>
             <th className="w-[8%] px-2 py-4 text-[12px]">
-              <ExportComponent />
+              <ExportComponent
+                handleExport={() => {
+                  handleExport(data);
+                }}
+              />
             </th>
           </tr>
         </thead>
         <tbody>
-          {data.map((item) => (
-            <CustomerTableItem {...item} viewDetails={showModal} />
+          {data.map((item, index) => (
+            <CustomerTableItem {...item} viewDetails={showModal} key={index} />
           ))}
         </tbody>
       </table>

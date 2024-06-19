@@ -20,6 +20,7 @@ import MobileTable from "../mobileTable";
 import { putRequest } from "@/api/method";
 import Toast from "@/components/ToastComponent/toast";
 import toast from "react-hot-toast";
+import { handleExport } from "@/utils/helper";
 
 const ProductTable = ({
   data,
@@ -90,7 +91,11 @@ const ProductTable = ({
                 </div>
               </th>
               <th className="w-[12%] px-2 py-4 text-[12px]">
-                <ExportComponent />
+                <ExportComponent
+                  handleExport={() => {
+                    handleExport(data);
+                  }}
+                />
               </th>
             </tr>
           </thead>

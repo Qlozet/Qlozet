@@ -2,6 +2,7 @@ import threeDotIcon from "../../../public/assets/svg/three-dot.svg";
 import Image from "next/image";
 import moment from "moment";
 import OrderStatus from "../../order/OrderStatus";
+import { setCustomerId } from "@/utils/localstorage";
 const CustomerTableItem = ({
   picture,
   customerName,
@@ -11,6 +12,7 @@ const CustomerTableItem = ({
   phone,
   emailAddress,
   viewDetails,
+  customerId,
 }) => {
   const date = new Date(lastOrderDate);
   return (
@@ -38,7 +40,10 @@ const CustomerTableItem = ({
             text="View details"
             color="text-[#3E1C01]"
             addMaxWidth={true}
-            clickHandler={viewDetails}
+            clickHandler={() => {
+              setCustomerId(customerId);
+              viewDetails(customerId);
+            }}
           />
         </div>
       </td>

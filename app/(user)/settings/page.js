@@ -14,10 +14,14 @@ import MobileSideBar from "@/components/MobileSideBar";
 import { getRequest, postRequest, putRequest } from "@/api/method";
 import Loader from "@/components/Loader";
 import { settingNav } from "@/utils/navdata";
+import Toast from "@/components/ToastComponent/toast";
+import toast from "react-hot-toast";
 const Dashboard = () => {
   const [dropDownValue, setDropDownValue] = useState("");
   const [pageLoading, setPageLoading] = useState(true);
+  const [isLoading, setIsloading] = useState(false);
   const [shopDetails, setShopDetails] = useState({
+    vendorName: "",
     companyName: "",
     addressLine1: "",
     addressLine2: "",
@@ -135,6 +139,7 @@ const Dashboard = () => {
 
   const submitCompanyInfo = async () => {
     try {
+      setIsloading(true);
       const response = await putRequest("/vendor/settings", {
         businessName: shopDetails.companyName,
         businessAddress: shopDetails.addressLine1,
@@ -147,9 +152,18 @@ const Dashboard = () => {
         city: shopDetails.city,
         bvn: shopDetails.bvn,
         nin: shopDetails.nin,
+        // cacDocument: ["string"],
       });
+      response && setIsloading(false);
       console.log(response);
+      if (response.success) {
+        toast(<Toast text={response.message} type="success" />);
+      } else {
+        toast(<Toast text={response.message} type="danger" />);
+      }
     } catch (error) {
+      error && setIsloading(false);
+
       console.log(error);
     }
   };
@@ -162,6 +176,7 @@ const Dashboard = () => {
         console.log(response?.data?.data);
         setPageLoading(false);
         setShopDetails({
+          vendorName: response?.data?.data?.businessName,
           companyName: response?.data?.data?.businessName,
           addressLine1: response?.data?.data?.addressLine2,
           state: response?.data?.data.state,
@@ -223,6 +238,7 @@ const Dashboard = () => {
                 requiredShopDetails={requiredShopDetails}
                 setRequiredShopDetails={setRequiredShopDetails}
                 submitCompanyInfo={submitCompanyInfo}
+                isLoading={isLoading}
               />
             )}
             {currentNav === "Billing and invoice" && <BillingAndInvioce />}

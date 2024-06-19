@@ -1,3 +1,5 @@
+import exportFromJSON from "export-from-json";
+
 export const handlerContainsNumber = (str) => {
   const regex = /\d/;
   return regex.test(str);
@@ -49,11 +51,17 @@ export const filterSelectedItems = (arr1, arr2) => {
   return res;
 };
 
-export   const calculatePrice = (data) => {
+export const calculatePrice = (data) => {
   let sum = 0;
   for (let i = 0; i < data.length; i++) {
     console.log(data[i]);
     sum += data[i].price;
   }
   return sum;
+};
+
+export const handleExport = (data) => {
+  const fileName = "download";
+  const exportType = exportFromJSON.types.csv;
+  exportFromJSON({ data, fileName, exportType });
 };
