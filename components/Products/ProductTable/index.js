@@ -11,7 +11,7 @@ import icon from "../../../public/assets/svg/Icon container.svg";
 import exportIcon from "../../../public/assets/svg/Content.svg";
 import Modal from "@/components/Modal";
 import DeleteProduct from "../Delete";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ShecduleProduct from "../ScheduleProduct";
 import ProductItemDropDown from "../ProductItemDropDown";
@@ -27,23 +27,26 @@ const ProductTable = ({
   viewDetails,
   showModal,
   statusChangeHandler,
+  handleFilfeterData,
 }) => {
   const [productData, setProductData] = useState(data);
   const router = useRouter();
   const [dropdownOption, setDropDownOption] = useState("");
   const toggleStatus = async () => {
     const productId = getProductId();
-    console.log(productId);
     try {
       const response = await putRequest(`/vendor/products/${productId}/toggle`);
       response && statusChangeHandler();
-      console.log(response);
       if (response?.data) {
         toast(<Toast text={response?.message} type="success" />);
       } else {
       }
     } catch (error) {}
   };
+
+  useEffect(() => {
+    setProductData(data);
+  }, [data]);
   return (
     <div className="mt-4 min-h-[50vh] ">
       <div className="hidden lg:block">
@@ -132,13 +135,23 @@ const ProductTable = ({
       <div className="block lg:hidden">
         <div className="flex items-center justify-between ">
           <div className="w-[70%] block">
-            <SearchInput placeholder="Search" />
+            <SearchInput
+              placeholder="Search"
+              setValue={(data) => {
+                handleFilfeterData(data);
+              }}
+            />
           </div>
           <div className="flex items-center justify-center">
             <Image src={icon} alt="" />
           </div>
           <div className="flex items-center justify-center">
-            <div className="w-[3rem] h-[3rem] bg-primary rounded-[12px] flex items-center justify-center">
+            <div
+              className="w-[3rem] h-[3rem] bg-primary rounded-[12px] flex items-center justify-center"
+              onClick={() => {
+                handleExport(data);
+              }}
+            >
               <Image src={exportIcon} alt="" />
             </div>
           </div>

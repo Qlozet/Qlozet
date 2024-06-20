@@ -1,6 +1,7 @@
 import Image from "next/image";
 import OrderStatus from "../../order/OrderStatus";
 const HistoryTableItem = ({
+  id,
   date,
   productName,
   productPrice,

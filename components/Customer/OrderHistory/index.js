@@ -3,7 +3,7 @@ import defaultImage from "../../../public/assets/image/default.png";
 import Image from "next/image";
 import Button from "../../Button";
 import HistoryTable from "../HistoryTable";
-const OrderHistory = ({ topNavData, closeModal }) => {
+const OrderHistory = ({ topNavData, closeModal, customerHistory }) => {
   return (
     <div className="flex flex-col items-center justify-center w-full mt-6">
       <OrderDetailNav
@@ -13,7 +13,7 @@ const OrderHistory = ({ topNavData, closeModal }) => {
         width="w-[60%]"
       />
       <div className="w-[60%]">
-        <HistoryTable />
+        <HistoryTable data={customerHistory} />
       </div>
       <div className="bg-white flex items-center justify-end w-[60%] rounded-b-[12px] px-4 py-8">
         <Button

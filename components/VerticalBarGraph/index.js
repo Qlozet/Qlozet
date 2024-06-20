@@ -38,7 +38,7 @@ const VerticalBarGraph = () => {
             "Choose month",
             "Custom",
           ]}
-          maxWidth={"max-w-[10rem]"}
+          maxWidth={"max-w-[7.5rem]"}
           placeholder="Time Range"
           setValue={(data) => {}}
           bg={"bg-white"}

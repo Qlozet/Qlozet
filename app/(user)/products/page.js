@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import DashboardTopCard from "@/components/DashboardTopCard";
 import SideBar from "@/components/SideBar";
-import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
+import shoppingBag from "../../../public/assets/svg/shipping_bag.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import Typography from "@/components/Typography";
 import Modal from "@/components/Modal";
@@ -30,6 +30,7 @@ const Products = () => {
   const [showHostory, setShowHistory] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);
+  const [filteredProduct, setFilterdProduct] = useState([]);
   const [showMobileNav, setShowMobileNav] = useState(false);
   const chartData = {
     labels: ["Suit", "Kaftan", "Cargo", "Abgada"],
@@ -109,6 +110,7 @@ const Products = () => {
           productData.push(orderItem);
         });
         setProducts(productData);
+        setFilterdProduct(productData);
         setIsLoading(false);
       } else {
         toast(<Toast text={response.message} type="danger" />);
@@ -116,6 +118,26 @@ const Products = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleFilfeterData = (data) => {
+    console.log(
+      products.filter(
+        (pro) =>
+          pro.productName.toLowerCase().includes(data.toLowerCase()) ||
+          pro.category.toLowerCase().includes(data.toLowerCase()) ||
+          pro.tag.toLowerCase().includes(data.toLowerCase())
+      )
+    );
+
+    setFilterdProduct(
+      products.filter(
+        (pro) =>
+          pro.productName.toLowerCase().includes(data.toLowerCase()) ||
+          pro.category.toLowerCase().includes(data.toLowerCase()) ||
+          pro.tag.toLowerCase().includes(data.toLowerCase())
+      )
+    );
   };
   useEffect(() => {
     getProducts();
@@ -139,7 +161,7 @@ const Products = () => {
               name="Products"
               addSearch={true}
               setValue={(data) => {
-                // console.log(data);
+                handleFilfeterData(data);
               }}
               showSideBar={showSideBar}
             />
@@ -197,20 +219,20 @@ const Products = () => {
               className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
             >
               <DashboardTopCard
-                name="Total Vendors"
-                total="10000"
+                name="Total products"
+                total={products.length}
                 percentage="2.5"
                 bgColor="bg-[#57CAEB]"
                 link="link"
-                icon={vendorIcon}
+                icon={shoppingBag}
                 addMaxWidth={true}
               />
               <DashboardTopCard
-                name="Achieved Vendors"
+                name="Achieved products"
                 total="10000"
                 percentage="2.5"
                 bgColor="bg-[#5DDAB4]"
-                icon={customerIcon}
+                icon={shoppingBag}
                 addMaxWidth={true}
               />
               <div
@@ -274,9 +296,10 @@ const Products = () => {
                 <UpdateComponent />
               </div>
               <ProductTable
-                data={products}
+                data={filteredProduct}
                 showModal={showModal}
                 statusChangeHandler={toggleStatus}
+                handleFilfeterData={handleFilfeterData}
               />
             </div>
           </div>

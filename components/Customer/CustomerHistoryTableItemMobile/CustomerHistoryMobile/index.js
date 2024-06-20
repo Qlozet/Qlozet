@@ -2,8 +2,8 @@ import OrderStatus from "@/components/order/OrderStatus";
 
 const { default: Typography } = require("@/components/Typography");
 
-const MobileItem = ({ item, index }) => {
-  console.log(item);
+const CustomerMobileHistory = ({ history, index }) => {
+  console.log(history);
   return (
     <div className="p-4 bg-white" key={index}>
       <div className="flex justify-between items-center">
@@ -20,7 +20,7 @@ const MobileItem = ({ item, index }) => {
             textWeight="font-normal"
             textSize="text-[16px]"
           >
-            {12345}
+            {"12345678"}
           </Typography>
           <Typography
             textColor="text-gray-200"
@@ -34,7 +34,7 @@ const MobileItem = ({ item, index }) => {
             textWeight="font-normal"
             textSize="text-[16px]"
           >
-            {item.amount}
+            {"12345678"}
           </Typography>
         </div>
         <div className="flex flex-col items-end">
@@ -66,4 +66,4 @@ const MobileItem = ({ item, index }) => {
   );
 };
 
-export default MobileItem;
+export default CustomerMobileHistory;

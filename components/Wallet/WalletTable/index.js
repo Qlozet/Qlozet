@@ -10,7 +10,12 @@ import MobileItem from "../MobileTableItem";
 import { useState } from "react";
 import { handleExport } from "@/utils/helper";
 // import { JsonToCsv } from "react-json-to-csv";
-const WalletTable = ({ data, viewDetails, showRejectModal }) => {
+const WalletTable = ({
+  data,
+  viewDetails,
+  showRejectModal,
+  handleFilfeterData,
+}) => {
   return (
     <div className="mt-4 min-h-[50vh]">
       <table className="w-full hidden lg:block">
@@ -73,13 +78,23 @@ const WalletTable = ({ data, viewDetails, showRejectModal }) => {
         <div className="block lg:hidden">
           <div className="flex items-center justify-between">
             <div className="w-[70%] block">
-              <SearchInput placeholder="Search" />
+              <SearchInput
+                placeholder="Search"
+                setValue={(data) => {
+                  handleFilfeterData(data);
+                }}
+              />
             </div>
             <div className="flex items-center justify-center">
               <Image src={icon} alt="" />
             </div>
             <div className="flex items-center justify-center">
-              <div className="w-[3rem] h-[3rem] bg-primary rounded-[12px] flex items-center justify-center">
+              <div
+                className="w-[3rem] h-[3rem] bg-primary rounded-[12px] flex items-center justify-center"
+                onClick={() => {
+                  handleExport(data);
+                }}
+              >
                 <Image src={exportIcon} />
               </div>
             </div>
@@ -101,6 +116,7 @@ const WalletTable = ({ data, viewDetails, showRejectModal }) => {
                 "Choose month",
                 "Custom",
               ]}
+              maxWidth={"max-w-[7.5rem]"}
               placeholder="Time Range"
               setValue={(data) => {}}
             />

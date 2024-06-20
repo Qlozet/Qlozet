@@ -5,7 +5,8 @@ import Image from "next/image";
 import SearchInput from "@/components/SearchInput";
 import icon from "../../../../public/assets/svg/Icon container.svg";
 import exportIcon from "../../../../public/assets/svg/Content.svg";
-const WearhousetTable = ({ data }) => {
+import { handleExport } from "@/utils/helper";
+const WearhousetTable = ({ data, handleFilfeterData }) => {
   return (
     <div>
       <table className="w-full hidden lg:block">
@@ -65,13 +66,23 @@ const WearhousetTable = ({ data }) => {
           <div className="">
             <div className="flex items-center justify-between">
               <div className="w-[70%] block">
-                <SearchInput placeholder="Search" />
+                <SearchInput
+                  placeholder="Search"
+                  setValue={(data) => {
+                    handleFilfeterData(data);
+                  }}
+                />
               </div>
               <div className="flex items-center justify-center">
                 <Image src={icon} alt="" />
               </div>
               <div className="flex items-center justify-center">
-                <div className="w-[3rem] h-[3rem] bg-primary rounded-[12px] flex items-center justify-center">
+                <div
+                  className="w-[3rem] h-[3rem] bg-primary rounded-[12px] flex items-center justify-center"
+                  onClick={() => {
+                    handleExport(data);
+                  }}
+                >
                   <Image src={exportIcon} alt="" />
                 </div>
               </div>

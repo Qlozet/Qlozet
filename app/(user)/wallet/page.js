@@ -28,6 +28,7 @@ const Wallet = () => {
   const [allBanks, setAllBanks] = useState([]);
   const [loadPage, setLoadPage] = useState(true);
   const [transactionData, setTransactionData] = useState([]);
+  const [filteredTransactionData, setFilteredTransactionData] = useState([]);
   const [rejectModal, setShowReject] = useState(false);
   const handleShowViewDetailModal = () => {
     setShowTransactiondetails(true);
@@ -93,6 +94,7 @@ const Wallet = () => {
           transactionDataArray.push(transactionItem);
         });
         setTransactionData(transactionDataArray);
+        setFilteredTransactionData(transactionDataArray);
       } else {
         // toast(<Toast text={response.message} type="danger" />);
       }
@@ -110,6 +112,16 @@ const Wallet = () => {
         setAllBanks(response?.data?.data?.data);
       }
     } catch (error) {}
+  };
+
+  const handleFilfeterData = (data) => {
+    setFilteredTransactionData(
+      transactionData.filter(
+        (tansact) =>
+          tansact.narration.toLowerCase().includes(data.toLowerCase()) ||
+          tansact.transactionId.toLowerCase().includes(data.toLowerCase())
+      )
+    );
   };
   useEffect(() => {
     getTransaction();
@@ -133,7 +145,9 @@ const Wallet = () => {
           <div className="w-full p-4">
             <DasboardNavWithOutSearch
               addSearch={true}
-              setValue={(data) => {}}
+              setValue={(data) => {
+                handleFilfeterData(data);
+              }}
               name="Wallet"
               showSideBar={showSideBar}
             />
@@ -208,12 +222,13 @@ const Wallet = () => {
 
             <div className="">
               <WalletTable
-                data={transactionData}
+                data={filteredTransactionData}
                 viewDetails={(id) => {
                   setransactionId(id);
                   handleShowViewDetailModal();
                 }}
                 showRejectModal={showRejectModal}
+                handleFilfeterData={handleFilfeterData}
               />
             </div>
           </div>

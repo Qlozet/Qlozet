@@ -21,7 +21,7 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg }) => {
         zIndex: 20,
       }}
     >
-      <div className={`relative ${bg ? bg : "bg-gray-300"}`}>
+      <div className={`relative ${bg ? bg : ""}`}>
         <Image src={arrowDownIcon} className="absolute top-2 right-3" alt="" />
         <input
           onChange={() => {}}
@@ -29,9 +29,9 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg }) => {
             setShowDropDown(true);
           }}
           onBlur={(e) => {
-            if (!dropDownRef.current.contains(e.relatedTarget)) {
-              setShowDropDown(false);
-            }
+            // if (!dropDownRef.current.contains(e.relatedTarget)) {
+            setShowDropDown(false);
+            // }
           }}
           placeholder={placeholder}
           value={options}
@@ -54,9 +54,9 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg }) => {
               <div
                 tabIndex={0}
                 key={index}
-                className={`cursor-pointer p-2 ${
+                className={`cursor-pointer text-[12px] p-2 ${
                   index < data.length - 1 &&
-                  "border-solid border-gray-200 border-b-[1px] w-full"
+                  "border-solid border-gray-200 border-b-[1px] w-full "
                 }`}
                 onClick={() => {
                   handleSetValue(item);

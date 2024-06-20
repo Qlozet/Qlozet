@@ -9,7 +9,13 @@ import DropDown from "@/components/DropDown";
 import OrderStatus from "../OrderStatus";
 import userInfo from "../../../public/assets/svg/Info Circle.svg";
 import { handleExport } from "@/utils/helper";
-const OrderTable = ({ data, viewDetails, showRejectModal }) => {
+import MobileTableItem from "../OrderMobileTableItem";
+const OrderTable = ({
+  data,
+  viewDetails,
+  showRejectModal,
+  handleFilfeterData,
+}) => {
   return (
     <div className=" mt-4 min-h-[50vh]">
       <table className="w-full hidden lg:block">
@@ -51,7 +57,7 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
               </div>
             </th>
             <th className="w-[10%] px-2 py-4 text-[12px]">
-            <ExportComponent
+              <ExportComponent
                 handleExport={() => {
                   handleExport(data);
                 }}
@@ -74,13 +80,23 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
         <div className="block lg:hidden">
           <div className="flex items-center justify-between">
             <div className="w-[70%] block">
-              <SearchInput placeholder="Search" />
+              <SearchInput
+                placeholder="Search"
+                setValue={(data) => {
+                  handleFilfeterData(data);
+                }}
+              />
             </div>
             <div className="flex items-center justify-center">
               <Image src={icon} alt="" />
             </div>
             <div className="flex items-center justify-center">
-              <div className="w-[3rem] h-[3rem] bg-primary rounded-[12px] flex items-center justify-center">
+              <div
+                className="w-[3rem] h-[3rem] bg-primary rounded-[12px] flex items-center justify-center"
+                onClick={() => {
+                  handleExport(data);
+                }}
+              >
                 <Image src={exportIcon} alt="" />
               </div>
             </div>
@@ -102,73 +118,13 @@ const OrderTable = ({ data, viewDetails, showRejectModal }) => {
                 "Choose month",
                 "Custom",
               ]}
-              maxWidth={"max-w-[10rem]"}
+              maxWidth={"max-w-[7.5rem]"}
               placeholder="Time Range"
               setValue={(data) => {}}
             />
           </div>
           {data.map((item, index) => {
-            console.log(item);
-            return (
-              <div className="" key={index}>
-                <div className="flex justify-between items-center bg-white p-4">
-                  <div>
-                    <Typography
-                      textColor="text-gray-200"
-                      textWeight="font-normal"
-                      textSize="text-[14px]"
-                    >
-                      Ref ID
-                    </Typography>
-                    <Typography
-                      textColor="text-dark"
-                      textWeight="font-normal"
-                      textSize="text-[16px]"
-                    >
-                      12345678910
-                    </Typography>
-                    <Typography
-                      textColor="text-gray-200"
-                      textWeight="font-normal"
-                      textSize="text-[14px]"
-                    >
-                      Amount
-                    </Typography>
-                    <Typography
-                      textColor="text-dark"
-                      textWeight="font-normal"
-                      textSize="text-[16px]"
-                    >
-                      {item.AmountPaid}
-                    </Typography>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <OrderStatus
-                      text="Out for delivery"
-                      bgColor="bg-[#DEF1FF]"
-                      color="text-[#3893FE]"
-                      addMaxWidth={true}
-                    />
-                    <div className="my-2">
-                      <Typography
-                        textColor="text-gray-200"
-                        textWeight="font-normal"
-                        textSize="text-[14px]"
-                      >
-                        Product
-                      </Typography>
-                    </div>
-                    <Typography
-                      textColor="text-dark"
-                      textWeight="font-normal"
-                      textSize="text-[16px]"
-                    >
-                      {item.productName}
-                    </Typography>
-                  </div>
-                </div>
-              </div>
-            );
+            return <MobileTableItem item={item} key={index} />;
           })}
         </div>
       </div>

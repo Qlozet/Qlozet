@@ -9,18 +9,8 @@ import { getRequest } from "@/api/method";
 import Loader from "@/components/Loader";
 
 const Warehouse = () => {
-  const [wareHouse, setWareHouse] = useState([
-    {
-      warehouseName: "Mouka warehouse",
-      vendorName: "Mouka warehouse",
-      warehouseAddress: "14, Jones street, Lagos Nigeria",
-      contactName: "2348132205304",
-      PhoneNumber: "helloe",
-      email: "karlkeller@gmail.com",
-      Status: "helloe",
-      vendorId: "DEV63016762",
-    },
-  ]);
+  const [wareHouse, setWareHouse] = useState([]);
+  const [filtereWareHouse, setFilterWareHouse] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [pageLoading, setPageLoading] = useState(false);
   const closeAddWarehouseModal = () => {
@@ -32,7 +22,6 @@ const Warehouse = () => {
       setPageLoading(true);
       let response = await getRequest("/vendor/warehouse");
       let warehouses = [];
-      console.log(response);
       setPageLoading(false);
       if (response.data) {
         response?.data?.data.formattedWarehouses.map((item) => {
@@ -48,10 +37,24 @@ const Warehouse = () => {
           warehouses.push(warehouse);
         });
         setWareHouse(warehouses);
+        setFilterWareHouse(warehouses);
       }
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleFilfeterData = (data) => {
+    setFilterWareHouse(
+      wareHouse.filter(
+        (ware) =>
+          ware.warehouseName.toLowerCase().includes(data.toLowerCase()) ||
+          ware.vendorName.toLowerCase().includes(data.toLowerCase()) ||
+          ware.email.toLowerCase().includes(data.toLowerCase()) ||
+          ware.contactName.toLowerCase().includes(data.toLowerCase()) ||
+          ware.warehouseAddress.toLowerCase().includes(data.toLowerCase())
+      )
+    );
   };
 
   useEffect(() => {
@@ -81,7 +84,10 @@ const Warehouse = () => {
             <div></div>
           </div>
 
-          <WearhousetTable data={wareHouse} />
+          <WearhousetTable
+            data={filtereWareHouse}
+            handleFilfeterData={handleFilfeterData}
+          />
           {showAddModal && (
             <Modal
               content={

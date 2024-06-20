@@ -7,6 +7,9 @@ import classes from "./index.module.css";
 import moment from "moment";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
+import sendIcon from "../../../public/assets/svg/send.svg";
+import carIcon from "../../../public/assets/svg/car.svg";
+import shippingIcon from "../../../public/assets/svg/shipping_bag.svg";
 import OrderTable from "@/components/order/OrderTable";
 import Modal from "@/components/Modal";
 import SetTotalOrderPerDay from "@/components/SetTotalItemPerDayForm";
@@ -28,6 +31,7 @@ const Order = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [orders, setOrders] = useState([]);
+  const [filterdOrders, setFilteredOrders] = useState([]);
   const [order, setOrder] = useState({});
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
@@ -35,50 +39,6 @@ const Order = () => {
   const handleShowViewDetailModal = (orderId) => {
     setOrder(orders.filter((item) => item.orderId == orderId)[0]);
     setOrderDetails(true);
-  };
-
-  const data = [
-    {
-      location: "Warri",
-      total: "w-[70%]",
-      percentage: "w-[50%]",
-    },
-    {
-      location: "Benin",
-      total: "w-[60%]",
-      percentage: "w-[53%]",
-    },
-    {
-      location: "Aba",
-      total: "w-[44%]",
-      percentage: "w-[40%]",
-    },
-    {
-      location: "Aba",
-      total: "w-[44%]",
-      percentage: "w-[40%]",
-    },
-  ];
-
-  const dropdownData = [
-    {
-      text: "View vendor’s details",
-      color: "",
-    },
-    {
-      text: "View vendor’s ",
-      color: "",
-    },
-    {
-      text: "vendor’s details",
-      color: "",
-    },
-  ];
-  const chartData = {
-    labels: ["Male", "Female"],
-    values: [12, 19],
-    colors: ["#3E1C01", "#9C8578"],
-    borderAlign: "center",
   };
 
   const closeModal = () => {
@@ -129,8 +89,8 @@ const Order = () => {
     try {
       const response = await getRequest("/vendor/orders");
       let ordersData = [];
+      console.log(response);
       response.data.data.map((order) => {
-        console.log(order);
         let DeliveryStatus;
         if (order.status === "out-for-delivery") {
           DeliveryStatus = { name: "Out for delivery", bg: "bg-[#D4CFCA]" };
@@ -143,7 +103,7 @@ const Order = () => {
           orderId: order._id,
           date: moment(order.orderDate).format("YYYY-MM-DD"),
           productName: order.orderItems.map((product) => {
-            return product.product.name;
+            return product.name;
           }),
           productPrice: calculatePrice(order.orderItems),
           customerName: `${order.customer.firstName} ${order.customer.lastName}`,
@@ -157,8 +117,21 @@ const Order = () => {
         ordersData.push(orderItem);
       });
       setOrders(ordersData);
+      setFilteredOrders(ordersData);
       setPageLoading(false);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleFilfeterData = (data) => {
+    setFilteredOrders(
+      orders.filter(
+        (ord) =>
+          ord.customerName.toLowerCase().includes(data.toLowerCase()) ||
+          ord.productName[0].toLowerCase().includes(data.toLowerCase())
+      )
+    );
   };
 
   useEffect(() => {
@@ -182,42 +155,44 @@ const Order = () => {
             <DasboardNavWithOutSearch
               addSearch={true}
               name="Orders"
-              setValue={(data) => {}}
+              setValue={(data) => {
+                handleFilfeterData(data);
+              }}
               showSideBar={showSideBar}
             />
             <div
               className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4 lg:hidden`}
             >
               <DashboardTopCard
-                name="Total Vendors"
-                total="1000"
+                name="Total Orders"
+                total={orders.length}
                 percentage="2.5"
                 bgColor="bg-[#57CAEB]"
                 icon={TotalOrderIcon}
                 addMaxWidth={true}
               />
               <DashboardTopCard
-                name="Achieved Vendors"
+                name="Orders Delivered"
                 total="100"
                 percentage="2.5"
                 bgColor="bg-[#5DDAB4]"
-                icon={customerIcon}
+                icon={sendIcon}
                 addMaxWidth={true}
               />
               <DashboardTopCard
-                name="Total Customers"
+                name="Orders in Transit"
                 total="100"
                 percentage="2.5"
-                bgColor="bg-[#5DDAB4]"
-                icon={customerIcon}
+                bgColor="bg-[#FF7676]"
+                icon={carIcon}
                 addMaxWidth={true}
               />
               <DashboardTopCard
-                name="Total Customers"
+                name="Most purchased order"
                 total="1000"
                 percentage="2.5"
-                bgColor="bg-[#5DDAB4]"
-                icon={customerIcon}
+                bgColor="bg-[#FF9E57]"
+                icon={shippingIcon}
                 addMaxWidth={true}
               />
             </div>
@@ -225,19 +200,19 @@ const Order = () => {
               className={`${classes.scrollbarElement} items-center gap-4 overflow-x-scroll px-4 hidden lg:flex`}
             >
               <DashboardTopCard
-                name="Total Vendors"
-                total="10000"
+                name="Total Orders"
+                total={orders.length}
                 percentage="2.5"
                 bgColor="bg-[#57CAEB]"
                 link="link"
                 icon={vendorIcon}
               />
               <DashboardTopCard
-                name="Achieved Vendors"
+                name="Orders Delivered"
                 total="10000"
                 percentage="2.5"
                 bgColor="bg-[#5DDAB4]"
-                icon={customerIcon}
+                icon={sendIcon}
               />
               <DashboardTopCard
                 name="Total Customers"
@@ -257,10 +232,11 @@ const Order = () => {
             <div className="">
               <div>
                 <OrderTable
-                  data={orders}
+                  data={filterdOrders}
                   viewDetails={(orderId) => {
                     handleShowViewDetailModal(orderId);
                   }}
+                  handleFilfeterData={handleFilfeterData}
                   showRejectModal={showRejectModal}
                 />
               </div>

@@ -173,14 +173,15 @@ const Dashboard = () => {
       let response = await getRequest("/vendor/settings/vendor-details");
       let vandorInfo = [];
       if (response?.data) {
-        console.log(response?.data?.data);
+        console.log(response);
         setPageLoading(false);
         setShopDetails({
           vendorName: response?.data?.data?.businessName,
           companyName: response?.data?.data?.businessName,
-          addressLine1: response?.data?.data?.addressLine2,
+          addressLine1: response?.data?.data?.businessAddress,
+          addressLine2: response?.data?.data?.addressLine2,
           state: response?.data?.data.state,
-          timeZone: response?.data?.data,
+          timeZone: response?.data?.data.timeZone,
           Phone: response?.data?.data?.businessPhoneNumber,
           email: response?.data?.data?.businessEmail,
           city: response?.data?.data?.city,
@@ -217,9 +218,11 @@ const Dashboard = () => {
           </div>
           <div className="w-full p-4">
             <DasboardNavWithOutSearch
-              addSearch={false}
+              // addSearch={currentNav === "Warehouses" ? true : false}
               name="Settings"
-              setValue={(data) => {}}
+              setValue={(data) => {
+                handleFilfeterData(data);
+              }}
               showSideBar={showSideBar}
             />
             <div className="mt-4">

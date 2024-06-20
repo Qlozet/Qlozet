@@ -1,26 +1,24 @@
-import OrderStatus from "@/components/order/OrderStatus";
+import Typography from "@/components/Typography";
+import OrderStatus from "../OrderStatus";
 
-const { default: Typography } = require("@/components/Typography");
-
-const MobileItem = ({ item, index }) => {
-  console.log(item);
+const MobileTableItem = ({ item }) => {
   return (
-    <div className="p-4 bg-white" key={index}>
-      <div className="flex justify-between items-center">
+    <div className="" >
+      <div className="flex justify-between items-center bg-white p-4">
         <div className="flex flex-col gap-1">
           <Typography
             textColor="text-gray-200"
             textWeight="font-normal"
             textSize="text-[14px]"
           >
-            transaction Id
+            Ref ID
           </Typography>
           <Typography
             textColor="text-dark"
             textWeight="font-normal"
             textSize="text-[16px]"
           >
-            {12345}
+            12345678910
           </Typography>
           <Typography
             textColor="text-gray-200"
@@ -34,7 +32,7 @@ const MobileItem = ({ item, index }) => {
             textWeight="font-normal"
             textSize="text-[16px]"
           >
-            {item.amount}
+            {item.AmountPaid}
           </Typography>
         </div>
         <div className="flex flex-col items-end">
@@ -58,7 +56,7 @@ const MobileItem = ({ item, index }) => {
             textWeight="font-normal"
             textSize="text-[16px]"
           >
-            12345678910
+            {item.productName}
           </Typography>
         </div>
       </div>
@@ -66,4 +64,4 @@ const MobileItem = ({ item, index }) => {
   );
 };
 
-export default MobileItem;
+export default MobileTableItem;

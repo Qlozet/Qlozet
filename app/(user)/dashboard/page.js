@@ -25,6 +25,7 @@ import DropDown from "@/components/DropDown";
 const Dashboard = () => {
   const mobileNavRef = useRef();
   const [totalCustomer, setTotalCustomer] = useState("0");
+  const [totalOrder, setTotalOrder] = useState("0");
   const [customerLocation, setCustomerLocation] = useState("");
   const [loadPage, setLoadPage] = useState(true);
   const [top4Location, setTop4Location] = useState([]);
@@ -157,6 +158,15 @@ const Dashboard = () => {
     } catch (error) {}
   };
 
+  const getTotalOrder = async () => {
+    try {
+      let response = await getRequest("/vendor/orders");
+      if (response.data) {
+        setTotalOrder(response.data.data.length);
+      }
+    } catch (error) {}
+  };
+
   const getOrderByGender = async () => {
     try {
       const productData = [];
@@ -195,6 +205,7 @@ const Dashboard = () => {
     get4TopLocation();
     get4Topproduct();
     getOrderByGender();
+    getTotalOrder();
   }, []);
 
   return (
@@ -228,7 +239,7 @@ const Dashboard = () => {
             >
               <DashboardTopCard
                 name="Total Order"
-                total={totalCustomer}
+                total={totalOrder}
                 percentage="2.5"
                 bgColor="bg-[#57CAEB]"
                 link="link"
@@ -243,7 +254,7 @@ const Dashboard = () => {
               />
               <DashboardTopCard
                 name="Total Customers"
-                total="10000"
+                total={totalCustomer}
                 percentage="2.5"
                 bgColor="bg-[#FF7976]"
                 icon={customerIcon}
@@ -278,7 +289,7 @@ const Dashboard = () => {
                       "Choose month",
                       "Custom",
                     ]}
-                    maxWidth={"max-w-[10rem]"}
+                    maxWidth={"max-w-[7.5rem]"}
                     placeholder="Time Range"
                     setValue={(data) => {}}
                     bg={"bg-white"}
