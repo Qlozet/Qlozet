@@ -5,6 +5,7 @@ import Typography from "../../Typography";
 import OrderStatus from "../../order/OrderStatus";
 import Button from "../../Button";
 const CustomerDetails = ({ topNavData, closeModal, customer }) => {
+  console.log(customer);
   return (
     <div className="flex flex-col items-center justify-center w-full my-4">
       <OrderDetailNav
@@ -60,7 +61,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
                 textWeight="font-bold"
                 textSize="text-[12px]"
               >
-                {customer.emailAddress}
+                {customer.customerEmail}
               </Typography>
             </div>
           </div>
@@ -80,7 +81,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
                 textWeight="font-bold"
                 textSize="text-[12px]"
               >
-                {customer.phone}
+                {customer.customerPhoneNumber}
               </Typography>
             </div>
           </div>
@@ -100,7 +101,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
                 textWeight="font-bold"
                 textSize="text-[12px]"
               >
-                {customer.phone}
+                {customer.customerPhoneNumber}
               </Typography>
             </div>
           </div>
@@ -120,7 +121,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
                 textWeight="font-bold"
                 textSize="text-[12px]"
               >
-                {/* {customer.custmerAddress} */}
+                {customer.custmerAddress}
               </Typography>
             </div>
           </div>
@@ -133,7 +134,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
               children="Close"
               btnSize="large"
               variant="primary"
-              clickHandler={() => {}}
+              clickHandler={closeModal}
               maxWidth="max-w-[14rem]"
               minWidth="w-[9rem]"
             />

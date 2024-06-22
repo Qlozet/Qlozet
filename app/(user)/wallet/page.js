@@ -85,7 +85,7 @@ const Wallet = () => {
           }
           const transactionItem = {
             transactionId: item?.transactionId,
-            amount: item?.amount,
+            amount: `₦${parseInt(item?.amount).toLocaleString()}`,
             date: item?.date,
             narration: item.narration,
             status: status,

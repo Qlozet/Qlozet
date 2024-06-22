@@ -24,6 +24,7 @@ const DasboardNavWithOutSearch = ({
 }) => {
   const router = useRouter();
   const [showProfile, setShowProfile] = useState(false);
+  const [pageLoaging, setPageLoading] = useState(true);
   const showProfileHandler = () => {
     setShowProfile(!showProfile);
   };
@@ -37,28 +38,28 @@ const DasboardNavWithOutSearch = ({
   const getVendorDetailshandler = async () => {
     const response = await getVendorDetails();
     if (response?.data) {
-      setUserDetails(response?.data);
-      // console.log(response?.data);
+      setPageLoading(false);
       setUserData({
-        businessName: response?.data?.data?.businessName
-          ? response?.data?.data?.businessName
+        businessName: response?.data?.data?.companyName
+          ? response?.data?.data?.companyName
           : "",
-        personalName: response?.data?.data?.personalName
-          ? response?.data?.data?.personalName
+        personalName: response?.data?.data?.vendorName
+          ? response?.data?.data?.vendorName
           : "",
-        profileImage: response?.data?.data?.profileImage
-          ? response?.data?.data?.profileImage
+        profileImage: response?.data?.profilePicture
+          ? response?.data?.data?.profilePicture
           : "",
       });
+      console.log(response?.data?.data?.vendorName);
       setUserDetails({
-        businessName: response?.data?.data?.businessName
-          ? response?.data?.data?.businessName
+        businessName: response?.data?.data?.companyName
+          ? response?.data?.data?.companyName
           : "",
-        personalName: response?.data?.data?.personalName
-          ? response?.data?.data?.personalName
+        personalName: response?.data?.data?.vendorName
+          ? response?.data?.data?.vendorName
           : "",
-        profileImage: response?.data?.data?.profileImage
-          ? response?.data?.data?.profileImage
+        profileImage: response?.data?.profilePicture
+          ? response?.data?.data?.profilePicture
           : "",
       });
     }
@@ -102,6 +103,13 @@ const DasboardNavWithOutSearch = ({
                   }}
                 />
               </div>
+              <Typography
+                textColor="text-dark"
+                textWeight="font-bold"
+                textSize="text-[18px]"
+              >
+                {userDetails.personalName}
+              </Typography>
               <div className="rounded-[12px] p-2 bg-[#F8F9FA] cursor-pointer">
                 <Image
                   alt=""

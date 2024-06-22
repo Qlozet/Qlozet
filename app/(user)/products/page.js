@@ -100,7 +100,7 @@ const Products = () => {
               ? product.images[0]?.secure_url
               : "",
             productName: product.name,
-            productPrice: product.price,
+            productPrice: `₦${parseInt(product.price).toLocaleString()}`,
             category: "Two Piece",
             productType: product.type,
             tag: product.tag,

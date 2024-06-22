@@ -10,16 +10,19 @@ import OrderStatus from "../OrderStatus";
 import userInfo from "../../../public/assets/svg/Info Circle.svg";
 import { handleExport } from "@/utils/helper";
 import MobileTableItem from "../OrderMobileTableItem";
+import { useState } from "react";
 const OrderTable = ({
   data,
   viewDetails,
   showRejectModal,
   handleFilfeterData,
+  handleFilterWithDate,
 }) => {
+  const [secke, setCheck] = useState("");
   return (
     <div className=" mt-4 min-h-[50vh]">
-      <table className="w-full hidden lg:block">
-        <thead className="w-full bg-[#F4F4F4] ">
+      <table className="w-full hidden lg:block border-3px">
+        <thead className="w-full bg-[#F4F4F4]  border-primary border-solid">
           <tr>
             <th className="w-[8%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
@@ -28,10 +31,10 @@ const OrderTable = ({
             </th>
             <th className="w-[5%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
-                Order ID{" "}
+                Order ID
               </div>
             </th>
-            <th className="w-[8%] px-2 py-4 text-[12px]">
+            {/* <th className="w-[8%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
                 Product name
               </div>
@@ -40,7 +43,7 @@ const OrderTable = ({
               <div className="flex items-center justify-start font-[500] text-dark">
                 Product price
               </div>
-            </th>
+            </th> */}
             <th className="w-[10%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
                 Customer name
@@ -110,6 +113,7 @@ const OrderTable = ({
               Orders
             </Typography>
             <DropDown
+              value={secke}
               data={[
                 "This week",
                 "Last week",
@@ -118,9 +122,12 @@ const OrderTable = ({
                 "Choose month",
                 "Custom",
               ]}
-              maxWidth={"max-w-[7.5rem]"}
+              maxWidth={"max-w-[8rem]"}
               placeholder="Time Range"
-              setValue={(data) => {}}
+              setValue={(data) => {
+                setCheck(data);
+                handleFilterWithDate(data);
+              }}
             />
           </div>
           {data.map((item, index) => {

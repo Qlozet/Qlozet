@@ -89,7 +89,6 @@ const Order = () => {
     try {
       const response = await getRequest("/vendor/orders");
       let ordersData = [];
-      console.log(response);
       response.data.data.map((order) => {
         let DeliveryStatus;
         if (order.status === "out-for-delivery") {
@@ -100,7 +99,7 @@ const Order = () => {
           DeliveryStatus = { name: "Return", bg: "bg-[#D4CFCA]" };
         }
         let orderItem = {
-          orderId: order._id,
+          orderId: order.orderId,
           date: moment(order.orderDate).format("YYYY-MM-DD"),
           productName: order.orderItems.map((product) => {
             return product.name;
@@ -109,10 +108,11 @@ const Order = () => {
           customerName: `${order.customer.firstName} ${order.customer.lastName}`,
           customerPhoneNumber: order.customer.phoneNumber,
           customerEmail: order.customer.email,
-          AmountPaid: order.amountPaid,
+          AmountPaid: `₦${order.amountPaid.toLocaleString()}`,
           shippingAddress: order.shippingAddress,
           custmerAddress: order.shippingAddress,
           DeliveryStatus: DeliveryStatus,
+          createdAt: order.orderDate,
         };
         ordersData.push(orderItem);
       });
@@ -122,6 +122,17 @@ const Order = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleFilterWithDate = (data) => {
+    const today = new Date();
+    console.log(
+      orders.filter(
+        (item) =>
+          moment(item.createdAt).valueOf() > data &&
+          moment(item.createdAt).valueOf() < today.getTime()
+      )
+    );
   };
 
   const handleFilfeterData = (data) => {
@@ -237,6 +248,7 @@ const Order = () => {
                     handleShowViewDetailModal(orderId);
                   }}
                   handleFilfeterData={handleFilfeterData}
+                  handleFilterWithDate={handleFilterWithDate}
                   showRejectModal={showRejectModal}
                 />
               </div>
@@ -266,7 +278,7 @@ const Order = () => {
                 <CustomerDetails
                   topNavData={topNavData}
                   closeModal={closeModal}
-                  order={order}
+                  customer={order}
                 />
               }
             ></Modal>

@@ -3,7 +3,7 @@ import OrderStatus from "../OrderStatus";
 
 const MobileTableItem = ({ item }) => {
   return (
-    <div className="" >
+    <div className="">
       <div className="flex justify-between items-center bg-white p-4">
         <div className="flex flex-col gap-1">
           <Typography
@@ -18,7 +18,7 @@ const MobileTableItem = ({ item }) => {
             textWeight="font-normal"
             textSize="text-[16px]"
           >
-            12345678910
+            {item.orderId}
           </Typography>
           <Typography
             textColor="text-gray-200"

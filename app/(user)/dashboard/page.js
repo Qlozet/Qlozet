@@ -167,44 +167,44 @@ const Dashboard = () => {
     } catch (error) {}
   };
 
-  const getOrderByGender = async () => {
-    try {
-      const productData = [];
-      const response = await getRequest("/vendor/dashboard/orders/tag");
-      console.log(response);
-      if (response?.data) {
-        console.log(response?.data?.data.female);
-        setGenderByOrder({
-          labels: ["Male", "Female"],
-          values: [response?.data.data.male, response?.data.data.female],
-          colors: ["#3E1C01", "#9C8578"],
-          borderAlign: "center",
-        });
-      }
-      // const singleLocatin = {
-      //   location: location.location,
-      //   female: (location.female / response?.data?.data?.totalOrders) * 100,
-      //   male: (location.male / response?.data?.data?.totalOrders) * 100,
-      // };
-      // setCustomerLocation(response.data.totalCount);
-      // response?.data?.data?.locations.map((location) => {
-      //   const singleLocatin = {
-      //     location: location.location,
-      //     female: (location.female / response?.data?.data?.totalOrders) * 100,
-      //     male: (location.male / response?.data?.data?.totalOrders) * 100,
-      //   };
-      //   locationData.push(singleLocatin);
-      // });
-      // setTop4Location(locationData);
-    } catch (error) {}
-  };
+  // const getOrderByGender = async () => {
+  //   try {
+  //     const productData = [];
+  //     const response = await getRequest("/vendor/dashboard/orders/tag");
+  //     console.log(response);
+  //     if (response?.data) {
+  //       console.log(response?.data?.data.female);
+  //       setGenderByOrder({
+  //         labels: ["Male", "Female"],
+  //         values: [response?.data.data.male, response?.data.data.female],
+  //         colors: ["#3E1C01", "#9C8578"],
+  //         borderAlign: "center",
+  //       });
+  //     }
+  //     // const singleLocatin = {
+  //     //   location: location.location,
+  //     //   female: (location.female / response?.data?.data?.totalOrders) * 100,
+  //     //   male: (location.male / response?.data?.data?.totalOrders) * 100,
+  //     // };
+  //     // setCustomerLocation(response.data.totalCount);
+  //     // response?.data?.data?.locations.map((location) => {
+  //     //   const singleLocatin = {
+  //     //     location: location.location,
+  //     //     female: (location.female / response?.data?.data?.totalOrders) * 100,
+  //     //     male: (location.male / response?.data?.data?.totalOrders) * 100,
+  //     //   };
+  //     //   locationData.push(singleLocatin);
+  //     // });
+  //     // setTop4Location(locationData);
+  //   } catch (error) {}
+  // };
 
   useEffect(() => {
     getTotalCustomers();
     getLocationWithHighestCustomer();
     get4TopLocation();
     get4Topproduct();
-    getOrderByGender();
+    // getOrderByGender();
     getTotalOrder();
   }, []);
 

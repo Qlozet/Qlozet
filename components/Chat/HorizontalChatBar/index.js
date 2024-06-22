@@ -5,14 +5,14 @@ const HorizontalChatBar = ({ location, male, female }) => {
         {male < female && (
           <div
             className={`
-        bg-primary-200 rounded-r-[40px] block`}
-            style={{ width: `${female < 70 ? female + 70 : female}%` }}
+        bg-primary-200 rounded-r-[55px] block`}
+            style={{ width: `${female < 55 ? female + 55 : female}%` }}
           >
             <div
-              className={`bg-primary rounded-r-[40px] block`}
-              style={{ width: `${male < 70 ? male + 70 : male}%` }}
+              className={`bg-primary rounded-r-[55px] block`}
+              style={{ width: `${male < 55 ? male + 55 : male}%` }}
             >
-              <p className="py-1 px-2 text-white text-[12px] font-[500]">
+              <p className="py-1 px-2 text-white text-[12px] font-[550]">
                 {location}
               </p>
             </div>
@@ -20,15 +20,15 @@ const HorizontalChatBar = ({ location, male, female }) => {
         )}
         {male > female && (
           <div
-            className={`bg-primary rounded-r-[40px] block`}
-            style={{ width: `${male < 70 ? male + 70 : male}%` }}
+            className={`bg-primary rounded-r-[55px] block`}
+            style={{ width: `${male < 55 ? male + 55 : male}%` }}
           >
             <div
               className={`
-        bg-primary-200 rounded-r-[40px]`}
-              style={{ width: `${female < 70 ? female + 70 : female}% block` }}
+        bg-primary-200 rounded-r-[55px]`}
+              style={{ width: `${female < 55 ? female + 55 : female}% block` }}
             >
-              <p className="py-1 px-2 text-white text-[12px] font-[500]">
+              <p className="py-1 px-2 text-white text-[12px] font-[550]">
                 {location}
               </p>
             </div>
@@ -36,10 +36,10 @@ const HorizontalChatBar = ({ location, male, female }) => {
         )}
         {male === female && (
           <div
-            className={`bg-primary rounded-r-[40px] block`}
-            style={{ width: `${male < 70 ? male + 70 : male}%` }}
+            className={`bg-primary rounded-r-[55px] block`}
+            style={{ width: `${male < 55 ? male + 55 : male}%` }}
           >
-            <p className="py-1 px-2 text-white text-[12px] font-[500]">
+            <p className="py-1 px-2 text-white text-[12px] font-[550]">
               {location}
             </p>
           </div>

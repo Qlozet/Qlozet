@@ -5,7 +5,7 @@ import { getToken } from "../utils/localstorage";
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
 });
-
+import { redirect } from "next/navigation";
 export const getRequest = async (url) => {
   let userData;
   let token = getToken();
@@ -16,14 +16,18 @@ export const getRequest = async (url) => {
       response = await axiosInstance.get(url, {
         headers: { Authorization: `Bearer ${userData?.token}` },
       });
+
       return response;
     } else {
       response = await axiosInstance.get(url);
       return response.data;
     }
   } catch (error) {
-    console.log(error);
-    return error.response;
+    if (error.response.data === "Unauthorized") {
+      redirect("/auth/signin");
+    } else {
+      return error.response;
+    }
   }
 };
 
