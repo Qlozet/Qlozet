@@ -33,12 +33,17 @@ const DasboardNavWithOutSearch = ({
     businessName: "",
     profileImage: "",
     personalName: "",
+    profilePic: "",
+    averageRating: "",
+    profit: "",
+    items: "",
   });
 
   const getVendorDetailshandler = async () => {
     const response = await getVendorDetails();
     if (response?.data) {
       setPageLoading(false);
+      console.log(response?.data?.data);
       setUserData({
         businessName: response?.data?.data?.companyName
           ? response?.data?.data?.companyName
@@ -49,8 +54,13 @@ const DasboardNavWithOutSearch = ({
         profileImage: response?.data?.profilePicture
           ? response?.data?.data?.profilePicture
           : "",
+        items: response.data?.data?.items ? response.data?.data?.items : "",
+        profit: response.data?.data?.profit ? response.data?.data?.profit : "",
+        averageRating: response.data?.data?.averageRating
+          ? response?.data?.data?.averageRating
+          : "",
       });
-      console.log(response?.data?.data?.vendorName);
+      console.log(response.data?.data?.profit);
       setUserDetails({
         businessName: response?.data?.data?.companyName
           ? response?.data?.data?.companyName
@@ -60,6 +70,11 @@ const DasboardNavWithOutSearch = ({
           : "",
         profileImage: response?.data?.profilePicture
           ? response?.data?.data?.profilePicture
+          : "",
+        items: response.data?.data?.items ? response.data?.data?.items : "",
+        profit: response.data?.data?.profit ? response.data?.data?.profit : "",
+        averageRating: response.data?.data?.averageRating
+          ? response?.data?.data?.averageRating
           : "",
       });
     }

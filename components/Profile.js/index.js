@@ -7,6 +7,7 @@ import Performance from "../Performance";
 import Rating from "../Rating";
 import { useEffect, useState } from "react";
 const Profile = ({ closeProfile, userDetails }) => {
+  console.log(userDetails);
   return (
     <div
       className={`fixed h-screen overflow-y-scroll w-screen top-0 right-0 flex justify-end z-50`}
@@ -80,7 +81,7 @@ const Profile = ({ closeProfile, userDetails }) => {
                           textSize="text-[18px]"
                           align="center"
                         >
-                          10,000
+                          0{/* {userDetails.items} */}
                         </Typography>
                       </div>
                       <div className="h-[2rem] w-[1px] bg-gray-200"></div>
@@ -99,7 +100,7 @@ const Profile = ({ closeProfile, userDetails }) => {
                           textSize="text-[18px]"
                           align="center"
                         >
-                          10,000
+                          0{/* {userDetails.profit} */}
                         </Typography>
                       </div>
                     </div>
