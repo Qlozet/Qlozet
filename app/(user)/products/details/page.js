@@ -55,7 +55,7 @@ const ProductDetails = () => {
       });
       setProductFormData({
         productName: response.data.data.name,
-        productPrice: response.data.data.price,
+        productPrice: `₦${response.data.data.price}`,
         productTag: response.data.data.tag,
         description: response.data.data.description,
         productQuantity: response.data.data.quantity,
