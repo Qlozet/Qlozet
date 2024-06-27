@@ -2,8 +2,8 @@ import ReactStars from "react-stars";
 import React from "react";
 import { render } from "react-dom";
 
-const Rating = () => {
-  const ratingChanged = (newRating) => {};
+const Rating = ({ newRating }) => {
+  const ratingChanged = ({}) => {};
   return (
     <div>
       <ReactStars
@@ -11,7 +11,7 @@ const Rating = () => {
         onChange={ratingChanged}
         size={24}
         color2={"#FFB020"}
-        value={4.8}
+        value={newRating}
       />
     </div>
   );

@@ -7,7 +7,7 @@ import Performance from "../Performance";
 import Rating from "../Rating";
 import { useEffect, useState } from "react";
 const Profile = ({ closeProfile, userDetails }) => {
-  console.log(userDetails);
+  console.log(userDetails.averageRating);
   return (
     <div
       className={`fixed h-screen overflow-y-scroll w-screen top-0 right-0 flex justify-end z-50`}
@@ -36,15 +36,17 @@ const Profile = ({ closeProfile, userDetails }) => {
               <div>
                 <div className="items-center justify-center">
                   <Image
-                    src={userIcon}
+                    src={
+                      "https://res.cloudinary.com/dfnmx7vgc/image/upload/v1715890031/kjfpw2h5hcj1poszqqwm.png"
+                    }
                     width={30}
                     height={30}
                     style={{
                       width: "5rem",
-                      height: "auto",
+                      height: "5rem",
                     }}
                     alt=""
-                    className="my-2 mx-auto"
+                    className="my-2 mx-auto rounded-[50%]"
                   />
                   <div className="p-1 flex justify-center items-center">
                     <Typography
@@ -119,7 +121,7 @@ const Profile = ({ closeProfile, userDetails }) => {
                 <Image src={rotate} alt="" />
               </div>
               <div className="flex items-center gap-4 px-4 py-2">
-                <Rating />
+                <Rating newRating={parseInt(userDetails.averageRating)} />
                 <div className="flex items-center">
                   <div className="mr-2">
                     {" "}
@@ -128,7 +130,7 @@ const Profile = ({ closeProfile, userDetails }) => {
                       textWeight="font-[600]"
                       textSize="text-[18px]"
                     >
-                      4.8
+                      {userDetails.averageRating}
                     </Typography>
                   </div>
                   <Typography
