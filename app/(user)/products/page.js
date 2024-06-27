@@ -23,6 +23,8 @@ import toast from "react-hot-toast";
 import Toast from "@/components/ToastComponent/toast";
 import Loader from "@/components/Loader";
 import { clearProductId } from "@/utils/localstorage";
+import DropDown from "@/components/DropDown";
+import moment from "moment";
 
 const Products = () => {
   const router = useRouter();
@@ -80,6 +82,7 @@ const Products = () => {
       console.log(response?.data);
       if (response?.data) {
         response?.data?.data?.map((product) => {
+          console.log(product);
           let productStatus;
           if (product.status) {
             productStatus = {
@@ -106,6 +109,7 @@ const Products = () => {
             tag: product.tag,
             quiantity: product.quantity,
             ProductStatus: productStatus,
+            createdAt: product.createdAt,
           };
           productData.push(orderItem);
         });
@@ -121,7 +125,7 @@ const Products = () => {
   };
 
   const handleFilfeterData = (data) => {
-    console.log(
+    setFilterdProduct(
       products.filter(
         (pro) =>
           pro.productName.toLowerCase().includes(data.toLowerCase()) ||
@@ -129,13 +133,14 @@ const Products = () => {
           pro.tag.toLowerCase().includes(data.toLowerCase())
       )
     );
+  };
 
+  const handleFilterWithDate = (startDate, endDate) => {
     setFilterdProduct(
       products.filter(
-        (pro) =>
-          pro.productName.toLowerCase().includes(data.toLowerCase()) ||
-          pro.category.toLowerCase().includes(data.toLowerCase()) ||
-          pro.tag.toLowerCase().includes(data.toLowerCase())
+        (item) =>
+          moment(item.createdAt).valueOf() >= startDate &&
+          moment(item.createdAt).valueOf() <= endDate
       )
     );
   };
@@ -272,24 +277,37 @@ const Products = () => {
                 </div>
               </div>
             </div>
-            <div className="">
-              <div className="flex items-center justify-between mt-14 mb-2 ">
-                <Typography
-                  textColor="text-dark"
-                  textWeight="font-bold"
-                  textSize="text-[18px]"
+            <div>
+              <div className="relative">
+                <div
+                  className="flex items-center justify-between mt-14 mb-2"
+                  style={{ zIndex: "20" }}
                 >
-                  Products
-                </Typography>
-                <div className="">
-                  {/* <DropDown
-                placeholder={"Filter by"}
-                value={dropDownValue}
-                setValue={(data) => {
-                  setDropDownValue(data);
-                }}
-                data={dropdownData}
-              /> */}
+                  <Typography
+                    textColor="text-dark"
+                    textWeight="font-bold"
+                    textSize="text-[18px]"
+                  >
+                    Products
+                  </Typography>
+                  <div className="">
+                    <DropDown
+                      data={[
+                        "This week",
+                        "Last week",
+                        "This month",
+                        "Last month",
+                        "Choose month",
+                        "Custom",
+                      ]}
+                      maxWidth={"max-w-[8rem]"}
+                      placeholder="Time Range"
+                      setValue={(startDate, endDate) => {
+                        handleFilterWithDate(startDate, endDate);
+                      }}
+                      zIndex={80}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="my-4 block lg:hidden">

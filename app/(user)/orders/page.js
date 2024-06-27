@@ -22,6 +22,8 @@ import MobileSideBar from "@/components/MobileSideBar";
 import { getRequest } from "@/api/method";
 import { calculatePrice } from "@/utils/helper";
 import Loader from "@/components/Loader";
+import DropDown from "@/components/DropDown";
+import Typography from "@/components/Typography";
 const Order = () => {
   const [viewOrderDetails, setOrderDetails] = useState(false);
   const [showTrack, setShowTrack] = useState(false);
@@ -119,18 +121,15 @@ const Order = () => {
       setOrders(ordersData);
       setFilteredOrders(ordersData);
       setPageLoading(false);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
-  const handleFilterWithDate = (data) => {
-    const today = new Date();
-    console.log(
+  const handleFilterWithDate = (startDate, endDate) => {
+    setFilteredOrders(
       orders.filter(
         (item) =>
-          moment(item.createdAt).valueOf() > data &&
-          moment(item.createdAt).valueOf() < today.getTime()
+          moment(item.createdAt).valueOf() >= startDate &&
+          moment(item.createdAt).valueOf() <= endDate
       )
     );
   };
@@ -241,6 +240,32 @@ const Order = () => {
               />
             </div>
             <div className="">
+              <div className="items-center justify-between mt-14 mb-2 hidden md:flex">
+                <Typography
+                  textColor="text-dark"
+                  textWeight="font-bold"
+                  textSize="text-[18px]"
+                >
+                  Orders
+                </Typography>
+                <div className="">
+                  <DropDown
+                    data={[
+                      "This week",
+                      "Last week",
+                      "This month",
+                      "Last month",
+                      "Choose month",
+                      "Custom",
+                    ]}
+                    maxWidth={"max-w-[8rem]"}
+                    placeholder="Time Range"
+                    setValue={(startDate, endDate) => {
+                      handleFilterWithDate(startDate, endDate);
+                    }}
+                  />
+                </div>
+              </div>
               <div>
                 <OrderTable
                   data={filterdOrders}

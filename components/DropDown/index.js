@@ -7,9 +7,8 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg }) => {
   const [option, setOption] = useState("");
   const [showDropDown, setShowDropDown] = useState(false);
 
-  const handleSetValue = (value) => {
+  const handleSetValue = (value, option) => {
     const today = moment();
-
     // "This week",
     // "Last week",
     // "Last month",
@@ -17,23 +16,44 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg }) => {
     // "Choose month",
     // "Custom",
     if (value === "This week") {
-      setValue(today.subtract(7, "days").valueOf());
+      const startOfWeek = moment().startOf("week").valueOf();
+      const endOfWeek = moment().endOf("week").valueOf();
+      setValue(startOfWeek, endOfWeek);
     }
     if (value === "Last week") {
-      setValue(today.subtract(14, "days").valueOf());
+      const startOfPreviousWeek = moment()
+        .subtract(1, "weeks")
+        .startOf("week")
+        .valueOf();
+      const endOfPreviousWeek = moment()
+        .subtract(1, "weeks")
+        .endOf("week")
+        .valueOf();
+      setValue(startOfPreviousWeek, endOfPreviousWeek);
     }
     if (value === "This month") {
-      setValue(today.subtract(21, "days").valueOf());
+      const endOfMonth = moment().endOf("month").valueOf();
+      const startOfMonth = moment().startOf("month").valueOf();
+      setValue(startOfMonth, endOfMonth);
     }
     if (value === "Last month") {
-      setValue(today.subtract(31, "days").valueOf());
+      const startOfPreviousMonth = moment()
+        .subtract(1, "months")
+        .startOf("month")
+        .valueOf();
+      const endOfPreviousMonth = moment()
+        .subtract(1, "months")
+        .endOf("month")
+        .valueOf();
+      setValue(startOfPreviousMonth, endOfPreviousMonth);
     }
     if (value === "Choose month") {
+      option = "Choose month";
       setValue(today.subtract(62, "days").valueOf());
     }
     if (value === "Custom") {
+      option = "Custom";
       setValue(today.subtract(62, "days").valueOf());
-      // today.subtract(9, "days").valueOf();
     }
     setOption(value);
 

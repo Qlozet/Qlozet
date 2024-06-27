@@ -3,6 +3,7 @@ import OrderItem from "./components/orderItem";
 import rightIcon from "../../public/assets/svg/arrow-primary.svg";
 import Image from "next/image";
 const RecentOrder = ({ orders }) => {
+  console.log(orders);
   return (
     <div className="p-2">
       <div className="flex justify-between my-3">

@@ -9,14 +9,14 @@ const OrderItem = ({ order }) => {
           <Typography
             textColor="text-primary"
             textWeight="font-normal"
-            textSize="text-[14px]"
+            textSize="text-[12px]"
           >
             {order.product}
           </Typography>
           <Typography
             textColor="text-primary"
             textWeight="font-normal"
-            textSize="text-[14px]"
+            textSize="text-[12px]"
           >
             {order.name}
           </Typography>
@@ -25,14 +25,14 @@ const OrderItem = ({ order }) => {
           <Typography
             textColor="text-primary"
             textWeight="font-normal"
-            textSize="text-[14px]"
+            textSize="text-[12px]"
           >
-            N{order.price}
+            {order.price}
           </Typography>
           <Typography
             textColor="text-primary"
             textWeight="font-normal"
-            textSize="text-[14px]"
+            textSize="text-[10px]"
           >
             {order.date}
           </Typography>
@@ -40,7 +40,7 @@ const OrderItem = ({ order }) => {
       </div>
       <div className="w-[20%] flex items-center py-5">
         <div className="bg-gray-300 rounded-[15px] px-[7px] flex items-center">
-          <button className="text-[12px]">More</button>
+          <button className="text-[10px]">More</button>
         </div>
       </div>
     </div>

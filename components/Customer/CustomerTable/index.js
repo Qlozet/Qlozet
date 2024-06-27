@@ -14,6 +14,7 @@ const CustomerTable = ({
   viewDetails,
   showModal,
   handleFilfeterData,
+  handleFilterWithDate,
 }) => {
   return (
     <div className="mt-4 min-h-[50vh]">
@@ -107,14 +108,16 @@ const CustomerTable = ({
               data={[
                 "This week",
                 "Last week",
-                "Last month",
                 "This month",
+                "Last month",
                 "Choose month",
                 "Custom",
               ]}
+              maxWidth={"max-w-[8rem]"}
               placeholder="Time Range"
-              maxWidth={"max-w-[7.5rem]"}
-              setValue={(data) => {}}
+              setValue={(startDate, endDate) => {
+                handleFilterWithDate(startDate, endDate);
+              }}
             />
           </div>
           <div>

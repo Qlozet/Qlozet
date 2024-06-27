@@ -21,66 +21,25 @@ import getVendorDetails from "@/api/request";
 import { setUserDetails } from "@/utils/localstorage";
 import Loader from "@/components/Loader";
 import DropDown from "@/components/DropDown";
+import moment from "moment";
 
 const Dashboard = () => {
   const mobileNavRef = useRef();
   const [totalCustomer, setTotalCustomer] = useState("0");
+  const [topEarning, setTopEarning] = useState("0");
   const [totalOrder, setTotalOrder] = useState("0");
   const [customerLocation, setCustomerLocation] = useState("");
   const [loadPage, setLoadPage] = useState(true);
   const [top4Location, setTop4Location] = useState([]);
   const [top4Product, setTop4Product] = useState([]);
   const [showMobileNav, setShowMobileNav] = useState(false);
+  const [recentOrders, setRecentOrders] = useState([]);
   const [genderByOrder, setGenderByOrder] = useState({
     labels: ["Male", "Female"],
     values: [0, 0],
     colors: ["#3E1C01", "#9C8578"],
     borderAlign: "center",
   });
-  const dropdownData = [
-    {
-      text: "View vendor’s details",
-      color: "",
-    },
-    {
-      text: "View vendor’s ",
-      color: "",
-    },
-    {
-      text: "vendor’s details",
-      color: "",
-    },
-  ];
-
-  const orders = [
-    {
-      id: 1,
-      name: "Omoniyi Precious",
-      date: "01/12/2024",
-      product: "Amasi dress",
-      price: 1000,
-      quantity: 1,
-      status: "Ready to Ship",
-    },
-    {
-      id: 2,
-      name: "Kennedy Jones",
-      date: "01/12/2024",
-      product: "Kaz Kit ",
-      price: 20,
-      quantity: 2,
-      status: "Ready to Ship",
-    },
-    {
-      id: 3,
-      name: "Toyosi Adeyemi",
-      date: "01/12/2024",
-      product: "Amasi dress",
-      price: 50,
-      quantity: 1,
-      status: "Ready to Ship",
-    },
-  ];
 
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
@@ -130,7 +89,6 @@ const Dashboard = () => {
         "/vendor/dashboard/orders/top-products"
       );
       response?.data?.data?.topProducts.map((product) => {
-        console.log(product);
         const singleProduct = {
           location: product.name,
           female: (product.female / response?.data?.data?.totalOrders) * 100,
@@ -140,6 +98,30 @@ const Dashboard = () => {
       });
 
       setTop4Product(productData);
+    } catch (error) {}
+  };
+
+  const getTotalOrder = async () => {
+    try {
+      let response = await getRequest("/vendor/orders");
+      if (response.data) {
+        setTotalOrder(response.data.data.length);
+      }
+    } catch (error) {}
+  };
+
+  const getOrderByGender = async () => {
+    try {
+      const productData = [];
+      const response = await getRequest("/vendor/dashboard/orders/tag");
+      if (response?.data) {
+        setGenderByOrder({
+          labels: ["Male", "Female"],
+          values: [response?.data.data.male, response?.data.data.female],
+          colors: ["#3E1C01", "#9C8578"],
+          borderAlign: "center",
+        });
+      }
       // const singleLocatin = {
       //   location: location.location,
       //   female: (location.female / response?.data?.data?.totalOrders) * 100,
@@ -158,53 +140,70 @@ const Dashboard = () => {
     } catch (error) {}
   };
 
-  const getTotalOrder = async () => {
+  const getTotalEarning = async () => {
     try {
-      let response = await getRequest("/vendor/orders");
+      const response = await getRequest("/vendor/dashboard/earnings");
       if (response.data) {
-        setTotalOrder(response.data.data.length);
+        setTopEarning(response.data.data.earnings);
       }
     } catch (error) {}
   };
 
-  // const getOrderByGender = async () => {
-  //   try {
-  //     const productData = [];
-  //     const response = await getRequest("/vendor/dashboard/orders/tag");
-  //     console.log(response);
-  //     if (response?.data) {
-  //       console.log(response?.data?.data.female);
-  //       setGenderByOrder({
-  //         labels: ["Male", "Female"],
-  //         values: [response?.data.data.male, response?.data.data.female],
-  //         colors: ["#3E1C01", "#9C8578"],
-  //         borderAlign: "center",
-  //       });
-  //     }
-  //     // const singleLocatin = {
-  //     //   location: location.location,
-  //     //   female: (location.female / response?.data?.data?.totalOrders) * 100,
-  //     //   male: (location.male / response?.data?.data?.totalOrders) * 100,
-  //     // };
-  //     // setCustomerLocation(response.data.totalCount);
-  //     // response?.data?.data?.locations.map((location) => {
-  //     //   const singleLocatin = {
-  //     //     location: location.location,
-  //     //     female: (location.female / response?.data?.data?.totalOrders) * 100,
-  //     //     male: (location.male / response?.data?.data?.totalOrders) * 100,
-  //     //   };
-  //     //   locationData.push(singleLocatin);
-  //     // });
-  //     // setTop4Location(locationData);
-  //   } catch (error) {}
-  // };
+  const getOrders = async () => {
+    try {
+      const response = await getRequest("/vendor/orders");
+      let ordersData = [];
+      response.data.data.map((order) => {
+        let DeliveryStatus;
+        if (order.status === "out-for-delivery") {
+          DeliveryStatus = { name: "Out for delivery", bg: "bg-[#D4CFCA]" };
+        } else if (order.status === "return") {
+          DeliveryStatus = { name: "Return", bg: "bg-[#D4CFCA]" };
+        } else {
+          DeliveryStatus = { name: "Return", bg: "bg-[#D4CFCA]" };
+        }
+        // let orderItem = {
+        //   orderId: order.orderId,
+        //   date: moment(order.orderDate).format("YYYY-MM-DD"),
+        //   productName: order.orderItems.map((product) => {
+        //     return product.name;
+        //   }),
+        //   productPrice: calculatePrice(order.orderItems),
+        //   customerName: `${order.customer.firstName} ${order.customer.lastName}`,
+        //   customerPhoneNumber: order.customer.phoneNumber,
+        //   customerEmail: order.customer.email,
+        //   AmountPaid: `₦${order.amountPaid.toLocaleString()}`,
+        //   shippingAddress: order.shippingAddress,
+        //   custmerAddress: order.shippingAddress,
+        //   DeliveryStatus: DeliveryStatus,
+        //   createdAt: order.orderDate,
+        // };
+        let orderItem = {
+          id: 1,
+          name: `${order.customer.firstName} ${order.customer.lastName}`,
+          date: moment(order.orderDate).format("YYYY-MM-DD"),
+          product: order.orderItems.map((product) => {
+            return product.name;
+          })[0],
+          price: `₦${order.amountPaid.toLocaleString()}`,
+          quantity: 1,
+          status: "Ready to Ship",
+        };
+        ordersData.push(orderItem);
+      });
+      setRecentOrders(ordersData);
+      setPageLoading(false);
+    } catch (error) {}
+  };
 
   useEffect(() => {
+    getTotalEarning();
     getTotalCustomers();
+    getOrders();
     getLocationWithHighestCustomer();
     get4TopLocation();
     get4Topproduct();
-    // getOrderByGender();
+    getOrderByGender();
     getTotalOrder();
   }, []);
 
@@ -226,9 +225,7 @@ const Dashboard = () => {
             <div className="p-4">
               <DasboardNavWithOutSearch
                 addSearch={false}
-                setValue={(data) => {
-                  // console.log(data);
-                }}
+                setValue={(data) => {}}
                 name="Dashboard"
                 showSideBar={showSideBar}
               />
@@ -247,7 +244,7 @@ const Dashboard = () => {
               />
               <DashboardTopCard
                 name="Total earnings"
-                total="N 50,000"
+                total={topEarning}
                 percentage="2.5"
                 bgColor="bg-[#5DDAB4]"
                 icon={TotalearningIcon}
@@ -347,7 +344,7 @@ const Dashboard = () => {
                   <div className="bg-white rounded-[12px] w-full flex gap-4 h-full ">
                     {
                       <div className="p-3 text-dark w-full">
-                        <RecentOrder orders={orders} />
+                        <RecentOrder orders={recentOrders} />
                       </div>
                     }
                   </div>

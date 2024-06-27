@@ -2,6 +2,7 @@ import threeDotIcon from "../../../public/assets/svg/three-dot.svg";
 import Image from "next/image";
 import OrderStatus from "../../order/OrderStatus";
 import Modal from "../../Modal";
+import moment from "moment";
 const WalletTableItem = ({
   id,
   date,
@@ -14,7 +15,9 @@ const WalletTableItem = ({
 }) => {
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-[12px] font-normal p-4 text-dark">{date}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">
+        {moment(date).format("YYYY-MM-DD")}
+      </td>
       <td className="text-[12px] font-normal p-4 text-dark">{transactionId}</td>
       <td className="text-[12px] font-normal p-4 text-dark">
         {transactionType}

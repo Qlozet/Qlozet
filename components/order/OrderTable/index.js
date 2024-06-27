@@ -18,7 +18,6 @@ const OrderTable = ({
   handleFilfeterData,
   handleFilterWithDate,
 }) => {
-  const [secke, setCheck] = useState("");
   return (
     <div className=" mt-4 min-h-[50vh]">
       <table className="w-full hidden lg:block border-3px">
@@ -113,20 +112,18 @@ const OrderTable = ({
               Orders
             </Typography>
             <DropDown
-              value={secke}
               data={[
                 "This week",
                 "Last week",
-                "Last month",
                 "This month",
+                "Last month",
                 "Choose month",
                 "Custom",
               ]}
               maxWidth={"max-w-[8rem]"}
               placeholder="Time Range"
-              setValue={(data) => {
-                setCheck(data);
-                handleFilterWithDate(data);
+              setValue={(startDate, endDate) => {
+                handleFilterWithDate(startDate, endDate);
               }}
             />
           </div>

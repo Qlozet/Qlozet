@@ -19,6 +19,7 @@ import Button from "@/components/Button";
 import Image from "next/image";
 import defaultImage from "../../../public/assets/image/Rectangle.png";
 import DropDown from "@/components/DropDown";
+import moment from "moment";
 
 const Customer = () => {
   const [viewCustomerDetails, setCustomerDetails] = useState(false);
@@ -89,6 +90,7 @@ const Customer = () => {
             lastOrderDate: item.lastOrderDate,
             phone: item.phoneNumber,
             emailAddress: item.email,
+            createdAt: item.lastOrderDate,
           };
           Customers.push(customer);
         });
@@ -110,6 +112,15 @@ const Customer = () => {
     );
   };
 
+  const handleFilterWithDate = (startDate, endDate) => {
+    setFilteredCustomers(
+      custmers.filter(
+        (item) =>
+          moment(item.createdAt).valueOf() >= startDate &&
+          moment(item.createdAt).valueOf() <= endDate
+      )
+    );
+  };
   useEffect(() => {
     getCustomers();
   }, []);
@@ -164,27 +175,39 @@ const Customer = () => {
             )}
             {!viewCustomerDetails && (
               <div className="">
-                <div className="flex items-center justify-between mt-14 mb-2 ">
+                <div className="items-center justify-between mt-14 mb-2 hidden md:flex">
                   <Typography
                     textColor="text-dark"
                     textWeight="font-bold"
                     textSize="text-[18px]"
                   >
-                    Customers
+                    Customer
                   </Typography>
-                  {/* <div className="">
-              <DropDown
-                placeholder={"Filter by"}
-                value={dropDownValue}
-                setValue={(data) => {
-                  setDropDownValue(data);
-                }}
-                data={dropdownData}
-              /> 
-              </div>*/}
+                  <div className="">
+                    <DropDown
+                      data={[
+                        "This week",
+                        "Last week",
+                        "This month",
+                        "Last month",
+                        "Choose month",
+                        "Custom",
+                      ]}
+                      maxWidth={"max-w-[8rem]"}
+                      placeholder="Time Range"
+                      setValue={(startDate, endDate) => {
+                        handleFilterWithDate(startDate, endDate);
+                      }}
+                    />
+                  </div>
                 </div>
                 <div>
-                  <CustomerTable data={filterCustmers} showModal={showModal} handleFilfeterData={handleFilfeterData} />
+                  <CustomerTable
+                    data={filterCustmers}
+                    showModal={showModal}
+                    handleFilterWithDate={handleFilterWithDate}
+                    handleFilfeterData={handleFilfeterData}
+                  />
                 </div>
               </div>
             )}

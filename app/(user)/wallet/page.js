@@ -19,6 +19,9 @@ import { getRequest } from "@/api/method";
 import toast from "react-hot-toast";
 import Toast from "@/components/ToastComponent/toast";
 import Loader from "@/components/Loader";
+import Typography from "@/components/Typography";
+import DropDown from "@/components/DropDown";
+import moment from "moment";
 const Wallet = () => {
   const [setUpWalletWallet, setSetUpWalletWallet] = useState(false);
   const [showTransactiondetails, setShowTransactiondetails] = useState(false);
@@ -57,10 +60,6 @@ const Wallet = () => {
     } catch (error) {}
   };
 
-  useEffect(() => {
-    getWalletBalance();
-  }, []);
-
   const getTransaction = async () => {
     try {
       let response = await getRequest("/vendor/wallet/transactions");
@@ -90,6 +89,7 @@ const Wallet = () => {
             narration: item.narration,
             status: status,
             transactionType: item.transType,
+            createdAt: item.createdAt,
           };
           transactionDataArray.push(transactionItem);
         });
@@ -123,8 +123,19 @@ const Wallet = () => {
       )
     );
   };
+
+  const handleFilterWithDate = (startDate, endDate) => {
+    setFilteredTransactionData(
+      transactionData.filter(
+        (item) =>
+          moment(item.createdAt).valueOf() >= startDate &&
+          moment(item.createdAt).valueOf() <= endDate
+      )
+    );
+  };
   useEffect(() => {
     getTransaction();
+    getWalletBalance();
     getBanks();
   }, []);
 
@@ -221,6 +232,32 @@ const Wallet = () => {
             </div>
 
             <div className="">
+              <div className="flex items-center justify-between mt-14 mb-2 ">
+                <Typography
+                  textColor="text-dark"
+                  textWeight="font-bold"
+                  textSize="text-[18px]"
+                >
+                  Wallet
+                </Typography>
+                <div className="">
+                  <DropDown
+                    data={[
+                      "This week",
+                      "Last week",
+                      "This month",
+                      "Last month",
+                      "Choose month",
+                      "Custom",
+                    ]}
+                    maxWidth={"max-w-[8rem]"}
+                    placeholder="Time Range"
+                    setValue={(startDate, endDate) => {
+                      handleFilterWithDate(startDate, endDate);
+                    }}
+                  />
+                </div>
+              </div>
               <WalletTable
                 data={filteredTransactionData}
                 viewDetails={(id) => {
