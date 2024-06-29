@@ -110,13 +110,16 @@ const DasboardNavWithOutSearch = ({
                     }}
                   />
                 </div>
-                <Typography
-                  textColor="text-dark"
-                  textWeight="font-bold"
-                  textSize="text-[18px]"
-                >
-                  {userDetails.personalName}
-                </Typography>
+                <div className="hidden md:block">
+                  <Typography
+                    textColor="text-dark"
+                    textWeight="font-bold"
+                    textSize="text-[18px]"
+                  >
+                    {userDetails.personalName}
+                  </Typography>
+                </div>
+
                 <div className="rounded-[12px] p-2 bg-[#F8F9FA] cursor-pointer">
                   <Image
                     alt=""
@@ -130,13 +133,15 @@ const DasboardNavWithOutSearch = ({
           )}
         </div>
         <div className="hidden lg:flex items-center justify-between bg-white border-[#DDE2E5] border-solid border-[1.5px] py-2 px-6 rounded-[12px]">
-          <Typography
-            textColor="text-dark"
-            textWeight="font-bold"
-            textSize="text-[18px]"
-          >
-            {name}
-          </Typography>
+          <div className="hidden md:block">
+            <Typography
+              textColor="text-dark"
+              textWeight="font-bold"
+              textSize="text-[18px]"
+            >
+              {name}
+            </Typography>
+          </div>
           <div className="flex items-center justify-end gap-6">
             {addSearch && (
               <div className="relative   min-w-96">
