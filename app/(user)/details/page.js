@@ -38,6 +38,8 @@ const ProductDetails = () => {
     //   },
     // ],
     images: [],
+    likes: [],
+    reviews: [],
   });
   const fetchProduct = async () => {
     const productId = getProductId();
@@ -50,24 +52,21 @@ const ProductDetails = () => {
         colors.push(item.hex);
       });
 
-      const categories = response.data.data.categoryName.map((item) => {
-        return item.name;
-      });
-      console.log(categories);
-      console.log(response.data.data.categoryName);
       setProductFormData({
         productName: response.data.data.name,
         productPrice: `₦${response.data.data.price.toLocaleString()}`,
         productTag: response.data.data.tag,
         description: response.data.data.description,
         productQuantity: response.data.data.quantity,
-        productCategory: response.data.data.categoryName.map((item) => {
-          return item;
+        productCategory: response.data.data.categories.map((item) => {
+          return item.name;
         }),
         productType: response.data.data.type,
         discount: response.data.data.discount,
         isFeatured: 0,
         colors: colors,
+        likes: response.data.data.likes,
+        reviews: response.data.data.reviews,
         // variants: [
         //   {
         //     colors: ["#808080", "#FFFF00"],
@@ -75,6 +74,7 @@ const ProductDetails = () => {
         //     quantity: 5,
         //   },
         // ],
+
         images: response.data.data.images.map((image) => {
           return image?.secure_url;
         }),
@@ -158,19 +158,19 @@ const ProductDetails = () => {
                       <div className="flex items-center gap-2">
                         <Image src={starIcon} alt="" />
                         <span className="font-bold text-[14px] leading-[20px]">
-                         {/* {productFormData.likes} */}
+                          {productFormData.likes.length}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Image src={heartIcon} alt="" />
                         <span className="font-bold text-[14px] leading-[20px]">
-                          200
+                          {productFormData.likes.length}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Image src={chatIcon} alt="" />
                         <span className="font-bold text-[14px] leading-[20px] mr-1">
-                          100
+                          {productFormData.reviews.length}
                         </span>
                         <p className="underline font-light text-[12px] leading-[16px] text-[#495057]">
                           Read reviews
