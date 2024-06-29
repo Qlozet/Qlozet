@@ -37,9 +37,7 @@ const Profile = ({ closeProfile, userDetails }) => {
                 <div>
                   <div className="items-center justify-center">
                     <Image
-                      src={
-                        "https://res.cloudinary.com/dfnmx7vgc/image/upload/v1715890031/kjfpw2h5hcj1poszqqwm.png"
-                      }
+                      src={userDetails.profileImage}
                       width={30}
                       height={30}
                       style={{
