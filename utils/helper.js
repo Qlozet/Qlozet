@@ -65,3 +65,19 @@ export const handleExport = (data) => {
   const exportType = exportFromJSON.types.csv;
   exportFromJSON({ data, fileName, exportType });
 };
+export const uploadSingleImage = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append("image", file);
+    const response = await postRequest(
+      "/vendor/products/single-image",
+      formData,
+      true
+    );
+    return {
+      asset_id: response?.data.asset_id,
+      public_id: response?.data.public_id,
+      secure_url: response?.data.secure_url,
+    };
+  } catch (error) {}
+};

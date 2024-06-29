@@ -22,6 +22,7 @@ const ProductTableItem = ({
   ProductStatus,
   handleSelect,
 }) => {
+  console.log(productType);
   const [showDropDown, setShowDropDown] = useState(false);
   const closeDropDown = (item) => {
     setProductId(id);

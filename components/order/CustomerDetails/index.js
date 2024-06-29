@@ -16,9 +16,15 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
       <div className="w-full lg:w-[40%] bg-white p-4 rounded-b-[8px]">
         <div className="bg-auto bg-no-contain">
           <Image
-            alt="Customer image"
-            src={defaultImage}
-            className="w-[148px] h-[115px] rounded-[12px]"
+            alt="Product Image"
+            src={customer.customerPicture}
+            width={30}
+            height={30}
+            style={{
+              width: "10rem",
+              height: "auto",
+            }}
+            className="rounded-[6px]"
           />
         </div>
         <div className="flex justify-between items-center py-4">

@@ -8,6 +8,7 @@ const FileInput = ({
   value,
   placeholder,
   disabled = false,
+  fileName,
 }) => {
   const [files, setFiles] = useState(value);
   const removeFile = (fileIndex) => {
@@ -15,6 +16,7 @@ const FileInput = ({
     handleSelect(files.filter((file, index) => index !== fileIndex));
     setFiles(files.filter((file, index) => index !== fileIndex));
   };
+
   return (
     <div className="my-3 w-full">
       <label>{label}</label>
@@ -44,7 +46,7 @@ const FileInput = ({
           })}
           <label
             className="border-[1px] border-solid border-primary-200 block min-w-[5rem] h-[5rem] rounded-[12px]"
-            htmlFor="file"
+            htmlFor={fileName ? fileName : "file"}
           >
             <div className="border-[1px] border-solid border-gray-200 h-[100%] cursor-pointer rounded-[12px] flex justify-center items-center">
               <Image src={documentIcon} alt="" />
@@ -55,7 +57,7 @@ const FileInput = ({
 
       <input
         type="file"
-        id="file"
+        id={fileName ? fileName : "file"}
         className={`py-3 px-4 w-full border-solid border-[1.5px] 
             focus:outline-none focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 ${
               disabled && "border-0 bg-gray-300 cursor-not-allowed min-h-[82px]"

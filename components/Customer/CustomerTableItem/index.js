@@ -14,10 +14,22 @@ const CustomerTableItem = ({
   viewDetails,
   customerId,
 }) => {
+  // console.log(picture);
   const date = new Date(lastOrderDate);
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-[12px] font-normal p-4 text-dark ">{picture}</td>
+      <td className="text-[12px] font-normal p-4 text-dark ">
+        <Image
+          src={picture}
+          width={30}
+          height={30}
+          style={{
+            width: "5rem",
+            height: "5rem",
+          }}
+          alt=""
+        />
+      </td>
       <td className="text-[12px] font-normal p-4 text-dark ">{customerName}</td>
       <td className="text-[12px] font-normal p-4 text-dark">{emailAddress}</td>
       <td className="text-[12px] font-normal p-4 text-dark">{phone}</td>

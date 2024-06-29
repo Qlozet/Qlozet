@@ -137,6 +137,17 @@ const Dashboard = () => {
     setShowMobileNav(!showMobileNav);
   };
 
+  const handleSelectCompanyLogo = async (files) => {
+    const ImageInfo = await uploadSingleImage(files[0]);
+    // setUploadeFiles((prevData) => {
+    //   return [...prevData, ImageInfo];
+    // });
+    // setFile(files);
+    // setProductFormData((prevData) => {
+    //   return { ...prevData, images: files };
+    // });
+  };
+
   const submitCompanyInfo = async () => {
     try {
       setIsloading(true);

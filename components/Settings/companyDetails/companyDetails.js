@@ -7,6 +7,7 @@ import FileInput from "../../uploadFileinput/UploadFileInput";
 import userIcon from "../../../public/assets/svg/Frame.svg";
 import Typography from "@/components/Typography";
 import DashedComponent from "@/components/DashedComponent";
+import { uploadSingleImage } from "@/utils/helper";
 const CompanyDetails = ({
   shopDetails,
   setShopDetails,
@@ -15,6 +16,27 @@ const CompanyDetails = ({
   submitCompanyInfo,
   isLoading,
 }) => {
+  const handleSelectLogo = async (files) => {
+    const ImageInfo = await uploadSingleImage(files[0]);
+    // setUploadeFiles((prevData) => {
+    //   return [...prevData, ImageInfo];
+    // });
+    // setFile(files);
+    // setProductFormData((prevData) => {
+    //   return { ...prevData, images: files };
+    // });
+  };
+  const handleSelectDoc = async (files) => {
+    const ImageInfo = await uploadSingleImage(files[0]);
+    console.log(ImageInfo);
+    // setUploadeFiles((prevData) => {
+    //   return [...prevData, ImageInfo];
+    // });
+    // setFile(files);
+    // setProductFormData((prevData) => {
+    //   return { ...prevData, images: files };
+    // });
+  };
   return (
     <div className=" w-full mx-0 lg:mx-2 py-2 lg:bg-white">
       <div className="block items-center justify-center lg:hidden p-4 shadow my-4 rounded-[12px] bg-white">
@@ -320,16 +342,20 @@ const CompanyDetails = ({
         <div className="block lg:flex items-center justify-between gap-6 mx-2">
           <div className="w-full">
             <FileInput
+              fileName="logo"
               label="Upload company logo"
               // placeholder="Enter NIN"
               setValue={(data) => {}}
               value={[]}
+              handleSelect={handleSelectLogo}
             />
           </div>
           <div className="w-full">
             <FileInput
+              fileName="cacdoc"
               label="Upload CAC Document"
               setValue={(data) => {}}
+              handleSelect={handleSelectDoc}
               value={[]}
             />
           </div>

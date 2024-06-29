@@ -92,6 +92,7 @@ const Order = () => {
       const response = await getRequest("/vendor/orders");
       let ordersData = [];
       response.data.data.map((order) => {
+        console.log(order);
         let DeliveryStatus;
         if (order.status === "out-for-delivery") {
           DeliveryStatus = { name: "Out for delivery", bg: "bg-[#D4CFCA]" };
@@ -106,8 +107,10 @@ const Order = () => {
           productName: order.orderItems.map((product) => {
             return product.name;
           }),
+          orderItems: order.orderItems,
           productPrice: calculatePrice(order.orderItems),
           customerName: `${order.customer.firstName} ${order.customer.lastName}`,
+          customerPicture: `${order.customer.profilePicture} `,
           customerPhoneNumber: order.customer.phoneNumber,
           customerEmail: order.customer.email,
           AmountPaid: `₦${order.amountPaid.toLocaleString()}`,
@@ -290,13 +293,11 @@ const Order = () => {
               }
             ></Modal>
           )}
-
           {showTrack && (
             <Modal
               content={<TrackOrder data={topNavData} closeModal={closeModal} />}
             ></Modal>
           )}
-
           {showCustomer && (
             <Modal
               content={

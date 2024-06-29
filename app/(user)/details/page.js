@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import SideBar from "@/components/SideBar";
-import arrowLeftIcon from "../../../../public/assets/svg/arrow-left.svg";
-import arrowRightIcon from "../../../../public/assets/svg/arrow-right.svg";
-import starIcon from "../../../../public/assets/svg/productdetailstar.svg";
-import heartIcon from "../../../../public/assets/svg/productdetailsheart.svg";
-import chatIcon from "../../../../public/assets/svg/productdetailschat.svg";
+import arrowLeftIcon from "../../../public/assets/svg/arrow-left.svg";
+import arrowRightIcon from "../../../public/assets/svg/arrow-right.svg";
+import starIcon from "../../../public/assets/svg/productdetailstar.svg";
+import heartIcon from "../../../public/assets/svg/productdetailsheart.svg";
+import chatIcon from "../../../public/assets/svg/productdetailschat.svg";
 import Image from "next/image";
 import Button from "@/components/Button";
 import Typography from "@/components/Typography";
@@ -50,17 +50,19 @@ const ProductDetails = () => {
         colors.push(item.hex);
       });
 
-      const categories = response.data.data.categories.map((item) => {
+      const categories = response.data.data.categoryName.map((item) => {
         return item.name;
       });
+      console.log(categories);
+      console.log(response.data.data.categoryName);
       setProductFormData({
         productName: response.data.data.name,
-        productPrice: `₦${response.data.data.price}`,
+        productPrice: `₦${response.data.data.price.toLocaleString()}`,
         productTag: response.data.data.tag,
         description: response.data.data.description,
         productQuantity: response.data.data.quantity,
-        productCategory: response.data.data.categories.map((item) => {
-          return item.name;
+        productCategory: response.data.data.categoryName.map((item) => {
+          return item;
         }),
         productType: response.data.data.type,
         discount: response.data.data.discount,

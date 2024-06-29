@@ -1,0 +1,19 @@
+.container {
+  overflow-y: scroll;
+}
+
+.container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.container::-webkit-scrollbar-track {
+  background: var(--gray3);
+  margin-top: 3px;
+  margin-bottom: 3px;
+  border-radius: 6px;
+}
+
+.container::-webkit-scrollbar-thumb {
+  background: var(--primary3);
+  border-radius: 6px;
+}

@@ -29,7 +29,7 @@ import VariantInput from "@/components/VariantInput";
 import MaterialInput from "@/components/MaterialInput";
 import MAterialInput from "@/components/MaterialInput";
 import SizeInput from "@/components/SizeInput";
-
+import { uploadSingleImage } from "@/utils/helper";
 const AddProduct = () => {
   const [variantTable, setVariantTable] = useState([]);
   const router = useRouter();
@@ -68,24 +68,6 @@ const AddProduct = () => {
     colors: false,
   });
 
-  const uploadSingleImage = async (file) => {
-    try {
-      const formData = new FormData();
-      formData.append("image", file);
-      const response = await postRequest(
-        "/vendor/products/single-image",
-        formData,
-        true
-      );
-      console.log(response);
-      return {
-        asset_id: response?.data.asset_id,
-        public_id: response?.data.public_id,
-        secure_url: response?.data.secure_url,
-      };
-    } catch (error) {}
-  };
-
   const handleSelectFile = async (files) => {
     const ImageInfo = await uploadSingleImage(files[0]);
     setUploadeFiles((prevData) => {
@@ -110,7 +92,6 @@ const AddProduct = () => {
   const submitVariantImage = async (file, listIndex, imageIndex) => {
     const imageUrl = await uploadSingleImage(file);
     let prevVariantTable = variantTable;
-    console.log(imageUrl?.secure_url);
     if (imageUrl?.secure_url) {
       console.log(imageUrl.secure_url);
       let images = variantTable[listIndex].images;

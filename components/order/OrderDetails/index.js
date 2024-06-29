@@ -4,8 +4,8 @@ import Image from "next/image";
 import Typography from "../../Typography";
 import OrderStatus from "../OrderStatus";
 import Button from "../../Button";
+import classes from "./index.module.css";
 const OrderDetails = ({ topNavData, closeModal, order }) => {
-  console.log(order);
   return (
     <div className="flex flex-col items-center justify-center w-full mt-4 mb-3">
       <div className="px-5 "></div>
@@ -14,28 +14,47 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
         data={topNavData}
         closeModal={closeModal}
       />
-      <div className=" w-full lg:w-[40%] bg-white p-4 rounded-b-[14px]">
-        <div className="bg-auto bg-no-contain">
-          <Image
-            alt="Product Image"
-            src={defaultImage}
-            className="w-[148.13px] h-[203.13px] rounded-[12px]"
-          />
-        </div>
-        <Typography
-          textColor="text-dark"
-          textWeight="font-bold"
-          textSize="text-[18px]"
-        >
-          Amasi Queen Shirt
-        </Typography>
-        <div className="max-w-[13rem] my-2">
-          <OrderStatus
-            text="View customization details"
-            color="text-[#3E1C01]"
-            // addMaxWidth={true}
-            bgColor="bg-[#D4CFCA]"
-          />
+      <div className={` w-full lg:w-[40%] bg-white p-4 rounded-b-[14px]`}>
+        <div className={`${classes.scroll_container} flex gap-4 items-center`}>
+          {order.orderItems.map((item) => {
+            console.log(item);
+            return (
+              <div className="min-w-[10rem]">
+                <div>
+                  <div className="bg-auto bg-no-contain">
+                    <Image
+                      alt="Product Image"
+                      src={item.picture}
+                      width={30}
+                      height={30}
+                      style={{
+                        width: "10rem",
+                        height: "auto",
+                      }}
+                      className="rounded-[6px]"
+                    />
+                  </div>
+                  <div className="my-2">
+                    <Typography
+                      textColor="text-dark"
+                      textWeight="font-[700]"
+                      textSize="text-[14px]"
+                    >
+                      {item.name}
+                    </Typography>
+                  </div>
+                  <div className="max-w-[13rem] my-2">
+                    <OrderStatus
+                      text="View customization details"
+                      color="text-[#3E1C01]"
+                      // addMaxWidth={true}
+                      bgColor="bg-[#D4CFCA]"
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
         {/* <div className="flex justify-between items-center py-4">
           <div>

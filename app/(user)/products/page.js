@@ -214,7 +214,7 @@ const Products = () => {
                   minWidth="min-w-[14rem]"
                   variant="primary"
                   clickHandler={() => {
-                    router.push("/products/add");
+                    router.push("/add");
                     clearProductId();
                   }}
                 />

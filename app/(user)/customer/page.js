@@ -28,16 +28,7 @@ const Customer = () => {
   const [custmers, setCustomers] = useState([]);
   const [filterCustmers, setFilteredCustomers] = useState([]);
   const [customer, setCustomer] = useState({});
-  const [customerHistory, setCustomerHistory] = useState([
-    {
-      id: "1",
-      date: "hello",
-      productName: "hello",
-      productPrice: "hello",
-      AmountPaid: "hello",
-      DeliveryStatus: "hello",
-    },
-  ]);
+  const [customerHistory, setCustomerHistory] = useState([]);
 
   const [showMobileNav, setShowMobileNav] = useState(false);
   const showSideBar = () => {
@@ -80,10 +71,10 @@ const Customer = () => {
       response && setPageLoading(false);
       if (response.data) {
         response?.data?.data.map((item) => {
-          console.log(item);
+          console.log(item.picture);
           const customer = {
             customerId: item.customerId,
-            picture: "",
+            picture: item.picture,
             customerName: `${item.firstName} ${item.lastName}`,
             status: item.status,
             totalOrders: item.totalOrders,
