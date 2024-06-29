@@ -89,13 +89,16 @@ const DasboardNavWithOutSearch = ({
                 >
                   <Image alt="" src={menuIcon} />
                 </div>
-                <Typography
-                  textColor="text-dark"
-                  textWeight="font-bold"
-                  textSize="text-[18px]"
-                >
-                  {name}
-                </Typography>
+
+                <div className="hidden md:block">
+                  <Typography
+                    textColor="text-dark"
+                    textWeight="font-bold"
+                    textSize="text-[18px]"
+                  >
+                    {name}
+                  </Typography>
+                </div>
               </div>
               <div className="flex items-center gap-4">
                 <div className="rounded-[12px] p-2 bg-[#F8F9FA] cursor-pointer">
