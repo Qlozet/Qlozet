@@ -158,7 +158,7 @@ const ProductDetails = () => {
                       <div className="flex items-center gap-2">
                         <Image src={starIcon} alt="" />
                         <span className="font-bold text-[14px] leading-[20px]">
-                          4.8
+                         {/* {productFormData.likes} */}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
