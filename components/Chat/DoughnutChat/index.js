@@ -20,7 +20,7 @@ const DonutChart = ({ data, width, height, cutout }) => {
         data: {
           datasets: [
             {
-              label: "Donut Chart",
+              label: "Gender chart",
               data: data.values,
               backgroundColor: data.colors,
             },
@@ -32,7 +32,6 @@ const DonutChart = ({ data, width, height, cutout }) => {
           maintainAspectRatio: false,
           borderWidth: 0,
           weight: "10px",
-
           plugins: {
             legend: {
               position: "bottom", // Change the position of the labels (e.g., 'top', 'bottom', 'left', 'right')

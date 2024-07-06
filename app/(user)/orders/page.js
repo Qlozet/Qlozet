@@ -93,11 +93,38 @@ const Order = () => {
       let ordersData = [];
       response.data.data.map((order) => {
         console.log(order);
+        console.log(order.status);
         let DeliveryStatus;
         if (order.status === "out-for-delivery") {
-          DeliveryStatus = { name: "Out for delivery", bg: "bg-[#D4CFCA]" };
+          DeliveryStatus = {
+            name: "Out for delivery",
+            bg: "bg-[#D4CFCA]",
+            text: "text-[#3E1C01]",
+          };
         } else if (order.status === "return") {
-          DeliveryStatus = { name: "Return", bg: "bg-[#D4CFCA]" };
+          DeliveryStatus = {
+            name: "Return",
+            bg: "bg-[#9747FF21]",
+            text: "text-[#A869FA]",
+          };
+        } else if (order.status === "pending") {
+          DeliveryStatus = {
+            name: "pending",
+            bg: "bg-[#FFF7DE]",
+            text: "text-[#FFB020]",
+          };
+        } else if (order.status === "completed") {
+          DeliveryStatus = {
+            name: "completed",
+            bg: "bg-[#33CC331A]",
+            text: "text-[#33CC33]",
+          };
+        } else if (order.status === "Successful") {
+          DeliveryStatus = {
+            name: "Successful",
+            bg: "bg-[#FFF5F5]",
+            text: "text-[#33CC33]",
+          };
         } else {
           DeliveryStatus = { name: "Return", bg: "bg-[#D4CFCA]" };
         }

@@ -13,6 +13,7 @@ const OrderTableItem = ({
   DeliveryStatus,
   viewDetails,
 }) => {
+  console.log(DeliveryStatus);
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
       <td className="text-[12px] font-normal p-4 text-dark">{date}</td>
@@ -24,10 +25,16 @@ const OrderTableItem = ({
       <td className="text-[12px] font-normal p-4 text-dark">
         <OrderStatus
           text={DeliveryStatus.name}
+          bgColor={DeliveryStatus.bg}
+          color={DeliveryStatus.text}
+          addMaxWidth={true}
+        />
+        {/* <OrderStatus
+          text={DeliveryStatus.name}
           bgColor={"bg-[#D4CFCA]"}
           color="text-[#3E1C01]"
           addMaxWidth={true}
-        />
+        /> */}
       </td>
       <td className="text-[12px] font-normal p-4 text-dark ">
         <div className="border rounded-[5px] ">

@@ -70,6 +70,8 @@ const AddProduct = () => {
 
   const handleSelectFile = async (files) => {
     const ImageInfo = await uploadSingleImage(files[0]);
+    console.log(await uploadSingleImage(files[0]));
+    console.log(ImageInfo);
     setUploadeFiles((prevData) => {
       return [...prevData, ImageInfo];
     });
@@ -181,6 +183,7 @@ const AddProduct = () => {
     if (status) {
       try {
         setIsLoading(true);
+
         const formData = {
           name: productFormData.productName,
           description: productFormData.description,
@@ -189,6 +192,7 @@ const AddProduct = () => {
           productTag: productFormData.productTag === "Male" ? "male" : "female",
           productCategory: JSON.stringify([productFormData.productCategory]),
           colors: JSON.stringify(productFormData.colors),
+          productType: productFormData.productType,
           discount: productFormData.discount,
           isFeatured: 0,
           images: {

@@ -24,6 +24,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
               width: "10rem",
               height: "auto",
             }}
+            unoptimized
             className="rounded-[6px]"
           />
         </div>

@@ -12,6 +12,8 @@ const DateInput = ({
   leftIcon,
   placeholder,
   disabled = false,
+  onFocus,
+  onBlur,
 }) => {
   const [dateValue, onChange] = useState(new Date());
   const [date, setDate] = useState(new Date());
@@ -23,8 +25,10 @@ const DateInput = ({
       <label className="text-[14px] font-light my-2 text-dark"> {label}</label>
       <input
         onFocus={() => {
+          onFocus();
           setShowCalender(true);
         }}
+        onBlur={onBlur}
         type="number"
         className={`py-3 ${
           error && "border-danger"
@@ -45,13 +49,14 @@ const DateInput = ({
         onClick={() => {}}
       />
       {showCalender && (
-        <div className="absolute top-[1rem] right-[4rem] bg-white w-full">
+        <div className="fixed top-[1rem] right-[4rem] flex items-center justify-center w-screen height-screen index-30">
           <Calendar
             onChange={(e) => {
               console.log(moment(e).format("YYYY-MM-DD"));
               setDate(moment(e).format("YYYY-MM-DD"));
               setShowCalender(false);
               onChange();
+              setValue(moment(e).format("YYYY-MM-DD"));
             }}
             value={value}
           />

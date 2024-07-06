@@ -31,6 +31,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
                         width: "10rem",
                         height: "auto",
                       }}
+                      unoptimized
                       className="rounded-[6px]"
                     />
                   </div>

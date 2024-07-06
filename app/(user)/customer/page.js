@@ -151,7 +151,7 @@ const Customer = () => {
                   link="link"
                   icon={vendorIcon}
                   addMaxWidth={true}
-                  minHeight="min-h-[8.5rem]"
+                  minHeight="min-h-[9rem]"
                 />
                 <DashboardTopCard
                   name="Highest customer by location"
@@ -160,7 +160,7 @@ const Customer = () => {
                   bgColor="bg-[#5DDAB4]"
                   icon={customerIcon}
                   addMaxWidth={true}
-                  minHeight="min-h-[8.5rem]"
+                  minHeight="min-h-[9rem]"
                 />
               </div>
             )}
