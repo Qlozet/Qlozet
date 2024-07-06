@@ -31,8 +31,8 @@ const CustomerTableItem = ({
         />
       </td>
       <td className="text-[12px] font-normal p-4 text-dark ">{customerName}</td>
-      <td className="text-[12px] font-normal p-4 text-dark">{emailAddress}</td>
-      <td className="text-[12px] font-normal p-4 text-dark">{phone}</td>
+      {/* <td className="text-[12px] font-normal p-4 text-dark">{emailAddress}</td>
+      <td className="text-[12px] font-normal p-4 text-dark">{phone}</td> */}
       <td className="text-[12px] font-normal p-4 text-dark">{totalOrders}</td>
       <td className="text-[12px] font-normal p-4 text-dark">
         {moment(date).format("DD/MM/YYYY")}

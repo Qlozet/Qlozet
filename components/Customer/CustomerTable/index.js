@@ -31,7 +31,7 @@ const CustomerTable = ({
                 Customer name
               </div>
             </th>
-            <th className="w-[8%] px-2 py-4 text-[12px]">
+            {/* <th className="w-[8%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]  text-dark">
                 Email address
               </div>
@@ -40,7 +40,7 @@ const CustomerTable = ({
               <div className="flex items-center justify-start font-[500]  text-dark">
                 Phone number
               </div>
-            </th>
+            </th> */}
             <th className="w-[8%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500]  text-dark">
                 Total orders
