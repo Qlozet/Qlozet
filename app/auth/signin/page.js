@@ -71,7 +71,10 @@ const SignIn = () => {
               <div
                 className={`${classes.first_Container} max-w-lg	p-4 lg:p-0  rounded-[12px]	bg-white mx-4 mb-10`}
               >
-                <Logo />
+                <div className="hidden lg:block">
+                  <Logo />
+                </div>
+
                 <div className="flex h-[100%]  items-center translate-y-[-20%]">
                   <div className="mt-[6rem] md:mt-16">
                     <Typography
