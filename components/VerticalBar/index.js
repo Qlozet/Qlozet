@@ -35,27 +35,24 @@ const VerticalBar = ({ date, value, per, color, highest }) => {
           onTouchStart={() => {
             setShowValue(true);
           }}
-          // onTouchEnd={() => {
-          //   setShowValue(false);
-          // }}
         >
           {showValue && (
             <div>
               <div
-                className="absolute top-[-3.5rem] left-[-14px] font-[400] text-[14px] text-[#495057] bg-[#495057] text-white p-2 rounded-[12px] w-[60px] flex items-center justify-center"
-                style={{ zIndex: 3 }}
+                className="absolute top-[-2.6rem] left-[-17px] font-[400] text-[12px] text-[#495057] bg-[#495057] text-white px-2 py-1 rounded-[12px] w-[60px] flex items-center justify-center"
+                style={{ zIndex: 5 }}
               >
-                {value}
+                {value.toLocaleString()}
               </div>
               <div
-                className={`${classes.rotate} absolute  bg-[#495057] top-[-30px] left-[6px] w-[15px] h-[13px] text-white p-2 rounded-[2px] text-[12px] font-[300]`}
+                className={`${classes.rotate} absolute  bg-[#495057] top-[-28px] left-[8px] w-[13px] h-[13px] text-white p-2 rounded-[2px] text-[12px] font-[300]`}
                 style={{ zIndex: 3 }}
               ></div>
             </div>
           )}
         </div>
       </div>
-      <div className="translate-x-[-6px] flex items-center justify-center font-[400] text-[12px] text-[#495057]">
+      <div className="translate-x-[-0px] flex items-center justify-center font-[400] text-[12px] text-[#495057]">
         {date.substring(0, 3)}
       </div>
     </div>

@@ -34,6 +34,15 @@ const Dashboard = () => {
   const [top4Product, setTop4Product] = useState([]);
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [recentOrders, setRecentOrders] = useState([]);
+  const [data, setData] = useState([
+    { date: "Sun", value: 4300 },
+    { date: "Mon", value: 5100 },
+    { date: "Tue", value: 4200 },
+    { date: "Wed", value: 4900 },
+    { date: "Thu", value: 6100 },
+    { date: "Fri", value: 5300 },
+    { date: "Sat", value: 5300 },
+  ]);
   const [genderByOrder, setGenderByOrder] = useState({
     labels: ["Male", "Female"],
     values: [0, 0],
@@ -150,10 +159,91 @@ const Dashboard = () => {
   };
 
   const getOrders = async () => {
+    let sunOrders = { day: "Sun", orders: [] };
+    let monOrders = { day: "Mon", orders: [] };
+    let tuesOrders = { day: "Tue", orders: [] };
+    let wedOrders = { day: "Wed", orders: [] };
+    let thuOrders = { day: "Thu", orders: [] };
+    let friOrders = { day: "Fri", orders: [] };
+    let satOrders = { day: "Sat", orders: [] };
+    let test = { day: "test", orders: [] };
+    let ordersWitDay = [];
+
     try {
+      const startOfWeek = moment().startOf("week");
       const response = await getRequest("/vendor/orders");
-      let ordersData = [];
       response.data.data.map((order) => {
+        if (
+          moment(order.orderDate).valueOf() > startOfWeek.valueOf() &&
+          moment(order.orderDate).valueOf() < startOfWeek.valueOf() + 86400000
+        ) {
+          sunOrders.orders.push(order);
+        } else if (
+          moment(order.orderDate).valueOf() >
+            startOfWeek.valueOf() + 86400000 &&
+          moment(order.orderDate).valueOf() <
+            startOfWeek.valueOf() + 86400000 * 2
+        ) {
+          monOrders.orders.push(order);
+        } else if (
+          moment(order.orderDate).valueOf() >
+            startOfWeek.valueOf() + 86400000 * 2 &&
+          moment(order.orderDate).valueOf() <
+            startOfWeek.valueOf() + 86400000 * 3
+        ) {
+          tuesOrders.orders.push(order);
+        } else if (
+          moment(order.orderDate).valueOf() >
+            startOfWeek.valueOf() + 86400000 * 3 &&
+          moment(order.orders.orderDate).valueOf() <
+            startOfWeek.valueOf() + 86400000 * 4
+        ) {
+          wedOrders.orders.push(order);
+        } else if (
+          moment(order.orderDate).valueOf() >
+            startOfWeek.valueOf() + 86400000 * 5 &&
+          moment(order.orderDate).valueOf() <
+            startOfWeek.orders.valueOf() + 86400000 * 6
+        ) {
+          friOrders.orders.push(order);
+        } else if (
+          moment(order.orderDate).valueOf() >
+            startOfWeek.valueOf() + 86400000 * 5 &&
+          moment(order.orderDate).valueOf() <
+            startOfWeek.valueOf() + 86400000 * 6
+        ) {
+          thuOrders.orders.push(order);
+        } else if (
+          moment(order.orderDate).valueOf() >
+            startOfWeek.valueOf() + 86400000 * 6 &&
+          moment(order.orderDate).valueOf() <
+            startOfWeek.valueOf() + 86400000 * 7
+        ) {
+          satOrders.orders.push(order);
+        } else {
+          test.orders.push({ amount: 400 });
+          test.orders.push({ amount: 400 });
+          test.orders.push({ amount: 400 });
+        }
+
+        ordersWitDay = [
+          sunOrders,
+          monOrders,
+          tuesOrders,
+          wedOrders,
+          thuOrders,
+          friOrders,
+          satOrders,
+          test,
+        ];
+
+        const last = test[8].orders.reduce((accumulator, currentItem) => {
+          return {
+            day: currentItem.day,
+            total: accumulator + currentItem.amount,
+          };
+        }, 0);
+        
         let DeliveryStatus;
         if (order.status === "out-for-delivery") {
           DeliveryStatus = { name: "Out for delivery", bg: "bg-[#D4CFCA]" };
@@ -162,22 +252,6 @@ const Dashboard = () => {
         } else {
           DeliveryStatus = { name: "Return", bg: "bg-[#D4CFCA]" };
         }
-        // let orderItem = {
-        //   orderId: order.orderId,
-        //   date: moment(order.orderDate).format("YYYY-MM-DD"),
-        //   productName: order.orderItems.map((product) => {
-        //     return product.name;
-        //   }),
-        //   productPrice: calculatePrice(order.orderItems),
-        //   customerName: `${order.customer.firstName} ${order.customer.lastName}`,
-        //   customerPhoneNumber: order.customer.phoneNumber,
-        //   customerEmail: order.customer.email,
-        //   AmountPaid: `₦${order.amountPaid.toLocaleString()}`,
-        //   shippingAddress: order.shippingAddress,
-        //   custmerAddress: order.shippingAddress,
-        //   DeliveryStatus: DeliveryStatus,
-        //   createdAt: order.orderDate,
-        // };
         let orderItem = {
           id: 1,
           name: `${order.customer.firstName} ${order.customer.lastName}`,
@@ -221,7 +295,7 @@ const Dashboard = () => {
               closeSideBar={showSideBar}
             />
           </div>
-          <div className="w-full">
+          <div className="w-full mb-[2rem]">
             <div className="p-4">
               <DasboardNavWithOutSearch
                 addSearch={false}
@@ -269,14 +343,6 @@ const Dashboard = () => {
               <div className="flex items-center justify-between mb-2 mt-4">
                 <UpdateComponent />
                 <div className="hidden lg:block">
-                  {/* <DropDown
-                    placeholder={"Vendor’s status"}
-                    value={dropDownValue}
-                    setValue={(data) => {
-                      setDropDownValue(data);
-                    }}
-                    data={dropdownData}
-                  /> */}
                   <DropDown
                     data={[
                       "This week",
@@ -333,13 +399,12 @@ const Dashboard = () => {
                   className={`${classes.first_container} block md:flex md:gap-4 mt-3 w-full `}
                 >
                   <div className="w-full shadow-md bg-white rounded-[12px] p-6 block">
-                    <VerticalBarGraph />
+                    <VerticalBarGraph name="Earning" data={data} />
                   </div>
                   <div className="w-full shadow-md bg-white rounded-[12px] p-6 block mt-4 md:mt-0">
-                    <VerticalBarGraph />
+                    <VerticalBarGraph name="Order Count" data={data} />
                   </div>
                 </div>
-
                 <div className={`${classes.second_container} flex  mt-4`}>
                   <div className="bg-white rounded-[12px] w-full flex gap-4 h-full ">
                     {

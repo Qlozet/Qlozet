@@ -9,12 +9,7 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg }) => {
 
   const handleSetValue = (value, option) => {
     const today = moment();
-    // "This week",
-    // "Last week",
-    // "Last month",
-    // "This month",
-    // "Choose month",
-    // "Custom",
+
     if (value === "This week") {
       const startOfWeek = moment().startOf("week").valueOf();
       const endOfWeek = moment().endOf("week").valueOf();
@@ -90,6 +85,7 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg }) => {
       <div className={`relative ${bg ? bg : ""}`}>
         <Image src={arrowDownIcon} className="absolute top-2 right-3" alt="" />
         <input
+          readOnly
           onChange={() => {}}
           onClick={() => {
             setShowDropDown(true);
@@ -102,7 +98,7 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg }) => {
               : "rounded-[10px] "
           } ${
             option ? "bg-primary text-white" : "bg-gray-400 text-black"
-          }  w-full p-2 outline-none text-[12px]  placeholder-gray-200 text-dark border-[1px] border-solid border-gray-200`}
+          }  w-full p-2 outline-none text-[12px]  placeholder-gray-200 text-dark border-[1.5px] border-solid border-gray-200`}
         />
         <div className="absolute top-[10px] right-2 z-50"></div>
         {showDropDown && (

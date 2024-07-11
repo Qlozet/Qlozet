@@ -4,16 +4,8 @@ import VerticalBar from "../VerticalBar";
 import Typography from "../Typography";
 import DropDown from "../DropDown";
 
-const VerticalBarGraph = () => {
-  const [data, setData] = useState([
-    { date: "June 1", value: 5100 },
-    { date: "June 2", value: 4200 },
-    { date: "June 3", value: 4900 },
-    { date: "June 4", value: 4300 },
-    { date: "June 5", value: 6100 },
-    { date: "June 6", value: 5300 },
-    { date: "June 7", value: 5300 },
-  ]);
+const VerticalBarGraph = ({data, name }) => {
+ 
 
   const itemWithHighestValue = data.reduce((prevItem, currentItem) => {
     return prevItem.value > currentItem.value ? prevItem : currentItem;
@@ -27,7 +19,7 @@ const VerticalBarGraph = () => {
           textWeight="font-bold"
           textSize="text-[16px]"
         >
-          Order Count
+          {name}
         </Typography>
         <DropDown
           data={[
@@ -45,10 +37,6 @@ const VerticalBarGraph = () => {
         />
       </div>
       <div className="">
-        {/* <VendorCountLine value={"11,000"} />
-        <VendorCountLine value={"10,000"} />
-        <VendorCountLine value={"9,000"} />
-        <VendorCountLine value={"8,000"} /> */}
         {/* <VendorCountLine value={"7,000"} /> */}
         <VendorCountLine value={"6,000"} />
         <VendorCountLine value={"5,000"} />
