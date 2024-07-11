@@ -147,7 +147,7 @@ const Products = () => {
     getProducts();
   }, [isLoading]);
   return (
-    <div>
+    <section>
       {isLoading ? (
         <Loader></Loader>
       ) : (
@@ -339,7 +339,7 @@ const Products = () => {
           )}
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

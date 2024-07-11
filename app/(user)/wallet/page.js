@@ -140,7 +140,7 @@ const Wallet = () => {
   }, []);
 
   return (
-    <div>
+    <section>
       {loadPage ? (
         <Loader></Loader>
       ) : (
@@ -335,7 +335,7 @@ const Wallet = () => {
           )}
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

@@ -49,7 +49,7 @@ const NotificationPage = () => {
 
   return (
     <section>
-      {" "}
+     
       {pageLoading ? (
         <Loader></Loader>
       ) : (

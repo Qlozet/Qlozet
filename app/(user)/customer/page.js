@@ -116,7 +116,7 @@ const Customer = () => {
     getCustomers();
   }, []);
   return (
-    <div>
+    <section className={classes.main_container}>
       {pageLoading ? (
         <Loader></Loader>
       ) : (
@@ -385,7 +385,7 @@ const Customer = () => {
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

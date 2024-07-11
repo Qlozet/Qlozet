@@ -208,11 +208,11 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div>
+    <section>
       {loadPage ? (
         <Loader></Loader>
       ) : (
-        <div className="flex bg-gray-400 w-full h-full">
+        <div className={`flex bg-gray-400 w-full h-full`}>
           <div className="">
             <SideBar active="Dashboard" />
             <MobileSideBar
@@ -354,7 +354,7 @@ const Dashboard = () => {
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

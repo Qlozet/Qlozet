@@ -214,7 +214,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div>
+    <section>
       {pageLoading ? (
         <Loader></Loader>
       ) : (
@@ -263,7 +263,7 @@ const Dashboard = () => {
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

@@ -48,7 +48,7 @@ const Support = () => {
     }
   };
   return (
-    <div>
+    <section>
       {pageLoading ? (
         <Loader></Loader>
       ) : (
@@ -156,7 +156,7 @@ const Support = () => {
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 };
 

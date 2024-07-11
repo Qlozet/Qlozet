@@ -276,7 +276,7 @@ const AddProduct = () => {
     fetchProduct();
   }, []);
   return (
-    <div>
+    <section>
       {pageLoading ? (
         <Loader></Loader>
       ) : (
@@ -688,7 +688,7 @@ const AddProduct = () => {
           </div>
         </div>
       )}{" "}
-    </div>
+    </section>
   );
 };
 
