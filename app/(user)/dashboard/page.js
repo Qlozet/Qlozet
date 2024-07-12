@@ -243,7 +243,7 @@ const Dashboard = () => {
             total: accumulator + currentItem.amount,
           };
         }, 0);
-        
+
         let DeliveryStatus;
         if (order.status === "out-for-delivery") {
           DeliveryStatus = { name: "Out for delivery", bg: "bg-[#D4CFCA]" };
