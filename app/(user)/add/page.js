@@ -215,7 +215,6 @@ const AddProduct = () => {
         const response = !productId
           ? await postRequest("/vendor/products", formData)
           : await putRequest(`/vendor/products/${productId}/update`, formData);
-        console.log(response);
         response && setIsLoading(false);
         if (response?.data) {
           router.push("../products");

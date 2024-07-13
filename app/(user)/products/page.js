@@ -34,12 +34,13 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [filteredProduct, setFilterdProduct] = useState([]);
   const [showMobileNav, setShowMobileNav] = useState(false);
-  const chartData = {
-    labels: ["Suit", "Kaftan", "Cargo", "Abgada"],
-    values: [50, 25, 25, 25],
-    colors: ["#3E1C01", "#9C8578", "#F6E9DD", "#BE7D42"],
+  const [tagData, setTagData] = useState({
+    labels: ["Male", "Female"],
+    values: [0, 0],
+    colors: ["#9C8578", "#3E1C01"],
     borderAlign: "center",
-  };
+  });
+
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
   };
@@ -81,7 +82,6 @@ const Products = () => {
       let productData = [];
       if (response?.data) {
         response?.data?.data?.map((product) => {
-          console.log(product);
           let productStatus;
           if (product.status) {
             productStatus = {
@@ -111,6 +111,15 @@ const Products = () => {
             createdAt: product.createdAt,
           };
           productData.push(orderItem);
+        });
+        setTagData((prevData) => {
+          return {
+            ...prevData,
+            values: [
+              productData.filter((prod) => prod.tag === "male").length,
+              productData.filter((prod) => prod.tag === "female").length,
+            ],
+          };
         });
         setProducts(productData);
         setFilterdProduct(productData);
@@ -242,7 +251,7 @@ const Products = () => {
               <div
                 className={`px-6 py-4 flex bg-white rounded-[12px] mt-4 max-w-[300px] w-full min-w-[300px]`}
               >
-                <DonutChart data={chartData} width={"90"} height={"90"} />
+                <DonutChart data={tagData} width={"90"} height={"90"} />
                 <div>
                   <Typography
                     textColor="text-black"
@@ -259,17 +268,17 @@ const Products = () => {
                         textWeight="font-[400]"
                         textSize="text-[12px]"
                       >
-                        Suite
+                        Female
                       </Typography>
                     </div>
                     <div className="flex items-center gap-2 p-2">
-                      <span className="w-[10px] h-[10px] rounded-[50%] bg-primary"></span>
+                      <span className="w-[10px] h-[10px] rounded-[50%] bg-primary-200"></span>
                       <Typography
                         textColor="text-black"
                         textWeight="font-[400]"
                         textSize="text-[12px]"
                       >
-                        Suite
+                        Male
                       </Typography>
                     </div>
                   </div>
@@ -304,7 +313,7 @@ const Products = () => {
                       setValue={(startDate, endDate) => {
                         handleFilterWithDate(startDate, endDate);
                       }}
-                      zIndex={80}
+                      zIndex={100}
                     />
                   </div>
                 </div>

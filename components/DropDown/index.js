@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import arrowDownIcon from "../../public/assets/svg/arrow-down.svg";
 import Image from "next/image";
 import moment from "moment";
-const DropDown = ({ placeholder, setValue, data, maxWidth, bg }) => {
+const DropDown = ({ placeholder, setValue, data, maxWidth, bg, zIndex }) => {
   const dropDownRef = useRef();
   const [option, setOption] = useState("");
   const [showDropDown, setShowDropDown] = useState(false);
@@ -79,7 +79,7 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg }) => {
         showDropDown ? "shadow-2xl" : ""
       } rounded-lg `}
       style={{
-        zIndex: 20,
+        zIndex: zIndex ? zIndex : 20,
       }}
     >
       <div className={`relative ${bg ? bg : ""}`}>

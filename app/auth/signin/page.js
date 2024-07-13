@@ -56,6 +56,20 @@ const SignIn = () => {
     }
   };
 
+  const getProduct = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/api/products", {
+        params: {
+          organization_id: "04bd5f1f59814d91af03179706c01855",
+          Appid: "IYISGX44YNAPMDE",
+          Apikey: "f83f5d9239bd40bea801feda7eebdc5420240712221910617336",
+        },
+      });
+    } catch (error) {
+      console.error("There was an error making the request:", error);
+    }
+  };
+  getProduct();
   return (
     <section className={`h-screen overflow-hidden`}>
       <div

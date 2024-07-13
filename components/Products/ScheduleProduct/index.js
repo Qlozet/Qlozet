@@ -8,9 +8,16 @@ import closeicon from "../../../public/assets/svg/material-symbols_close-rounded
 import "react-calendar/dist/Calendar.css";
 import Image from "next/image";
 import { useState } from "react";
+import { getProductId } from "@/utils/localstorage";
+import { postRequest } from "@/api/method";
+import Toast from "@/components/ToastComponent/toast";
+import toast from "react-hot-toast";
 const ShecduleProduct = ({ closeSchedule }) => {
+  const productId = getProductId();
   const [schedule, setSchedule] = useState({ date: "", time: "" });
   const [dateinputIsActive, setDateInputIsactive] = useState(false);
+  const [showCalender, setShowCalender] = useState(false);
+  const [isLoading, setIsloading] = useState(false);
   const timearray = [
     { text: "00:00" },
     { text: "00:30" },
@@ -61,6 +68,26 @@ const ShecduleProduct = ({ closeSchedule }) => {
     { text: "23:00" },
     { text: "23:30" },
   ];
+  const submitSchedule = async () => {
+    try {
+      setIsloading(true);
+      const response = await postRequest(
+        `/vendor/products/schedule/${productId}`,
+        {
+          date: schedule.date,
+          time: schedule.time,
+        }
+      );
+      if (response.code == 200) {
+        toast(<Toast text={response?.message} type="success" />);
+        closeSchedule();
+      }
+      response && setIsloading(false);
+    } catch (error) {
+      error && setIsloading(false);
+      console.log(error);
+    }
+  };
   return (
     <div>
       <div className="mt-4 mx-auto lg:max-w-[30%]">
@@ -81,21 +108,34 @@ const ShecduleProduct = ({ closeSchedule }) => {
                 className="cursor-pointer"
               />
             </div>
+            <div
+              onClick={() => {
+                setShowCalender(!showCalender);
+              }}
+            >
+              <DateInput
+                showCalender={showCalender}
+                placeholder={"Select Date"}
+                value={schedule.date}
+                setValue={(data) => {
+                  console.log(data);
+                  setSchedule((prevData) => {
+                    return { ...prevData, date: data };
+                  });
+                }}
+                label="Date"
+                onFocus={() => {
+                  setDateInputIsactive(true);
+                }}
+                // onBlur={() => {
+                //   setDateInputIsactive(false);
+                // }}
+                showCalendeHandler={() => {
+                  setShowCalender(false);
+                }}
+              />
+            </div>
 
-            <DateInput
-              placeholder={"Select Date"}
-              // value={""}
-              setValue={(data) => {
-                console.log(data);
-              }}
-              label="Date"
-              onFocus={() => {
-                setDateInputIsactive(true);
-              }}
-              onBlur={() => {
-                setDateInputIsactive(false);
-              }}
-            />
             <div
               className="w-full"
               style={{
@@ -103,7 +143,7 @@ const ShecduleProduct = ({ closeSchedule }) => {
               }}
             >
               <SelectInput
-                index={10}
+                index={showCalender ? -10 : 10}
                 placeholder={"Product Tags"}
                 label="Tags"
                 value={schedule.time}
@@ -117,12 +157,13 @@ const ShecduleProduct = ({ closeSchedule }) => {
             </div>
             <div className="my-6 flex items-center justify-center lg:justify-end ">
               <Button
+                loading={isLoading}
                 children="Schedule activation"
                 btnSize="small"
                 minWidth="min-w-[100%]"
                 variant="primary"
                 clickHandler={() => {
-                  closeSchedule();
+                  submitSchedule();
                 }}
               />
             </div>
