@@ -17,7 +17,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
         <div className="bg-auto bg-no-contain">
           <Image
             alt="Product Image"
-            src={customer.customerPicture}
+            src={customer.picture}
             width={30}
             height={30}
             style={{
@@ -68,7 +68,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
                 textWeight="font-bold"
                 textSize="text-[12px]"
               >
-                {customer.customerEmail}
+                {customer.emailAddress}
               </Typography>
             </div>
           </div>
@@ -88,7 +88,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
                 textWeight="font-bold"
                 textSize="text-[12px]"
               >
-                {customer.customerPhoneNumber}
+                {customer.phone}
               </Typography>
             </div>
           </div>
@@ -108,7 +108,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
                 textWeight="font-bold"
                 textSize="text-[12px]"
               >
-                {customer.customerPhoneNumber}
+                {customer.phone}
               </Typography>
             </div>
           </div>

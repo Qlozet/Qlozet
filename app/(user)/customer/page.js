@@ -40,6 +40,7 @@ const Customer = () => {
   };
 
   const showModal = (customerId) => {
+    console.log(custmers.filter((item) => item.customerId === customerId)[0]);
     setCustomer(custmers.filter((item) => item.customerId === customerId)[0]);
     setCustomerDetails(true);
     setShowHistory(false);

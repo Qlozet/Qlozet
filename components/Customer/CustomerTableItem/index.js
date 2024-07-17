@@ -46,8 +46,8 @@ const CustomerTableItem = ({
         />
       </td>
 
-      <td className="text-[12px] font-normal p-4 text-dark ">
-        <div className="border rounded-[12px] ">
+      <td className="text-[12px] font-normal p-4 text-dark  flex items-center justify-end">
+        <div className="border rounded-[12px] max-w-[6rem]">
           <OrderStatus
             text="View details"
             color="text-[#3E1C01]"
