@@ -82,6 +82,7 @@ const Products = () => {
       let productData = [];
       if (response?.data) {
         response?.data?.data?.map((product) => {
+          console.log(product);
           let productStatus;
           if (product.status) {
             productStatus = {

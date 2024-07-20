@@ -1,3 +1,4 @@
+import { postRequest } from "@/api/method";
 import exportFromJSON from "export-from-json";
 
 export const handlerContainsNumber = (str) => {

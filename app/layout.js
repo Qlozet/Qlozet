@@ -1,6 +1,5 @@
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
-// import ToastProvider from "@/components/ToastComponent";
 import { Poppins } from "next/font/google";
 const poppins = Poppins({
   subsets: ["latin"],
@@ -13,11 +12,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className="">
       <body className={poppins.className}>
         {/* <ToastProvider></ToastProvider> */}
-        <div className="max-w-[2500px] mx-auto"> {children}</div>
-
+        <div className={`max-w-[2500px] mx-auto`}> {children}</div>
         <Toaster
           toastOptions={{
             duration: 5000,

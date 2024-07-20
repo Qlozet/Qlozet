@@ -64,6 +64,7 @@ const SelectInput = ({
         >
           {list.map((item, index) => (
             <div
+              key={index}
               tabIndex={0}
               className={`p-2 ${
                 index !== 0

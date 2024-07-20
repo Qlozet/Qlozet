@@ -10,6 +10,7 @@ const Button = ({
   minWidth,
   loading,
   className,
+  paddingVertical,
   ...rest
 }) => {
   let variantClasses = "";
@@ -43,12 +44,14 @@ const Button = ({
       sizeClasses = "w-[155px] py-3 px-6";
       break;
     default:
-      sizeClasses = "py-2 px-4";
+      sizeClasses = "px-4";
   }
 
   return (
     <button
-      className={`py-2  flex items-center justify-center gap-4 rounded-[5px] ${minWidth} ${maxWidth} ${variantClasses} ${sizeClasses} text-[14px] ${className} ${
+      className={` ${
+        paddingVertical ? paddingVertical : "py-2"
+      }  flex items-center justify-center gap-4 rounded-[5px] ${minWidth} ${maxWidth} ${variantClasses} ${sizeClasses} text-[14px] ${className} ${
         loading && "cursor-not-allowed"
       }`}
       {...rest}

@@ -38,7 +38,6 @@ const Page = () => {
   });
 
   const handleCheckPassword = (data) => {
-    console.log(data);
     const containsCharacter = handleContainsSymbolOrCharacter(data);
     const containsNumber = handlerContainsNumber(data);
     if (containsCharacter) {
@@ -51,7 +50,6 @@ const Page = () => {
         return { ...prevData, containNumber: true };
       });
     }
-
     if (data.length > 7) {
       setCheckPassword((prevData) => {
         return { ...prevData, moreThan8: true };
@@ -85,7 +83,6 @@ const Page = () => {
           confirmPassword: formData.confirmPassword,
         });
         response && setRequesLoading(false);
-        console.log(response);
         if (response.success) {
           toast(<Toast text={response.message} type="success" />);
           router.push("/auth/signin");

@@ -30,6 +30,7 @@ import MaterialInput from "@/components/MaterialInput";
 import MAterialInput from "@/components/MaterialInput";
 import SizeInput from "@/components/SizeInput";
 import { uploadSingleImage } from "@/utils/helper";
+import DragDrop from "@/components/DragandDrop";
 const AddProduct = () => {
   const [variantTable, setVariantTable] = useState([]);
   const router = useRouter();
@@ -70,14 +71,13 @@ const AddProduct = () => {
 
   const handleSelectFile = async (files) => {
     const ImageInfo = await uploadSingleImage(files[0]);
-    console.log(await uploadSingleImage(files[0]));
     console.log(ImageInfo);
     setUploadeFiles((prevData) => {
       return [...prevData, ImageInfo];
     });
     setFile(files);
     setProductFormData((prevData) => {
-      return { ...prevData, images: files };
+      return { ...prevData, images: ImageInfo };
     });
   };
 
@@ -112,10 +112,7 @@ const AddProduct = () => {
   };
 
   const addToVariantTable = async (data) => {
-    console.log(data);
-
     if (data[0] instanceof File) {
-      console.log("Item is file");
       const imageUrl = await uploadSingleImage(data[0]);
       setCurrentVariantFile(imageUrl.secure_url);
       setCurrentVariantColor("");
@@ -195,6 +192,7 @@ const AddProduct = () => {
           productType: productFormData.productType,
           discount: productFormData.discount,
           isFeatured: 0,
+          isCustomizable: true,
           images: {
             retained: upladedFiles,
             deleted: [],
@@ -212,12 +210,14 @@ const AddProduct = () => {
             return varantItem;
           }),
         };
+        console.log(formData);
         const response = !productId
           ? await postRequest("/vendor/products", formData)
           : await putRequest(`/vendor/products/${productId}/update`, formData);
         response && setIsLoading(false);
+        console.log(response);
         if (response?.data) {
-          router.push("../products");
+          // router.push("../products");
           setIsLoading(false);
           toast(<Toast text={response?.message} type="success" />);
         } else {
@@ -686,7 +686,8 @@ const AddProduct = () => {
             )}
           </div>
         </div>
-      )}{" "}
+      )}
+      <Modal content={<DragDrop></DragDrop>}></Modal>
     </section>
   );
 };

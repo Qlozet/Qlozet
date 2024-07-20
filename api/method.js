@@ -35,7 +35,6 @@ export const postRequest = async (url, data, fileAvailable) => {
   let userData;
   let token = getToken();
   let response;
-  console.log(userData?.token);
   try {
     if (token) {
       userData = JSON.parse(token);
@@ -67,14 +66,12 @@ export const postRequest = async (url, data, fileAvailable) => {
     }
     return response.data;
   } catch (error) {
-    console.log(error);
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
       return error.response.data;
       // alert(error.response.data.data ?? error);
-      console.log(error.response.status);
-      console.log(error.response.headers);
+
       if (error.response.status === 401) {
         // toastError("Unauthotized! Re-login to continue");
         return;
