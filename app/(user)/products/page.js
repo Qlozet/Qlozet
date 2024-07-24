@@ -82,7 +82,6 @@ const Products = () => {
       let productData = [];
       if (response?.data) {
         response?.data?.data?.map((product) => {
-          console.log(product);
           let productStatus;
           if (product.status) {
             productStatus = {
@@ -158,197 +157,201 @@ const Products = () => {
   }, [isLoading]);
   return (
     <section>
-      {isLoading ? (
-        <Loader></Loader>
-      ) : (
-        <div className="flex bg-[#F8F9FA]">
-          <div className="">
-            <SideBar active="Products" />
-            <MobileSideBar
-              showMobileNav={showMobileNav}
-              active="Products"
-              closeSideBar={showSideBar}
-            />
-          </div>
-          <div className="w-full p-4">
-            <DasboardNavWithOutSearch
-              name="Products"
-              addSearch={true}
-              setValue={(data) => {
-                handleFilfeterData(data);
-              }}
-              showSideBar={showSideBar}
-            />
-            <div className="flex items-center justify-end py-6 gap-6">
-              <div className="hidden lg:block">
-                <Button
-                  children={
-                    <span className="flex justify-center items-center">
-                      <span>Import Products</span>
-                      <Image src={addIcon} className="ml-4" alt="" />
-                    </span>
-                  }
-                  btnSize="small"
-                  minWidth="min-w-[14rem]"
-                  variant="primary"
-                  clickHandler={() => {
-                    setShowAddModal(true);
-                  }}
-                />
+      <div className="flex bg-[#F8F9FA]">
+        <div className="">
+          <SideBar active="Products" />
+          <MobileSideBar
+            showMobileNav={showMobileNav}
+            active="Products"
+            closeSideBar={showSideBar}
+          />
+        </div>
+        <div className="w-full p-4">
+          <DasboardNavWithOutSearch
+            name="Products"
+            addSearch={true}
+            setValue={(data) => {
+              handleFilfeterData(data);
+            }}
+            showSideBar={showSideBar}
+          />
+
+          {isLoading ? (
+            <Loader></Loader>
+          ) : (
+            <div>
+              {" "}
+              <div className="flex items-center justify-end py-6 gap-6">
+                <div className="hidden lg:block">
+                  <Button
+                    children={
+                      <span className="flex justify-center items-center">
+                        <span>Import Products</span>
+                        <Image src={addIcon} className="ml-4" alt="" />
+                      </span>
+                    }
+                    btnSize="small"
+                    minWidth="min-w-[14rem]"
+                    variant="primary"
+                    clickHandler={() => {
+                      setShowAddModal(true);
+                    }}
+                  />
+                </div>
+                <div className="block lg:hidden">
+                  <Button
+                    children={
+                      <span className="flex justify-center items-center">
+                        <span>Import</span>
+                        <Image src={addIcon} className="ml-4" alt="" />
+                      </span>
+                    }
+                    btnSize="small"
+                    variant="=outline"
+                    clickHandler={() => {
+                      setShowAddModal(true);
+                    }}
+                  />
+                </div>
+                <div>
+                  <Button
+                    children={
+                      <span className="flex justify-center items-center">
+                        <span>Add new product</span>
+                        <Image src={addIcon} className="ml-4" alt="" />
+                      </span>
+                    }
+                    btnSize="small"
+                    minWidth="min-w-[14rem]"
+                    variant="primary"
+                    clickHandler={() => {
+                      router.push("/add");
+                      clearProductId();
+                    }}
+                  />
+                </div>
               </div>
-              <div className="block lg:hidden">
-                <Button
-                  children={
-                    <span className="flex justify-center items-center">
-                      <span>Import</span>
-                      <Image src={addIcon} className="ml-4" alt="" />
-                    </span>
-                  }
-                  btnSize="small"
-                  variant="=outline"
-                  clickHandler={() => {
-                    setShowAddModal(true);
-                  }}
+              <div
+                className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
+              >
+                <DashboardTopCard
+                  name="Total products"
+                  total={products.length}
+                  percentage="2.5"
+                  bgColor="bg-[#57CAEB]"
+                  link="link"
+                  icon={shoppingBag}
+                  addMaxWidth={true}
                 />
+                <DashboardTopCard
+                  name="Achieved products"
+                  total="10000"
+                  percentage="2.5"
+                  bgColor="bg-[#5DDAB4]"
+                  icon={shoppingBag}
+                  addMaxWidth={true}
+                />
+                <div
+                  className={`px-6 py-4 flex bg-white rounded-[12px] mt-4 max-w-[300px] w-full min-w-[300px]`}
+                >
+                  <DonutChart data={tagData} width={"90"} height={"90"} />
+                  <div>
+                    <Typography
+                      textColor="text-black"
+                      textWeight="font-[400]"
+                      textSize="text-[12px]"
+                    >
+                      Sales By Product Category
+                    </Typography>
+                    <div>
+                      <div className="flex items-center gap-2 p-2">
+                        <span className="w-[10px] h-[10px] rounded-[50%] bg-primary"></span>
+                        <Typography
+                          textColor="text-black"
+                          textWeight="font-[400]"
+                          textSize="text-[12px]"
+                        >
+                          Female
+                        </Typography>
+                      </div>
+                      <div className="flex items-center gap-2 p-2">
+                        <span className="w-[10px] h-[10px] rounded-[50%] bg-primary-200"></span>
+                        <Typography
+                          textColor="text-black"
+                          textWeight="font-[400]"
+                          textSize="text-[12px]"
+                        >
+                          Male
+                        </Typography>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div>
-                <Button
-                  children={
-                    <span className="flex justify-center items-center">
-                      <span>Add new product</span>
-                      <Image src={addIcon} className="ml-4" alt="" />
-                    </span>
-                  }
-                  btnSize="small"
-                  minWidth="min-w-[14rem]"
-                  variant="primary"
-                  clickHandler={() => {
-                    router.push("/add");
-                    clearProductId();
-                  }}
-                />
-              </div>
-            </div>
-            <div
-              className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
-            >
-              <DashboardTopCard
-                name="Total products"
-                total={products.length}
-                percentage="2.5"
-                bgColor="bg-[#57CAEB]"
-                link="link"
-                icon={shoppingBag}
-                addMaxWidth={true}
-              />
-              <DashboardTopCard
-                name="Achieved products"
-                total="10000"
-                percentage="2.5"
-                bgColor="bg-[#5DDAB4]"
-                icon={shoppingBag}
-                addMaxWidth={true}
-              />
-              <div
-                className={`px-6 py-4 flex bg-white rounded-[12px] mt-4 max-w-[300px] w-full min-w-[300px]`}
-              >
-                <DonutChart data={tagData} width={"90"} height={"90"} />
-                <div>
-                  <Typography
-                    textColor="text-black"
-                    textWeight="font-[400]"
-                    textSize="text-[12px]"
+                <div className="relative">
+                  <div
+                    className="flex items-center justify-between mt-14 mb-2"
+                    style={{ zIndex: "20" }}
                   >
-                    Sales By Product Category
-                  </Typography>
-                  <div>
-                    <div className="flex items-center gap-2 p-2">
-                      <span className="w-[10px] h-[10px] rounded-[50%] bg-primary"></span>
-                      <Typography
-                        textColor="text-black"
-                        textWeight="font-[400]"
-                        textSize="text-[12px]"
-                      >
-                        Female
-                      </Typography>
-                    </div>
-                    <div className="flex items-center gap-2 p-2">
-                      <span className="w-[10px] h-[10px] rounded-[50%] bg-primary-200"></span>
-                      <Typography
-                        textColor="text-black"
-                        textWeight="font-[400]"
-                        textSize="text-[12px]"
-                      >
-                        Male
-                      </Typography>
+                    <Typography
+                      textColor="text-dark"
+                      textWeight="font-bold"
+                      textSize="text-[18px]"
+                    >
+                      Products
+                    </Typography>
+                    <div className="">
+                      <DropDown
+                        data={[
+                          "This week",
+                          "Last week",
+                          "This month",
+                          "Last month",
+                          "Choose month",
+                          "Custom",
+                        ]}
+                        maxWidth={"max-w-[8rem]"}
+                        placeholder="Time Range"
+                        setValue={(startDate, endDate) => {
+                          handleFilterWithDate(startDate, endDate);
+                        }}
+                        zIndex={100}
+                      />
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div>
-              <div className="relative">
-                <div
-                  className="flex items-center justify-between mt-14 mb-2"
-                  style={{ zIndex: "20" }}
-                >
-                  <Typography
-                    textColor="text-dark"
-                    textWeight="font-bold"
-                    textSize="text-[18px]"
-                  >
-                    Products
-                  </Typography>
-                  <div className="">
-                    <DropDown
-                      data={[
-                        "This week",
-                        "Last week",
-                        "This month",
-                        "Last month",
-                        "Choose month",
-                        "Custom",
-                      ]}
-                      maxWidth={"max-w-[8rem]"}
-                      placeholder="Time Range"
-                      setValue={(startDate, endDate) => {
-                        handleFilterWithDate(startDate, endDate);
-                      }}
-                      zIndex={100}
-                    />
-                  </div>
+                <div className="my-4 block lg:hidden">
+                  <UpdateComponent />
                 </div>
-              </div>
-              <div className="my-4 block lg:hidden">
-                <UpdateComponent />
-              </div>
-              <ProductTable
-                data={filteredProduct}
-                showModal={showModal}
-                statusChangeHandler={toggleStatus}
-                handleFilfeterData={handleFilfeterData}
-              />
-            </div>
-          </div>
-          {viewCustomerDetails && (
-            <Modal
-              content={
-                <CustomerDetails
-                  topNavData={topNavData}
-                  closeModal={closeModal}
+                <ProductTable
+                  data={filteredProduct}
+                  showModal={showModal}
+                  statusChangeHandler={toggleStatus}
+                  handleFilfeterData={handleFilfeterData}
                 />
-              }
-            ></Modal>
-          )}
-          {showHostory && (
-            <Modal
-              content={
-                <OrderHistory topNavData={topNavData} closeModal={closeModal} />
-              }
-            ></Modal>
+              </div>
+            </div>
           )}
         </div>
-      )}
+        {viewCustomerDetails && (
+          <Modal
+            content={
+              <CustomerDetails
+                topNavData={topNavData}
+                closeModal={closeModal}
+              />
+            }
+          ></Modal>
+        )}
+        {showHostory && (
+          <Modal
+            content={
+              <OrderHistory topNavData={topNavData} closeModal={closeModal} />
+            }
+          ></Modal>
+        )}
+      </div>
     </section>
   );
 };

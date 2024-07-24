@@ -5,6 +5,8 @@ import Toast from "@/components/ToastComponent/toast";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import DropDown from "@/components/DropDown";
+import HomePageHeader from "@/components/Header";
+import HomePageHero from "@/components/HomePageHero";
 export default function Home() {
   const router = useRouter();
 
@@ -55,20 +57,13 @@ export default function Home() {
   ];
 
   useEffect(() => {
-    router.push("/auth/signin");
+    // router.push("/auth/signin");
   }, []);
 
   return (
-    <main className="bg-white w-full h-[100vh] p-20">
-      <h1
-        className="cursor-pointer"
-        onClick={() => {
-          toast(<Toast text={"gdfgdggdgggghdhjjdHello man"} type="success" />);
-        }}
-      >
-        Homepage
-      </h1>
-      <h1>Components</h1>
+    <main className="bg-white w-[95%] h-[100vh] m-auto">
+      <HomePageHeader />
+      <HomePageHero />
     </main>
   );
 }

@@ -179,183 +179,187 @@ const Order = () => {
   }, []);
   return (
     <section>
-      {pageLoading ? (
-        <Loader></Loader>
-      ) : (
-        <div className="flex bg-[#F8F9FA]">
-          <div className="">
-            <SideBar active="Orders" />
-            <MobileSideBar
-              showMobileNav={showMobileNav}
-              active="Orders"
-              closeSideBar={showSideBar}
-            />
-          </div>
-          <div className="w-full p-4">
-            <DasboardNavWithOutSearch
-              addSearch={true}
-              name="Orders"
-              setValue={(data) => {
-                handleFilfeterData(data);
-              }}
-              showSideBar={showSideBar}
-            />
-            <div
-              className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4 lg:hidden`}
-            >
-              <DashboardTopCard
-                name="Total Orders"
-                total={orders.length}
-                percentage="2.5"
-                bgColor="bg-[#57CAEB]"
-                icon={TotalOrderIcon}
-                addMaxWidth={true}
-              />
-              <DashboardTopCard
-                name="Orders Delivered"
-                total="100"
-                percentage="2.5"
-                bgColor="bg-[#5DDAB4]"
-                icon={sendIcon}
-                addMaxWidth={true}
-              />
-              <DashboardTopCard
-                name="Orders in Transit"
-                total="100"
-                percentage="2.5"
-                bgColor="bg-[#FF7676]"
-                icon={carIcon}
-                addMaxWidth={true}
-              />
-              <DashboardTopCard
-                name="Most purchased order"
-                total="1000"
-                percentage="2.5"
-                bgColor="bg-[#FF9E57]"
-                icon={shippingIcon}
-                addMaxWidth={true}
-              />
-            </div>
-            <div
-              className={`${classes.scrollbarElement} items-center gap-4 overflow-x-scroll px-4 hidden lg:flex`}
-            >
-              <DashboardTopCard
-                name="Total Orders"
-                total={orders.length}
-                percentage="2.5"
-                bgColor="bg-[#57CAEB]"
-                link="link"
-                icon={vendorIcon}
-              />
-              <DashboardTopCard
-                name="Orders Delivered"
-                total="10000"
-                percentage="2.5"
-                bgColor="bg-[#5DDAB4]"
-                icon={sendIcon}
-              />
-              <DashboardTopCard
-                name="Total Customers"
-                total="10000"
-                percentage="2.5"
-                bgColor="bg-[#5DDAB4]"
-                icon={customerIcon}
-              />
-              <DashboardTopCard
-                name="Total Customers"
-                total="10000"
-                percentage="2.5"
-                bgColor="bg-[#5DDAB4]"
-                icon={customerIcon}
-              />
-            </div>
-            <div className="">
-              <div className="items-center justify-between mt-14 mb-2 hidden md:flex">
-                <Typography
-                  textColor="text-dark"
-                  textWeight="font-bold"
-                  textSize="text-[18px]"
-                >
-                  Orders
-                </Typography>
-                <div className="">
-                  <DropDown
-                    data={[
-                      "This week",
-                      "Last week",
-                      "This month",
-                      "Last month",
-                      "Choose month",
-                      "Custom",
-                    ]}
-                    maxWidth={"max-w-[8rem]"}
-                    placeholder="Time Range"
-                    setValue={(startDate, endDate) => {
-                      handleFilterWithDate(startDate, endDate);
+      <div className="flex bg-[#F8F9FA]">
+        <div className="">
+          <SideBar active="Orders" />
+          <MobileSideBar
+            showMobileNav={showMobileNav}
+            active="Orders"
+            closeSideBar={showSideBar}
+          />
+        </div>
+        <div className="w-full p-4">
+          <DasboardNavWithOutSearch
+            addSearch={true}
+            name="Orders"
+            setValue={(data) => {
+              handleFilfeterData(data);
+            }}
+            showSideBar={showSideBar}
+          />
+          {pageLoading ? (
+            <Loader></Loader>
+          ) : (
+            <div>
+              {" "}
+              <div></div>
+              <div
+                className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4 lg:hidden`}
+              >
+                <DashboardTopCard
+                  name="Total Orders"
+                  total={orders.length}
+                  percentage="2.5"
+                  bgColor="bg-[#57CAEB]"
+                  icon={TotalOrderIcon}
+                  addMaxWidth={true}
+                />
+                <DashboardTopCard
+                  name="Orders Delivered"
+                  total="100"
+                  percentage="2.5"
+                  bgColor="bg-[#5DDAB4]"
+                  icon={sendIcon}
+                  addMaxWidth={true}
+                />
+                <DashboardTopCard
+                  name="Orders in Transit"
+                  total="100"
+                  percentage="2.5"
+                  bgColor="bg-[#FF7676]"
+                  icon={carIcon}
+                  addMaxWidth={true}
+                />
+                <DashboardTopCard
+                  name="Most purchased order"
+                  total="1000"
+                  percentage="2.5"
+                  bgColor="bg-[#FF9E57]"
+                  icon={shippingIcon}
+                  addMaxWidth={true}
+                />
+              </div>
+              <div
+                className={`${classes.scrollbarElement} items-center gap-4 overflow-x-scroll px-4 hidden lg:flex`}
+              >
+                <DashboardTopCard
+                  name="Total Orders"
+                  total={orders.length}
+                  percentage="2.5"
+                  bgColor="bg-[#57CAEB]"
+                  link="link"
+                  icon={vendorIcon}
+                />
+                <DashboardTopCard
+                  name="Orders Delivered"
+                  total="10000"
+                  percentage="2.5"
+                  bgColor="bg-[#5DDAB4]"
+                  icon={sendIcon}
+                />
+                <DashboardTopCard
+                  name="Total Customers"
+                  total="10000"
+                  percentage="2.5"
+                  bgColor="bg-[#5DDAB4]"
+                  icon={customerIcon}
+                />
+                <DashboardTopCard
+                  name="Total Customers"
+                  total="10000"
+                  percentage="2.5"
+                  bgColor="bg-[#5DDAB4]"
+                  icon={customerIcon}
+                />
+              </div>
+              <div className="">
+                <div className="items-center justify-between mt-14 mb-2 hidden md:flex">
+                  <Typography
+                    textColor="text-dark"
+                    textWeight="font-bold"
+                    textSize="text-[18px]"
+                  >
+                    Orders
+                  </Typography>
+                  <div className="">
+                    <DropDown
+                      data={[
+                        "This week",
+                        "Last week",
+                        "This month",
+                        "Last month",
+                        "Choose month",
+                        "Custom",
+                      ]}
+                      maxWidth={"max-w-[8rem]"}
+                      placeholder="Time Range"
+                      setValue={(startDate, endDate) => {
+                        handleFilterWithDate(startDate, endDate);
+                      }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <OrderTable
+                    data={filterdOrders}
+                    viewDetails={(orderId) => {
+                      handleShowViewDetailModal(orderId);
                     }}
+                    handleFilfeterData={handleFilfeterData}
+                    handleFilterWithDate={handleFilterWithDate}
+                    showRejectModal={showRejectModal}
                   />
                 </div>
               </div>
-              <div>
-                <OrderTable
-                  data={filterdOrders}
-                  viewDetails={(orderId) => {
-                    handleShowViewDetailModal(orderId);
-                  }}
-                  handleFilfeterData={handleFilfeterData}
-                  handleFilterWithDate={handleFilterWithDate}
-                  showRejectModal={showRejectModal}
-                />
-              </div>
             </div>
-          </div>
-          {viewOrderDetails && (
-            <Modal
-              content={
-                <OrderDetails
-                  topNavData={topNavData}
-                  closeModal={closeModal}
-                  order={order}
-                />
-              }
-            ></Modal>
-          )}
-          {showTrack && (
-            <Modal
-              content={<TrackOrder data={topNavData} closeModal={closeModal} />}
-            ></Modal>
-          )}
-          {showCustomer && (
-            <Modal
-              content={
-                <CustomerDetails
-                  topNavData={topNavData}
-                  closeModal={closeModal}
-                  customer={order}
-                />
-              }
-            ></Modal>
-          )}
-          {rejectModal && (
-            <Modal
-              content={
-                <div className="flex items-center justify-center h-[100vh]">
-                  <RejectOrderModal closeModal={closeModal} />
-                </div>
-              }
-            ></Modal>
-          )}
-          {total && (
-            <Modal
-              content={
-                <div className="flex items-center justify-center h-[100vh]">
-                  <SetTotalOrderPerDay closeModal={closeModal} />
-                </div>
-              }
-            ></Modal>
           )}
         </div>
-      )}
+        {viewOrderDetails && (
+          <Modal
+            content={
+              <OrderDetails
+                topNavData={topNavData}
+                closeModal={closeModal}
+                order={order}
+              />
+            }
+          ></Modal>
+        )}
+        {showTrack && (
+          <Modal
+            content={<TrackOrder data={topNavData} closeModal={closeModal} />}
+          ></Modal>
+        )}
+        {showCustomer && (
+          <Modal
+            content={
+              <CustomerDetails
+                topNavData={topNavData}
+                closeModal={closeModal}
+                customer={order}
+              />
+            }
+          ></Modal>
+        )}
+        {rejectModal && (
+          <Modal
+            content={
+              <div className="flex items-center justify-center h-[100vh]">
+                <RejectOrderModal closeModal={closeModal} />
+              </div>
+            }
+          ></Modal>
+        )}
+        {total && (
+          <Modal
+            content={
+              <div className="flex items-center justify-center h-[100vh]">
+                <SetTotalOrderPerDay closeModal={closeModal} />
+              </div>
+            }
+          ></Modal>
+        )}
+      </div>
     </section>
   );
 };

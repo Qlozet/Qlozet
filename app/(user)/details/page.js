@@ -102,18 +102,18 @@ const ProductDetails = () => {
   }, []);
   return (
     <div>
-      {pageLoading ? (
-        <Loader></Loader>
-      ) : (
-        <div>
-          <div className="flex min-h-[100dvh] bg-gray-400">
-            <div className="">
-              <SideBar active="Products" />
+      <div>
+        <div className="flex min-h-[100dvh] bg-gray-400">
+          <div className="">
+            <SideBar active="Products" />
+          </div>
+          <div className="w-full">
+            <div className="px-4 mt-4">
+              <DasboardNavWithOutSearch name="Products" addSearch={false} />
             </div>
-            <div className="w-full">
-              <div className="px-4 mt-4">
-                <DasboardNavWithOutSearch name="Products" addSearch={false} />
-              </div>
+            {pageLoading ? (
+              <Loader></Loader>
+            ) : (
               <div className="px-4">
                 <div
                   className="hidden  lg:flex  items-center gap-2  cursor-pointer"
@@ -141,40 +141,42 @@ const ProductDetails = () => {
                   </div>
                   <div className="block lg:flex">
                     <div className="lg:flex-1 relative">
-                      <div className="absolute top-[50%] left-0 flex items-center justify-between w-[100%] px-6">
-                        <div className="bg-white w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]">
-                          <Image
-                            height={24}
-                            width={24}
-                            src={arrowLeft}
-                            alt="product image"
-                            className="rounded-b-[12px]"
-                            unoptimized
-                          />
+                      <div className="relative">
+                        <div className="absolute top-[50%] left-0 flex items-center justify-between w-[100%] px-6">
+                          <div className="bg-white w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]">
+                            <Image
+                              height={24}
+                              width={24}
+                              src={arrowLeft}
+                              alt="product image"
+                              className="rounded-b-[12px]"
+                              unoptimized
+                            />
+                          </div>
+                          <div className="bg-white w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]">
+                            <Image
+                              height={24}
+                              width={24}
+                              src={arrowRight}
+                              alt="product image"
+                              className="rounded-b-[12px]"
+                              unoptimized
+                            />
+                          </div>
                         </div>
-                        <div className="bg-white w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]">
-                          <Image
-                            height={24}
-                            width={24}
-                            src={arrowRight}
-                            alt="product image"
-                            className="rounded-b-[12px]"
-                            unoptimized
-                          />
-                        </div>
+                        <Image
+                          height={50}
+                          width={50}
+                          src={productFormData.images[0]}
+                          alt="product image"
+                          className="rounded-[1rem]"
+                          style={{
+                            width: "100%",
+                            height: "auto",
+                          }}
+                          unoptimized
+                        />
                       </div>
-                      <Image
-                        height={50}
-                        width={50}
-                        src={productFormData.images[0]}
-                        alt="product image"
-                        className="rounded-[1rem]"
-                        style={{
-                          width: "100%",
-                          height: "auto",
-                        }}
-                        unoptimized
-                      />
                     </div>
 
                     <div className="w-full p-8 lg:flex-1">
@@ -262,7 +264,6 @@ const ProductDetails = () => {
 
                         <div className="font-bold col-span-2 flex items-center gap-2">
                           {productFormData.colors.map((item, index) => {
-                            console.log(item);
                             return (
                               <div
                                 key={index}
@@ -315,19 +316,19 @@ const ProductDetails = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
-          {/* {showHostory && ( */}
-          {showReview && (
-            <Modal
-              content={
-                <ProductReview closeModal={handleShowReview}></ProductReview>
-              }
-            ></Modal>
-          )}
-          {/* )} */}
         </div>
-      )}
+        {/* {showHostory && ( */}
+        {showReview && (
+          <Modal
+            content={
+              <ProductReview closeModal={handleShowReview}></ProductReview>
+            }
+          ></Modal>
+        )}
+        {/* )} */}
+      </div>
     </div>
   );
 };

@@ -15,7 +15,6 @@ import classes from "./index.module.css";
 import { getRequest } from "@/api/method";
 import Loader from "@/components/Loader";
 import CustomerMobileHistory from "@/components/Customer/CustomerHistoryTableItemMobile/CustomerHistoryMobile";
-import Button from "@/components/Button";
 import Image from "next/image";
 import defaultImage from "../../../public/assets/image/Rectangle.png";
 import DropDown from "@/components/DropDown";
@@ -118,118 +117,122 @@ const Customer = () => {
   }, []);
   return (
     <section className={classes.main_container}>
-      {pageLoading ? (
-        <Loader></Loader>
-      ) : (
-        <div className="flex bg-[#F8F9FA]">
-          <div className="">
-            <SideBar active="Customers" />
-          </div>
-          <MobileSideBar
-            showMobileNav={showMobileNav}
-            active="Customers"
-            closeSideBar={showSideBar}
+      <div className="flex bg-[#F8F9FA]">
+        <div className="">
+          <SideBar active="Customers" />
+        </div>
+        <MobileSideBar
+          showMobileNav={showMobileNav}
+          active="Customers"
+          closeSideBar={showSideBar}
+        />
+        <div className={!viewCustomerDetails ? "block" : "hidden"}></div>
+        <div className="w-full p-4">
+          <DasboardNavWithOutSearch
+            addSearch={true}
+            setValue={(data) => {
+              handleFilfeterData(data);
+            }}
+            showSideBar={showSideBar}
+            name="Customers"
           />
-          <div className={!viewCustomerDetails ? "block" : "hidden"}></div>
-          <div className="w-full p-4">
-            <DasboardNavWithOutSearch
-              addSearch={true}
-              setValue={(data) => {
-                handleFilfeterData(data);
-              }}
-              showSideBar={showSideBar}
-              name="Customers"
-            />
-            {!viewCustomerDetails && (
-              <div
-                className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
-              >
-                <DashboardTopCard
-                  name="Total Customers"
-                  total={`${custmers.length}`}
-                  percentage="2.5"
-                  bgColor="bg-[#57CAEB]"
-                  link="link"
-                  icon={vendorIcon}
-                  addMaxWidth={true}
-                  minHeight="min-h-[9rem]"
-                />
-                <DashboardTopCard
-                  name="Highest customer by location"
-                  total="Lagos state"
-                  percentage="2.5"
-                  bgColor="bg-[#5DDAB4]"
-                  icon={customerIcon}
-                  addMaxWidth={true}
-                  minHeight="min-h-[9rem]"
-                />
-              </div>
-            )}
-            {!viewCustomerDetails && (
-              <div className="">
-                <div className="items-center justify-between mt-14 mb-2 hidden md:flex">
-                  <Typography
-                    textColor="text-dark"
-                    textWeight="font-bold"
-                    textSize="text-[18px]"
-                  >
-                    Customer
-                  </Typography>
-                  <div className="">
-                    <DropDown
-                      data={[
-                        "This week",
-                        "Last week",
-                        "This month",
-                        "Last month",
-                        "Choose month",
-                        "Custom",
-                      ]}
-                      maxWidth={"max-w-[8rem]"}
-                      placeholder="Time Range"
-                      setValue={(startDate, endDate) => {
-                        handleFilterWithDate(startDate, endDate);
-                      }}
+          {pageLoading ? (
+            <Loader></Loader>
+          ) : (
+            <div>
+              {" "}
+              {!viewCustomerDetails && (
+                <div
+                  className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
+                >
+                  <DashboardTopCard
+                    name="Total Customers"
+                    total={`${custmers.length}`}
+                    percentage="2.5"
+                    bgColor="bg-[#57CAEB]"
+                    link="link"
+                    icon={vendorIcon}
+                    addMaxWidth={true}
+                    minHeight="min-h-[9rem]"
+                  />
+                  <DashboardTopCard
+                    name="Highest customer by location"
+                    total="Lagos state"
+                    percentage="2.5"
+                    bgColor="bg-[#5DDAB4]"
+                    icon={customerIcon}
+                    addMaxWidth={true}
+                    minHeight="min-h-[9rem]"
+                  />
+                </div>
+              )}
+              {!viewCustomerDetails && (
+                <div className="">
+                  <div className="items-center justify-between mt-14 mb-2 hidden md:flex">
+                    <Typography
+                      textColor="text-dark"
+                      textWeight="font-bold"
+                      textSize="text-[18px]"
+                    >
+                      Customer
+                    </Typography>
+                    <div className="">
+                      <DropDown
+                        data={[
+                          "This week",
+                          "Last week",
+                          "This month",
+                          "Last month",
+                          "Choose month",
+                          "Custom",
+                        ]}
+                        maxWidth={"max-w-[8rem]"}
+                        placeholder="Time Range"
+                        setValue={(startDate, endDate) => {
+                          handleFilterWithDate(startDate, endDate);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <CustomerTable
+                      data={filterCustmers}
+                      showModal={showModal}
+                      handleFilterWithDate={handleFilterWithDate}
+                      handleFilfeterData={handleFilfeterData}
                     />
                   </div>
                 </div>
-                <div>
-                  <CustomerTable
-                    data={filterCustmers}
-                    showModal={showModal}
-                    handleFilterWithDate={handleFilterWithDate}
-                    handleFilfeterData={handleFilfeterData}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="hidden lg:block">
-            {viewCustomerDetails && (
-              <Modal
-                content={
-                  <CustomerDetails
-                    customer={customer}
-                    topNavData={topNavData}
-                    closeModal={closeModal}
-                  />
-                }
-              ></Modal>
-            )}
-            {showHostory && (
-              <Modal
-                content={
-                  <OrderHistory
-                    topNavData={topNavData}
-                    closeModal={closeModal}
-                    customerHistory={customerHistory}
-                  />
-                }
-              ></Modal>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
-      )}
+        <div className="hidden lg:block">
+          {viewCustomerDetails && (
+            <Modal
+              content={
+                <CustomerDetails
+                  customer={customer}
+                  topNavData={topNavData}
+                  closeModal={closeModal}
+                />
+              }
+            ></Modal>
+          )}
+          {showHostory && (
+            <Modal
+              content={
+                <OrderHistory
+                  topNavData={topNavData}
+                  closeModal={closeModal}
+                  customerHistory={customerHistory}
+                />
+              }
+            ></Modal>
+          )}
+        </div>
+      </div>
+
       {/* customer mobile viewdetails */}
       {viewCustomerDetails && (
         <div className="block md:hidden">

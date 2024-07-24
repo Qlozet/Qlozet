@@ -95,7 +95,6 @@ const AddProduct = () => {
     const imageUrl = await uploadSingleImage(file);
     let prevVariantTable = variantTable;
     if (imageUrl?.secure_url) {
-      console.log(imageUrl.secure_url);
       let images = variantTable[listIndex].images;
       images[imageIndex] = imageUrl;
       const newVariantItem = {
@@ -180,7 +179,6 @@ const AddProduct = () => {
     if (status) {
       try {
         setIsLoading(true);
-
         const formData = {
           name: productFormData.productName,
           description: productFormData.description,
@@ -189,10 +187,13 @@ const AddProduct = () => {
           productTag: productFormData.productTag === "Male" ? "male" : "female",
           productCategory: JSON.stringify([productFormData.productCategory]),
           colors: JSON.stringify(productFormData.colors),
-          productType: productFormData.productType,
+          productType:
+            productFormData.productType === "Customizable"
+              ? "customizable"
+              : "outright",
           discount: productFormData.discount,
           isFeatured: 0,
-          isCustomizable: true,
+          // isCustomizable: true,
           images: {
             retained: upladedFiles,
             deleted: [],
@@ -210,14 +211,14 @@ const AddProduct = () => {
             return varantItem;
           }),
         };
-        console.log(formData);
+        console.log(JSON.stringify(productFormData.variantSizes));
         const response = !productId
           ? await postRequest("/vendor/products", formData)
           : await putRequest(`/vendor/products/${productId}/update`, formData);
         response && setIsLoading(false);
-        console.log(response);
+
         if (response?.data) {
-          // router.push("../products");
+          router.push("../products");
           setIsLoading(false);
           toast(<Toast text={response?.message} type="success" />);
         } else {
@@ -239,7 +240,6 @@ const AddProduct = () => {
     const productId = getProductId();
     try {
       const response = await getRequest(`/vendor/products/${productId}`);
-      console.log(response);
       let colors = [];
       response.data.data.colors.map((item) => {
         colors.push(item.hex);
@@ -247,6 +247,7 @@ const AddProduct = () => {
       const categories = response.data.data.categories.map((item) => {
         return item.name;
       });
+      console.log(response.data.data);
       setProductFormData({
         productName: response.data.data.name,
         productPrice: response.data.data.price,
@@ -276,418 +277,422 @@ const AddProduct = () => {
   }, []);
   return (
     <section>
-      {pageLoading ? (
-        <Loader></Loader>
-      ) : (
-        <div className="flex bg-[#F8F9FA]">
-          <div className="">
-            <SideBar active="Products" />
-            <MobileSideBar
-              showMobileNav={showMobileNav}
-              active="Products"
-              closeSideBar={showSideBar}
-            />
-          </div>
-          <div className="w-full p-4">
-            <DasboardNavWithOutSearch
-              addSearch={false}
-              name="Products"
-              setValue={(data) => {
-                // console.log(data);
-              }}
-              showSideBar={showSideBar}
-            />
-            <div className="mt-4"></div>
-            <div className="">
-              <div className="mx-0 bg-gray-300 lg:bg-white p-4  rounded-t-lg lg:translate-x-2">
-                <CheckBoxInput label="Billing address same as company details" />
-              </div>
-              <div className="bg-white w-full p-4 mx-0 lg:mx-2">
-                <DashedComponent name={"Product info"} />
-                <div className="block lg:flex items-center justify-between  gap-6">
-                  <div className="w-full">
-                    <TextInput
-                      value={productFormData.productName}
-                      label="Product name"
-                      placeholder="Enter product name"
-                      setValue={(data) => {
-                        setProductFormData((prevData) => {
-                          return { ...prevData, productName: data };
-                        });
-                        if (data) {
-                          setrequiredproductFormData((prevData) => {
-                            return { ...prevData, productName: false };
-                          });
-                        } else {
-                          setrequiredproductFormData((prevData) => {
-                            return { ...prevData, productName: true };
-                          });
-                        }
-                      }}
-                      error={requiredproductFormData.productName}
-                    />
-                  </div>
-                  <div className="w-full">
-                    <NumberInput
-                      value={productFormData.productPrice}
-                      label="Price"
-                      placeholder="Enter price"
-                      setValue={(data) => {
-                        setProductFormData((prevData) => {
-                          return { ...prevData, productPrice: data };
-                        });
-                        if (data) {
-                          setrequiredproductFormData((prevData) => {
-                            return { ...prevData, productPrice: false };
-                          });
-                        } else {
-                          setrequiredproductFormData((prevData) => {
-                            return { ...prevData, productPrice: true };
-                          });
-                        }
-                      }}
-                      error={requiredproductFormData.productPrice}
-                    />
-                  </div>
-                  <div className="w-full">
-                    <SelectInput
-                      index={50}
-                      placeholder={"Product Tags"}
-                      label="Tags"
-                      value={productFormData.productTag}
-                      setValue={(data) => {
-                        setProductFormData((prevData) => {
-                          return { ...prevData, productTag: data };
-                        });
-                        if (data) {
-                          setrequiredproductFormData((prevData) => {
-                            return { ...prevData, productTag: false };
-                          });
-                        } else {
-                          setrequiredproductFormData((prevData) => {
-                            return { ...prevData, productTag: true };
-                          });
-                        }
-                      }}
-                      error={requiredproductFormData.productTag}
-                      data={[{ text: "Male" }, { text: "Female" }]}
-                    />
-                  </div>
+      <div className="flex bg-[#F8F9FA]">
+        <div className="">
+          <SideBar active="Products" />
+          <MobileSideBar
+            showMobileNav={showMobileNav}
+            active="Products"
+            closeSideBar={showSideBar}
+          />
+        </div>
+        <div className="w-full p-4">
+          <DasboardNavWithOutSearch
+            addSearch={false}
+            name="Products"
+            setValue={(data) => {
+              // console.log(data);
+            }}
+            showSideBar={showSideBar}
+          />
+          {pageLoading ? (
+            <Loader></Loader>
+          ) : (
+            <div>
+              <div className="mt-4"></div>
+              <div className="">
+                <div className="mx-0 bg-gray-300 lg:bg-white p-4  rounded-t-lg lg:translate-x-2">
+                  <CheckBoxInput label="Billing address same as company details" />
                 </div>
-                <div className="block lg:flex items-center justify-between  gap-6">
+                <div className="bg-white w-full p-4 mx-0 lg:mx-2">
+                  <DashedComponent name={"Product info"} />
+                  <div className="block lg:flex items-center justify-between  gap-6">
+                    <div className="w-full">
+                      <TextInput
+                        value={productFormData.productName}
+                        label="Product name"
+                        placeholder="Enter product name"
+                        setValue={(data) => {
+                          setProductFormData((prevData) => {
+                            return { ...prevData, productName: data };
+                          });
+                          if (data) {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, productName: false };
+                            });
+                          } else {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, productName: true };
+                            });
+                          }
+                        }}
+                        error={requiredproductFormData.productName}
+                      />
+                    </div>
+                    <div className="w-full">
+                      <NumberInput
+                        value={productFormData.productPrice}
+                        label="Price"
+                        placeholder="Enter price"
+                        setValue={(data) => {
+                          setProductFormData((prevData) => {
+                            return { ...prevData, productPrice: data };
+                          });
+                          if (data) {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, productPrice: false };
+                            });
+                          } else {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, productPrice: true };
+                            });
+                          }
+                        }}
+                        error={requiredproductFormData.productPrice}
+                      />
+                    </div>
+                    <div className="w-full">
+                      <SelectInput
+                        index={50}
+                        placeholder={"Product Tags"}
+                        label="Tags"
+                        value={productFormData.productTag}
+                        setValue={(data) => {
+                          setProductFormData((prevData) => {
+                            return { ...prevData, productTag: data };
+                          });
+                          if (data) {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, productTag: false };
+                            });
+                          } else {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, productTag: true };
+                            });
+                          }
+                        }}
+                        error={requiredproductFormData.productTag}
+                        data={[{ text: "Male" }, { text: "Female" }]}
+                      />
+                    </div>
+                  </div>
+                  <div className="block lg:flex items-center justify-between  gap-6">
+                    <div className="w-full">
+                      <SelectInput
+                        placeholder={"Category"}
+                        value={productFormData.productCategory}
+                        setValue={(data) => {
+                          setProductFormData((prevData) => {
+                            return { ...prevData, productCategory: data };
+                          });
+                          if (data) {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, productCategory: false };
+                            });
+                          } else {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, productCategory: true };
+                            });
+                          }
+                        }}
+                        error={requiredproductFormData.productCategory}
+                        data={[{ text: "Two Piece" }, { text: "Dress" }]}
+                        label="Category"
+                        index={40}
+                      />
+                    </div>
+                    <div className="w-full">
+                      <SelectInput
+                        placeholder={"Enter product type"}
+                        value={productFormData.productType}
+                        setValue={(data) => {
+                          setProductFormData((prevData) => {
+                            return { ...prevData, productType: data };
+                          });
+                          if (data) {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, productType: false };
+                            });
+                          } else {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, productType: true };
+                            });
+                          }
+                        }}
+                        error={requiredproductFormData.productType}
+                        data={[{ text: "Customizable" }, { text: "Outright" }]}
+                        label="Product type"
+                        index={20}
+                      />
+                    </div>
+                    <div className="w-full ">
+                      <ColorInput
+                        index={80}
+                        label="Colour"
+                        placeholder="Choose  colours available for this product"
+                        value={productFormData.colors}
+                        setValue={(data) => {
+                          setProductFormData((prevData) => {
+                            return { ...prevData, colors: data };
+                          });
+                          if (data) {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, colors: false };
+                            });
+                          } else {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, colors: true };
+                            });
+                          }
+                        }}
+                        error={requiredproductFormData.colors}
+                      />
+                    </div>
+                  </div>
+                  <div className="block lg:flex  justify-between gap-6">
+                    <div className="w-full ">
+                      <FileInput
+                        handleSelect={handleSelectFile}
+                        label="Upload product image"
+                        value={productFormData.images}
+                      />
+                    </div>
+                    <div className="w-full">
+                      <TextArea
+                        label="Product description"
+                        placeholder="Enter description"
+                        value={productFormData.description}
+                        setValue={(data) => {
+                          console.log(data);
+                          setProductFormData((prevData) => {
+                            return { ...prevData, description: data };
+                          });
+                          if (data) {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, description: false };
+                            });
+                          } else {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, description: true };
+                            });
+                          }
+                        }}
+                        error={requiredproductFormData.description}
+                      />
+                    </div>
+                    <div className="w-full flex items-start justify-start">
+                      <NumberInput
+                        label="Available discount"
+                        placeholder="Enter available discount?"
+                        value={productFormData.discount}
+                        setValue={(data) => {
+                          setProductFormData((prevData) => {
+                            return { ...prevData, discount: data };
+                          });
+                          if (data) {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, discount: false };
+                            });
+                          } else {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, discount: true };
+                            });
+                          }
+                        }}
+                        error={requiredproductFormData.discount}
+                      />
+                    </div>
+                  </div>
+                  <div className="block lg:flex  justify-between  gap-6">
+                    <div className="w-full flex items-start justify-start">
+                      <NumberInput
+                        label="Available quantity"
+                        placeholder="Enter quantity"
+                        value={productFormData.productQuantity}
+                        setValue={(data) => {
+                          setProductFormData((prevData) => {
+                            return { ...prevData, productQuantity: data };
+                          });
+                          if (data) {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, productQuantity: false };
+                            });
+                          } else {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, productQuantity: true };
+                            });
+                          }
+                        }}
+                        error={requiredproductFormData.productQuantity}
+                      />
+                    </div>
+                  </div>
+                  <div className="block lg:flex items-center justify-between gap-6"></div>
+                  <div className="my-4">
+                    <DashedComponent name={"Customization"} />
+                  </div>
+                  <div>
+                    <div className="">
+                      <Typography
+                        textWeight="font-[700]"
+                        textSize="text-[18px]"
+                        verticalPadding="my-2"
+                        textColor="text-dark"
+                      >
+                        Add Customization
+                      </Typography>
+                    </div>
+                  </div>
+                  <div>
+                    <CustomiSationButton
+                      handleClick={() => {
+                        setShowCustomiseOrder(true);
+                      }}
+                    />
+                  </div>
                   <div className="w-full">
-                    <SelectInput
-                      placeholder={"Category"}
-                      value={productFormData.productCategory}
-                      setValue={(data) => {
+                    <VariantInput
+                      index={50}
+                      value={variantTable.map((item) => {
+                        console.log(item);
+                        return item.color;
+                      })}
+                      label="Colour"
+                      placeholder="Choose colours available for this product"
+                      setValue={addToVariantTable}
+                    />
+                  </div>
+                  <div className="w-full">
+                    <MaterialInput
+                      label="Material"
+                      placeholder="Choose available for this product"
+                      handleSelect={addToVariantTable}
+                      value={variantFiles}
+                    />
+                  </div>
+                  <div className="w-full">
+                    <SizeInput
+                      value={productFormData.variantSizes}
+                      setValue={(data, index) => {
+                        if (index !== undefined) {
+                          removeVariant(index);
+                        } else {
+                          console.log(index);
+                          addSizeToVariant(data);
+                        }
                         setProductFormData((prevData) => {
-                          return { ...prevData, productCategory: data };
+                          return { ...prevData, variantSizes: data };
                         });
                         if (data) {
                           setrequiredproductFormData((prevData) => {
-                            return { ...prevData, productCategory: false };
+                            return { ...prevData, variantSizes: false };
                           });
                         } else {
                           setrequiredproductFormData((prevData) => {
-                            return { ...prevData, productCategory: true };
+                            return { ...prevData, variantSizes: true };
                           });
                         }
                       }}
-                      error={requiredproductFormData.productCategory}
-                      data={[{ text: "Two Piece" }, { text: "Dress" }]}
-                      label="Category"
+                      error={requiredproductFormData.variantSizes}
+                      data={[
+                        "Extra small",
+                        "Small",
+                        "Medium",
+                        "Large",
+                        "Extra large",
+                      ]}
+                      label="Sizes"
                       index={40}
                     />
                   </div>
-                  <div className="w-full">
-                    <SelectInput
-                      placeholder={"Enter product type"}
-                      value={productFormData.productType}
-                      setValue={(data) => {
-                        setProductFormData((prevData) => {
-                          return { ...prevData, productType: data };
-                        });
-                        if (data) {
-                          setrequiredproductFormData((prevData) => {
-                            return { ...prevData, productType: false };
-                          });
-                        } else {
-                          setrequiredproductFormData((prevData) => {
-                            return { ...prevData, productType: true };
-                          });
-                        }
-                      }}
-                      error={requiredproductFormData.productType}
-                      data={[{ text: "Customizable" }, { text: "Outright" }]}
-                      label="Product type"
-                      index={20}
-                    />
+                  <div className="my-4">
+                    <DashedComponent name={"Product variants"} />
                   </div>
-                  <div className="w-full ">
-                    <ColorInput
-                      index={80}
-                      label="Colour"
-                      placeholder="Choose  colours available for this product"
-                      value={productFormData.colors}
-                      setValue={(data) => {
-                        setProductFormData((prevData) => {
-                          return { ...prevData, colors: data };
-                        });
-                        if (data) {
-                          setrequiredproductFormData((prevData) => {
-                            return { ...prevData, colors: false };
-                          });
-                        } else {
-                          setrequiredproductFormData((prevData) => {
-                            return { ...prevData, colors: true };
-                          });
-                        }
-                      }}
-                      error={requiredproductFormData.colors}
-                    />
-                  </div>
-                </div>
-                <div className="block lg:flex  justify-between gap-6">
-                  <div className="w-full ">
-                    <FileInput
-                      handleSelect={handleSelectFile}
-                      label="Upload product image"
-                      value={productFormData.images}
-                    />
-                  </div>
-                  <div className="w-full">
-                    <TextArea
-                      label="Product description"
-                      placeholder="Enter description"
-                      value={productFormData.description}
-                      setValue={(data) => {
-                        console.log(data);
-                        setProductFormData((prevData) => {
-                          return { ...prevData, description: data };
-                        });
-                        if (data) {
-                          setrequiredproductFormData((prevData) => {
-                            return { ...prevData, description: false };
-                          });
-                        } else {
-                          setrequiredproductFormData((prevData) => {
-                            return { ...prevData, description: true };
-                          });
-                        }
-                      }}
-                      error={requiredproductFormData.description}
-                    />
-                  </div>
-                  <div className="w-full flex items-start justify-start">
-                    <NumberInput
-                      label="Available discount"
-                      placeholder="Enter available discount?"
-                      value={productFormData.discount}
-                      setValue={(data) => {
-                        setProductFormData((prevData) => {
-                          return { ...prevData, discount: data };
-                        });
-                        if (data) {
-                          setrequiredproductFormData((prevData) => {
-                            return { ...prevData, discount: false };
-                          });
-                        } else {
-                          setrequiredproductFormData((prevData) => {
-                            return { ...prevData, discount: true };
-                          });
-                        }
-                      }}
-                      error={requiredproductFormData.discount}
-                    />
-                  </div>
-                </div>
-                <div className="block lg:flex  justify-between  gap-6">
-                  <div className="w-full flex items-start justify-start">
-                    <NumberInput
-                      label="Available quantity"
-                      placeholder="Enter quantity"
-                      value={productFormData.productQuantity}
-                      setValue={(data) => {
-                        setProductFormData((prevData) => {
-                          return { ...prevData, productQuantity: data };
-                        });
-                        if (data) {
-                          setrequiredproductFormData((prevData) => {
-                            return { ...prevData, productQuantity: false };
-                          });
-                        } else {
-                          setrequiredproductFormData((prevData) => {
-                            return { ...prevData, productQuantity: true };
-                          });
-                        }
-                      }}
-                      error={requiredproductFormData.productQuantity}
-                    />
-                  </div>
-                </div>
-                <div className="block lg:flex items-center justify-between gap-6"></div>
-                <div className="my-4">
-                  <DashedComponent name={"Customization"} />
-                </div>
-                <div>
-                  <div className="">
+
+                  <div className="flex items-center">
                     <Typography
                       textWeight="font-[700]"
                       textSize="text-[18px]"
                       verticalPadding="my-2"
                       textColor="text-dark"
                     >
-                      Add Customization
+                      Add options
+                    </Typography>
+                    <Typography
+                      textWeight="font-[500]"
+                      textSize="text-[16px]"
+                      verticalPadding="my-2"
+                      textColor="text-gray-200"
+                    >
+                      (Variants)
                     </Typography>
                   </div>
-                </div>
-                <div>
-                  <CustomiSationButton
-                    handleClick={() => {
-                      setShowCustomiseOrder(true);
-                    }}
-                  />
-                </div>
-                <div className="w-full">
-                  <VariantInput
-                    index={50}
-                    value={variantTable.map((item) => {
-                      console.log(item);
-                      return item.color;
-                    })}
-                    label="Colour"
-                    placeholder="Choose colours available for this product"
-                    setValue={addToVariantTable}
-                  />
-                </div>
-                <div className="w-full">
-                  <MaterialInput
-                    label="Material"
-                    placeholder="Choose available for this product"
-                    handleSelect={addToVariantTable}
-                    value={variantFiles}
-                  />
-                </div>
-                <div className="w-full">
-                  <SizeInput
-                    value={productFormData.variantSizes}
-                    setValue={(data, index) => {
-                      if (index !== undefined) {
-                        removeVariant(index);
-                      } else {
-                        console.log(index);
-                        addSizeToVariant(data);
-                      }
-                      setProductFormData((prevData) => {
-                        return { ...prevData, variantSizes: data };
-                      });
-                      if (data) {
-                        setrequiredproductFormData((prevData) => {
-                          return { ...prevData, variantSizes: false };
-                        });
-                      } else {
-                        setrequiredproductFormData((prevData) => {
-                          return { ...prevData, variantSizes: true };
-                        });
-                      }
-                    }}
-                    error={requiredproductFormData.variantSizes}
-                    data={[
-                      "Extra small",
-                      "Small",
-                      "Medium",
-                      "Large",
-                      "Extra large",
-                    ]}
-                    label="Sizes"
-                    index={40}
-                  />
-                </div>
-                <div className="my-4">
-                  <DashedComponent name={"Product variants"} />
-                </div>
+                  <div>
+                    <div className="w-full">
+                      <SelectInput
+                        placeholder={"Enter roduct tags"}
+                        // value={dropDownValue}
+                        setValue={(data) => {
+                          //   setDropDownValue(data);
+                        }}
+                        data={[{ text: "Male" }, { text: "Female" }]}
+                        label="Product tags"
+                        index={20}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <Typography
+                      textWeight="font-[700]"
+                      textSize="text-[18px]"
+                      verticalPadding="my-2"
+                      textColor="text-dark"
+                    >
+                      Set variants
+                    </Typography>
+                  </div>
+                  <div className="overflow-x-scroll">
+                    <VariantTable
+                      data={variantTable}
+                      // QuantityHandler={variantQuantityHandler}
+                      submitVariantImage={submitVariantImage}
+                      quantityHandler={VariantQuantityHandler}
+                      priceHandler={priceHandler}
+                    />
+                  </div>
 
-                <div className="flex items-center">
-                  <Typography
-                    textWeight="font-[700]"
-                    textSize="text-[18px]"
-                    verticalPadding="my-2"
-                    textColor="text-dark"
-                  >
-                    Add options
-                  </Typography>
-                  <Typography
-                    textWeight="font-[500]"
-                    textSize="text-[16px]"
-                    verticalPadding="my-2"
-                    textColor="text-gray-200"
-                  >
-                    (Variants)
-                  </Typography>
-                </div>
-                <div>
-                  <div className="w-full">
-                    <SelectInput
-                      placeholder={"Enter roduct tags"}
-                      // value={dropDownValue}
-                      setValue={(data) => {
-                        //   setDropDownValue(data);
+                  <div className="my-4">
+                    <Button
+                      loading={isLoading}
+                      children="Save"
+                      btnSize="large"
+                      variant="primary"
+                      maxWidth="max-w-[10rem]"
+                      clickHandler={() => {
+                        handleSubmit();
                       }}
-                      data={[{ text: "Male" }, { text: "Female" }]}
-                      label="Product tags"
-                      index={20}
                     />
                   </div>
                 </div>
-                <div className="flex items-center">
-                  <Typography
-                    textWeight="font-[700]"
-                    textSize="text-[18px]"
-                    verticalPadding="my-2"
-                    textColor="text-dark"
-                  >
-                    Set variants
-                  </Typography>
-                </div>
-                <div className="overflow-x-scroll">
-                  <VariantTable
-                    data={variantTable}
-                    // QuantityHandler={variantQuantityHandler}
-                    submitVariantImage={submitVariantImage}
-                    quantityHandler={VariantQuantityHandler}
-                    priceHandler={priceHandler}
-                  />
-                </div>
-
-                <div className="my-4">
-                  <Button
-                    loading={isLoading}
-                    children="Save"
-                    btnSize="large"
-                    variant="primary"
-                    maxWidth="max-w-[10rem]"
-                    clickHandler={() => {
-                      handleSubmit();
-                    }}
-                  />
-                </div>
               </div>
             </div>
-            {showCustomiseOrder && (
-              <Modal
-                content={
-                  <CustomizeOrder
-                    closeModal={() => {
-                      setShowCustomiseOrder(false);
-                    }}
-                  />
-                }
-              ></Modal>
-            )}
-          </div>
+          )}
+
+          {showCustomiseOrder && (
+            <Modal
+              content={
+                <CustomizeOrder
+                  closeModal={() => {
+                    setShowCustomiseOrder(false);
+                  }}
+                />
+              }
+            ></Modal>
+          )}
         </div>
-      )}
-      <Modal content={<DragDrop></DragDrop>}></Modal>
+      </div>
+
+      {/* <Modal content={<DragDrop></DragDrop>}></Modal> */}
     </section>
   );
 };

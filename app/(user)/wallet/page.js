@@ -141,200 +141,202 @@ const Wallet = () => {
 
   return (
     <section>
-      {loadPage ? (
-        <Loader></Loader>
-      ) : (
-        <div className="flex bg-[#F8F9FA]">
-          <div className="">
-            <SideBar active="Wallet" />
-            <MobileSideBar
-              showMobileNav={showMobileNav}
-              active="Wallet"
-              closeSideBar={showSideBar}
-            />
-          </div>
-          <div className="w-full p-4">
-            <DasboardNavWithOutSearch
-              addSearch={true}
-              setValue={(data) => {
-                handleFilfeterData(data);
-              }}
-              name="Wallet"
-              showSideBar={showSideBar}
-            />
-            <div className="flex justify-end items-center lg:hidden w-full">
-              <div className="items-start gap-6 pt-5 flex ">
-                <Button
-                  children="Send money"
-                  btnSize="large"
-                  variant="outline"
-                  minWidth="min-w-[10rem]"
-                  maxWidth="max-w-[10rem]"
-                  clickHandler={() => {
-                    setShowSendMoney("Send Money");
-                  }}
-                />
-                <Button
-                  children="Fund wallet"
-                  btnSize="large"
-                  variant="primary"
-                  minWidth="min-w-[10rem]"
-                  maxWidth="max-w-[10rem]"
-                  clickHandler={() => {
-                    setSetUpWalletWallet(true);
-                  }}
-                />
-              </div>
-            </div>
+      <div className="flex bg-[#F8F9FA]">
+        <div className="">
+          <SideBar active="Wallet" />
+          <MobileSideBar
+            showMobileNav={showMobileNav}
+            active="Wallet"
+            closeSideBar={showSideBar}
+          />
+        </div>
+        <div className="w-full p-4">
+          <DasboardNavWithOutSearch
+            addSearch={true}
+            setValue={(data) => {
+              handleFilfeterData(data);
+            }}
+            name="Wallet"
+            showSideBar={showSideBar}
+          />
 
-            <div className="flex justify-between">
-              <div
-                className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
-              >
-                <DashboardTopCard
-                  name="Wallet Balance"
-                  total={walletBalance}
-                  percentage="2.5"
-                  bgColor="bg-[#57CAEB]"
-                  link="link"
-                  icon={vendorIcon}
-                  addMaxWidth={true}
-                />
-                <DashboardTopCard
-                  name="Total Amount Received"
-                  total="0"
-                  percentage="2.5"
-                  bgColor="bg-[#5DDAB4]"
-                  icon={customerIcon}
-                  addMaxWidth={true}
-                />
-              </div>
-              <div className="items-start gap-6 pt-5 hidden lg:flex">
-                <Button
-                  children="Send money"
-                  btnSize="large"
-                  variant="outline"
-                  minWidth="min-w-[10rem]"
-                  clickHandler={() => {
-                    setShowSendMoney("Send Money");
-                  }}
-                />
-                <Button
-                  children="Fund wallet"
-                  btnSize="large"
-                  variant="primary"
-                  minWidth="min-w-[10rem]"
-                  clickHandler={() => {
-                    setSetUpWalletWallet(true);
-                  }}
-                />
-              </div>
-            </div>
-
-            <div className="">
-              <div className="flex items-center justify-between mt-14 mb-2 ">
-                <Typography
-                  textColor="text-dark"
-                  textWeight="font-bold"
-                  textSize="text-[18px]"
-                >
-                  Wallet
-                </Typography>
-                <div className="">
-                  <DropDown
-                    data={[
-                      "This week",
-                      "Last week",
-                      "This month",
-                      "Last month",
-                      "Choose month",
-                      "Custom",
-                    ]}
-                    maxWidth={"max-w-[8rem]"}
-                    placeholder="Time Range"
-                    setValue={(startDate, endDate) => {
-                      handleFilterWithDate(startDate, endDate);
+          {loadPage ? (
+            <Loader></Loader>
+          ) : (
+            <div>
+              {" "}
+              <div className="flex justify-end items-center lg:hidden w-full">
+                <div className="items-start gap-6 pt-5 flex ">
+                  <Button
+                    children="Send money"
+                    btnSize="large"
+                    variant="outline"
+                    minWidth="min-w-[10rem]"
+                    maxWidth="max-w-[10rem]"
+                    clickHandler={() => {
+                      setShowSendMoney("Send Money");
+                    }}
+                  />
+                  <Button
+                    children="Fund wallet"
+                    btnSize="large"
+                    variant="primary"
+                    minWidth="min-w-[10rem]"
+                    maxWidth="max-w-[10rem]"
+                    clickHandler={() => {
+                      setSetUpWalletWallet(true);
                     }}
                   />
                 </div>
               </div>
-              <WalletTable
-                data={filteredTransactionData}
-                viewDetails={(id) => {
-                  setransactionId(id);
-                  handleShowViewDetailModal();
-                }}
-                showRejectModal={showRejectModal}
-                handleFilfeterData={handleFilfeterData}
-              />
+              <div className="flex justify-between">
+                <div
+                  className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
+                >
+                  <DashboardTopCard
+                    name="Wallet Balance"
+                    total={walletBalance}
+                    percentage="2.5"
+                    bgColor="bg-[#57CAEB]"
+                    link="link"
+                    icon={vendorIcon}
+                    addMaxWidth={true}
+                  />
+                  <DashboardTopCard
+                    name="Total Amount Received"
+                    total="0"
+                    percentage="2.5"
+                    bgColor="bg-[#5DDAB4]"
+                    icon={customerIcon}
+                    addMaxWidth={true}
+                  />
+                </div>
+                <div className="items-start gap-6 pt-5 hidden lg:flex">
+                  <Button
+                    children="Send money"
+                    btnSize="large"
+                    variant="outline"
+                    minWidth="min-w-[10rem]"
+                    clickHandler={() => {
+                      setShowSendMoney("Send Money");
+                    }}
+                  />
+                  <Button
+                    children="Fund wallet"
+                    btnSize="large"
+                    variant="primary"
+                    minWidth="min-w-[10rem]"
+                    clickHandler={() => {
+                      setSetUpWalletWallet(true);
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="">
+                <div className="flex items-center justify-between mt-14 mb-2 ">
+                  <Typography
+                    textColor="text-dark"
+                    textWeight="font-bold"
+                    textSize="text-[18px]"
+                  >
+                    Wallet
+                  </Typography>
+                  <div className="">
+                    <DropDown
+                      data={[
+                        "This week",
+                        "Last week",
+                        "This month",
+                        "Last month",
+                        "Choose month",
+                        "Custom",
+                      ]}
+                      maxWidth={"max-w-[8rem]"}
+                      placeholder="Time Range"
+                      setValue={(startDate, endDate) => {
+                        handleFilterWithDate(startDate, endDate);
+                      }}
+                    />
+                  </div>
+                </div>
+                <WalletTable
+                  data={filteredTransactionData}
+                  viewDetails={(id) => {
+                    setransactionId(id);
+                    handleShowViewDetailModal();
+                  }}
+                  showRejectModal={showRejectModal}
+                  handleFilfeterData={handleFilfeterData}
+                />
+              </div>
             </div>
-          </div>
-          {/* <Modal content={<SetTotalOrderPerDay />}></Modal> */}
-          {/* {showModal == true && ( */}
-          {setUpWalletWallet && (
-            <Modal
-              content={
-                <SetUpAltireWallet
-                  closeModal={() => {
-                    setSetUpWalletWallet(false);
-                  }}
-                />
-              }
-            ></Modal>
-          )}
-          {showTransactiondetails && (
-            <Modal
-              content={
-                <TransactionDetails
-                  closeModal={() => {
-                    setShowTransactiondetails(false);
-                  }}
-                  details={
-                    transactionData.filter(
-                      (item) => item.transactionId == transactionId
-                    )[0]
-                  }
-                />
-              }
-            ></Modal>
-          )}
-          {showSendMoney === "Send Money" && (
-            <Modal
-              content={
-                <SendMoney
-                  closeModal={(name) => {
-                    console.log(name);
-                    setShowSendMoney(name);
-                  }}
-                />
-              }
-            ></Modal>
-          )}
-          {showSendMoney === "Manually" && (
-            <Modal
-              content={
-                <SendMoneyForm
-                  banks={allBanks}
-                  closeModal={() => {
-                    setShowSendMoney(false);
-                  }}
-                />
-              }
-            ></Modal>
-          )}
-          {showSendMoney === "Beneficiaries" && (
-            <Modal
-              content={
-                <Beneficiary
-                  closeModal={() => {
-                    setShowSendMoney(false);
-                  }}
-                />
-              }
-            ></Modal>
           )}
         </div>
-      )}
+        {/* <Modal content={<SetTotalOrderPerDay />}></Modal> */}
+        {/* {showModal == true && ( */}
+        {setUpWalletWallet && (
+          <Modal
+            content={
+              <SetUpAltireWallet
+                closeModal={() => {
+                  setSetUpWalletWallet(false);
+                }}
+              />
+            }
+          ></Modal>
+        )}
+        {showTransactiondetails && (
+          <Modal
+            content={
+              <TransactionDetails
+                closeModal={() => {
+                  setShowTransactiondetails(false);
+                }}
+                details={
+                  transactionData.filter(
+                    (item) => item.transactionId == transactionId
+                  )[0]
+                }
+              />
+            }
+          ></Modal>
+        )}
+        {showSendMoney === "Send Money" && (
+          <Modal
+            content={
+              <SendMoney
+                closeModal={(name) => {
+                  console.log(name);
+                  setShowSendMoney(name);
+                }}
+              />
+            }
+          ></Modal>
+        )}
+        {showSendMoney === "Manually" && (
+          <Modal
+            content={
+              <SendMoneyForm
+                banks={allBanks}
+                closeModal={() => {
+                  setShowSendMoney(false);
+                }}
+              />
+            }
+          ></Modal>
+        )}
+        {showSendMoney === "Beneficiaries" && (
+          <Modal
+            content={
+              <Beneficiary
+                closeModal={() => {
+                  setShowSendMoney(false);
+                }}
+              />
+            }
+          ></Modal>
+        )}
+      </div>
     </section>
   );
 };

@@ -103,8 +103,8 @@ const ColorInput = ({
                 ></div>
               </div>
             )}
-            {selectedColors.map((color) => (
-              <div>
+            {selectedColors.map((color, index) => (
+              <div key={index}>
                 <div
                   className="w-[4rem] h-[2rem] rounded"
                   style={{

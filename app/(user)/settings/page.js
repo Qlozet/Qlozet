@@ -215,54 +215,57 @@ const Dashboard = () => {
 
   return (
     <section>
-      {pageLoading ? (
-        <Loader></Loader>
-      ) : (
-        <div className="flex bg-[#F8F9FA]">
-          <div className="">
-            <SideBar active="Settings" />
-            <MobileSideBar
-              showMobileNav={showMobileNav}
-              active="Settings"
-              closeSideBar={showSideBar}
-            />
-          </div>
-          <div className="w-full p-4">
-            <DasboardNavWithOutSearch
-              // addSearch={currentNav === "Warehouses" ? true : false}
-              name="Settings"
-              setValue={(data) => {
-                handleFilfeterData(data);
-              }}
-              showSideBar={showSideBar}
-            />
-            <div className="mt-4">
-              <OrderDetailNav
-                bg="bg"
-                data={settingNav}
-                width="w-full"
-                active={currentNav}
-                full={true}
-              />
-            </div>
-            {currentNav === "Shop details" && (
-              <CompanyDetails
-                shopDetails={shopDetails}
-                setShopDetails={setShopDetails}
-                requiredShopDetails={requiredShopDetails}
-                setRequiredShopDetails={setRequiredShopDetails}
-                submitCompanyInfo={submitCompanyInfo}
-                isLoading={isLoading}
-              />
-            )}
-            {currentNav === "Billing and invoice" && <BillingAndInvioce />}
-            {currentNav === "Warehouses" && <Warehouse />}
-            {/* {currentNav === "Shipping partners" && <Shipping />} */}
-            {currentNav === "Users and permissions" && <UserAndPermission />}
-            {currentNav === "Categories" && <Category />}
-          </div>
+      <div className="flex bg-[#F8F9FA]">
+        <div className="">
+          <SideBar active="Settings" />
+          <MobileSideBar
+            showMobileNav={showMobileNav}
+            active="Settings"
+            closeSideBar={showSideBar}
+          />
         </div>
-      )}
+        <div className="w-full p-4">
+          <DasboardNavWithOutSearch
+            // addSearch={currentNav === "Warehouses" ? true : false}
+            name="Settings"
+            setValue={(data) => {
+              handleFilfeterData(data);
+            }}
+            showSideBar={showSideBar}
+          />
+          {pageLoading ? (
+            <Loader></Loader>
+          ) : (
+            <div>
+              {" "}
+              <div className="mt-4">
+                <OrderDetailNav
+                  bg="bg"
+                  data={settingNav}
+                  width="w-full"
+                  active={currentNav}
+                  full={true}
+                />
+              </div>
+              {currentNav === "Shop details" && (
+                <CompanyDetails
+                  shopDetails={shopDetails}
+                  setShopDetails={setShopDetails}
+                  requiredShopDetails={requiredShopDetails}
+                  setRequiredShopDetails={setRequiredShopDetails}
+                  submitCompanyInfo={submitCompanyInfo}
+                  isLoading={isLoading}
+                />
+              )}
+              {currentNav === "Billing and invoice" && <BillingAndInvioce />}
+              {currentNav === "Warehouses" && <Warehouse />}
+              {/* {currentNav === "Shipping partners" && <Shipping />} */}
+              {currentNav === "Users and permissions" && <UserAndPermission />}
+              {currentNav === "Categories" && <Category />}
+            </div>
+          )}
+        </div>
+      </div>
     </section>
   );
 };

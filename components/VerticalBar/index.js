@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import classes from "./index.module.css";
 
-const VerticalBar = ({ date, value, per, color, highest }) => {
+const VerticalBar = ({ date, value, per, color, highest, heightValue }) => {
   const [showValue, setShowValue] = useState(false);
-  const total = 11000;
+  const total = heightValue;
   const ref = useRef(null);
   const handleClickOutside = (event) => {
     if (ref.current && !ref.current.contains(event.target)) {
