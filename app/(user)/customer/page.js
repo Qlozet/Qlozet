@@ -117,17 +117,15 @@ const Customer = () => {
   }, []);
   return (
     <section className={classes.main_container}>
+      <SideBar active="Customers" />
       <div className="flex bg-[#F8F9FA]">
-        <div className="">
-          <SideBar active="Customers" />
-        </div>
         <MobileSideBar
           showMobileNav={showMobileNav}
           active="Customers"
           closeSideBar={showSideBar}
         />
-        <div className={!viewCustomerDetails ? "block" : "hidden"}></div>
-        <div className="w-full p-4">
+        <div className="w-full p-4 ">
+          <div></div>
           <DasboardNavWithOutSearch
             addSearch={true}
             setValue={(data) => {
@@ -140,7 +138,6 @@ const Customer = () => {
             <Loader></Loader>
           ) : (
             <div>
-              {" "}
               {!viewCustomerDetails && (
                 <div
                   className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}

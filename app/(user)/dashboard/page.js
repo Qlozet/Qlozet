@@ -306,7 +306,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <section>
+    <section className="ml-[260px]">
       <div className={`flex bg-gray-400 w-full h-full`}>
         <div className="">
           <SideBar active="Dashboard" />
@@ -316,6 +316,7 @@ const Dashboard = () => {
             closeSideBar={showSideBar}
           />
         </div>
+
         <div className="w-full mb-[2rem]">
           <div className="p-4">
             <DasboardNavWithOutSearch

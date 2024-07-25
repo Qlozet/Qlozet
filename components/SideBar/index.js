@@ -94,7 +94,7 @@ const SideBar = ({ active }) => {
   };
 
   return (
-    <div className="hidden lg:block bg-white h-screen ">
+    <div className="hidden lg:block bg-white fixed w-[260px]">
       <div className="py-10 lg:px-16 md:px-4">
         <Logo />
       </div>
