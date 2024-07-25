@@ -11,7 +11,7 @@ const Logo = () => {
           alt=""
           style={{
             width: "100px",
-            height: "auto",
+            height: "2rem",
           }}
         />
       </div>
