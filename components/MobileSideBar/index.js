@@ -22,7 +22,7 @@ import { useRouter } from "next/navigation";
 
 import Image from "next/image";
 import Modal from "../Modal";
-import logo from "../../public/assets/svg/logo.svg";
+import logo from "../../public/assets/image/logobrown.png";
 const MobileSideBar = ({ active, closeSideBar, showMobileNav }) => {
   const [showLogOutModal, setShowLogOutModal] = useState(false);
   const router = useRouter();
