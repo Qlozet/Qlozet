@@ -24,7 +24,6 @@ const SignIn = () => {
     businessEmail: false,
     password: false,
   });
-
   const handleLogin = async () => {
     const { status, data, id } = validator(formData, requiredFormData);
     if (status) {

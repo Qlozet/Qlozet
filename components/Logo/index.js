@@ -1,15 +1,29 @@
 import Image from "next/image";
-import logo from "../../public/assets/svg/logo.svg";
-import logo2 from "../../public/assets/svg/altire2.svg";
+import brownLogo from "../../public/assets/image/logobrown.png";
+import whiteLogo from "../../public/assets/image/logowhite.png";
 
 const Logo = () => {
   return (
     <div>
       <div className=" items-center justify-center lg:justify-start hidden lg:flex">
-        <Image src={logo} alt="" />
+        <Image
+          src={brownLogo}
+          alt=""
+          style={{
+            width: "100px",
+            height: "auto",
+          }}
+        />
       </div>
       <div className="items-center justify-center lg:justify-start flex lg:hidden">
-        <Image src={logo2} alt="" />
+        <Image
+          src={whiteLogo}
+          alt=""
+          style={{
+            width: "100px",
+            height: "auto",
+          }}
+        />
       </div>
     </div>
   );
