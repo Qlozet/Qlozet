@@ -365,7 +365,7 @@ const Dashboard = () => {
                 />
               </div>
               <div className=" bg-[#F8F9FA] px-4">
-                <div className="flex items-center justify-between mb-2 mt-4">
+                {/* <div className="flex items-center justify-between mb-2 mt-4">
                   <UpdateComponent />
                   <div className="hidden lg:block">
                     <DropDown
@@ -383,7 +383,7 @@ const Dashboard = () => {
                       bg={"bg-white"}
                     />
                   </div>
-                </div>
+                </div> */}
                 <div className="md:flex block lg:flex items-center w-full md:gap-2 gap-4 border-solid solid-[1px] border-primary z-[0]">
                   <div
                     className={`${classes.first_container} block lg:flex items-center md:gap-2 gap-4 mt-4 w-full md:flex`}

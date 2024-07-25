@@ -1,6 +1,8 @@
 .main_container {
   max-width: 1324px;
   margin: 0 auto;
+  margin-left: 260px;
+  position: relative;
 }
 
 .first_container {

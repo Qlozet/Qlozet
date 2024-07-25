@@ -116,7 +116,7 @@ const Customer = () => {
     getCustomers();
   }, []);
   return (
-    <section className={classes.main_container}>
+    <section className={`ml-[260px] ${classes.main_container}`}>
       <SideBar active="Customers" />
       <div className="flex bg-[#F8F9FA]">
         <MobileSideBar

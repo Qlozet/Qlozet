@@ -73,7 +73,7 @@ const DasboardNavWithOutSearch = ({
   }, []);
   return (
     <div>
-      <div className={`${!hideNav ? " " : "pt-2"} rounded-[15px]`}>
+      <div className={`${!hideNav ? " " : "pt-2"} rounded-[15px] `}>
         <div className="block lg:hidden">
           <div className=" items-center justify-between px-3 py-3 bg-gray-400 rounded-[12px] hidden">
             <Image src={transformText} alt="" />

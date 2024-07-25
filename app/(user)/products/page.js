@@ -156,7 +156,7 @@ const Products = () => {
     getProducts();
   }, [isLoading]);
   return (
-    <section>
+    <section className="ml-[260px]">
       <div className="flex bg-[#F8F9FA]">
         <div className="">
           <SideBar active="Products" />

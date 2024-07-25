@@ -14,7 +14,7 @@ import Button from "@/components/Button";
 
 const ProductDetails = () => {
   return (
-    <div className="flex min-h-[100dvh] bg-[#F8F9FA]">
+    <div className="flex min-h-[100dvh] bg-[#F8F9FA] ml-[260px]">
       <div className="">
         <SideBar active="Products" />
       </div>
