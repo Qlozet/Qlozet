@@ -12,7 +12,7 @@ const HomePageHeader = () => {
           alt=""
           style={{
             width: "100px",
-            height: "2rem",
+            height: "auto",
           }}
         />
         <div className="flex items-center gap-[3rem]">
