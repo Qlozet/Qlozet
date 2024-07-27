@@ -34,6 +34,7 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [filteredProduct, setFilterdProduct] = useState([]);
   const [showMobileNav, setShowMobileNav] = useState(false);
+  const [activatedProduct, setActivatedProduct] = useState(0);
   const [tagData, setTagData] = useState({
     labels: ["Male", "Female"],
     values: [0, 0],
@@ -81,6 +82,9 @@ const Products = () => {
       let response = await getRequest("/vendor/products/all");
       let productData = [];
       if (response?.data) {
+        setActivatedProduct(
+          response?.data.data.filter((product) => product.status).length
+        );
         response?.data?.data?.map((product) => {
           let productStatus;
           if (product.status) {
@@ -121,6 +125,7 @@ const Products = () => {
             ],
           };
         });
+        console.log(productData);
         setProducts(productData);
         setFilterdProduct(productData);
         setIsLoading(false);
@@ -156,7 +161,7 @@ const Products = () => {
     getProducts();
   }, [isLoading]);
   return (
-    <section className="ml-[260px]">
+    <section className="md:ml-[260px]">
       <div className="flex bg-[#F8F9FA]">
         <div className="">
           <SideBar active="Products" />
@@ -244,8 +249,8 @@ const Products = () => {
                   addMaxWidth={true}
                 />
                 <DashboardTopCard
-                  name="Achieved products"
-                  total="10000"
+                  name="Activated products"
+                  total={activatedProduct}
                   percentage="2.5"
                   bgColor="bg-[#5DDAB4]"
                   icon={shoppingBag}

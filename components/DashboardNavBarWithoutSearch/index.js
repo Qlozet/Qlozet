@@ -43,7 +43,6 @@ const DasboardNavWithOutSearch = ({
     const response = await getVendorDetails();
     if (response?.data) {
       setPageLoading(false);
-
       const details = {
         businessName: response?.data?.data?.companyName
           ? response?.data?.data?.companyName
@@ -124,7 +123,9 @@ const DasboardNavWithOutSearch = ({
                   <Image
                     alt=""
                     src={mobileProfile}
-                    onClick={showProfileHandler}
+                    onClick={() => {
+                      console.log("clicked");
+                    }}
                     className="cursor-pointer"
                   />
                 </div>
@@ -179,7 +180,9 @@ const DasboardNavWithOutSearch = ({
                 <Image
                   alt=""
                   src={userIcon}
-                  onClick={showProfileHandler}
+                  onClick={() => {
+                    setShowProfile(true);
+                  }}
                   className="cursor-pointer"
                 />
               </div>
@@ -188,7 +191,11 @@ const DasboardNavWithOutSearch = ({
         </div>
       </div>
       {showProfile && (
-        <Profile closeProfile={showProfileHandler} userDetails={userDetails} />
+        <Profile
+          showProfileHandler={showProfileHandler}
+          userDetails={userDetails}
+          showProfile={showProfile}
+        />
       )}
     </div>
   );

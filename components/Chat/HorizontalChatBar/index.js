@@ -12,7 +12,7 @@ const HorizontalChatBar = ({ location, male, female }) => {
               className={`bg-primary rounded-r-[55px] block`}
               style={{ width: `${male < 55 ? male + 55 : male}%` }}
             >
-              <p className="py-1 px-2 text-white text-[12px] font-[550]">
+              <p className="py-1 px-2 text-white text-[12px] font-[550] max-w-xs whitespace-nowrap overflow-hidden text-ellipsis">
                 {location}
               </p>
             </div>
@@ -28,7 +28,7 @@ const HorizontalChatBar = ({ location, male, female }) => {
         bg-primary-200 rounded-r-[55px]`}
               style={{ width: `${female < 55 ? female + 55 : female}% block` }}
             >
-              <p className="py-1 px-2 text-white text-[12px] font-[550]">
+              <p className="py-1 px-2 text-white text-[12px] font-[550] max-w-xs whitespace-nowrap overflow-hidden text-ellipsis">
                 {location}
               </p>
             </div>
@@ -39,7 +39,7 @@ const HorizontalChatBar = ({ location, male, female }) => {
             className={`bg-primary rounded-r-[55px] block`}
             style={{ width: `${male < 55 ? male + 55 : male}%` }}
           >
-            <p className="py-1 px-2 text-white text-[12px] font-[550]">
+            <p className="py-1 px-2 text-white text-[12px] font-[550] max-w-xs whitespace-nowrap overflow-hidden text-ellipsis">
               {location}
             </p>
           </div>

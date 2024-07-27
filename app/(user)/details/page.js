@@ -11,7 +11,7 @@ import chatIcon from "../../../public/assets/svg/productdetailschat.svg";
 import Image from "next/image";
 import Button from "@/components/Button";
 import Typography from "@/components/Typography";
-import { getProductId } from "@/utils/localstorage";
+import { getGetUserDetails, getProductId } from "@/utils/localstorage";
 import { getRequest } from "@/api/method";
 import Loader from "@/components/Loader";
 import arrowLeft from "../../../public/assets/svg/arrrowLeft.svg";
@@ -22,10 +22,9 @@ import DragDrop from "@/components/DragandDrop";
 
 const ProductDetails = () => {
   const router = useRouter();
-
   const [pageLoading, setPageLoading] = useState(true);
   const [showReview, setShowReview] = useState(false);
-
+  const [vendorName, setVendorName] = useState("");
   const [productFormData, setProductFormData] = useState({
     productName: "",
     productPrice: "",
@@ -53,12 +52,11 @@ const ProductDetails = () => {
 
     try {
       const response = await getRequest(`/vendor/products/${productId}`);
-      console.log(response);
+      console.log(response.data.data);
       let colors = [];
       response.data.data.colors.map((item) => {
         colors.push(item.hex);
       });
-
       setProductFormData({
         productName: response.data.data.name,
         productPrice: `₦${response.data.data.price.toLocaleString()}`,
@@ -98,7 +96,10 @@ const ProductDetails = () => {
   };
 
   useEffect(() => {
+    const vendor = getGetUserDetails();
+    setVendorName(vendor.businessName);
     fetchProduct();
+    // const
   }, []);
   return (
     <div className="ml-[260px]">
@@ -142,28 +143,30 @@ const ProductDetails = () => {
                   <div className="block lg:flex">
                     <div className="lg:flex-1 relative">
                       <div className="relative">
-                        <div className="absolute top-[50%] left-0 flex items-center justify-between w-[100%] px-6">
-                          <div className="bg-white w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]">
-                            <Image
-                              height={24}
-                              width={24}
-                              src={arrowLeft}
-                              alt="product image"
-                              className="rounded-b-[12px]"
-                              unoptimized
-                            />
+                        {productFormData.images.length > 1 && (
+                          <div className="absolute top-[50%] left-0 flex items-center justify-between w-[100%] px-6">
+                            <div className="bg-white w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]">
+                              <Image
+                                height={24}
+                                width={24}
+                                src={arrowLeft}
+                                alt="product image"
+                                className="rounded-b-[12px]"
+                                unoptimized
+                              />
+                            </div>
+                            <div className="bg-white w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]">
+                              <Image
+                                height={24}
+                                width={24}
+                                src={arrowRight}
+                                alt="product image"
+                                className="rounded-b-[12px]"
+                                unoptimized
+                              />
+                            </div>
                           </div>
-                          <div className="bg-white w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]">
-                            <Image
-                              height={24}
-                              width={24}
-                              src={arrowRight}
-                              alt="product image"
-                              className="rounded-b-[12px]"
-                              unoptimized
-                            />
-                          </div>
-                        </div>
+                        )}
                         <Image
                           height={50}
                           width={50}
@@ -182,9 +185,9 @@ const ProductDetails = () => {
                     <div className="w-full p-8 lg:flex-1">
                       <div className="flex items-center justify-between w-full">
                         <p className="text-[14px] text-primary-100">
-                          MISKAY BOUTIQUE
+                          {vendorName}
                         </p>
-                        <div className="items-center hidden lg:flex">
+                        {/* <div className="items-center hidden lg:flex">
                           <p className="text-[12px] leading-[18px] underline font-bold text-primary-100">
                             View product in main site
                           </p>
@@ -195,7 +198,7 @@ const ProductDetails = () => {
                             alt=""
                             unoptimized
                           />
-                        </div>
+                        </div> */}
                       </div>
                       <h1 className="text-[16px] lg:text-[32px] font-bold my-2 text-primary">
                         {productFormData.productName}
@@ -224,7 +227,7 @@ const ProductDetails = () => {
                         <div className="flex items-center gap-2">
                           <Image src={chatIcon} alt="" width={20} height={20} />
                           <span className="font-bold text-[14px] leading-[20px] mr-1 flex pt-[2px]">
-                            {productFormData.reviews.length}
+                            {/* {productFormData.reviews.length} */}
                           </span>
                           <p
                             className="underline font-light text-[12px] leading-[16px] text-[#495057] cursor-pointer ml-2"

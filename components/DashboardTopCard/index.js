@@ -2,8 +2,7 @@ import Image from "next/image";
 import activeDashboardIcon from "../../public/assets/svg/activeDashboardIcon.svg";
 import arrowUpSuccess from "../../public/assets/svg/arrowup-success.svg";
 import eyeSuccess from "../../public/assets/svg/eye-success.svg";
-import cartWhite from "../../public/assets/svg/cart-white.svg";
-
+import { useRouter } from "next/navigation";
 const DashboardTopCard = ({
   name,
   bgColor,
@@ -14,6 +13,7 @@ const DashboardTopCard = ({
   addMaxWidth,
   minHeight,
 }) => {
+  const navigate = useRouter();
   return (
     <div
       className={`min-w-[260px] lg:min-w-[0] p-6 flex bg-white rounded-[12px] mt-4 ${
@@ -37,7 +37,14 @@ const DashboardTopCard = ({
           </div>
           {link && (
             <div className="flex items-center gap-1 cursor-pointer">
-              <p className="text-[12px] text-[#33CC33]">View</p>
+              <p
+                className="text-[12px] text-[#33CC33]"
+                onClick={() => {
+                  navigate.push(link);
+                }}
+              >
+                View
+              </p>
               <Image src={eyeSuccess} alt="" />
             </div>
           )}

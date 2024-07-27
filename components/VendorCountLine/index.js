@@ -1,5 +1,6 @@
 import Typography from "../Typography";
 const VendorCountLine = ({ value }) => {
+  console.log(value);
   return (
     <div className="mt-3">
       <div className="flex  gap-4">
@@ -7,9 +8,9 @@ const VendorCountLine = ({ value }) => {
           <Typography
             textColor="text-gray-100"
             textWeight="font-normal"
-            textSize="text-[14px]"
+            textSize="text-[12px]"
           >
-            {value}
+            {parseInt(`${value}`.slice(0, -3)).toLocaleString()}K
           </Typography>
         </div>
 

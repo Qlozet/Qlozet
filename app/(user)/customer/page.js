@@ -71,7 +71,7 @@ const Customer = () => {
       response && setPageLoading(false);
       if (response.data) {
         response?.data?.data.map((item) => {
-          console.log(item.picture);
+          console.log(item);
           const customer = {
             customerId: item.customerId,
             picture: item.picture,

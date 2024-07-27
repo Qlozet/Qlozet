@@ -32,6 +32,7 @@ const Wallet = () => {
   const [loadPage, setLoadPage] = useState(true);
   const [transactionData, setTransactionData] = useState([]);
   const [filteredTransactionData, setFilteredTransactionData] = useState([]);
+  const [totalAmountRecived, setTotalAmountRecieved] = useState(0);
   const [rejectModal, setShowReject] = useState(false);
   const handleShowViewDetailModal = () => {
     setShowTransactiondetails(true);
@@ -133,7 +134,19 @@ const Wallet = () => {
       )
     );
   };
+  const getTotalAmontRecievd = async () => {
+    try {
+      const response = await getRequest(
+        "/vendor/wallet/:vendorId/totalReceived"
+      );
+      if (response.data) {
+        setTotalAmountRecieved(response.data.data.totalReceived);
+      }
+      console.log(response);
+    } catch (error) {}
+  };
   useEffect(() => {
+    getTotalAmontRecievd();
     getTransaction();
     getWalletBalance();
     getBanks();
@@ -195,7 +208,7 @@ const Wallet = () => {
                 >
                   <DashboardTopCard
                     name="Wallet Balance"
-                    total={walletBalance}
+                    total={walletBalance.toLocaleString()}
                     percentage="2.5"
                     bgColor="bg-[#57CAEB]"
                     link="link"
@@ -204,7 +217,7 @@ const Wallet = () => {
                   />
                   <DashboardTopCard
                     name="Total Amount Received"
-                    total="0"
+                    total={totalAmountRecived.toLocaleString()}
                     percentage="2.5"
                     bgColor="bg-[#5DDAB4]"
                     icon={customerIcon}

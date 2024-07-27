@@ -14,18 +14,17 @@ const CustomerTableItem = ({
   viewDetails,
   customerId,
 }) => {
-  // console.log(picture);
   const date = new Date(lastOrderDate);
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-[12px] font-normal p-4 text-dark ">
+      <td className="text-[12px] font-normal p-4 text-dark min-h-[5rem]">
         <Image
           src={picture}
           width={30}
           height={30}
           style={{
-            width: "5rem",
-            height: "5rem",
+            width: "2rem",
+            height: "auto",
           }}
           alt=""
         />

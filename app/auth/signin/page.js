@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import signupImage from "../../../public/assets/svg/signupImage.svg";
 import arrowRight from "../../../public/assets/svg/arrow-right.svg";
 import Image from "next/image";
@@ -14,7 +14,7 @@ import validator from "@/utils/validator";
 import { postRequest } from "@/api/method";
 import toast from "react-hot-toast";
 import Toast from "@/components/ToastComponent/toast";
-import { setToken } from "@/utils/localstorage";
+import { getToken, setToken } from "@/utils/localstorage";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 const SignIn = () => {
   const router = useRouter();
@@ -34,7 +34,6 @@ const SignIn = () => {
           password: formData.password,
         });
         response && setIsLoading(false);
-        console.log(response);
         if (response.success === true) {
           setToken(JSON.stringify(response.data));
           console.log(response);
@@ -46,7 +45,6 @@ const SignIn = () => {
       } catch (error) {
         console.log(error);
         error && setIsLoading(false);
-        // toast(<Toast text={error.message} type="danger" />);
       }
     } else {
       setReqiuredFormData((prevData) => {
@@ -54,21 +52,15 @@ const SignIn = () => {
       });
     }
   };
-
-  const getProduct = async () => {
-    try {
-      const response = await axios.get("http://localhost:3001/api/products", {
-        params: {
-          organization_id: "04bd5f1f59814d91af03179706c01855",
-          Appid: "IYISGX44YNAPMDE",
-          Apikey: "f83f5d9239bd40bea801feda7eebdc5420240712221910617336",
-        },
-      });
-    } catch (error) {
-      console.error("There was an error making the request:", error);
+  useEffect(() => {
+    let token = getToken();
+    if (token) {
+      const userExist = JSON.parse(token);
+      if (userExist.token) {
+        router.push("../dashboard");
+      }
     }
-  };
-  getProduct();
+  }, []);
   return (
     <section className={`h-screen overflow-hidden`}>
       <div

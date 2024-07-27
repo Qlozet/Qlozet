@@ -161,112 +161,11 @@ const Dashboard = () => {
   };
 
   const getOrders = async () => {
-    let sunOrders = { day: "Sun", orders: [] };
-    let monOrders = { day: "Mon", orders: [] };
-    let tuesOrders = { day: "Tue", orders: [] };
-    let wedOrders = { day: "Wed", orders: [] };
-    let thuOrders = { day: "Thu", orders: [] };
-    let friOrders = { day: "Fri", orders: [] };
-    let satOrders = { day: "Sat", orders: [] };
-    let test = { day: "test", orders: [] };
-    let ordersWitDay = [];
     try {
-      const startOfWeek = moment().startOf("week");
+      let ordersData;
       const response = await getRequest("/vendor/orders");
-      response.data.data.map((order) => {
-        if (
-          moment(order.orderDate).valueOf() > startOfWeek.valueOf() &&
-          moment(order.orderDate).valueOf() < startOfWeek.valueOf() + 86400000
-        ) {
-          sunOrders.orders.push(order);
-        } else if (
-          moment(order.orderDate).valueOf() >
-            startOfWeek.valueOf() + 86400000 &&
-          moment(order.orderDate).valueOf() <
-            startOfWeek.valueOf() + 86400000 * 2
-        ) {
-          monOrders.orders.push(order);
-        } else if (
-          moment(order.orderDate).valueOf() >
-            startOfWeek.valueOf() + 86400000 * 2 &&
-          moment(order.orderDate).valueOf() <
-            startOfWeek.valueOf() + 86400000 * 3
-        ) {
-          tuesOrders.orders.push(order);
-        } else if (
-          moment(order.orderDate).valueOf() >
-            startOfWeek.valueOf() + 86400000 * 3 &&
-          moment(order.orders.orderDate).valueOf() <
-            startOfWeek.valueOf() + 86400000 * 4
-        ) {
-          wedOrders.orders.push(order);
-        } else if (
-          moment(order.orderDate).valueOf() >
-            startOfWeek.valueOf() + 86400000 * 5 &&
-          moment(order.orderDate).valueOf() <
-            startOfWeek.orders.valueOf() + 86400000 * 6
-        ) {
-          friOrders.orders.push(order);
-        } else if (
-          moment(order.orderDate).valueOf() >
-            startOfWeek.valueOf() + 86400000 * 5 &&
-          moment(order.orderDate).valueOf() <
-            startOfWeek.valueOf() + 86400000 * 6
-        ) {
-          thuOrders.orders.push(order);
-        } else if (
-          moment(order.orderDate).valueOf() >
-            startOfWeek.valueOf() + 86400000 * 6 &&
-          moment(order.orderDate).valueOf() <
-            startOfWeek.valueOf() + 86400000 * 7
-        ) {
-          satOrders.orders.push(order);
-        } else {
-          test.orders.push({ amount: 400 });
-          test.orders.push({ amount: 400 });
-          test.orders.push({ amount: 400 });
-        }
 
-        ordersWitDay = [
-          sunOrders,
-          monOrders,
-          tuesOrders,
-          wedOrders,
-          thuOrders,
-          friOrders,
-          satOrders,
-          test,
-        ];
-
-        const last = test[8].orders.reduce((accumulator, currentItem) => {
-          return {
-            day: currentItem.day,
-            total: accumulator + currentItem.amount,
-          };
-        }, 0);
-
-        let DeliveryStatus;
-        if (order.status === "out-for-delivery") {
-          DeliveryStatus = { name: "Out for delivery", bg: "bg-[#D4CFCA]" };
-        } else if (order.status === "return") {
-          DeliveryStatus = { name: "Return", bg: "bg-[#D4CFCA]" };
-        } else {
-          DeliveryStatus = { name: "Return", bg: "bg-[#D4CFCA]" };
-        }
-        let orderItem = {
-          id: 1,
-          name: `${order.customer.firstName} ${order.customer.lastName}`,
-          date: moment(order.orderDate).format("YYYY-MM-DD"),
-          product: order.orderItems.map((product) => {
-            return product.name;
-          })[0],
-          price: `₦${order.amountPaid.toLocaleString()}`,
-          quantity: 1,
-          status: "Ready to Ship",
-        };
-        ordersData.push(orderItem);
-      });
-      setRecentOrders(ordersData);
+      setRecentOrders(response.data.data);
       setPageLoading(false);
     } catch (error) {}
   };
@@ -281,15 +180,11 @@ const Dashboard = () => {
   };
   const getDailyOrder = async () => {
     try {
-      console.log("Erro");
       const response = await getRequest("/vendor/orders/last-week");
-      console.log(response);
       if (response.data) {
         setDailyOrder(response.data.data);
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -306,7 +201,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <section className="ml-[260px]">
+    <section className="md:ml-[260px]">
       <div className={`flex bg-gray-400 w-full h-full`}>
         <div className="">
           <SideBar active="Dashboard" />
@@ -338,12 +233,12 @@ const Dashboard = () => {
                   total={totalOrder}
                   percentage="2.5"
                   bgColor="bg-[#57CAEB]"
-                  link="link"
+                  link="orders"
                   icon={TotalOrderIcon}
                 />
                 <DashboardTopCard
                   name="Total earnings"
-                  total={topEarning}
+                  total={topEarning.toLocaleString()}
                   percentage="2.5"
                   bgColor="bg-[#5DDAB4]"
                   icon={TotalearningIcon}

@@ -6,7 +6,7 @@ import DropDown from "../DropDown";
 import { current } from "@reduxjs/toolkit";
 
 const VerticalBarGraph = ({ data, name }) => {
-  console.log(data);
+  // console.log(data);
   const daysArray = [
     {
       day: "Mon",
@@ -37,10 +37,8 @@ const VerticalBarGraph = ({ data, name }) => {
       value: data.Sunday,
     },
   ];
-  console.log(daysArray);
   daysArray.sort((a, b) => b.value - a.value);
   let heightValue = daysArray[0].value;
-
   const numberOfLineFromZero = 6;
   return (
     <div>
@@ -120,27 +118,108 @@ const VerticalBarGraph = ({ data, name }) => {
           />
 
           <div className="mb-[1rem] lg:mb-0">
-            <VendorCountLine
-              value={
-                Math.floor(((heightValue / numberOfLineFromZero) * 1) / 1000) *
-                1000 *
-                0
-              }
-            />
+            {/* did this because of the slice */}
+            <VendorCountLine value={0.001} />
           </div>
         </div>
         <div className="absolute right-0 bottom-[.6rem] lg:bottom-[9px]  w-[94%] h-[96%] flex justify-between pl-10">
           {daysArray.map((item, index) => {
-            return (
-              <VerticalBar
-                heightValue={heightValue}
-                highest={item.value === heightValue ? true : false}
-                per={item.per}
-                value={item.value}
-                date={item.day}
-                key={index}
-              />
-            );
+            if (item.day == "Sun") {
+              return (
+                <VerticalBar
+                  heightValue={heightValue}
+                  highest={item.value === heightValue ? true : false}
+                  per={item.per}
+                  value={item.value}
+                  date={item.day}
+                  key={index}
+                />
+              );
+            }
+          })}
+          {daysArray.map((item, index) => {
+            if (item.day == "Mon") {
+              return (
+                <VerticalBar
+                  heightValue={heightValue}
+                  highest={item.value === heightValue ? true : false}
+                  per={item.per}
+                  value={item.value}
+                  date={item.day}
+                  key={index}
+                />
+              );
+            }
+          })}
+          {daysArray.map((item, index) => {
+            if (item.day == "Tue") {
+              return (
+                <VerticalBar
+                  heightValue={heightValue}
+                  highest={item.value === heightValue ? true : false}
+                  per={item.per}
+                  value={item.value}
+                  date={item.day}
+                  key={index}
+                />
+              );
+            }
+          })}
+          {daysArray.map((item, index) => {
+            if (item.day == "Wed") {
+              return (
+                <VerticalBar
+                  heightValue={heightValue}
+                  highest={item.value === heightValue ? true : false}
+                  per={item.per}
+                  value={item.value}
+                  date={item.day}
+                  key={index}
+                />
+              );
+            }
+          })}
+          {daysArray.map((item, index) => {
+            if (item.day == "Thu") {
+              return (
+                <VerticalBar
+                  heightValue={heightValue}
+                  highest={item.value === heightValue ? true : false}
+                  per={item.per}
+                  value={item.value}
+                  date={item.day}
+                  key={index}
+                />
+              );
+            }
+          })}
+          {daysArray.map((item, index) => {
+            if (item.day == "Fri") {
+              return (
+                <VerticalBar
+                  heightValue={heightValue}
+                  highest={item.value === heightValue ? true : false}
+                  per={item.per}
+                  value={item.value}
+                  date={item.day}
+                  key={index}
+                />
+              );
+            }
+          })}
+          {daysArray.map((item, index) => {
+            if (item.day == "Sat") {
+              return (
+                <VerticalBar
+                  heightValue={heightValue}
+                  highest={item.value === heightValue ? true : false}
+                  per={item.per}
+                  value={item.value}
+                  date={item.day}
+                  key={index}
+                />
+              );
+            }
           })}
         </div>
       </div>

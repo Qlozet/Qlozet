@@ -11,14 +11,14 @@ const OrderItem = ({ order }) => {
             textWeight="font-normal"
             textSize="text-[12px]"
           >
-            {order.product}
+            {order.orderItems[0].name}
           </Typography>
           <Typography
             textColor="text-primary"
             textWeight="font-normal"
             textSize="text-[12px]"
           >
-            {order.name}
+            {`${order.customer.firstName}  ${order.customer.lastName}`}
           </Typography>
         </div>
         <div className="flex flex-col w-[30%]">
@@ -27,7 +27,7 @@ const OrderItem = ({ order }) => {
             textWeight="font-normal"
             textSize="text-[12px]"
           >
-            {order.price}
+            {order.amountPaid.toLocaleString()}
           </Typography>
           <Typography
             textColor="text-primary"

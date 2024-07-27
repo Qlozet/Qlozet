@@ -51,7 +51,7 @@ const AddProduct = () => {
     productQuantity: "0",
     productCategory: "",
     productType: "",
-    discount: "",
+    discount: "0",
     isFeatured: false,
     colors: [],
     images: [],
@@ -64,7 +64,6 @@ const AddProduct = () => {
     description: false,
     productQuantity: false,
     productType: false,
-    discount: false,
     productCategory: false,
     colors: false,
   });
@@ -119,6 +118,7 @@ const AddProduct = () => {
       setProductFormData((prevData) => {
         return { ...prevData, variantSizes: [] };
       });
+      console.log(data[0]);
       setCurrentVariantColor(data[0]);
       setCurrentVariantFile("");
     }
@@ -165,7 +165,6 @@ const AddProduct = () => {
   const priceHandler = (value, index) => {
     let prevVariantTable = variantTable;
     prevVariantTable[index].prize = value;
-    console.log(prevVariantTable);
     setVariantTable(prevVariantTable);
   };
 
@@ -211,12 +210,11 @@ const AddProduct = () => {
             return varantItem;
           }),
         };
-        console.log(JSON.stringify(productFormData.variantSizes));
         const response = !productId
           ? await postRequest("/vendor/products", formData)
           : await putRequest(`/vendor/products/${productId}/update`, formData);
+        console.log(response);
         response && setIsLoading(false);
-
         if (response?.data) {
           router.push("../products");
           setIsLoading(false);
@@ -238,16 +236,38 @@ const AddProduct = () => {
 
   const fetchProduct = async () => {
     const productId = getProductId();
+    let colors = [];
+    let sizeVariant = [];
     try {
       const response = await getRequest(`/vendor/products/${productId}`);
-      let colors = [];
-      response.data.data.colors.map((item) => {
-        colors.push(item.hex);
+      // sizeVariant = response.data.data
+      //   ? response.data.data.variants
+      //       .map((item) => item.size)
+      //       .map((item) => item.label)
+      //   : [];
+      // colors = response.data.data
+      //   ? response.data.data.variants
+      //       .map((item) => item.color)
+      //       .map((item) => item.hex)
+      //   : [];
+      setVariantTable((prevData) => {
+        return [
+          ...prevData,
+          {
+            color: currentVariantFile ? currentVariantFile : colors,
+            images: [
+              { asset_id: "", public_id: "", secure_url: "" },
+              { asset_id: "", public_id: "", secure_url: "" },
+              { asset_id: "", public_id: "", secure_url: "" },
+              { asset_id: "", public_id: "", secure_url: "" },
+              { asset_id: "", public_id: "", secure_url: "" },
+            ],
+            // prize: productFormData.productPrice,
+            sizes: sizeVariant,
+            // quantity: productFormData.productQuantity,
+          },
+        ];
       });
-      const categories = response.data.data.categories.map((item) => {
-        return item.name;
-      });
-      console.log(response.data.data);
       setProductFormData({
         productName: response.data.data.name,
         productPrice: response.data.data.price,
@@ -257,10 +277,15 @@ const AddProduct = () => {
         productCategory: response.data.data.categories.map((item) => {
           return item.name;
         }),
-        productType: response.data.data.type,
+        variantSizes: response.data.data.variants ? sizeVariant : [],
+        productType:
+          response.data.data.type === "customizable"
+            ? "Customizable"
+            : "Outright",
         discount: response.data.data.discount,
         isFeatured: false,
         colors: colors,
+        discount: response.data.data.discount,
         images: response.data.data.images.map((image) => {
           return image.secure_url;
         }),
@@ -276,8 +301,8 @@ const AddProduct = () => {
     fetchProduct();
   }, []);
   return (
-    <section>
-      <div className="flex bg-[#F8F9FA]">
+    <section className="md:ml-[260px]">
+      <div className="flex bg-[#F8F9FA] ">
         <div className="">
           <SideBar active="Products" />
           <MobileSideBar
@@ -426,7 +451,7 @@ const AddProduct = () => {
                       />
                     </div>
                     <div className="w-full ">
-                      <ColorInput
+                      {/* <ColorInput
                         index={80}
                         label="Colour"
                         placeholder="Choose  colours available for this product"
@@ -446,7 +471,29 @@ const AddProduct = () => {
                           }
                         }}
                         error={requiredproductFormData.colors}
-                      />
+                      /> */}
+                      <div className="w-full flex items-start justify-start">
+                        <NumberInput
+                          label="Available discount"
+                          placeholder="Enter available discount?"
+                          value={productFormData.discount}
+                          setValue={(data) => {
+                            setProductFormData((prevData) => {
+                              return { ...prevData, discount: data };
+                            });
+                            // if (data) {
+                            //   setrequiredproductFormData((prevData) => {
+                            //     return { ...prevData, discount: false };
+                            //   });
+                            // } else {
+                            //   setrequiredproductFormData((prevData) => {
+                            //     return { ...prevData, discount: true };
+                            //   });
+                            // }
+                          }}
+                          error={requiredproductFormData.discount}
+                        />
+                      </div>
                     </div>
                   </div>
                   <div className="block lg:flex  justify-between gap-6">
@@ -480,31 +527,7 @@ const AddProduct = () => {
                         error={requiredproductFormData.description}
                       />
                     </div>
-                    <div className="w-full flex items-start justify-start">
-                      <NumberInput
-                        label="Available discount"
-                        placeholder="Enter available discount?"
-                        value={productFormData.discount}
-                        setValue={(data) => {
-                          setProductFormData((prevData) => {
-                            return { ...prevData, discount: data };
-                          });
-                          if (data) {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, discount: false };
-                            });
-                          } else {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, discount: true };
-                            });
-                          }
-                        }}
-                        error={requiredproductFormData.discount}
-                      />
-                    </div>
-                  </div>
-                  <div className="block lg:flex  justify-between  gap-6">
-                    <div className="w-full flex items-start justify-start">
+                    <div className="w-full">
                       <NumberInput
                         label="Available quantity"
                         placeholder="Enter quantity"
@@ -526,6 +549,9 @@ const AddProduct = () => {
                         error={requiredproductFormData.productQuantity}
                       />
                     </div>
+                  </div>
+                  <div className="block lg:flex  justify-between  gap-6">
+                    <div className="w-full flex items-start justify-start"></div>
                   </div>
                   <div className="block lg:flex items-center justify-between gap-6"></div>
                   <div className="my-4">
@@ -554,7 +580,6 @@ const AddProduct = () => {
                     <VariantInput
                       index={50}
                       value={variantTable.map((item) => {
-                        console.log(item);
                         return item.color;
                       })}
                       label="Colour"

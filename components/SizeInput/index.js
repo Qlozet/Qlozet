@@ -12,6 +12,7 @@ const SizeInput = ({
   index,
   error,
 }) => {
+  console.log(value);
   const [showDropDown, setShowDropDown] = useState(false);
   const dropDownRef = useRef();
   const [list, setList] = useState(data);

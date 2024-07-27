@@ -2,6 +2,7 @@ import Typography from "@/components/Typography";
 import OrderStatus from "../OrderStatus";
 
 const MobileTableItem = ({ item }) => {
+  console.log(item);
   return (
     <div className="">
       <div className="flex justify-between items-center bg-white p-4">
@@ -37,9 +38,9 @@ const MobileTableItem = ({ item }) => {
         </div>
         <div className="flex flex-col items-end">
           <OrderStatus
-            text="Out for delivery"
-            bgColor="bg-[#DEF1FF]"
-            color="text-[#3893FE]"
+            text={item.DeliveryStatus.name}
+            bgColor={item.DeliveryStatus.bg}
+            color={item.DeliveryStatus.text}
             addMaxWidth={true}
           />
           <div className="my-2">

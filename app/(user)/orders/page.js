@@ -35,6 +35,8 @@ const Order = () => {
   const [orders, setOrders] = useState([]);
   const [filterdOrders, setFilteredOrders] = useState([]);
   const [order, setOrder] = useState({});
+  const [deliveredOrder, setDeliveredOrder] = useState(0);
+  const [orderInTransit, setOrderInTransit] = useState(0);
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
   };
@@ -90,10 +92,17 @@ const Order = () => {
   const getOrders = async () => {
     try {
       const response = await getRequest("/vendor/orders");
+      console.log(response);
       let ordersData = [];
+      setDeliveredOrder(
+        response.data.data.filter((order) => order.status === "completed")
+          .length
+      );
+      setOrderInTransit(
+        response.data.data.filter((order) => order.status === "in-transit")
+          .length
+      );
       response.data.data.map((order) => {
-        console.log(order);
-        console.log(order.status);
         let DeliveryStatus;
         if (order.status === "out-for-delivery") {
           DeliveryStatus = {
@@ -178,7 +187,7 @@ const Order = () => {
     getOrders();
   }, []);
   return (
-    <section className="ml-[260px]">
+    <section className="md:ml-[260px]">
       <div className="flex bg-[#F8F9FA]">
         <div className="">
           <SideBar active="Orders" />
@@ -216,7 +225,7 @@ const Order = () => {
                 />
                 <DashboardTopCard
                   name="Orders Delivered"
-                  total="100"
+                  total={deliveredOrder}
                   percentage="2.5"
                   bgColor="bg-[#5DDAB4]"
                   icon={sendIcon}
@@ -224,7 +233,7 @@ const Order = () => {
                 />
                 <DashboardTopCard
                   name="Orders in Transit"
-                  total="100"
+                  total={orderInTransit}
                   percentage="2.5"
                   bgColor="bg-[#FF7676]"
                   icon={carIcon}
@@ -252,24 +261,27 @@ const Order = () => {
                 />
                 <DashboardTopCard
                   name="Orders Delivered"
-                  total="10000"
+                  total={deliveredOrder}
                   percentage="2.5"
                   bgColor="bg-[#5DDAB4]"
                   icon={sendIcon}
+                  addMaxWidth={true}
                 />
                 <DashboardTopCard
-                  name="Total Customers"
-                  total="10000"
+                  name="Orders in Transit"
+                  total={orderInTransit}
                   percentage="2.5"
-                  bgColor="bg-[#5DDAB4]"
-                  icon={customerIcon}
+                  bgColor="bg-[#FF7676]"
+                  icon={carIcon}
+                  addMaxWidth={true}
                 />
                 <DashboardTopCard
-                  name="Total Customers"
-                  total="10000"
+                  name="Most purchased product"
+                  total="1000"
                   percentage="2.5"
-                  bgColor="bg-[#5DDAB4]"
-                  icon={customerIcon}
+                  bgColor="bg-[#FF9E57]"
+                  icon={shippingIcon}
+                  addMaxWidth={true}
                 />
               </div>
               <div className="">

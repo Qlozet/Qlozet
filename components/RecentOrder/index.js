@@ -2,7 +2,10 @@ import Typography from "../Typography";
 import OrderItem from "./components/orderItem";
 import rightIcon from "../../public/assets/svg/arrow-primary.svg";
 import Image from "next/image";
+import moment from "moment";
+import { useRouter } from "next/navigation";
 const RecentOrder = ({ orders }) => {
+  const navigate = useRouter();
   console.log(orders);
   return (
     <div className="p-2">
@@ -14,7 +17,12 @@ const RecentOrder = ({ orders }) => {
         >
           Recent orders
         </Typography>
-        <div className="flex items-center">
+        <div
+          className="flex items-center"
+          onClick={() => {
+            navigate.push("orders");
+          }}
+        >
           <Typography
             textColor="text-primary"
             textWeight="font-normal"
@@ -25,9 +33,10 @@ const RecentOrder = ({ orders }) => {
           <Image src={rightIcon} alt="" />
         </div>
       </div>
-      {orders.map((order) => (
-        <OrderItem order={order} key={order.id} />
-      ))}
+      {orders &&
+        orders
+          .slice(0, 3)
+          .map((order, key) => <OrderItem order={order} key={key} />)}
     </div>
   );
 };

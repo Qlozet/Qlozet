@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import threeDotIcon from "../../../public/assets/svg/three-dot.svg";
 import Image from "next/image";
 import OrderStatus from "@/components/order/OrderStatus";
@@ -10,6 +10,7 @@ import DeleteProduct from "../Delete";
 import DropDown from "@/components/DropDown";
 import ProductItemDropDown from "../ProductItemDropDown";
 import { setProductId } from "@/utils/localstorage";
+
 const ProductTableItem = ({
   id,
   picture,
@@ -22,13 +23,21 @@ const ProductTableItem = ({
   ProductStatus,
   handleSelect,
 }) => {
-  console.log(productType);
+  const dropDownButtonRef = useRef();
   const [showDropDown, setShowDropDown] = useState(false);
   const closeDropDown = (item) => {
     setProductId(id);
     setShowDropDown(false);
     handleSelect(item);
   };
+
+  document.addEventListener("click", (e) => {
+    if (showDropDown) {
+      setShowDropDown(false);
+    } else if (e.target === dropDownButtonRef.current) {
+      setShowDropDown(true);
+    }
+  });
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white relative">
       <td className="text-[12px] font-normal p-4 text-dark">
@@ -60,6 +69,7 @@ const ProductTableItem = ({
       <td className="text-[12px] font-normal p-4 text-dark">
         <div className="flex items-center justify-center">
           <Image
+            ref={dropDownButtonRef}
             alt="Product Image"
             src={dottedIcon}
             onClick={() => {
@@ -68,25 +78,24 @@ const ProductTableItem = ({
             className="cursor-pointer"
           />
           {showDropDown && (
-            <div
-              className="absolute right-[6rem] top-[50%] "
-              style={{ zIndex: 10 }}
-            >
-              <ProductItemDropDown
-                handleSelect={(item) => {
-                  closeDropDown(item);
-                }}
-                data={[
-                  "View product",
-                  "Edit product",
-                  "Feature product",
-                  "Activate product",
-                  "Schedule activation",
-                  "Deactivate product",
-                  "Delete product",
-                ]}
-              />
-            </div>
+            <ProductItemDropDown
+              handleSelect={(item) => {
+                closeDropDown(item);
+              }}
+              data={[
+                "View product",
+                "Edit product",
+                // "Feature product",
+                "Activate product",
+                "Schedule activation",
+                "Deactivate product",
+                "Delete product",
+              ]}
+              showContainer={showDropDown}
+              outSideCLicked={() => {
+                setShowDropDown(false);
+              }}
+            />
           )}
         </div>
       </td>

@@ -67,7 +67,6 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg, zIndex }) => {
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
     }
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
