@@ -146,9 +146,6 @@ const SendMoneyForm = ({ closeModal, banks }) => {
               label="Account name"
               placeholder="Enter Account number"
               setValue={(data) => {
-                setFormData((prevData) => {
-                  return { ...prevData, accountName: data };
-                });
                 if (data) {
                   setRequiredFormData((prevData) => {
                     return { ...prevData, accountName: false };

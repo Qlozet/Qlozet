@@ -102,7 +102,7 @@ const ProductDetails = () => {
     // const
   }, []);
   return (
-    <div className="ml-[260px]">
+    <div className="md:ml-[260px]">
       <div>
         <div className="flex min-h-[100dvh] bg-gray-400">
           <div className="">

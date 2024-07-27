@@ -48,7 +48,7 @@ const Support = () => {
     }
   };
   return (
-    <section className="ml-[260px]">
+    <section className="md:ml-[260px]">
       {pageLoading ? (
         <Loader></Loader>
       ) : (

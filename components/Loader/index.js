@@ -3,8 +3,8 @@ const Loader = ({ small, height, width }) => {
   return (
     <div
       className={`${
-        small ? "bg-[#DDE2E5]" : "h-screen md:h-[90%] w-full bg-[#F8F9FA]"
-      }  flex items-center justify-center max-w-[1324px] m-auto`}
+        small ? "bg-[#DDE2E5]" : "h-screen w-full bg-[#F8F9FA]"
+      }  flex items-center justify-center max-w-[1324px] m-auto h-screen`}
     >
       <BallTriangle
         height={height ? height : 100}
