@@ -211,7 +211,7 @@ const Wallet = () => {
                     total={walletBalance.toLocaleString()}
                     percentage="2.5"
                     bgColor="bg-[#57CAEB]"
-                    link="link"
+                    // link="link"
                     icon={vendorIcon}
                     addMaxWidth={true}
                   />

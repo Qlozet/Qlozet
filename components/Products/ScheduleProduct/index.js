@@ -145,7 +145,7 @@ const ShecduleProduct = ({ closeSchedule }) => {
               <SelectInput
                 index={showCalender ? -10 : 10}
                 placeholder={"Product Tags"}
-                label="Tags"
+                label="Time"
                 value={schedule.time}
                 setValue={(data) => {
                   setSchedule((prevData) => {

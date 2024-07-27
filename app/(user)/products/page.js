@@ -244,7 +244,7 @@ const Products = () => {
                   total={products.length}
                   percentage="2.5"
                   bgColor="bg-[#57CAEB]"
-                  link="link"
+                  link="products"
                   icon={shoppingBag}
                   addMaxWidth={true}
                 />
