@@ -172,7 +172,10 @@ const Dashboard = () => {
 
   const getDailyEarning = async () => {
     try {
-      const response = await getRequest("/vendor/dashboard/daily-earnings");
+      const response = await getRequest(
+        "/vendor/dashboard/daily-earnings?filter=thisMonth"
+      );
+      console.log(response);
       if (response.data) {
         setDailyEarning(response.data.data);
       }
@@ -180,7 +183,10 @@ const Dashboard = () => {
   };
   const getDailyOrder = async () => {
     try {
-      const response = await getRequest("/vendor/orders/last-week");
+      const response = await getRequest(
+        "/vendor/orders/daily-order?filter=thisMonth"
+      );
+      console.log(response);
       if (response.data) {
         setDailyOrder(response.data.data);
       }

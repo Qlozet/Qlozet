@@ -22,7 +22,7 @@ const ChatCard = ({ text, graph }) => {
       {graph}
       {text === "Vendors by gender"}
       <div className={`${text === "Vendors by gender" ? "" : ""}`}>
-        <ChatLabel />
+        {/* <ChatLabel /> */}
       </div>
     </div>
   );
