@@ -209,7 +209,7 @@ const Dashboard = () => {
   return (
     <section className="md:ml-[260px]">
       <div className={`flex bg-gray-400 w-full h-full`}>
-        <div className="">
+        <div className="border ">
           <SideBar active="Dashboard" />
           <MobileSideBar
             showMobileNav={showMobileNav}
@@ -217,7 +217,6 @@ const Dashboard = () => {
             closeSideBar={showSideBar}
           />
         </div>
-
         <div className="w-full mb-[2rem]">
           <div className="p-4">
             <DasboardNavWithOutSearch

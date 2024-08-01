@@ -96,7 +96,7 @@ const SideBar = ({ active }) => {
   };
 
   return (
-    <div className="hidden md:block bg-white fixed top-0 left-0 w-[260px]">
+    <div className="hidden md:block bg-white fixed top-0 left-0 w-[260px] max-w-[260px] lg:min-w-[250px]">
       <div className="py-10 lg:px-16 md:px-4">
         <Image
           alt=""
@@ -110,7 +110,7 @@ const SideBar = ({ active }) => {
       <div className="">
         {sidebaritems.map((item, index) => (
           <div
-            className="lg:px-16 md:px-4 flex items-center gap-4  py-3 cursor-pointer hover:bg-[#f4f4f4] min-w-[90px] md:min-w-[90px] lg:min-w-[250px]"
+            className="lg:px-16 md:px-4 flex items-center gap-4  py-3 cursor-pointer hover:bg-[#f4f4f4] min-w-[90px] md:min-w-[90px] "
             key={index}
             onClick={() => {
               item.function();

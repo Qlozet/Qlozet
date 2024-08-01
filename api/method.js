@@ -142,10 +142,8 @@ export const putRequest = async (url, data) => {
     response = await axiosInstance.put(url, data, {
       headers: { Authorization: `Bearer ${userData?.token}` },
     });
-    console.log(response);
     return response.data;
   } catch (error) {
-    console.log(error);
     if (error.response) {
       if (error.response.status === 401) {
         toastError("Unauthotized! Re-login to continue");

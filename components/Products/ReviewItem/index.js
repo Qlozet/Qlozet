@@ -1,33 +1,64 @@
 import React, { useState } from "react";
 import Image from "next/image";
-import closeIcon from "../../../public/assets/svg/material-symbols_close-rounded.svg";
 import Typography from "@/components/Typography";
-
-const ReviewItem = ({}) => {
+import moment from "moment";
+import { putRequest } from "@/api/method";
+import toast from "react-hot-toast";
+import Toast from "@/components/ToastComponent/toast";
+import userIcon from "../../../public/assets/image/user.png";
+const ReviewItem = ({ review }) => {
+  const [description, setDescription] = useState("");
   const [addReview, setAddReview] = useState(false);
+  const [loading, setIsloading] = useState(false);
   const addReviewHandler = () => {
     setAddReview(!addReview);
+  };
+
+  const replyComment = async () => {
+    try {
+      setIsloading(true);
+      const response = await putRequest(
+        `/vendor/products/review/${review._id}`,
+        { description: description }
+      );
+      response && setIsloading(false);
+      if (response.code === 200) {
+        toast(<Toast text={"Reply successful"} type="success" />);
+      } else {
+        toast(<Toast text={response?.message} type="danger" />);
+      }
+    } catch (error) {
+      setIsloading(false);
+    }
   };
   return (
     <div className="py-4 flex gap-[1rem]">
       <div className="border-[1px] border-solid border-primary w-[2.2rem] h-[2.1rem] rounded-[50%]">
-        <Image src={closeIcon} width={50} height={50}  alt=""/>
+        <Image
+          src={userIcon}
+          width={50}
+          height={50}
+          alt=""
+          className="rounded-[50%]"
+        />
       </div>
       <div className="w-[95%] mt-[0.5rem]">
         <div className="flex justify-between w-[100%]">
           <Typography
-            children="Jasime King"
+            children={review.user.fullName}
             textSize="text-[12px]"
           ></Typography>
-          <Typography children="14/02/2023" textSize="text-[12px]"></Typography>
+          <Typography
+            children={moment(review.updatedAt).format("DD/MM/YYYY")}
+            textSize="text-[12px]"
+          ></Typography>
         </div>
         <Typography
           textSize="text-[12px]"
           textWeight="font-[500]"
           verticalPadding="py-4"
         >
-          Great dress, it loved it, my order got delivered to me early and the
-          dress fits perfectly. I will order more
+          {review.description}
         </Typography>
         {!addReview && (
           <div className="flex items-center justify-end">
@@ -44,12 +75,14 @@ const ReviewItem = ({}) => {
             <input
               className="px-4 w-full  text-dark placeholder-gray-200 border-none outline-none text-[12px]"
               placeholder="Add review"
+              onChange={(e) => setDescription(e.target.value)}
+              value={description}
             ></input>
             <button
               className="bg-primary py-2 px-5 text-white text-[12px]"
-              onClick={addReviewHandler}
+              onClick={replyComment}
             >
-              Submit
+              {loading ? "Loading..." : "Submit"}
             </button>
           </div>
         )}

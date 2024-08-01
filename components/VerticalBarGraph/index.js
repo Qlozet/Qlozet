@@ -38,7 +38,8 @@ const VerticalBarGraph = ({ data, name }) => {
     },
   ];
   daysArray.sort((a, b) => b.value - a.value);
-  let heightValue = daysArray[0].value;
+  let heightValue = daysArray[0].value > 0 ? daysArray[0].value : 10000;
+
   const numberOfLineFromZero = 6;
   return (
     <div>

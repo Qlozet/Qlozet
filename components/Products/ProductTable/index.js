@@ -14,8 +14,7 @@ import DeleteProduct from "../Delete";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ShecduleProduct from "../ScheduleProduct";
-import ProductItemDropDown from "../ProductItemDropDown";
-import { getProductId, setProductId } from "@/utils/localstorage";
+import { getProductId } from "@/utils/localstorage";
 import MobileTable from "../mobileTable";
 import { putRequest } from "@/api/method";
 import Toast from "@/components/ToastComponent/toast";
@@ -24,7 +23,6 @@ import { handleExport } from "@/utils/helper";
 
 const ProductTable = ({
   data,
-  viewDetails,
   showModal,
   statusChangeHandler,
   handleFilfeterData,
@@ -161,12 +159,11 @@ const ProductTable = ({
             key={index}
             {...item}
             handleSelect={(option) => {
-              console.log();
               setDropDownOption(option);
               if (option === "View product") {
-                router.push("/products/details");
+                router.push("/details");
               } else if (option === "Edit product") {
-                router.push("/products/add");
+                router.push("/add");
               } else if (option === "Deactivate product") {
                 if (item.ProductStatus.text === "Inactive") {
                 } else {

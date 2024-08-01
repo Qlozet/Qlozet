@@ -25,6 +25,7 @@ const ProductDetails = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const [showReview, setShowReview] = useState(false);
   const [vendorName, setVendorName] = useState("");
+  const [number, setNumber] = useState(0);
   const [productFormData, setProductFormData] = useState({
     productName: "",
     productPrice: "",
@@ -52,7 +53,6 @@ const ProductDetails = () => {
 
     try {
       const response = await getRequest(`/vendor/products/${productId}`);
-      console.log(response.data.data);
       let colors = [];
       response.data.data.colors.map((item) => {
         colors.push(item.hex);
@@ -145,17 +145,40 @@ const ProductDetails = () => {
                       <div className="relative">
                         {productFormData.images.length > 1 && (
                           <div className="absolute top-[50%] left-0 flex items-center justify-between w-[100%] px-6">
-                            <div className="bg-white w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]">
+                            <div
+                              className={`${
+                                number < 1 ? "bg-gray-300" : "bg-white"
+                              }  w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]`}
+                              onClick={() => {
+                                if (number < productFormData.images.length-1) {
+                                  setNumber(number - 1);
+                                }
+                              }}
+                            >
                               <Image
                                 height={24}
                                 width={24}
                                 src={arrowLeft}
-                                alt="product image"
+                                alt="Left icon"
                                 className="rounded-b-[12px]"
                                 unoptimized
                               />
                             </div>
-                            <div className="bg-white w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]">
+                            <div
+                              className={`${
+                                number === productFormData.images.length - 1
+                                  ? "bg-gray-300"
+                                  : "bg-white"
+                              }  w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]`}
+                              onClick={() => {
+                                if (
+                                  productFormData.images.length - 1 >
+                                  number
+                                ) {
+                                  setNumber(number + 1);
+                                }
+                              }}
+                            >
                               <Image
                                 height={24}
                                 width={24}
@@ -170,7 +193,7 @@ const ProductDetails = () => {
                         <Image
                           height={50}
                           width={50}
-                          src={productFormData.images[0]}
+                          src={productFormData.images[number]}
                           alt="product image"
                           className="rounded-[1rem]"
                           style={{
@@ -326,7 +349,11 @@ const ProductDetails = () => {
         {showReview && (
           <Modal
             content={
-              <ProductReview closeModal={handleShowReview}></ProductReview>
+              <ProductReview
+              productName={productFormData.productName}
+                reviews={productFormData.reviews}
+                closeModal={handleShowReview}
+              ></ProductReview>
             }
           ></Modal>
         )}

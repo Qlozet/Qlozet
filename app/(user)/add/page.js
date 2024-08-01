@@ -27,10 +27,8 @@ import Loader from "@/components/Loader";
 import { putRequest } from "@/api/method";
 import VariantInput from "@/components/VariantInput";
 import MaterialInput from "@/components/MaterialInput";
-import MAterialInput from "@/components/MaterialInput";
 import SizeInput from "@/components/SizeInput";
 import { uploadSingleImage } from "@/utils/helper";
-import DragDrop from "@/components/DragandDrop";
 const AddProduct = () => {
   const [variantTable, setVariantTable] = useState([]);
   const router = useRouter();
@@ -70,7 +68,7 @@ const AddProduct = () => {
 
   const handleSelectFile = async (files) => {
     const ImageInfo = await uploadSingleImage(files[0]);
-    console.log(ImageInfo);
+
     setUploadeFiles((prevData) => {
       return [...prevData, ImageInfo];
     });
@@ -102,10 +100,8 @@ const AddProduct = () => {
         sizes: variantTable[listIndex].sizes,
         quantity: variantTable[listIndex].quantity,
       };
-      // update the list with this index listIndex
       prevVariantTable[listIndex] = newVariantItem;
       setVariantTable(prevVariantTable);
-      console.log(prevVariantTable);
     }
   };
 
@@ -130,13 +126,7 @@ const AddProduct = () => {
         ...prevData,
         {
           color: currentVariantFile ? currentVariantFile : currentVariantColor,
-          images: [
-            { asset_id: "", public_id: "", secure_url: "" },
-            { asset_id: "", public_id: "", secure_url: "" },
-            { asset_id: "", public_id: "", secure_url: "" },
-            { asset_id: "", public_id: "", secure_url: "" },
-            { asset_id: "", public_id: "", secure_url: "" },
-          ],
+          images: [],
           prize: productFormData.productPrice,
           sizes: [size[size.length - 1]],
           quantity: productFormData.productQuantity,
@@ -213,7 +203,6 @@ const AddProduct = () => {
         const response = !productId
           ? await postRequest("/vendor/products", formData)
           : await putRequest(`/vendor/products/${productId}/update`, formData);
-        console.log(response);
         response && setIsLoading(false);
         if (response?.data) {
           router.push("../products");
@@ -236,62 +225,56 @@ const AddProduct = () => {
 
   const fetchProduct = async () => {
     const productId = getProductId();
-    let colors = [];
-    let sizeVariant = [];
+    let colors;
+    let sizeVariant;
     try {
       const response = await getRequest(`/vendor/products/${productId}`);
-      // sizeVariant = response.data.data
-      //   ? response.data.data.variants
-      //       .map((item) => item.size)
-      //       .map((item) => item.label)
-      //   : [];
-      // colors = response.data.data
-      //   ? response.data.data.variants
-      //       .map((item) => item.color)
-      //       .map((item) => item.hex)
-      //   : [];
-      setVariantTable((prevData) => {
-        return [
-          ...prevData,
-          {
-            color: currentVariantFile ? currentVariantFile : colors,
-            images: [
-              { asset_id: "", public_id: "", secure_url: "" },
-              { asset_id: "", public_id: "", secure_url: "" },
-              { asset_id: "", public_id: "", secure_url: "" },
-              { asset_id: "", public_id: "", secure_url: "" },
-              { asset_id: "", public_id: "", secure_url: "" },
-            ],
-            // prize: productFormData.productPrice,
-            sizes: sizeVariant,
-            // quantity: productFormData.productQuantity,
-          },
-        ];
-      });
-      setProductFormData({
-        productName: response.data.data.name,
-        productPrice: response.data.data.price,
-        productTag: response.data.data.tag,
-        description: response.data.data.description,
-        productQuantity: response.data.data.quantity,
-        productCategory: response.data.data.categories.map((item) => {
-          return item.name;
-        }),
-        variantSizes: response.data.data.variants ? sizeVariant : [],
-        productType:
-          response.data.data.type === "customizable"
-            ? "Customizable"
-            : "Outright",
-        discount: response.data.data.discount,
-        isFeatured: false,
-        colors: colors,
-        discount: response.data.data.discount,
-        images: response.data.data.images.map((image) => {
-          return image.secure_url;
-        }),
-      });
+      if (response.data.data) {
+        sizeVariant = (await response.data.data.variants)
+          ? await response.data.data.variants.map((item) => item.size.label)
+          : [];
+        console.log(response.data.data);
+        colors = response.data.data.variants
+          ? await response.data.data.variants.map((item) => item.color.hex)
+          : [];
+        setVariantTable((prevData) => {
+          return [
+            ...prevData,
+            {
+              color: currentVariantFile ? currentVariantFile : colors,
+              images: [
+                { asset_id: "", public_id: "", secure_url: "" },
+                { asset_id: "", public_id: "", secure_url: "" },
+                { asset_id: "", public_id: "", secure_url: "" },
+                { asset_id: "", public_id: "", secure_url: "" },
+                { asset_id: "", public_id: "", secure_url: "" },
+              ],
+              sizes: sizeVariant,
+            },
+          ];
+        });
 
-      setPageLoading(false);
+        setProductFormData({
+          productName: response.data.data.name,
+          productPrice: response.data.data.price,
+          productTag: response.data.data.tag,
+          description: response.data.data.description,
+          productQuantity: response.data.data.quantity,
+          productCategory: response.data.data.categories.map(
+            (item) => item.name
+          ),
+          variantSizes: sizeVariant,
+          productType:
+            response.data.data.type === "customizable"
+              ? "Customizable"
+              : "Outright",
+          discount: response.data.data.discount,
+          isFeatured: false,
+          colors: colors,
+          images: response.data.data.images.map((image) => image.secure_url),
+        });
+        setPageLoading(false);
+      }
     } catch (error) {
       setPageLoading(false);
     }
