@@ -37,6 +37,7 @@ const NumberInput = ({
           {label} cannot be empty!
         </p>
       )}
+      
       {isLoading && (
         <div className="absolute top-[2rem] right-4">
           <BallTriangle

@@ -20,7 +20,6 @@ const SendMoney = ({ closeModal }) => {
             >
               Transaction details
             </Typography>
-
             <div
               onClick={() => {
                 closeModal("");
@@ -35,15 +34,13 @@ const SendMoney = ({ closeModal }) => {
           >
             <div
               className={`flex items-center gap-4 relative mb-6 cursor-pointer`}
+              onClick={() => {
+                closeModal("Manually");
+              }}
             >
               <Image src={topImage} className="absolute top-0 right-2" />
               <div className="absolute top-0 left-0">
-                <div
-                  className="flex items-center gap-5 h-[77px] pl-6"
-                  onClick={() => {
-                    closeModal("Manually");
-                  }}
-                >
+                <div className="flex items-center gap-5 h-[77px] pl-6">
                   <Image src={groupIcon} />
                   <Typography
                     textColor="text-white"
@@ -60,15 +57,15 @@ const SendMoney = ({ closeModal }) => {
                 className="h-[77px] w-[100%]"
               />
             </div>
-            <div className={`flex items-center gap-4 relative cursor-pointer`}>
+            <div
+              className={`flex items-center gap-4 relative cursor-pointer`}
+              onClick={() => {
+                closeModal("Beneficiaries");
+              }}
+            >
               <Image src={topImage} className="absolute top-0 right-2" />
               <div className="absolute top-0 left-0">
-                <div
-                  className="flex items-center gap-5 h-[77px] pl-6"
-                  onClick={() => {
-                    closeModal("Beneficiaries");
-                  }}
-                >
+                <div className="flex items-center gap-5 h-[77px] pl-6">
                   <Image src={customerIcon} />
                   <Typography
                     textColor="text-white"
