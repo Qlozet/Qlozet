@@ -6,7 +6,6 @@ import moment from "moment";
 import { useRouter } from "next/navigation";
 const RecentOrder = ({ orders }) => {
   const navigate = useRouter();
-  console.log(orders);
   return (
     <div className="p-2">
       <div className="flex justify-between my-3">

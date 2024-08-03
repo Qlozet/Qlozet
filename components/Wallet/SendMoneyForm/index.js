@@ -36,7 +36,6 @@ const SendMoneyForm = ({ closeModal, banks }) => {
   const [bankCode, setBankCode] = useState("");
   const addBeneficiary = async () => {
     try {
-      console.log(formData);
       const response = await postRequest("/vendor/beneficiaries", {
         bank: formData.bankName,
         accountNumber: formData.accountNumber,
@@ -55,7 +54,6 @@ const SendMoneyForm = ({ closeModal, banks }) => {
   const getUserAccountName = async () => {
     if (formData.accountNumber.length === 10) {
       try {
-        console.log(bankCode);
         setFetchingAccountName(true);
         const response = await getRequest(
           `vendor/transfer/name-enquiry?bankCode=${bankCode}&accountNumber=${formData.accountNumber}`
@@ -69,7 +67,9 @@ const SendMoneyForm = ({ closeModal, banks }) => {
             };
           });
         }
-      } catch (error) {}
+      } catch (error) {
+        setFetchingAccountName(true);
+      }
     }
   };
   useEffect(() => {
@@ -144,7 +144,7 @@ const SendMoneyForm = ({ closeModal, banks }) => {
 
             <TextInput
               label="Account name"
-              placeholder="Enter Account number"
+              placeholder="Enter Account name"
               setValue={(data) => {
                 if (data) {
                   setRequiredFormData((prevData) => {

@@ -27,6 +27,7 @@ const Dashboard = () => {
   const mobileNavRef = useRef();
   const [totalCustomer, setTotalCustomer] = useState("0");
   const [topEarning, setTopEarning] = useState("0");
+  const [totalReturn, setTotalReturn] = useState("0");
   const [totalOrder, setTotalOrder] = useState("0");
   const [customerLocation, setCustomerLocation] = useState("");
   const [loadPage, setLoadPage] = useState(true);
@@ -162,9 +163,10 @@ const Dashboard = () => {
 
   const getOrders = async () => {
     try {
-      let ordersData;
       const response = await getRequest("/vendor/orders");
-
+      setTotalReturn(
+        response.data.data.filter((item) => item.status === "return").length
+      );
       setRecentOrders(response.data.data);
       setPageLoading(false);
     } catch (error) {}
@@ -175,18 +177,17 @@ const Dashboard = () => {
       const response = await getRequest(
         "/vendor/dashboard/daily-earnings?filter=thisMonth"
       );
-      console.log(response);
       if (response.data) {
         setDailyEarning(response.data.data);
       }
     } catch (error) {}
   };
+
   const getDailyOrder = async () => {
     try {
       const response = await getRequest(
         "/vendor/orders/daily-order?filter=thisMonth"
       );
-      console.log(response);
       if (response.data) {
         setDailyOrder(response.data.data);
       }
@@ -207,9 +208,9 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <section className="md:ml-[260px]">
+    <section className="md:ml-[260px] bg-gray-400">
       <div className={`flex bg-gray-400 w-full h-full`}>
-        <div className="border ">
+        <div className="">
           <SideBar active="Dashboard" />
           <MobileSideBar
             showMobileNav={showMobileNav}
@@ -258,7 +259,7 @@ const Dashboard = () => {
 
                 <DashboardTopCard
                   name="Total returns"
-                  total="10"
+                  total={totalReturn}
                   percentage="2.5"
                   bgColor="bg-[#FF3A3A]"
                   icon={CartIcon}

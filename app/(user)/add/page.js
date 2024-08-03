@@ -204,6 +204,7 @@ const AddProduct = () => {
           ? await postRequest("/vendor/products", formData)
           : await putRequest(`/vendor/products/${productId}/update`, formData);
         response && setIsLoading(false);
+        console.log(response);
         if (response?.data) {
           router.push("../products");
           setIsLoading(false);
@@ -225,35 +226,35 @@ const AddProduct = () => {
 
   const fetchProduct = async () => {
     const productId = getProductId();
-    let colors;
-    let sizeVariant;
+    let colors = [];
+    let sizeVariant = [];
     try {
       const response = await getRequest(`/vendor/products/${productId}`);
       if (response.data.data) {
-        sizeVariant = (await response.data.data.variants)
-          ? await response.data.data.variants.map((item) => item.size.label)
-          : [];
-        console.log(response.data.data);
-        colors = response.data.data.variants
-          ? await response.data.data.variants.map((item) => item.color.hex)
-          : [];
-        setVariantTable((prevData) => {
-          return [
-            ...prevData,
-            {
-              color: currentVariantFile ? currentVariantFile : colors,
-              images: [
-                { asset_id: "", public_id: "", secure_url: "" },
-                { asset_id: "", public_id: "", secure_url: "" },
-                { asset_id: "", public_id: "", secure_url: "" },
-                { asset_id: "", public_id: "", secure_url: "" },
-                { asset_id: "", public_id: "", secure_url: "" },
-              ],
-              sizes: sizeVariant,
-            },
-          ];
-        });
-
+        // sizeVariant = (await response.data.data.variants)
+        //   ? await response.data.data.variants.map((item) => item.size.label)
+        //   : [];
+        // console.log(response.data.data);
+        // colors = response.data.data.variants
+        //   ? await response.data.data.variants.map((item) => item.color.hex)
+        //   : [];
+        // setVariantTable((prevData) => {
+        //   return [
+        //     ...prevData,
+        //     {
+        //       color: currentVariantFile ? currentVariantFile : colors,
+        //       images: [
+        //         { asset_id: "", public_id: "", secure_url: "" },
+        //         { asset_id: "", public_id: "", secure_url: "" },
+        //         { asset_id: "", public_id: "", secure_url: "" },
+        //         { asset_id: "", public_id: "", secure_url: "" },
+        //         { asset_id: "", public_id: "", secure_url: "" },
+        //       ],
+        //       sizes: sizeVariant,
+        //     },
+        //   ];
+        // });
+        console.log(response.data.data.type);
         setProductFormData({
           productName: response.data.data.name,
           productPrice: response.data.data.price,
@@ -264,10 +265,7 @@ const AddProduct = () => {
             (item) => item.name
           ),
           variantSizes: sizeVariant,
-          productType:
-            response.data.data.type === "customizable"
-              ? "Customizable"
-              : "Outright",
+          productType: response.data.data.type,
           discount: response.data.data.discount,
           isFeatured: false,
           colors: colors,

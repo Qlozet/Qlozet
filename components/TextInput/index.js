@@ -1,3 +1,4 @@
+import { BallTriangle } from "react-loader-spinner";
 import Loader from "../Loader";
 const TextInput = ({
   label,
@@ -37,7 +38,16 @@ const TextInput = ({
       )}
       {isLoading && (
         <div className="absolute top-[2rem] right-4">
-          <Loader small={true} width={30} height={30} />
+          <BallTriangle
+            height={25}
+            width={25}
+            radius={5}
+            color="rgba(62, 28, 1, 1)"
+            ariaLabel="ball-triangle-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+          />
         </div>
       )}
     </div>

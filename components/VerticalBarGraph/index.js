@@ -6,7 +6,6 @@ import DropDown from "../DropDown";
 import { current } from "@reduxjs/toolkit";
 
 const VerticalBarGraph = ({ data, name }) => {
-  // console.log(data);
   const daysArray = [
     {
       day: "Mon",

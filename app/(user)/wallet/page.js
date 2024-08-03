@@ -319,7 +319,7 @@ const Wallet = () => {
             content={
               <SendMoney
                 closeModal={(name) => {
-                  console.log(name);
+                
                   setShowSendMoney(name);
                 }}
               />

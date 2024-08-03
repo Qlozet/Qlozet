@@ -12,10 +12,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="">
+    <html lang="en" className="bg-gray-400">
       <body className={poppins.className}>
         {/* <ToastProvider></ToastProvider> */}
-        <div className={`max-w-[2500px] mx-auto`}> {children}</div>
+        <div className={`max-w-[2500px] mx-auto relative`}>{children}</div>
         <Toaster
           toastOptions={{
             duration: 5000,
