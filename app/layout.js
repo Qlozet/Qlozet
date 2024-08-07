@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className="bg-gray-400">
       <body className={poppins.className}>
         {/* <ToastProvider></ToastProvider> */}
-        <div className={`max-w-[2500px] mx-auto relative`}>{children}</div>
+        <div className={`max-w-[3500px] mx-auto relative`}>{children}</div>
         <Toaster
           toastOptions={{
             duration: 5000,
