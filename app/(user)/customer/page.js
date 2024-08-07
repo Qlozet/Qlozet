@@ -117,7 +117,7 @@ const Customer = () => {
   }, []);
   return (
     <section
-      className={` ${classes.main_container} border-solid border-[3px] border-primary`}
+      className={` ${classes.main_container}`}
     >
       <div className="flex bg-[#F8F9FA] md:ml-[260px]">
         <SideBar active="Customers" />
