@@ -33,7 +33,7 @@ const AddProduct = () => {
   const [variantTable, setVariantTable] = useState([]);
   const router = useRouter();
   const [showCustomiseOrder, setShowCustomiseOrder] = useState(false);
-  const [pageLoading, setPageLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(false);
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentVariantColor, setCurrentVariantColor] = useState("");
@@ -228,53 +228,56 @@ const AddProduct = () => {
     const productId = getProductId();
     let colors = [];
     let sizeVariant = [];
-    try {
-      const response = await getRequest(`/vendor/products/${productId}`);
-      if (response.data.data) {
-        // sizeVariant = (await response.data.data.variants)
-        //   ? await response.data.data.variants.map((item) => item.size.label)
-        //   : [];
-        // console.log(response.data.data);
-        // colors = response.data.data.variants
-        //   ? await response.data.data.variants.map((item) => item.color.hex)
-        //   : [];
-        // setVariantTable((prevData) => {
-        //   return [
-        //     ...prevData,
-        //     {
-        //       color: currentVariantFile ? currentVariantFile : colors,
-        //       images: [
-        //         { asset_id: "", public_id: "", secure_url: "" },
-        //         { asset_id: "", public_id: "", secure_url: "" },
-        //         { asset_id: "", public_id: "", secure_url: "" },
-        //         { asset_id: "", public_id: "", secure_url: "" },
-        //         { asset_id: "", public_id: "", secure_url: "" },
-        //       ],
-        //       sizes: sizeVariant,
-        //     },
-        //   ];
-        // });
-        console.log(response.data.data.type);
-        setProductFormData({
-          productName: response.data.data.name,
-          productPrice: response.data.data.price,
-          productTag: response.data.data.tag,
-          description: response.data.data.description,
-          productQuantity: response.data.data.quantity,
-          productCategory: response.data.data.categories.map(
-            (item) => item.name
-          ),
-          variantSizes: sizeVariant,
-          productType: response.data.data.type,
-          discount: response.data.data.discount,
-          isFeatured: false,
-          colors: colors,
-          images: response.data.data.images.map((image) => image.secure_url),
-        });
+    if (productId) {
+      try {
+        setPageLoading(true);
+        const response = await getRequest(`/vendor/products/${productId}`);
+        if (response.data.data) {
+          // sizeVariant = (await response.data.data.variants)
+          //   ? await response.data.data.variants.map((item) => item.size.label)
+          //   : [];
+          // console.log(response.data.data);
+          // colors = response.data.data.variants
+          //   ? await response.data.data.variants.map((item) => item.color.hex)
+          //   : [];
+          // setVariantTable((prevData) => {
+          //   return [
+          //     ...prevData,
+          //     {
+          //       color: currentVariantFile ? currentVariantFile : colors,
+          //       images: [
+          //         { asset_id: "", public_id: "", secure_url: "" },
+          //         { asset_id: "", public_id: "", secure_url: "" },
+          //         { asset_id: "", public_id: "", secure_url: "" },
+          //         { asset_id: "", public_id: "", secure_url: "" },
+          //         { asset_id: "", public_id: "", secure_url: "" },
+          //       ],
+          //       sizes: sizeVariant,
+          //     },
+          //   ];
+          // });
+          console.log(response.data.data.type);
+          setProductFormData({
+            productName: response.data.data.name,
+            productPrice: response.data.data.price,
+            productTag: response.data.data.tag,
+            description: response.data.data.description,
+            productQuantity: response.data.data.quantity,
+            productCategory: response.data.data.categories.map(
+              (item) => item.name
+            ),
+            variantSizes: sizeVariant,
+            productType: response.data.data.type,
+            discount: response.data.data.discount,
+            isFeatured: false,
+            colors: colors,
+            images: response.data.data.images.map((image) => image.secure_url),
+          });
+          setPageLoading(false);
+        }
+      } catch (error) {
         setPageLoading(false);
       }
-    } catch (error) {
-      setPageLoading(false);
     }
   };
 
