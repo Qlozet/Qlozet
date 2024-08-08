@@ -9,7 +9,6 @@ import TextInput from "@/components/TextInput";
 import Button from "@/components/Button";
 import DashedComponent from "@/components/DashedComponent";
 import SelectInput from "@/components/SelectInput";
-import ColorInput from "@/components/ColorInput";
 import FileInput from "@/components/uploadFileinput/UploadFileInput";
 import Typography from "@/components/Typography";
 import CustomiSationButton from "@/components/CustomizationButton";
@@ -33,13 +32,13 @@ const AddProduct = () => {
   const [variantTable, setVariantTable] = useState([]);
   const router = useRouter();
   const [showCustomiseOrder, setShowCustomiseOrder] = useState(false);
-  const [pageLoading, setPageLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState();
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentVariantColor, setCurrentVariantColor] = useState("");
   const [currentVariantFile, setCurrentVariantFile] = useState("");
   const [files, setFile] = useState([]);
-  const [upladedFiles, setUploadeFiles] = useState([]);
+  const [deletedFiles, setDeletedFiles] = useState([]);
   const [variantFiles, setVariantFiles] = useState([]);
   const [productFormData, setProductFormData] = useState({
     productName: "",
@@ -66,16 +65,12 @@ const AddProduct = () => {
     colors: false,
   });
 
-  const handleSelectFile = async (files) => {
-    const ImageInfo = await uploadSingleImage(files[0]);
-
-    setUploadeFiles((prevData) => {
-      return [...prevData, ImageInfo];
-    });
-    setFile(files);
+  const handleSelectFile = async (files, deletedFiles) => {
+    console.log(deletedFiles);
     setProductFormData((prevData) => {
-      return { ...prevData, images: ImageInfo };
+      return { ...prevData, images: files };
     });
+    setDeletedFiles(deletedFiles);
   };
 
   const handleSelecVarianttFile = (files) => {
@@ -182,10 +177,9 @@ const AddProduct = () => {
               : "outright",
           discount: productFormData.discount,
           isFeatured: 0,
-          // isCustomizable: true,
           images: {
-            retained: upladedFiles,
-            deleted: [],
+            retained: productFormData.images,
+            deleted: deletedFiles,
           },
           variants: variantTable.map((item) => {
             let varantItem = {
@@ -267,11 +261,14 @@ const AddProduct = () => {
               (item) => item.name
             ),
             variantSizes: sizeVariant,
-            productType: response.data.data.type,
+            productType:
+              response.data.data.type === "customizable"
+                ? "Customizable"
+                : "Outright",
             discount: response.data.data.discount,
             isFeatured: false,
             colors: colors,
-            images: response.data.data.images.map((image) => image.secure_url),
+            images: response.data.data.images,
           });
           setPageLoading(false);
         }

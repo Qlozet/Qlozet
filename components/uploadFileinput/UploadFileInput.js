@@ -2,6 +2,9 @@ import Image from "next/image";
 import documentIcon from "../../public/assets/svg/document-upload.svg";
 import { useState } from "react";
 import classes from "./index.module.css";
+import closeIcon from "../../public/assets/svg/material-symbol-close-icon.svg";
+import { uploadSingleImage } from "@/utils/helper";
+import { BallTriangle } from "react-loader-spinner";
 const FileInput = ({
   label,
   handleSelect,
@@ -11,12 +14,28 @@ const FileInput = ({
   fileName,
 }) => {
   const [files, setFiles] = useState(value);
-  const removeFile = (fileIndex) => {
-    files.filter((file, index) => index !== fileIndex);
-    handleSelect(files.filter((file, index) => index !== fileIndex));
+  const [deletedFile, setDeletedFile] = useState([]);
+  const [isloading, setIsloading] = useState(false);
+  let deletedFiles = [];
+  const removeItemFromList = (fileIndex) => {
+    files.filter((file, index) => file !== fileIndex);
     setFiles(files.filter((file, index) => index !== fileIndex));
+    const deletedFile = files.filter((file, index) => index === fileIndex);
+    deletedFiles.push(deletedFile);
+    console.log(deletedFiles);
+    handleSelect(
+      files.filter((file, index) => index !== fileIndex),
+      deletedFiles
+    );
   };
 
+  const handleSubmitFile = async (file) => {
+    setIsloading(true);
+    const ImageInfo = await uploadSingleImage(file);
+    ImageInfo && setIsloading(false);
+    handleSelect([...files, ImageInfo]);
+    setFiles((prevData) => [...prevData, ImageInfo]);
+  };
   return (
     <div className="my-3 w-full">
       <label>{label}</label>
@@ -25,18 +44,21 @@ const FileInput = ({
           className={`${classes.scrollbarElement} w-full h-[7rem] flex items-center gap-4 px-4 border-[1.5px] border-solid border-primary-200 rounded-[12px]`}
         >
           {files.map((item, index) => {
-            let dataUrl;
-            if (typeof item === "string") {
-              dataUrl = item;
-            } else {
-              dataUrl = URL.createObjectURL(item);
-            }
+            console.log(item);
             return (
-              <div key={index}>
+              <div key={index} className="relative">
+                <div
+                  className="absolute right-[-0.3rem] top-[-0.3rem] rounded-[50%] cursor-pointer bg-primary"
+                  onClick={() => {
+                    removeItemFromList(index);
+                  }}
+                >
+                  <Image src={closeIcon} alt={item} width={20} height={20} />
+                </div>
                 <Image
                   width={500}
                   height={500}
-                  src={dataUrl}
+                  src={item.secure_url}
                   style={{ width: "5rem", height: "auto" }}
                   alt=""
                   className="min-w-[5rem] h-[auto]"
@@ -44,14 +66,31 @@ const FileInput = ({
               </div>
             );
           })}
-          <label
-            className="border-[1px] border-solid border-primary-200 block min-w-[5rem] h-[5rem] rounded-[12px]"
-            htmlFor={fileName ? fileName : "file"}
-          >
-            <div className="border-[1px] border-solid border-gray-200 h-[100%] cursor-pointer rounded-[12px] flex justify-center items-center">
-              <Image src={documentIcon} alt="" />
+          {!isloading ? (
+            <label
+              className="border-[1px] border-solid border-primary-200 block min-w-[5rem] h-[5rem] rounded-[12px]"
+              htmlFor={fileName ? fileName : "file"}
+            >
+              <div className="border-[1px] border-solid border-gray-200 h-[100%] cursor-pointer rounded-[12px] flex justify-center items-center bg-white">
+                <Image src={documentIcon} alt="" />
+              </div>
+            </label>
+          ) : (
+            <div className="border-[1px] border-solid border-primary-200 block min-w-[5rem] h-[5rem] rounded-[12px]">
+              <div className="border-[1px] border-solid border-gray-200 h-[100%] cursor-pointer rounded-[12px] flex justify-center items-center bg-white">
+                <BallTriangle
+                  height={60}
+                  width={60}
+                  radius={5}
+                  color="rgba(62, 28, 1, 1)"
+                  ariaLabel="ball-triangle-loading"
+                  wrapperStyle={{}}
+                  wrapperClass=""
+                  visible={true}
+                />
+              </div>
             </div>
-          </label>
+          )}
         </div>
       </div>
 
@@ -65,10 +104,7 @@ const FileInput = ({
         disabled={disabled}
         placeholder={placeholder}
         onChange={(e) => {
-          setFiles((prevData) => {
-            handleSelect([...prevData, e.target.files[0]]);
-            return [...prevData, e.target.files[0]];
-          });
+          handleSubmitFile(e.target.files[0]);
         }}
       />
     </div>

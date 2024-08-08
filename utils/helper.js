@@ -67,7 +67,6 @@ export const handleExport = (data) => {
   exportFromJSON({ data, fileName, exportType });
 };
 export const uploadSingleImage = async (file) => {
-  console.log(file);
   try {
     const formData = new FormData();
     formData.append("image", file);
@@ -76,7 +75,6 @@ export const uploadSingleImage = async (file) => {
       formData,
       true
     );
-    console.log(response);
     return {
       asset_id: response?.data.asset_id,
       public_id: response?.data.public_id,
