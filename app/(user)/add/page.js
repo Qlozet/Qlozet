@@ -1,4 +1,22 @@
 "use client";
+import icon1 from "../../../public/assets/image/icon1.jpg";
+import icon2 from "../../../public/assets/image/icon2.jpg";
+import icon3 from "../../../public/assets/image/icon3.jpg";
+import icon4 from "../../../public/assets/image/icon4.jpg";
+import icon5 from "../../../public/assets/image/icon5.jpg";
+import icon6 from "../../../public/assets/image/icon6.jpg";
+import icon7 from "../../../public/assets/image/icon7.jpg";
+import icon8 from "../../../public/assets/image/icon8.jpg";
+import icon9 from "../../../public/assets/image/icon9.jpg";
+import icon10 from "../../../public/assets/image/icon10.jpg";
+import icon11 from "../../../public/assets/image/icon11.jpg";
+import icon12 from "../../../public/assets/image/icon12.jpg";
+import icon13 from "../../../public/assets/image/icon13.jpg";
+import icon14 from "../../../public/assets/image/icon14.jpg";
+import icon15 from "../../../public/assets/image/icon15.jpg";
+import icon16 from "../../../public/assets/image/icon16.jpg";
+import icon17 from "../../../public/assets/image/icon17.jpg";
+
 import { useEffect, useState } from "react";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import SideBar from "@/components/SideBar";
@@ -28,6 +46,7 @@ import VariantInput from "@/components/VariantInput";
 import MaterialInput from "@/components/MaterialInput";
 import SizeInput from "@/components/SizeInput";
 import { uploadSingleImage } from "@/utils/helper";
+import DragDrop from "@/components/DragandDrop";
 const AddProduct = () => {
   const [variantTable, setVariantTable] = useState([]);
   const router = useRouter();
@@ -45,10 +64,10 @@ const AddProduct = () => {
     productPrice: "",
     productTag: "",
     description: "",
-    productQuantity: "0",
+    productQuantity: "",
     productCategory: "",
     productType: "",
-    discount: "0",
+    discount: "",
     isFeatured: false,
     colors: [],
     images: [],
@@ -66,7 +85,6 @@ const AddProduct = () => {
   });
 
   const handleSelectFile = async (files, deletedFiles) => {
-    console.log(deletedFiles);
     setProductFormData((prevData) => {
       return { ...prevData, images: files };
     });
@@ -179,7 +197,7 @@ const AddProduct = () => {
           isFeatured: 0,
           images: {
             retained: productFormData.images,
-            deleted: deletedFiles,
+            deleted: productId ? deletedFiles : [],
           },
           variants: variantTable.map((item) => {
             let varantItem = {
@@ -200,7 +218,7 @@ const AddProduct = () => {
         response && setIsLoading(false);
         console.log(response);
         if (response?.data) {
-          router.push("../products");
+          // router.push("../products");
           setIsLoading(false);
           toast(<Toast text={response?.message} type="success" />);
         } else {
@@ -250,7 +268,7 @@ const AddProduct = () => {
           //     },
           //   ];
           // });
-          console.log(response.data.data.type);
+          console.log(response.data.data);
           setProductFormData({
             productName: response.data.data.name,
             productPrice: response.data.data.price,
@@ -557,6 +575,25 @@ const AddProduct = () => {
                       }}
                     />
                   </div>
+                  <div>
+                    <div className="">
+                      <Typography
+                        textWeight="font-[700]"
+                        textSize="text-[18px]"
+                        verticalPadding="my-2"
+                        textColor="text-dark"
+                      >
+                        Add Accessories
+                      </Typography>
+                    </div>
+                  </div>
+                  <div>
+                    <CustomiSationButton
+                      handleClick={() => {
+                        setShowCustomiseOrder(true);
+                      }}
+                    />
+                  </div>
                   <div className="w-full">
                     <VariantInput
                       index={50}
@@ -697,7 +734,6 @@ const AddProduct = () => {
           )}
         </div>
       </div>
-
       {/* <Modal content={<DragDrop></DragDrop>}></Modal> */}
     </section>
   );

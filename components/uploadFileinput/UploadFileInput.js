@@ -14,18 +14,18 @@ const FileInput = ({
   fileName,
 }) => {
   const [files, setFiles] = useState(value);
-  const [deletedFile, setDeletedFile] = useState([]);
+  const [deletedFiles, setDeletedFiles] = useState([]);
   const [isloading, setIsloading] = useState(false);
-  let deletedFiles = [];
   const removeItemFromList = (fileIndex) => {
     files.filter((file, index) => file !== fileIndex);
     setFiles(files.filter((file, index) => index !== fileIndex));
-    const deletedFile = files.filter((file, index) => index === fileIndex);
-    deletedFiles.push(deletedFile);
-    console.log(deletedFiles);
+    const deletFile = files.filter((file, index) => index === fileIndex);
+    setDeletedFiles((prevData) => {
+      return [...prevData, deletFile[0]];
+    });
     handleSelect(
       files.filter((file, index) => index !== fileIndex),
-      deletedFiles
+      [...deletedFiles, deletFile[0]]
     );
   };
 

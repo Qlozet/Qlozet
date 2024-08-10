@@ -17,7 +17,6 @@ const NumberInput = ({
       {leftIcon}
       <label className="text-[14px] font-light my-2 text-dark"> {label}</label>
       <input
-        type="number"
         className={`py-3 ${
           error && "border-danger"
         } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  
@@ -28,7 +27,10 @@ const NumberInput = ({
         disabled={isLoading ? true : false}
         placeholder={placeholder}
         onChange={(e) => {
-          setValue(e.target.value);
+          const re = /^[0-9\b]+$/;
+          if (e.target.value === "" || re.test(e.target.value)) {
+            setValue(e.target.value);
+          }
         }}
       ></input>
       {rightIcon}
@@ -37,7 +39,7 @@ const NumberInput = ({
           {label} cannot be empty!
         </p>
       )}
-      
+
       {isLoading && (
         <div className="absolute top-[2rem] right-4">
           <BallTriangle
