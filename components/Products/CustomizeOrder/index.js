@@ -53,6 +53,7 @@ const CustomizeOrder = ({ closeModal }) => {
         closeModal={closeModal}
         clickCurrentNav={clickCurrentNav}
       />
+
       {currentNav === "Tops" && <Tops />}
       {currentNav === "Bottoms" && <Bottoms />}
       {currentNav === "Dresses" && <Dresses />}

@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import Logo from "../Logo";
 import dashboardIcon from "../../public/assets/svg/dashboardIcon.svg";
@@ -96,7 +97,12 @@ const SideBar = ({ active }) => {
   };
 
   return (
-    <div className="hidden md:block bg-white fixed top-0 left-0 w-[260px] max-w-[260px] lg:min-w-[250px] h-screen">
+    <div
+      className="hidden md:block bg-white fixed top-0 left-0 w-[260px] max-w-[260px] lg:min-w-[250px] h-screen"
+      style={{
+        zIndex: 100,
+      }}
+    >
       <div className="py-10 lg:px-16 md:px-4">
         <Image
           alt=""

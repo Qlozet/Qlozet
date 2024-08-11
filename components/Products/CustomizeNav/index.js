@@ -24,7 +24,7 @@ const CustomizeNav = ({
           textWeight="font-[600]"
           textSize="text-[14px]"
         >
-          Sign Up
+          Customize
         </Typography>
         <div onClick={closeModal} className="cursor-pointer">
           <Image src={closeIcon} alt="" />

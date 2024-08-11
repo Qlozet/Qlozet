@@ -8,15 +8,12 @@ const ProductItemDropDown = ({ data, handleSelect, outSideCLicked }) => {
 
   useEffect(() => {}, [options]);
   return (
-    <div className="absolute right-[4.5rem] top-[50%] " style={{ zIndex: 10 }}>
+    <div className="absolute right-[4.5rem] top-[0%] " style={{ zIndex: 10 }}>
       <div
         className={`border-[1px] border-solid border-gray-200 bg-white rounded-[8px] min-w-[12rem]`}
       >
         <div>
-          <div className="">
-            {/* {options === "" && <Image src={arrowDownIcon} alt="" />} */}
-          </div>
-
+          <div className=""></div>
           <div className=" w-full rounded-b-lg ">
             {data.map((item, index) => (
               <div

@@ -2,9 +2,9 @@ import Image from "next/image";
 import documentIcon from "../../public/assets/svg/document-upload.svg";
 import { useState } from "react";
 import classes from "./index.module.css";
-import closeIcon from "../../public/assets/svg/material-symbol-close-icon.svg";
 import { uploadSingleImage } from "@/utils/helper";
-import { BallTriangle } from "react-loader-spinner";
+import { BallTriangle, Oval } from "react-loader-spinner";
+import SelectedFile from "./FileContainer";
 const FileInput = ({
   label,
   handleSelect,
@@ -16,7 +16,9 @@ const FileInput = ({
   const [files, setFiles] = useState(value);
   const [deletedFiles, setDeletedFiles] = useState([]);
   const [isloading, setIsloading] = useState(false);
+
   const removeItemFromList = (fileIndex) => {
+    console.log(fileIndex);
     files.filter((file, index) => file !== fileIndex);
     setFiles(files.filter((file, index) => index !== fileIndex));
     const deletFile = files.filter((file, index) => index === fileIndex);
@@ -44,31 +46,19 @@ const FileInput = ({
           className={`${classes.scrollbarElement} w-full h-[7rem] flex items-center gap-4 px-4 border-[1.5px] border-solid border-primary-200 rounded-[12px]`}
         >
           {files.map((item, index) => {
-            console.log(item);
             return (
-              <div key={index} className="relative">
-                <div
-                  className="absolute right-[-0.3rem] top-[-0.3rem] rounded-[50%] cursor-pointer bg-primary"
-                  onClick={() => {
-                    removeItemFromList(index);
-                  }}
-                >
-                  <Image src={closeIcon} alt={item} width={20} height={20} />
-                </div>
-                <Image
-                  width={500}
-                  height={500}
-                  src={item.secure_url}
-                  style={{ width: "5rem", height: "auto" }}
-                  alt=""
-                  className="min-w-[5rem] h-[auto]"
-                />
-              </div>
+              <SelectedFile
+                item={item}
+                removeItemFromList={() => {
+                  removeItemFromList(item);
+                }}
+                key={index}
+              />
             );
           })}
           {!isloading ? (
             <label
-              className="border-[1px] border-solid border-primary-200 block min-w-[5rem] h-[5rem] rounded-[12px]"
+              className="border-[1px] border-solid border-primary-200 block min-w-[5rem] h-[5rem] rounded-[12px] "
               htmlFor={fileName ? fileName : "file"}
             >
               <div className="border-[1px] border-solid border-gray-200 h-[100%] cursor-pointer rounded-[12px] flex justify-center items-center bg-white">
@@ -76,17 +66,16 @@ const FileInput = ({
               </div>
             </label>
           ) : (
-            <div className="border-[1px] border-solid border-primary-200 block min-w-[5rem] h-[5rem] rounded-[12px]">
-              <div className="border-[1px] border-solid border-gray-200 h-[100%] cursor-pointer rounded-[12px] flex justify-center items-center bg-white">
-                <BallTriangle
-                  height={60}
-                  width={60}
-                  radius={5}
+            <div className="border-[1px] border-solid border-primary-200 block min-w-[5rem] h-[5rem] rounded-[12px] relative">
+              <div className="border-[1px] border-solid border-gray-200 h-[100%] cursor-pointer rounded-[12px] flex justify-center items-center  bg-[rgba-(0,0,0,1)]">
+                <Oval
+                  visible={true}
+                  height={24}
+                  width={24}
                   color="rgba(62, 28, 1, 1)"
-                  ariaLabel="ball-triangle-loading"
+                  ariaLabel="oval-loading"
                   wrapperStyle={{}}
                   wrapperClass=""
-                  visible={true}
                 />
               </div>
             </div>

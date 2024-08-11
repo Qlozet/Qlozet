@@ -42,7 +42,7 @@ const ProductTable = ({
     setProductData(data);
   }, [data]);
   return (
-    <div className="mt-4 min-h-[50vh] ">
+    <div className="mt-4 min-h-[50vh] " style={{ zIndex: -1 }}>
       <div className="hidden lg:block">
         <table className="w-full">
           <thead className="w-full bg-[#F4F4F4] text-dark ">
@@ -103,7 +103,6 @@ const ProductTable = ({
                 {...item}
                 viewDetails={showModal}
                 handleSelect={(option) => {
-                  console.log();
                   setDropDownOption(option);
                   if (option === "View product") {
                     router.push("/details");

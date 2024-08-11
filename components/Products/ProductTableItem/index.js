@@ -39,7 +39,7 @@ const ProductTableItem = ({
     }
   });
   return (
-    <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white relative">
+    <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white ">
       <td className="text-[12px] font-normal p-4 text-dark">
         <Image
           width={500}
@@ -66,7 +66,7 @@ const ProductTableItem = ({
           addMaxWidth={true}
         />
       </td>
-      <td className="text-[12px] font-normal p-4 text-dark">
+      <td className="text-[12px] font-normal p-4 text-dark relative">
         <div className="flex items-center justify-center">
           <Image
             ref={dropDownButtonRef}

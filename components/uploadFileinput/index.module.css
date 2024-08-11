@@ -5,14 +5,16 @@
 
 .scrollbarElement::-webkit-scrollbar {
   /* width: 12px; */
-  height: 7px;
+  height: 2px;
   width: 95%;
+  overflow: hidden;
 }
 
 .scrollbarElement::-webkit-scrollbar-track {
   background: transparent;
   border-radius: 50px;
   max-width: 90%;
+  overflow: hidden;
 }
 
 .scrollbarElement::-webkit-scrollbar-thumb {

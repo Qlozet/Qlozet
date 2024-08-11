@@ -306,7 +306,7 @@ const Products = () => {
                     >
                       Products
                     </Typography>
-                    <div className="">
+                    <div className="relative">
                       <DropDown
                         data={[
                           "This week",
@@ -321,14 +321,15 @@ const Products = () => {
                         setValue={(startDate, endDate) => {
                           handleFilterWithDate(startDate, endDate);
                         }}
-                        zIndex={100}
+                        zIndex={5000}
                       />
                     </div>
                   </div>
                 </div>
-                <div className="my-4 block lg:hidden">
+                {/* <div className="my-4 block lg:hidden">
                   <UpdateComponent />
-                </div>
+                </div> */}
+
                 <ProductTable
                   data={filteredProduct}
                   showModal={showModal}

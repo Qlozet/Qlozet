@@ -47,16 +47,19 @@ import MaterialInput from "@/components/MaterialInput";
 import SizeInput from "@/components/SizeInput";
 import { uploadSingleImage } from "@/utils/helper";
 import DragDrop from "@/components/DragandDrop";
+import AddAcessories from "@/components/Products/Accessories";
+import StyleComp from "@/components/Products/StyleComponent";
+import style from "./index.module.css";
 const AddProduct = () => {
   const [variantTable, setVariantTable] = useState([]);
   const router = useRouter();
   const [showCustomiseOrder, setShowCustomiseOrder] = useState(false);
+  const [showAddAccessories, setShowAddAccessories] = useState(false);
   const [pageLoading, setPageLoading] = useState();
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentVariantColor, setCurrentVariantColor] = useState("");
   const [currentVariantFile, setCurrentVariantFile] = useState("");
-  const [files, setFile] = useState([]);
   const [deletedFiles, setDeletedFiles] = useState([]);
   const [variantFiles, setVariantFiles] = useState([]);
   const [productFormData, setProductFormData] = useState({
@@ -216,9 +219,8 @@ const AddProduct = () => {
           ? await postRequest("/vendor/products", formData)
           : await putRequest(`/vendor/products/${productId}/update`, formData);
         response && setIsLoading(false);
-        console.log(response);
         if (response?.data) {
-          // router.push("../products");
+          router.push("../products");
           setIsLoading(false);
           toast(<Toast text={response?.message} type="success" />);
         } else {
@@ -245,13 +247,34 @@ const AddProduct = () => {
         setPageLoading(true);
         const response = await getRequest(`/vendor/products/${productId}`);
         if (response.data.data) {
-          // sizeVariant = (await response.data.data.variants)
-          //   ? await response.data.data.variants.map((item) => item.size.label)
-          //   : [];
-          // console.log(response.data.data);
-          // colors = response.data.data.variants
-          //   ? await response.data.data.variants.map((item) => item.color.hex)
-          //   : [];
+          setProductFormData({
+            productName: response.data.data.name,
+            productPrice: response.data.data.price,
+            productTag: response.data.data.tag,
+            description: response.data.data.description,
+            productQuantity: response.data.data.quantity,
+            productCategory: response.data.data.categories.map(
+              (item) => item.name
+            ),
+            variantSizes: [],
+            productType:
+              response.data.data.type === "customizable"
+                ? "Customizable"
+                : "Outright",
+            discount: response.data.data.discount,
+            isFeatured: false,
+            colors: [],
+            images: response.data.data.images,
+          });
+          console.log(response.data.data);
+          // response.data.data.variants &&
+          response.data.data.variants.map((item) => {
+            console.log(item);
+            colors.push(item.color);
+            // sizeVariant.push(item.size.label);
+          });
+          console.log(colors);
+          console.log(sizeVariant);
           // setVariantTable((prevData) => {
           //   return [
           //     ...prevData,
@@ -268,26 +291,6 @@ const AddProduct = () => {
           //     },
           //   ];
           // });
-          console.log(response.data.data);
-          setProductFormData({
-            productName: response.data.data.name,
-            productPrice: response.data.data.price,
-            productTag: response.data.data.tag,
-            description: response.data.data.description,
-            productQuantity: response.data.data.quantity,
-            productCategory: response.data.data.categories.map(
-              (item) => item.name
-            ),
-            variantSizes: sizeVariant,
-            productType:
-              response.data.data.type === "customizable"
-                ? "Customizable"
-                : "Outright",
-            discount: response.data.data.discount,
-            isFeatured: false,
-            colors: colors,
-            images: response.data.data.images,
-          });
           setPageLoading(false);
         }
       } catch (error) {
@@ -295,6 +298,8 @@ const AddProduct = () => {
       }
     }
   };
+
+  useEffect(() => {}, [showCustomiseOrder]);
 
   useEffect(() => {
     fetchProduct();
@@ -377,7 +382,7 @@ const AddProduct = () => {
                     </div>
                     <div className="w-full">
                       <SelectInput
-                        index={50}
+                        index={20}
                         placeholder={"Product Tags"}
                         label="Tags"
                         value={productFormData.productTag}
@@ -422,7 +427,7 @@ const AddProduct = () => {
                         error={requiredproductFormData.productCategory}
                         data={[{ text: "Two Piece" }, { text: "Dress" }]}
                         label="Category"
-                        index={40}
+                        index={15}
                       />
                     </div>
                     <div className="w-full">
@@ -446,7 +451,7 @@ const AddProduct = () => {
                         error={requiredproductFormData.productType}
                         data={[{ text: "Customizable" }, { text: "Outright" }]}
                         label="Product type"
-                        index={20}
+                        index={10}
                       />
                     </div>
                     <div className="w-full ">
@@ -471,7 +476,7 @@ const AddProduct = () => {
                         }}
                         error={requiredproductFormData.colors}
                       /> */}
-                      <div className="w-full flex items-start justify-start">
+                      <div className="w-full">
                         <NumberInput
                           label="Available discount"
                           placeholder="Enter available discount?"
@@ -495,8 +500,8 @@ const AddProduct = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="block lg:flex  justify-between gap-6">
-                    <div className="w-full ">
+                  <div className="block md:grid grid-cols-3  justify-between gap-6">
+                    <div className="w-full max-w-full">
                       <FileInput
                         handleSelect={handleSelectFile}
                         label="Upload product image"
@@ -568,12 +573,15 @@ const AddProduct = () => {
                       </Typography>
                     </div>
                   </div>
-                  <div>
+                  <div
+                    className={`flex overflow-x-scroll gap-4 ${style.scrollbarElement}`}
+                  >
                     <CustomiSationButton
                       handleClick={() => {
                         setShowCustomiseOrder(true);
                       }}
                     />
+                    <StyleComp image={icon1} />
                   </div>
                   <div>
                     <div className="">
@@ -587,12 +595,18 @@ const AddProduct = () => {
                       </Typography>
                     </div>
                   </div>
-                  <div>
+                  <div
+                    className={`flex overflow-x-scroll gap-4 ${style.scrollbarElement}`}
+                  >
                     <CustomiSationButton
                       handleClick={() => {
-                        setShowCustomiseOrder(true);
+                        setShowAddAccessories(true);
                       }}
                     />
+                    <StyleComp image={icon1} />
+                    {/* <StyleComp />
+                    <StyleComp />
+                    <StyleComp /> */}
                   </div>
                   <div className="w-full">
                     <VariantInput
@@ -703,7 +717,6 @@ const AddProduct = () => {
                       priceHandler={priceHandler}
                     />
                   </div>
-
                   <div className="my-4">
                     <Button
                       loading={isLoading}
@@ -727,6 +740,17 @@ const AddProduct = () => {
                 <CustomizeOrder
                   closeModal={() => {
                     setShowCustomiseOrder(false);
+                  }}
+                />
+              }
+            ></Modal>
+          )}
+          {showAddAccessories && (
+            <Modal
+              content={
+                <AddAcessories
+                  closeModal={() => {
+                    setShowAddAccessories(false);
                   }}
                 />
               }

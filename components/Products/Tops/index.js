@@ -21,7 +21,7 @@ import icon17 from "../../../public/assets/image/icon17.jpg";
 
 const Tops = () => {
   return (
-    <div className="w-full lg:w-[50%] bg-white px-5 rounded-b-[14px] min-h-[25rem]">
+    <div className="lg:w-[50%] bg-white px-5 rounded-b-[14px] min-h-[25rem] flex-wrap">
       <Typography
         textColor="text-dark"
         textWeight="font-[600]"
@@ -31,7 +31,7 @@ const Tops = () => {
         customers.
       </Typography>
       <div>
-        <div className="grid grid-cols-3 lg:grid-cols-7 gap-4 py-4">
+        <div className="grid grid-cols-4 lg:grid-cols-7 gap-4 py-4">
           <Design image={icon1} />
           <Design image={icon2} />
           <Design image={icon3} />
