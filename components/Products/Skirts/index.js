@@ -39,7 +39,7 @@ const customization = [
   { id: 17, image: icon17 },
 ];
 
-const Skirts = () => {
+const Skirts = ({ data }) => {
   return (
     <div className="w-full lg:w-[50%] bg-white px-5 rounded-b-[14px] min-h-[25rem]">
       <Typography
@@ -52,16 +52,24 @@ const Skirts = () => {
       </Typography>
       <div>
         <div className="grid grid-cols-3 lg:grid-cols-7 gap-4 py-4">
-          <Design image={icon1} />
+          {data.map((item, index) => (
+            <Design
+              image={item.imageUrl}
+              key={index}
+              id={item._id}
+              name={"skirts"}
+            />
+          ))}
+          {/* <Design image={icon1} />
           <Design image={icon2} />
           <Design image={icon3} />
           <Design image={icon4} />
-          <Design image={icon5} />
+          <Design image={icon5} /> */}
         </div>
       </div>
       <div>
         <div className="grid grid-cols-3 lg:grid-cols-8 gap-4 py-4 mt-1">
-          <Design image={icon6} reduce={true} />
+          {/* <Design image={icon6} reduce={true} />
           <Design image={icon7} reduce={true} />
           <Design image={icon8} reduce={true} />
           <Design image={icon9} reduce={true} />
@@ -73,7 +81,7 @@ const Skirts = () => {
           <Design image={icon15} reduce={true} />
           <Design image={icon16} reduce={true} />
           <Design image={icon17} reduce={true} />
-          <Design image={icon3} reduce={true} />
+          <Design image={icon3} reduce={true} /> */}
         </div>
         <div className="m-4">
           <Button

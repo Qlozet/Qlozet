@@ -36,8 +36,9 @@ const CustomizeNav = ({
           className={`border-dashed flex items-center justify-between w-full
            `}
         >
-          {data.map((item) => (
+          {data.map((item, index) => (
             <div
+              key={index}
               className={`cursor-pointer ${
                 active === item.item
                   ? "border-solid border-b-[2px] border-primary"

@@ -24,7 +24,7 @@ import icon21 from "../../../public/assets/image/icon21.jpg";
 import icon22 from "../../../public/assets/image/icon22.jpg";
 import icon23 from "../../../public/assets/image/icon23.jpg";
 
-const Bottoms = () => {
+const Bottoms = ({ data }) => {
   return (
     <div className="w-full lg:w-[50%] bg-white px-5 rounded-b-[14px] min-h-[25rem]">
       <Typography
@@ -37,11 +37,14 @@ const Bottoms = () => {
       </Typography>
       <div>
         <div className="grid grid-cols-3 lg:grid-cols-7 gap-4 py-4">
-          <Design image={icon18} />
-          <Design image={icon19} />
-          <Design image={icon20} />
-          <Design image={icon21} />
-          <Design image={icon22} />
+          {data.map((item, index) => (
+            <Design
+              image={item.imageUrl}
+              key={index}
+              id={item._id}
+              name="bottoms"
+            />
+          ))}
         </div>
       </div>
       <div>

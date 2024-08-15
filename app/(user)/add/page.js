@@ -62,6 +62,7 @@ const AddProduct = () => {
   const [currentVariantFile, setCurrentVariantFile] = useState("");
   const [deletedFiles, setDeletedFiles] = useState([]);
   const [variantFiles, setVariantFiles] = useState([]);
+  const [styles, setStyles] = useState([]);
   const [productFormData, setProductFormData] = useState({
     productName: "",
     productPrice: "",
@@ -298,8 +299,17 @@ const AddProduct = () => {
       }
     }
   };
-
-  useEffect(() => {}, [showCustomiseOrder]);
+  const fetchStyles = async () => {
+    try {
+      const response = await getRequest("/vendor/products/styles/all");
+      if (response.status === 200) {
+        setStyles(response.data.data);
+      }
+    } catch (error) {}
+  };
+  useEffect(() => {
+    fetchStyles();
+  }, []);
 
   useEffect(() => {
     fetchProduct();
@@ -738,6 +748,7 @@ const AddProduct = () => {
             <Modal
               content={
                 <CustomizeOrder
+                  styleData={styles}
                   closeModal={() => {
                     setShowCustomiseOrder(false);
                   }}

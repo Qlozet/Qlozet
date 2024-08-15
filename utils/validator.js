@@ -7,7 +7,6 @@ const validator = (formData, requiredFormData) => {
   for (const key in formData) {
     if (requiredFormData.hasOwnProperty(key)) {
       if (!formData[key]) {
-        console.log(key);
         if (!firstErrorId) {
           firstErrorId = key;
         }

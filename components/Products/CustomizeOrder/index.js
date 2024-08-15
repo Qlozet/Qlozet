@@ -9,7 +9,8 @@ import Bottoms from "../Bottoms";
 import Dresses from "../Dresses";
 import Outfits from "../Outfits";
 import Skirts from "../Skirts";
-const CustomizeOrder = ({ closeModal }) => {
+const CustomizeOrder = ({ closeModal, styleData }) => {
+  console.log(styleData);
   const [currentNav, setCurrentNav] = useState("Tops");
   const topNavData = [
     {
@@ -54,11 +55,23 @@ const CustomizeOrder = ({ closeModal }) => {
         clickCurrentNav={clickCurrentNav}
       />
 
-      {currentNav === "Tops" && <Tops />}
-      {currentNav === "Bottoms" && <Bottoms />}
-      {currentNav === "Dresses" && <Dresses />}
-      {currentNav === "Outfits" && <Outfits />}
-      {currentNav === "Skirts" && <Skirts />}
+      {currentNav === "Tops" && (
+        <Tops data={styleData.filter((item) => item.class === "tops")}  />
+      )}
+
+      {currentNav === "Bottoms" && (
+        <Bottoms data={styleData.filter((item) => item.class === "bottoms")} />
+      )}
+
+      {currentNav === "Dresses" && (
+        <Dresses data={styleData.filter((item) => item.class === "dresses")} />
+      )}
+      {currentNav === "Outfits" && (
+        <Outfits data={styleData.filter((item) => item.class === "outfits")} />
+      )}
+      {currentNav === "Skirts" && (
+        <Skirts data={styleData.filter((item) => item.class === "skirts")} />
+      )}
     </div>
   );
 };

@@ -2,14 +2,26 @@ import Typography from "@/components/Typography";
 import Image from "next/image";
 import closeIcon from "../../../../public/assets/svg/material-symbol-close-icon.svg";
 import { useState } from "react";
-const Design = ({ image, name, reduce }) => {
+const Design = ({ id, image, name, reduce }) => {
+  let data = [];
   const selecteHandler = () => {
     setSelcted(true);
+    const localData = localStorage.getItem("styleTypes");
+    console.log(localData);
+    if (!localData) {
+      data = [{ id, name, image }];
+    } else {
+      const savedData = JSON.parse(localData);
+      console.log(savedData);
+      data = [...savedData, { id, name, image }];
+    }
+    localStorage.setItem("styleTypes", JSON.stringify(data));
   };
+
   const handleUnselect = () => {
     setSelcted(false);
   };
-  
+
   const [selected, setSelcted] = useState(false);
   return (
     <div
@@ -40,6 +52,8 @@ const Design = ({ image, name, reduce }) => {
               reduce ? "w-[100%]" : "w-[4rem] h-auto"
             } cursor-pointer `}
             onClick={selecteHandler}
+            width={18}
+            height={18}
           />
         </div>
       </div>
