@@ -10,7 +10,6 @@ import Dresses from "../Dresses";
 import Outfits from "../Outfits";
 import Skirts from "../Skirts";
 const CustomizeOrder = ({ closeModal, styleData }) => {
-  console.log(styleData);
   const [currentNav, setCurrentNav] = useState("Tops");
   const topNavData = [
     {
@@ -56,7 +55,7 @@ const CustomizeOrder = ({ closeModal, styleData }) => {
       />
 
       {currentNav === "Tops" && (
-        <Tops data={styleData.filter((item) => item.class === "tops")}  />
+        <Tops data={styleData.filter((item) => item.class === "tops")} />
       )}
 
       {currentNav === "Bottoms" && (

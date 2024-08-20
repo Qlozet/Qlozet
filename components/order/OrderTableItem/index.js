@@ -13,7 +13,6 @@ const OrderTableItem = ({
   DeliveryStatus,
   viewDetails,
 }) => {
-  console.log(DeliveryStatus);
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
       <td className="text-[12px] font-normal p-4 text-dark">{date}</td>

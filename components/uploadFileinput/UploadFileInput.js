@@ -17,18 +17,14 @@ const FileInput = ({
   const [deletedFiles, setDeletedFiles] = useState([]);
   const [isloading, setIsloading] = useState(false);
 
-  const removeItemFromList = (fileIndex) => {
-    console.log(fileIndex);
-    files.filter((file, index) => file !== fileIndex);
-    setFiles(files.filter((file, index) => index !== fileIndex));
-    const deletFile = files.filter((file, index) => index === fileIndex);
+  const removeItemFromList = (id) => {
+    const newImages = files.filter((file, index) => file.asset_id !== id);
+    const deletFile = files.filter((file, index) => file.asset_id === id);
+    setFiles(newImages);
     setDeletedFiles((prevData) => {
       return [...prevData, deletFile[0]];
     });
-    handleSelect(
-      files.filter((file, index) => index !== fileIndex),
-      [...deletedFiles, deletFile[0]]
-    );
+    handleSelect(newImages, [...deletedFiles, deletFile[0]]);
   };
 
   const handleSubmitFile = async (file) => {
@@ -38,6 +34,7 @@ const FileInput = ({
     handleSelect([...files, ImageInfo]);
     setFiles((prevData) => [...prevData, ImageInfo]);
   };
+
   return (
     <div className="my-3 w-full">
       <label>{label}</label>
@@ -50,7 +47,7 @@ const FileInput = ({
               <SelectedFile
                 item={item}
                 removeItemFromList={() => {
-                  removeItemFromList(item);
+                  removeItemFromList(item.asset_id);
                 }}
                 key={index}
               />

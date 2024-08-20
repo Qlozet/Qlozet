@@ -125,7 +125,7 @@ const VariantInput = ({
     >
       <div className="my-3">
         {leftIcon}
-        <label className="text-[14px] font-light my-2 text-dark">{label}</label>
+        <label className="text-[14px] my-2 text-dark">{label}</label>
         <div
           className={`flex items-center min-h-[2.8rem] cursor-pointer px-2 w-full border-solid border-[1.5px]  text-dark placeholder-gray-200
           focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 ${

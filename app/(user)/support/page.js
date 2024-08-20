@@ -35,7 +35,6 @@ const Support = () => {
           message: formData.message,
         });
 
-        console.log(response);
         if (response.data) {
           setFormData({ message: "", issueType: "" });
           toast(<Toast text={response?.message} type="success" />);
@@ -48,28 +47,12 @@ const Support = () => {
     }
   };
   return (
-    <section className="md:ml-[260px]">
+    <section>
       {pageLoading ? (
         <Loader></Loader>
       ) : (
         <div className="flex bg-[#F8F9FA]">
-          <div className="">
-            <SideBar active="Support" />
-            <MobileSideBar
-              showMobileNav={showMobileNav}
-              active="Support"
-              closeSideBar={showSideBar}
-            />
-          </div>
           <div className="w-full p-4">
-            <DasboardNavWithOutSearch
-              addSearch={false}
-              name="Support"
-              setValue={(data) => {
-                // console.log(data);
-              }}
-              showSideBar={showSideBar}
-            />
             <div className="min-h-[80vh]">
               <div className="mt-4 mx-auto ">
                 <div className="bg-white rounded-[12px] w-full  lg:w-[40%] m-auto px-4 py-6 my-6 shadow">

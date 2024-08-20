@@ -39,7 +39,7 @@ const Dresses = ({ data }) => {
               image={item.imageUrl}
               key={index}
               id={item._id}
-              name={"dresses"}
+              name={item.class}
             />
           ))}
           {/* <Design image={icon23} />

@@ -11,7 +11,7 @@ const TextArea = ({
   return (
     <div className="my-3">
       {leftIcon}
-      <label className="text-[14px] font-light my-2 text-dark"> {label}</label>
+      <label className="text-[14px]  my-2 text-dark"> {label}</label>
       <div>
         <textarea
           style={{ minHeight: "110px" }}

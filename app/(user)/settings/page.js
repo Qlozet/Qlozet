@@ -214,30 +214,13 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <section className="md:ml-[260px]">
+    <section>
       <div className="flex bg-[#F8F9FA]">
-        <div className="">
-          <SideBar active="Settings" />
-          <MobileSideBar
-            showMobileNav={showMobileNav}
-            active="Settings"
-            closeSideBar={showSideBar}
-          />
-        </div>
         <div className="w-full p-4">
-          <DasboardNavWithOutSearch
-            // addSearch={currentNav === "Warehouses" ? true : false}
-            name="Settings"
-            setValue={(data) => {
-              handleFilfeterData(data);
-            }}
-            showSideBar={showSideBar}
-          />
           {pageLoading ? (
             <Loader></Loader>
           ) : (
             <div>
-              {" "}
               <div className="mt-4">
                 <OrderDetailNav
                   bg="bg"

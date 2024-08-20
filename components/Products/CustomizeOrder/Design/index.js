@@ -1,28 +1,42 @@
 import Typography from "@/components/Typography";
 import Image from "next/image";
 import closeIcon from "../../../../public/assets/svg/material-symbol-close-icon.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 const Design = ({ id, image, name, reduce }) => {
+  const [selected, setSelected] = useState(false);
+
   let data = [];
   const selecteHandler = () => {
-    setSelcted(true);
+    setSelected(true);
     const localData = localStorage.getItem("styleTypes");
-    console.log(localData);
     if (!localData) {
       data = [{ id, name, image }];
     } else {
       const savedData = JSON.parse(localData);
-      console.log(savedData);
       data = [...savedData, { id, name, image }];
     }
     localStorage.setItem("styleTypes", JSON.stringify(data));
   };
 
   const handleUnselect = () => {
-    setSelcted(false);
+    const localData = localStorage.getItem("styleTypes");
+    if (localData) {
+      const savedData = JSON.parse(localData);
+      const checkIfSelected = savedData.filter((item) => item.id !== id);
+      localStorage.setItem("styleTypes", JSON.stringify(checkIfSelected));
+    }
+    setSelected(false);
   };
 
-  const [selected, setSelcted] = useState(false);
+  useEffect(() => {
+    const localData = localStorage.getItem("styleTypes");
+    if (localData) {
+      const savedData = JSON.parse(localData);
+      const checkIfSelected = savedData.filter((item) => item.id === id);
+      checkIfSelected.length > 0 && setSelected(true);
+    }
+  }, [selected]);
+
   return (
     <div
       className={`flex-col gap-2 ${

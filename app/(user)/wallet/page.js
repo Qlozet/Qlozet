@@ -153,31 +153,13 @@ const Wallet = () => {
   }, []);
 
   return (
-    <section className="md:ml-[260px]">
+    <section>
       <div className="flex bg-[#F8F9FA]">
-        <div className="">
-          <SideBar active="Wallet" />
-          <MobileSideBar
-            showMobileNav={showMobileNav}
-            active="Wallet"
-            closeSideBar={showSideBar}
-          />
-        </div>
         <div className="w-full p-4">
-          <DasboardNavWithOutSearch
-            addSearch={true}
-            setValue={(data) => {
-              handleFilfeterData(data);
-            }}
-            name="Wallet"
-            showSideBar={showSideBar}
-          />
-
           {loadPage ? (
             <Loader></Loader>
           ) : (
             <div>
-              {" "}
               <div className="flex justify-end items-center lg:hidden w-full">
                 <div className="items-start gap-6 pt-5 flex ">
                   <Button
@@ -319,7 +301,6 @@ const Wallet = () => {
             content={
               <SendMoney
                 closeModal={(name) => {
-                
                   setShowSendMoney(name);
                 }}
               />

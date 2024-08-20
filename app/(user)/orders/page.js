@@ -1,12 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import DashboardTopCard from "@/components/DashboardTopCard";
-import SideBar from "@/components/SideBar";
 import classes from "./index.module.css";
 import moment from "moment";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
-import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import sendIcon from "../../../public/assets/svg/send.svg";
 import carIcon from "../../../public/assets/svg/car.svg";
 import shippingIcon from "../../../public/assets/svg/shipping_bag.svg";
@@ -18,13 +15,15 @@ import TotalOrderIcon from "../../../public/assets/svg/TotalOrder-Icon.svg";
 import TrackOrder from "@/components/order/TrackOrders";
 import RejectOrderModal from "@/components/order/RejectOrderModal";
 import CustomerDetails from "@/components/order/CustomerDetails";
-import MobileSideBar from "@/components/MobileSideBar";
 import { getRequest } from "@/api/method";
 import { calculatePrice } from "@/utils/helper";
 import Loader from "@/components/Loader";
 import DropDown from "@/components/DropDown";
 import Typography from "@/components/Typography";
+import { useAppSelector } from "@/redux/store";
+
 const Order = () => {
+  const filterData = useAppSelector((state) => state.auth.authState);
   const [viewOrderDetails, setOrderDetails] = useState(false);
   const [showTrack, setShowTrack] = useState(false);
   const [showCustomer, setShowCustomer] = useState(false);
@@ -37,9 +36,6 @@ const Order = () => {
   const [order, setOrder] = useState({});
   const [deliveredOrder, setDeliveredOrder] = useState(0);
   const [orderInTransit, setOrderInTransit] = useState(0);
-  const showSideBar = () => {
-    setShowMobileNav(!showMobileNav);
-  };
   const handleShowViewDetailModal = (orderId) => {
     setOrder(orders.filter((item) => item.orderId == orderId)[0]);
     setOrderDetails(true);
@@ -92,7 +88,6 @@ const Order = () => {
   const getOrders = async () => {
     try {
       const response = await getRequest("/vendor/orders");
-      console.log(response);
       let ordersData = [];
       setDeliveredOrder(
         response.data.data.filter((order) => order.status === "completed")
@@ -184,34 +179,20 @@ const Order = () => {
   };
 
   useEffect(() => {
+    handleFilfeterData(filterData);
+  }, [filterData]);
+  useEffect(() => {
     getOrders();
   }, []);
   return (
-    <section className="md:ml-[260px]">
+    <section>
       <div className="flex bg-[#F8F9FA]">
-        <div className="">
-          <SideBar active="Orders" />
-          <MobileSideBar
-            showMobileNav={showMobileNav}
-            active="Orders"
-            closeSideBar={showSideBar}
-          />
-        </div>
+        {/* {filterData} */}
         <div className="w-full p-4">
-          <DasboardNavWithOutSearch
-            addSearch={true}
-            name="Orders"
-            setValue={(data) => {
-              handleFilfeterData(data);
-            }}
-            showSideBar={showSideBar}
-          />
           {pageLoading ? (
             <Loader></Loader>
           ) : (
             <div>
-              {" "}
-              <div></div>
               <div
                 className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4 lg:hidden`}
               >

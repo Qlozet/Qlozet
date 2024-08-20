@@ -42,7 +42,7 @@ const Bottoms = ({ data }) => {
               image={item.imageUrl}
               key={index}
               id={item._id}
-              name="bottoms"
+              name={item.class}
             />
           ))}
         </div>

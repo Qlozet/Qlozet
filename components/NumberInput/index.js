@@ -15,7 +15,7 @@ const NumberInput = ({
   return (
     <div className="my-3 relative">
       {leftIcon}
-      <label className="text-[14px] font-light my-2 text-dark"> {label}</label>
+      <label className="text-[14px] my-2 text-dark"> {label}</label>
       <input
         className={`py-3 ${
           error && "border-danger"

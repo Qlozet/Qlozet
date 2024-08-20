@@ -57,42 +57,20 @@ const Skirts = ({ data }) => {
               image={item.imageUrl}
               key={index}
               id={item._id}
-              name={"skirts"}
+              name={item.class}
             />
           ))}
-          {/* <Design image={icon1} />
-          <Design image={icon2} />
-          <Design image={icon3} />
-          <Design image={icon4} />
-          <Design image={icon5} /> */}
         </div>
       </div>
       <div>
-        <div className="grid grid-cols-3 lg:grid-cols-8 gap-4 py-4 mt-1">
-          {/* <Design image={icon6} reduce={true} />
-          <Design image={icon7} reduce={true} />
-          <Design image={icon8} reduce={true} />
-          <Design image={icon9} reduce={true} />
-          <Design image={icon10} reduce={true} />
-          <Design image={icon11} reduce={true} />
-          <Design image={icon12} reduce={true} />
-          <Design image={icon13} reduce={true} />
-          <Design image={icon14} reduce={true} />
-          <Design image={icon15} reduce={true} />
-          <Design image={icon16} reduce={true} />
-          <Design image={icon17} reduce={true} />
-          <Design image={icon3} reduce={true} /> */}
-        </div>
+        <div className="grid grid-cols-3 lg:grid-cols-8 gap-4 py-4 mt-1"></div>
         <div className="m-4">
           <Button
-            // loading={isLoading}
             maxWidth="max-w-[6rem]"
             children="Submit"
             btnSize="large"
             variant="primary"
-            clickHandler={() => {
-              // handleLogin();
-            }}
+            clickHandler={() => {}}
           />
         </div>
       </div>

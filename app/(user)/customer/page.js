@@ -116,26 +116,9 @@ const Customer = () => {
     getCustomers();
   }, []);
   return (
-    <section
-      className={` ${classes.main_container}`}
-    >
-      <div className="flex bg-[#F8F9FA] md:ml-[260px]">
-        <SideBar active="Customers" />
-        <MobileSideBar
-          showMobileNav={showMobileNav}
-          active="Customers"
-          closeSideBar={showSideBar}
-        />
+    <section className={` ${classes.main_container}`}>
+      <div className="flex bg-[#F8F9FA] ">
         <div className="w-full p-4 ">
-          <div></div>
-          <DasboardNavWithOutSearch
-            addSearch={true}
-            setValue={(data) => {
-              handleFilfeterData(data);
-            }}
-            showSideBar={showSideBar}
-            name="Customers"
-          />
           {pageLoading ? (
             <Loader></Loader>
           ) : (

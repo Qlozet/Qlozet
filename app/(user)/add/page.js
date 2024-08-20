@@ -1,22 +1,4 @@
 "use client";
-import icon1 from "../../../public/assets/image/icon1.jpg";
-import icon2 from "../../../public/assets/image/icon2.jpg";
-import icon3 from "../../../public/assets/image/icon3.jpg";
-import icon4 from "../../../public/assets/image/icon4.jpg";
-import icon5 from "../../../public/assets/image/icon5.jpg";
-import icon6 from "../../../public/assets/image/icon6.jpg";
-import icon7 from "../../../public/assets/image/icon7.jpg";
-import icon8 from "../../../public/assets/image/icon8.jpg";
-import icon9 from "../../../public/assets/image/icon9.jpg";
-import icon10 from "../../../public/assets/image/icon10.jpg";
-import icon11 from "../../../public/assets/image/icon11.jpg";
-import icon12 from "../../../public/assets/image/icon12.jpg";
-import icon13 from "../../../public/assets/image/icon13.jpg";
-import icon14 from "../../../public/assets/image/icon14.jpg";
-import icon15 from "../../../public/assets/image/icon15.jpg";
-import icon16 from "../../../public/assets/image/icon16.jpg";
-import icon17 from "../../../public/assets/image/icon17.jpg";
-
 import { useEffect, useState } from "react";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import SideBar from "@/components/SideBar";
@@ -48,8 +30,8 @@ import SizeInput from "@/components/SizeInput";
 import { uploadSingleImage } from "@/utils/helper";
 import DragDrop from "@/components/DragandDrop";
 import AddAcessories from "@/components/Products/Accessories";
-import StyleComp from "@/components/Products/StyleComponent";
 import style from "./index.module.css";
+import Styles from "@/components/Products/StyleComponent/style";
 const AddProduct = () => {
   const [variantTable, setVariantTable] = useState([]);
   const router = useRouter();
@@ -58,11 +40,13 @@ const AddProduct = () => {
   const [pageLoading, setPageLoading] = useState();
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [positionModal, setPositionModal] = useState(false);
   const [currentVariantColor, setCurrentVariantColor] = useState("");
   const [currentVariantFile, setCurrentVariantFile] = useState("");
   const [deletedFiles, setDeletedFiles] = useState([]);
   const [variantFiles, setVariantFiles] = useState([]);
   const [styles, setStyles] = useState([]);
+  const [selectedStyles, setSelectedStyles] = useState([]);
   const [productFormData, setProductFormData] = useState({
     productName: "",
     productPrice: "",
@@ -101,6 +85,7 @@ const AddProduct = () => {
       return { ...prevData, images: files };
     });
   };
+
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
   };
@@ -270,11 +255,9 @@ const AddProduct = () => {
           console.log(response.data.data);
           // response.data.data.variants &&
           response.data.data.variants.map((item) => {
-            console.log(item);
             colors.push(item.color);
             // sizeVariant.push(item.size.label);
           });
-          console.log(colors);
           console.log(sizeVariant);
           // setVariantTable((prevData) => {
           //   return [
@@ -292,6 +275,7 @@ const AddProduct = () => {
           //     },
           //   ];
           // });
+
           setPageLoading(false);
         }
       } catch (error) {
@@ -314,26 +298,18 @@ const AddProduct = () => {
   useEffect(() => {
     fetchProduct();
   }, []);
+
+  useEffect(() => {
+    const localData = localStorage.getItem("styleTypes");
+    if (localData) {
+      const savedData = JSON.parse(localData);
+      savedData && setSelectedStyles(savedData);
+    }
+  }, [showCustomiseOrder]);
   return (
-    <section className="md:ml-[260px]">
+    <section>
       <div className="flex bg-[#F8F9FA] ">
-        <div className="">
-          <SideBar active="Products" />
-          <MobileSideBar
-            showMobileNav={showMobileNav}
-            active="Products"
-            closeSideBar={showSideBar}
-          />
-        </div>
         <div className="w-full p-4">
-          <DasboardNavWithOutSearch
-            addSearch={false}
-            name="Products"
-            setValue={(data) => {
-              // console.log(data);
-            }}
-            showSideBar={showSideBar}
-          />
           {pageLoading ? (
             <Loader></Loader>
           ) : (
@@ -341,7 +317,7 @@ const AddProduct = () => {
               <div className="mt-4"></div>
               <div className="">
                 <div className="mx-0 bg-gray-300 lg:bg-white p-4  rounded-t-lg lg:translate-x-2">
-                  <CheckBoxInput label="Billing address same as company details" />
+                  <CheckBoxInput label="Add variants if product comes in multiple versions like different sizes and colours" />
                 </div>
                 <div className="bg-white w-full p-4 mx-0 lg:mx-2">
                   <DashedComponent name={"Product info"} />
@@ -584,14 +560,14 @@ const AddProduct = () => {
                     </div>
                   </div>
                   <div
-                    className={`flex overflow-x-scroll gap-4 ${style.scrollbarElement}`}
+                    className={`flex overflow-x-scroll gap-4 pb-2 ${style.scrollbarElement}`}
                   >
                     <CustomiSationButton
                       handleClick={() => {
                         setShowCustomiseOrder(true);
                       }}
                     />
-                    <StyleComp image={icon1} />
+                    <Styles data={selectedStyles} />
                   </div>
                   <div>
                     <div className="">
@@ -613,10 +589,7 @@ const AddProduct = () => {
                         setShowAddAccessories(true);
                       }}
                     />
-                    <StyleComp image={icon1} />
-                    {/* <StyleComp />
-                    <StyleComp />
-                    <StyleComp /> */}
+                    <Styles />
                   </div>
                   <div className="w-full">
                     <VariantInput
@@ -743,7 +716,6 @@ const AddProduct = () => {
               </div>
             </div>
           )}
-
           {showCustomiseOrder && (
             <Modal
               content={
@@ -751,6 +723,7 @@ const AddProduct = () => {
                   styleData={styles}
                   closeModal={() => {
                     setShowCustomiseOrder(false);
+                    setPositionModal(true);
                   }}
                 />
               }
@@ -769,7 +742,19 @@ const AddProduct = () => {
           )}
         </div>
       </div>
-      {/* <Modal content={<DragDrop></DragDrop>}></Modal> */}
+      {positionModal && (
+        <Modal
+          content={
+            <DragDrop
+              productImages={productFormData.images}
+              selectedStyles={selectedStyles}
+              closeModal={() => {
+                setPositionModal(false);
+              }}
+            ></DragDrop>
+          }
+        ></Modal>
+      )}
     </section>
   );
 };

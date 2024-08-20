@@ -2,7 +2,6 @@ import Typography from "@/components/Typography";
 import OrderStatus from "../OrderStatus";
 
 const MobileTableItem = ({ item }) => {
-  console.log(item);
   return (
     <div className="">
       <div className="flex justify-between items-center bg-white p-4">

@@ -1,6 +1,10 @@
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { Poppins } from "next/font/google";
+import dynamic from "next/dynamic";
+const ReduxProvider = dynamic(() => import("@/redux/provider"), {
+  ssr: false,
+});
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
@@ -14,8 +18,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="bg-gray-400">
       <body className={poppins.className}>
-        {/* <ToastProvider></ToastProvider> */}
-        <div className={`mx-auto relative`}>{children}</div>
+        <ReduxProvider>
+          <div className={`mx-auto relative`}>{children}</div>
+        </ReduxProvider>
+
         <Toaster
           toastOptions={{
             duration: 5000,

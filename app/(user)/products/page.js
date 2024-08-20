@@ -161,26 +161,9 @@ const Products = () => {
     getProducts();
   }, [isLoading]);
   return (
-    <section className="md:ml-[260px]">
+    <section>
       <div className="flex bg-[#F8F9FA]">
-        <div className="">
-          <SideBar active="Products" />
-          <MobileSideBar
-            showMobileNav={showMobileNav}
-            active="Products"
-            closeSideBar={showSideBar}
-          />
-        </div>
         <div className="w-full p-4">
-          <DasboardNavWithOutSearch
-            name="Products"
-            addSearch={true}
-            setValue={(data) => {
-              handleFilfeterData(data);
-            }}
-            showSideBar={showSideBar}
-          />
-
           {isLoading ? (
             <Loader></Loader>
           ) : (

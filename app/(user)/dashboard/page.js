@@ -2,29 +2,18 @@
 import { useState, useEffect, useRef } from "react";
 import ChatCard from "@/components/Chat/ChatCard";
 import HorizontalChat from "@/components/Chat/HorizontalChart";
-import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import DashboardTopCard from "@/components/DashboardTopCard";
-import SideBar from "@/components/SideBar";
 import classes from "./index.module.css";
 import DonutChart from "@///components/Chat/DoughnutChat";
-import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import TotalOrderIcon from "../../../public/assets/svg/TotalOrder-Icon.svg";
 import TotalearningIcon from "../../../public/assets/svg/Totalearning-icon.svg";
 import CartIcon from "../../../public/assets/svg/customer-carticon.svg";
 import VerticalBarGraph from "@/components/VerticalBarGraph";
-import UpdateComponent from "@/components/UpdateComponent";
 import RecentOrder from "@/components/RecentOrder";
 import { getRequest } from "@/api/method";
-import MobileSideBar from "@/components/MobileSideBar";
-import getVendorDetails from "@/api/request";
-import { setUserDetails } from "@/utils/localstorage";
 import Loader from "@/components/Loader";
-import DropDown from "@/components/DropDown";
-import moment from "moment";
-
 const Dashboard = () => {
-  const mobileNavRef = useRef();
   const [totalCustomer, setTotalCustomer] = useState("0");
   const [topEarning, setTopEarning] = useState("0");
   const [totalReturn, setTotalReturn] = useState("0");
@@ -53,9 +42,6 @@ const Dashboard = () => {
     borderAlign: "center",
   });
 
-  const showSideBar = () => {
-    setShowMobileNav(!showMobileNav);
-  };
   const getTotalCustomers = async () => {
     try {
       const custmerResponse = await getRequest(
@@ -208,25 +194,9 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <section className="md:ml-[260px] bg-gray-400">
+    <section>
       <div className={`flex bg-gray-400 w-full h-full`}>
-        <div className="">
-          <SideBar active="Dashboard" />
-          <MobileSideBar
-            showMobileNav={showMobileNav}
-            active="Dashboard"
-            closeSideBar={showSideBar}
-          />
-        </div>
         <div className="w-full mb-[2rem]">
-          <div className="p-4">
-            <DasboardNavWithOutSearch
-              addSearch={false}
-              setValue={(data) => {}}
-              name="Dashboard"
-              showSideBar={showSideBar}
-            />
-          </div>
           {loadPage ? (
             <Loader></Loader>
           ) : (
