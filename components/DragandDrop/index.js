@@ -6,18 +6,23 @@ import arrowLeft from "../../public/assets/svg/arrrowLeft.svg";
 import arrowRight from "../../public/assets/svg/arrowRightt.svg";
 import closeIcon from "../../public/assets/svg/material-symbols_close-rounded.svg";
 
-const DragDrop = ({ closeModal, productImages, selectedStyles }) => {
-  const defaultPosition = selectedStyles.map((item, index) => {
-    return {
-      id: item.id,
-      imageIndex: index,
-      position: { left: 0, right: 0, top: 0, bottom: 0 },
-      uiLeft: 0,
-      uiTop: 0,
-    };
-  });
+const DragDrop = ({
+  closeModal,
+  productImages,
+  selectedStyles,
+  handleSelectStyle,
+}) => {
+  // const defaultPosition = selectedStyles.map((item, index) => {
+  //   return {
+  //     id: item.id,
+  //     imageIndex: index,
+  //     position: { left: 0, right: 0, top: 0, bottom: 0 },
+  //     uiLeft: 0,
+  //     uiTop: 0,
+  //   };
+  // });
 
-  console.log(productImages);
+  // console.log(productImages);
   const imageRef = useRef();
   const itemref = useRef();
   const subRef = useRef();
@@ -50,10 +55,14 @@ const DragDrop = ({ closeModal, productImages, selectedStyles }) => {
   ];
   const [activeDrags, setActiveDrags] = useState(0);
   const [imageIndex, setImageIndex] = useState(0);
-  const [deltaPosition, setDeltaPosition] = useState({ x: 0, y: 0 });
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
   const [itemSize, setItemSize] = useState({ width: 0, height: 0 });
-  const [mainContainer, setContainer] = useState({ width: 0, height: 0 });
+  const [customStyles, setCustomStyles] = useState([]);
+  const [customeStylesOrAllImage, setCustomeStyleOfAllImage] = useState([]);
+  const [currentStyle, setCurrentStyle] = useState({
+    name: "",
+    imageIndex: "",
+  });
   const [positionWidthimage, setPositionWidthimage] = useState([]);
   const [controlledPosition, setControlledPosition] = useState([]);
   const onStart = () => {
@@ -67,76 +76,44 @@ const DragDrop = ({ closeModal, productImages, selectedStyles }) => {
         height: itemref.current.offsetHeight,
         width: itemref.current.offsetWidth,
       });
-
-      console.log(itemref.current.offsetHeight, itemref.current.offsetWidth);
     }
     setActiveDrags(activeDrags + 1);
   };
 
   const onStop = (e, data) => {
-    // console.log(data.lastX);
-    // position of image from left
-    // console.log(imageSize.width + data.lastX + 24);
-    const currentIndex = defaultPosition.filter(
-      (item, index) => index === imageIndex
-    );
-    defaultPosition[imageIndex] = {
-      id: defaultPosition[imageIndex].id,
-      imageIndex: defaultPosition[imageIndex].imageIndex,
-      ui: {
-        left: data.lastX,
-        top: data.lastY,
-      },
-      position: {
-        left: imageSize.width + data.lastX + 24,
-        top: imageSize.height + data.lastY,
-        bottom: 0,
-        right: 0,
-      },
+    console.log(data);
+    const position = {
+      left: (imageSize.width + data.lastX + 24 / imageSize.width) * 100,
+      top: (imageSize.height + data.lastY + 24 / imageSize.height) * 100,
+      right: 0,
+      bottom: 0,
     };
-    console.log(positionWidthimage);
-    setPositionWidthimage(defaultPosition);
+
+    const newSTyles = customStyles.map((item) => {
+      if (item.name === currentStyle.name) {
+        return { ...item, imageIndex: imageIndex, position: position };
+      } else {
+        return { ...item };
+      }
+    });
+    const newCustomStyleofAllImage = customeStylesOrAllImage.map((item) => {
+      if (item.imageIndex === imageIndex) {
+        return { ...item, style: newSTyles };
+      } else {
+        return { ...item };
+      }
+    });
+    setCustomStyles(newSTyles);
+    setCustomeStyleOfAllImage(newCustomStyleofAllImage);
+    // setCustomStyles((prevdata) => {
+    //   return [...prevdata, customStyle];
+    // });
+    handleSelectStyle(newCustomStyleofAllImage);
   };
 
-  const onDropAreaMouseEnter = (e) => {
-    if (activeDrags) {
-      e.target.classList.add("hovered");
-    }
+  const handleSetCurentStyle = (style, imgIndex) => {
+    setCurrentStyle({ name: style, imageIndex: imgIndex });
   };
-
-  const onDropAreaMouseLeave = (e) => {
-    e.target.classList.remove("hovered");
-  };
-
-  // For controlled component
-  const adjustXPos = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setControlledPosition((prevPosition) => ({
-      ...prevPosition,
-      x: prevPosition.x - 10,
-    }));
-  };
-
-  const adjustYPos = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setControlledPosition((prevPosition) => ({
-      ...prevPosition,
-      y: prevPosition.y - 10,
-    }));
-  };
-
-  const onControlledDrag = (e, position) => {
-    const { x, y } = position;
-    setControlledPosition({ x, y });
-  };
-
-  const onControlledDragStop = (e, position) => {
-    onControlledDrag(e, position);
-    onStop();
-  };
-
   const dragHandlers = { onStart, onStop };
 
   useEffect(() => {
@@ -154,6 +131,27 @@ const DragDrop = ({ closeModal, productImages, selectedStyles }) => {
     //   })
     // );
   }, [imageIndex]);
+
+  useEffect(() => {
+    const indexCheck = [];
+    data.map((item, index) => {
+      const newItem = {
+        imageIndex: index,
+      };
+      indexCheck.push(newItem);
+    });
+    setCustomeStyleOfAllImage(indexCheck);
+    selectedStyles.map((item, index) => {
+      const newItem = {
+        id: item.id,
+        name: item.name,
+      };
+
+      setCustomStyles((prevData) => {
+        return [...prevData, newItem];
+      });
+    });
+  }, [selectedStyles]);
   return (
     <div className="bg-white m-auto overflow-hidden lg:mt-[4rem] p-6 rounded-[10px] lg:w-[450px] relative">
       <button
@@ -195,7 +193,7 @@ const DragDrop = ({ closeModal, productImages, selectedStyles }) => {
               )}
             </div>
             <div>
-              {imageIndex < data.length - 1 && (
+              {imageIndex < productImages.length - 1 && (
                 <button
                   className="bg-white w-[2rem] h-[2rem] flex items-center justify-center rounded-[50%] cursor-pointer"
                   onClick={() => {
@@ -214,23 +212,23 @@ const DragDrop = ({ closeModal, productImages, selectedStyles }) => {
               )}
             </div>
           </div>
-          {productImages.length > 0 && (
-            <Image
-              ref={imageRef}
-              alt=""
-              src={productImages[imageIndex].secure_url}
-              width={50}
-              height={50}
-              style={{
-                width: "100%",
-                height: "auto",
-                maxWidth: "300px",
-              }}
-              unoptimized
-            />
-          )}
+          {/* {productImages.length > 0 && ( */}
+          <Image
+            ref={imageRef}
+            alt=""
+            src={productImages[imageIndex].secure_url}
+            width={50}
+            height={50}
+            style={{
+              width: "100%",
+              height: "auto",
+              maxWidth: "300px",
+            }}
+            unoptimized
+          />
+          {/* )} */}
         </div>
-        {defaultPosition.map(
+        {productImages.map(
           (item, index) =>
             index == imageIndex && (
               <div
@@ -243,6 +241,12 @@ const DragDrop = ({ closeModal, productImages, selectedStyles }) => {
                     <div
                       className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4 "
                       ref={itemref}
+                      onKeyDown={() => {
+                        handleSetCurentStyle("tops", imageIndex);
+                      }}
+                      onTouchStart={() => {
+                        handleSetCurentStyle("tops", imageIndex);
+                      }}
                     >
                       <Typography
                         textColor="text-white"
@@ -258,7 +262,15 @@ const DragDrop = ({ closeModal, productImages, selectedStyles }) => {
                 {selectedStyles.filter((item) => item.name === "bottoms")
                   .length > 0 && (
                   <Draggable {...dragHandlers}>
-                    <div className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4">
+                    <div
+                      className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4"
+                      onKeyDown={() => {
+                        handleSetCurentStyle("bottoms", imageIndex);
+                      }}
+                      onTouchStart={() => {
+                        handleSetCurentStyle("bottoms", imageIndex);
+                      }}
+                    >
                       <Typography
                         textColor="text-white"
                         textWeight="font-[500]"
@@ -273,7 +285,15 @@ const DragDrop = ({ closeModal, productImages, selectedStyles }) => {
                 {selectedStyles.filter((item) => item.name === "skirts")
                   .length > 0 && (
                   <Draggable {...dragHandlers}>
-                    <div className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4">
+                    <div
+                      className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4"
+                      onKeyDown={() => {
+                        handleSetCurentStyle("skirts", imageIndex);
+                      }}
+                      onTouchStart={() => {
+                        handleSetCurentStyle("skirts", imageIndex);
+                      }}
+                    >
                       <Typography
                         textColor="text-white"
                         textWeight="font-[500]"
@@ -288,7 +308,15 @@ const DragDrop = ({ closeModal, productImages, selectedStyles }) => {
                 {selectedStyles.filter((item) => item.name === "dresses")
                   .length > 0 && (
                   <Draggable {...dragHandlers}>
-                    <div className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4">
+                    <div
+                      className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4"
+                      onKeyDown={() => {
+                        handleSetCurentStyle("dresses", imageIndex);
+                      }}
+                      onTouchStart={() => {
+                        handleSetCurentStyle("dresses", imageIndex);
+                      }}
+                    >
                       <Typography
                         textColor="text-white"
                         textWeight="font-[500]"
@@ -303,7 +331,15 @@ const DragDrop = ({ closeModal, productImages, selectedStyles }) => {
                 {selectedStyles.filter((item) => item.name === "outfits")
                   .length > 0 && (
                   <Draggable {...dragHandlers}>
-                    <div className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4">
+                    <div
+                      className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4"
+                      onKeyDown={() => {
+                        handleSetCurentStyle("outfits", imageIndex);
+                      }}
+                      onTouchStart={() => {
+                        handleSetCurentStyle("outfits", imageIndex);
+                      }}
+                    >
                       <Typography
                         textColor="text-white"
                         textWeight="font-[500]"
@@ -311,7 +347,7 @@ const DragDrop = ({ closeModal, productImages, selectedStyles }) => {
                       >
                         Outfit
                       </Typography>
-                      <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
+                      {/* <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div> */}
                     </div>
                   </Draggable>
                 )}

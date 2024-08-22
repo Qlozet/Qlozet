@@ -1,6 +1,6 @@
 import ExportComponent from "@/components/ExportButton";
 import VariantTableItem from "../VariantTableItem";
-
+import styles from "./index.module.css";
 const VariantTable = ({
   data,
   QuantityHandler,
@@ -9,7 +9,7 @@ const VariantTable = ({
   priceHandler = { priceHandler },
 }) => {
   return (
-    <div className="mt-4 min-h-[50vh] ">
+    <div className={`overflow-x-scroll ${styles.scrollbarElement}`}>
       <table className="w-full shadow py-4">
         <thead className="w-full bg-[#F4F4F4] ">
           <tr>

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import SideBar from "@/components/SideBar";
 import Modal from "@/components/Modal";
-import MobileSideBar from "@/components/MobileSideBar";
 import CheckBoxInput from "@/components/CheckboxInput";
 import TextInput from "@/components/TextInput";
 import Button from "@/components/Button";
@@ -38,7 +37,6 @@ const AddProduct = () => {
   const [showCustomiseOrder, setShowCustomiseOrder] = useState(false);
   const [showAddAccessories, setShowAddAccessories] = useState(false);
   const [pageLoading, setPageLoading] = useState();
-  const [showMobileNav, setShowMobileNav] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [positionModal, setPositionModal] = useState(false);
   const [currentVariantColor, setCurrentVariantColor] = useState("");
@@ -47,6 +45,7 @@ const AddProduct = () => {
   const [variantFiles, setVariantFiles] = useState([]);
   const [styles, setStyles] = useState([]);
   const [selectedStyles, setSelectedStyles] = useState([]);
+  const [positionStyles, setPositionStyles] = useState([]);
   const [productFormData, setProductFormData] = useState({
     productName: "",
     productPrice: "",
@@ -86,8 +85,35 @@ const AddProduct = () => {
     });
   };
 
-  const showSideBar = () => {
-    setShowMobileNav(!showMobileNav);
+  const handleSelectStyle = (positionStyles) => {
+    const filter = positionStyles.map((item) => item.style);
+    const stylesExist = filter
+      .filter((item) => {
+        if (item) {
+          return item;
+        }
+      })
+      .flat()
+      .map((item) => {
+        return {
+          id: item.id,
+          position: item.position,
+          imageIndex: item.imageIndex,
+        };
+      });
+
+    const containsPostion = stylesExist.filter((item) => {
+      if (item.position) {
+        return item;
+      } else {
+      }
+    });
+    console.log(containsPostion);
+    setPositionStyles(containsPostion);
+
+    // console.log(positionStyles.map((item)=>{
+
+    // }));
   };
 
   const submitVariantImage = async (file, listIndex, imageIndex) => {
@@ -116,7 +142,6 @@ const AddProduct = () => {
       setProductFormData((prevData) => {
         return { ...prevData, variantSizes: [] };
       });
-      console.log(data[0]);
       setCurrentVariantColor(data[0]);
       setCurrentVariantFile("");
     }
@@ -161,6 +186,7 @@ const AddProduct = () => {
   };
 
   const handleSubmit = async () => {
+    const mergedArray = positionStyles.flat();
     const formData = new FormData();
     const productId = getProductId();
     const { status, data, id } = validator(
@@ -178,6 +204,7 @@ const AddProduct = () => {
           productTag: productFormData.productTag === "Male" ? "male" : "female",
           productCategory: JSON.stringify([productFormData.productCategory]),
           colors: JSON.stringify(productFormData.colors),
+          customStyles: positionStyles,
           productType:
             productFormData.productType === "Customizable"
               ? "customizable"
@@ -188,6 +215,7 @@ const AddProduct = () => {
             retained: productFormData.images,
             deleted: productId ? deletedFiles : [],
           },
+
           variants: variantTable.map((item) => {
             let varantItem = {
               colors: [item.color],
@@ -286,6 +314,7 @@ const AddProduct = () => {
   const fetchStyles = async () => {
     try {
       const response = await getRequest("/vendor/products/styles/all");
+      console.log(response);
       if (response.status === 200) {
         setStyles(response.data.data);
       }
@@ -567,7 +596,10 @@ const AddProduct = () => {
                         setShowCustomiseOrder(true);
                       }}
                     />
-                    <Styles data={selectedStyles} />
+                    <Styles
+                      data={selectedStyles}
+                      price={productFormData.productPrice}
+                    />
                   </div>
                   <div>
                     <div className="">
@@ -645,11 +677,11 @@ const AddProduct = () => {
                       index={40}
                     />
                   </div>
-                  <div className="my-4">
+                  <div className="my-8">
                     <DashedComponent name={"Product variants"} />
                   </div>
 
-                  <div className="flex items-center">
+                  {/* <div className="flex items-center">
                     <Typography
                       textWeight="font-[700]"
                       textSize="text-[18px]"
@@ -666,9 +698,9 @@ const AddProduct = () => {
                     >
                       (Variants)
                     </Typography>
-                  </div>
+                  </div> */}
                   <div>
-                    <div className="w-full">
+                    {/* <div className="w-full">
                       <SelectInput
                         placeholder={"Enter roduct tags"}
                         // value={dropDownValue}
@@ -679,38 +711,42 @@ const AddProduct = () => {
                         label="Product tags"
                         index={20}
                       />
+                    </div> */}
+                  </div>
+
+                  <div>
+                    {" "}
+                    <div className="flex items-center">
+                      <Typography
+                        textWeight="font-[700]"
+                        textSize="text-[18px]"
+                        verticalPadding="my-2"
+                        textColor="text-dark"
+                      >
+                        Variant Table
+                      </Typography>
                     </div>
-                  </div>
-                  <div className="flex items-center">
-                    <Typography
-                      textWeight="font-[700]"
-                      textSize="text-[18px]"
-                      verticalPadding="my-2"
-                      textColor="text-dark"
-                    >
-                      Set variants
-                    </Typography>
-                  </div>
-                  <div className="overflow-x-scroll">
-                    <VariantTable
-                      data={variantTable}
-                      // QuantityHandler={variantQuantityHandler}
-                      submitVariantImage={submitVariantImage}
-                      quantityHandler={VariantQuantityHandler}
-                      priceHandler={priceHandler}
-                    />
-                  </div>
-                  <div className="my-4">
-                    <Button
-                      loading={isLoading}
-                      children="Save"
-                      btnSize="large"
-                      variant="primary"
-                      maxWidth="max-w-[10rem]"
-                      clickHandler={() => {
-                        handleSubmit();
-                      }}
-                    />
+                    <div>
+                      <VariantTable
+                        data={variantTable}
+                        // QuantityHandler={variantQuantityHandler}
+                        submitVariantImage={submitVariantImage}
+                        quantityHandler={VariantQuantityHandler}
+                        priceHandler={priceHandler}
+                      />
+                    </div>
+                    <div className="my-4">
+                      <Button
+                        loading={isLoading}
+                        children="Save"
+                        btnSize="large"
+                        variant="primary"
+                        maxWidth="max-w-[10rem]"
+                        clickHandler={() => {
+                          handleSubmit();
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -746,6 +782,7 @@ const AddProduct = () => {
         <Modal
           content={
             <DragDrop
+              handleSelectStyle={handleSelectStyle}
               productImages={productFormData.images}
               selectedStyles={selectedStyles}
               closeModal={() => {
