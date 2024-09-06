@@ -1,0 +1,226 @@
+ // <div className="bg-white m-auto overflow-hidden lg:mt-[4rem] p-6 rounded-[10px] lg:w-[450px] relative">
+    //   <button
+    //     onClick={() => {
+    //       closeModal();
+    //     }}
+    //   >
+    //     <Image src={closeIcon} alt="" className="absolute top-4 right-4" />
+    //   </button>
+    //   <div className="mb-4">
+    //     <Typography
+    //       textColor="text-dark"
+    //       textWeight="font-[600]"
+    //       textSize="text-[14px]"
+    //     >
+    //       Drag & Drop parts of the cloth
+    //     </Typography>
+    //   </div>
+    //   <div className="flex gap-4 ">
+    //     <DragDropContext onDragEnd={onDragEnd}>
+    //       <Droppable droppableId="1">
+    //         {(provided) => (
+    //           <div className="w-[70%] relative">
+    //             <div className="absolute top-[50%] left-0 flex items-center justify-between w-[100%] px-6">
+    //               <div>
+    //                 {imageIndex > 0 && (
+    //                   <button
+    //                     className="bg-white w-[2rem] h-[2rem] flex items-center justify-center rounded-[50%] cursor-pointer"
+    //                     onClick={() => {
+    //                       setImageIndex(imageIndex - 1);
+    //                     }}
+    //                   >
+    //                     <Image
+    //                       height={18}
+    //                       width={18}
+    //                       src={arrowLeft}
+    //                       alt="product image"
+    //                       className="rounded-b-[12px]"
+    //                       unoptimized
+    //                     />
+    //                   </button>
+    //                 )}
+    //               </div>
+    //               <div>
+    //                 {imageIndex < productImages.length - 1 && (
+    //                   <button
+    //                     className="bg-white w-[2rem] h-[2rem] flex items-center justify-center rounded-[50%] cursor-pointer"
+    //                     onClick={() => {
+    //                       setImageIndex(imageIndex + 1);
+    //                     }}
+    //                   >
+    //                     <Image
+    //                       height={18}
+    //                       width={18}
+    //                       src={arrowRight}
+    //                       alt="product image"
+    //                       className="rounded-b-[12px]"
+    //                       unoptimized
+    //                     />
+    //                   </button>
+    //                 )}
+    //               </div>
+    //             </div>
+    //             {/* {productImages.length > 0 && ( */}
+    //             <Image
+    //               ref={imageRef}
+    //               alt=""
+    //               src={productImages[imageIndex].secure_url}
+    //               width={50}
+    //               height={50}
+    //               style={{
+    //                 width: "100%",
+    //                 height: "auto",
+    //                 maxWidth: "300px",
+    //               }}
+    //               unoptimized
+    //             />
+    //             {/* )} */}
+    //           </div>
+    //         )}
+    //       </Droppable>
+    //       <Droppable droppableId="2">
+    //         {(provided) => (
+    //           <div ref={provided.innerRef} {...provided.droppableProps}>
+    //             {productImages.map(
+    //               (item, index) =>
+    //                 index == imageIndex && (
+    //                   <div
+    //                     className="w-[30%] bg-[#EBEBEBEB] py-2 px-3 rounded-[10px]"
+    //                     ref={subRef}
+    //                   >
+    //                     {selectedStyles.filter((item) => item.name === "tops")
+    //                       .length > 0 && (
+    //                       <Draggable>
+    //                         {(provided) => (
+    //                           <div
+    //                             ref={provided.innerRef}
+    //                             {...provided.draggableProps}
+    //                             {...provided.dragHandleProps}
+    //                             className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4 "
+    //                             ref={itemref}
+    //                             onKeyDown={() => {
+    //                               handleSetCurentStyle("tops", imageIndex);
+    //                             }}
+    //                             onTouchStart={() => {
+    //                               handleSetCurentStyle("tops", imageIndex);
+    //                             }}
+    //                           >
+    //                             <Typography
+    //                               textColor="text-white"
+    //                               textWeight="font-[500]"
+    //                               textSize="text-[12px]"
+    //                             >
+    //                               Top
+    //                             </Typography>
+    //                             <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
+    //                           </div>
+    //                         )}
+    //                       </Draggable>
+    //                     )}
+    //                    {selectedStyles.filter(
+    //                       (item) => item.name === "bottoms"
+    //                     ).length > 0 && (
+    //                       <Draggable>
+    //                         <div
+    //                           className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4"
+    //                           onKeyDown={() => {
+    //                             handleSetCurentStyle("bottoms", imageIndex);
+    //                           }}
+    //                           onTouchStart={() => {
+    //                             handleSetCurentStyle("bottoms", imageIndex);
+    //                           }}
+    //                         >
+    //                           <Typography
+    //                             textColor="text-white"
+    //                             textWeight="font-[500]"
+    //                             textSize="text-[12px]"
+    //                           >
+    //                             Bottom
+    //                           </Typography>
+    //                           <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
+    //                         </div>
+    //                       </Draggable>
+    //                     )}
+    //                     {selectedStyles.filter((item) => item.name === "skirts")
+    //                       .length > 0 && (
+    //                       <Draggable>
+    //                         <div
+    //                           className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4"
+    //                           onKeyDown={() => {
+    //                             handleSetCurentStyle("skirts", imageIndex);
+    //                           }}
+    //                           onTouchStart={() => {
+    //                             handleSetCurentStyle("skirts", imageIndex);
+    //                           }}
+    //                         >
+    //                           <Typography
+    //                             textColor="text-white"
+    //                             textWeight="font-[500]"
+    //                             textSize="text-[12px]"
+    //                           >
+    //                             Shirt
+    //                           </Typography>
+    //                           <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
+    //                         </div>
+    //                       </Draggable>
+    //                     )}
+    //                     {selectedStyles.filter(
+    //                       (item) => item.name === "dresses"
+    //                     ).length > 0 && (
+    //                       <Draggable>
+    //                         <div
+    //                           className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4"
+    //                           onKeyDown={() => {
+    //                             handleSetCurentStyle("dresses", imageIndex);
+    //                           }}
+    //                           onTouchStart={() => {
+    //                             handleSetCurentStyle("dresses", imageIndex);
+    //                           }}
+    //                         >
+    //                           <Typography
+    //                             textColor="text-white"
+    //                             textWeight="font-[500]"
+    //                             textSize="text-[12px]"
+    //                           >
+    //                             Dress
+    //                           </Typography>
+    //                           <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
+    //                         </div>
+    //                       </Draggable>
+    //                     )}
+    //                     {selectedStyles.filter(
+    //                       (item) => item.name === "outfits"
+    //                     ).length > 0 && (
+    //                       <Draggable
+    //                         draggableId={`draggable-available-${permission.id}-${permission.name}`}
+    //                         index={index}
+    //                         key={index}
+    //                       >
+    //                         <div
+    //                           className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4"
+    //                           onKeyDown={() => {
+    //                             handleSetCurentStyle("outfits", imageIndex);
+    //                           }}
+    //                           onTouchStart={() => {
+    //                             handleSetCurentStyle("outfits", imageIndex);
+    //                           }}
+    //                         >
+    //                           <Typography
+    //                             textColor="text-white"
+    //                             textWeight="font-[500]"
+    //                             textSize="text-[12px]"
+    //                           >
+    //                             Outfit
+    //                           </Typography>
+    //                         </div>
+    //                       </Draggable>
+    //                     )}
+    //                    </div>
+    //                 )
+    //             )}
+    //           </div>
+    //         )}
+    //       </Droppable>
+    //     </DragDropContext>
+    //   </div>
+    // </div>

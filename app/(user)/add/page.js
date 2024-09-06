@@ -1,7 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
-import SideBar from "@/components/SideBar";
 import Modal from "@/components/Modal";
 import CheckBoxInput from "@/components/CheckboxInput";
 import TextInput from "@/components/TextInput";
@@ -23,14 +21,14 @@ import { useRouter } from "next/navigation";
 import { getProductId } from "@/utils/localstorage";
 import Loader from "@/components/Loader";
 import { putRequest } from "@/api/method";
-import VariantInput from "@/components/VariantInput";
 import MaterialInput from "@/components/MaterialInput";
 import SizeInput from "@/components/SizeInput";
-import { uploadSingleImage } from "@/utils/helper";
-import DragDrop from "@/components/DragandDrop";
+import { modifySizeHandler, uploadSingleImage } from "@/utils/helper";
+import DragDrop from "@/components/DragandDrop/ind";
 import AddAcessories from "@/components/Products/Accessories";
 import style from "./index.module.css";
 import Styles from "@/components/Products/StyleComponent/style";
+import ColorInput from "@/components/ColorInput";
 const AddProduct = () => {
   const [variantTable, setVariantTable] = useState([]);
   const router = useRouter();
@@ -39,13 +37,15 @@ const AddProduct = () => {
   const [pageLoading, setPageLoading] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [positionModal, setPositionModal] = useState(false);
-  const [currentVariantColor, setCurrentVariantColor] = useState("");
-  const [currentVariantFile, setCurrentVariantFile] = useState("");
+  const [selectedColors, setSelectedColors] = useState([]);
+  const [selectedVariantFIles, setselectedVariantFIles] = useState([]);
   const [deletedFiles, setDeletedFiles] = useState([]);
   const [variantFiles, setVariantFiles] = useState([]);
   const [styles, setStyles] = useState([]);
   const [selectedStyles, setSelectedStyles] = useState([]);
   const [positionStyles, setPositionStyles] = useState([]);
+  const [accessories, setAcessories] = useState([]);
+  const [materialUploadLoading, setMaterialUploadLoading] = useState(false);
   const [productFormData, setProductFormData] = useState({
     productName: "",
     productPrice: "",
@@ -60,6 +60,7 @@ const AddProduct = () => {
     images: [],
     variantSizes: [],
   });
+
   const [requiredproductFormData, setrequiredproductFormData] = useState({
     productName: false,
     productPrice: false,
@@ -75,17 +76,18 @@ const AddProduct = () => {
     setProductFormData((prevData) => {
       return { ...prevData, images: files };
     });
+
     setDeletedFiles(deletedFiles);
   };
 
-  const handleSelecVarianttFile = (files) => {
-    setVariantFiles(files);
-    setProductFormData((prevData) => {
-      return { ...prevData, images: files };
+  const submitAcessories = (acess) => {
+    setAcessories((prevData) => {
+      return [...prevData, { image: acess.images, id: acess.id }];
     });
   };
 
-  const handleSelectStyle = (positionStyles) => {
+  const handleSelectStyle = (positionStyles, width, height) => {
+    console.log(width, height);
     const filter = positionStyles.map((item) => item.style);
     const stylesExist = filter
       .filter((item) => {
@@ -100,6 +102,16 @@ const AddProduct = () => {
           position: item.position,
           imageIndex: item.imageIndex,
         };
+        // return {
+        //   id: item.id,
+        //   position: {
+        //     left: (item.position.left * 100) / width,
+        //     top: (item.position.left * 100) / height,
+        //     right: (width - item.position.left * 100) / width,
+        //     Bottoms: (height - item.position.left * 100) / height,
+        //   },
+        //   imageIndex: item.imageIndex,
+        // };
       });
 
     const containsPostion = stylesExist.filter((item) => {
@@ -108,12 +120,8 @@ const AddProduct = () => {
       } else {
       }
     });
-    console.log(containsPostion);
     setPositionStyles(containsPostion);
-
-    // console.log(positionStyles.map((item)=>{
-
-    // }));
+    console.log(positionStyles);
   };
 
   const submitVariantImage = async (file, listIndex, imageIndex) => {
@@ -125,7 +133,7 @@ const AddProduct = () => {
       const newVariantItem = {
         color: variantTable[listIndex].color,
         images: images,
-        sizes: variantTable[listIndex].sizes,
+        size: variantTable[listIndex].sizes,
         quantity: variantTable[listIndex].quantity,
       };
       prevVariantTable[listIndex] = newVariantItem;
@@ -134,38 +142,64 @@ const AddProduct = () => {
   };
 
   const addToVariantTable = async (data) => {
-    if (data[0] instanceof File) {
-      const imageUrl = await uploadSingleImage(data[0]);
-      setCurrentVariantFile(imageUrl.secure_url);
-      setCurrentVariantColor("");
+    if (data instanceof File) {
+      setMaterialUploadLoading(true);
+      const imageUrl = await uploadSingleImage(data);
+      imageUrl && setMaterialUploadLoading(false);
+      imageUrl &&
+        setselectedVariantFIles((prevData) => {
+          return [...prevData, imageUrl.secure_url];
+        });
     } else {
       setProductFormData((prevData) => {
         return { ...prevData, variantSizes: [] };
       });
-      setCurrentVariantColor(data[0]);
-      setCurrentVariantFile("");
+      setSelectedColors((prevData) => {
+        return [...prevData, data[0]];
+      });
     }
   };
 
   const addSizeToVariant = (size) => {
-    setVariantTable((prevData) => {
-      return [
-        ...prevData,
-        {
-          color: currentVariantFile ? currentVariantFile : currentVariantColor,
-          images: [],
-          prize: productFormData.productPrice,
-          sizes: [size[size.length - 1]],
-          quantity: productFormData.productQuantity,
-        },
-      ];
+    const addColorAndMaterial = [...selectedColors, ...selectedVariantFIles];
+    addColorAndMaterial.map((item) => {
+      console.log(modifySizeHandler(size[size.length - 1]));
+      setVariantTable((prevData) => {
+        return [
+          ...prevData,
+          {
+            color: item,
+            images: {
+              retained: [],
+              deleted: [],
+            },
+            prize: productFormData.productPrice,
+            size: modifySizeHandler(size[size.length - 1]),
+            quantity: productFormData.productQuantity,
+          },
+        ];
+      });
     });
   };
 
-  const removeVariant = (variantIndex) => {
-    setVariantTable(
-      variantTable.filter((item, index) => index !== variantIndex)
+  const removeColorVariant = (color, index) => {
+    setSelectedColors(selectedColors.filter((item) => item !== color));
+    setVariantTable(variantTable.filter((item) => item.color !== color));
+  };
+
+  const removeMaterialHandler = (material) => {
+    setselectedVariantFIles(
+      selectedVariantFIles.filter((item) => item !== material)
     );
+    setVariantTable(variantTable.filter((item) => item.color !== material));
+  };
+
+  const removeVariant = (variantIndex, data) => {
+    console.log(data);
+    console.log(variantTable);
+    // setVariantTable(
+    //   variantTable.filter((item, index) => index !== variantIndex)
+    // );
   };
 
   const VariantQuantityHandler = (index, action) => {
@@ -205,6 +239,9 @@ const AddProduct = () => {
           productCategory: JSON.stringify([productFormData.productCategory]),
           colors: JSON.stringify(productFormData.colors),
           customStyles: positionStyles,
+          accessories: accessories.map((item) => {
+            return item.id;
+          }),
           productType:
             productFormData.productType === "Customizable"
               ? "customizable"
@@ -215,11 +252,11 @@ const AddProduct = () => {
             retained: productFormData.images,
             deleted: productId ? deletedFiles : [],
           },
-
           variants: variantTable.map((item) => {
             let varantItem = {
-              colors: [item.color],
-              size: item.sizes[0],
+              colors: item.color,
+              size: item.size,
+              price: 90,
               quantity: item.quantity,
               images: {
                 retained: item.images,
@@ -254,8 +291,8 @@ const AddProduct = () => {
 
   const fetchProduct = async () => {
     const productId = getProductId();
-    let colors = [];
-    let sizeVariant = [];
+    const styleResponse = await getRequest("/vendor/products/styles/all");
+    setStyles(styleResponse.data.data);
     if (productId) {
       try {
         setPageLoading(true);
@@ -277,33 +314,58 @@ const AddProduct = () => {
                 : "Outright",
             discount: response.data.data.discount,
             isFeatured: false,
-            colors: [],
+            colors: response.data.data.variants.map((item) => {
+              return item.color.hex;
+            }),
             images: response.data.data.images,
           });
-          console.log(response.data.data);
-          // response.data.data.variants &&
-          response.data.data.variants.map((item) => {
-            colors.push(item.color);
-            // sizeVariant.push(item.size.label);
-          });
-          console.log(sizeVariant);
-          // setVariantTable((prevData) => {
-          //   return [
-          //     ...prevData,
-          //     {
-          //       color: currentVariantFile ? currentVariantFile : colors,
-          //       images: [
-          //         { asset_id: "", public_id: "", secure_url: "" },
-          //         { asset_id: "", public_id: "", secure_url: "" },
-          //         { asset_id: "", public_id: "", secure_url: "" },
-          //         { asset_id: "", public_id: "", secure_url: "" },
-          //         { asset_id: "", public_id: "", secure_url: "" },
-          //       ],
-          //       sizes: sizeVariant,
-          //     },
-          //   ];
-          // });
 
+          setAcessories(
+            response.data.data.accessories.map((item) => {
+              return { image: item.images[0].secure_url, id: item._id };
+            })
+          );
+          setSelectedColors(
+            response.data.data.variants.map((item) => {
+              return item.color.hex;
+            })
+          );
+          setVariantTable(
+            response.data.data.variants.map((item) => {
+              return {
+                color: item.color.hex,
+                size: item.size.value,
+                price: item.price,
+                quantity: item.qty,
+                images: {
+                  retained: [],
+                  deleted: [],
+                },
+              };
+            })
+          );
+          const idSet = new Set(
+            response.data.data.customStyles.map((obj) => obj.id)
+          );
+          const filteredArray1 = styleResponse.data.data.filter((obj) =>
+            idSet.has(obj._id)
+          );
+          const productStyles = filteredArray1.map((item, index) => {
+            const stylePositionExist = response.data.data.customStyles.filter(
+              (styleItem) => styleItem.id === item._id
+            );
+            return {
+              image: item.imageUrl,
+              id: item._id,
+              name: item.class,
+              position: stylePositionExist && stylePositionExist[0].position,
+              imageIndex:
+                stylePositionExist && stylePositionExist[0].imageIndex,
+            };
+          });
+
+          setSelectedStyles(productStyles);
+          localStorage.setItem("styleTypes", JSON.stringify(productStyles));
           setPageLoading(false);
         }
       } catch (error) {
@@ -311,17 +373,14 @@ const AddProduct = () => {
       }
     }
   };
-  const fetchStyles = async () => {
-    try {
-      const response = await getRequest("/vendor/products/styles/all");
-      console.log(response);
-      if (response.status === 200) {
-        setStyles(response.data.data);
-      }
-    } catch (error) {}
-  };
+  // const fetchStyles = async () => {
+  //   try {
+  //   catch (error) {}
+  // };
+
   useEffect(() => {
-    fetchStyles();
+    localStorage.removeItem("styleTypes");
+    // fetchStyles();
   }, []);
 
   useEffect(() => {
@@ -470,27 +529,6 @@ const AddProduct = () => {
                       />
                     </div>
                     <div className="w-full ">
-                      {/* <ColorInput
-                        index={80}
-                        label="Colour"
-                        placeholder="Choose  colours available for this product"
-                        value={productFormData.colors}
-                        setValue={(data) => {
-                          setProductFormData((prevData) => {
-                            return { ...prevData, colors: data };
-                          });
-                          if (data) {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, colors: false };
-                            });
-                          } else {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, colors: true };
-                            });
-                          }
-                        }}
-                        error={requiredproductFormData.colors}
-                      /> */}
                       <div className="w-full">
                         <NumberInput
                           label="Available discount"
@@ -500,15 +538,6 @@ const AddProduct = () => {
                             setProductFormData((prevData) => {
                               return { ...prevData, discount: data };
                             });
-                            // if (data) {
-                            //   setrequiredproductFormData((prevData) => {
-                            //     return { ...prevData, discount: false };
-                            //   });
-                            // } else {
-                            //   setrequiredproductFormData((prevData) => {
-                            //     return { ...prevData, discount: true };
-                            //   });
-                            // }
                           }}
                           error={requiredproductFormData.discount}
                         />
@@ -621,17 +650,16 @@ const AddProduct = () => {
                         setShowAddAccessories(true);
                       }}
                     />
-                    <Styles />
+                    <Styles data={accessories} />
                   </div>
                   <div className="w-full">
-                    <VariantInput
+                    <ColorInput
                       index={50}
-                      value={variantTable.map((item) => {
-                        return item.color;
-                      })}
+                      value={selectedColors}
                       label="Colour"
                       placeholder="Choose colours available for this product"
                       setValue={addToVariantTable}
+                      removeColorHandler={removeColorVariant}
                     />
                   </div>
                   <div className="w-full">
@@ -639,17 +667,23 @@ const AddProduct = () => {
                       label="Material"
                       placeholder="Choose available for this product"
                       handleSelect={addToVariantTable}
-                      value={variantFiles}
+                      value={selectedVariantFIles}
+                      removeMaterialHandler={removeMaterialHandler}
+                      loading={materialUploadLoading}
                     />
                   </div>
                   <div className="w-full">
                     <SizeInput
+                      disabled={
+                        [...selectedColors, ...selectedColors].length > 0
+                          ? false
+                          : true
+                      }
                       value={productFormData.variantSizes}
                       setValue={(data, index) => {
                         if (index !== undefined) {
-                          removeVariant(index);
+                          removeVariant(index, data);
                         } else {
-                          console.log(index);
                           addSizeToVariant(data);
                         }
                         setProductFormData((prevData) => {
@@ -680,42 +714,8 @@ const AddProduct = () => {
                   <div className="my-8">
                     <DashedComponent name={"Product variants"} />
                   </div>
-
-                  {/* <div className="flex items-center">
-                    <Typography
-                      textWeight="font-[700]"
-                      textSize="text-[18px]"
-                      verticalPadding="my-2"
-                      textColor="text-dark"
-                    >
-                      Add options
-                    </Typography>
-                    <Typography
-                      textWeight="font-[500]"
-                      textSize="text-[16px]"
-                      verticalPadding="my-2"
-                      textColor="text-gray-200"
-                    >
-                      (Variants)
-                    </Typography>
-                  </div> */}
+                  <div></div>
                   <div>
-                    {/* <div className="w-full">
-                      <SelectInput
-                        placeholder={"Enter roduct tags"}
-                        // value={dropDownValue}
-                        setValue={(data) => {
-                          //   setDropDownValue(data);
-                        }}
-                        data={[{ text: "Male" }, { text: "Female" }]}
-                        label="Product tags"
-                        index={20}
-                      />
-                    </div> */}
-                  </div>
-
-                  <div>
-                    {" "}
                     <div className="flex items-center">
                       <Typography
                         textWeight="font-[700]"
@@ -769,28 +769,25 @@ const AddProduct = () => {
             <Modal
               content={
                 <AddAcessories
+                  submitAcessories={submitAcessories}
                   closeModal={() => {
-                    setShowAddAccessories(false);
+                    setShowAddAccessories(false); 
                   }}
                 />
               }
             ></Modal>
           )}
         </div>
-      </div>
+      </v
       {positionModal && (
-        <Modal
-          content={
-            <DragDrop
-              handleSelectStyle={handleSelectStyle}
-              productImages={productFormData.images}
-              selectedStyles={selectedStyles}
-              closeModal={() => {
-                setPositionModal(false);
-              }}
-            ></DragDrop>
-          }
-        ></Modal>
+        <DragD     
+          handleSelectStyle={handleSelectStyle}
+          productImages={productFormData.images}
+          selectedStyles={selectedStyles}
+          closeModal={() => {
+            setPositionModal(false);
+          }}
+        ></DragDrop>
       )}
     </section>
   );

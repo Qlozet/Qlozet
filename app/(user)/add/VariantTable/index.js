@@ -8,6 +8,7 @@ const VariantTable = ({
   quantityHandler,
   priceHandler = { priceHandler },
 }) => {
+  console.log(data);
   return (
     <div className={`overflow-x-scroll ${styles.scrollbarElement}`}>
       <table className="w-full shadow py-4">

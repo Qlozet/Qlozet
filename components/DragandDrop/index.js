@@ -23,7 +23,7 @@ const DragDrop = ({
   // });
 
   // console.log(productImages);
-  const imageRef = useRef();
+  const imageConRef = useRef();
   const itemref = useRef();
   const subRef = useRef();
   const data = [
@@ -63,13 +63,17 @@ const DragDrop = ({
     name: "",
     imageIndex: "",
   });
+  const [customeStylesUiPosition, setCustomStylesUiPosition] = useState([
+    { left: 29, top: 20, style: "tops", index: 0 },
+    { left: 40, top: 60, style: "tops", index: 1 },
+  ]);
   const [positionWidthimage, setPositionWidthimage] = useState([]);
   const [controlledPosition, setControlledPosition] = useState([]);
   const onStart = () => {
-    if ((imageRef.current, itemref.current)) {
+    if ((imageConRef.current, itemref.current)) {
       setImageSize({
-        height: imageRef.current.offsetHeight,
-        width: imageRef.current.offsetWidth,
+        height: imageConRef.current.offsetHeight,
+        width: imageConRef.current.offsetWidth,
       });
 
       setItemSize({
@@ -96,6 +100,7 @@ const DragDrop = ({
         return { ...item };
       }
     });
+
     const newCustomStyleofAllImage = customeStylesOrAllImage.map((item) => {
       if (item.imageIndex === imageIndex) {
         return { ...item, style: newSTyles };
@@ -111,10 +116,29 @@ const DragDrop = ({
     handleSelectStyle(newCustomStyleofAllImage);
   };
 
+  function handleLastTouch(x, y) {
+    console.log("Last touch position:", x, y);
+  }
+
+  const handleTuchMove = (event) => {
+    const touches = event.changedTouches;
+    console.log(event);
+    if (touches.length > 0) {
+      const lastTouch = touches[touches.length - 1];
+      handleLastTouch(lastTouch.clientX, lastTouch.clientY);
+    }
+  };
+
+  const onMouseMove = (event) => {
+    // console.log(event.pageX - event.target.getBoundingClientRect().x);
+    console.log(event.offsetY);
+    console.log(event.target.getBoundingClientRect().y);
+  };
+
   const handleSetCurentStyle = (style, imgIndex) => {
     setCurrentStyle({ name: style, imageIndex: imgIndex });
   };
-  const dragHandlers = { onStart, onStop };
+  const dragHandlers = { onStart };
 
   useEffect(() => {
     // console.log(selectedStyles);
@@ -133,6 +157,14 @@ const DragDrop = ({
   }, [imageIndex]);
 
   useEffect(() => {
+    console.log(
+      customeStylesUiPosition.filter(
+        (item) => item.style === "tops" && item.index === imageIndex
+      )[0]
+    );
+    customeStylesUiPosition.filter(
+      (item) => item.style === "tops" && item.index === imageIndex
+    )[0];
     const indexCheck = [];
     data.map((item, index) => {
       const newItem = {
@@ -153,7 +185,7 @@ const DragDrop = ({
     });
   }, [selectedStyles]);
   return (
-    <div className="bg-white m-auto overflow-hidden lg:mt-[4rem] p-6 rounded-[10px] lg:w-[450px] relative">
+    <div className="bg-white m-auto overflow-hidden lg:mt-[4rem] p-6 rounded-[10px] lg:w-[450px]">
       <button
         onClick={() => {
           closeModal();
@@ -170,63 +202,68 @@ const DragDrop = ({
           Drag & Drop parts of the cloth
         </Typography>
       </div>
-      <div className="flex gap-4 ">
-        <div className="w-[70%] relative">
-          <div className="absolute top-[50%] left-0 flex items-center justify-between w-[100%] px-6">
-            <div>
-              {imageIndex > 0 && (
-                <button
-                  className="bg-white w-[2rem] h-[2rem] flex items-center justify-center rounded-[50%] cursor-pointer"
-                  onClick={() => {
-                    setImageIndex(imageIndex - 1);
-                  }}
-                >
-                  <Image
-                    height={18}
-                    width={18}
-                    src={arrowLeft}
-                    alt="product image"
-                    className="rounded-b-[12px]"
-                    unoptimized
-                  />
-                </button>
-              )}
-            </div>
-            <div>
-              {imageIndex < productImages.length - 1 && (
-                <button
-                  className="bg-white w-[2rem] h-[2rem] flex items-center justify-center rounded-[50%] cursor-pointer"
-                  onClick={() => {
-                    setImageIndex(imageIndex + 1);
-                  }}
-                >
-                  <Image
-                    height={18}
-                    width={18}
-                    src={arrowRight}
-                    alt="product image"
-                    className="rounded-b-[12px]"
-                    unoptimized
-                  />
-                </button>
-              )}
+      <div className="flex gap-4 relative">
+        <div className="w-[70%] " ref={imageConRef}>
+          <div className="relative w-full">
+            <div className="absolute mt-[50%] left-0 flex items-center justify-between w-[100%] px-6 ">
+              <div>
+                {imageIndex > 0 && (
+                  <button
+                    className="bg-white w-[2rem] h-[2rem] flex items-center justify-center rounded-[50%] cursor-pointer"
+                    onClick={() => {
+                      setImageIndex(imageIndex - 1);
+                    }}
+                  >
+                    <Image
+                      height={18}
+                      width={18}
+                      src={arrowLeft}
+                      alt="product image"
+                      className="rounded-b-[12px]"
+                      unoptimized
+                    />
+                  </button>
+                )}
+              </div>
+              <div>
+                {imageIndex < productImages.length - 1 && (
+                  <button
+                    className="bg-white w-[2rem] h-[2rem] flex items-center justify-center rounded-[50%] cursor-pointer"
+                    onClick={() => {
+                      setImageIndex(imageIndex + 1);
+                    }}
+                  >
+                    <Image
+                      height={18}
+                      width={18}
+                      src={arrowRight}
+                      alt="product image"
+                      className="rounded-b-[12px]"
+                      unoptimized
+                    />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
-          {/* {productImages.length > 0 && ( */}
-          <Image
-            ref={imageRef}
-            alt=""
-            src={productImages[imageIndex].secure_url}
-            width={50}
-            height={50}
-            style={{
-              width: "100%",
-              height: "auto",
-              maxWidth: "300px",
-            }}
-            unoptimized
-          />
-          {/* )} */}
+
+          {productImages.length > 0 && (
+            <Image
+              alt=""
+              src={productImages[imageIndex].secure_url}
+              width={50}
+              height={50}
+              style={{
+                width: "100%",
+                height: "auto",
+                maxWidth: "300px",
+              }}
+              unoptimized
+              onMouseMove={onMouseMove}
+              onMouseUp={onStop}
+              touchEnd={handleTuchMove}
+            />
+          )}
         </div>
         {productImages.map(
           (item, index) =>
@@ -246,6 +283,29 @@ const DragDrop = ({
                       }}
                       onTouchStart={() => {
                         handleSetCurentStyle("tops", imageIndex);
+                      }}
+                      style={{
+                        position: "absolute",
+                        left: `${
+                          customeStylesUiPosition.filter(
+                            (item) =>
+                              item.style === "tops" && item.index === imageIndex
+                          ).length > 0 &&
+                          customeStylesUiPosition.filter(
+                            (item) =>
+                              item.style === "tops" && item.index === imageIndex
+                          )[0].left
+                        }px`,
+                        top: `${
+                          customeStylesUiPosition.filter(
+                            (item) =>
+                              item.style === "tops" && item.index === imageIndex
+                          ).length > 0 &&
+                          customeStylesUiPosition.filter(
+                            (item) =>
+                              item.style === "tops" && item.index === imageIndex
+                          )[0].top
+                        }px`,
                       }}
                     >
                       <Typography

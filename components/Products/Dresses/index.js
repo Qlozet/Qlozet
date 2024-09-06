@@ -48,7 +48,7 @@ const Dresses = ({ data }) => {
       </div>
       <div>
         <div className="m-4">
-          <Button
+          {/* <Button
             // loading={isLoading}
             maxWidth="max-w-[6rem]"
             children="Submit"
@@ -57,7 +57,7 @@ const Dresses = ({ data }) => {
             clickHandler={() => {
               // handleLogin();
             }}
-          />
+          /> */}
         </div>
       </div>
     </div>

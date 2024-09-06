@@ -5,17 +5,24 @@ const Variant = ({ bg }) => {
   return (
     <div>
       {bg.includes("https://res.cloudinary.com") ? (
-        <Image
-          height={500}
-          width={500}
-          src={bg}
-          alt="product image"
-          className={`w-[3rem] h-[2rem] rounded-[8px]`}
+        // <Image
+        //   height={500}
+        //   width={500}
+        //   src={bg}
+        //   alt="product image"
+        //   className={`w-[3rem] h-[2rem] rounded-[8px]`}
+        //   style={{
+        //     width: "3rem",
+        //     height: "2rem",
+        //   }}
+        // />
+        <div
+          className="relative my-2 w-[3.5rem] h-[2rem] rounded-[2px]"
           style={{
-            width: "3rem",
-            height: "2rem",
+            backgroundImage: `url('${bg}')`,
+            backgroundPosition: "center",
           }}
-        />
+        ></div>
       ) : (
         <div
           className={`w-[3rem] h-[2rem] rounded-[8px]`}

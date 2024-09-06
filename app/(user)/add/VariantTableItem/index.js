@@ -15,12 +15,11 @@ const VariantTableItem = ({
   submitImage,
   priceHandler,
 }) => {
-  console.log(item);
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
       <td className="text-[12px] font-normal px-4 py-3 text-dark border-solid border-r-[1px] border-gray-300 flex items-center gap-2">
-        <Variant bg={item.color} />
-        <Size value={item.sizes[0]} />
+        <Variant bg={item.color && item.color} />
+        <Size value={item.size} />
       </td>
       <td className="text-[12px] font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
         <AddQuantity
@@ -32,7 +31,7 @@ const VariantTableItem = ({
       <td className="text-[12px] font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
         <PriceComp
           listIndex={index}
-          productAmount={item.prize}
+          productAmount={item.price}
           priceHandler={priceHandler}
         />
       </td>

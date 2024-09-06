@@ -11,8 +11,8 @@ const SizeInput = ({
   label,
   index,
   error,
+  disabled,
 }) => {
-  console.log(value);
   const [showDropDown, setShowDropDown] = useState(false);
   const dropDownRef = useRef();
   const [list, setList] = useState(data);
@@ -32,28 +32,33 @@ const SizeInput = ({
     setValue(remainingSizes, sizeIndex);
     setSelectedList(remainingSizes);
   };
+
   useEffect(() => {
     setList(filterSelectedItems(data, value));
   }, [value]);
 
   return (
     <div
-      className={`bg-white w-full relative my-2 h-[4rem]`}
+      className={`${
+        disabled ? "bg-gray-400" : "bg-white"
+      }  w-full relative my-2 h-[4rem]`}
       style={{ zIndex: index ? index : 10 }}
     >
       <div className={`${classes.container}`}>
         <label className="text-[14px] text-dark">{label}</label>
         <input
+          readOnly
           onChange={filterList}
           onClick={() => {
-            setShowDropDown(true);
+            !disabled && setShowDropDown(true);
           }}
           onBlur={(e) => {
-            if (!dropDownRef.current.contains(e.relatedTarget)) {
-              setShowDropDown(false);
+            if (!disabled) {
+              if (!dropDownRef.current.contains(e.relatedTarget)) {
+                setShowDropDown(false);
+              }
             }
           }}
-          // placeholder={value.length < 1 && placeholder}
           className={`py-3 ${
             error && "border-danger"
           } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  absolute top-[1.5rem] left-0

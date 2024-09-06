@@ -6,7 +6,9 @@ import icon from "../../../public/assets/svg/document-upload.svg";
 import Button from "@/components/Button";
 import closeIcon from "../../../public/assets/svg/material-symbols_close-rounded.svg";
 import validator from "@/utils/validator";
-const AddAcessories = ({ closeModal }) => {
+import { uploadSingleImage } from "@/utils/helper";
+import { postRequest } from "@/api/method";
+const AddAcessories = ({ closeModal, submitAcessories }) => {
   const [accessories, setAcesssories] = useState({
     name: "",
     type: "",
@@ -26,12 +28,35 @@ const AddAcessories = ({ closeModal }) => {
     if (status) {
       setloading(true);
       try {
-      } catch (error) {}
+        const response = await postRequest("/vendor/products/accessory", {
+          name: accessories.name,
+          type: accessories.type,
+          images: [accessories.image],
+        });
+        submitAcessories({
+          name: accessories.name,
+          type: accessories.type,
+          images: accessories.image.secure_url,
+          id: response.data,
+        });
+        response && setloading(false);
+      } catch (error) {
+        error && setloading(false);
+      }
     } else {
       setAcesssoriesRequired((prevData) => {
         return { prevData, ...data };
       });
     }
+  };
+
+  const handleUpload = async (file) => {
+    try {
+      const imageUrl = await uploadSingleImage(file);
+      setAcesssories((prevData) => {
+        return { ...prevData, image: imageUrl };
+      });
+    } catch (error) {}
   };
 
   return (
@@ -105,9 +130,7 @@ const AddAcessories = ({ closeModal }) => {
                 type="file"
                 className={`hidden `}
                 onChange={(e) => {
-                  setAcesssories((prevData) => {
-                    return { ...prevData, image: e.target.files[0] };
-                  });
+                  handleUpload(e.target.files[0]);
                   setAcesssoriesRequired((prevData) => {
                     return { ...prevData, image: false };
                   });
@@ -157,7 +180,7 @@ const AddAcessories = ({ closeModal }) => {
         </Typography>
         {accessories.image && (
           <Image
-            src={URL.createObjectURL(accessories.image)}
+            src={accessories.image.secure_url}
             alt="acces"
             width={50}
             height={50}

@@ -2,6 +2,7 @@ import Typography from "@/components/Typography";
 import { useState } from "react";
 const PriceComp = ({ priceHandler, productAmount, listIndex }) => {
   const [price, setPrice] = useState(productAmount);
+  console.log(productAmount);
   return (
     <div className="flex items-center  px-4 rounded-[6px] justify-between border-[1px] border-solid border-gray-300">
       <div className="cursor-pointer py-1">
@@ -23,13 +24,12 @@ const PriceComp = ({ priceHandler, productAmount, listIndex }) => {
         className="w-full h-full ml-6 font-[500] text-[16px]"
       />
       {/* <Typography
-          textColor="text-primary"
-          textWeight="font-[500]"
-          textSize="text-[16px]"
-        >
-          {productAmount}
-        </Typography>
-      </div> */}
+        textColor="text-primary"
+        textWeight="font-[500]"
+        textSize="text-[16px]"
+      >
+        {productAmount}
+      </Typography> */}
     </div>
   );
 };

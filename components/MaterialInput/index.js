@@ -3,57 +3,75 @@ import { useState } from "react";
 import classes from "./index.module.css";
 import trashIcon from "../../public/assets/svg/trash.svg";
 import imageicon from "../../public/assets/svg/image.svg";
+import closeIcon from "../../public/assets/svg/material-symbol-close-icon.svg";
+import { Oval } from "react-loader-spinner";
 const MaterialInput = ({
   label,
   handleSelect,
   value,
   placeholder,
   disabled = false,
+  removeMaterialHandler,
+  loading,
 }) => {
-  const [files, setFiles] = useState(value);
-  const removeFile = (fileIndex) => {
-    files.filter((file, index) => index !== fileIndex);
-    handleSelect(files.filter((file, index) => index !== fileIndex));
-    setFiles(files.filter((file, index) => index !== fileIndex));
-  };
   return (
     <div>
-      <label>{label}</label>
-      <div className="border-[1.5px] border-solid border-gray-200 relative h-[2.6rem] rounded-[8px]">
+      <label className="text-[14px] text-dark">{label}</label>
+      <div className="border-[1.5px] border-solid border-gray-200 relative h-[3rem] rounded-[8px]">
         <div className="absolute top-2 right-2 cursor-pointer  gap-4 flex justify-center items-center">
-          <label className="" htmlFor="material">
-            <div className="">
-              <Image src={imageicon} alt="" />
-            </div>
-          </label>
           <div className="">
             <Image src={trashIcon} alt="" />
           </div>
         </div>
         <div
-          className={` ${classes.scrollbarElement} flex items-center gap-4 h-full pl-4`}
+          className={` ${classes.scrollbarElement} flex items-center gap-4 h-full pl-2`}
         >
-          {files.map((item, index) => {
-            console.log(item);
-            let dataUrl;
-            if (typeof item === "string") {
-              dataUrl = item;
-            } else {
-              dataUrl = URL.createObjectURL(item);
-            }
+          {value.map((item, index) => {
+            let dataUrl = item;
             return (
-              <div key={index}>
-                <Image
-                  width={500}
-                  height={500}
-                  src={dataUrl}
-                  style={{ width: "5rem", height: "1.5rem" }}
-                  alt=""
-                  className="w-[2rem] h-[auto]"
-                />
+              <div
+                key={index}
+                className="relative my-2 w-[3.5rem] h-[2rem] rounded-[2px]"
+                style={{
+                  backgroundImage: `url('${dataUrl}')`,
+                  backgroundPosition: "center",
+                }}
+              >
+                <div
+                  className="absolute top-[-5px] right-[-5px] bg-primary-100 rounded-[50%] p-[1px]"
+                  style={{ zIndex: 200 }}
+                >
+                  <Image
+                    alt="close"
+                    src={closeIcon}
+                    width={15}
+                    height={15}
+                    onClick={() => {
+                      removeMaterialHandler(item, index);
+                    }}
+                  />
+                </div>
               </div>
             );
           })}
+          <label
+            htmlFor="material"
+            className="w-[4rem] h-[2rem] rounded border-[1.5px] border-solid flex items-center justify-center cursor-pointer"
+          >
+            {loading ? (
+              <Oval
+                visible={true}
+                height={18}
+                width={18}
+                color="rgba(62, 28, 1, 1)"
+                ariaLabel="oval-loading"
+                wrapperStyle={{}}
+                wrapperClass=""
+              />
+            ) : (
+              <Image src={imageicon} alt="" width={25} height={25} />
+            )}
+          </label>
         </div>
         <input
           type="file"
@@ -65,10 +83,7 @@ const MaterialInput = ({
           disabled={disabled}
           placeholder={placeholder}
           onChange={(e) => {
-            setFiles((prevData) => {
-              handleSelect([...prevData, e.target.files[0]]);
-              return [...prevData, e.target.files[0]];
-            });
+            handleSelect(e.target.files[0]);
           }}
         />
       </div>

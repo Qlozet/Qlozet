@@ -75,10 +75,33 @@ export const uploadSingleImage = async (file) => {
       formData,
       true
     );
-    return {
-      asset_id: response?.data.asset_id,
-      public_id: response?.data.public_id,
-      secure_url: response?.data.secure_url,
-    };
-  } catch (error) {}
+    if (response.data) {
+      return {
+        asset_id: response?.data.asset_id,
+        public_id: response?.data.public_id,
+        secure_url: response?.data.secure_url,
+      };
+    } else {
+      return null;
+    }
+  } catch (error) {
+    return null;
+  }
+};
+
+export const modifySizeHandler = (value) => {
+  console.log(value);
+  const size =
+    value === "Extra small"
+      ? "ES"
+      : value === "Small"
+      ? "S"
+      : value === "Medium"
+      ? "M"
+      : value === "Large"
+      ? "L"
+      : value === "Extra large"
+      ? "XL"
+      : "";
+  return size;
 };

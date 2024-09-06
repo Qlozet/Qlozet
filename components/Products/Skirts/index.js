@@ -65,13 +65,13 @@ const Skirts = ({ data }) => {
       <div>
         <div className="grid grid-cols-3 lg:grid-cols-8 gap-4 py-4 mt-1"></div>
         <div className="m-4">
-          <Button
+          {/* <Button
             maxWidth="max-w-[6rem]"
             children="Submit"
             btnSize="large"
             variant="primary"
             clickHandler={() => {}}
-          />
+          /> */}
         </div>
       </div>
     </div>

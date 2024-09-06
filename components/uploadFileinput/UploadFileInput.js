@@ -37,7 +37,7 @@ const FileInput = ({
 
   return (
     <div className="my-3 w-full">
-      <label>{label}</label>
+      <label className="text-[14px] text-dark">{label}</label>
       <div className="overflow-hidden">
         <div
           className={`${classes.scrollbarElement} w-full h-[7rem] flex items-center gap-4 px-4 border-[1.5px] border-solid border-primary-200 rounded-[12px]`}
