@@ -778,9 +778,9 @@ const AddProduct = () => {
             ></Modal>
           )}
         </div>
-      </v
+          </div>
       {positionModal && (
-        <DragD     
+        <DragDrop     
           handleSelectStyle={handleSelectStyle}
           productImages={productFormData.images}
           selectedStyles={selectedStyles}
