@@ -136,7 +136,7 @@ const DragDrop = ({
   useEffect(() => {
     console.log(selectedStyles);
 
-    const styleWithPosition = selectedStyles.filter((item) => item.position);g
+    const styleWithPosition = selectedStyles.filter((item) => item.position);
     setCustomStylesUiPosition(
       styleWithPosition.map((item) => {
         return {
