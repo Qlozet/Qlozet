@@ -130,6 +130,7 @@ const DragDrop = ({
   };
 
   const onMouseMove = (event) => {
+    event.prevDefault();
     // console.log(event.pageX - event.target.getBoundingClientRect().x);
     console.log(event.offsetY);
     console.log(event.target.getBoundingClientRect().y);

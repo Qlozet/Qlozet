@@ -9,7 +9,7 @@ const DragDrop = ({
   closeModal,
   productImages,
   selectedStyles,
-  handleSelectStyle,
+  handleSelectStyle
 }) => {
   const imageRef = useRef();
   const draggedRef = useRef();
@@ -21,7 +21,7 @@ const DragDrop = ({
       secure_url:
         "https://res.cloudinary.com/dfnmx7vgc/image/upload/v1723845336/dfkela1w4k0vzuqknqrc.jpg",
     },
-
+ 
     {
       asset_id: "d6afe2b799693f827bf55ac805756e43",
       public_id: "ri87pudm2jss5jtbmbw6",
@@ -41,26 +41,31 @@ const DragDrop = ({
         "https://res.cloudinary.com/dfnmx7vgc/image/upload/v1723845336/dfkela1w4k0vzuqknqrc.jpg",
     },
   ];
+
   const [imageIndex, setImageIndex] = useState(0);
   const [customStyles, setCustomStyles] = useState([]);
+  // const [imageRefSize,setImageRefSize]=useState({})
   const [startCal, setStartCal] = useState(false);
   const [customeStylesOrAllImage, setCustomeStyleOfAllImage] = useState([]);
   const [touchPoint, setTouchPoint] = useState({ x: 0, y: 0 });
   const [currentStyle, setCurrentStyle] = useState();
   const [customeStylesUiPosition, setCustomStylesUiPosition] = useState([]);
   const handleSetCurentStyle = (style, imgIndex) => {
+    setStartCal(true);
     setCurrentStyle({ name: style, imageIndex: imgIndex });
   };
 
   const calcultePosition = () => {
     if (startCal && currentStyle) {
       const { width, height } = imageRef.current.getBoundingClientRect();
+      console.log(customeStylesUiPosition[customeStylesUiPosition.length - 1].left)
       const position = {
-        left: customeStylesUiPosition[customeStylesUiPosition.length - 1].left,
-        top: customeStylesUiPosition[customeStylesUiPosition.length - 1].top,
+        left:(customeStylesUiPosition[customeStylesUiPosition.length - 1].left)* 100/ width,
+        top: (customeStylesUiPosition[customeStylesUiPosition.length - 1].top)*100/height,
         right: 0,
         bottom: 0,
       };
+
 
       const newSTyles = customStyles.map((item) => {
         if (item.name === currentStyle.name) {
@@ -69,6 +74,7 @@ const DragDrop = ({
           return { ...item };
         }
       });
+
       const newCustomStyleofAllImage = customeStylesOrAllImage.map((item) => {
         if (item.imageIndex === imageIndex) {
           return { ...item, style: newSTyles };
@@ -87,11 +93,12 @@ const DragDrop = ({
     if (startCal && currentStyle) {
       const { width, height, left, y } =
         imageRef.current.getBoundingClientRect();
+       
       for (let i = 0; i < e.changedTouches.length; i++) {
         setTouchPoint({
           ...touchPoint,
-          x: e.changedTouches[i].pageX - left + 10 - 32,
-          y: e.changedTouches[i].pageY - y + 40,
+          x: e.changedTouches[i].clientX - left,
+          y: e.changedTouches[i].clientY - y,
         });
       }
       setCustomStylesUiPosition((prevData) => {
@@ -109,8 +116,10 @@ const DragDrop = ({
   };
 
   const mouseMove = (e) => {
+    e.preventDefault();
     if (startCal && currentStyle) {
-      const { left, y } = imageRef.current.getBoundingClientRect();
+      const { left, y ,width,height} = imageRef.current.getBoundingClientRect();
+    console.log(width,height)
       setTouchPoint({
         ...touchPoint,
         x: e.clientX - left,
@@ -134,22 +143,21 @@ const DragDrop = ({
   };
 
   useEffect(() => {
-    console.log(selectedStyles);
-
     const styleWithPosition = selectedStyles.filter((item) => item.position);
+ const { width, height } = imageRef.current.getBoundingClientRect();
     setCustomStylesUiPosition(
       styleWithPosition.map((item) => {
         return {
-          left: item.position.left,
+          left: (item.position.left * width) / 100,
           right: item.position.right,
-          top: item.position.top,
+          top: (item.position.top * height) / 100,
           bottom: item.position.bottom,
           imageIndex: item.imageIndex,
           style: item.name,
         };
       })
     );
-  }, []);
+  }, [imageIndex]);
 
   useEffect(() => {
     const indexCheck = [];
@@ -173,15 +181,16 @@ const DragDrop = ({
   }, [selectedStyles]);
   return (
     <div
-      className={`${style.modal} fixed top-0 left-0 w-full bg-[#00000080] h-screen overflow-y-scroll px-4 lg:px-0  flex items-center justify-center`}
+      className={`${style.modal} fixed top-0 left-0 w-full bg-[#00000080] h-screen overflow-y-scroll px-4 lg:px-0  flex items-center justify-center  ${style.sizecontainer}`}
       style={{
         zIndex: 300,
       }}
       onMouseUp={() => {
+        console.log("Hello")
         calcultePosition();
       }}
     >
-      <div className="bg-white m-auto  lg:mt-[4rem] p-6 rounded-[10px] relative max-w-[450px]">
+      <div className="bg-white m-auto min-w-[97%] lg:mt-[4rem] p-6 rounded-[10px] relative md:min-w-[450px] max-w-[450px]">
         <button
           onClick={() => {
             closeModal();
@@ -199,9 +208,9 @@ const DragDrop = ({
           </Typography>
         </div>
         <div
-          className={`flex gap-4 relative overflow-hidden ${style.sizecontainer}`}
+          className={`flex gap-4 relative overflow-hidden `}
           onMouseDown={(e) => {
-            e.preventDefault();
+            // e.preventDefault();
             setStartCal(true);
           }}
           onMouseMove={mouseMove}
@@ -211,7 +220,7 @@ const DragDrop = ({
             {productImages.length > 0 && (
               <div className={`relative`}>
                 <div className="absolute top-[50%] left-0 flex items-center justify-between w-[100%] px-6">
-                  <div className="w-[70%] relative top-0 left-0 z-40">
+                  <div className="min-w-[70%] relative top-0 left-0 z-40">
                     {imageIndex > 0 && (
                       <button
                         className="bg-white w-[2rem] h-[2rem] flex items-center justify-center rounded-[50%] cursor-pointer"
@@ -356,7 +365,6 @@ const DragDrop = ({
                           handleSetCurentStyle("bottoms", imageIndex);
                         }}
                         onMouseDown={() => {
-                          setStartCal(true);
                           handleSetCurentStyle("bottoms", imageIndex);
                         }}
                         className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move w-[5rem] mb-4"
@@ -426,7 +434,6 @@ const DragDrop = ({
                           handleSetCurentStyle("skirts", imageIndex);
                         }}
                         onMouseDown={() => {
-                          setStartCal(true);
                           handleSetCurentStyle("skirts", imageIndex);
                         }}
                         className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move w-[5rem] mb-4"
@@ -496,7 +503,6 @@ const DragDrop = ({
                           handleSetCurentStyle("dresses", imageIndex);
                         }}
                         onMouseDown={() => {
-                          setStartCal(true);
                           handleSetCurentStyle("dresses", imageIndex);
                         }}
                         className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move w-[5rem] mb-4"
@@ -572,7 +578,6 @@ const DragDrop = ({
                           handleSetCurentStyle("outfits", imageIndex);
                         }}
                         onMouseDown={() => {
-                          setStartCal(true);
                           handleSetCurentStyle("outfits", imageIndex);
                         }}
                         className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move w-[5rem] mb-4"

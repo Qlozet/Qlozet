@@ -87,7 +87,6 @@ const AddProduct = () => {
   };
 
   const handleSelectStyle = (positionStyles, width, height) => {
-    console.log(width, height);
     const filter = positionStyles.map((item) => item.style);
     const stylesExist = filter
       .filter((item) => {
@@ -102,18 +101,8 @@ const AddProduct = () => {
           position: item.position,
           imageIndex: item.imageIndex,
         };
-        // return {
-        //   id: item.id,
-        //   position: {
-        //     left: (item.position.left * 100) / width,
-        //     top: (item.position.left * 100) / height,
-        //     right: (width - item.position.left * 100) / width,
-        //     Bottoms: (height - item.position.left * 100) / height,
-        //   },
-        //   imageIndex: item.imageIndex,
-        // };
+       
       });
-
     const containsPostion = stylesExist.filter((item) => {
       if (item.position) {
         return item;
@@ -121,7 +110,6 @@ const AddProduct = () => {
       }
     });
     setPositionStyles(containsPostion);
-    console.log(positionStyles);
   };
 
   const submitVariantImage = async (file, listIndex, imageIndex) => {
@@ -162,8 +150,13 @@ const AddProduct = () => {
 
   const addSizeToVariant = (size) => {
     const addColorAndMaterial = [...selectedColors, ...selectedVariantFIles];
+    const previousColorInVarianttable = new Set(
+      variantTable.map((color) => color.color)
+    );
+    const newSelectedColorsAndMaterials = addColorAndMaterial.filter(
+      (color) => !previousColorInVarianttable.has(color)
+    );
     addColorAndMaterial.map((item) => {
-      console.log(modifySizeHandler(size[size.length - 1]));
       setVariantTable((prevData) => {
         return [
           ...prevData,
@@ -195,16 +188,12 @@ const AddProduct = () => {
   };
 
   const removeVariant = (variantIndex, data) => {
-    console.log(data);
+    console.log(addColorAndMaterial);
     console.log(variantTable);
-    // setVariantTable(
-    //   variantTable.filter((item, index) => index !== variantIndex)
-    // );
   };
 
   const VariantQuantityHandler = (index, action) => {
     let prevVariantTable = variantTable;
-
     if (action == "increase") {
       prevVariantTable[index].quantity = prevVariantTable[index].quantity + 1;
     } else {
@@ -278,7 +267,6 @@ const AddProduct = () => {
           toast(<Toast text={response?.message} type="danger" />);
         }
       } catch (error) {
-        console.log(error);
         setIsLoading(false);
         toast(<Toast text={error?.message} type="danger" />);
       }
@@ -297,6 +285,7 @@ const AddProduct = () => {
       try {
         setPageLoading(true);
         const response = await getRequest(`/vendor/products/${productId}`);
+        console.log(response)
         if (response.data.data) {
           setProductFormData({
             productName: response.data.data.name,
@@ -771,16 +760,16 @@ const AddProduct = () => {
                 <AddAcessories
                   submitAcessories={submitAcessories}
                   closeModal={() => {
-                    setShowAddAccessories(false); 
+                    setShowAddAccessories(false);
                   }}
                 />
               }
             ></Modal>
           )}
         </div>
-          </div>
+      </div>
       {positionModal && (
-        <DragDrop     
+        <DragDrop
           handleSelectStyle={handleSelectStyle}
           productImages={productFormData.images}
           selectedStyles={selectedStyles}
