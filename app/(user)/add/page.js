@@ -73,11 +73,16 @@ const AddProduct = () => {
   });
 
   const handleSelectFile = async (files, deletedFiles) => {
+    console.log(deletedFiles);
     setProductFormData((prevData) => {
       return { ...prevData, images: files };
     });
-
-    setDeletedFiles(deletedFiles);
+    if (deletedFiles) {
+      setDeletedFiles(deletedFiles);
+    } else {
+      setDeletedFiles([]);
+      console.log("doen");
+    }
   };
 
   const submitAcessories = (acess) => {
@@ -101,7 +106,6 @@ const AddProduct = () => {
           position: item.position,
           imageIndex: item.imageIndex,
         };
-       
       });
     const containsPostion = stylesExist.filter((item) => {
       if (item.position) {
@@ -187,10 +191,7 @@ const AddProduct = () => {
     setVariantTable(variantTable.filter((item) => item.color !== material));
   };
 
-  const removeVariant = (variantIndex, data) => {
-    console.log(addColorAndMaterial);
-    console.log(variantTable);
-  };
+  const removeVariant = (variantIndex, data) => {};
 
   const VariantQuantityHandler = (index, action) => {
     let prevVariantTable = variantTable;
@@ -209,8 +210,6 @@ const AddProduct = () => {
   };
 
   const handleSubmit = async () => {
-    const mergedArray = positionStyles.flat();
-    const formData = new FormData();
     const productId = getProductId();
     const { status, data, id } = validator(
       productFormData,
@@ -234,16 +233,32 @@ const AddProduct = () => {
           productType:
             productFormData.productType === "Customizable"
               ? "customizable"
-              : "outright",
+              : "Non customizable",
           discount: productFormData.discount,
           isFeatured: 0,
           images: {
-            retained: productFormData.images,
-            deleted: productId ? deletedFiles : [],
+            retained: productFormData.images.map((item) => {
+              return {
+                asset_id: item.asset_id,
+                public_id: item.public_id,
+                secure_url: item.secure_url,
+              };
+            }),
+            deleted: deletedFiles,
           },
+          // images: {
+          //   retained: productFormData.images.map((item) => {
+          //     return {
+          //       asset_id: item.asset_id,
+          //       public_id: item.public_id,
+          //       secure_url: item.secure_url,
+          //     };
+          //   }),
+          //   deleted: productId ? deletedFiles : [],
+          // },
           variants: variantTable.map((item) => {
             let varantItem = {
-              colors: item.color,
+              color: item.color,
               size: item.size,
               price: 90,
               quantity: item.quantity,
@@ -285,7 +300,6 @@ const AddProduct = () => {
       try {
         setPageLoading(true);
         const response = await getRequest(`/vendor/products/${productId}`);
-        console.log(response)
         if (response.data.data) {
           setProductFormData({
             productName: response.data.data.name,

@@ -19,6 +19,7 @@ const MobileTable = ({
   quiantity,
   ProductStatus,
   handleSelect,
+  variantCount,
 }) => {
   const router = useRouter();
   const [showDropDown, setShowDropDown] = useState(false);
@@ -34,7 +35,8 @@ const MobileTable = ({
               src={picture}
               style={{ width: "5rem", height: "auto" }}
               alt=""
-              className="w-[2rem] h-[auto] ml-4"
+              unoptimized
+              className="min-w-[6rem] h-[auto] ml-4 max-w-[8rem] border-gray-200 border-[1.5px] border-solid rounded-sm"
             />
             <div
               className="w-[1.5rem] h-[1.5rem]"
@@ -121,7 +123,7 @@ const MobileTable = ({
               >
                 Quantity
               </Typography>
-              <Quantity />
+              <Quantity variant={variantCount} quantity={quiantity} />
             </div>
             <div className="flex flex-col gap-1 mt-2 items-end justify-center">
               <Typography

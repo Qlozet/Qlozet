@@ -39,18 +39,18 @@ const Design = ({ id, image, name, reduce }) => {
 
   return (
     <div
-      className={`flex-col gap-2 ${
+      className={`flex-col gap-2 border  ${
         reduce ? "items-center" : ""
       }  justify-center border-solid  rounded-[6px] ${
-        reduce ? "" : "min-w-[5rem]"
+        reduce ? "" : ""
       }`}
     >
       <div className="relative">
         {selected && (
           <div>
-            <div className="absolute top-0 left-0 flex items-center justify-center p-1 bg-[rgba(0,0,0,.5)] w-full h-full z-10"></div>
+            <div className="absolute top-0 left-0 flex items-center justify-center bg-[rgba(0,0,0,.5)] w-full h-full z-10"></div>
             <div
-              className="absolute top-1 right-1 z-20 bg-danger rounded-[50%] p-[2px] cursor-pointer"
+              className="absolute top-0 right-1 z-20 bg-danger rounded-[50%] p-[2px] cursor-pointer"
               onClick={handleUnselect}
             >
               <Image src={closeIcon} alt="" width={18} height={18} />

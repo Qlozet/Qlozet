@@ -22,7 +22,9 @@ const ProductTableItem = ({
   quiantity,
   ProductStatus,
   handleSelect,
+  variantCount,
 }) => {
+  console.log(variantCount, quiantity);
   const dropDownButtonRef = useRef();
   const [showDropDown, setShowDropDown] = useState(false);
   const closeDropDown = (item) => {
@@ -40,14 +42,15 @@ const ProductTableItem = ({
   });
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white ">
-      <td className="text-[12px] font-normal p-4 text-dark">
+      <td className="text-[12px] font-normal py-4 text-dark">
         <Image
           width={500}
           height={500}
           src={picture}
           style={{ width: "5rem", height: "auto" }}
           alt=""
-          className="w-[2rem] h-[auto]"
+          className="w-[2rem] h-[auto]  border-gray-200 border-[1.5px] border-solid rounded-sm"
+          unoptimized
         />
       </td>
       <td className="text-[12px] font-normal p-4 text-dark">{productName}</td>
@@ -56,7 +59,7 @@ const ProductTableItem = ({
       <td className="text-[12px] font-normal p-4 text-dark">{productType}</td>
       <td className="text-[12px] font-normal p-4 text-dark">{tag}</td>
       <td className="text-[12px] font-normal p-4 text-dark">
-        <Quantity />
+        <Quantity quantity={quiantity} variant={variantCount} />
       </td>
       <td className="text-[12px] font-normal p-4 text-dark">
         <OrderStatus

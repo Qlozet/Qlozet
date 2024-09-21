@@ -1,18 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
-import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import DashboardTopCard from "@/components/DashboardTopCard";
-import SideBar from "@/components/SideBar";
 import shoppingBag from "../../../public/assets/svg/shipping_bag.svg";
-import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import Typography from "@/components/Typography";
 import Modal from "@/components/Modal";
 import CustomerDetails from "@/components/order/CustomerDetails";
 import OrderHistory from "@/components/Customer/OrderHistory";
 import DonutChart from "@/components/Chat/DoughnutChat";
 import classes from "./index.module.css";
-import MobileSideBar from "@/components/MobileSideBar";
-import UpdateComponent from "@/components/UpdateComponent";
 import ProductTable from "@/components/Products/ProductTable";
 import addIcon from "../../../public/assets/svg/add-square.svg";
 import Button from "@/components/Button";
@@ -33,7 +28,6 @@ const Products = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const [filteredProduct, setFilterdProduct] = useState([]);
-  const [showMobileNav, setShowMobileNav] = useState(false);
   const [activatedProduct, setActivatedProduct] = useState(0);
   const [tagData, setTagData] = useState({
     labels: ["Male", "Female"],
@@ -42,9 +36,6 @@ const Products = () => {
     borderAlign: "center",
   });
 
-  const showSideBar = () => {
-    setShowMobileNav(!showMobileNav);
-  };
   const closeModal = () => {
     setCustomerDetails(false);
     setShowHistory(false);
@@ -86,6 +77,7 @@ const Products = () => {
           response?.data.data.filter((product) => product.status).length
         );
         response?.data?.data?.map((product) => {
+          console.log(product.variants.length);
           let productStatus;
           if (product.status) {
             productStatus = {
@@ -113,6 +105,7 @@ const Products = () => {
             quiantity: product.quantity,
             ProductStatus: productStatus,
             createdAt: product.createdAt,
+            variantCount: product.variants.length,
           };
           productData.push(orderItem);
         });
@@ -125,7 +118,6 @@ const Products = () => {
             ],
           };
         });
-        console.log(productData);
         setProducts(productData);
         setFilterdProduct(productData);
         setIsLoading(false);
@@ -168,7 +160,6 @@ const Products = () => {
             <Loader></Loader>
           ) : (
             <div>
-              {" "}
               <div className="flex items-center justify-end py-6 gap-6">
                 <div className="hidden lg:block">
                   <Button

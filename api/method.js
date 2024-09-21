@@ -23,7 +23,7 @@ export const getRequest = async (url) => {
       return response.data;
     }
   } catch (error) {
-    if (error.response.data === "Unauthorized") {
+    if (error.response?.data === "Unauthorized") {
       redirect("/auth/signin");
     } else {
       return error.response;

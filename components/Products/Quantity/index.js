@@ -1,10 +1,10 @@
 import Typography from "@/components/Typography";
 
-const Quantity = () => {
+const Quantity = ({ variant, quantity }) => {
   return (
     <div className="flex items-center justify-center gap-2">
-      <div className="flex items-center justify-center p-2 rounded bg-success text-white w-[1.5rem] h-[1.5rem] text-[12px] font-[500]">
-        1
+      <div className="flex items-center justify-center p-2 rounded bg-success text-white min-w-[1.5rem] h-[1.5rem] text-[12px] font-[500]">
+        {variant}
       </div>
       <Typography
         textColor="text-dark"
@@ -13,8 +13,8 @@ const Quantity = () => {
       >
         In
       </Typography>
-      <div className="flex items-center justify-center p-2 rounded bg-gray-300 text-dark w-[1.5rem] h-[1.5rem] text-[12px] font-[500]">
-        1
+      <div className="flex items-center justify-center p-2 rounded bg-gray-300 text-dark min-w-[1.5rem] h-[1.5rem] text-[12px] font-[500]">
+        {quantity}
       </div>
       <Typography
         textColor="text-dark"

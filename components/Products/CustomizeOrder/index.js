@@ -53,15 +53,12 @@ const CustomizeOrder = ({ closeModal, styleData }) => {
         closeModal={closeModal}
         clickCurrentNav={clickCurrentNav}
       />
-
       {currentNav === "Tops" && (
         <Tops data={styleData.filter((item) => item.class === "tops")} />
       )}
-
       {currentNav === "Bottoms" && (
         <Bottoms data={styleData.filter((item) => item.class === "bottoms")} />
       )}
-
       {currentNav === "Dresses" && (
         <Dresses data={styleData.filter((item) => item.class === "dresses")} />
       )}

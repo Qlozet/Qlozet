@@ -6,7 +6,11 @@ module.exports = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      gridTemplateColumns: {
+        'auto-fill-minmax': 'repeat(auto-fill, minmax(75px, max-content))',
+      },
+    },
     colors: {
       white: "rgba(255, 255, 255, 1)",
       dark: "rgba(18, 18, 18, 1)",

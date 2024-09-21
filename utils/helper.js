@@ -90,16 +90,17 @@ export const uploadSingleImage = async (file) => {
 };
 
 export const modifySizeHandler = (value) => {
-  console.log(value);
   const size =
     value === "Extra small"
-      ? "ES"
+      ? "XS"
       : value === "Small"
       ? "S"
       : value === "Medium"
       ? "M"
       : value === "Large"
       ? "L"
+      : value === "Extra Extra Large"
+      ? "XXL"
       : value === "Extra large"
       ? "XL"
       : "";

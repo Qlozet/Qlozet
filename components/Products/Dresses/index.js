@@ -33,7 +33,7 @@ const Dresses = ({ data }) => {
         customers.
       </Typography>
       <div>
-        <div className="grid grid-cols-3 lg:grid-cols-7 gap-4 py-4">
+        <div className="grid grid-cols-auto-fill-minmax gap-4 py-4">
           {data.map((item, index) => (
             <Design
               image={item.imageUrl}

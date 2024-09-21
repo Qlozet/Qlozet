@@ -27,7 +27,7 @@ const SelectedFile = ({ removeItemFromList, index, item }) => {
             removeItemFromList(index);
           }}
         >
-          <Image src={closeIcon} alt={item} width={18} height={18} />
+          <Image src={closeIcon} alt={""} width={18} height={18} />
         </div>
       )}
 
@@ -35,9 +35,10 @@ const SelectedFile = ({ removeItemFromList, index, item }) => {
         width={500}
         height={500}
         src={item.secure_url}
-        style={{ width: "5rem", height: "auto" }}
+        style={{ width: "auto", height: "5rem" }}
         alt=""
         className="min-w-[5rem] h-[auto] rounded"
+        unoptimized
       />
     </div>
   );

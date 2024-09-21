@@ -5,11 +5,12 @@ import arrowLeft from "../../public/assets/svg/arrrowLeft.svg";
 import arrowRight from "../../public/assets/svg/arrowRightt.svg";
 import closeIcon from "../../public/assets/svg/material-symbols_close-rounded.svg";
 import style from "./index.module.css";
+import StypePositioning from "./style";
 const DragDrop = ({
   closeModal,
   productImages,
   selectedStyles,
-  handleSelectStyle
+  handleSelectStyle,
 }) => {
   const imageRef = useRef();
   const draggedRef = useRef();
@@ -21,7 +22,7 @@ const DragDrop = ({
       secure_url:
         "https://res.cloudinary.com/dfnmx7vgc/image/upload/v1723845336/dfkela1w4k0vzuqknqrc.jpg",
     },
- 
+
     {
       asset_id: "d6afe2b799693f827bf55ac805756e43",
       public_id: "ri87pudm2jss5jtbmbw6",
@@ -44,7 +45,6 @@ const DragDrop = ({
 
   const [imageIndex, setImageIndex] = useState(0);
   const [customStyles, setCustomStyles] = useState([]);
-  // const [imageRefSize,setImageRefSize]=useState({})
   const [startCal, setStartCal] = useState(false);
   const [customeStylesOrAllImage, setCustomeStyleOfAllImage] = useState([]);
   const [touchPoint, setTouchPoint] = useState({ x: 0, y: 0 });
@@ -56,44 +56,72 @@ const DragDrop = ({
   };
 
   const calcultePosition = () => {
-    if (startCal && currentStyle) {
+    if (
+      startCal &&
+      currentStyle &&
+      customeStylesUiPosition[customeStylesUiPosition.length - 1]
+    ) {
       const { width, height } = imageRef.current.getBoundingClientRect();
-      console.log(customeStylesUiPosition[customeStylesUiPosition.length - 1].left)
-      const position = {
-        left:(customeStylesUiPosition[customeStylesUiPosition.length - 1].left)* 100/ width,
-        top: (customeStylesUiPosition[customeStylesUiPosition.length - 1].top)*100/height,
-        right: 0,
-        bottom: 0,
-      };
+      // This is to process return when the image is not inside the image
+      // 40 is the half width of the drag drop
+      if (
+        customeStylesUiPosition[customeStylesUiPosition.length - 1].left <
+        width - 40
+      ) {
+        const position = {
+          left:
+            (customeStylesUiPosition[customeStylesUiPosition.length - 1].left *
+              100) /
+            width,
+          top:
+            (customeStylesUiPosition[customeStylesUiPosition.length - 1].top *
+              100) /
+            height,
+          right: 0,
+          bottom: 0,
+        };
+        const newSTyles = customStyles.map((item) => {
+          if (item.name === currentStyle.name) {
+            return { ...item, imageIndex: imageIndex, position: position };
+          } else {
+            return { ...item };
+          }
+        });
+        const newCustomStyleofAllImage = customeStylesOrAllImage.map((item) => {
+          if (item.imageIndex === imageIndex) {
+            return { ...item, style: newSTyles };
+          } else {
+            return { ...item };
+          }
+        });
+        setCustomStyles(newSTyles);
+        setCustomeStyleOfAllImage(newCustomStyleofAllImage);
+        handleSelectStyle(newCustomStyleofAllImage, width, height);
+      } else {
+        let lastStyles =
+          customeStylesUiPosition[customeStylesUiPosition.length - 1];
+        const newCustomeStylesUiPositionay = customeStylesUiPosition.filter(
+          (item) => {
+            if (
+              item.imageIndex === lastStyles.imageIndex &&
+              item.style === lastStyles.style
+            ) {
+            } else {
+              return item;
+            }
+          }
+        );
 
-
-      const newSTyles = customStyles.map((item) => {
-        if (item.name === currentStyle.name) {
-          return { ...item, imageIndex: imageIndex, position: position };
-        } else {
-          return { ...item };
-        }
-      });
-
-      const newCustomStyleofAllImage = customeStylesOrAllImage.map((item) => {
-        if (item.imageIndex === imageIndex) {
-          return { ...item, style: newSTyles };
-        } else {
-          return { ...item };
-        }
-      });
-      setCustomStyles(newSTyles);
-      setCustomeStyleOfAllImage(newCustomStyleofAllImage);
-      handleSelectStyle(newCustomStyleofAllImage, width, height);
-      setStartCal(false);
+        setCustomStylesUiPosition(newCustomeStylesUiPositionay);
+      }
     }
+    setStartCal(false);
   };
 
   const touchMove = (e) => {
     if (startCal && currentStyle) {
       const { width, height, left, y } =
         imageRef.current.getBoundingClientRect();
-       
       for (let i = 0; i < e.changedTouches.length; i++) {
         setTouchPoint({
           ...touchPoint,
@@ -118,8 +146,8 @@ const DragDrop = ({
   const mouseMove = (e) => {
     e.preventDefault();
     if (startCal && currentStyle) {
-      const { left, y ,width,height} = imageRef.current.getBoundingClientRect();
-    console.log(width,height)
+      const { left, y, width, height } =
+        imageRef.current.getBoundingClientRect();
       setTouchPoint({
         ...touchPoint,
         x: e.clientX - left,
@@ -144,7 +172,7 @@ const DragDrop = ({
 
   useEffect(() => {
     const styleWithPosition = selectedStyles.filter((item) => item.position);
- const { width, height } = imageRef.current.getBoundingClientRect();
+    const { width, height } = imageRef.current.getBoundingClientRect();
     setCustomStylesUiPosition(
       styleWithPosition.map((item) => {
         return {
@@ -186,7 +214,9 @@ const DragDrop = ({
         zIndex: 300,
       }}
       onMouseUp={() => {
-        console.log("Hello")
+        calcultePosition();
+      }}
+      onTouchEnd={() => {
         calcultePosition();
       }}
     >
@@ -210,7 +240,6 @@ const DragDrop = ({
         <div
           className={`flex gap-4 relative overflow-hidden `}
           onMouseDown={(e) => {
-            // e.preventDefault();
             setStartCal(true);
           }}
           onMouseMove={mouseMove}
@@ -259,7 +288,6 @@ const DragDrop = ({
                     )}
                   </div>
                 </div>
-                {/* This is to remove the blue background due to drag */}
                 <Image
                   ref={imageRef}
                   alt=""
@@ -281,365 +309,41 @@ const DragDrop = ({
               (item, index) =>
                 index == imageIndex && (
                   <div className="px-3 rounded-[10px] " ref={subRef}>
-                    {selectedStyles.filter((item) => item.name === "tops")
-                      .length > 0 && (
-                      <div
-                        key={index}
-                        onTouchStart={() => {
-                          handleSetCurentStyle("tops", imageIndex);
-                        }}
-                        onMouseDown={() => {
-                          setStartCal(true);
-                          handleSetCurentStyle("tops", imageIndex);
-                        }}
-                        className="bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move w-[5rem] mb-4"
-                        ref={draggedRef}
-                        style={{
-                          position: customeStylesUiPosition.filter(
-                            (item) =>
-                              item.imageIndex === imageIndex &&
-                              item.style === "tops"
-                          ).length
-                            ? "absolute"
-                            : "relative",
-                          left:
-                            customeStylesUiPosition.filter(
-                              (item) =>
-                                item.imageIndex === imageIndex &&
-                                item.style === "tops"
-                            ).length > 0 &&
-                            `${
-                              customeStylesUiPosition.filter(
-                                (item) =>
-                                  item.imageIndex === imageIndex &&
-                                  item.style === "tops"
-                              )[
-                                customeStylesUiPosition.filter(
-                                  (item) =>
-                                    item.imageIndex === imageIndex &&
-                                    item.style === "tops"
-                                ).length - 1
-                              ].left
-                            }px`,
-                          top:
-                            customeStylesUiPosition.filter(
-                              (item) =>
-                                item.imageIndex === imageIndex &&
-                                item.style === "tops"
-                            ).length > 0 &&
-                            `${
-                              customeStylesUiPosition.filter(
-                                (item) =>
-                                  item.imageIndex === imageIndex &&
-                                  item.style === "tops"
-                              )[
-                                customeStylesUiPosition.filter(
-                                  (item) =>
-                                    item.imageIndex === imageIndex &&
-                                    item.style === "tops"
-                                ).length - 1
-                              ].top
-                            }px`,
-                        }}
-                      >
-                        <Typography
-                          textColor="text-white"
-                          textWeight="font-[500]"
-                          textSize="text-[12px]"
-                        >
-                          Top
-                        </Typography>
-                        <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
-                      </div>
-                      // </Draggable>
-                    )}
-                    {selectedStyles.filter((item) => item.name === "bottoms")
-                      .length > 0 && (
-                      // <Draggable
-                      //   onStart={() => {
-                      //     handleSetCurentStyle("bottoms", imageIndex);
-                      //   }}
-                      // >
-                      <div
-                        onTouchStart={() => {
-                          handleSetCurentStyle("bottoms", imageIndex);
-                        }}
-                        onMouseDown={() => {
-                          handleSetCurentStyle("bottoms", imageIndex);
-                        }}
-                        className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move w-[5rem] mb-4"
-                        style={{
-                          position: customeStylesUiPosition.filter(
-                            (item) =>
-                              item.imageIndex === imageIndex &&
-                              item.style === "bottoms"
-                          ).length
-                            ? "absolute"
-                            : "relative",
-                          left:
-                            customeStylesUiPosition.filter(
-                              (item) =>
-                                item.imageIndex === imageIndex &&
-                                item.style === "bottoms"
-                            ).length > 0 &&
-                            `${
-                              customeStylesUiPosition.filter(
-                                (item) =>
-                                  item.imageIndex === imageIndex &&
-                                  item.style === "bottoms"
-                              )[
-                                customeStylesUiPosition.filter(
-                                  (item) =>
-                                    item.imageIndex === imageIndex &&
-                                    item.style === "bottoms"
-                                ).length - 1
-                              ].left
-                            }px`,
-                          top:
-                            customeStylesUiPosition.filter(
-                              (item) =>
-                                item.imageIndex === imageIndex &&
-                                item.style === "bottoms"
-                            ).length > 0 &&
-                            `${
-                              customeStylesUiPosition.filter(
-                                (item) =>
-                                  item.imageIndex === imageIndex &&
-                                  item.style === "bottoms"
-                              )[
-                                customeStylesUiPosition.filter(
-                                  (item) =>
-                                    item.imageIndex === imageIndex &&
-                                    item.style === "bottoms"
-                                ).length - 1
-                              ].top
-                            }px`,
-                        }}
-                      >
-                        <Typography
-                          textColor="text-white"
-                          textWeight="font-[500]"
-                          textSize="text-[12px]"
-                        >
-                          Bottom
-                        </Typography>
-                        <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
-                      </div>
-                      // </Draggable>
-                    )}
-                    {selectedStyles.filter((item) => item.name === "skirts")
-                      .length > 0 && (
-                      <div
-                        onTouchStart={() => {
-                          handleSetCurentStyle("skirts", imageIndex);
-                        }}
-                        onMouseDown={() => {
-                          handleSetCurentStyle("skirts", imageIndex);
-                        }}
-                        className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move w-[5rem] mb-4"
-                        style={{
-                          position: customeStylesUiPosition.filter(
-                            (item) =>
-                              item.imageIndex === imageIndex &&
-                              item.style === "skirts"
-                          ).length
-                            ? "absolute"
-                            : "relative",
-                          left:
-                            customeStylesUiPosition.filter(
-                              (item) =>
-                                item.imageIndex === imageIndex &&
-                                item.style === "skirts"
-                            ).length > 0 &&
-                            `${
-                              customeStylesUiPosition.filter(
-                                (item) =>
-                                  item.imageIndex === imageIndex &&
-                                  item.style === "skirts"
-                              )[
-                                customeStylesUiPosition.filter(
-                                  (item) =>
-                                    item.imageIndex === imageIndex &&
-                                    item.style === "skirts"
-                                ).length - 1
-                              ].left
-                            }px`,
-                          top:
-                            customeStylesUiPosition.filter(
-                              (item) =>
-                                item.imageIndex === imageIndex &&
-                                item.style === "skirts"
-                            ).length > 0 &&
-                            `${
-                              customeStylesUiPosition.filter(
-                                (item) =>
-                                  item.imageIndex === imageIndex &&
-                                  item.style === "skirts"
-                              )[
-                                customeStylesUiPosition.filter(
-                                  (item) =>
-                                    item.imageIndex === imageIndex &&
-                                    item.style === "skirts"
-                                ).length - 1
-                              ].top
-                            }px`,
-                        }}
-                      >
-                        <Typography
-                          textColor="text-white"
-                          textWeight="font-[500]"
-                          textSize="text-[12px]"
-                        >
-                          Shirt
-                        </Typography>
-                        <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
-                      </div>
-                      // </Draggable>
-                    )}
-                    {selectedStyles.filter((item) => item.name === "dresses")
-                      .length > 0 && (
-                      <div
-                        onTouchStart={() => {
-                          handleSetCurentStyle("dresses", imageIndex);
-                        }}
-                        onMouseDown={() => {
-                          handleSetCurentStyle("dresses", imageIndex);
-                        }}
-                        className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move w-[5rem] mb-4"
-                        style={{
-                          position: customeStylesUiPosition.filter(
-                            (item) =>
-                              item.imageIndex === imageIndex &&
-                              item.style === "dresses"
-                          ).length
-                            ? "absolute"
-                            : "relative",
-                          left:
-                            customeStylesUiPosition.filter(
-                              (item) =>
-                                item.imageIndex === imageIndex &&
-                                item.style === "dresses"
-                            ).length > 0 &&
-                            `${
-                              customeStylesUiPosition.filter(
-                                (item) =>
-                                  item.imageIndex === imageIndex &&
-                                  item.style === "dresses"
-                              )[
-                                customeStylesUiPosition.filter(
-                                  (item) =>
-                                    item.imageIndex === imageIndex &&
-                                    item.style === "dresses"
-                                ).length - 1
-                              ].left
-                            }px`,
-                          top:
-                            customeStylesUiPosition.filter(
-                              (item) =>
-                                item.imageIndex === imageIndex &&
-                                item.style === "dresses"
-                            ).length > 0 &&
-                            `${
-                              customeStylesUiPosition.filter(
-                                (item) =>
-                                  item.imageIndex === imageIndex &&
-                                  item.style === "dresses"
-                              )[
-                                customeStylesUiPosition.filter(
-                                  (item) =>
-                                    item.imageIndex === imageIndex &&
-                                    item.style === "dresses"
-                                ).length - 1
-                              ].top
-                            }px`,
-                        }}
-                      >
-                        <Typography
-                          textColor="text-white"
-                          textWeight="font-[500]"
-                          textSize="text-[12px]"
-                        >
-                          Dress
-                        </Typography>
-                        <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
-                      </div>
-                      // </Draggable>
-                    )}
-                    {selectedStyles.filter((item) => item.name === "outfits")
-                      .length > 0 && (
-                      // <Draggable
-                      //   {...dragHandlers}
-                      //   onStart={() => {
-                      //     handleSetCurentStyle("outfits", imageIndex);
-                      //   }}
-                      // >
-                      <div
-                        onTouchStart={() => {
-                          handleSetCurentStyle("outfits", imageIndex);
-                        }}
-                        onMouseDown={() => {
-                          handleSetCurentStyle("outfits", imageIndex);
-                        }}
-                        className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move w-[5rem] mb-4"
-                        style={{
-                          position: customeStylesUiPosition.filter(
-                            (item) =>
-                              item.imageIndex === imageIndex &&
-                              item.style === "outfits"
-                          ).length
-                            ? "absolute"
-                            : "relative",
-                          left:
-                            customeStylesUiPosition.filter(
-                              (item) =>
-                                item.imageIndex === imageIndex &&
-                                item.style === "outfits"
-                            ).length > 0 &&
-                            `${
-                              customeStylesUiPosition.filter(
-                                (item) =>
-                                  item.imageIndex === imageIndex &&
-                                  item.style === "outfits"
-                              )[
-                                customeStylesUiPosition.filter(
-                                  (item) =>
-                                    item.imageIndex === imageIndex &&
-                                    item.style === "outfits"
-                                ).length - 1
-                              ].left
-                            }px`,
-                          top:
-                            customeStylesUiPosition.filter(
-                              (item) =>
-                                item.imageIndex === imageIndex &&
-                                item.style === "outfits"
-                            ).length > 0 &&
-                            `${
-                              customeStylesUiPosition.filter(
-                                (item) =>
-                                  item.imageIndex === imageIndex &&
-                                  item.style === "outfits"
-                              )[
-                                customeStylesUiPosition.filter(
-                                  (item) =>
-                                    item.imageIndex === imageIndex &&
-                                    item.style === "outfits"
-                                ).length - 1
-                              ].top
-                            }px`,
-                        }}
-                      >
-                        <Typography
-                          textColor="text-white"
-                          textWeight="font-[500]"
-                          textSize="text-[12px]"
-                        >
-                          Outfit
-                        </Typography>
-                        {/* <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div> */}
-                      </div>
-                      // </Draggable>
-                    )}
+                    <StypePositioning
+                      imageIndex={imageIndex}
+                      handleSetCurentStyle={handleSetCurentStyle}
+                      stylesType="tops"
+                      customeStylesUiPosition={customeStylesUiPosition}
+                      selectedStyles={selectedStyles}
+                    ></StypePositioning>
+                    <StypePositioning
+                      imageIndex={imageIndex}
+                      handleSetCurentStyle={handleSetCurentStyle}
+                      stylesType="bottoms"
+                      customeStylesUiPosition={customeStylesUiPosition}
+                      selectedStyles={selectedStyles}
+                    ></StypePositioning>
+                    <StypePositioning
+                      imageIndex={imageIndex}
+                      handleSetCurentStyle={handleSetCurentStyle}
+                      stylesType="skirts"
+                      customeStylesUiPosition={customeStylesUiPosition}
+                      selectedStyles={selectedStyles}
+                    ></StypePositioning>
+                    <StypePositioning
+                      imageIndex={imageIndex}
+                      handleSetCurentStyle={handleSetCurentStyle}
+                      stylesType="dresses"
+                      customeStylesUiPosition={customeStylesUiPosition}
+                      selectedStyles={selectedStyles}
+                    ></StypePositioning>
+                    <StypePositioning
+                      imageIndex={imageIndex}
+                      handleSetCurentStyle={handleSetCurentStyle}
+                      stylesType="outfits"
+                      customeStylesUiPosition={customeStylesUiPosition}
+                      selectedStyles={selectedStyles}
+                    ></StypePositioning>
                   </div>
                 )
             )}

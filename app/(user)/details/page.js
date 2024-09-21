@@ -26,6 +26,7 @@ const ProductDetails = () => {
   const [showReview, setShowReview] = useState(false);
   const [vendorName, setVendorName] = useState("");
   const [number, setNumber] = useState(0);
+  const [variants, setVariants] = useState([]);
   const [productFormData, setProductFormData] = useState({
     productName: "",
     productPrice: "",
@@ -37,13 +38,6 @@ const ProductDetails = () => {
     discount: "",
     isFeatured: false,
     colors: [],
-    // variants: [
-    //   {
-    //     colors: ["#808080", "#FFFF00"],
-    //     size: "M",
-    //     quantity: 5,
-    //   },
-    // ],
     images: [],
     likes: [],
     reviews: [],
@@ -57,6 +51,11 @@ const ProductDetails = () => {
       response.data.data.colors.map((item) => {
         colors.push(item.hex);
       });
+      setVariants(
+        response.data.data.variants.map((item) => {
+          return item;
+        })
+      );
       setProductFormData({
         productName: response.data.data.name,
         productPrice: `₦${response.data.data.price.toLocaleString()}`,
@@ -102,16 +101,10 @@ const ProductDetails = () => {
     // const
   }, []);
   return (
-    <div className="md:ml-[260px]">
+    <div className="">
       <div>
         <div className="flex min-h-[100dvh] bg-gray-400">
-          <div className="">
-            <SideBar active="Products" />
-          </div>
           <div className="w-full">
-            <div className="px-4 mt-4">
-              <DasboardNavWithOutSearch name="Products" addSearch={false} />
-            </div>
             {pageLoading ? (
               <Loader></Loader>
             ) : (
@@ -150,7 +143,10 @@ const ProductDetails = () => {
                                 number < 1 ? "bg-gray-300" : "bg-white"
                               }  w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]`}
                               onClick={() => {
-                                if (number < productFormData.images.length-1) {
+                                if (
+                                  number <
+                                  productFormData.images.length - 1
+                                ) {
                                   setNumber(number - 1);
                                 }
                               }}
@@ -264,9 +260,9 @@ const ProductDetails = () => {
                         <h2 className="hidden lg:block font-bold text-[24px] leading-[36px]">
                           {productFormData.productPrice}
                         </h2>
-                        <h2 className="font-[500] text-[14px] leading-[36px] text-primary lg:text-[#33CC33]">
+                        {/* <h2 className="font-[500] text-[14px] leading-[36px] text-primary lg:text-[#33CC33]">
                           1,000 items delivered
-                        </h2>
+                        </h2> */}
                       </div>
 
                       <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[12px]">
@@ -287,18 +283,34 @@ const ProductDetails = () => {
                         <p className="font-light col-span-1">
                           Available colours
                         </p>
-
                         <div className="font-bold col-span-2 flex items-center gap-2">
-                          {productFormData.colors.map((item, index) => {
-                            return (
-                              <div
-                                key={index}
-                                className="w-[20px] h-[20px] rounded-full"
-                                style={{
-                                  backgroundColor: `${item}`,
-                                }}
-                              />
-                            );
+                          {variants.map((item, index) => {
+                            if (
+                              item.color.hex.includes(
+                                "https://res.cloudinary.com"
+                              )
+                            ) {
+                              return (
+                                <div
+                                  key={index}
+                                  className="w-[20px] h-[20px] rounded-full"
+                                  style={{
+                                    backgroundImage: `url('${item.color.hex}')`,
+                                    backgroundPosition: "center",
+                                  }}
+                                ></div>
+                              );
+                            } else {
+                              return (
+                                <div
+                                  key={index}
+                                  className="w-[20px] h-[20px] rounded-full"
+                                  style={{
+                                    backgroundColor: `${item.color.hex}`,
+                                  }}
+                                ></div>
+                              );
+                            }
                           })}
                         </div>
                       </div>
@@ -313,6 +325,9 @@ const ProductDetails = () => {
                       <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[12px]">
                         <p className="font-light col-span-1">Available Sizes</p>
                         <p className="font-bold col-span-2">
+                          {variants.map((item) => {
+                            // console.log(item.size.value);
+                          })}
                           XS, S, M, L, XL, XXL
                         </p>
                       </div>
@@ -350,7 +365,7 @@ const ProductDetails = () => {
           <Modal
             content={
               <ProductReview
-              productName={productFormData.productName}
+                productName={productFormData.productName}
                 reviews={productFormData.reviews}
                 closeModal={handleShowReview}
               ></ProductReview>
