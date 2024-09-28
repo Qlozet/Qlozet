@@ -33,7 +33,6 @@ import { useAppSelector } from "@/redux/store";
 
 const Order = () => {
   const filterData = useAppSelector((state) => state.filter.state);
-
   // Variables starts
   const topNavData = [
     {

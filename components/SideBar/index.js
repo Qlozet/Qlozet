@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import Logo from "../Logo";
 import dashboardIcon from "../../public/assets/svg/dashboardIcon.svg";
 import activeDashboardIcon from "../../public/assets/svg/activeDashboardIcon.svg";
-import cart from "../../public/assets/svg/shopping-cart.svg";
-import actiivecart from "../../public/assets/svg/shopping-cart-active.svg";
 import shoppingBag from "../../public/assets/svg/shopping-bag.svg";
 import activeshopping from "../../public/assets/svg/activeshopping-bag.svg";
 import wallet from "../../public/assets/svg/wallet.svg";
@@ -20,12 +18,15 @@ import vendorDefault from "../../public/assets/svg/user-octagon.svg";
 import vendorActive from "../../public/assets/svg/user-octagon-active.svg";
 import Logout from "../Logout";
 import { useRouter } from "next/navigation";
-import { clearToken } from "@/utils/localstorage";
 import Image from "next/image";
 import Modal from "../Modal";
+import { setFilter } from "@/redux/slice";
 import brownLogo from "../../public/assets/image/logobrown.png";
 
+import { useAppDispatch } from "@/redux/store";
 const SideBar = ({ active }) => {
+  const dispatch = useAppDispatch();
+
   const [showLogOutModal, setShowLogOutModal] = useState(false);
   const router = useRouter();
 
@@ -35,21 +36,21 @@ const SideBar = ({ active }) => {
       link: "dashboard",
       defaultIcon: dashboardIcon,
       activeIcon: activeDashboardIcon,
-      function: () => {},
+      function: () => { },
     },
     {
       name: "Orders",
       link: "orders",
       defaultIcon: vendorDefault,
       activeIcon: vendorActive,
-      function: () => {},
+      function: () => { },
     },
     {
       name: "Products",
       link: "products",
       defaultIcon: shoppingBag,
       activeIcon: activeshopping,
-      function: () => {},
+      function: () => { },
     },
 
     {
@@ -57,14 +58,14 @@ const SideBar = ({ active }) => {
       link: "wallet",
       defaultIcon: wallet,
       activeIcon: walletActive,
-      function: () => {},
+      function: () => { },
     },
     {
       name: "Customers",
       link: "customer",
       defaultIcon: cutomerDefault,
       activeIcon: cutomerActive,
-      function: () => {},
+      function: () => { },
     },
 
     {
@@ -72,14 +73,14 @@ const SideBar = ({ active }) => {
       link: "settings",
       defaultIcon: settingsDefault,
       activeIcon: settingsActive,
-      function: () => {},
+      function: () => { },
     },
     {
       name: "Support",
       link: "support",
       defaultIcon: supportDefault,
       activeIcon: supportActive,
-      function: () => {},
+      function: () => { },
     },
     {
       name: "Logout",
@@ -119,6 +120,9 @@ const SideBar = ({ active }) => {
             className="lg:px-16 md:px-4 flex items-center gap-4  py-3 cursor-pointer hover:bg-[#f4f4f4] min-w-[90px] md:min-w-[90px] "
             key={index}
             onClick={() => {
+              // reset search string
+              console.log("click")
+              dispatch(setFilter(""));
               item.function();
               if (item.link !== "") {
                 router.push(`../${item.link}`);
@@ -131,9 +135,8 @@ const SideBar = ({ active }) => {
               <Image src={item.defaultIcon} alt="" />
             )}
             <p
-              className={`hidden md:block font-normal text-[14px] ${
-                active === item.name ? "text-primary" : " text-gray-100"
-              }`}
+              className={`hidden md:block font-normal text-[14px] ${active === item.name ? "text-primary" : " text-gray-100"
+                }`}
             >
               {item.name}
             </p>

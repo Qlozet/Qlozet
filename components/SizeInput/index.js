@@ -12,6 +12,7 @@ const SizeInput = ({
   index,
   error,
   disabled,
+  removeSizeFromVariant
 }) => {
   const [showDropDown, setShowDropDown] = useState(false);
   const dropDownRef = useRef();
@@ -20,6 +21,7 @@ const SizeInput = ({
 
   const filterList = (e) => {
     setValue(e.target.value);
+    console.log(e.target.value)
     setList(
       data.filter((bank) =>
         bank.text.toLowerCase().includes(e.target.value.toLowerCase())
@@ -27,14 +29,15 @@ const SizeInput = ({
     );
   };
 
-  const removeItemFromList = (sizeIndex) => {
+  const removeItemFromList = (sizeIndex, item) => {
+    removeSizeFromVariant(item)
     const remainingSizes = value.filter((file, index) => index !== sizeIndex);
     setValue(remainingSizes, sizeIndex);
     setSelectedList(remainingSizes);
   };
 
   useEffect(() => {
-    setList(filterSelectedItems(data, value));
+    setList(filterSelectedItems(data, value.map((item) => item.size)));
   }, [value]);
 
   return (
@@ -69,11 +72,11 @@ const SizeInput = ({
               className="bg-gray-300 rounded-[5px] p-1 w-[6rem] flex items-center justify-center relative"
               key={index}
             >
-              {item}
+              {item.size}
               <div
                 className="absolute right-[-0.3rem] top-[-0.4rem] bg-primary-200 rounded-[50%] cursor-pointer"
                 onClick={() => {
-                  removeItemFromList(index);
+                  removeItemFromList(index, item);
                 }}
               >
                 <Image src={closeIcon} alt={item} width={15} height={15} />
@@ -101,8 +104,8 @@ const SizeInput = ({
               key={index}
               tabIndex={0}
               className={`p-2 ${index !== 0
-                  ? "border-t-[1.5px] border-solid border-gray-200"
-                  : ""
+                ? "border-t-[1.5px] border-solid border-gray-200"
+                : ""
                 } bg-white hover:bg-[#F4F4F4]`}
               onClick={() => {
                 setSelectedList((prevData) => [...prevData, item]);

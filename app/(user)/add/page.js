@@ -152,6 +152,8 @@ const AddProduct = () => {
   };
 
   const addSizeToVariant = (size) => {
+    console.log(size)
+    const id = uuidv4();
     const addColorAndMaterial = [...selectedColors, ...selectedVariantFiles];
     const previousColorInVarianttable = new Set(
       variantTable.map((color) => color.color)
@@ -160,8 +162,11 @@ const AddProduct = () => {
       (color) => !previousColorInVarianttable.has(color)
     );
 
+    setProductFormData((prevData) => {
+      return { ...prevData, variantSizes: [...productFormData.variantSizes, { size: size[size.length - 1], id: id }] }
+    })
     addColorAndMaterial.map((item) => {
-      const id = uuidv4();
+      console.log(item)
       setVariantTable((prevData) => {
         return [
           ...prevData,
@@ -194,17 +199,16 @@ const AddProduct = () => {
     setVariantTable(variantTable.filter((item) => item.color !== material));
   };
 
-  const handleDeleteVariantFromTable = (id) => {
+  const handleDeleteVariantFromTable = (id, color) => {
     setProductFormData((prevData) => {
       return { ...prevData, variantSizes: [] }
     })
-    setVariantTable(variantTable.filter((item) => item.id !== id))
+    setVariantTable(variantTable.filter((item) => item.id !== id && item.color == color))
   }
 
-  const handleVariantChecked = (data, id) => {
+  const handleVariantChecked = (data, id, color) => {
     const newVariantTable = variantTable.map((item) => {
-      if (item.id === id) {
-
+      if (item.id === id && item.color === color) {
         return {
           id: item.id,
           prize: item.prize,
@@ -219,6 +223,7 @@ const AddProduct = () => {
         return item;
       }
     });
+    console.log(newVariantTable)
     setVariantTable(newVariantTable);
   };
 
@@ -320,6 +325,14 @@ const AddProduct = () => {
       });
     }
   };
+
+  const removeSizeFromVariant = (sizeInfo) => {
+    const newVariants = productFormData.variantSizes.filter((item) => item.id !== sizeInfo.id)
+    setVariantTable(variantTable.filter((item) => item.id !== sizeInfo.id))
+    setProductFormData((prevData) => {
+      return { ...prevData, variantSizes: newVariants }
+    })
+  }
 
   const fetchProduct = async () => {
     const productId = getProductId();
@@ -709,13 +722,10 @@ const AddProduct = () => {
                       value={productFormData.variantSizes}
                       setValue={(data, index) => {
                         if (index !== undefined) {
-                          removeVariant(index, data);
+
                         } else {
                           addSizeToVariant(data);
                         }
-                        setProductFormData((prevData) => {
-                          return { ...prevData, variantSizes: data };
-                        });
                         if (data) {
                           setrequiredproductFormData((prevData) => {
                             return { ...prevData, variantSizes: false };
@@ -736,6 +746,7 @@ const AddProduct = () => {
                       ]}
                       label="Sizes"
                       index={40}
+                      removeSizeFromVariant={removeSizeFromVariant}
                     />
                   </div>
                   <div className="my-8">

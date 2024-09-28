@@ -19,6 +19,7 @@ const DasboardNavWithOutSearch = ({
   vendor,
   page,
   setValue,
+  value,
   showSideBar,
   hideNav,
 }) => {
@@ -150,6 +151,7 @@ const DasboardNavWithOutSearch = ({
                   <Image alt="" src={searchNormalicon} />
                 </div>
                 <input
+                value={value}
                   onChange={(e) => {
                     setValue(e.target.value);
                   }}

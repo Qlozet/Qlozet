@@ -68,7 +68,7 @@ const VariantTableItem = ({
         <div className="flex w-[100%] justify-between px-4">
           <div>
             <CheckBoxInput handleChange={(data) => {
-              handleChecked(data, item.id)
+              handleChecked(data, item.id, item.color)
             }} value={item.checked} />
           </div>
         </div>
@@ -76,7 +76,7 @@ const VariantTableItem = ({
       <td className="text-[12px] font-normal px-1  text-dark  border-solid border-r-[1px] border-gray-300">
         <div className="flex w-[100%] justify-between px-3">
           <button className="hover:bg-primary p-1 rounded-sm" onClick={() => {
-            handleDeleteVariantFromTable(item.id)
+            handleDeleteVariantFromTable(item.id, item.color)
           }}>
             <Image src={trashGray} alt="" />
           </button>

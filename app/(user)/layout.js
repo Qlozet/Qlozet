@@ -4,10 +4,12 @@ import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch"
 import MobileSideBar from "@/components/MobileSideBar";
 import SideBar from "@/components/SideBar";
 import { usePathname } from "next/navigation";
-import { useAppDispatch } from "@/redux/store";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
 
 import { setFilter } from "@/redux/slice";
 const Layout = ({ children }) => {
+  const filterData = useAppSelector((state) => state.filter.state);
+
   const dispatch = useAppDispatch();
 
   const pathname = usePathname();
@@ -45,6 +47,7 @@ const Layout = ({ children }) => {
         <div className="md:ml-[260px] border-[2px] border-solid border-primary">
           <div className="p-4">
             <DasboardNavWithOutSearch
+              value={filterData}
               addSearch={addSearch}
               setValue={(data) => {
                 dispatch(setFilter(data));
