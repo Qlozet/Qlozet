@@ -168,6 +168,7 @@ const AddProduct = () => {
     addColorAndMaterial.map((item) => {
       console.log(item)
       setVariantTable((prevData) => {
+        console.log(prevData)
         return [
           ...prevData,
           {
