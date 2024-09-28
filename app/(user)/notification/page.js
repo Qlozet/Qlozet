@@ -21,12 +21,13 @@ const NotificationPage = () => {
   const getNotification = async () => {
     try {
       let response = await getRequest("/vendor/notification");
+      console.log(response)
       let notificationData = [];
-      console.log(response?.data);
       if (response?.data) {
         setPageLoading(false);
         response?.data?.data?.map((item) => {
           const tableItem = {
+            id: item.id,
             read: item.read,
             title: item.title,
             desc: item?.description,
@@ -39,7 +40,7 @@ const NotificationPage = () => {
         toast(<Toast text={response.message} type="danger" />);
       }
     } catch (error) {
-      console.log(error);
+      // console.er(error);
     }
   };
   useEffect(() => {

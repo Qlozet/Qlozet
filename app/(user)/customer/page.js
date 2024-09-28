@@ -1,8 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import DashboardTopCard from "@/components/DashboardTopCard";
-import SideBar from "@/components/SideBar";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import Typography from "@/components/Typography";
@@ -10,7 +8,6 @@ import Modal from "@/components/Modal";
 import CustomerDetails from "@/components/order/CustomerDetails";
 import OrderHistory from "@/components/Customer/OrderHistory";
 import CustomerTable from "@/components/Customer/CustomerTable";
-import MobileSideBar from "@/components/MobileSideBar";
 import classes from "./index.module.css";
 import { getRequest } from "@/api/method";
 import Loader from "@/components/Loader";
@@ -19,8 +16,11 @@ import Image from "next/image";
 import defaultImage from "../../../public/assets/image/Rectangle.png";
 import DropDown from "@/components/DropDown";
 import moment from "moment";
+import { useAppSelector } from "@/redux/store";
 
 const Customer = () => {
+  const filterData = useAppSelector((state) => state.filter.state);
+
   const [viewCustomerDetails, setCustomerDetails] = useState(false);
   const [showHostory, setShowHistory] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
@@ -29,17 +29,12 @@ const Customer = () => {
   const [customer, setCustomer] = useState({});
   const [customerHistory, setCustomerHistory] = useState([]);
 
-  const [showMobileNav, setShowMobileNav] = useState(false);
-  const showSideBar = () => {
-    setShowMobileNav(!showMobileNav);
-  };
   const closeModal = () => {
     setCustomerDetails(false);
     setShowHistory(false);
   };
 
   const showModal = (customerId) => {
-    console.log(custmers.filter((item) => item.customerId === customerId)[0]);
     setCustomer(custmers.filter((item) => item.customerId === customerId)[0]);
     setCustomerDetails(true);
     setShowHistory(false);
@@ -71,7 +66,6 @@ const Customer = () => {
       response && setPageLoading(false);
       if (response.data) {
         response?.data?.data.map((item) => {
-          console.log(item);
           const customer = {
             customerId: item.customerId,
             picture: item.picture,
@@ -89,11 +83,11 @@ const Customer = () => {
         setFilteredCustomers(Customers);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
-  const handleFilfeterData = (data) => {
+  const handleFilterData = (data) => {
     setFilteredCustomers(
       custmers.filter(
         (cus) =>
@@ -112,6 +106,13 @@ const Customer = () => {
       )
     );
   };
+
+  useEffect(() => {
+    console.log(filterData)
+    handleFilterData(filterData);
+  }, [filterData]);
+
+
   useEffect(() => {
     getCustomers();
   }, []);
@@ -181,7 +182,7 @@ const Customer = () => {
                       data={filterCustmers}
                       showModal={showModal}
                       handleFilterWithDate={handleFilterWithDate}
-                      handleFilfeterData={handleFilfeterData}
+                      handleFilterData={handleFilterData}
                     />
                   </div>
                 </div>
@@ -362,7 +363,7 @@ const Customer = () => {
                   "Custom",
                 ]}
                 placeholder="Time Range"
-                setValue={(data) => {}}
+                setValue={(data) => { }}
               />
             </div>
             <CustomerMobileHistory />

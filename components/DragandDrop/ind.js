@@ -22,7 +22,6 @@ const DragDrop = ({
       secure_url:
         "https://res.cloudinary.com/dfnmx7vgc/image/upload/v1723845336/dfkela1w4k0vzuqknqrc.jpg",
     },
-
     {
       asset_id: "d6afe2b799693f827bf55ac805756e43",
       public_id: "ri87pudm2jss5jtbmbw6",

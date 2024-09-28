@@ -21,7 +21,7 @@ const ProductTable = ({
   data,
   showModal,
   statusChangeHandler,
-  handleFilfeterData,
+  handleFilterData,
 }) => {
   const [productData, setProductData] = useState(data);
   const router = useRouter();
@@ -35,7 +35,7 @@ const ProductTable = ({
         toast(<Toast text={response?.message} type="success" />);
       } else {
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -131,7 +131,7 @@ const ProductTable = ({
             <SearchInput
               placeholder="Search"
               setValue={(data) => {
-                handleFilfeterData(data);
+                handleFilterData(data);
               }}
             />
           </div>

@@ -6,7 +6,7 @@ import SideBar from "@/components/SideBar";
 import { usePathname } from "next/navigation";
 import { useAppDispatch } from "@/redux/store";
 
-import { setAuthState } from "@/redux/slice";
+import { setFilter } from "@/redux/slice";
 const Layout = ({ children }) => {
   const dispatch = useAppDispatch();
 
@@ -42,18 +42,18 @@ const Layout = ({ children }) => {
         />
       </div>
       <div>
-        <div className="md:ml-[260px]">
+        <div className="md:ml-[260px] border-[2px] border-solid border-primary">
           <div className="p-4">
             <DasboardNavWithOutSearch
               addSearch={addSearch}
               setValue={(data) => {
-                dispatch(setAuthState(data));
+                dispatch(setFilter(data));
               }}
               name={page}
               showSideBar={showSideBar}
             />
           </div>
-          <div> {children}</div>
+          <div > {children}</div>
         </div>
       </div>
     </div>

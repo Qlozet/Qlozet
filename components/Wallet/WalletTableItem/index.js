@@ -1,7 +1,5 @@
-import threeDotIcon from "../../../public/assets/svg/three-dot.svg";
-import Image from "next/image";
+
 import OrderStatus from "../../order/OrderStatus";
-import Modal from "../../Modal";
 import moment from "moment";
 const WalletTableItem = ({
   id,
@@ -34,7 +32,7 @@ const WalletTableItem = ({
       </td>
 
       <td className="text-[12px] font-normal p-4 text-dark ">
-        <div className="border rounded-[12px] ">
+        <div className="border rounded-[5px] ">
           <OrderStatus
             text="View details"
             color="text-[#3E1C01]"
@@ -45,7 +43,7 @@ const WalletTableItem = ({
           />
         </div>
       </td>
-      {/* <Modal content={<OrderDetails />}></Modal> */}
+     
     </tr>
   );
 };

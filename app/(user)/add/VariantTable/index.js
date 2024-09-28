@@ -7,8 +7,9 @@ const VariantTable = ({
   submitVariantImage,
   quantityHandler,
   priceHandler = { priceHandler },
+  handleChecked,
+  handleDeleteVariantFromTable
 }) => {
-  console.log(data);
   return (
     <div className={`overflow-x-scroll ${styles.scrollbarElement}`}>
       <table className="w-full shadow py-4">
@@ -52,8 +53,8 @@ const VariantTable = ({
               submitImage={submitVariantImage}
               quantityHandler={quantityHandler}
               priceHandler={priceHandler}
-              //   viewDetails={viewDetails}
-              //   showRejectModal={showRejectModal}
+              handleChecked={handleChecked}
+              handleDeleteVariantFromTable={handleDeleteVariantFromTable}
             />
           ))}
         </tbody>

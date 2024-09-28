@@ -14,14 +14,19 @@ import Button from "@/components/Button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getRequest } from "@/api/method";
+import { clearProductId } from "@/utils/localstorage";
+
 import toast from "react-hot-toast";
 import Toast from "@/components/ToastComponent/toast";
 import Loader from "@/components/Loader";
-import { clearProductId } from "@/utils/localstorage";
 import DropDown from "@/components/DropDown";
 import moment from "moment";
 
+// redux
+import { useAppSelector } from "@/redux/store";
+
 const Products = () => {
+  const filterData = useAppSelector((state) => state.filter.state);
   const router = useRouter();
   const [viewCustomerDetails, setCustomerDetails] = useState(false);
   const [showHostory, setShowHistory] = useState(false);
@@ -77,7 +82,6 @@ const Products = () => {
           response?.data.data.filter((product) => product.status).length
         );
         response?.data?.data?.map((product) => {
-          console.log(product.variants.length);
           let productStatus;
           if (product.status) {
             productStatus = {
@@ -129,7 +133,8 @@ const Products = () => {
     }
   };
 
-  const handleFilfeterData = (data) => {
+  const handleFilterData = (data) => {
+    console.log(data)
     setFilterdProduct(
       products.filter(
         (pro) =>
@@ -149,6 +154,11 @@ const Products = () => {
       )
     );
   };
+
+  useEffect(() => {
+    handleFilterData(filterData)
+  }, [filterData])
+
   useEffect(() => {
     getProducts();
   }, [isLoading]);
@@ -300,15 +310,11 @@ const Products = () => {
                     </div>
                   </div>
                 </div>
-                {/* <div className="my-4 block lg:hidden">
-                  <UpdateComponent />
-                </div> */}
-
                 <ProductTable
                   data={filteredProduct}
                   showModal={showModal}
                   statusChangeHandler={toggleStatus}
-                  handleFilfeterData={handleFilfeterData}
+                  handleFilterData={handleFilterData}
                 />
               </div>
             </div>

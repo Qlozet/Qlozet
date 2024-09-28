@@ -101,7 +101,7 @@ const SignUp = () => {
         formData.append("personalName", personalInfo.personalName);
         formData.append(
           "personalPhoneNumber",
-          personalInfo.personalPhoneNumber
+          personalInfo.phoneName
         );
         formData.append(
           "nationalIdentityNumber",
@@ -120,7 +120,7 @@ const SignUp = () => {
           setIsLoading(false);
           toast(<Toast text={response.message} type="success" />);
         } else {
-          setIsLoading(false);
+          // setIsLoading(false);
           toast(<Toast text={response.message} type="danger" />);
         }
       } else {
@@ -130,6 +130,7 @@ const SignUp = () => {
         });
       }
     } catch (error) {
+      console.error(error)
       setIsLoading(false);
     }
   };
@@ -143,7 +144,7 @@ const SignUp = () => {
             <div className="block lg:hidden">
               <DasboardNavWithOutSearch
                 addSearch={false}
-                setValue={(data) => {}}
+                setValue={(data) => { }}
                 hideNav={true}
               />
             </div>

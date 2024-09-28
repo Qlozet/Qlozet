@@ -6,7 +6,7 @@ import SearchInput from "@/components/SearchInput";
 import icon from "../../../../public/assets/svg/Icon container.svg";
 import exportIcon from "../../../../public/assets/svg/Content.svg";
 import { handleExport } from "@/utils/helper";
-const WearhousetTable = ({ data, handleFilfeterData }) => {
+const WearhousetTable = ({ data, handleFilterData }) => {
   return (
     <div>
       <table className="w-full hidden lg:block">
@@ -55,8 +55,8 @@ const WearhousetTable = ({ data, handleFilfeterData }) => {
             <WarehouseTableItem
               {...item}
               key={index}
-              // viewDetails={viewDetails}
-              // showRejectModal={showRejectModal}
+            // viewDetails={viewDetails}
+            // showRejectModal={showRejectModal}
             />
           ))}
         </tbody>
@@ -69,7 +69,7 @@ const WearhousetTable = ({ data, handleFilfeterData }) => {
                 <SearchInput
                   placeholder="Search"
                   setValue={(data) => {
-                    handleFilfeterData(data);
+                    handleFilterData(data);
                   }}
                 />
               </div>

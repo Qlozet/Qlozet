@@ -106,3 +106,42 @@ export const modifySizeHandler = (value) => {
       : "";
   return size;
 };
+
+
+ export const statusHandler = (item) => {
+  let status;
+  if (item.status === "out-for-delivery") {
+    status = {
+      name: "Out for delivery",
+      bg: "bg-[#D4CFCA]",
+      text: "text-[#3E1C01]",
+    };
+  } else if (item.status === "return") {
+    status = {
+      name: "Return",
+      bg: "bg-[#9747FF21]",
+      text: "text-[#A869FA]",
+    };
+  } else if (item.status === "pending") {
+    status = {
+      name: "pending",
+      bg: "bg-[#FFF7DE]",
+      text: "text-[#FFB020]",
+    };
+  } else if (item.status === "completed") {
+    status = {
+      name: "completed",
+      bg: "bg-[#33CC331A]",
+      text: "text-[#33CC33]",
+    };
+  } else if (item.status === "Successful") {
+    status = {
+      name: "Successful",
+      bg: "bg-[#FFF5F5]",
+      text: "text-[#33CC33]",
+    };
+  } else {
+    status = { name: "Return", bg: "bg-[#D4CFCA]" };
+  }
+  return status
+}

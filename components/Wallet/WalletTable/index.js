@@ -7,14 +7,12 @@ import DropDown from "@/components/DropDown";
 import icon from "../../../public/assets/svg/Icon container.svg";
 import exportIcon from "../../../public/assets/svg/Content.svg";
 import MobileItem from "../MobileTableItem";
-import { useState } from "react";
 import { handleExport } from "@/utils/helper";
-// import { JsonToCsv } from "react-json-to-csv";
 const WalletTable = ({
   data,
   viewDetails,
   showRejectModal,
-  handleFilfeterData,
+  handleFilterData,
 }) => {
   return (
     <div className="mt-4 min-h-[50vh]">
@@ -81,7 +79,7 @@ const WalletTable = ({
               <SearchInput
                 placeholder="Search"
                 setValue={(data) => {
-                  handleFilfeterData(data);
+                  handleFilterData(data);
                 }}
               />
             </div>
@@ -118,7 +116,7 @@ const WalletTable = ({
               ]}
               maxWidth={"max-w-[7.5rem]"}
               placeholder="Time Range"
-              setValue={(data) => {}}
+              setValue={(data) => { }}
             />
           </div>
           {data.map((item, index) => {

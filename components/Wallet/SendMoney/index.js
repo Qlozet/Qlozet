@@ -44,7 +44,7 @@ const SendMoney = ({ closeModal }) => {
                   <Image src={groupIcon} />
                   <Typography
                     textColor="text-white"
-                    textWeight="font-[700]"
+                    textWeight="font-[600]"
                     textSize="text-[18px]"
                   >
                     Send manually
@@ -69,7 +69,7 @@ const SendMoney = ({ closeModal }) => {
                   <Image src={customerIcon} />
                   <Typography
                     textColor="text-white"
-                    textWeight="font-[700]"
+                    textWeight="font-[600]"
                     textSize="text-[18px]"
                   >
                     Select from beneficiaries

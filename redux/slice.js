@@ -1,20 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { PayloadAction } from "@reduxjs/toolkit";
 
 const initialState = {
-  authState: "hello",
+  state: "",
 };
 
-export const authSlice = createSlice({
-  name: "auth",
+export const filterSlice = createSlice({
+  name: "filter",
   initialState,
   reducers: {
-    setAuthState: (state, action) => {
-      console.log(action);
-      state.authState = action.payload;
+    setFilter: (state, action) => {
+      state.state = action.payload;
     },
   },
 });
 
-export const { setAuthState } = authSlice.actions;
-export const authReducer = authSlice.reducer;
+export const { setFilter } = filterSlice.actions;
+export const sliceReducer = filterSlice.reducer;

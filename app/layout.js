@@ -21,7 +21,6 @@ export default function RootLayout({ children }) {
         <ReduxProvider>
           <div className={`mx-auto relative`}>{children}</div>
         </ReduxProvider>
-
         <Toaster
           toastOptions={{
             duration: 5000,

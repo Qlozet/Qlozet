@@ -15,7 +15,6 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
   //   console.log("clicked in");
   //   setShowProfile(true);
   // };
-  console.log(userDetails);
   const clickOutSide = (e) => {
     if (e.target !== profileRef.current) {
       showProfileHandler();
@@ -29,8 +28,8 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
         >
           {showProfile && (
             <div
-              style={{ backgroundColor: "rgba(0,0,0,.3)" }}
-              className="w-full"
+
+              className="w-full h-screen bg-[rgba(0,0,0,.3)] border-solid border-[2px] border-primary"
               onClick={clickOutSide}
               ref={outsideRef}
             ></div>

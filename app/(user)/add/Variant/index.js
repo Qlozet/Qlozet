@@ -13,7 +13,7 @@ const Variant = ({ bg }) => {
         ></div>
       ) : (
         <div
-          className={`w-[3rem] h-[2rem] rounded-[8px]`}
+            className={`w-[3.5rem] h-[2rem] rounded-[2px]`}
           style={{
             backgroundColor: bg,
           }}

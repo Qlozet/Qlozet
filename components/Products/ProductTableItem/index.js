@@ -24,7 +24,6 @@ const ProductTableItem = ({
   handleSelect,
   variantCount,
 }) => {
-  console.log(variantCount, quiantity);
   const dropDownButtonRef = useRef();
   const [showDropDown, setShowDropDown] = useState(false);
   const closeDropDown = (item) => {

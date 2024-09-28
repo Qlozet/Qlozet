@@ -326,7 +326,6 @@ const ProductDetails = () => {
                         <p className="font-light col-span-1">Available Sizes</p>
                         <p className="font-bold col-span-2">
                           {variants.map((item) => {
-                            // console.log(item.size.value);
                           })}
                           XS, S, M, L, XL, XXL
                         </p>

@@ -29,6 +29,8 @@ import AddAcessories from "@/components/Products/Accessories";
 import style from "./index.module.css";
 import Styles from "@/components/Products/StyleComponent/style";
 import ColorInput from "@/components/ColorInput";
+import { v4 as uuidv4 } from "uuid";
+
 const AddProduct = () => {
   const [variantTable, setVariantTable] = useState([]);
   const router = useRouter();
@@ -38,9 +40,8 @@ const AddProduct = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [positionModal, setPositionModal] = useState(false);
   const [selectedColors, setSelectedColors] = useState([]);
-  const [selectedVariantFIles, setselectedVariantFIles] = useState([]);
+  const [selectedVariantFiles, setSelectedVariantFiles] = useState([]);
   const [deletedFiles, setDeletedFiles] = useState([]);
-  const [variantFiles, setVariantFiles] = useState([]);
   const [styles, setStyles] = useState([]);
   const [selectedStyles, setSelectedStyles] = useState([]);
   const [positionStyles, setPositionStyles] = useState([]);
@@ -73,7 +74,6 @@ const AddProduct = () => {
   });
 
   const handleSelectFile = async (files, deletedFiles) => {
-    console.log(deletedFiles);
     setProductFormData((prevData) => {
       return { ...prevData, images: files };
     });
@@ -81,7 +81,6 @@ const AddProduct = () => {
       setDeletedFiles(deletedFiles);
     } else {
       setDeletedFiles([]);
-      console.log("doen");
     }
   };
 
@@ -139,7 +138,7 @@ const AddProduct = () => {
       const imageUrl = await uploadSingleImage(data);
       imageUrl && setMaterialUploadLoading(false);
       imageUrl &&
-        setselectedVariantFIles((prevData) => {
+        setSelectedVariantFiles((prevData) => {
           return [...prevData, imageUrl.secure_url];
         });
     } else {
@@ -153,18 +152,22 @@ const AddProduct = () => {
   };
 
   const addSizeToVariant = (size) => {
-    const addColorAndMaterial = [...selectedColors, ...selectedVariantFIles];
+    const addColorAndMaterial = [...selectedColors, ...selectedVariantFiles];
     const previousColorInVarianttable = new Set(
       variantTable.map((color) => color.color)
     );
     const newSelectedColorsAndMaterials = addColorAndMaterial.filter(
       (color) => !previousColorInVarianttable.has(color)
     );
+
     addColorAndMaterial.map((item) => {
+      const id = uuidv4();
       setVariantTable((prevData) => {
         return [
           ...prevData,
           {
+            id: id,
+            checked: false,
             color: item,
             images: {
               retained: [],
@@ -185,13 +188,39 @@ const AddProduct = () => {
   };
 
   const removeMaterialHandler = (material) => {
-    setselectedVariantFIles(
-      selectedVariantFIles.filter((item) => item !== material)
+    setSelectedVariantFiles(
+      selectedVariantFiles.filter((item) => item !== material)
     );
     setVariantTable(variantTable.filter((item) => item.color !== material));
   };
 
-  const removeVariant = (variantIndex, data) => {};
+  const handleDeleteVariantFromTable = (id) => {
+    setProductFormData((prevData) => {
+      return { ...prevData, variantSizes: [] }
+    })
+    setVariantTable(variantTable.filter((item) => item.id !== id))
+  }
+
+  const handleVariantChecked = (data, id) => {
+    const newVariantTable = variantTable.map((item) => {
+      if (item.id === id) {
+
+        return {
+          id: item.id,
+          prize: item.prize,
+          images: item.images,
+          color: item.color,
+          checked: data,
+
+          quantity: item.quantity,
+          size: item.size,
+        };
+      } else {
+        return item;
+      }
+    });
+    setVariantTable(newVariantTable);
+  };
 
   const VariantQuantityHandler = (index, action) => {
     let prevVariantTable = variantTable;
@@ -376,10 +405,6 @@ const AddProduct = () => {
       }
     }
   };
-  // const fetchStyles = async () => {
-  //   try {
-  //   catch (error) {}
-  // };
 
   useEffect(() => {
     localStorage.removeItem("styleTypes");
@@ -405,9 +430,9 @@ const AddProduct = () => {
             <Loader></Loader>
           ) : (
             <div>
-              <div className="mt-4"></div>
+              <div className="mt-4 lg:mt-0"></div>
               <div className="">
-                <div className="mx-0 bg-gray-300 lg:bg-white p-4  rounded-t-lg lg:translate-x-2">
+                <div className="mx-0 bg-gray-300 lg:bg-white pt-4 px-4  rounded-t-lg lg:translate-x-2">
                   <CheckBoxInput label="Add variants if product comes in multiple versions like different sizes and colours" />
                 </div>
                 <div className="bg-white w-full p-4 mx-0 lg:mx-2">
@@ -561,7 +586,6 @@ const AddProduct = () => {
                         placeholder="Enter description"
                         value={productFormData.description}
                         setValue={(data) => {
-                          console.log(data);
                           setProductFormData((prevData) => {
                             return { ...prevData, description: data };
                           });
@@ -670,7 +694,7 @@ const AddProduct = () => {
                       label="Material"
                       placeholder="Choose available for this product"
                       handleSelect={addToVariantTable}
-                      value={selectedVariantFIles}
+                      value={selectedVariantFiles}
                       removeMaterialHandler={removeMaterialHandler}
                       loading={materialUploadLoading}
                     />
@@ -678,7 +702,7 @@ const AddProduct = () => {
                   <div className="w-full">
                     <SizeInput
                       disabled={
-                        [...selectedColors, ...selectedColors].length > 0
+                        [...selectedColors, ...selectedVariantFiles].length > 0
                           ? false
                           : true
                       }
@@ -731,11 +755,12 @@ const AddProduct = () => {
                     </div>
                     <div>
                       <VariantTable
+                        handleChecked={handleVariantChecked}
                         data={variantTable}
-                        // QuantityHandler={variantQuantityHandler}
                         submitVariantImage={submitVariantImage}
                         quantityHandler={VariantQuantityHandler}
                         priceHandler={priceHandler}
+                        handleDeleteVariantFromTable={handleDeleteVariantFromTable}
                       />
                     </div>
                     <div className="my-4">

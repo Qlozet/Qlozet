@@ -13,7 +13,7 @@ const CustomerTable = ({
   data,
   viewDetails,
   showModal,
-  handleFilfeterData,
+  handleFilterData,
   handleFilterWithDate,
 }) => {
   return (
@@ -78,7 +78,7 @@ const CustomerTable = ({
               <SearchInput
                 placeholder="Search"
                 setValue={(data) => {
-                  handleFilfeterData(data);
+                  handleFilterData(data);
                 }}
               />
             </div>

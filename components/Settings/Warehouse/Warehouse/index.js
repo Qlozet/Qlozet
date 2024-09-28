@@ -44,7 +44,7 @@ const Warehouse = () => {
     }
   };
 
-  const handleFilfeterData = (data) => {
+  const handleFilterData = (data) => {
     setFilterWareHouse(
       wareHouse.filter(
         (ware) =>
@@ -86,7 +86,7 @@ const Warehouse = () => {
 
           <WearhousetTable
             data={filtereWareHouse}
-            handleFilfeterData={handleFilfeterData}
+            handleFilterData={handleFilterData}
           />
           {showAddModal && (
             <Modal

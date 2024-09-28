@@ -5,7 +5,6 @@ import ChatLabel from "../ChatLabel";
 const DonutChart = ({ data, width, height, cutout }) => {
   const chartRef = useRef(null);
   let chartInstance = null;
-  console.log(data);
   useEffect(() => {
     if (chartRef && chartRef.current) {
       const ctx = chartRef.current.getContext("2d");

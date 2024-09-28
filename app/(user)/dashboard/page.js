@@ -18,11 +18,9 @@ const Dashboard = () => {
   const [topEarning, setTopEarning] = useState("0");
   const [totalReturn, setTotalReturn] = useState("0");
   const [totalOrder, setTotalOrder] = useState("0");
-  const [customerLocation, setCustomerLocation] = useState("");
   const [loadPage, setLoadPage] = useState(true);
   const [top4Location, setTop4Location] = useState([]);
   const [top4Product, setTop4Product] = useState([]);
-  const [showMobileNav, setShowMobileNav] = useState(false);
   const [recentOrders, setRecentOrders] = useState([]);
   const [dailyEarnings, setDailyEarning] = useState([]);
   const [dailyOrder, setDailyOrder] = useState([]);
@@ -48,7 +46,7 @@ const Dashboard = () => {
         "/vendor/customers/total-customers-sold-to"
       );
       setTotalCustomer(custmerResponse.data.totalCount);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getLocationWithHighestCustomer = async () => {
@@ -56,9 +54,10 @@ const Dashboard = () => {
       const response = await getRequest(
         "/vendor/customers/highest-customers-by-location"
       );
+      response.data && setLoadPage(false);
       setCustomerLocation(response.data.totalCount);
-      response?.data && setLoadPage(false);
-    } catch (error) {}
+
+    } catch (error) { }
   };
 
   const get4TopLocation = async () => {
@@ -77,7 +76,7 @@ const Dashboard = () => {
         locationData.push(singleLocatin);
       });
       setTop4Location(locationData);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const get4Topproduct = async () => {
@@ -96,7 +95,7 @@ const Dashboard = () => {
       });
 
       setTop4Product(productData);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getTotalOrder = async () => {
@@ -105,7 +104,7 @@ const Dashboard = () => {
       if (response.data) {
         setTotalOrder(response.data.data.length);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getOrderByGender = async () => {
@@ -120,22 +119,7 @@ const Dashboard = () => {
           borderAlign: "center",
         });
       }
-      // const singleLocatin = {
-      //   location: location.location,
-      //   female: (location.female / response?.data?.data?.totalOrders) * 100,
-      //   male: (location.male / response?.data?.data?.totalOrders) * 100,
-      // };
-      // setCustomerLocation(response.data.totalCount);
-      // response?.data?.data?.locations.map((location) => {
-      //   const singleLocatin = {
-      //     location: location.location,
-      //     female: (location.female / response?.data?.data?.totalOrders) * 100,
-      //     male: (location.male / response?.data?.data?.totalOrders) * 100,
-      //   };
-      //   locationData.push(singleLocatin);
-      // });
-      // setTop4Location(locationData);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getTotalEarning = async () => {
@@ -144,7 +128,7 @@ const Dashboard = () => {
       if (response.data) {
         setTopEarning(response.data.data.earnings);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getOrders = async () => {
@@ -155,7 +139,7 @@ const Dashboard = () => {
       );
       setRecentOrders(response.data.data);
       setPageLoading(false);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getDailyEarning = async () => {
@@ -166,7 +150,7 @@ const Dashboard = () => {
       if (response.data) {
         setDailyEarning(response.data.data);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getDailyOrder = async () => {
@@ -177,7 +161,7 @@ const Dashboard = () => {
       if (response.data) {
         setDailyOrder(response.data.data);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {

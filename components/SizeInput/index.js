@@ -39,9 +39,7 @@ const SizeInput = ({
 
   return (
     <div
-      className={`${
-        disabled ? "bg-gray-400" : "bg-white"
-      }  w-full relative my-2 h-[4rem]`}
+      className={`  w-full relative my-2 h-[4rem]`}
       style={{ zIndex: index ? index : 10 }}
     >
       <div className={`${classes.container}`}>
@@ -59,9 +57,9 @@ const SizeInput = ({
               }
             }
           }}
-          className={`py-3 ${
-            error && "border-danger"
-          } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  absolute top-[1.5rem] left-0
+          className={`py-3 ${disabled ? "bg-gray-300" : "bg-white"
+            } ${error && "border-danger"
+            } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  absolute top-[1.5rem] left-0
             focus:outline-none focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 
            `}
         ></input>
@@ -73,7 +71,7 @@ const SizeInput = ({
             >
               {item}
               <div
-                className="absolute right-[-0.3rem] top-[-0.3rem] bg-primary-200 rounded-[50%] cursor-pointer"
+                className="absolute right-[-0.3rem] top-[-0.4rem] bg-primary-200 rounded-[50%] cursor-pointer"
                 onClick={() => {
                   removeItemFromList(index);
                 }}
@@ -102,11 +100,10 @@ const SizeInput = ({
             <div
               key={index}
               tabIndex={0}
-              className={`p-2 ${
-                index !== 0
+              className={`p-2 ${index !== 0
                   ? "border-t-[1.5px] border-solid border-gray-200"
                   : ""
-              } bg-white hover:bg-[#F4F4F4]`}
+                } bg-white hover:bg-[#F4F4F4]`}
               onClick={() => {
                 setSelectedList((prevData) => [...prevData, item]);
                 setValue([...value, item]);

@@ -1,8 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import DashboardTopCard from "@/components/DashboardTopCard";
-import SideBar from "@/components/SideBar";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import customerIcon from "../../../public/assets/svg/total-customer.svg";
 import Modal from "@/components/Modal";
@@ -12,7 +10,6 @@ import SetUpAltireWallet from "@/components/Wallet/SetUpAltireWallet";
 import TransactionDetails from "@/components/Wallet/TransactionDetails";
 import SendMoney from "@/components/Wallet/SendMoney";
 import SendMoneyForm from "@/components/Wallet/SendMoneyForm";
-import MobileSideBar from "@/components/MobileSideBar";
 import classes from "./index.module.css";
 import Beneficiary from "@/components/Wallet/Beneficiary";
 import { getRequest } from "@/api/method";
@@ -22,7 +19,10 @@ import Loader from "@/components/Loader";
 import Typography from "@/components/Typography";
 import DropDown from "@/components/DropDown";
 import moment from "moment";
+import { useAppSelector } from "@/redux/store";
 const Wallet = () => {
+  const filterData = useAppSelector((state) => state.filter.state);
+
   const [setUpWalletWallet, setSetUpWalletWallet] = useState(false);
   const [showTransactiondetails, setShowTransactiondetails] = useState(false);
   const [walletBalance, setWalletBalance] = useState(0);
@@ -38,11 +38,6 @@ const Wallet = () => {
     setShowTransactiondetails(true);
   };
 
-  const [showMobileNav, setShowMobileNav] = useState(false);
-  const showSideBar = () => {
-    setShowMobileNav(!showMobileNav);
-  };
-
   const showRejectModal = () => {
     setOrderDetails(false);
     setShowTrack(false);
@@ -54,11 +49,10 @@ const Wallet = () => {
     try {
       const response = await getRequest("/vendor/wallet/balance");
       if (response?.data) {
-        console.log(response?.data);
         setWalletBalance(response?.data?.data);
       } else {
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getTransaction = async () => {
@@ -68,7 +62,6 @@ const Wallet = () => {
       response?.data && setLoadPage(false);
       if (response?.data) {
         response?.data?.data.map((item) => {
-          console.log(item);
           let status;
           if ((item.status = "Successful")) {
             status = {
@@ -97,10 +90,8 @@ const Wallet = () => {
         setTransactionData(transactionDataArray);
         setFilteredTransactionData(transactionDataArray);
       } else {
-        // toast(<Toast text={response.message} type="danger" />);
       }
     } catch (error) {
-      console.log(error);
       error?.message && toast(<Toast text={error?.message} type="danger" />);
       // error?.data && toast(<Toast text={error?.data} type="danger" />);
     }
@@ -112,14 +103,15 @@ const Wallet = () => {
       if (response?.data) {
         setAllBanks(response?.data?.data?.data);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
-  const handleFilfeterData = (data) => {
+  const handleFilterData = (data) => {
     setFilteredTransactionData(
       transactionData.filter(
         (tansact) =>
           tansact.narration.toLowerCase().includes(data.toLowerCase()) ||
+          tansact.transactionType.toLowerCase().includes(data.toLowerCase()) ||
           tansact.transactionId.toLowerCase().includes(data.toLowerCase())
       )
     );
@@ -142,8 +134,9 @@ const Wallet = () => {
       if (response.data) {
         setTotalAmountRecieved(response.data.data.totalReceived);
       }
-      console.log(response);
-    } catch (error) {}
+    } catch (error) {
+      console.error(error)
+    }
   };
   useEffect(() => {
     getTotalAmontRecievd();
@@ -151,6 +144,11 @@ const Wallet = () => {
     getWalletBalance();
     getBanks();
   }, []);
+
+  useEffect(() => {
+    console.log(filterData)
+    handleFilterData(filterData);
+  }, [filterData]);
 
   return (
     <section>
@@ -193,7 +191,6 @@ const Wallet = () => {
                     total={walletBalance.toLocaleString()}
                     percentage="2.5"
                     bgColor="bg-[#57CAEB]"
-                    // link="link"
                     icon={vendorIcon}
                     addMaxWidth={true}
                   />
@@ -261,14 +258,13 @@ const Wallet = () => {
                     handleShowViewDetailModal();
                   }}
                   showRejectModal={showRejectModal}
-                  handleFilfeterData={handleFilfeterData}
+                  handleFilterData={handleFilterData}
                 />
               </div>
             </div>
           )}
         </div>
-        {/* <Modal content={<SetTotalOrderPerDay />}></Modal> */}
-        {/* {showModal == true && ( */}
+
         {setUpWalletWallet && (
           <Modal
             content={

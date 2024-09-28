@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import ExportComponent from "../../ExportButton";
 import OrderTableItem from "../OrderTableItem";
 import SearchInput from "@/components/SearchInput";
@@ -6,18 +7,33 @@ import exportIcon from "../../../public/assets/svg/Content.svg";
 import Image from "next/image";
 import Typography from "@/components/Typography";
 import DropDown from "@/components/DropDown";
-import OrderStatus from "../OrderStatus";
-import userInfo from "../../../public/assets/svg/Info Circle.svg";
 import { handleExport } from "@/utils/helper";
 import MobileTableItem from "../OrderMobileTableItem";
-import { useState } from "react";
 const OrderTable = ({
   data,
   viewDetails,
   showRejectModal,
-  handleFilfeterData,
+  handleFilterData,
   handleFilterWithDate,
 }) => {
+  const [exportData, setExportData] = useState([]);
+  console.log(data);
+  useEffect(() => {
+    console.log(
+      setExportData(data.map((item) => {
+        return {
+          orderId: item.orderId,
+          date: item.date,
+          productName: item.productName,
+          DeliveryStatus: item.DeliveryStatus.name,
+          customerEmail: item.customerEmail,
+          custmerAddress: item.custmerAddress,
+          customerName: item.customerName,
+          AmountPaid: item.AmountPaid
+        };
+      }))
+    );
+  }, []);
   return (
     <div className=" mt-4 min-h-[50vh]">
       <table className="w-full hidden lg:block border-3px">
@@ -59,11 +75,12 @@ const OrderTable = ({
               </div>
             </th>
             <th className="w-[10%] px-2 py-4 text-[12px]">
-              <ExportComponent
+              <div className="flex items-center justify-end"> <ExportComponent
                 handleExport={() => {
-                  handleExport(data);
+                  handleExport(exportData);
                 }}
-              />
+              /></div>
+
             </th>
           </tr>
         </thead>
@@ -85,7 +102,7 @@ const OrderTable = ({
               <SearchInput
                 placeholder="Search"
                 setValue={(data) => {
-                  handleFilfeterData(data);
+                  handleFilterData(data);
                 }}
               />
             </div>

@@ -1,8 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
-import DashboardTopCard from "@/components/DashboardTopCard";
 import classes from "./index.module.css";
 import moment from "moment";
+
+// Component Imports starts
+import DashboardTopCard from "@/components/DashboardTopCard";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import sendIcon from "../../../public/assets/svg/send.svg";
 import carIcon from "../../../public/assets/svg/car.svg";
@@ -15,46 +17,24 @@ import TotalOrderIcon from "../../../public/assets/svg/TotalOrder-Icon.svg";
 import TrackOrder from "@/components/order/TrackOrders";
 import RejectOrderModal from "@/components/order/RejectOrderModal";
 import CustomerDetails from "@/components/order/CustomerDetails";
-import { getRequest } from "@/api/method";
-import { calculatePrice } from "@/utils/helper";
 import Loader from "@/components/Loader";
 import DropDown from "@/components/DropDown";
 import Typography from "@/components/Typography";
+// Component Imports ends
+
+// functions start
+import { getRequest } from "@/api/method";
+import { calculatePrice } from "@/utils/helper"
+import { statusHandler } from "@/utils/helper";
+// functions ends
+
+// redux
 import { useAppSelector } from "@/redux/store";
 
 const Order = () => {
-  const filterData = useAppSelector((state) => state.auth.authState);
-  const [viewOrderDetails, setOrderDetails] = useState(false);
-  const [showTrack, setShowTrack] = useState(false);
-  const [showCustomer, setShowCustomer] = useState(false);
-  const [rejectModal, setShowReject] = useState(false);
-  const [total, setShowTotal] = useState(false);
-  const [pageLoading, setPageLoading] = useState(true);
-  const [showMobileNav, setShowMobileNav] = useState(false);
-  const [orders, setOrders] = useState([]);
-  const [filterdOrders, setFilteredOrders] = useState([]);
-  const [order, setOrder] = useState({});
-  const [deliveredOrder, setDeliveredOrder] = useState(0);
-  const [orderInTransit, setOrderInTransit] = useState(0);
-  const handleShowViewDetailModal = (orderId) => {
-    setOrder(orders.filter((item) => item.orderId == orderId)[0]);
-    setOrderDetails(true);
-  };
+  const filterData = useAppSelector((state) => state.filter.state);
 
-  const closeModal = () => {
-    setOrderDetails(false);
-    setShowTrack(false);
-    setShowCustomer(false);
-    setShowReject(false);
-  };
-
-  const showRejectModal = () => {
-    setOrderDetails(false);
-    setShowTrack(false);
-    setShowCustomer(false);
-    setShowReject(true);
-  };
-
+  // Variables starts
   const topNavData = [
     {
       item: "Order details",
@@ -84,6 +64,41 @@ const Order = () => {
       },
     },
   ];
+  // varisable ends
+
+  // states starts
+  const [viewOrderDetails, setOrderDetails] = useState(false);
+  const [showTrack, setShowTrack] = useState(false);
+  const [showCustomer, setShowCustomer] = useState(false);
+  const [rejectModal, setShowReject] = useState(false);
+  const [total, setShowTotal] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [orders, setOrders] = useState([]);
+  const [filterdOrders, setFilteredOrders] = useState([]);
+  const [order, setOrder] = useState({});
+  const [deliveredOrder, setDeliveredOrder] = useState(0);
+  const [orderInTransit, setOrderInTransit] = useState(0);
+  // states ends
+
+  // function starts
+  const handleShowViewDetailModal = (orderId) => {
+    setOrder(orders.filter((item) => item.orderId == orderId)[0]);
+    setOrderDetails(true);
+  };
+
+  const closeModal = () => {
+    setOrderDetails(false);
+    setShowTrack(false);
+    setShowCustomer(false);
+    setShowReject(false);
+  };
+
+  const showRejectModal = () => {
+    setOrderDetails(false);
+    setShowTrack(false);
+    setShowCustomer(false);
+    setShowReject(true);
+  };
 
   const getOrders = async () => {
     try {
@@ -98,40 +113,7 @@ const Order = () => {
           .length
       );
       response.data.data.map((order) => {
-        let DeliveryStatus;
-        if (order.status === "out-for-delivery") {
-          DeliveryStatus = {
-            name: "Out for delivery",
-            bg: "bg-[#D4CFCA]",
-            text: "text-[#3E1C01]",
-          };
-        } else if (order.status === "return") {
-          DeliveryStatus = {
-            name: "Return",
-            bg: "bg-[#9747FF21]",
-            text: "text-[#A869FA]",
-          };
-        } else if (order.status === "pending") {
-          DeliveryStatus = {
-            name: "pending",
-            bg: "bg-[#FFF7DE]",
-            text: "text-[#FFB020]",
-          };
-        } else if (order.status === "completed") {
-          DeliveryStatus = {
-            name: "completed",
-            bg: "bg-[#33CC331A]",
-            text: "text-[#33CC33]",
-          };
-        } else if (order.status === "Successful") {
-          DeliveryStatus = {
-            name: "Successful",
-            bg: "bg-[#FFF5F5]",
-            text: "text-[#33CC33]",
-          };
-        } else {
-          DeliveryStatus = { name: "Return", bg: "bg-[#D4CFCA]" };
-        }
+        let DeliveryStatus = statusHandler(order);
         let orderItem = {
           orderId: order.orderId,
           date: moment(order.orderDate).format("YYYY-MM-DD"),
@@ -155,7 +137,7 @@ const Order = () => {
       setOrders(ordersData);
       setFilteredOrders(ordersData);
       setPageLoading(false);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const handleFilterWithDate = (startDate, endDate) => {
@@ -168,7 +150,7 @@ const Order = () => {
     );
   };
 
-  const handleFilfeterData = (data) => {
+  const handleFilterData = (data) => {
     setFilteredOrders(
       orders.filter(
         (ord) =>
@@ -177,17 +159,19 @@ const Order = () => {
       )
     );
   };
+  // function ends
 
   useEffect(() => {
-    handleFilfeterData(filterData);
+    console.log(filterData)
+    handleFilterData(filterData);
   }, [filterData]);
+
   useEffect(() => {
     getOrders();
   }, []);
   return (
     <section>
       <div className="flex bg-[#F8F9FA]">
-        {/* {filterData} */}
         <div className="w-full p-4">
           {pageLoading ? (
             <Loader></Loader>
@@ -298,7 +282,7 @@ const Order = () => {
                     viewDetails={(orderId) => {
                       handleShowViewDetailModal(orderId);
                     }}
-                    handleFilfeterData={handleFilfeterData}
+                    handleFilterData={handleFilterData}
                     handleFilterWithDate={handleFilterWithDate}
                     showRejectModal={showRejectModal}
                   />

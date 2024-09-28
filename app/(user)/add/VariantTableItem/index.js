@@ -1,19 +1,19 @@
-import OrderStatus from "@/components/order/OrderStatus";
 import AddQuantity from "../Quantity";
-import AvailableSize from "../AvailableSize";
 import Variant from "../Variant";
 import Image from "next/image";
-import checkboxIcon from "../../../../public/assets/svg/checkbox-gray.svg";
 import trashGray from "../../../../public/assets/svg/trash-gray.svg";
 import Size from "@/components/Size.js";
 import VariantImage from "@/components/Products/VariantImage";
 import PriceComp from "../PriceComponent";
+import CheckBoxInput from "@/components/CheckboxInput";
 const VariantTableItem = ({
   item,
   index,
   quantityHandler,
   submitImage,
   priceHandler,
+  handleChecked,
+  handleDeleteVariantFromTable
 }) => {
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
@@ -67,15 +67,19 @@ const VariantTableItem = ({
       <td className="text-[12px] font-normal px-1  text-dark  border-solid border-r-[1px] border-gray-300">
         <div className="flex w-[100%] justify-between px-4">
           <div>
-            <Image src={checkboxIcon} alt="" />
+            <CheckBoxInput handleChange={(data) => {
+              handleChecked(data, item.id)
+            }} value={item.checked} />
           </div>
         </div>
       </td>
       <td className="text-[12px] font-normal px-1  text-dark  border-solid border-r-[1px] border-gray-300">
-        <div className="flex w-[100%] justify-between px-4">
-          <div>
+        <div className="flex w-[100%] justify-between px-3">
+          <button className="hover:bg-primary p-1 rounded-sm" onClick={() => {
+            handleDeleteVariantFromTable(item.id)
+          }}>
             <Image src={trashGray} alt="" />
-          </div>
+          </button>
         </div>
       </td>
 

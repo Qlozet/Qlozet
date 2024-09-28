@@ -5,7 +5,7 @@ import whiteLogo from "../../public/assets/image/logowhite.png";
 const Logo = () => {
   return (
     <div>
-      <div className=" items-center justify-center lg:justify-start hidden lg:flex">
+      <div className="items-center justify-center lg:justify-start hidden lg:flex">
         <Image
           src={brownLogo}
           alt=""

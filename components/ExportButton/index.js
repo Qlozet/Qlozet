@@ -5,7 +5,7 @@ import Image from "next/image";
 const ExportComponent = ({ handleExport }) => {
   return (
     <div
-      className="flex gap-4 items-center justify-center px-2 py-2 border-solid border-[1px] border-primary rounded-[12px] cursor-pointer max-w-[10rem]"
+      className="flex gap-4 items-center justify-center px-2 py-2  cursor-pointer max-w-[8rem] hover-translateX"
       onClick={handleExport}
     >
       <Image src={excelIcon} alt="" />
