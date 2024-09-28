@@ -61,8 +61,6 @@ const DasboardNavWithOutSearch = ({
           ? response?.data?.data?.averageRating
           : "",
       };
-
-      console.log(details);
       setUserData(details);
       setUserDetails(details);
     }
@@ -75,7 +73,7 @@ const DasboardNavWithOutSearch = ({
     <div>
       <div className={`${!hideNav ? " " : "pt-2"} rounded-[15px] `}>
         <div className="block lg:hidden">
-          <div className=" items-center justify-between px-3 py-3 bg-gray-400 rounded-[12px] hidden">
+          <div className="items-center justify-between px-3 py-3 bg-gray-400 rounded-[12px] hidden">
             <Image src={transformText} alt="" />
             <Image src={altireicon} alt="" />
             <Image src={clockwise} alt="" />
@@ -89,7 +87,6 @@ const DasboardNavWithOutSearch = ({
                 >
                   <Image alt="" src={menuIcon} />
                 </div>
-
                 <div className="hidden md:block">
                   <Typography
                     textColor="text-dark"

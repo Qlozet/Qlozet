@@ -44,7 +44,7 @@ const Layout = ({ children }) => {
         />
       </div>
       <div>
-        <div className="md:ml-[260px] border-[2px] border-solid border-primary">
+        <div className="md:ml-[260px]">
           <div className="p-4">
             <DasboardNavWithOutSearch
               value={filterData}

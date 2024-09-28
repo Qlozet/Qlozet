@@ -25,11 +25,12 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
       <div>
         <div
           className={`fixed h-screen w-screen top-0 right-0 flex justify-end z-50 ${styles.container}`}
+          style={{ zIndex: 100 }}
         >
           {showProfile && (
             <div
 
-              className="w-full h-screen bg-[rgba(0,0,0,.3)] border-solid border-[2px] border-primary"
+              className="w-full h-full bg-[rgba(0,0,0,.3)] border-solid border-[2px] border-primary"
               onClick={clickOutSide}
               ref={outsideRef}
             ></div>
