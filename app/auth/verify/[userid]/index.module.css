@@ -4,7 +4,7 @@
 }
 
 .sub_container {
-  background-image: url("../../../public//assets/image/verificationbg.jpg");
+  background-image: url("../../public//assets/image/verificationbg.jpg");
   background-size: contain;
   box-shadow: 0px 0.72px 5.73px 0px #0000000d;
 }
