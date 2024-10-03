@@ -11,64 +11,21 @@ import userIcon from "../../public/assets/svg/user-octagon.svg";
 import menuIcon from "../../public/assets/svg/menu-icon.svg";
 import mobileProfile from "../../public/assets/svg/mobile-oct-icon.svg";
 import Profile from "../Profile.js";
-import getVendorDetails from "@/api/request";
-import { setUserData } from "@/utils/localstorage";
 const DasboardNavWithOutSearch = ({
   name,
   addSearch,
-  vendor,
-  page,
   setValue,
   value,
   showSideBar,
   hideNav,
+  userDetails
 }) => {
   const router = useRouter();
   const [showProfile, setShowProfile] = useState(false);
-  const [pageLoaging, setPageLoading] = useState(true);
   const showProfileHandler = () => {
     setShowProfile(!showProfile);
   };
 
-  const [userDetails, setUserDetails] = useState({
-    businessName: "",
-    profileImage: "",
-    personalName: "",
-    profilePic: "",
-    averageRating: "",
-    profit: "",
-    items: "",
-  });
-
-  const getVendorDetailshandler = async () => {
-    const response = await getVendorDetails();
-    if (response?.data) {
-      setPageLoading(false);
-      const details = {
-        businessName: response?.data?.data?.companyName
-          ? response?.data?.data?.companyName
-          : "",
-        personalName: response?.data?.data?.vendorName
-          ? response?.data?.data?.vendorName
-          : "",
-        profileImage: response.data?.data
-          ? response.data?.data.profilePicture
-          : "",
-        ratings: response.data?.data ? response.data?.data.ratings : "",
-        items: response.data?.data ? response.data?.data?.items : "",
-        profit: response.data?.data ? response.data?.data?.profit : "",
-        averageRating: response.data?.data?.averageRating
-          ? response?.data?.data?.averageRating
-          : "",
-      };
-      setUserData(details);
-      setUserDetails(details);
-    }
-  };
-
-  useEffect(() => {
-    getVendorDetailshandler();
-  }, []);
   return (
     <div>
       <div className={`${!hideNav ? " " : "pt-2"} rounded-[15px] `}>

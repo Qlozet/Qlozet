@@ -14,7 +14,6 @@ const Verication = ({ params }) => {
   const verifyAccount = async () => {
     try {
       const response = await getRequest(`/vendor/verify/${params.userid}`);
-      console.log(response);
       if (response?.data.success) {
         toast(<Toast text={response?.data?.message} type="success" />);
         setLoading(false);
@@ -37,7 +36,7 @@ const Verication = ({ params }) => {
       ) : (
         <div className={`${classes.container}  max-w-[735px] `}>
           <div className="py-16 flex justify-center">
-            <Logo />
+            <Logo brown={true} />
           </div>
           <div className={`${classes.sub_container} py-6 rounded-[16px] `}>
             <div className="pb-2">

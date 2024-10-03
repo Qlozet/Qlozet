@@ -16,12 +16,13 @@ import supportActive from "../../public/assets/svg/support-active.svg";
 import loggoutDefault from "../../public/assets/svg/logout-default.svg";
 import vendorDefault from "../../public/assets/svg/user-octagon.svg";
 import vendorActive from "../../public/assets/svg/user-octagon-active.svg";
+import brownLogo from "../../public/assets/image/logobrown.png";
 import Logout from "../Logout";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Modal from "../Modal";
 import { setFilter } from "@/redux/slice";
-import brownLogo from "../../public/assets/image/logobrown.png";
+import styles from './index.module.css'
 
 import { useAppDispatch } from "@/redux/store";
 const SideBar = ({ active }) => {
@@ -29,7 +30,6 @@ const SideBar = ({ active }) => {
 
   const [showLogOutModal, setShowLogOutModal] = useState(false);
   const router = useRouter();
-
   const sidebaritems = [
     {
       name: "Dashboard",
@@ -99,7 +99,7 @@ const SideBar = ({ active }) => {
 
   return (
     <div
-      className="hidden md:block bg-white fixed top-0 left-0 w-[260px] max-w-[260px] lg:min-w-[250px] h-screen"
+      className={`hidden md:block bg-white fixed top-0 left-0 w-[260px] max-w-[260px] lg:min-w-[250px] h-screen ${styles.container}`}
       style={{
         zIndex: 100,
       }}

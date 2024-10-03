@@ -1,6 +1,5 @@
 import ExportComponent from "../../ExportButton";
 import ProductTableItem from "../ProductTableItem";
-import defaultImage from "../../../public/assets/image/default.png";
 import Image from "next/image";
 import SearchInput from "@/components/SearchInput";
 import icon from "../../../public/assets/svg/Icon container.svg";

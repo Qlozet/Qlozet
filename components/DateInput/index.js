@@ -7,8 +7,6 @@ const DateInput = ({
   label,
   setValue,
   value,
-  error,
-  rightIcon,
   leftIcon,
   placeholder,
   disabled = false,
@@ -17,7 +15,6 @@ const DateInput = ({
   showCalender,
   showCalendeHandler,
 }) => {
-  console.log(value);
   const [dateValue, onChange] = useState(new Date());
   const [date, setDate] = useState(new Date());
 
@@ -36,7 +33,7 @@ const DateInput = ({
         alt=""
         src={calenderIcon}
         className="absolute top-[2.3rem] right-[1rem] cursor-pointer"
-        onClick={() => {}}
+        onClick={() => { }}
       />
       {showCalender && (
         <div className="fixed top-[1rem] flex items-center justify-center w-screen height-screen index-60">

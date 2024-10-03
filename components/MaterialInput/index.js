@@ -39,7 +39,6 @@ const MaterialInput = ({
               >
                 <div
                   className="absolute top-[-5px] right-[-5px] bg-primary-100 rounded-[50%] p-[1px]"
-                  style={{ zIndex: 200 }}
                 >
                   <Image
                     alt="close"
@@ -77,8 +76,7 @@ const MaterialInput = ({
           type="file"
           id="material"
           className={`py-3 px-4 w-full border-solid border-[1.5px] 
-            focus:outline-none focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 ${
-              disabled && "border-0 bg-gray-300 cursor-not-allowed min-h-[82px]"
+            focus:outline-none focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 ${disabled && "border-0 bg-gray-300 cursor-not-allowed min-h-[82px]"
             } hidden`}
           disabled={disabled}
           placeholder={placeholder}

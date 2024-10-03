@@ -15,7 +15,6 @@ import { postRequest } from "@/api/method";
 import toast from "react-hot-toast";
 import Toast from "@/components/ToastComponent/toast";
 import { getToken, setToken } from "@/utils/localstorage";
-import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 const SignIn = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +35,6 @@ const SignIn = () => {
         response && setIsLoading(false);
         if (response.success === true) {
           setToken(JSON.stringify(response.data));
-          console.log(response);
           router.push("/dashboard");
           toast(<Toast text={response.message} type="success" />);
         } else {

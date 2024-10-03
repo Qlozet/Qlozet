@@ -11,6 +11,7 @@ const SelectInput = ({
   label,
   index,
   error,
+  readOnly
 }) => {
   const [showDropDown, setShowDropDown] = useState(false);
   const dropDownRef = useRef();
@@ -31,7 +32,7 @@ const SelectInput = ({
       <div className={`${classes.container}  border-solid   `}>
         <label className="text-[14px] text-dark">{label}</label>
         <input
-          readOnly
+          readOnly={readOnly}
           onChange={filterList}
           onClick={() => {
             setShowDropDown(true);
@@ -43,9 +44,8 @@ const SelectInput = ({
           }}
           placeholder={placeholder}
           value={value}
-          className={`py-2 ${
-            error && "border-danger"
-          } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  
+          className={`py-2 ${error && "border-danger"
+            } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  
             focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 
            `}
         ></input>
@@ -60,18 +60,17 @@ const SelectInput = ({
       </div>
       {showDropDown && (
         <div
-          className={`border-[2px] border-solid border-primary w-full cursor-pointer absolute top-[72px] bg-white rounded-[12px] max-h-[15rem] ${classes.datalist}`}
+          className={`border-[2px] border-solid border-primary w-full cursor-pointer absolute top-[68px] bg-white rounded-[12px] max-h-[15rem] ${classes.datalist}`}
           ref={dropDownRef}
         >
           {list.map((item, index) => (
             <div
               key={index}
               tabIndex={0}
-              className={`p-2 ${
-                index !== 0
-                  ? "border-t-[1.5px] border-solid border-gray-200"
-                  : ""
-              } hover:bg-[#F4F4F4]`}
+              className={`p-2 ${index !== 0
+                ? "border-t-[1.5px] border-solid border-gray-200"
+                : ""
+                } hover:bg-[#F4F4F4]`}
               onClick={() => {
                 console.log(item.text);
                 setValue(item.text);

@@ -5,6 +5,8 @@ import { ColorPicker, useColor } from "react-color-palette";
 import ColorInputContainer from "../ColorPicker";
 import Typography from "../Typography";
 import classes from "./index.module.css";
+import customisationIcon from "../../public/assets/svg/customisation-icon.svg";
+
 import { useState } from "react";
 const ColorInput = ({
   label,
@@ -16,6 +18,7 @@ const ColorInput = ({
   placeholder,
   disabled = false,
   index,
+  removeColorHandler
 }) => {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [currentColor, setCurrentColor] = useState("#561ecb");
@@ -68,6 +71,11 @@ const ColorInput = ({
     "#9900B3",
   ];
   const [color, setColor] = useColor("#561ecb");
+
+  const removeColor = (color, index) => {
+    setSelectedColors(selectedColors.filter((item) => item !== color));
+    removeColorHandler(color, index);
+  };
   return (
     <div
       className="relative"
@@ -77,52 +85,56 @@ const ColorInput = ({
     >
       <div className="my-3">
         {leftIcon}
-        <label className="text-[14px] font-light my-2 text-dark">{label}</label>
+        <label className="text-[14px] my-2 text-dark">{label}</label>
         <div className="flex items-center w-full">
           <div
             type="text"
-            className={` min-h-[2.8rem] cursor-pointer px-4 w-full border-solid border-[1.5px]  text-dark placeholder-gray-200
-          focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 ${
-            error && "border-danger"
-          } border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 ${
-              disabled && "border-0 bg-gray-300 cursor-not-allowed "
-            } `}
-            // value={value}
-            // disabled={disabled}
-            // placeholder={placeholder}
-            // onChange={(e) => {
-            //   setValue(e.target.value);
-            //}}
-            onClick={() => {
-              setShowColorPicker(true);
-            }}
+            className={`h-[3rem] px-2 w-full border-solid border-[1.5px]  text-dark placeholder-gray-200
+          focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 ${error && "border-danger"
+              } border-gray-2 rounded-[8px] overflow-x-hidden text-[14px] text-font-light placeholder:font-300 ${disabled && "border-0 bg-gray-300 cursor-not-allowed "
+              } `}
           >
             <div
               className={`${classes.scrollbarElement} overflow-x-scroll absolute top-[2rem] flex items-center gap-4 w-[75%]`}
             >
-              {showColorPicker && (
-                <div>
-                  <div
-                    className="w-[4rem] h-[2rem] rounded"
-                    style={{
-                      backgroundColor: currentColor,
-                    }}
-                  ></div>
-                </div>
-              )}
-              {selectedColors.map((color) => (
-                <div>
-                  <div 
-                    className="w-[4rem] h-[2rem] rounded"
-                    style={{
-                      backgroundColor: color,
-                    }}
-                  ></div>
-                </div>
-              ))}
+              <div
+                className="w-[4rem] h-[2rem] rounded border-[1.5px] border-solid flex items-center justify-center cursor-pointer"
+                onClick={() => {
+                  setShowColorPicker(true);
+                }}
+              >
+                <Image src={customisationIcon} alt="" width={25} height={25} />
+              </div>
+              {selectedColors.map((color, index) => {
+                return (
+                  <div className="relative" key={index} style={{ zIndex: 500 }}>
+                    <div
+                      className="absolute top-[-5px] right-[-5px] bg-primary-100 rounded-[50%] p-[1px]"
+                    >
+                      <Image
+                        alt=""
+                        src={closeIcon}
+                        width={15}
+                        height={15}
+                        onClick={() => {
+                          removeColor(color, index);
+                        }}
+                      />
+                    </div>
+                    <div
+                      className="w-[4rem] h-[2rem] rounded"
+                      style={{
+                        backgroundColor: color,
+                      }}
+                    ></div>
+                  </div>
+                );
+              })}
             </div>
           </div>
-          <div className="absolute top-[2.2rem] right-[-1.5rem] cursor-pointer">
+          <div className="absolute top-[2.2rem] right-[-1.5rem] cursor-pointer" onClick={() => {
+            setShowColorPicker(true);
+          }}>
             <Image src={colourIcon} className="translate-x-[-2rem]" alt="" />
           </div>
         </div>
@@ -141,7 +153,7 @@ const ColorInput = ({
         }}
       >
         {showColorPicker && (
-          <div className=" fixed top-0 left-0 h-screen w-screen ">
+          <div className=" fixed top-0 left-0 h-screen w-screen " style={{ zIndex: 1000 }}>
             <div className="relaive overflow-y-scroll top-0 left-0 wfull bg-[rgba(0,0,0,.3)] flex items-center justify-center h-screen w-screen">
               <div className="mx-w-[300px] top-[4.5rem] right-0 bg-[#2c2c2c] p-b-3 border-gray-200 rounded-[5px] border-solid border-[2px] border-[rgba(13,153,255)]">
                 <div className="p-4 flex items-center justify-between">

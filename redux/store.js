@@ -12,6 +12,5 @@ export const store = configureStore({
     getDefaultMiddleware({ serializableCheck: false }),
 });
 
-// Use `store.getState()` to get the root state
 export const useAppDispatch = () => useDispatch();
 export const useAppSelector = useSelector;

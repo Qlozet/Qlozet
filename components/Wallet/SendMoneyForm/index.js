@@ -48,7 +48,7 @@ const SendMoneyForm = ({ closeModal, banks }) => {
         closeModal("");
         toast(<Toast text={response?.message} type="success" />);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getUserAccountName = async () => {
@@ -95,9 +95,9 @@ const SendMoneyForm = ({ closeModal, banks }) => {
             className={`border-dashed border-gray-200 border-t-[1.5px] mt-4 pt-6`}
           >
             <SelectInput
+              readOnly={false}
               error={requiredFormData.bankName}
               placeholder={"Select an option"}
-              // value={dropDownValue}
               setValue={(data) => {
                 setFormData((prevData) => {
                   return { ...prevData, bankName: data };
@@ -128,7 +128,7 @@ const SendMoneyForm = ({ closeModal, banks }) => {
                 if (data) {
                   if (data.length < 11) {
                     setFormData((prevData) => {
-                      return { ...prevData, accountNumber: data };
+                      return { ...prevData, accountNumber: data, accountName: "" };
                     });
                   }
                 } else {
@@ -158,6 +158,7 @@ const SendMoneyForm = ({ closeModal, banks }) => {
               }}
               error={requiredFormData.accountName}
               value={formData.accountName}
+              disabled={true}
             />
             <NumberInput
               label="Amount"

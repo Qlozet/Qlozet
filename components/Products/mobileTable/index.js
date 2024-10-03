@@ -36,7 +36,7 @@ const MobileTable = ({
               style={{ width: "5rem", height: "auto" }}
               alt=""
               unoptimized
-              className="min-w-[6rem] h-[auto] ml-4 max-w-[8rem] border-gray-200 border-[1.5px] border-solid rounded-sm"
+              className="min-w-[6rem] h-[auto] ml-4 max-w-[8rem] border-gray-200 border-[1.5px] border-solid rounded-lg"
             />
             <div
               className="w-[1.5rem] h-[1.5rem]"

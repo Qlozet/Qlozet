@@ -1,25 +1,32 @@
 "use client";
 import { useEffect, useState } from "react";
-import DashboardTopCard from "@/components/DashboardTopCard";
+// Svg import starts
+import addIcon from "../../../public/assets/svg/add-square.svg";
+import importIcon from '../../../public/assets/svg/import.svg'
 import shoppingBag from "../../../public/assets/svg/shipping_bag.svg";
+
+// Components import start
+import DashboardTopCard from "@/components/DashboardTopCard";
 import Typography from "@/components/Typography";
 import Modal from "@/components/Modal";
 import CustomerDetails from "@/components/order/CustomerDetails";
 import OrderHistory from "@/components/Customer/OrderHistory";
 import DonutChart from "@/components/Chat/DoughnutChat";
-import classes from "./index.module.css";
 import ProductTable from "@/components/Products/ProductTable";
-import addIcon from "../../../public/assets/svg/add-square.svg";
 import Button from "@/components/Button";
+import Loader from "@/components/Loader";
+import DropDown from "@/components/DropDown";
+import Toast from "@/components/ToastComponent/toast";
 import Image from "next/image";
+
+// stylse sheet 
+import classes from "./index.module.css";
+
 import { useRouter } from "next/navigation";
 import { getRequest } from "@/api/method";
 import { clearProductId } from "@/utils/localstorage";
 
 import toast from "react-hot-toast";
-import Toast from "@/components/ToastComponent/toast";
-import Loader from "@/components/Loader";
-import DropDown from "@/components/DropDown";
 import moment from "moment";
 
 // redux
@@ -171,34 +178,20 @@ const Products = () => {
           ) : (
             <div>
               <div className="flex items-center justify-end py-6 gap-6">
-                <div className="hidden lg:block">
+                <div className="block">
                   <Button
                     children={
                       <span className="flex justify-center items-center">
-                        <span>Import Products</span>
-                        <Image src={addIcon} className="ml-4" alt="" />
+                        <span>Import</span> <span className="hidden lg:block ml-[2px]"> Product</span>
+                        <Image src={importIcon} className="ml-4" alt="" />
                       </span>
                     }
                     btnSize="small"
-                    minWidth="min-w-[14rem]"
-                    variant="primary"
+                    minWidth="min-w-[8rem] lg:min-w-[14rem]"
+                    variant="outline"
                     clickHandler={() => {
-                      setShowAddModal(true);
-                    }}
-                  />
-                </div>
-                <div className="block lg:hidden">
-                  <Button
-                    children={
-                      <span className="flex justify-center items-center">
-                        <span>Import</span>
-                        <Image src={addIcon} className="ml-4" alt="" />
-                      </span>
-                    }
-                    btnSize="small"
-                    variant="=outline"
-                    clickHandler={() => {
-                      setShowAddModal(true);
+                      router.push("/add");
+                      clearProductId();
                     }}
                   />
                 </div>
@@ -211,7 +204,7 @@ const Products = () => {
                       </span>
                     }
                     btnSize="small"
-                    minWidth="min-w-[14rem]"
+                    minWidth="lg:min-w-[14rem]"
                     variant="primary"
                     clickHandler={() => {
                       router.push("/add");
@@ -228,7 +221,6 @@ const Products = () => {
                   total={products.length}
                   percentage="2.5"
                   bgColor="bg-[#57CAEB]"
-                  // link="products"
                   icon={shoppingBag}
                   addMaxWidth={true}
                 />

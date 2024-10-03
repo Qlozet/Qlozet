@@ -11,10 +11,6 @@ import mobileProfile from "../../public/assets/svg/mobile-oct-icon.svg";
 const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
   const outsideRef = useRef();
   const profileRef = useRef();
-  // const showProfileHandler = () => {
-  //   console.log("clicked in");
-  //   setShowProfile(true);
-  // };
   const clickOutSide = (e) => {
     if (e.target !== profileRef.current) {
       showProfileHandler();
@@ -24,13 +20,12 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
     <div>
       <div>
         <div
-          className={`fixed h-screen w-screen top-0 right-0 flex justify-end z-50 ${styles.container}`}
+          className={`fixed  bg-[rgba(0,0,0,.3)] h-screen w-screen top-0 right-0 flex justify-end z-50 ${styles.container}`}
           style={{ zIndex: 100 }}
         >
           {showProfile && (
             <div
-
-              className="w-full h-full bg-[rgba(0,0,0,.3)] border-solid border-[2px] border-primary"
+              className="w-full h-full "
               onClick={clickOutSide}
               ref={outsideRef}
             ></div>
@@ -39,7 +34,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
           <div className="relative">
             {showProfile && (
               <div
-                className="w-screen  bg-white  lg:w-[350px] "
+                className="w-screen h-screen bg-white  lg:w-[350px] "
                 ref={profileRef}
               >
                 <div className="bg-white">

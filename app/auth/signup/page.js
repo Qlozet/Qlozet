@@ -1,6 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
+// svgs imports
+import previousIcon from "../../../public/assets/svg/previousicon.svg";
 import signupImage from "../../../public/assets/svg/signupImage.svg";
+
+// Components import
 import Image from "next/image";
 import { toast } from "react-hot-toast";
 import Button from "@/components/Button";
@@ -15,10 +19,11 @@ import { postRequest } from "@/api/method";
 import Step4 from "@/components/SignUpStep/Step4";
 import Toast from "@/components/ToastComponent/toast";
 import Logo from "@/components/Logo";
-import previousIcon from "../../../public/assets/svg/previousicon.svg";
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
-
+import { setEmail, setFilter } from "@/redux/slice";
+import { useDispatch } from "react-redux";
 const SignUp = () => {
+  const dispatch = useDispatch()
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [businessLogo, setBusinessLogo] = useState([]);
@@ -115,12 +120,14 @@ const SignUp = () => {
         formData.append("businessLogo", businessLogo[0]);
         console.log([...formData.entries()]);
         const response = await postRequest(`/vendor/signup`, formData, true);
-        console.log(response);
         if (response.success) {
+          dispatch(setEmail(businessInfo.businessEmail))
           setIsLoading(false);
+          router.push("/auth/confirm-account");
+          // 
           toast(<Toast text={response.message} type="success" />);
         } else {
-          // setIsLoading(false);
+       
           toast(<Toast text={response.message} type="danger" />);
         }
       } else {

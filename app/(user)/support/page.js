@@ -13,7 +13,6 @@ import validator from "@/utils/validator";
 import Toast from "@/components/ToastComponent/toast";
 import toast from "react-hot-toast";
 const Support = () => {
-  const [showMobileNav, setShowMobileNav] = useState(false);
   const [formData, setFormData] = useState({ issueType: "", message: "" });
   const [pageLoading, setPageLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -21,9 +20,6 @@ const Support = () => {
     issueType: false,
     message: false,
   });
-  const showSideBar = () => {
-    setShowMobileNav(!showMobileNav);
-  };
 
   const submiteHandler = async () => {
     const { status, data, id } = validator(formData, requiredFormData);
@@ -39,7 +35,7 @@ const Support = () => {
           setFormData({ message: "", issueType: "" });
           toast(<Toast text={response?.message} type="success" />);
         }
-      } catch (error) {}
+      } catch (error) { }
     } else {
       setRequiredFormData((prevData) => {
         return { prevData, ...data };
@@ -65,15 +61,9 @@ const Support = () => {
                       >
                         Get support
                       </Typography>
-                      {/* <Image
-                  src={closeIcon}
-                  alt=""
-                  onClick={closeModal}
-                  className="cursor-pointer"
-                /> */}
                     </div>
-
                     <SelectInput
+                      readOnly={true}
                       placeholder={"User type "}
                       value={formData.issueType}
                       setValue={(data) => {

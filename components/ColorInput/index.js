@@ -87,9 +87,6 @@ const ColorInput = ({
           } border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 ${
             disabled && "border-0 bg-gray-300 cursor-not-allowed "
           } `}
-          // onClick={() => {
-
-          // }}
         >
           <div
             className={`${classes.scrollbarElement} overflow-x-scroll  flex items-center gap-4 w-[99%]`}
@@ -187,7 +184,6 @@ const ColorInput = ({
                   color={color}
                   onChange={(currentColor) => {
                     setColor(currentColor);
-
                     setCurrentColor(currentColor.hex);
                   }}
                 />

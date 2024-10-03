@@ -1,13 +1,8 @@
 import { useState, useRef } from "react";
-import threeDotIcon from "../../../public/assets/svg/three-dot.svg";
 import Image from "next/image";
 import OrderStatus from "@/components/order/OrderStatus";
-import Modal from "../../Modal";
-import defaultImage from "../../../public/assets/image/default.png";
 import dottedIcon from "../../../public/assets/svg/carbon_overflow-menu-horizontal.svg";
 import Quantity from "../Quantity";
-import DeleteProduct from "../Delete";
-import DropDown from "@/components/DropDown";
 import ProductItemDropDown from "../ProductItemDropDown";
 import { setProductId } from "@/utils/localstorage";
 
@@ -39,6 +34,7 @@ const ProductTableItem = ({
       setShowDropDown(true);
     }
   });
+
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white ">
       <td className="text-[12px] font-normal py-4 text-dark">
@@ -48,7 +44,7 @@ const ProductTableItem = ({
           src={picture}
           style={{ width: "5rem", height: "auto" }}
           alt=""
-          className="w-[2rem] h-[auto]  border-gray-200 border-[1.5px] border-solid rounded-sm"
+          className="w-[2rem] h-[auto]  border-gray-200 border-[1.5px] border-solid  rounded-lg"
           unoptimized
         />
       </td>
@@ -87,7 +83,6 @@ const ProductTableItem = ({
               data={[
                 "View product",
                 "Edit product",
-                // "Feature product",
                 "Activate product",
                 "Schedule activation",
                 "Deactivate product",
