@@ -1,12 +1,11 @@
 import style from "./index.module.css";
-// import logo from ".../../../public/assets/svg/logo.svg";
 import Image from "next/image";
 import Button from "../Button";
 import brownLogo from "../../public/assets/image/logobrown.png";
 const HomePageHeader = () => {
   return (
-    <div>
-      <div className="flex items-center justify-between py-8">
+    <div className="w-[95%] mx-auto">
+      <div className="flex items-center justify-between ">
         <Image
           src={brownLogo}
           alt=""

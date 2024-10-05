@@ -1,18 +1,24 @@
 import Image from "next/image";
-import firstImage from "../../public/assets/image/homeImage.jpg";
-import SecondImag from "../../public/assets/image/SecondImag.jpg";
-import third from "../../public/assets/image/third.jpg";
-import fourth from "../../public/assets/image/fourth.jpg";
-import fift from "../../public/assets/image/fourth-hero.jpg";
-import sixt from "../../public/assets/svg/sixth.svg";
+import frame1 from '../../public/assets/svg/frame1.svg'
+import frame2 from '../../public/assets/svg/frame2.svg'
+import frame3 from '../../public/assets/svg/frame3.svg'
+import frame4 from '../../public/assets/svg/frame4.svg'
+import frame5 from '../../public/assets/svg/frame5.svg'
+import frame6 from '../../public/assets/svg/frame6.svg'
 import Typography from "../Typography";
+import backgroungImage from '../../public/assets/image/frame.jpg'
 import Button from "../Button";
 const HomePageHero = () => {
   return (
-    <div className="bg-[#8A8989]  mt-4 rounded-[12px]">
-      <div className="flex p-4">
-        <div className="flex-1 mt-[64px] ml-[32px]">
-          <div>
+    <div className={` mt-4 rounded-[12px] w-[95%] mx-auto`} style={{
+      backgroundImage: `url('https://res.cloudinary.com/dxqg5hify/image/upload/v1728076899/f05c5b09b12e674c3e031d5f2ea52b06_vflqev.jpg')`,
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "cover"
+    }}>
+      <div className="flex px-4 gap-8">
+        <div className="flex-1 flex-col justify-between w-[80%] pt-4 min-h-full">
+          <div className="ml-12 mt-[4rem] w-[65%]">
             <Typography
               textColor="text-white"
               textWeight="font-[500]"
@@ -26,7 +32,7 @@ const HomePageHero = () => {
               textSize="text-[24px]"
             >
               We are the driving force behind the dreams of emerging designers
-              and tailors entrepreneurs{" "}
+              and tailors entrepreneurs
             </Typography>
             <div className="mt-[43px]">
               <Button
@@ -41,45 +47,21 @@ const HomePageHero = () => {
               />
             </div>
           </div>
-        </div>
-        <div className="flex flex-1 items-end gap-[32]">
-          <div>
-            <Image
-              src={SecondImag}
-              alt=""
-              unoptimized
-              className="rounded-[8px] translate-x-[-20px] border-solid border-[2px] border-primary"
-            />
-          </div>
-          <div>
-            <Image
-              src={firstImage}
-              alt=""
-              unoptimized
-              className="rounded-[8px]"
-            />
+          <div className="">
+            <div className="flex items-center justify-end"><Image src={frame3} /></div>
+            <div className="flex items-end justify-between gap-2 w-[100%]">
+              <Image src={frame6} />
+              <Image src={frame5} />
+              <Image src={frame4} />
+            </div>
           </div>
         </div>
+        <div className="flex flex-col w-[20%] justify-end gap-[3rem] pt-12 min-h-full">
+          <Image src={frame1} unoptimized />
+          <div className="flex items-end"><Image src={frame2} unoptimized /></div>
+        </div>
       </div>
-      <div className="flex items-center gap-6 w-full overflow-hidden">
-        <Image
-          src={third}
-          className="rounded-tl-[20px] rounded-tr-[20px] w-full"
-          unoptimized
-        />
-        <Image
-          src={fourth}
-          className="rounded-tl-[20px] rounded-tr-[20px] w-full"
-          unoptimized
-        />
-        <div className="relative z-10"></div>
-       
-        <Image
-          src={sixt}
-          className="rounded-tl-[20px] rounded-tr-[20px] w-full"
-          unoptimized
-        />
-      </div>
+
     </div>
   );
 };
