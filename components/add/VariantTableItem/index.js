@@ -38,29 +38,33 @@ const VariantTableItem = ({
       <td className="text-[12px] font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
         <div className="flex items-center gap-3">
           <VariantImage
-            listIndex={index}
+            id={item.id}
             imageIndex={0}
             submitImage={submitImage}
+            color={item.color}
           />
           <VariantImage
-            listIndex={index}
+            id={item.id}
             imageIndex={1}
             submitImage={submitImage}
           />
           <VariantImage
-            listIndex={index}
+            id={item.id}
             imageIndex={2}
             submitImage={submitImage}
+            color={item.color}
           />
           <VariantImage
-            listIndex={index}
+            id={item.id}
             imageIndex={3}
             submitImage={submitImage}
+            color={item.color}
           />
           <VariantImage
-            listIndex={index}
+            id={item.id}
             imageIndex={4}
             submitImage={submitImage}
+            color={item.color}
           />
         </div>
       </td>

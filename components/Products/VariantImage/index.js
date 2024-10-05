@@ -1,21 +1,21 @@
 import Image from "next/image";
 import icon from "../../../public/assets/svg/image-frame.svg";
 import { useState } from "react";
-const VariantImage = ({ submitImage, listIndex, imageIndex }) => {
+const VariantImage = ({ submitImage, id, imageIndex, color }) => {
   const [file, setFile] = useState("");
   return (
     <div>
       <input
         className="hidden"
         type="file"
-        id={`variantImage${listIndex}${imageIndex}`}
+        id={`variantImage${id}${imageIndex}`}
         onChange={(e) => {
           setFile(e.target.files[0]);
-          submitImage(e.target.files[0], listIndex, imageIndex);
+          submitImage(e.target.files[0], id, imageIndex, color);
         }}
       />
       <label
-        htmlFor={`variantImage${listIndex}${imageIndex}`}
+        htmlFor={`variantImage${id}${imageIndex}`}
         className="cursor-pointer"
       >
         <Image

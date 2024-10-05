@@ -34,7 +34,7 @@ const HomePageHeader = () => {
               //   handleSubmit();
             }}
           /> */}
-          <button  className="px-4 py-2 rounded-sm bg-dark flex items-center h-[2.8rem] text-white ">Watch demo</button>
+          <button  className="px-4 py-2  bg-dark flex items-center h-[2.8rem] text-white rounded-2xl">Watch demo</button>
         </div>
       </div>
     </div>

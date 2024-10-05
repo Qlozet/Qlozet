@@ -119,21 +119,26 @@ const AddProduct = () => {
     setPositionStyles(containsPostion);
   };
 
-  const submitVariantImage = async (file, listIndex, imageIndex) => {
+  const submitVariantImage = async (file, id, imageIndex, color) => {
     const imageUrl = await uploadSingleImage(file);
-    let prevVariantTable = variantTable;
-    if (imageUrl?.secure_url) {
-      let images = variantTable[listIndex].images;
-      images[imageIndex] = imageUrl;
-      const newVariantItem = {
-        color: variantTable[listIndex].color,
-        images: images,
-        size: variantTable[listIndex].sizes,
-        quantity: variantTable[listIndex].quantity,
-      };
-      prevVariantTable[listIndex] = newVariantItem;
-      setVariantTable(prevVariantTable);
-    }
+    const orderItems = variantTable.filter((item) => item.id !== id)
+    const targetItems = variantTable.filter((item) => item.id === id)
+    targetItems[0].images.retained = [...targetItems[0].images.retained, imageUrl]
+    setVariantTable([...targetItems, ...orderItems]);
+    // let prevVariantTable = variantTable;
+    // if (imageUrl?.secure_url) {
+    //   let images = variantTable[listIndex].images;
+    //   images[imageIndex] = imageUrl;
+    //   const newVariantItem = {
+    //     color: variantTable[listIndex].color,
+    //     images: images,
+    //     size: variantTable[listIndex].sizes,
+    //     quantity: variantTable[listIndex].quantity,
+    //   };
+
+    //   prevVariantTable[listIndex] = newVariantItem;
+    //   //
+    // }
   };
 
   const addToVariantTable = async (data) => {
@@ -157,6 +162,7 @@ const AddProduct = () => {
 
   const addSizeToVariant = (size) => {
     const id = uuidv4();
+    console.log(variantTable)
     const addColorAndMaterial = [...selectedColors, ...selectedVariantFiles];
     const previousColorInVarianttable = new Set(
       variantTable.map((color) => color.color)
@@ -288,7 +294,7 @@ const AddProduct = () => {
               price: 90,
               quantity: item.quantity,
               images: {
-                retained: item.images,
+                retained: item.images.retained,
                 deleted: [],
               },
             };

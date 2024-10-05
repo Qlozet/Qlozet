@@ -18,7 +18,6 @@ import arrowLeft from "../../../public/assets/svg/arrrowLeft.svg";
 import arrowRight from "../../../public/assets/svg/arrowRightt.svg";
 import Modal from "@/components/Modal";
 import ProductReview from "@/components/Products/ReviewComponent";
-import DragDrop from "@/components/DragandDrop";
 
 const ProductDetails = () => {
   const router = useRouter();
@@ -27,6 +26,7 @@ const ProductDetails = () => {
   const [vendorName, setVendorName] = useState("");
   const [number, setNumber] = useState(0);
   const [variants, setVariants] = useState([]);
+  const [sliderImages, setSliderImages] = useState([])
   const [productFormData, setProductFormData] = useState({
     productName: "",
     productPrice: "",
@@ -83,13 +83,22 @@ const ProductDetails = () => {
           return image?.secure_url;
         }),
       });
-      // clearProductId();
+      setSliderImages(response.data.data.images.map((image) => {
+        return image?.secure_url;
+      }))
+      console.log(response.data.data.images.map((image) => {
+        return image?.secure_url;
+      }))
       setPageLoading(false);
     } catch (error) {
       setPageLoading(false);
     }
   };
 
+  const handleSetSliderImageToVariantImage = (variant) => {
+    console.log(variant)
+    setSliderImages(variant.images.map((item) => item.secure_url))
+  }
   const handleShowReview = () => {
     setShowReview(!showReview);
   };
@@ -118,7 +127,7 @@ const ProductDetails = () => {
                   <Image src={arrowLeftIcon} alt="" />
                   <h2
                     className="font-bold text-[18px] 
-        my-4"
+            my-4"
                   >
                     View Product
                   </h2>
@@ -136,16 +145,15 @@ const ProductDetails = () => {
                   <div className="block lg:flex">
                     <div className="lg:flex-1 relative">
                       <div className="relative">
-                        {productFormData.images.length > 1 && (
+                        {sliderImages.length > 1 && (
                           <div className="absolute top-[50%] left-0 flex items-center justify-between w-[100%] px-6">
                             <div
-                              className={`${
-                                number < 1 ? "bg-gray-300" : "bg-white"
-                              }  w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]`}
+                              className={`${number < 1 ? "bg-gray-300" : "bg-white"
+                                }  w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]`}
                               onClick={() => {
                                 if (
                                   number <
-                                  productFormData.images.length - 1
+                                  sliderImages.length - 1
                                 ) {
                                   setNumber(number - 1);
                                 }
@@ -161,14 +169,13 @@ const ProductDetails = () => {
                               />
                             </div>
                             <div
-                              className={`${
-                                number === productFormData.images.length - 1
-                                  ? "bg-gray-300"
-                                  : "bg-white"
-                              }  w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]`}
+                              className={`${number === sliderImages.length - 1
+                                ? "bg-gray-300"
+                                : "bg-white"
+                                }  w-[2.5rem]  h-[2.5rem] flex items-center justify-center rounded-[50%]`}
                               onClick={() => {
                                 if (
-                                  productFormData.images.length - 1 >
+                                  sliderImages.length - 1 >
                                   number
                                 ) {
                                   setNumber(number + 1);
@@ -189,7 +196,7 @@ const ProductDetails = () => {
                         <Image
                           height={50}
                           width={50}
-                          src={productFormData.images[number]}
+                          src={sliderImages[number]}
                           alt="product image"
                           className="rounded-[1rem]"
                           style={{
@@ -285,6 +292,7 @@ const ProductDetails = () => {
                         </p>
                         <div className="font-bold col-span-2 flex items-center gap-2">
                           {variants.map((item, index) => {
+
                             if (
                               item.color.hex.includes(
                                 "https://res.cloudinary.com"
@@ -292,6 +300,9 @@ const ProductDetails = () => {
                             ) {
                               return (
                                 <div
+                                  onClick={() => {
+                                    handleSetSliderImageToVariantImage(item)
+                                  }}
                                   key={index}
                                   className="w-[20px] h-[20px] rounded-full"
                                   style={{
@@ -303,6 +314,9 @@ const ProductDetails = () => {
                             } else {
                               return (
                                 <div
+                                  onClick={() => {
+                                    handleSetSliderImageToVariantImage(item)
+                                  }}
                                   key={index}
                                   className="w-[20px] h-[20px] rounded-full"
                                   style={{
