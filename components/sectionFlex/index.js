@@ -41,7 +41,7 @@ const SectionFlex = ({ heading, subText, reverseFlex, translate, image1, image2 
                 >
                     {subText}
                 </Typography>
-                <button className="border-solid py-2 px-6 border-dark bg-transparent border-[1.5px] rounded-md">
+                <button className="border-solid mt-9 py-2 px-6 border-dark bg-transparent border-[1.5px] rounded-md">
                     Discover how it works
                 </button>
             </div>

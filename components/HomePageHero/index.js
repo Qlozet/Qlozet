@@ -35,30 +35,24 @@ const HomePageHero = () => {
               and tailors entrepreneurs
             </Typography>
             <div className="mt-[43px]">
-              <Button
-                loading={false}
-                children="Sell with Us"
-                btnSize="large"
-                variant="primary"
-                maxWidth="max-w-[10rem]"
-                clickHandler={() => {
-                  //   handleSubmit();
-                }}
-              />
+
+
+              <button className="px-4 py-2 rounded-sm bg-dark flex items-center h-[2.8rem] text-white ">Sell with Us</button>
+
             </div>
           </div>
           <div className="">
-            <div className="flex items-center justify-end"><Image src={frame3} /></div>
+            <div className="flex items-center justify-end"><Image alt="" src={frame3} /></div>
             <div className="flex items-end justify-between gap-2 w-[100%]">
-              <Image src={frame6} />
-              <Image src={frame5} />
-              <Image src={frame4} />
+              <Image alt="" src={frame6} />
+              <Image alt="" src={frame5} />
+              <Image alt="" src={frame4} />
             </div>
           </div>
         </div>
         <div className="flex flex-col w-[20%] justify-end gap-[3rem] pt-12 min-h-full">
-          <Image src={frame1} unoptimized />
-          <div className="flex items-end"><Image src={frame2} unoptimized /></div>
+          <Image alt="" src={frame1} unoptimized />
+          <div className="flex items-end"><Image alt="" src={frame2} unoptimized /></div>
         </div>
       </div>
 

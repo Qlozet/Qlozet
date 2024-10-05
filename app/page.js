@@ -110,7 +110,7 @@ export default function Home() {
               to time period.
             </Typography></div>
           </div>
-          <Image src={image13} />
+          <Image src={image13} alt=""/>
         </div>
       </div></div>
 

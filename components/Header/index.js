@@ -4,7 +4,7 @@ import Button from "../Button";
 import brownLogo from "../../public/assets/image/logobrown.png";
 const HomePageHeader = () => {
   return (
-    <div className="w-[95%] mx-auto">
+    <div className="w-[95%] mx-auto py-6">
       <div className="flex items-center justify-between ">
         <Image
           src={brownLogo}
@@ -24,7 +24,7 @@ const HomePageHeader = () => {
             <li>Api</li>
             <li className="min-w-[7rem]">How it works</li>
           </ul>
-          <Button
+          {/* <Button
             loading={false}
             children="Watch demo"
             btnSize="large"
@@ -33,7 +33,8 @@ const HomePageHeader = () => {
             clickHandler={() => {
               //   handleSubmit();
             }}
-          />
+          /> */}
+          <button  className="px-4 py-2 rounded-sm bg-dark flex items-center h-[2.8rem] text-white ">Watch demo</button>
         </div>
       </div>
     </div>
