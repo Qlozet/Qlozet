@@ -53,6 +53,6 @@ module.exports = {
       xl: "1280px", // Extra large screens (e.g., desktops)
       "2xl": "1536px", // 2xl screens (e.g., large desktops)
     },
-  },
-  plugins: [require("@tailwindcss/forms")],
+  }
+  // plugins: [require("@tailwindcss/forms")],
 };

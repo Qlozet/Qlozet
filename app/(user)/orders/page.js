@@ -5,7 +5,6 @@ import moment from "moment";
 
 // Svg imports starts
 import DashboardTopCard from "@/components/DashboardTopCard";
-import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import sendIcon from "../../../public/assets/svg/send.svg";
 import carIcon from "../../../public/assets/svg/car.svg";
 import TotalOrderIcon from "../../../public/assets/svg/TotalOrder-Icon.svg";
