@@ -32,7 +32,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
           <div className="relative">
             {showProfile && (
               <div
-                className="w-screen h-screen bg-white rounded-tl-lg lg:w-[350px] overflow-hidden"
+                className="w-screen h-screen bg-white rounded-tl-lg lg:w-[350px] "
                 ref={profileRef}
               >
                 <div className="bg-white rounded-tl-2xl">

@@ -39,18 +39,18 @@ const SelectInput = ({
             setShowDropDown(true);
           }}
           onBlur={(e) => {
-            if (!dropDownRef.current.contains(e.relatedTarget)) {
+            if (!dropDownRef?.current?.contains(e.relatedTarget)) {
               setShowDropDown(false);
             }
           }}
           placeholder={placeholder}
           value={value}
-          className={`py-2 ${error && "border-danger"
+          className={`py-3 ${error && "border-danger"
             } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  
             focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 
            `}
         ></input>
-        <div className="absolute top-[34px] right-2 ">
+        <div className="absolute top-[36px] right-2 ">
           {showDropDown ? <ChevronUp /> : <ChevronDown />}
         </div>
         {error && (
@@ -61,7 +61,7 @@ const SelectInput = ({
       </div>
       {showDropDown && (
         <div
-          className={`border-[1.5px] border-solid border-primary w-full cursor-pointer absolute top-[68px] bg-white rounded-lg max-h-[15rem] ${classes.datalist}`}
+          className={`border-[1.5px] border-solid border-primary w-full cursor-pointer absolute top-[70px] bg-white rounded-lg max-h-[15rem] ${classes.datalist}`}
           ref={dropDownRef}
         >
           {list.map((item, index) => (
