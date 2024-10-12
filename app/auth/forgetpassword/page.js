@@ -25,7 +25,6 @@ const Page = () => {
         const response = await postRequest(`/vendor/forgot-password`, {
           businessEmail: formData.businessEmail,
         });
-        console.log(response);
         if (response.success) {
           toast(<Toast text={response.message} type="success" />);
           router.push("/auth/createnewpassword");
@@ -34,7 +33,6 @@ const Page = () => {
         }
         setIsloading(false);
       } catch (error) {
-        console.log(error);
         toast(<Toast text={response.message} type="danger" />);
       }
     } else {

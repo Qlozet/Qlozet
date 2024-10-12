@@ -28,7 +28,6 @@ const CompanyDetails = ({
   };
   const handleSelectDoc = async (files) => {
     const ImageInfo = await uploadSingleImage(files[0]);
-    console.log(ImageInfo);
     // setUploadeFiles((prevData) => {
     //   return [...prevData, ImageInfo];
     // });
@@ -38,7 +37,7 @@ const CompanyDetails = ({
     // });
   };
   return (
-    <div className=" w-full mx-0 lg:mx-2 py-2 lg:bg-white">
+    <div className=" w-full mx-0 lg:mx-2 py-2 px-2 lg:bg-white ">
       <div className="block items-center justify-center lg:hidden p-4 shadow my-4 rounded-[12px] bg-white">
         <Image src={userIcon} alt="" className="my-2 mx-auto" />
         <div className="p-1 flex justify-center items-center">

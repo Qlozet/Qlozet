@@ -21,7 +21,6 @@ const SizeInput = ({
 
   const filterList = (e) => {
     setValue(e.target.value);
-    console.log(e.target.value)
     setList(
       data.filter((bank) =>
         bank.text.toLowerCase().includes(e.target.value.toLowerCase())

@@ -118,7 +118,6 @@ const SignUp = () => {
           formData.append("cacDocument", image);
         });
         formData.append("businessLogo", businessLogo[0]);
-        console.log([...formData.entries()]);
         const response = await postRequest(`/vendor/signup`, formData, true);
         if (response.success) {
           dispatch(setEmail(businessInfo.businessEmail))

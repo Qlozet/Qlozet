@@ -7,7 +7,6 @@ import TextInput from "../../TextInput";
 import OrderStatus from "../../order/OrderStatus";
 
 const TransactionDetails = ({ closeModal, details }) => {
-  console.log(details);
   return (
     <div className="w-full flex items-center justify-center mt-6">
       <div className="bg-white p-4 rounded-[12px] w-[40%]">

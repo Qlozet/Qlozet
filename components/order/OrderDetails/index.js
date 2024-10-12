@@ -1,5 +1,4 @@
 import OrderDetailNav from "../OrderdetailsNav";
-import defaultImage from "../../../public/assets/image/default.png";
 import Image from "next/image";
 import Typography from "../../Typography";
 import OrderStatus from "../OrderStatus";
@@ -17,7 +16,6 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
       <div className={` w-full lg:w-[40%] bg-white p-4 rounded-b-[14px]`}>
         <div className={`${classes.scroll_container} flex gap-4 items-center`}>
           {order.orderItems.map((item) => {
-            console.log(item);
             return (
               <div className="min-w-[10rem]">
                 <div>

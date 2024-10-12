@@ -12,10 +12,6 @@ const ShippingTableItem = ({
 }) => {
   const [showDropDown, setShowDropDown] = useState(false);
 
-  const selectDropDownHandler = (option) => {
-    console.log(option);
-    setShowDropDown(false);
-  };
 
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">

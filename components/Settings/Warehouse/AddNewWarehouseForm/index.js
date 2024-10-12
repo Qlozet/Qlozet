@@ -58,7 +58,6 @@ const AddNewWarehouseForm = ({ closeModal }) => {
 
         response && setIsloading(false);
         if (response?.data) {
-          console.log(response);
           closeModal();
           toast(<Toast text={response.message} type="success" />);
         } else {

@@ -17,22 +17,7 @@ const OrderTable = ({
   handleFilterWithDate,
 }) => {
   const [exportData, setExportData] = useState([]);
-  console.log(data);
   useEffect(() => {
-    console.log(
-      setExportData(data.map((item) => {
-        return {
-          orderId: item.orderId,
-          date: item.date,
-          productName: item.productName,
-          DeliveryStatus: item.DeliveryStatus.name,
-          customerEmail: item.customerEmail,
-          custmerAddress: item.custmerAddress,
-          customerName: item.customerName,
-          AmountPaid: item.AmountPaid
-        };
-      }))
-    );
   }, []);
   return (
     <div className=" mt-4 min-h-[50vh]">
@@ -49,16 +34,7 @@ const OrderTable = ({
                 Order ID
               </div>
             </th>
-            {/* <th className="w-[8%] px-2 py-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500] text-dark">
-                Product name
-              </div>
-            </th>
-            <th className="w-[8%] px-2 py-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500] text-dark">
-                Product price
-              </div>
-            </th> */}
+           
             <th className="w-[10%] px-2 py-4 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
                 Customer name

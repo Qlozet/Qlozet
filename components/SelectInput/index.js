@@ -3,6 +3,7 @@ const { default: Image } = require("next/image");
 import arrowDownIcon from "../../public/assets/svg/arrow-down.svg";
 import Typography from "../Typography";
 import classes from "./index.module.css";
+import { ChevronDown, ChevronUp } from "lucide-react";
 const SelectInput = ({
   value,
   placeholder,
@@ -49,8 +50,8 @@ const SelectInput = ({
             focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 
            `}
         ></input>
-        <div className="absolute top-[40px] right-2 ">
-          <Image src={arrowDownIcon} alt="" />
+        <div className="absolute top-[34px] right-2 ">
+          {showDropDown ? <ChevronUp /> : <ChevronDown />}
         </div>
         {error && (
           <p className="text-danger text-[12px] font-[400]">
@@ -60,7 +61,7 @@ const SelectInput = ({
       </div>
       {showDropDown && (
         <div
-          className={`border-[2px] border-solid border-primary w-full cursor-pointer absolute top-[68px] bg-white rounded-[12px] max-h-[15rem] ${classes.datalist}`}
+          className={`border-[1.5px] border-solid border-primary w-full cursor-pointer absolute top-[68px] bg-white rounded-lg max-h-[15rem] ${classes.datalist}`}
           ref={dropDownRef}
         >
           {list.map((item, index) => (
@@ -72,7 +73,6 @@ const SelectInput = ({
                 : ""
                 } hover:bg-[#F4F4F4]`}
               onClick={() => {
-                console.log(item.text);
                 setValue(item.text);
                 setShowDropDown(false);
               }}

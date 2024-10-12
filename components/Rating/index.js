@@ -1,9 +1,7 @@
-import ReactStars from "react-stars";
 import React from "react";
-import { render } from "react-dom";
-
+import ReactStars from "react-stars";
 const Rating = ({ newRating }) => {
-  const ratingChanged = ({}) => {};
+  const ratingChanged = ({ }) => { };
   return (
     <div>
       <ReactStars

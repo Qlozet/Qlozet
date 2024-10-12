@@ -108,7 +108,6 @@ const Customer = () => {
   };
 
   useEffect(() => {
-    console.log(filterData)
     handleFilterData(filterData);
   }, [filterData]);
 

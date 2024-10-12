@@ -5,7 +5,6 @@ import Typography from "../../Typography";
 import OrderStatus from "../../order/OrderStatus";
 import Button from "../../Button";
 const CustomerDetails = ({ topNavData, closeModal, customer }) => {
-  console.log(customer);
   return (
     <div className="flex flex-col items-center justify-center w-full my-4">
       <OrderDetailNav

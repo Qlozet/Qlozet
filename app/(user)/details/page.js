@@ -86,9 +86,7 @@ const ProductDetails = () => {
       setSliderImages(response.data.data.images.map((image) => {
         return image?.secure_url;
       }))
-      console.log(response.data.data.images.map((image) => {
-        return image?.secure_url;
-      }))
+    
       setPageLoading(false);
     } catch (error) {
       setPageLoading(false);
@@ -96,7 +94,6 @@ const ProductDetails = () => {
   };
 
   const handleSetSliderImageToVariantImage = (variant) => {
-    console.log(variant)
     setSliderImages(variant.images.map((item) => item.secure_url))
   }
   const handleShowReview = () => {

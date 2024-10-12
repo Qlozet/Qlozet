@@ -121,7 +121,6 @@ const SideBar = ({ active }) => {
             key={index}
             onClick={() => {
               // reset search string
-              console.log("click")
               dispatch(setFilter(""));
               item.function();
               if (item.link !== "") {

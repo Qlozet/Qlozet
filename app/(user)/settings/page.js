@@ -1,23 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
-import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
-import SideBar from "@/components/SideBar";
 import OrderDetailNav from "@/components/order/OrderdetailsNav";
 import CompanyDetails from "@/components/Settings/companyDetails/companyDetails";
 import BillingAndInvioce from "@/components/Settings/BillingAndInvioceInfo";
 import Warehouse from "@/components/Settings/Warehouse/Warehouse";
-import classes from "./index.module.css";
-import Shipping from "@/components/Settings/Shipping/Shipping";
 import UserAndPermission from "@/components/Settings/UserAndPermission/UserAndPermssion";
 import Category from "@/components/Settings/Category/Category";
-import MobileSideBar from "@/components/MobileSideBar";
-import { getRequest, postRequest, putRequest } from "@/api/method";
+import { getRequest, putRequest } from "@/api/method";
 import Loader from "@/components/Loader";
-import { settingNav } from "@/utils/navdata";
 import Toast from "@/components/ToastComponent/toast";
 import toast from "react-hot-toast";
 const Dashboard = () => {
-  const [dropDownValue, setDropDownValue] = useState("");
   const [pageLoading, setPageLoading] = useState(true);
   const [isLoading, setIsloading] = useState(false);
   const [shopDetails, setShopDetails] = useState({
@@ -51,15 +44,7 @@ const Dashboard = () => {
     logo: false,
     cacDocs: false,
   });
-  const [showCompanyDetails, setShowComapanyDetails] = useState(false);
-  const [showBillingAndInvioce, setShowBillingAndInvioce] = useState(false);
-  const [showWarehouse, setShowWarehouse] = useState(false);
-  const [showShippingPatners, setShowShippingPatners] = useState(false);
-  const [showUserAndPermission, setShowUserAndPermission] = useState(false);
-  const [showCategory, setShowCategory] = useState(false);
   const [currentNav, setCurrentNav] = useState("Shop details");
-  const [showMobileNav, setShowMobileNav] = useState(false);
-
   const settingNav = [
     {
       item: "Shop details",
@@ -67,13 +52,7 @@ const Dashboard = () => {
       navWidth: "min-w-[7.5rem] lg:min-w-w-[0]",
       handleFunction: (data) => {
         setCurrentNav(data);
-        setShowComapanyDetails(true);
-        setShowBillingAndInvioce(false);
-        setShowWarehouse(false);
-        setShowWarehouse(false);
-        setShowShippingPatners(false);
-        setShowUserAndPermission(false);
-        setShowCategory(false);
+
       },
     },
     {
@@ -82,13 +61,7 @@ const Dashboard = () => {
       link: "",
       handleFunction: (data) => {
         setCurrentNav(data);
-        setShowComapanyDetails(false);
-        setShowBillingAndInvioce(true);
-        setShowWarehouse(false);
-        setShowWarehouse(false);
-        setShowShippingPatners(false);
-        setShowUserAndPermission(false);
-        setShowCategory(false);
+
       },
     },
     {
@@ -97,12 +70,7 @@ const Dashboard = () => {
       link: "",
       handleFunction: (data) => {
         setCurrentNav(data);
-        setShowComapanyDetails(false);
-        setShowBillingAndInvioce(false);
-        setShowWarehouse(true);
-        setShowShippingPatners(false);
-        setShowUserAndPermission(false);
-        setShowCategory(false);
+
       },
     },
     {
@@ -111,12 +79,7 @@ const Dashboard = () => {
       navWidth: "min-w-[13rem] lg:min-w-w-[0]",
       handleFunction: (data) => {
         setCurrentNav(data);
-        setShowComapanyDetails(false);
-        setShowBillingAndInvioce(false);
-        setShowWarehouse(false);
-        setShowShippingPatners(false);
-        setShowUserAndPermission(true);
-        setShowCategory(false);
+
       },
     },
     {
@@ -124,29 +87,9 @@ const Dashboard = () => {
       navWidth: "min-w-[8rem] lg:min-w-w-[0]",
       handleFunction: (data) => {
         setCurrentNav(data);
-        setShowComapanyDetails(false);
-        setShowBillingAndInvioce(false);
-        setShowWarehouse(false);
-        setShowShippingPatners(false);
-        setShowUserAndPermission(false);
-        setShowCategory(true);
       },
     },
   ];
-  const showSideBar = () => {
-    setShowMobileNav(!showMobileNav);
-  };
-
-  const handleSelectCompanyLogo = async (files) => {
-    const ImageInfo = await uploadSingleImage(files[0]);
-    // setUploadeFiles((prevData) => {
-    //   return [...prevData, ImageInfo];
-    // });
-    // setFile(files);
-    // setProductFormData((prevData) => {
-    //   return { ...prevData, images: files };
-    // });
-  };
 
   const submitCompanyInfo = async () => {
     try {
@@ -166,7 +109,6 @@ const Dashboard = () => {
         // cacDocument: ["string"],
       });
       response && setIsloading(false);
-      console.log(response);
       if (response.success) {
         toast(<Toast text={response.message} type="success" />);
       } else {
@@ -175,7 +117,6 @@ const Dashboard = () => {
     } catch (error) {
       error && setIsloading(false);
 
-      console.log(error);
     }
   };
 
@@ -184,7 +125,6 @@ const Dashboard = () => {
       let response = await getRequest("/vendor/settings/vendor-details");
       let vandorInfo = [];
       if (response?.data) {
-        console.log(response);
         setPageLoading(false);
         setShopDetails({
           vendorName: response?.data?.data?.businessName,
@@ -206,7 +146,6 @@ const Dashboard = () => {
         toast(<Toast text={response.message} type="danger" />);
       }
     } catch (error) {
-      console.log(error);
     }
   };
   useEffect(() => {

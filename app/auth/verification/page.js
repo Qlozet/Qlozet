@@ -7,7 +7,6 @@ import { getRequest } from "@/api/method";
 import { useEffect } from "react";
 
 const Verication = ({ params }) => {
-  console.log(params);
   const router = useRouter();
   const verifyCode = async () => {
     const response = await getRequest("/vendor/verify");

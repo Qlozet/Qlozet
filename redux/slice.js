@@ -14,7 +14,6 @@ export const filterSlice = createSlice({
     },
 
     setEmail: (state, action) => {
-      console.log(action.payload)
       state.email = action.payload
     }
   },

@@ -105,7 +105,6 @@ export const patchRequest = async (url, data) => {
     return response.data;
   } catch (error) {
     // alert(error);
-    console.log(error);
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
@@ -122,18 +121,15 @@ export const patchRequest = async (url, data) => {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      console.log(error.request);
       // toastError("Error in request");
     } else {
       // Something happened in setting up the request that triggered an Error
-      console.log("Error", error.message);
       // toastError("Error in request");
     }
   }
 };
 
 export const putRequest = async (url, data) => {
-  console.log(data);
   let userData;
   let token = getToken();
   let response;
@@ -158,11 +154,9 @@ export const putRequest = async (url, data) => {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
-      console.log(error.request);
       toastError("Error in request");
     } else {
       // Something happened in setting up the request that triggered an Error
-      console.log("Error", error.message);
       toastError("Error in request");
     }
   }
@@ -182,7 +176,6 @@ export const deleteRequest = async (url, data) => {
     return response.data;
   } catch (error) {
     // alert(error);
-    console.log(error);
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx

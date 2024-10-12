@@ -8,10 +8,6 @@ const DateInput = ({
   setValue,
   value,
   leftIcon,
-  placeholder,
-  disabled = false,
-  onFocus,
-  onBlur,
   showCalender,
   showCalendeHandler,
 }) => {
@@ -28,23 +24,32 @@ const DateInput = ({
         onChange={() => {
           setValue(e.target.value);
         }}
+        onClick={() => {
+          // passing " " will display calender because the data type is empty
+          showCalendeHandler("")
+        }}
       />
       <Image
         alt=""
         src={calenderIcon}
         className="absolute top-[2.3rem] right-[1rem] cursor-pointer"
-        onClick={() => { }}
       />
       {showCalender && (
-        <div className="fixed top-[1rem] flex items-center justify-center w-screen height-screen index-60">
-          <div className="w-full h-full border-1 border-solid border-b-dark">
+        <div className="fixed top-0 left-0 flex items-center justify-center w-screen h-screen bg-[rgba(0,0,0,.5)]" style={{ zIndex: 2000 }}>
+          <div className="w-full h-full border-1 border-solid border-b-dark flex items-center justify-center" style={{ zIndex: 2000 }}>
             <Calendar
               onChange={(e) => {
-                console.log(moment(e).format("YYYY-MM-DD"));
-                setDate(moment(e).format("YYYY-MM-DD"));
-                showCalendeHandler();
-                onChange();
-                setValue(moment(e).format("YYYY-MM-DD"));
+                const isValidDate = Date.parse(e)
+                if (isValidDate) {
+                  setDate(moment(e).format("YYYY-MM-DD"));
+                  showCalendeHandler(isValidDate);
+                  onChange();
+                  setValue(moment(e).format("YYYY-MM-DD"));
+                } else {
+                  // Don't remove calender
+                  showCalendeHandler(isValidDate);
+
+                }
               }}
               value={value}
             />

@@ -41,7 +41,6 @@ const SignIn = () => {
           toast(<Toast text={response.message} type="danger" />);
         }
       } catch (error) {
-        console.log(error);
         error && setIsLoading(false);
       }
     } else {

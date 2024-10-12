@@ -3,17 +3,18 @@ import { useEffect, useState } from "react";
 import classes from "./index.module.css";
 import moment from "moment";
 
-// Component Imports starts
+// Svg imports starts
 import DashboardTopCard from "@/components/DashboardTopCard";
 import vendorIcon from "../../../public/assets/svg/vendor-total.svg";
 import sendIcon from "../../../public/assets/svg/send.svg";
 import carIcon from "../../../public/assets/svg/car.svg";
+import TotalOrderIcon from "../../../public/assets/svg/TotalOrder-Icon.svg";
 import shippingIcon from "../../../public/assets/svg/shipping_bag.svg";
+
 import OrderTable from "@/components/order/OrderTable";
 import Modal from "@/components/Modal";
 import SetTotalOrderPerDay from "@/components/SetTotalItemPerDayForm";
 import OrderDetails from "@/components/order/OrderDetails";
-import TotalOrderIcon from "../../../public/assets/svg/TotalOrder-Icon.svg";
 import TrackOrder from "@/components/order/TrackOrders";
 import RejectOrderModal from "@/components/order/RejectOrderModal";
 import CustomerDetails from "@/components/order/CustomerDetails";
@@ -161,7 +162,6 @@ const Order = () => {
   // function ends
 
   useEffect(() => {
-    console.log(filterData)
     handleFilterData(filterData);
   }, [filterData]);
 
@@ -186,6 +186,7 @@ const Order = () => {
                   bgColor="bg-[#57CAEB]"
                   icon={TotalOrderIcon}
                   addMaxWidth={true}
+                  link={false}
                 />
                 <DashboardTopCard
                   name="Orders Delivered"
@@ -220,8 +221,8 @@ const Order = () => {
                   total={orders.length}
                   percentage="2.5"
                   bgColor="bg-[#57CAEB]"
-                  link="link"
-                  icon={vendorIcon}
+                  icon={TotalOrderIcon}
+                  addMaxWidth={true}
                 />
                 <DashboardTopCard
                   name="Orders Delivered"

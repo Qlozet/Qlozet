@@ -17,7 +17,6 @@ const WarehouseTableItem = ({
   const [showDropDown, setShowDropDown] = useState(false);
 
   const selectDropDownHandler = (option) => {
-    console.log(option);
     setShowDropDown(false);
   };
 

@@ -9,7 +9,6 @@ import {
   handleContainsSymbolOrCharacter,
 } from "@/utils/helper";
 const Step5 = ({ formData, setFormData, requiredData, setRequiredData }) => {
-  console.log(requiredData);
   const [checkPassword, setCheckPassword] = useState({
     moreThan8: false,
     containSymbol: false,

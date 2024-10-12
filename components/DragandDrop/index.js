@@ -22,7 +22,6 @@ const DragDrop = ({
   //   };
   // });
 
-  // console.log(productImages);
   const imageConRef = useRef();
   const itemref = useRef();
   const subRef = useRef();
@@ -85,7 +84,6 @@ const DragDrop = ({
   };
 
   const onStop = (e, data) => {
-    console.log(data);
     const position = {
       left: (imageSize.width + data.lastX + 24 / imageSize.width) * 100,
       top: (imageSize.height + data.lastY + 24 / imageSize.height) * 100,
@@ -117,12 +115,10 @@ const DragDrop = ({
   };
 
   function handleLastTouch(x, y) {
-    console.log("Last touch position:", x, y);
   }
 
   const handleTuchMove = (event) => {
     const touches = event.changedTouches;
-    console.log(event);
     if (touches.length > 0) {
       const lastTouch = touches[touches.length - 1];
       handleLastTouch(lastTouch.clientX, lastTouch.clientY);
@@ -131,9 +127,7 @@ const DragDrop = ({
 
   const onMouseMove = (event) => {
     event.prevDefault();
-    // console.log(event.pageX - event.target.getBoundingClientRect().x);
-    console.log(event.offsetY);
-    console.log(event.target.getBoundingClientRect().y);
+   
   };
 
   const handleSetCurentStyle = (style, imgIndex) => {
@@ -142,27 +136,11 @@ const DragDrop = ({
   const dragHandlers = { onStart };
 
   useEffect(() => {
-    // console.log(selectedStyles);
-    // console.log(
-    //   selectedStyles.map((item, index) => {
-    //     return {
-    //       item,
-    //       imageIndex: index,
-    //       left: 0,
-    //       right: 0,
-    //       top: 0,
-    //       Bottom: 0,
-    //     };
-    //   })
-    // );
+  
   }, [imageIndex]);
 
   useEffect(() => {
-    console.log(
-      customeStylesUiPosition.filter(
-        (item) => item.style === "tops" && item.index === imageIndex
-      )[0]
-    );
+   
     customeStylesUiPosition.filter(
       (item) => item.style === "tops" && item.index === imageIndex
     )[0];

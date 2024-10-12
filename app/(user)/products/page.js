@@ -136,12 +136,10 @@ const Products = () => {
         toast(<Toast text={response.message} type="danger" />);
       }
     } catch (error) {
-      console.log(error);
     }
   };
 
   const handleFilterData = (data) => {
-    console.log(data)
     setFilterdProduct(
       products.filter(
         (pro) =>

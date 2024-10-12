@@ -162,7 +162,6 @@ const AddProduct = () => {
 
   const addSizeToVariant = (size) => {
     const id = uuidv4();
-    console.log(variantTable)
     const addColorAndMaterial = [...selectedColors, ...selectedVariantFiles];
     const previousColorInVarianttable = new Set(
       variantTable.map((color) => color.color)

@@ -21,7 +21,6 @@ export const validator = (formData, requiredFormData) => {
   for (const key in formData) {
     if (requiredFormData.hasOwnProperty(key)) {
       if (!formData[key]) {
-        console.log(key);
         if (!firstErrorId) {
           firstErrorId = key;
         }
@@ -55,7 +54,6 @@ export const filterSelectedItems = (arr1, arr2) => {
 export const calculatePrice = (data) => {
   let sum = 0;
   for (let i = 0; i < data.length; i++) {
-    console.log(data[i]);
     sum += data[i].price;
   }
   return sum;
@@ -113,35 +111,35 @@ export const modifySizeHandler = (value) => {
   if (item.status === "out-for-delivery") {
     status = {
       name: "Out for delivery",
-      bg: "bg-[#D4CFCA]",
-      text: "text-[#3E1C01]",
+      bg: "#D4CFCA",
+      text: "#3E1C01",
     };
   } else if (item.status === "return") {
     status = {
       name: "Return",
-      bg: "bg-[#9747FF21]",
-      text: "text-[#A869FA]",
+      bg: "#9747FF21",
+      text: "#A869FA",
     };
   } else if (item.status === "pending") {
     status = {
       name: "pending",
-      bg: "bg-[#FFF7DE]",
-      text: "text-[#FFB020]",
+      bg: "#FFF7DE",
+      text: "#FFB020",
     };
   } else if (item.status === "completed") {
     status = {
       name: "completed",
-      bg: "bg-[#33CC331A]",
-      text: "text-[#33CC33]",
+      bg: "#33CC331A",
+      text: "#33CC33",
     };
   } else if (item.status === "Successful") {
     status = {
       name: "Successful",
-      bg: "bg-[#FFF5F5]",
-      text: "text-[#33CC33]",
+      bg: "#FFF5F5",
+      text: "#33CC33",
     };
   } else {
-    status = { name: "Return", bg: "bg-[#D4CFCA]" };
+    status = { name: "Return", bg: "#D4CFCA" };
   }
   return status
 }

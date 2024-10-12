@@ -18,7 +18,7 @@ const DasboardNavWithOutSearch = ({
   value,
   showSideBar,
   hideNav,
-  userDetails
+  userDetails,
 }) => {
   const router = useRouter();
   const [showProfile, setShowProfile] = useState(false);
@@ -67,20 +67,17 @@ const DasboardNavWithOutSearch = ({
                 <div className="hidden md:block">
                   <Typography
                     textColor="text-dark"
-                    textWeight="font-bold"
+                    textWeight="font-semibold"
                     textSize="text-[18px]"
                   >
                     {userDetails.personalName}
                   </Typography>
                 </div>
-
                 <div className="rounded-[12px] p-2 bg-[#F8F9FA] cursor-pointer">
                   <Image
                     alt=""
                     src={mobileProfile}
-                    onClick={() => {
-                    
-                    }}
+                    onClick={() => { setShowProfile(true) }}
                     className="cursor-pointer"
                   />
                 </div>
@@ -105,7 +102,7 @@ const DasboardNavWithOutSearch = ({
                   <Image alt="" src={searchNormalicon} />
                 </div>
                 <input
-                value={value}
+                  value={value}
                   onChange={(e) => {
                     setValue(e.target.value);
                   }}

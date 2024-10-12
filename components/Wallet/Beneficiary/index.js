@@ -28,7 +28,6 @@ const Beneficiary = ({ closeModal }) => {
   const getBeneficiary = async () => {
     try {
       const response = await getRequest("/vendor/beneficiaries");
-      console.log(response?.data.beneficiaries);
       let savedBeneneficiaries = [];
       if (response?.data) {
         response?.data?.beneficiaries.map((item) => {
@@ -72,7 +71,6 @@ const Beneficiary = ({ closeModal }) => {
           >
             <SearchInput placeholder="Search" />
             {beneficairy.map((item) => {
-              console.log(item);
               return (
                 <div className="flex items-center justify-between my-4">
                   <div className="flex items-center">

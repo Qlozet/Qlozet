@@ -40,7 +40,6 @@ const Warehouse = () => {
         setFilterWareHouse(warehouses);
       }
     } catch (error) {
-      console.log(error);
     }
   };
 

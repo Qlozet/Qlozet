@@ -1,13 +1,11 @@
 import Typography from "../Typography";
 import closeIcon from "../../public/assets/svg/close-square-icon.svg";
-import userIcon from "../../public/assets/svg/Frame.svg";
 import rotate from "../../public/assets/svg/rotate-icon.svg";
 import Image from "next/image";
 import Performance from "../Performance";
 import Rating from "../Rating";
 import styles from "./index.module.css";
-import { useEffect, useState, useRef } from "react";
-import mobileProfile from "../../public/assets/svg/mobile-oct-icon.svg";
+import { useRef } from "react";
 const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
   const outsideRef = useRef();
   const profileRef = useRef();
@@ -34,10 +32,10 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
           <div className="relative">
             {showProfile && (
               <div
-                className="w-screen h-screen bg-white  lg:w-[350px] "
+                className="w-screen h-screen bg-white rounded-tl-lg lg:w-[350px] overflow-hidden"
                 ref={profileRef}
               >
-                <div className="bg-white">
+                <div className="bg-white rounded-tl-2xl">
                   <div>
                     <div className="flex px-4 py-6 items-center justify-between">
                       <Typography

@@ -1,6 +1,5 @@
 import Typography from "../Typography";
 const VendorCountLine = ({ value }) => {
-  console.log(value);
   return (
     <div className="mt-3">
       <div className="flex  gap-4">

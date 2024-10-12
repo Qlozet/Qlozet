@@ -21,7 +21,6 @@ const NotificationPage = () => {
   const getNotification = async () => {
     try {
       let response = await getRequest("/vendor/notification");
-      console.log(response)
       let notificationData = [];
       if (response?.data) {
         setPageLoading(false);

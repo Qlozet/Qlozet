@@ -90,7 +90,6 @@ const Page = () => {
           toast(<Toast text={response.message} type="danger" />);
         }
       } catch (error) {
-        console.log(error);
         toast(<Toast text={error.message} type="danger" />);
       }
     } else {
@@ -126,7 +125,6 @@ const Page = () => {
               placeholder="Enter reset code sent to your email"
               setValue={(data) => {
                 setFormData((prevData) => {
-                  console.log(prevData);
                   return { ...prevData, resetCode: data };
                 });
 

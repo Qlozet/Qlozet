@@ -66,7 +66,6 @@ const VariantInput = ({
   index,
   removeColor,
 }) => {
-  console.log(value);
   const removeColorHandler = (color, index) => {
     removeColor(color, index);
     removeColor(color, index);
@@ -125,7 +124,6 @@ const VariantInput = ({
   const [color, setColor] = useColor("#561ecb");
 
   useEffect(() => {
-    console.log(selectedColors);
     setCurrentColor(value);
   }, [value]);
   return (
@@ -160,7 +158,6 @@ const VariantInput = ({
               </div>
             )}
             {selectedColors.map((color, index) => {
-              console.log(color);
               return (
                 <div className="relative my-2">
                   <div

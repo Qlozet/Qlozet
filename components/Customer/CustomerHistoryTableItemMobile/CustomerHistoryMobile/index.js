@@ -3,7 +3,6 @@ import OrderStatus from "@/components/order/OrderStatus";
 const { default: Typography } = require("@/components/Typography");
 
 const CustomerMobileHistory = ({ history, index }) => {
-  console.log(history);
   return (
     <div className="p-4 bg-white" key={index}>
       <div className="flex justify-between items-center">

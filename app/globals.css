@@ -9,12 +9,11 @@
 }
 
 input{
-  outline: none;
+  outline: none !important;
 }
 
 input:focus{
-  outline: none;
-  
+  outline: none !important;
 }
 
 @media (prefers-color-scheme: dark) {
