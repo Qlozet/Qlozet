@@ -6,7 +6,7 @@ const ProductItemDropDown = ({ data, handleSelect, outSideCLicked }) => {
 
   const calculatePosition = () => {
     if (dropDownRef.current.getBoundingClientRect().
-      bottom < window.innerHeight) {
+      bottom > window.innerHeight) {
       setPositionTop(false)
     } else {
       setPositionTop(true)

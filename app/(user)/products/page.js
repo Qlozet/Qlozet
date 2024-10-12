@@ -280,7 +280,7 @@ const Products = () => {
                     >
                       Products
                     </Typography>
-                    <div className="relative">
+                    <div className="relative" style={{ zIndex: 500 }}>
                       <DropDown
                         data={[
                           "This week",
