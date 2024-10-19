@@ -92,21 +92,21 @@ export const modifySizeHandler = (value) => {
     value === "Extra small"
       ? "XS"
       : value === "Small"
-      ? "S"
-      : value === "Medium"
-      ? "M"
-      : value === "Large"
-      ? "L"
-      : value === "Extra Extra Large"
-      ? "XXL"
-      : value === "Extra large"
-      ? "XL"
-      : "";
+        ? "S"
+        : value === "Medium"
+          ? "M"
+          : value === "Large"
+            ? "L"
+            : value === "Extra Extra Large"
+              ? "XXL"
+              : value === "Extra large"
+                ? "XL"
+                : "";
   return size;
 };
 
 
- export const statusHandler = (item) => {
+export const statusHandler = (item) => {
   let status;
   if (item.status === "out-for-delivery") {
     status = {
@@ -142,4 +142,22 @@ export const modifySizeHandler = (value) => {
     status = { name: "Return", bg: "#D4CFCA" };
   }
   return status
+}
+
+export const activeCheck = (status) => {
+  let productStatus;
+  if (status==="active") {
+    productStatus = {
+      text: "Active",
+      bgColor: "#33CC331A",
+      color: "#33CC33",
+    };
+  } else {
+    productStatus = {
+      text: "Inactive",
+      bgColor: "#FFF5F5",
+      color: "#FF3A3A",
+    };
+  }
+  return productStatus
 }

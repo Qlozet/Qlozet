@@ -89,20 +89,8 @@ const Products = () => {
           response?.data.data.filter((product) => product.status).length
         );
         response?.data?.data?.map((product) => {
-          let productStatus;
-          if (product.status) {
-            productStatus = {
-              text: "Active",
-              bgColor: "bg-success-300",
-              color: "text-[#33CC33]",
-            };
-          } else {
-            productStatus = {
-              text: "Inactive",
-              bgColor: "bg-[#FFF5F5]",
-              color: "text-[#FF3A3A]",
-            };
-          }
+          let productStatus = activeCheck(product.status);
+
           let orderItem = {
             id: product._id,
             picture: product.images[0]?.secure_url
