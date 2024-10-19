@@ -31,6 +31,7 @@ import moment from "moment";
 
 // redux
 import { useAppSelector } from "@/redux/store";
+import { activeCheck } from "@/utils/helper";
 
 const Products = () => {
   const filterData = useAppSelector((state) => state.filter.state);
@@ -90,7 +91,6 @@ const Products = () => {
         );
         response?.data?.data?.map((product) => {
           let productStatus = activeCheck(product.status);
-
           let orderItem = {
             id: product._id,
             picture: product.images[0]?.secure_url
