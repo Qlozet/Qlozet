@@ -31,6 +31,7 @@ function UploadDocInput({ handleSelect, uploadfiles, singleUpload }) {
       return [...prevData, acceptedFiles[0]];
     });
   }, []);
+
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     noClick: true,
@@ -44,9 +45,8 @@ function UploadDocInput({ handleSelect, uploadfiles, singleUpload }) {
     >
       {files.length < 1 ? (
         <div
-          className={`flex items-center bg-dark cursor-pointer ${
-            showDropDown ? "rounded-t-lg" : "rounded-[8px]"
-          }  justify-between py-2 mb-6 relative`}
+          className={`flex items-center bg-dark cursor-pointer ${showDropDown ? "rounded-t-lg" : "rounded-[8px]"
+            }  justify-between py-2 mb-6 relative`}
           onClick={showdropDownHandler}
         >
           <p className="text-white px-4 ">Choose file</p>
@@ -111,9 +111,8 @@ function UploadDocInput({ handleSelect, uploadfiles, singleUpload }) {
           {!singleUpload && (
             <div className={`${classes.select_file_container} gap-4`}>
               <div
-                className={`flex-1 flex items-center bg-white border-[1.5px] cursor-pointer border-solid h-[50px] border-gray-200 ${
-                  showDropDown ? "rounded-t-lg" : "rounded-[8px]"
-                }  justify-between py-2 mb-6 relative`}
+                className={`flex-1 flex items-center bg-white border-[1.5px] cursor-pointer border-solid h-[50px] border-gray-200 ${showDropDown ? "rounded-t-lg" : "rounded-[8px]"
+                  }  justify-between py-2 mb-6 relative`}
                 onClick={showdropDownHandler}
               >
                 <p className="text-dark font-medium px-4 flex  ">
@@ -163,26 +162,24 @@ function UploadDocInput({ handleSelect, uploadfiles, singleUpload }) {
           )}
         </div>
       )}
-      {!singleUpload && (
-        <div>
-          {" "}
-          <input {...getInputProps()} />
-          {isDragActive ? (
-            <p className="text-center font-[700] text-[14px] text-dark">
-              Drop the files here ...
+      <div>
+
+        <input {...getInputProps()} />
+        {isDragActive ? (
+          <p className="text-center font-[700] text-[14px] text-dark">
+            Drop the files here ...
+          </p>
+        ) : (
+          <div>
+            <p className="text-center font-[700] text-[14px]  text-dark">
+              You can also
             </p>
-          ) : (
-            <div>
-              <p className="text-center font-[700] text-[14px]  text-dark">
-                You can also
-              </p>
-              <p className="text-center font-[700] text-[14px]  text-dark">
-                Drag and drop your file here
-              </p>
-            </div>
-          )}
-        </div>
-      )}
+            <p className="text-center font-[700] text-[14px]  text-dark">
+              Drag and drop your file here
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

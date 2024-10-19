@@ -31,6 +31,11 @@ const Step4 = ({ handleSelect, businessLogo }) => {
         >
           Upload Business Logo
         </Typography>
+        {/* <UploadDocInput
+          handleSelect={handleSelect}
+          uploadfiles={businessLogo}
+          singleUpload={true}
+        /> */}
         <UploadDocInput
           handleSelect={handleSelect}
           uploadfiles={businessLogo}

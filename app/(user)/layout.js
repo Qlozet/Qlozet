@@ -74,6 +74,7 @@ const Layout = ({ children }) => {
       pathname.replace("/", "").charAt(0).toUpperCase() + pathname.slice(2)
     );
     getVendorDetailshandler();
+    console.log("Checkking")
   }, [pathname]);
   return (
     <div className="bg-gray-400">

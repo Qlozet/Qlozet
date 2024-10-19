@@ -19,8 +19,7 @@ import { postRequest } from "@/api/method";
 import Step4 from "@/components/SignUpStep/Step4";
 import Toast from "@/components/ToastComponent/toast";
 import Logo from "@/components/Logo";
-import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
-import { setEmail, setFilter } from "@/redux/slice";
+import { setEmail } from "@/redux/slice";
 import { useDispatch } from "react-redux";
 const SignUp = () => {
   const dispatch = useDispatch()
@@ -81,6 +80,7 @@ const SignUp = () => {
   };
 
   const handleSelectLogo = (file) => {
+    console.log(file)
     setBusinessLogo(file);
   };
 
@@ -126,7 +126,7 @@ const SignUp = () => {
           // 
           toast(<Toast text={response.message} type="success" />);
         } else {
-       
+
           toast(<Toast text={response.message} type="danger" />);
         }
       } else {
@@ -147,13 +147,6 @@ const SignUp = () => {
       >
         <div className="bg-[rgba(0,0,0,.7)] lg:bg-white h-screen w-screen 2xl:flex justify-center items-center overflow-y-scroll lg:p-4">
           <div>
-            <div className="block lg:hidden">
-              <DasboardNavWithOutSearch
-                addSearch={false}
-                setValue={(data) => { }}
-                hideNav={true}
-              />
-            </div>
             <div className="block mt-2 mb-4  lg:hidden">
               <Logo />
             </div>
@@ -263,7 +256,7 @@ const SignUp = () => {
                     <Logo />
                   </div>
                   <div className="mt-12 ml-6 lg:ml-0">
-                    {" "}
+
                     <Image
                       src={previousIcon}
                       alt=""
@@ -276,7 +269,7 @@ const SignUp = () => {
                     businessLogo={businessLogo}
                   />
                   <div className="py-10 flex items-center justify-center m-auto max-w-[200px] lg:max-w-full ">
-                    {" "}
+
                     <Button
                       children="Continue"
                       btnSize="large"
