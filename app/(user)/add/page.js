@@ -125,20 +125,6 @@ const AddProduct = () => {
     const targetItems = variantTable.filter((item) => item.id === id)
     targetItems[0].images.retained = [...targetItems[0].images.retained, imageUrl]
     setVariantTable([...targetItems, ...orderItems]);
-    // let prevVariantTable = variantTable;
-    // if (imageUrl?.secure_url) {
-    //   let images = variantTable[listIndex].images;
-    //   images[imageIndex] = imageUrl;
-    //   const newVariantItem = {
-    //     color: variantTable[listIndex].color,
-    //     images: images,
-    //     size: variantTable[listIndex].sizes,
-    //     quantity: variantTable[listIndex].quantity,
-    //   };
-
-    //   prevVariantTable[listIndex] = newVariantItem;
-    //   //
-    // }
   };
 
   const addToVariantTable = async (data) => {
@@ -167,11 +153,12 @@ const AddProduct = () => {
       return { ...prevData, variantSizes: [...productFormData.variantSizes, { size: size[size.length - 1], id: id }] }
     })
     addColorAndMaterial.map((item) => {
+      const variantId = uuidv4();
       setVariantTable((prevData) => {
         return [
           ...prevData,
           {
-            id: id,
+            id: variantId,
             checked: false,
             color: item,
             images: {
@@ -203,7 +190,8 @@ const AddProduct = () => {
     setProductFormData((prevData) => {
       return { ...prevData, variantSizes: [] }
     })
-    setVariantTable(variantTable.filter((item) => item.id !== id && item.color == color))
+    console.log(variantTable)
+    setVariantTable(variantTable.filter((item) => item.id !== id))
   }
 
   const handleVariantChecked = (data, id, color) => {
@@ -215,7 +203,6 @@ const AddProduct = () => {
           images: item.images,
           color: item.color,
           checked: data,
-
           quantity: item.quantity,
           size: item.size,
         };
