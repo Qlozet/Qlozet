@@ -119,14 +119,14 @@ const SignUp = () => {
         });
         formData.append("businessLogo", businessLogo[0]);
         const response = await postRequest(`/vendor/signup`, formData, true);
+        response && setIsLoading(false)
         if (response.success) {
           dispatch(setEmail(businessInfo.businessEmail))
-          setIsLoading(false);
+
           router.push("/auth/confirm-account");
           // 
           toast(<Toast text={response.message} type="success" />);
         } else {
-
           toast(<Toast text={response.message} type="danger" />);
         }
       } else {

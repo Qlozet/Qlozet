@@ -117,7 +117,6 @@ function UploadDocInput({ handleSelect, uploadfiles, singleUpload }) {
               >
                 <p className="text-dark font-medium px-4 flex  ">
                   <span className="h-[30px] flex items-center overflow-hidden truncate text-dark">
-                    {" "}
                     Add more file
                   </span>
                 </p>
@@ -171,12 +170,13 @@ function UploadDocInput({ handleSelect, uploadfiles, singleUpload }) {
           </p>
         ) : (
           <div>
-            <p className="text-center font-[700] text-[14px]  text-dark">
+            {files.length === 0 && (<div>  <p className="text-center font-[700] text-[14px]  text-dark">
               You can also
             </p>
-            <p className="text-center font-[700] text-[14px]  text-dark">
-              Drag and drop your file here
-            </p>
+              <p className="text-center font-[700] text-[14px]  text-dark">
+                Drag and drop your file here
+              </p></div>)}
+
           </div>
         )}
       </div>
