@@ -1,5 +1,6 @@
 import StyleComp from ".";
 const Styles = ({ data, price }) => {
+
   return (
     <div className="flex items-center gap-2">
       {data &&

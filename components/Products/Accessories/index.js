@@ -8,16 +8,21 @@ import closeIcon from "../../../public/assets/svg/material-symbols_close-rounded
 import validator from "@/utils/validator";
 import { uploadSingleImage } from "@/utils/helper";
 import { postRequest } from "@/api/method";
+import NumberInput from "@/components/NumberInput";
+import Toast from "@/components/ToastComponent/toast";
+import toast from "react-hot-toast";
 const AddAcessories = ({ closeModal, submitAcessories }) => {
   const [accessories, setAcesssories] = useState({
     name: "",
     type: "",
     image: "",
+    price: 230
   });
 
   const [accessoriesRequired, setAcesssoriesRequired] = useState({
     name: false,
     type: false,
+    price: false,
     image: false,
   });
 
@@ -31,6 +36,7 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
         const response = await postRequest("/vendor/products/accessory", {
           name: accessories.name,
           type: accessories.type,
+          price: accessories.price,
           images: [accessories.image],
         });
         submitAcessories({
@@ -40,6 +46,9 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
           id: response.data,
         });
         response && setloading(false);
+        if (response.data) {
+          toast(<Toast text={"Accessories added"} type="success" />);
+        }
       } catch (error) {
         error && setloading(false);
       }
@@ -56,7 +65,7 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
       setAcesssories((prevData) => {
         return { ...prevData, image: imageUrl };
       });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   return (
@@ -121,6 +130,28 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
               error={accessoriesRequired.type}
             />
           </div>
+          <div className="w-full">
+            <NumberInput
+              label="Price"
+              placeholder="Enter Price"
+              value={accessories.productQuantity}
+              setValue={(data) => {
+                setAcesssories((prevData) => {
+                  return { ...prevData, price: data };
+                });
+                if (data) {
+                  setAcesssoriesRequired((prevData) => {
+                    return { ...prevData, price: false };
+                  });
+                } else {
+                  setAcesssoriesRequired((prevData) => {
+                    return { ...prevData, price: true };
+                  });
+                }
+              }}
+              error={accessoriesRequired.price}
+            />
+          </div>
           <div>
             <div className="my-3 relative">
               <p className="text-[14px] font-light my-2 text-dark">
@@ -147,6 +178,7 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
                   width={24}
                   height={24}
                   className="absolute top-2 right-2 "
+                  unoptimized
                 />
               </label>
               {accessoriesRequired.image && (
@@ -188,6 +220,7 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
               width: "100%",
               height: "auto",
             }}
+            unoptimized
           />
         )}
       </div>

@@ -14,6 +14,7 @@ const MaterialInput = ({
   removeMaterialHandler,
   loading,
 }) => {
+  console.log(value)
   return (
     <div>
       <label className="text-[14px] text-dark">{label}</label>
@@ -27,9 +28,9 @@ const MaterialInput = ({
           className={` ${classes.scrollbarElement} flex items-center gap-4 h-full pl-2`}
         >
           {value.map((item, index) => {
-            let dataUrl = item;
-            return (
-              <div
+            let dataUrl = item && item;
+            if (item) {
+              return (<div
                 key={index}
                 className="relative my-2 w-[3.5rem] h-[2rem] rounded-[2px]"
                 style={{
@@ -50,8 +51,8 @@ const MaterialInput = ({
                     }}
                   />
                 </div>
-              </div>
-            );
+              </div>)
+            }
           })}
           <label
             htmlFor="material"

@@ -106,29 +106,31 @@ const ColorInput = ({
                 <Image src={customisationIcon} alt="" width={25} height={25} />
               </div>
               {selectedColors.map((color, index) => {
-                return (
-                  <div className="relative" key={index} style={{ zIndex: 500 }}>
-                    <div
-                      className="absolute top-[-5px] right-[-5px] bg-primary-100 rounded-[50%] p-[1px]"
-                    >
-                      <Image
-                        alt=""
-                        src={closeIcon}
-                        width={15}
-                        height={15}
-                        onClick={() => {
-                          removeColor(color, index);
+                if (color) {
+                  return (
+                    <div className="relative" key={index} style={{ zIndex: 500 }}>
+                      <div
+                        className="absolute top-[-5px] right-[-5px] bg-primary-100 rounded-[50%] p-[1px]"
+                      >
+                        <Image
+                          alt=""
+                          src={closeIcon}
+                          width={15}
+                          height={15}
+                          onClick={() => {
+                            removeColor(color, index);
+                          }}
+                        />
+                      </div>
+                      <div
+                        className="w-[4rem] h-[2rem] rounded"
+                        style={{
+                          backgroundColor: color,
                         }}
-                      />
+                      ></div>
                     </div>
-                    <div
-                      className="w-[4rem] h-[2rem] rounded"
-                      style={{
-                        backgroundColor: color,
-                      }}
-                    ></div>
-                  </div>
-                );
+                  );
+                }
               })}
             </div>
           </div>

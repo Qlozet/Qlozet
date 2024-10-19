@@ -162,14 +162,7 @@ const AddProduct = () => {
 
   const addSizeToVariant = (size) => {
     const id = uuidv4();
-    const addColorAndMaterial = [...selectedColors, ...selectedVariantFiles];
-    const previousColorInVarianttable = new Set(
-      variantTable.map((color) => color.color)
-    );
-    const newSelectedColorsAndMaterials = addColorAndMaterial.filter(
-      (color) => !previousColorInVarianttable.has(color)
-    );
-
+    const addColorAndMaterial = [...selectedColors.filter((item) => item !== undefined), ...selectedVariantFiles.filter((item) => item !== undefined)];
     setProductFormData((prevData) => {
       return { ...prevData, variantSizes: [...productFormData.variantSizes, { size: size[size.length - 1], id: id }] }
     })
@@ -285,6 +278,7 @@ const AddProduct = () => {
               };
             }),
             deleted: deletedFiles,
+            // deleted: [],
           },
           variants: variantTable.map((item) => {
             let varantItem = {
@@ -707,6 +701,8 @@ const AddProduct = () => {
                         setShowAddAccessories(true);
                       }}
                     />
+
+                    {/* The accesorries is returning only id he should return the full data */}
                     <Styles data={accessories} />
                   </div>
                   {addVariant && (<div> <div className="w-full">

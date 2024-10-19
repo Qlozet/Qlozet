@@ -28,7 +28,6 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
               ref={outsideRef}
             ></div>
           )}
-
           <div className="relative">
             {showProfile && (
               <div
