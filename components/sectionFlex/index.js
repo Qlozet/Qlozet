@@ -8,7 +8,7 @@ const SectionFlex = ({ heading, subText, reverseFlex, translate, image1, image2 
             className={`mb-[-6rem] flex ${reverseFlex ? "flex-row-reverse" : "flex-row"
                 } items-center justify-between px-10  mx-auto min-h-full gap-12 ${translate && translate}`}
         >
-            <div className=" w-[50%]">
+            <div className="w-[50%]">
                 <div className="relative flex-col flex ">
                     <Image src={image1} />
                     <Image

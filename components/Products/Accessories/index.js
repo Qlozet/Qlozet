@@ -11,6 +11,7 @@ import { postRequest } from "@/api/method";
 import NumberInput from "@/components/NumberInput";
 import Toast from "@/components/ToastComponent/toast";
 import toast from "react-hot-toast";
+import { Oval } from "react-loader-spinner";
 const AddAcessories = ({ closeModal, submitAcessories }) => {
   const [accessories, setAcesssories] = useState({
     name: "",
@@ -27,6 +28,7 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
   });
 
   const [loading, setloading] = useState(false);
+  const [loadingImageUpload, setloadingImageUpload] = useState(false);
 
   const handleSubmit = async () => {
     const { status, data, id } = validator(accessories, accessoriesRequired);
@@ -61,11 +63,22 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
 
   const handleUpload = async (file) => {
     try {
+      setloadingImageUpload(true)
       const imageUrl = await uploadSingleImage(file);
-      setAcesssories((prevData) => {
-        return { ...prevData, image: imageUrl };
-      });
-    } catch (error) { }
+      if (imageUrl) {
+        setAcesssories((prevData) => {
+          return { ...prevData, image: imageUrl };
+        });
+        imageUrl && setloadingImageUpload(false)
+      } else {
+        toast(<Toast text={"Error occured while uploading accessory image."} type="danger" />);
+        setloadingImageUpload(false)
+      }
+
+    } catch (error) {
+      setloadingImageUpload(false)
+      console.error(error)
+    }
   };
 
   return (
@@ -172,14 +185,25 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
                 className="py-5 px-4 w-full border-solid border-[1.5px] block rounded-[8px] cursor-pointer relative"
                 htmlFor="accessories"
               >
-                <Image
+                {!loadingImageUpload ? <Image
                   src={icon}
                   alt=""
                   width={24}
                   height={24}
                   className="absolute top-2 right-2 "
-                  unoptimized
-                />
+
+                /> : <Oval
+                  visible={true}
+                  height="30"
+                  width="30"
+                  color="rgba(62, 28, 1, 1)"
+                  ariaLabel="oval-loading"
+                  secondaryColor="#f4f4f4"
+                  wrapperStyle={{
+                  }}
+                  wrapperClass="absolute top-2 right-2"
+                />}
+
               </label>
               {accessoriesRequired.image && (
                 <p className="text-danger text-[12px] font-[400]">

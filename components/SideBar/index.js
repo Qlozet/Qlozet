@@ -25,6 +25,7 @@ import { setFilter } from "@/redux/slice";
 import styles from './index.module.css'
 
 import { useAppDispatch } from "@/redux/store";
+import Link from "next/link";
 const SideBar = ({ active }) => {
   const dispatch = useAppDispatch();
 
@@ -62,7 +63,7 @@ const SideBar = ({ active }) => {
     },
     {
       name: "Customers",
-      link: "customer",
+      link: "customers",
       defaultIcon: cutomerDefault,
       activeIcon: cutomerActive,
       function: () => { },
@@ -105,14 +106,14 @@ const SideBar = ({ active }) => {
       }}
     >
       <div className="py-10 lg:px-16 md:px-4">
-        <Image
+        <Link href="/dashboard">  <Image
           alt=""
           src={brownLogo}
           style={{
             width: "100px",
             height: "auto",
           }}
-        />
+        /></Link>
       </div>
       <div className="">
         {sidebaritems.map((item, index) => (

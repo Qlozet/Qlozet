@@ -89,6 +89,7 @@ const AddProduct = () => {
   };
 
   const submitAcessories = (acess) => {
+    console.log(acess)
     setAcessories((prevData) => {
       return [...prevData, { image: acess.images, id: acess.id }];
     });
@@ -190,7 +191,6 @@ const AddProduct = () => {
     setProductFormData((prevData) => {
       return { ...prevData, variantSizes: [] }
     })
-    console.log(variantTable)
     setVariantTable(variantTable.filter((item) => item.id !== id))
   }
 
