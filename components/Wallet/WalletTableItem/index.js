@@ -13,7 +13,7 @@ const WalletTableItem = ({
 }) => {
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-[12px] font-normal p-4 text-dark">
+      <td className="text-[12px] font-normal p-4 text-dark pl-6">
         {moment(date).format("YYYY-MM-DD")}
       </td>
       <td className="text-[12px] font-normal p-4 text-dark">{transactionId}</td>
@@ -30,9 +30,8 @@ const WalletTableItem = ({
           addMaxWidth={true}
         />
       </td>
-
-      <td className="text-[12px] font-normal p-4 text-dark ">
-        <div className="border rounded-[5px] ">
+      <td className="text-[12px] font-normal p-4 text-dark flex items-center justify-end" >
+        <div className="border rounded-[5px] max-w-[91px] ">
           <OrderStatus
             text="View details"
             color="text-[#3E1C01]"
@@ -43,7 +42,7 @@ const WalletTableItem = ({
           />
         </div>
       </td>
-     
+
     </tr>
   );
 };

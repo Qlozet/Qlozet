@@ -69,8 +69,8 @@ const UserAndPermissionTable = ({ handleEdit }) => {
             <UserAndPermissionTableItem
               {...item}
               handleEdit={handleEdit}
-              // viewDetails={viewDetails}
-              // showRejectModal={showRejectModal}
+            // viewDetails={viewDetails}
+            // showRejectModal={showRejectModal}
             />
           ))}
         </tbody>
@@ -90,7 +90,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
           </div>
         </div>
         <div className="">
-          <div className="bg-gray-300 p-4 rounded-t-[12px] lg:hidden">
+          <div className=" bg-[#F4F4F4] p-4 rounded-t-[12px] lg:hidden">
             <Typography
               textColor="text-dark"
               textWeight="font-[700]"

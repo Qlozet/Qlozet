@@ -29,15 +29,9 @@ const MobileTable = ({
       <div>
         <div className="flex items-center justify-between py-6  ">
           <div className="flex justify-between w-full">
-            <Image
-              width={500}
-              height={500}
-              src={picture}
-              style={{ width: "5rem", height: "auto" }}
-              alt=""
-              unoptimized
-              className="min-w-[6rem] h-[auto] ml-4 max-w-[8rem] border-gray-200 border-[1.5px] border-solid rounded-lg"
-            />
+
+            <div className="ml-4 w-[66px] h-[64px] border-[1px] border-solid border-gray-200 rounded-lg " style={{ backgroundImage: `url(${picture})`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat" }}></div>
+
             <div
               className="w-[1.5rem] h-[1.5rem]"
               onClick={() => {

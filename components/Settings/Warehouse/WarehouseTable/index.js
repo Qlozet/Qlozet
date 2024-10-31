@@ -87,7 +87,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
                 </div>
               </div>
             </div>
-            <div className="bg-gray-300 p-4 rounded-t-[12px] lg:hidden">
+            <div className=" bg-[#F4F4F4] p-4 rounded-t-[12px] lg:hidden">
               <Typography
                 textColor="text-dark"
                 textWeight="font-[700]"

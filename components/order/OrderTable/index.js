@@ -22,35 +22,35 @@ const OrderTable = ({
   return (
     <div className=" mt-4 min-h-[50vh]">
       <table className="w-full hidden lg:block border-3px">
-        <thead className="w-full bg-[#F4F4F4]  border-primary border-solid">
-          <tr>
-            <th className="w-[8%] px-2 py-4 text-[12px]">
+        <thead className="w-full bg-[#F4F4F4]  px-[8px] border-solid border-primary">
+          <tr className="">
+            <th className="w-[8%] px-6 py-3 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
                 Date
               </div>
             </th>
-            <th className="w-[5%] px-2 py-4 text-[12px]">
+            <th className="w-[5%] px-3 py-3 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
                 Order ID
               </div>
             </th>
-           
-            <th className="w-[10%] px-2 py-4 text-[12px]">
+
+            <th className="w-[10%] px-3 py-3 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
                 Customer name
               </div>
             </th>
-            <th className="w-[8%] px-2 py-4 text-[12px]">
+            <th className="w-[8%] px-3 py-3 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
                 Amount paid
               </div>
             </th>
-            <th className="w-[9%] px-2 py-4 text-[12px]">
+            <th className="w-[9%] px-3 py-3 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">
                 Delivery Status
               </div>
             </th>
-            <th className="w-[10%] px-2 py-4 text-[12px]">
+            <th className="w-[10%] px-3 py-3 text-[12px]">
               <div className="flex items-center justify-end"> <ExportComponent
                 handleExport={() => {
                   handleExport(exportData);
@@ -96,7 +96,7 @@ const OrderTable = ({
               </div>
             </div>
           </div>
-          <div className="p-2 flex items-center justify-between mt-8  bg-gray-300 rounded-t-[12px] ">
+          <div className="p-2 flex items-center justify-between mt-8  bg-[#F4F4F4] rounded-t-[12px] ">
             <Typography
               textColor="text-dark"
               textWeight="font-bold"

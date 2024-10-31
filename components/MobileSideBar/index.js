@@ -59,7 +59,7 @@ const MobileSideBar = ({ active, closeSideBar, showMobileNav }) => {
     },
     {
       name: "Customers",
-      link: "customer",
+      link: "customers",
       defaultIcon: cutomerDefault,
       activeIcon: cutomerActive,
       function: () => {},

@@ -47,7 +47,7 @@ const ProductTable = ({
           <thead className="w-full bg-[#F4F4F4] text-dark ">
             <tr>
               <th className="w-[5%] px-2 py-4 text-[12px]">
-                <div className="flex items-center justify-start font-[500] text-dark">
+                <div className="flex items-center justify-start font-[500] text-dark pl-4">
                   Picture
                 </div>
               </th>

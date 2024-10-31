@@ -8,7 +8,7 @@ import FileInput from "../../uploadFileinput/UploadFileInput";
 const BillingAndInvioce = () => {
   return (
     <div className="">
-      <div className="mx-0 bg-gray-300 lg:bg-white p-4  rounded-t-lg lg:translate-x-2">
+      <div className="mx-0  bg-[#F4F4F4] lg:bg-white p-4  rounded-t-lg lg:translate-x-2">
         <CheckBoxInput label="Billing address same as company details" handleChange={(value) => { }} />
       </div>
       <div className="bg-white w-full p-4 mx-0 lg:mx-2">

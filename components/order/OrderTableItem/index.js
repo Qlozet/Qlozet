@@ -11,8 +11,8 @@ const OrderTableItem = ({
   viewDetails,
 }) => {
   return (
-    <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-[12px] font-normal p-4 text-dark">{date}</td>
+    <tr className="border-b-[1px] border-solid border-gray-300 bg-white ">
+      <td className="text-[12px] font-normal p-6 text-dark">{date}</td>
       <td className="text-[12px] font-normal p-4 text-dark">{orderId}</td>
       <td className="text-[12px] font-normal p-4 text-dark">{customerName}</td>
       <td className="text-[12px] font-normal p-4 text-dark">{AmountPaid}</td>
@@ -24,8 +24,8 @@ const OrderTableItem = ({
           addMaxWidth={true}
         />
       </td>
-      <td className="text-[12px] font-normal p-4 text-dark ">
-        <div className="border rounded-[5px] ">
+      <td className="text-[12px] font-normal p-4 text-dark flex items-center justify-end">
+        <div className="border rounded-[5px] max-w-[93px] ">
           <OrderStatus
             text="View details"
             color="text-[#3E1C01]"

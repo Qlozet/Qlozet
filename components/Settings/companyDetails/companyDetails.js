@@ -71,7 +71,7 @@ const CompanyDetails = ({
       <DashedComponent name={"Company info"} />
 
       <div className="showdow bg-white">
-        <div className="bg-gray-300 p-4 rounded-t-[12px] lg:hidden">
+        <div className=" bg-[#F4F4F4] p-4 rounded-t-[12px] lg:hidden">
           <Typography
             textColor="text-dark"
             textWeight="font-[700]"
@@ -344,7 +344,7 @@ const CompanyDetails = ({
               fileName="logo"
               label="Upload company logo"
               // placeholder="Enter NIN"
-              setValue={(data) => {}}
+              setValue={(data) => { }}
               value={[]}
               handleSelect={handleSelectLogo}
             />
@@ -353,7 +353,7 @@ const CompanyDetails = ({
             <FileInput
               fileName="cacdoc"
               label="Upload CAC Document"
-              setValue={(data) => {}}
+              setValue={(data) => { }}
               handleSelect={handleSelectDoc}
               value={[]}
             />

@@ -68,7 +68,6 @@ const Customer = () => {
       if (response.data) {
         response?.data?.data.map((item) => {
           const status = activeCheck(item.status)
-          console.log(status)
           const customer = {
             customerId: item.customerId,
             picture: item.picture,

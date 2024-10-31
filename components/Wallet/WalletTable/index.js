@@ -19,7 +19,7 @@ const WalletTable = ({
       <table className="w-full hidden lg:block">
         <thead className="w-full bg-[#F4F4F4] ">
           <tr>
-            <th className="w-[8%] p-4 text-[12px]">
+            <th className="w-[8%] p-4 text-[12px] pl-6">
               <div className="flex items-center justify-start font-[500] text-dark">
                 Date
               </div>
@@ -97,7 +97,7 @@ const WalletTable = ({
               </div>
             </div>
           </div>
-          <div className="p-2 flex items-center justify-between mt-14  bg-gray-300 rounded-t-[12px]">
+          <div className="p-2 flex items-center justify-between mt-14   bg-[#F4F4F4] rounded-t-[12px]">
             <Typography
               textColor="text-dark"
               textWeight="font-bold"

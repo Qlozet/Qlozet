@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useRouter } from 'next/router';
 import { BASE_URL } from "./urls";
 // import { toastError } from "../utils/toast";
 import { getToken } from "../utils/localstorage";
@@ -7,6 +8,7 @@ const axiosInstance = axios.create({
 });
 import { redirect } from "next/navigation";
 export const getRequest = async (url) => {
+  const router = useRouter();
   let userData;
   let token = getToken();
   let response;
@@ -23,8 +25,9 @@ export const getRequest = async (url) => {
       return response.data;
     }
   } catch (error) {
+    console.log(error)
     if (error.response?.data === "Unauthorized") {
-      redirect("/auth/signin");
+      return "Unauthorized"
     } else {
       return error.response;
     }
@@ -40,29 +43,29 @@ export const postRequest = async (url, data, fileAvailable) => {
       userData = JSON.parse(token);
       response = fileAvailable
         ? await axiosInstance.post(url, data, {
-            headers: {
-              Authorization: `Bearer ${userData?.token}`,
-              "Content-Type": "multipart/form-data",
-            },
-          })
+          headers: {
+            Authorization: `Bearer ${userData?.token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        })
         : await axiosInstance.post(url, data, {
-            headers: {
-              Authorization: `Bearer ${userData?.token}`,
-            },
-          });
+          headers: {
+            Authorization: `Bearer ${userData?.token}`,
+          },
+        });
     } else {
       response = fileAvailable
         ? await axiosInstance.post(url, data, {
-            headers: {
-              Authorization: `Bearer ${userData?.token}`,
-              "Content-Type": "multipart/form-data",
-            },
-          })
+          headers: {
+            Authorization: `Bearer ${userData?.token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        })
         : await axiosInstance.post(url, data, {
-            headers: {
-              Authorization: `Bearer ${userData?.token}`,
-            },
-          });
+          headers: {
+            Authorization: `Bearer ${userData?.token}`,
+          },
+        });
     }
     return response.data;
   } catch (error) {

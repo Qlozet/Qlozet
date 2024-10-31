@@ -5,11 +5,14 @@ import MobileSideBar from "@/components/MobileSideBar";
 import SideBar from "@/components/SideBar";
 import { usePathname } from "next/navigation";
 import getVendorDetails from "@/api/request";
-import { setUserData } from "@/utils/localstorage";
+import { clearToken, setUserData } from "@/utils/localstorage";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { useRouter } from "next/navigation";
+
 
 import { setFilter } from "@/redux/slice";
 const Layout = ({ children }) => {
+  const router = useRouter();
   const filterData = useAppSelector((state) => state.filter.state);
   const dispatch = useAppDispatch();
   const pathname = usePathname();
@@ -26,31 +29,38 @@ const Layout = ({ children }) => {
   const [loadingPage, setLoadingPage] = useState(true)
   const getVendorDetailshandler = async () => {
     const response = await getVendorDetails();
-    if (response?.data) {
-      const details = {
-        businessName: response?.data?.data?.companyName
-          ? response?.data?.data?.companyName
-          : "",
-        personalName: response?.data?.data?.vendorName
-          ? response?.data?.data?.vendorName
-          : "",
-        profileImage: response.data?.data
-          ? response.data?.data.profilePicture
-          : "",
-        ratings: response.data?.data ? response.data?.data.ratings : "",
-        items: response.data?.data ? response.data?.data?.items : "",
-        profit: response.data?.data ? response.data?.data?.profit : "",
-        averageRating: response.data?.data?.averageRating
-          ? response?.data?.data?.averageRating
-          : "",
-      };
-      setUserData(details);
-      setUserDetails(details);
-      setLoadingPage(false)
-      if (details) {
+    try {
+      if (response?.data) {
+        const details = {
+          businessName: response?.data?.data?.companyName
+            ? response?.data?.data?.companyName
+            : "",
+          personalName: response?.data?.data?.vendorName
+            ? response?.data?.data?.vendorName
+            : "",
+          profileImage: response.data?.data
+            ? response.data?.data.profilePicture
+            : "",
+          ratings: response.data?.data ? response.data?.data.ratings : "",
+          items: response.data?.data ? response.data?.data?.items : "",
+          profit: response.data?.data ? response.data?.data?.profit : "",
+          averageRating: response.data?.data?.averageRating
+            ? response?.data?.data?.averageRating
+            : "",
+        };
+        setUserData(details);
+        setUserDetails(details);
+        setLoadingPage(false)
+        if (details) {
 
+        }
+
+      } else {
+        clearToken()
+        router.push("/auth/signin");
       }
-
+    } catch (error) {
+      console.log(error)
     }
   };
 
@@ -98,7 +108,7 @@ const Layout = ({ children }) => {
                 showSideBar={showSideBar}
               />
             </div>
-            <div > {children}</div>
+            <div className="max-w-[1050px]"> {children}</div>
           </div>
         </div></div>)}
 
