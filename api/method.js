@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useRouter } from 'next/router';
 import { BASE_URL } from "./urls";
 // import { toastError } from "../utils/toast";
 import { getToken } from "../utils/localstorage";
@@ -8,7 +7,6 @@ const axiosInstance = axios.create({
 });
 import { redirect } from "next/navigation";
 export const getRequest = async (url) => {
-  const router = useRouter();
   let userData;
   let token = getToken();
   let response;
@@ -26,11 +24,12 @@ export const getRequest = async (url) => {
     }
   } catch (error) {
     console.log(error)
-    if (error.response?.data === "Unauthorized") {
-      return "Unauthorized"
-    } else {
-      return error.response;
-    }
+    console.log(error)
+    // if (error.response?.data === "Unauthorized") {
+    //   console.log(error)
+    //   return "Unauthorized"
+    // }
+    return error
   }
 };
 

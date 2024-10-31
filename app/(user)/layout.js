@@ -28,8 +28,10 @@ const Layout = ({ children }) => {
   });
   const [loadingPage, setLoadingPage] = useState(true)
   const getVendorDetailshandler = async () => {
-    const response = await getVendorDetails();
+
     try {
+      const response = await getVendorDetails();
+      console.log(response)
       if (response?.data) {
         const details = {
           businessName: response?.data?.data?.companyName
@@ -55,12 +57,14 @@ const Layout = ({ children }) => {
 
         }
 
-      } else {
+      } else if (!response.data) {
         clearToken()
         router.push("/auth/signin");
       }
     } catch (error) {
-      console.log(error)
+      clearToken()
+      router.push("/auth/signin");
+   
     }
   };
 

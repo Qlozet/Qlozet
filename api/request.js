@@ -4,6 +4,7 @@ const getVendorDetails = async () => {
     const response = await getRequest("/vendor/profile");
     return response;
   } catch (error) {
+    return error
   }
 };
 
