@@ -34,11 +34,11 @@ const UserAndPermission = () => {
         <div></div>
       </div>
       <UserAndPermissionTable handleEdit={handleEdit} />
-      {showAddModal && (
+
         <Modal
-          content={<AddNewUserAndPermissionForm closeModal={closeAddModal} />}
+        show={showAddModal}
+        content={<>{showAddModal && (<AddNewUserAndPermissionForm closeModal={closeAddModal} />)}</>}
         ></Modal>
-      )}
     </div>
   );
 };

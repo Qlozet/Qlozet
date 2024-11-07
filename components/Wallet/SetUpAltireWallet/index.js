@@ -28,7 +28,7 @@ const SetUpAltireWallet = ({ closeModal }) => {
               <NumberInput
                 label="Bank verification number"
                 placeholder="1234567891"
-              />
+            setValue={(data)=>{}}  />
             </div>
             <div className="mt-4">
               <TextInput
@@ -38,7 +38,7 @@ const SetUpAltireWallet = ({ closeModal }) => {
               />
             </div>
             <div className="mt-4">
-              <NumberInput label="Phone number" placeholder="08012345678" />
+              <NumberInput label="Phone number" placeholder="08012345678" setValue={(data) => { }} />
             </div>
             <div className="mt-10 flex items-center justify-end">
               <Button

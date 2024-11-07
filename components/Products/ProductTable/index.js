@@ -176,35 +176,36 @@ const ProductTable = ({
           />
         ))}
       </div>
-      {dropdownOption === "Delete product" && (
         <Modal
+        show={dropdownOption === "Delete product"?true:false}
           content={
             <div className="flex items-center justify-center h-[100%] ">
-              <DeleteProduct
+              {dropdownOption && (<DeleteProduct
                 deleteFunction={(productId) => {
                   setDropDownOption("");
                   setProductData(
                     productData.filter((item) => item.id !== productId)
                   );
                 }}
-              />
+              />)}
             </div>
           }
         />
-      )}
-      {dropdownOption === "Schedule activation" && (
+      
+    
         <Modal
+        show={dropdownOption === "Schedule activation"?true:false}
           content={
             <div className="">
-              <ShecduleProduct
+              {dropdownOption && (<ShecduleProduct
                 closeSchedule={() => {
                   setDropDownOption("");
                 }}
-              />
+              />)}
+           
             </div>
           }
         />
-      )}
     </div>
   );
 };

@@ -370,19 +370,16 @@ const ProductDetails = () => {
             )}
           </div>
         </div>
-        {/* {showHostory && ( */}
-        {showReview && (
           <Modal
+          show={showReview}
             content={
-              <ProductReview
+              <>   {showReview && (<ProductReview
                 productName={productFormData.productName}
                 reviews={productFormData.reviews}
                 closeModal={handleShowReview}
-              ></ProductReview>
+              ></ProductReview>)}</>
             }
           ></Modal>
-        )}
-        {/* )} */}
       </div>
     </div>
   );

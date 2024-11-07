@@ -2,7 +2,6 @@ import { useState } from "react";
 import threeDotIcon from "../../../../public/assets/svg/three-dot.svg";
 import Image from "next/image";
 import OrderStatus from "../../../order/OrderStatus";
-import Modal from "../../../Modal";
 import DropDown from "../../../DropDown";
 import DropDownComponent from "../../../DropDownComponent";
 const WarehouseTableItem = ({

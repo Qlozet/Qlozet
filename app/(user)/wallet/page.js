@@ -264,21 +264,20 @@ const Wallet = () => {
           )}
         </div>
 
-        {setUpWalletWallet && (
           <Modal
+            show={setUpWalletWallet}
             content={
-              <SetUpAltireWallet
+              <>{setUpWalletWallet && (<SetUpAltireWallet
                 closeModal={() => {
                   setSetUpWalletWallet(false);
                 }}
-              />
+              />)}</>  
             }
           ></Modal>
-        )}
-        {showTransactiondetails && (
           <Modal
+          show={showTransactiondetails}
             content={
-              <TransactionDetails
+              <>{showTransactiondetails&&(<TransactionDetails
                 closeModal={() => {
                   setShowTransactiondetails(false);
                 }}
@@ -287,44 +286,45 @@ const Wallet = () => {
                     (item) => item.transactionId == transactionId
                   )[0]
                 }
-              />
+              />)}</>
             }
           ></Modal>
-        )}
-        {showSendMoney === "Send Money" && (
           <Modal
+            show={showSendMoney === "Send Money"?true:false}
             content={
-              <SendMoney
+              <>{showSendMoney === "Send Money"&&(<SendMoney
                 closeModal={(name) => {
                   setShowSendMoney(name);
                 }}
-              />
+              />)}</>
             }
           ></Modal>
-        )}
-        {showSendMoney === "Manually" && (
+  
           <Modal
+            show={showSendMoney === "Manually"?true:false}
             content={
-              <SendMoneyForm
+              <>{showSendMoney && (<SendMoneyForm
                 banks={allBanks}
                 closeModal={() => {
                   setShowSendMoney(false);
                 }}
-              />
+              />)}</>
+             
             }
           ></Modal>
-        )}
-        {showSendMoney === "Beneficiaries" && (
+        
+    
           <Modal
+          show={showSendMoney === "Beneficiaries"}
             content={
-              <Beneficiary
+              showSendMoney === "Beneficiaries" && (<Beneficiary
                 closeModal={() => {
                   setShowSendMoney(false);
                 }}
-              />
+              />)
             }
           ></Modal>
-        )}
+        
       </div>
     </section>
   );

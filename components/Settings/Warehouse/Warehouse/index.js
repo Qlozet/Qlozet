@@ -87,13 +87,13 @@ const Warehouse = () => {
             data={filtereWareHouse}
             handleFilterData={handleFilterData}
           />
-          {showAddModal && (
             <Modal
+                show={showAddModal}
               content={
-                <AddNewWarehouseForm closeModal={closeAddWarehouseModal} />
+                <>{showAddModal &&<AddNewWarehouseForm closeModal={closeAddWarehouseModal} />
+}</>
               }
             ></Modal>
-          )}
         </div>
       )}
     </div>

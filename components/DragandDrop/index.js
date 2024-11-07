@@ -127,7 +127,7 @@ const DragDrop = ({
 
   const onMouseMove = (event) => {
     event.prevDefault();
-   
+
   };
 
   const handleSetCurentStyle = (style, imgIndex) => {
@@ -136,11 +136,11 @@ const DragDrop = ({
   const dragHandlers = { onStart };
 
   useEffect(() => {
-  
+
   }, [imageIndex]);
 
   useEffect(() => {
-   
+
     customeStylesUiPosition.filter(
       (item) => item.style === "tops" && item.index === imageIndex
     )[0];
@@ -253,143 +253,141 @@ const DragDrop = ({
               >
                 {selectedStyles.filter((item) => item.name === "tops").length >
                   0 && (
-                  <Draggable {...dragHandlers}>
-                    <div
-                      className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4 "
-                      ref={itemref}
-                      onKeyDown={() => {
-                        handleSetCurentStyle("tops", imageIndex);
-                      }}
-                      onTouchStart={() => {
-                        handleSetCurentStyle("tops", imageIndex);
-                      }}
-                      style={{
-                        position: "absolute",
-                        left: `${
-                          customeStylesUiPosition.filter(
+                    <Draggable {...dragHandlers}>
+                      <div
+                        className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4 "
+                        ref={itemref}
+                        onKeyDown={() => {
+                          handleSetCurentStyle("tops", imageIndex);
+                        }}
+                        onTouchStart={() => {
+                          handleSetCurentStyle("tops", imageIndex);
+                        }}
+                        style={{
+                          position: "absolute",
+                          left: `${customeStylesUiPosition.filter(
                             (item) =>
                               item.style === "tops" && item.index === imageIndex
                           ).length > 0 &&
-                          customeStylesUiPosition.filter(
-                            (item) =>
-                              item.style === "tops" && item.index === imageIndex
-                          )[0].left
-                        }px`,
-                        top: `${
-                          customeStylesUiPosition.filter(
+                            customeStylesUiPosition.filter(
+                              (item) =>
+                                item.style === "tops" && item.index === imageIndex
+                            )[0].left
+                            }px`,
+                          top: `${customeStylesUiPosition.filter(
                             (item) =>
                               item.style === "tops" && item.index === imageIndex
                           ).length > 0 &&
-                          customeStylesUiPosition.filter(
-                            (item) =>
-                              item.style === "tops" && item.index === imageIndex
-                          )[0].top
-                        }px`,
-                      }}
-                    >
-                      <Typography
-                        textColor="text-white"
-                        textWeight="font-[500]"
-                        textSize="text-[12px]"
+                            customeStylesUiPosition.filter(
+                              (item) =>
+                                item.style === "tops" && item.index === imageIndex
+                            )[0].top
+                            }px`,
+                        }}
                       >
-                        Top
-                      </Typography>
-                      <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
-                    </div>
-                  </Draggable>
-                )}
+                        <Typography
+                          textColor="text-white"
+                          textWeight="font-[500]"
+                          textSize="text-[12px]"
+                        >
+                          Top
+                        </Typography>
+                        <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
+                      </div>
+                    </Draggable>
+                  )}
                 {selectedStyles.filter((item) => item.name === "bottoms")
                   .length > 0 && (
-                  <Draggable {...dragHandlers}>
-                    <div
-                      className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4"
-                      onKeyDown={() => {
-                        handleSetCurentStyle("bottoms", imageIndex);
-                      }}
-                      onTouchStart={() => {
-                        handleSetCurentStyle("bottoms", imageIndex);
-                      }}
-                    >
-                      <Typography
-                        textColor="text-white"
-                        textWeight="font-[500]"
-                        textSize="text-[12px]"
+                    <Draggable {...dragHandlers}>
+                      <div
+                        className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4"
+                        onKeyDown={() => {
+                          handleSetCurentStyle("bottoms", imageIndex);
+                        }}
+                        onTouchStart={() => {
+                          handleSetCurentStyle("bottoms", imageIndex);
+                        }}
                       >
-                        Bottom
-                      </Typography>
-                      <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
-                    </div>
-                  </Draggable>
-                )}
+                        <Typography
+                          textColor="text-white"
+                          textWeight="font-[500]"
+                          textSize="text-[12px]"
+                        >
+                          Bottom
+                        </Typography>
+                        <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
+                      </div>
+                    </Draggable>
+                  )}
                 {selectedStyles.filter((item) => item.name === "skirts")
                   .length > 0 && (
-                  <Draggable {...dragHandlers}>
-                    <div
-                      className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4"
-                      onKeyDown={() => {
-                        handleSetCurentStyle("skirts", imageIndex);
-                      }}
-                      onTouchStart={() => {
-                        handleSetCurentStyle("skirts", imageIndex);
-                      }}
-                    >
-                      <Typography
-                        textColor="text-white"
-                        textWeight="font-[500]"
-                        textSize="text-[12px]"
+                    <Draggable {...dragHandlers}>
+                      <div
+                        className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4"
+                        onKeyDown={() => {
+                          handleSetCurentStyle("skirts", imageIndex);
+                        }}
+                        onTouchStart={() => {
+                          handleSetCurentStyle("skirts", imageIndex);
+                        }}
                       >
-                        Shirt
-                      </Typography>
-                      <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
-                    </div>
-                  </Draggable>
-                )}
+                        <Typography
+                          textColor="text-white"
+                          textWeight="font-[500]"
+                          textSize="text-[12px]"
+                        >
+                          Shirt
+                        </Typography>
+                        <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
+                      </div>
+                    </Draggable>
+                  )}
                 {selectedStyles.filter((item) => item.name === "dresses")
                   .length > 0 && (
-                  <Draggable {...dragHandlers}>
-                    <div
-                      className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4"
-                      onKeyDown={() => {
-                        handleSetCurentStyle("dresses", imageIndex);
-                      }}
-                      onTouchStart={() => {
-                        handleSetCurentStyle("dresses", imageIndex);
-                      }}
-                    >
-                      <Typography
-                        textColor="text-white"
-                        textWeight="font-[500]"
-                        textSize="text-[12px]"
+                    <Draggable {...dragHandlers}>
+                      <div
+                        className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4"
+                        onKeyDown={() => {
+                          handleSetCurentStyle("dresses", imageIndex);
+                        }}
+                        onTouchStart={() => {
+                          handleSetCurentStyle("dresses", imageIndex);
+                        }}
                       >
-                        Dress
-                      </Typography>
-                      <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
-                    </div>
-                  </Draggable>
-                )}
+                        <Typography
+                          textColor="text-white"
+                          textWeight="font-[500]"
+                          textSize="text-[12px]"
+                        >
+                          Dress
+                        </Typography>
+                        <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div>
+                      </div>
+                    </Draggable>
+                  )}
                 {selectedStyles.filter((item) => item.name === "outfits")
                   .length > 0 && (
-                  <Draggable {...dragHandlers}>
-                    <div
-                      className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4"
-                      onKeyDown={() => {
-                        handleSetCurentStyle("outfits", imageIndex);
-                      }}
-                      onTouchStart={() => {
-                        handleSetCurentStyle("outfits", imageIndex);
-                      }}
-                    >
-                      <Typography
-                        textColor="text-white"
-                        textWeight="font-[500]"
-                        textSize="text-[12px]"
+                    <Draggable {...dragHandlers}>
+                      <div
+                        className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move my-4"
+                        onKeyDown={() => {
+                          handleSetCurentStyle("outfits", imageIndex);
+                        }}
+                        onTouchStart={() => {
+                          handleSetCurentStyle("outfits", imageIndex);
+                        }}
                       >
-                        Outfit
-                      </Typography>
-                      {/* <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div> */}
-                    </div>
-                  </Draggable>
-                )}
+                        <Typography
+                          textColor="text-white"
+                          textWeight="font-[500]"
+                          textSize="text-[12px]"
+                        >
+                          Outfit
+                        </Typography>
+                        {/* <div className="w-[10px] h-[10px] bg-white absolute top-1 left-2 rounded-[50%]"></div> */}
+                      </div>
+                    </Draggable>
+                  )}
               </div>
             )
         )}
