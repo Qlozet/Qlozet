@@ -58,7 +58,6 @@ const SendMoneyForm = ({ closeModal, banks }) => {
         const response = await getRequest(
           `vendor/transfer/name-enquiry?bankCode=${bankCode}&accountNumber=${formData.accountNumber}`
         );
-
         response && setFetchingAccountName(false);
         if (response) {
           setFormData((prevData) => {
@@ -69,7 +68,6 @@ const SendMoneyForm = ({ closeModal, banks }) => {
           });
         } else {
           setFetchingAccountName(false);
-
         }
       } catch (error) {
         setFetchingAccountName(false);
