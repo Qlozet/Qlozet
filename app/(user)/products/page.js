@@ -158,12 +158,12 @@ const Products = () => {
   return (
     <section>
       <div className="flex bg-[#F8F9FA]">
-        <div className="w-full p-4">
+        <div className="w-full px-4">
           {isLoading ? (
             <Loader></Loader>
           ) : (
             <div>
-              <div className="flex items-center justify-end py-6 gap-6">
+              <div className="flex items-center justify-end py-4 gap-6">
                 <div className="block">
                   <Button
                     children={
@@ -173,7 +173,7 @@ const Products = () => {
                       </span>
                     }
                     btnSize="small"
-                    minWidth="min-w-[8rem] lg:min-w-[14rem]"
+                    minWidth="min-w-[8rem] lg:min-w-[8rem]"
                     variant="outline"
                     clickHandler={() => {
                       router.push("/add");
@@ -258,7 +258,7 @@ const Products = () => {
               <div>
                 <div className="relative">
                   <div
-                    className="flex items-center justify-between mt-14 mb-2"
+                    className="flex items-center justify-between mt-8 mb-2"
                     style={{ zIndex: "20" }}
                   >
                     <Typography

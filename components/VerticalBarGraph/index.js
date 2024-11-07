@@ -65,7 +65,7 @@ const VerticalBarGraph = ({ data, name }) => {
           bg={"bg-white"}
         />
       </div>
-      <div className="relative">
+      <div className="relative ">
         <div>
           <VendorCountLine
             value={
@@ -122,7 +122,7 @@ const VerticalBarGraph = ({ data, name }) => {
             <VendorCountLine value={0.001} />
           </div>
         </div>
-        <div className="absolute right-0 bottom-[.6rem] lg:bottom-[9px]  w-[94%] h-[96%] flex justify-between pl-10">
+        <div className="absolute right-0 bottom-[.6rem] lg:bottom-[9px]  w-[94%] h-[96%] flex justify-between pl-2">
           {daysArray.map((item, index) => {
             if (item.day == "Sun") {
               return (

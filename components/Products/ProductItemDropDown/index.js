@@ -12,6 +12,11 @@ const ProductItemDropDown = ({ data, handleSelect, outSideCLicked }) => {
       setPositionTop(true)
     }
   }
+
+  //   let { bottom }: any = selectElementRef.current?.getBoundingClientRect();
+  //   setCanFitDropdown(window.innerHeight - (bottom + 5) > 250);
+  //   // console.log("Ran resize");
+  // }
   useEffect(() => { calculatePosition() }, [])
 
   return (

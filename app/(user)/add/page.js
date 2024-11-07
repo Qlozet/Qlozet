@@ -91,7 +91,7 @@ const AddProduct = () => {
   const submitAcessories = (acess) => {
     console.log(acess)
     setAcessories((prevData) => {
-      return [...prevData, { image: acess.images, id: acess.id }];
+      return [...prevData, { image: acess.images, id: acess.id, price: acess.price }];
     });
   };
 
@@ -246,6 +246,7 @@ const AddProduct = () => {
           productTag: productFormData.productTag === "Male" ? "male" : "female",
           productCategory: JSON.stringify([productFormData.productCategory]),
           colors: [],
+          isVariantAvailable: productFormData.isVariantAvailable,
           customStyles: positionStyles,
           accessories: accessories.map((item) => {
             return item.id;
@@ -440,6 +441,9 @@ const AddProduct = () => {
                 <div className="mx-0 bg-gray-300 lg:bg-white pt-4 px-4  rounded-t-lg lg:translate-x-2">
                   <CheckBoxInput label="Add variants if product comes in multiple versions like different sizes and colours" handleChange={(data) => {
                     setAddVaient(data)
+                    setProductFormData((prevData) => {
+                      return { ...prevData, isVariantAvailable: data }
+                    })
                   }} />
                 </div>
                 <div className="bg-white w-full p-4 mx-0 lg:mx-2">
@@ -660,7 +664,12 @@ const AddProduct = () => {
                   >
                     <CustomiSationButton
                       handleClick={() => {
-                        setShowCustomiseOrder(true);
+                        if (productFormData.images.length > 0) {
+                          setShowCustomiseOrder(true);
+
+                        } else {
+                          toast(<Toast text={"Add product Image"} type="danger" />);
+                        }
                       }}
                     />
                     <Styles

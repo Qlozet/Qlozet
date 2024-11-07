@@ -170,7 +170,7 @@ const Order = () => {
   return (
     <section>
       <div className="flex bg-[#F8F9FA]">
-        <div className="w-full p-4">
+        <div className="w-full px-4">
           {pageLoading ? (
             <Loader></Loader>
           ) : (
@@ -184,7 +184,7 @@ const Order = () => {
                   percentage="2.5"
                   bgColor="bg-[#57CAEB]"
                   icon={TotalOrderIcon}
-                  addMaxWidth={true}
+                  addMaxWidth={false}
                   link={false}
                 />
                 <DashboardTopCard
@@ -193,7 +193,7 @@ const Order = () => {
                   percentage="2.5"
                   bgColor="bg-[#5DDAB4]"
                   icon={sendIcon}
-                  addMaxWidth={true}
+                  addMaxWidth={false}
                 />
                 <DashboardTopCard
                   name="Orders in Transit"
@@ -201,7 +201,7 @@ const Order = () => {
                   percentage="2.5"
                   bgColor="bg-[#FF7676]"
                   icon={carIcon}
-                  addMaxWidth={true}
+                  addMaxWidth={false}
                 />
                 <DashboardTopCard
                   name="Most purchased order"
@@ -209,11 +209,11 @@ const Order = () => {
                   percentage="2.5"
                   bgColor="bg-[#FF9E57]"
                   icon={shippingIcon}
-                  addMaxWidth={true}
+                  addMaxWidth={false}
                 />
               </div>
               <div
-                className={`${classes.scrollbarElement} items-center gap-4 overflow-x-scroll px-4 hidden lg:flex`}
+                className={`${classes.scrollbarElement} border-solid border-primary-100 items-center gap-4 overflow-x-scroll hidden lg:flex`}
               >
                 <DashboardTopCard
                   name="Total Orders"
@@ -249,7 +249,7 @@ const Order = () => {
                 />
               </div>
               <div className="">
-                <div className="items-center justify-between mt-14 mb-2 hidden md:flex">
+                <div className="items-center justify-between mt-8 mb-2 hidden md:flex">
                   <Typography
                     textColor="text-dark"
                     textWeight="font-bold"

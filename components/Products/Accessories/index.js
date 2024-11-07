@@ -41,10 +41,12 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
           price: accessories.price,
           images: [accessories.image],
         });
+        console.log(response)
         submitAcessories({
           name: accessories.name,
           type: accessories.type,
           images: accessories.image.secure_url,
+          price: accessories.price,
           id: response.data,
         });
         response && setloading(false);
@@ -235,17 +237,19 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
           Preview
         </Typography>
         {accessories.image && (
-          <Image
-            src={accessories.image.secure_url}
-            alt="acces"
-            width={50}
-            height={50}
-            style={{
-              width: "100%",
-              height: "auto",
-            }}
-            unoptimized
-          />
+          // <Image
+          //   src={accessories.image.secure_url}
+          //   alt="acces"
+          //   width={50}
+          //   height={50}
+          //   style={{
+          //     width: "100%",
+          //     height: "auto",
+          //   }}
+          //   unoptimized
+          // />
+          <div className="w-full h-full rounded-lg " style={{ backgroundImage: `url(${accessories.image.secure_url})`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat" }}></div>
+
         )}
       </div>
     </div>

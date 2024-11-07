@@ -31,7 +31,6 @@ const Layout = ({ children }) => {
 
     try {
       const response = await getVendorDetails();
-      console.log(response)
       if (response?.data) {
         const details = {
           businessName: response?.data?.data?.companyName
@@ -64,7 +63,7 @@ const Layout = ({ children }) => {
     } catch (error) {
       clearToken()
       router.push("/auth/signin");
-   
+
     }
   };
 
@@ -90,7 +89,7 @@ const Layout = ({ children }) => {
     getVendorDetailshandler();
   }, [pathname]);
   return (
-    <div className="bg-gray-400">
+    <div className="bg-gray-400 m-auto">
       {loadingPage ? (<div></div>) : (<div>  <div className="">
         <SideBar active={page} />
         <MobileSideBar
@@ -100,7 +99,7 @@ const Layout = ({ children }) => {
         />
       </div>
         <div>
-          <div className="md:ml-[260px]">
+          <div className="lg:ml-[280px]">
             <div className="p-4">
               <DasboardNavWithOutSearch userDetails={userDetails}
                 value={filterData}
@@ -112,7 +111,7 @@ const Layout = ({ children }) => {
                 showSideBar={showSideBar}
               />
             </div>
-            <div className="max-w-[1050px]"> {children}</div>
+            <div className="max-w-[1148px] lg:m-auto"> {children}</div>
           </div>
         </div></div>)}
 

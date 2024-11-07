@@ -29,6 +29,8 @@ const ProductDetails = () => {
           </div>
           <div className="bg-white p-6 w-full">
             <div className="flex gap-8">
+
+
               <Image
                 src={productImage}
                 alt="product image"
@@ -37,7 +39,11 @@ const ProductDetails = () => {
                   width: "438px",
                   height: "550px",
                 }}
+
+
               />
+              {/* <div className="w-[438px] h-[550px] border-[1px] border-solid border-gray-200 rounded-lg " style={{ backgroundImage: `url(${picture})`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat" }}></div> */}
+
               <div className="w-full text-[#3E1C01]">
                 <div className="flex items-center justify-between w-full">
                   <p className="text-[14px] leading-[20px]">MISKAY BOUTIQUE</p>

@@ -195,6 +195,7 @@ const Dashboard = () => {
                   bgColor="bg-[#57CAEB]"
                   link="orders"
                   icon={TotalOrderIcon}
+                  addMaxWidth={false}
                 />
                 <DashboardTopCard
                   name="Total earnings"
@@ -202,6 +203,7 @@ const Dashboard = () => {
                   percentage="2.5"
                   bgColor="bg-[#5DDAB4]"
                   icon={TotalearningIcon}
+                  addMaxWidth={false}
                 />
                 <DashboardTopCard
                   name="Total Customers"
@@ -209,6 +211,7 @@ const Dashboard = () => {
                   percentage="2.5"
                   bgColor="bg-[#FF7976]"
                   icon={customerIcon}
+                  addMaxWidth={false}
                 />
 
                 <DashboardTopCard
@@ -217,6 +220,7 @@ const Dashboard = () => {
                   percentage="2.5"
                   bgColor="bg-[#FF3A3A]"
                   icon={CartIcon}
+                  addMaxWidth={false}
                 />
               </div>
               <div className=" bg-[#F8F9FA] px-4">
@@ -239,9 +243,9 @@ const Dashboard = () => {
                     />
                   </div>
                 </div> */}
-                <div className="md:flex block lg:flex items-center w-full md:gap-2 gap-4 border-solid solid-[1px] border-primary z-[0]">
+                <div className="md:flex block lg:flex items-center w-full md:gap-[21px] gap-4 ">
                   <div
-                    className={`${classes.first_container} block lg:flex items-center md:gap-2 gap-4 mt-4 w-full md:flex`}
+                    className={`${classes.first_container} block lg:flex items-center md:gap-[21px] gap-4 mt-4 w-full md:flex`}
                   >
                     <div className="lg:w-1/2 w-full">
                       <ChatCard
@@ -274,9 +278,9 @@ const Dashboard = () => {
                     </div>
                   </div>
                 </div>
-                <div className="block md:flex lg:flex w-full gap-4  mt-4 ">
+                <div className="block md:flex lg:flex w-full md:gap-[21px] gap-4 mt-4 ">
                   <div
-                    className={`${classes.first_container} block md:flex md:gap-4 mt-3 w-full `}
+                    className={`${classes.first_container} block md:flex md:gap-[21px] gap-4 mt-3 w-full `}
                   >
                     <div className="w-full shadow-md bg-white rounded-[12px] p-6 block">
                       <VerticalBarGraph name="Earning" data={dailyEarnings} />

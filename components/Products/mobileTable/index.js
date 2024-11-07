@@ -29,9 +29,7 @@ const MobileTable = ({
       <div>
         <div className="flex items-center justify-between py-6  ">
           <div className="flex justify-between w-full">
-
             <div className="ml-4 w-[66px] h-[64px] border-[1px] border-solid border-gray-200 rounded-lg " style={{ backgroundImage: `url(${picture})`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat" }}></div>
-
             <div
               className="w-[1.5rem] h-[1.5rem]"
               onClick={() => {
@@ -46,7 +44,6 @@ const MobileTable = ({
               />
             </div>
           </div>
-
           <div>
             {showDropDown && (
               <div
@@ -83,13 +80,11 @@ const MobileTable = ({
               >
                 Product
               </Typography>
-              <Typography
-                textColor="text-dark"
-                textWeight="font-normal"
-                textSize="text-[14px]"
-              >
+              <p className="overflow-hidden text-ellipsis pr-4 whitespace-nowrap max-w-[117px] text-dark text-[14px]">
+
                 {productName}
-              </Typography>
+              </p>
+
             </div>
             <div className="flex flex-col gap-1 mt-2 items-end">
               <Typography

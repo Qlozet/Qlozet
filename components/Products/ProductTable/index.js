@@ -96,31 +96,34 @@ const ProductTable = ({
             </tr>
           </thead>
           <tbody>
-            {productData.map((item, index) => (
-              <ProductTableItem
-                key={index}
-                {...item}
-                viewDetails={showModal}
-                handleSelect={(option) => {
-                  setDropDownOption(option);
-                  if (option === "View product") {
-                    router.push("/details");
-                  } else if (option === "Edit product") {
-                    router.push("/add");
-                  } else if (option === "Deactivate product") {
-                    if (item.ProductStatus.text === "Inactive") {
-                    } else {
-                      toggleStatus();
+            {productData.map((item, index) => {
+            
+              return (
+                <ProductTableItem
+                  key={index}
+                  {...item}
+                  viewDetails={showModal}
+                  handleSelect={(option) => {
+                    setDropDownOption(option);
+                    if (option === "View product") {
+                      router.push("/details");
+                    } else if (option === "Edit product") {
+                      router.push("/add");
+                    } else if (option === "Deactivate product") {
+                      if (item.ProductStatus.text === "Inactive") {
+                      } else {
+                        toggleStatus();
+                      }
+                    } else if (option === "Activate product") {
+                      if (item.ProductStatus.text === "Active") {
+                      } else {
+                        toggleStatus();
+                      }
                     }
-                  } else if (option === "Activate product") {
-                    if (item.ProductStatus.text === "Active") {
-                    } else {
-                      toggleStatus();
-                    }
-                  }
-                }}
-              />
-            ))}
+                  }}
+                />
+              )
+            })}
           </tbody>
         </table>
       </div>

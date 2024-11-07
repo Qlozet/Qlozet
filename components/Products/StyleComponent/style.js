@@ -4,9 +4,11 @@ const Styles = ({ data, price }) => {
   return (
     <div className="flex items-center gap-2">
       {data &&
-        data.map((item, index) => (
-          <StyleComp price={price} image={item.image} key={index} />
-        ))}
+        data.map((item, index) => {
+          return (
+            <StyleComp price={item.price} image={item.image} key={index} />
+          )
+        })}
     </div>
   );
 };

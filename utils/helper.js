@@ -146,7 +146,7 @@ export const statusHandler = (item) => {
 
 export const activeCheck = (status) => {
   let productStatus;
-  if (status==="active") {
+  if (status) {
     productStatus = {
       text: "Active",
       bgColor: "#33CC331A",

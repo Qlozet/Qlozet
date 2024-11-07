@@ -300,6 +300,8 @@ const DragDrop = ({
                   }}
                   unoptimized
                 />
+                {/* <div className="w-full h-auto rounded" ref={imageRef}
+                  style={{ backgroundImage: `url(${productImages[imageIndex].secure_url})`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat" }}></div> */}
               </div>
             )}
           </div>

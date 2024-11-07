@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useState } from "react";
 const StyleComp = ({ image, setPriceHandler, price }) => {
+  console.log(price)
   return (
     <div className=" max-w-[80px]">
       <Image

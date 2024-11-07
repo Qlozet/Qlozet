@@ -30,6 +30,8 @@ const SelectedFile = ({ removeItemFromList, index, item }) => {
           <Image src={closeIcon} alt={""} width={18} height={18} />
         </div>
       )}
+      {/* <div className="min-w-[5rem] h-[auto] rounded"
+        style={{ backgroundImage: `url(${item.secure_url})`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat" }}></div> */}
 
       <Image
         width={500}
@@ -37,7 +39,6 @@ const SelectedFile = ({ removeItemFromList, index, item }) => {
         src={item.secure_url}
         style={{ width: "auto", height: "5rem" }}
         alt=""
-        className="min-w-[5rem] h-[auto] rounded"
         unoptimized
       />
     </div>

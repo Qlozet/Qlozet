@@ -9,7 +9,7 @@ const ChatCard = ({ text, graph }) => {
   };
   return (
     // shadow-md
-    <div className=" bg-white rounded-[12px] p-6 w-full h-[22rem] flex flex-col justify-between">
+    <div className="shadow-md bg-white rounded-[12px] p-6 w-full h-[22rem] flex flex-col justify-between ">
       <div>
         <Typography
           textColor="text-gray-100"

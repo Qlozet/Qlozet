@@ -1,9 +1,9 @@
 import Typography from "../Typography";
 const VendorCountLine = ({ value }) => {
   return (
-    <div className="mt-3">
-      <div className="flex  gap-4">
-        <div className="min-w-[3rem]">
+    <div className="mt-3 ">
+      <div className="flex justify-between">
+        <div className="min-w-[1.7rem] ">
           <Typography
             textColor="text-gray-100"
             textWeight="font-normal"
@@ -13,7 +13,7 @@ const VendorCountLine = ({ value }) => {
           </Typography>
         </div>
 
-        <div className="border-dashed border-t-[1.5px] border-gray-200 w-full translate-y-[10px] border-spacing-x-0.5"></div>
+        <div className="border-dashed border-t-[1.5px] border-gray-200 w-full translate-y-[10px] border-spacing-x-0.5 "></div>
       </div>
     </div>
   );

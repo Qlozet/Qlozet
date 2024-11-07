@@ -37,18 +37,18 @@ const ProductTableItem = ({
 
   return (
     <tr className="border-b-[1px] border-solid border-gray-300 bg-white ">
-      <td className="text-[12px] font-normal py-4 text-dark pl-6">
+      <td className="text-[12px] font-normal py-4 text-dark pl-4">
         <div className="w-[51px] h-[37px] border-[1px] border-solid border-gray-200 rounded-lg " style={{ backgroundImage: `url(${picture})`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat" }}></div>
       </td>
-      <td className="text-[12px] font-normal p-4 text-dark">{productName}</td>
-      <td className="text-[12px] font-normal p-4 text-dark">{productPrice}</td>
-      <td className="text-[12px] font-normal p-4 text-dark">{category}</td>
-      <td className="text-[12px] font-normal p-4 text-dark">{productType}</td>
-      <td className="text-[12px] font-normal p-4 text-dark">{tag}</td>
-      <td className="text-[12px] font-normal p-4 text-dark">
+      <td className="text-[12px] font-normal py-4 px-2 text-dark overflow-hidden text-ellipsis pr-4 whitespace-nowrap max-w-[117px]">{productName}</td>
+      <td className="text-[12px] font-normal py-4 px-2 text-dark">{productPrice}</td>
+      <td className="text-[12px] font-normal py-4 px-2 text-dark">{category}</td>
+      <td className="text-[12px] font-normal py-4 px-2 text-dark">{productType}</td>
+      <td className="text-[12px] font-normal py-4 px-2 text-dark">{tag}</td>
+      <td className="text-[12px] font-normal py-4 px-2 text-dark">
         <Quantity quantity={quiantity} variant={variantCount} />
       </td>
-      <td className="text-[12px] font-normal p-4 text-dark">
+      <td className="text-[12px] font-normal py-4 px-2 text-dark">
         <OrderStatus
           text={ProductStatus.text}
           bgColor={ProductStatus.bgColor}
@@ -56,7 +56,7 @@ const ProductTableItem = ({
           addMaxWidth={true}
         />
       </td>
-      <td className="text-[12px] font-normal p-4 text-dark relative">
+      <td className="text-[12px] font-normal py-4 px-2 text-dark relative">
         <div className="flex items-center justify-center">
           <Image
             ref={dropDownButtonRef}
