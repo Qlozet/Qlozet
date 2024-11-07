@@ -59,16 +59,18 @@ const SendMoneyForm = ({ closeModal, banks }) => {
           `vendor/transfer/name-enquiry?bankCode=${bankCode}&accountNumber=${formData.accountNumber}`
         );
         response && setFetchingAccountName(false);
-        if (response?.data) {
+        if (response) {
           setFormData((prevData) => {
             return {
               ...prevData,
               accountName: response?.data?.data?.data?.account_name,
             };
           });
+        } else {
+          setFetchingAccountName(false);
         }
       } catch (error) {
-        setFetchingAccountName(true);
+        setFetchingAccountName(false);
       }
     }
   };

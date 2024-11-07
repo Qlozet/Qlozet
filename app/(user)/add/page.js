@@ -801,43 +801,46 @@ const AddProduct = () => {
               </div>
             </div>
           )}
-          {showCustomiseOrder && (
-            <Modal
-              content={
-                <CustomizeOrder
-                  styleData={styles}
-                  closeModal={() => {
-                    setShowCustomiseOrder(false);
-                    setPositionModal(true);
-                  }}
-                />
-              }
-            ></Modal>
-          )}
-          {showAddAccessories && (
-            <Modal
-              content={
-                <AddAcessories
-                  submitAcessories={submitAcessories}
-                  closeModal={() => {
-                    setShowAddAccessories(false);
-                  }}
-                />
-              }
-            ></Modal>
-          )}
+          <Modal
+            show={showCustomiseOrder}
+            content={
+              <>{showCustomiseOrder&&(<CustomizeOrder
+                styleData={styles}
+                closeModal={() => {
+                  setShowCustomiseOrder(false);
+                  setPositionModal(true);
+                }}
+              />)}</>
+            }
+          ></Modal>
+
+          <Modal
+            show={showAddAccessories}
+            content={
+              <>{showAddAccessories&&(<AddAcessories
+                submitAcessories={submitAcessories}
+                closeModal={() => {
+                  setShowAddAccessories(false);
+                }}
+              />)}</>
+            }
+          ></Modal>
         </div>
       </div>
-      {positionModal && (
-        <DragDrop
-          handleSelectStyle={handleSelectStyle}
-          productImages={productFormData.images}
-          selectedStyles={selectedStyles}
-          closeModal={() => {
-            setPositionModal(false);
-          }}
-        ></DragDrop>
-      )}
+      <Modal
+        show={positionModal}
+        content={
+          <>{positionModal && (<DragDrop
+            handleSelectStyle={handleSelectStyle}
+            productImages={productFormData.images}
+            selectedStyles={selectedStyles}
+            closeModal={() => {
+              setPositionModal(false);
+            }}
+          ></DragDrop>)}</>
+        }
+      ></Modal>
+
     </section>
   );
 };

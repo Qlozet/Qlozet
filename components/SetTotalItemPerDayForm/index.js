@@ -35,7 +35,8 @@ const SetTotalOrderPerDay = ({ closeModal }) => {
               <NumberInput
                 label="Set number of orders you want to receive in a day"
                 placeholder="Enter number"
-              />
+             setValue={(data)=>{}}
+             />
             </div>
             <div className="mt-10 flex items-center justify-end">
               <Button

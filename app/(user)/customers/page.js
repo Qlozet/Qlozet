@@ -192,28 +192,30 @@ const Customer = () => {
           )}
         </div>
         <div className="hidden lg:block">
-          {viewCustomerDetails && (
-            <Modal
-              content={
-                <CustomerDetails
-                  customer={customer}
-                  topNavData={topNavData}
-                  closeModal={closeModal}
-                />
-              }
-            ></Modal>
-          )}
-          {showHostory && (
-            <Modal
-              content={
-                <OrderHistory
-                  topNavData={topNavData}
-                  closeModal={closeModal}
-                  customerHistory={customerHistory}
-                />
-              }
-            ></Modal>
-          )}
+
+          <Modal
+            show={viewCustomerDetails}
+            content={
+              <>{viewCustomerDetails && (<CustomerDetails
+                customer={customer}
+                topNavData={topNavData}
+                closeModal={closeModal}
+              />)}</>
+
+            }
+          ></Modal>
+          <Modal
+            show={showHostory}
+            content={
+              <>{showHostory && (<OrderHistory
+                topNavData={topNavData}
+                closeModal={closeModal}
+                customerHistory={customerHistory}
+              />)}</>
+
+            }
+          ></Modal>
+
         </div>
       </div>
 

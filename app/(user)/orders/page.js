@@ -290,51 +290,49 @@ const Order = () => {
             </div>
           )}
         </div>
-        {viewOrderDetails && (
           <Modal
+            show={viewOrderDetails}
             content={
-              <OrderDetails
+              <>{viewOrderDetails&&(<OrderDetails
                 topNavData={topNavData}
                 closeModal={closeModal}
                 order={order}
-              />
+              />)}</>
             }
           ></Modal>
-        )}
-        {showTrack && (
+       
           <Modal
-            content={<TrackOrder data={topNavData} closeModal={closeModal} />}
+          show={showTrack}
+          content={<>{showTrack&&(<TrackOrder data={topNavData} closeModal={closeModal} />)}</>}
           ></Modal>
-        )}
-        {showCustomer && (
+        
           <Modal
+            show={showCustomer}
             content={
-              <CustomerDetails
+              <>{showCustomer&&(<CustomerDetails
                 topNavData={topNavData}
                 closeModal={closeModal}
                 customer={order}
-              />
+              />)}</>
             }
           ></Modal>
-        )}
-        {rejectModal && (
           <Modal
+          show={rejectModal}
             content={
-              <div className="flex items-center justify-center h-[100vh]">
+              <>{rejectModal&&(<div className="flex items-center justify-center h-[100vh]">
                 <RejectOrderModal closeModal={closeModal} />
-              </div>
+              </div>)}</>
             }
           ></Modal>
-        )}
-        {total && (
+       
           <Modal
+          show={total}
             content={
-              <div className="flex items-center justify-center h-[100vh]">
+              <>{total && (<div className="flex items-center justify-center h-[100vh]">
                 <SetTotalOrderPerDay closeModal={closeModal} />
-              </div>
+              </div>)}</>
             }
           ></Modal>
-        )}
       </div>
     </section>
   );

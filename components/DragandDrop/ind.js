@@ -208,10 +208,7 @@ const DragDrop = ({
   }, [selectedStyles]);
   return (
     <div
-      className={`${style.modal} fixed top-0 left-0 w-full bg-[#00000080] h-screen overflow-y-scroll px-4 lg:px-0  flex items-center justify-center  ${style.sizecontainer}`}
-      style={{
-        zIndex: 300,
-      }}
+
       onMouseUp={() => {
         calcultePosition();
       }}

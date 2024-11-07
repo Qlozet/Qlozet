@@ -298,23 +298,23 @@ const Products = () => {
             </div>
           )}
         </div>
-        {viewCustomerDetails && (
+      
           <Modal
+          show={viewCustomerDetails}
             content={
-              <CustomerDetails
+              <>{viewCustomerDetails&&(<CustomerDetails
                 topNavData={topNavData}
                 closeModal={closeModal}
-              />
+              />)}</>
             }
           ></Modal>
-        )}
-        {showHostory && (
           <Modal
+            show={showHostory}
             content={
-              <OrderHistory topNavData={topNavData} closeModal={closeModal} />
+              <>{showHostory&&(<OrderHistory topNavData={topNavData} closeModal={closeModal} />
+)}</>
             }
           ></Modal>
-        )}
       </div>
     </section>
   );
