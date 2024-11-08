@@ -38,9 +38,9 @@ const CustomerTableItem = ({
       </td>
       <td className="text-[12px] font-normal py-3 px-2 text-dark">
         <OrderStatus
-          text="Active"
-          bgColor="bg-success-300"
-          color="bg-success"
+          text={status.text}
+          bgColor={status.bgColor}
+          color={status.color}
           addMaxWidth={true}
         />
       </td>

@@ -266,7 +266,6 @@ const AddProduct = () => {
               };
             }),
             deleted: deletedFiles,
-            // deleted: [],
           },
           variants: variantTable.map((item) => {
             let varantItem = {
@@ -431,22 +430,24 @@ const AddProduct = () => {
   return (
     <section>
       <div className="flex bg-[#F8F9FA] ">
-        <div className="w-full p-4">
+        <div className="w-full px-4 pb-4">
           {pageLoading ? (
             <Loader></Loader>
           ) : (
             <div>
               <div className="mt-4 lg:mt-0"></div>
               <div className="">
-                <div className="mx-0 bg-gray-300 lg:bg-white pt-4 px-4  rounded-t-lg lg:translate-x-2">
-                  <CheckBoxInput label="Add variants if product comes in multiple versions like different sizes and colours" handleChange={(data) => {
-                    setAddVaient(data)
-                    setProductFormData((prevData) => {
-                      return { ...prevData, isVariantAvailable: data }
-                    })
-                  }} />
+                <h5 className="hidden lg:block text-[18px] font-bold">Add product</h5>
+                <div className="lg:py-5 "> <CheckBoxInput label="Add variants if product comes in multiple versions like different sizes and colours" handleChange={(data) => {
+                  setAddVaient(data)
+                  setProductFormData((prevData) => {
+                    return { ...prevData, isVariantAvailable: data }
+                  })
+                }} /></div>
+                <div className="mx-0 mt-2 bg-gray-[#F4F4F4] lg:bg-white rounded-t-lg lg:translate-x-2 border-[1px] border-solid lg:border-none">
+                  <h4 className=" font-medium pt-2 px-4 pb-2 lg:hidden"> Product Info</h4>
                 </div>
-                <div className="bg-white w-full p-4 mx-0 lg:mx-2">
+                <div className="bg-white w-full p-4 mx-0 lg:mx-2 lg:rounded-2xl">
                   <DashedComponent name={"Product info"} />
                   <div className="block lg:flex items-center justify-between  gap-6">
                     <div className="w-full">
@@ -804,7 +805,7 @@ const AddProduct = () => {
           <Modal
             show={showCustomiseOrder}
             content={
-              <>{showCustomiseOrder&&(<CustomizeOrder
+              <>{showCustomiseOrder && (<CustomizeOrder
                 styleData={styles}
                 closeModal={() => {
                   setShowCustomiseOrder(false);
@@ -817,7 +818,7 @@ const AddProduct = () => {
           <Modal
             show={showAddAccessories}
             content={
-              <>{showAddAccessories&&(<AddAcessories
+              <>{showAddAccessories && (<AddAcessories
                 submitAcessories={submitAcessories}
                 closeModal={() => {
                   setShowAddAccessories(false);

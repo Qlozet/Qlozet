@@ -102,7 +102,7 @@ const SideBar = ({ active }) => {
     <div
       className={`hidden lg:block bg-white fixed top-0 left-0 w-[260px] max-w-[260px] lg:min-w-[250px] h-screen ${styles.container}`}
       style={{
-        zIndex: 100,
+        zIndex: 5000,
       }}
     >
       <div className="py-10 lg:px-16 md:px-4">

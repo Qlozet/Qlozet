@@ -1,10 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
-import SideBar from "@/components/SideBar";
 import arrowLeftIcon from "../../../public/assets/svg/arrow-left.svg";
-import arrowRightIcon from "../../../public/assets/svg/arrow-right.svg";
 import starIcon from "../../../public/assets/svg/productdetailstar.svg";
 import heartIcon from "../../../public/assets/svg/productdetailsheart.svg";
 import chatIcon from "../../../public/assets/svg/productdetailschat.svg";
@@ -71,13 +68,7 @@ const ProductDetails = () => {
         colors: colors,
         likes: response.data.data.likes,
         reviews: response.data.data.reviews,
-        // variants: [
-        //   {
-        //     colors: ["#808080", "#FFFF00"],
-        //     size: "M",
-        //     quantity: 5,
-        //   },
-        // ],
+
 
         images: response.data.data.images.map((image) => {
           return image?.secure_url;
@@ -86,7 +77,7 @@ const ProductDetails = () => {
       setSliderImages(response.data.data.images.map((image) => {
         return image?.secure_url;
       }))
-    
+
       setPageLoading(false);
     } catch (error) {
       setPageLoading(false);
@@ -202,6 +193,7 @@ const ProductDetails = () => {
                           }}
                           unoptimized
                         />
+                        {/* <div className="min-h-[30rem] w-full" style={{ backgroundImage: `url(${sliderImages[number]})`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat" }}></div> */}
                       </div>
                     </div>
 
@@ -370,16 +362,16 @@ const ProductDetails = () => {
             )}
           </div>
         </div>
-          <Modal
+        <Modal
           show={showReview}
-            content={
-              <>   {showReview && (<ProductReview
-                productName={productFormData.productName}
-                reviews={productFormData.reviews}
-                closeModal={handleShowReview}
-              ></ProductReview>)}</>
-            }
-          ></Modal>
+          content={
+            <>   {showReview && (<ProductReview
+              productName={productFormData.productName}
+              reviews={productFormData.reviews}
+              closeModal={handleShowReview}
+            ></ProductReview>)}</>
+          }
+        ></Modal>
       </div>
     </div>
   );

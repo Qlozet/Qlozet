@@ -51,13 +51,14 @@ const MobileTableItem = ({ item }) => {
               Product
             </Typography>
           </div>
-          <Typography
+          {/* <Typography
             textColor="text-dark"
             textWeight="font-normal"
             textSize="text-[16px]"
-          >
-            {item.productName}
-          </Typography>
+          > */}
+          <p className="overflow-hidden text-ellipsis  whitespace-nowrap max-w-[200px] "> {item.productName}</p>
+
+          {/* </Typography> */}
         </div>
       </div>
     </div>

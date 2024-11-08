@@ -20,9 +20,9 @@ const OrderTable = ({
   useEffect(() => {
   }, []);
   return (
-    <div className=" mt-4 min-h-[50vh]">
-      <table className="w-full hidden lg:block border-3px">
-        <thead className="w-full bg-[#F4F4F4]  px-[8px] border-solid border-primary">
+    <div className=" mt-4 min-h-[50vh] overflow-hidden rounded-xl mb-8">
+      <table className="w-full hidden lg:block border-3px overflow-hidden rounded-xl ">
+        <thead className="w-full bg-[#F4F4F4]  px-[8px] border-solid border-primary rounded-tl-xl rounded-tr-xl">
           <tr className="">
             <th className="w-[8%] px-6 py-3 text-[12px]">
               <div className="flex items-center justify-start font-[500] text-dark">

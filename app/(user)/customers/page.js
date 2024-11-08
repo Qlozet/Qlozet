@@ -17,7 +17,7 @@ import defaultImage from "../../../public/assets/image/Rectangle.png";
 import DropDown from "@/components/DropDown";
 import moment from "moment";
 import { useAppSelector } from "@/redux/store";
-import { activeCheck } from "@/utils/helper";
+import { activeCheck, customerActiveCheck } from "@/utils/helper";
 
 const Customer = () => {
   const filterData = useAppSelector((state) => state.filter.state);
@@ -67,7 +67,7 @@ const Customer = () => {
       response && setPageLoading(false);
       if (response.data) {
         response?.data?.data.map((item) => {
-          const status = activeCheck(item.status)
+          const status = customerActiveCheck(item.status)
           const customer = {
             customerId: item.customerId,
             picture: item.picture,
@@ -144,6 +144,7 @@ const Customer = () => {
                     total="Lagos state"
                     percentage="2.5"
                     bgColor="bg-[#5DDAB4]"
+                    
                     icon={customerIcon}
                     addMaxWidth={true}
                     minHeight="min-h-[9rem]"

@@ -20,6 +20,7 @@ import Typography from "@/components/Typography";
 import DropDown from "@/components/DropDown";
 import moment from "moment";
 import { useAppSelector } from "@/redux/store";
+import { walletStatusCheck } from "@/utils/helper";
 const Wallet = () => {
   const filterData = useAppSelector((state) => state.filter.state);
 
@@ -62,20 +63,7 @@ const Wallet = () => {
       response?.data && setLoadPage(false);
       if (response?.data) {
         response?.data?.data.map((item) => {
-          let status;
-          if ((item.status = "Successful")) {
-            status = {
-              text: item.status,
-              bgColor: "bg-success-300",
-              color: "text-[#33CC33]",
-            };
-          } else if ((item.status = "Failed")) {
-            status = {
-              text: item.status,
-              bgColor: "bg-[#FFF5F5]",
-              color: "text-[#FF3A3A]",
-            };
-          }
+          let status = walletStatusCheck(item.status);
           const transactionItem = {
             transactionId: item?.transactionId,
             amount: `₦${parseInt(item?.amount).toLocaleString()}`,
@@ -183,7 +171,7 @@ const Wallet = () => {
               </div>
               <div className="flex justify-between">
                 <div
-                  className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
+                  className={` ${classes.scrollbarElement} flex flex-2 items-center gap-4 overflow-x-scroll`}
                 >
                   <DashboardTopCard
                     name="Wallet Balance"
@@ -264,67 +252,67 @@ const Wallet = () => {
           )}
         </div>
 
-          <Modal
-            show={setUpWalletWallet}
-            content={
-              <>{setUpWalletWallet && (<SetUpAltireWallet
-                closeModal={() => {
-                  setSetUpWalletWallet(false);
-                }}
-              />)}</>  
-            }
-          ></Modal>
-          <Modal
+        <Modal
+          show={setUpWalletWallet}
+          content={
+            <>{setUpWalletWallet && (<SetUpAltireWallet
+              closeModal={() => {
+                setSetUpWalletWallet(false);
+              }}
+            />)}</>
+          }
+        ></Modal>
+        <Modal
           show={showTransactiondetails}
-            content={
-              <>{showTransactiondetails&&(<TransactionDetails
-                closeModal={() => {
-                  setShowTransactiondetails(false);
-                }}
-                details={
-                  transactionData.filter(
-                    (item) => item.transactionId == transactionId
-                  )[0]
-                }
-              />)}</>
-            }
-          ></Modal>
-          <Modal
-            show={showSendMoney === "Send Money"?true:false}
-            content={
-              <>{showSendMoney === "Send Money"&&(<SendMoney
-                closeModal={(name) => {
-                  setShowSendMoney(name);
-                }}
-              />)}</>
-            }
-          ></Modal>
-  
-          <Modal
-            show={showSendMoney === "Manually"?true:false}
-            content={
-              <>{showSendMoney && (<SendMoneyForm
-                banks={allBanks}
-                closeModal={() => {
-                  setShowSendMoney(false);
-                }}
-              />)}</>
-             
-            }
-          ></Modal>
-        
-    
-          <Modal
+          content={
+            <>{showTransactiondetails && (<TransactionDetails
+              closeModal={() => {
+                setShowTransactiondetails(false);
+              }}
+              details={
+                transactionData.filter(
+                  (item) => item.transactionId == transactionId
+                )[0]
+              }
+            />)}</>
+          }
+        ></Modal>
+        <Modal
+          show={showSendMoney === "Send Money" ? true : false}
+          content={
+            <>{showSendMoney === "Send Money" && (<SendMoney
+              closeModal={(name) => {
+                setShowSendMoney(name);
+              }}
+            />)}</>
+          }
+        ></Modal>
+
+        <Modal
+          show={showSendMoney === "Manually" ? true : false}
+          content={
+            <>{showSendMoney && (<SendMoneyForm
+              banks={allBanks}
+              closeModal={() => {
+                setShowSendMoney(false);
+              }}
+            />)}</>
+
+          }
+        ></Modal>
+
+
+        <Modal
           show={showSendMoney === "Beneficiaries"}
-            content={
-              showSendMoney === "Beneficiaries" && (<Beneficiary
-                closeModal={() => {
-                  setShowSendMoney(false);
-                }}
-              />)
-            }
-          ></Modal>
-        
+          content={
+            showSendMoney === "Beneficiaries" && (<Beneficiary
+              closeModal={() => {
+                setShowSendMoney(false);
+              }}
+            />)
+          }
+        ></Modal>
+
       </div>
     </section>
   );

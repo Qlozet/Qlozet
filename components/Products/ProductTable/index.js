@@ -41,13 +41,15 @@ const ProductTable = ({
     setProductData(data);
   }, [data]);
   return (
-    <div className="mt-4 min-h-[50vh] " style={{ zIndex: -1 }}>
-      <div className="hidden lg:block">
-        <table className="w-full">
-          <thead className="w-full bg-[#F4F4F4] text-dark ">
-            <tr>
+    <div className="mt-4 min-h-[50vh] overflow-hidden rounded-xl mb-8" style={{
+      zIndex: -1,
+    }} >
+      <div className="hidden lg:block ">
+        <table className="w-full ">
+          <thead className="w-full bg-[#F4F4F4] text-dark rounded-[12px]  overflow-hidden" >
+            <tr className="">
               <th className="w-[5%] px-2 py-4 text-[12px]">
-                <div className="flex items-center justify-start font-[500] text-dark pl-4">
+                <div className="flex items-center justify-start font-[500] text-dark pl-4" >
                   Picture
                 </div>
               </th>
@@ -97,7 +99,7 @@ const ProductTable = ({
           </thead>
           <tbody>
             {productData.map((item, index) => {
-            
+
               return (
                 <ProductTableItem
                   key={index}
@@ -176,36 +178,36 @@ const ProductTable = ({
           />
         ))}
       </div>
-        <Modal
-        show={dropdownOption === "Delete product"?true:false}
-          content={
-            <div className="flex items-center justify-center h-[100%] ">
-              {dropdownOption && (<DeleteProduct
-                deleteFunction={(productId) => {
-                  setDropDownOption("");
-                  setProductData(
-                    productData.filter((item) => item.id !== productId)
-                  );
-                }}
-              />)}
-            </div>
-          }
-        />
-      
-    
-        <Modal
-        show={dropdownOption === "Schedule activation"?true:false}
-          content={
-            <div className="">
-              {dropdownOption && (<ShecduleProduct
-                closeSchedule={() => {
-                  setDropDownOption("");
-                }}
-              />)}
-           
-            </div>
-          }
-        />
+      <Modal
+        show={dropdownOption === "Delete product" ? true : false}
+        content={
+          <div className="flex items-center justify-center h-[100%] ">
+            {dropdownOption && (<DeleteProduct
+              deleteFunction={(productId) => {
+                setDropDownOption("");
+                setProductData(
+                  productData.filter((item) => item.id !== productId)
+                );
+              }}
+            />)}
+          </div>
+        }
+      />
+
+
+      <Modal
+        show={dropdownOption === "Schedule activation" ? true : false}
+        content={
+          <div className="">
+            {dropdownOption && (<ShecduleProduct
+              closeSchedule={() => {
+                setDropDownOption("");
+              }}
+            />)}
+
+          </div>
+        }
+      />
     </div>
   );
 };

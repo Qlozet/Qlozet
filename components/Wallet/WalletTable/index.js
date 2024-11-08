@@ -15,8 +15,8 @@ const WalletTable = ({
   handleFilterData,
 }) => {
   return (
-    <div className="mt-4 min-h-[50vh]">
-      <table className="w-full hidden lg:block">
+    <div className="mt-4 min-h-[50vh] overflow-hidden rounded-xl">
+      <table className="w-full hidden lg:block overflow-hidden rounded-xl">
         <thead className="w-full bg-[#F4F4F4] ">
           <tr>
             <th className="w-[8%] p-4 text-[12px] pl-6">

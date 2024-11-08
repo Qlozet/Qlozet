@@ -282,10 +282,10 @@ const Dashboard = () => {
                   <div
                     className={`${classes.first_container} block md:flex md:gap-[21px] gap-4 mt-3 w-full `}
                   >
-                    <div className="w-full shadow-md bg-white rounded-[12px] p-6 block">
+                    <div className="w-full  bg-white rounded-[12px] p-6 block">
                       <VerticalBarGraph name="Earning" data={dailyEarnings} />
                     </div>
-                    <div className="w-full shadow-md bg-white rounded-[12px] p-6 block mt-4 md:mt-0">
+                    <div className="w-full bg-white rounded-[12px] p-6 block mt-4 md:mt-0">
                       <VerticalBarGraph name="Order Count" data={dailyOrder} />
                     </div>
                   </div>

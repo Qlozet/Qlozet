@@ -290,49 +290,49 @@ const Order = () => {
             </div>
           )}
         </div>
-          <Modal
-            show={viewOrderDetails}
-            content={
-              <>{viewOrderDetails&&(<OrderDetails
-                topNavData={topNavData}
-                closeModal={closeModal}
-                order={order}
-              />)}</>
-            }
-          ></Modal>
-       
-          <Modal
+        <Modal
+          show={viewOrderDetails}
+          content={
+            <>{viewOrderDetails && (<OrderDetails
+              topNavData={topNavData}
+              closeModal={closeModal}
+              order={order}
+            />)}</>
+          }
+        ></Modal>
+
+        <Modal
           show={showTrack}
-          content={<>{showTrack&&(<TrackOrder data={topNavData} closeModal={closeModal} />)}</>}
-          ></Modal>
-        
-          <Modal
-            show={showCustomer}
-            content={
-              <>{showCustomer&&(<CustomerDetails
-                topNavData={topNavData}
-                closeModal={closeModal}
-                customer={order}
-              />)}</>
-            }
-          ></Modal>
-          <Modal
+          content={<>{showTrack && (<TrackOrder data={topNavData} closeModal={closeModal} />)}</>}
+        ></Modal>
+
+        <Modal
+          show={showCustomer}
+          content={
+            <>{showCustomer && (<CustomerDetails
+              topNavData={topNavData}
+              closeModal={closeModal}
+              customer={order}
+            />)}</>
+          }
+        ></Modal>
+        <Modal
           show={rejectModal}
-            content={
-              <>{rejectModal&&(<div className="flex items-center justify-center h-[100vh]">
-                <RejectOrderModal closeModal={closeModal} />
-              </div>)}</>
-            }
-          ></Modal>
-       
-          <Modal
+          content={
+            <>{rejectModal && (<div className="flex items-center justify-center h-[100vh]">
+              <RejectOrderModal closeModal={closeModal} />
+            </div>)}</>
+          }
+        ></Modal>
+
+        <Modal
           show={total}
-            content={
-              <>{total && (<div className="flex items-center justify-center h-[100vh]">
-                <SetTotalOrderPerDay closeModal={closeModal} />
-              </div>)}</>
-            }
-          ></Modal>
+          content={
+            <>{total && (<div className="flex items-center justify-center h-[100vh]">
+              <SetTotalOrderPerDay closeModal={closeModal} />
+            </div>)}</>
+          }
+        ></Modal>
       </div>
     </section>
   );

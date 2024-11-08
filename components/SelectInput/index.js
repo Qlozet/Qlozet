@@ -61,7 +61,7 @@ const SelectInput = ({
       </div>
       {showDropDown && (
         <div
-          className={`border-[1.5px] border-solid border-primary w-full cursor-pointer absolute top-[70px] bg-white rounded-lg max-h-[15rem] ${classes.datalist}`}
+          className={` cursor-pointer absolute top-[73px] bg-white rounded-lg max-h-[15rem] ${classes.datalist} shadow-md  w-[95%]`}
           ref={dropDownRef}
         >
           {list.map((item, index) => (
@@ -69,7 +69,7 @@ const SelectInput = ({
               key={index}
               tabIndex={0}
               className={`p-2 ${index !== 0
-                ? "border-t-[1.5px] border-solid border-gray-200"
+                ? "border-t-[1px] border-solid border-gray-200"
                 : ""
                 } hover:bg-[#F4F4F4]`}
               onClick={() => {
@@ -77,7 +77,7 @@ const SelectInput = ({
                 setShowDropDown(false);
               }}
             >
-              <p className="rounded-b-[12px] overflow-hidden">{item.text}</p>
+              <p className="rounded-b-[12px] overflow-hidden text-[12px]">{item.text}</p>
             </div>
           ))}
         </div>

@@ -16,7 +16,7 @@ const DashboardTopCard = ({
   const navigate = useRouter();
   return (
     <div
-      className={` min-w-[265px] max-h-[119px] lg:min-w-0 p-6 flex bg-white rounded-[12px] mt-4 ${addMaxWidth ? "min-w-[265px] max-w-[265px]" : ""
+      className={`min-w-[265px] max-h-[119px] lg:min-w-0 p-6 flex bg-white rounded-[12px] mt-4 ${addMaxWidth ? "min-w-[265px] max-w-[290px]" : ""
         }  w-full ${minHeight ? minHeight : ""}`}
     >
       <div

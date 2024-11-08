@@ -1,5 +1,7 @@
 import { postRequest } from "@/api/method";
+import Toast from "@/components/ToastComponent/toast";
 import exportFromJSON from "export-from-json";
+import toast from "react-hot-toast";
 
 export const handlerContainsNumber = (str) => {
   const regex = /\d/;
@@ -80,9 +82,12 @@ export const uploadSingleImage = async (file) => {
         secure_url: response?.data.secure_url,
       };
     } else {
+      toast(<Toast text={"An error occurred"} type="danger" />);
       return null;
     }
   } catch (error) {
+    console.error(error)
+    toast(<Toast text={"An error occurred"} type="danger" />);
     return null;
   }
 };
@@ -160,4 +165,46 @@ export const activeCheck = (status) => {
     };
   }
   return productStatus
+}
+export const customerActiveCheck = (status) => {
+  let customerStatus
+  if (status === "active") {
+    customerStatus = {
+      text: "Active",
+      bgColor: "#33CC331A",
+      color: "#33CC33",
+    };
+  } else {
+    customerStatus = {
+      text: "Inactive",
+      bgColor: "#FFF5F5",
+      color: "#FF3A3A",
+    };
+  }
+  return customerStatus
+}
+
+export const walletStatusCheck = (item) => {
+  let status;
+  if (item === "pending") {
+    status = {
+      text: "pending",
+      bgColor: "#FFF7DE",
+      color: "#FFB020",
+    };
+  } else if (item === "completed") {
+    status = {
+      text: "completed",
+      bgColor: "#33CC331A",
+      color: "#33CC33",
+    };
+  } else if (item === "successful") {
+    status = {
+      text: "Successful",
+      bgColor: "#33CC331A", color: "#33CC33",
+    };
+  } else {
+    status = { color: "Return", bgColor: "#D4CFCA" };
+  }
+  return status
 }
