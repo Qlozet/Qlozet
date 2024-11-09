@@ -41,12 +41,12 @@ const ProductTable = ({
     setProductData(data);
   }, [data]);
   return (
-    <div className="mt-4 min-h-[50vh] overflow-hidden rounded-xl mb-8" style={{
+    <div className="mt-4 min-h-[50vh]  rounded-xl mb-8" style={{
       zIndex: -1,
     }} >
       <div className="hidden lg:block ">
         <table className="w-full ">
-          <thead className="w-full bg-[#F4F4F4] text-dark rounded-[12px]  overflow-hidden" >
+          <thead className="w-full bg-[#F4F4F4] text-dark rounded-[12px] " >
             <tr className="">
               <th className="w-[5%] px-2 py-4 text-[12px]">
                 <div className="flex items-center justify-start font-[500] text-dark pl-4" >

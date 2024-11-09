@@ -1,4 +1,3 @@
-import ExportComponent from "@/components/ExportButton";
 import VariantTableItem from "../VariantTableItem";
 import styles from "./index.module.css";
 const VariantTable = ({
@@ -25,8 +24,8 @@ const VariantTable = ({
                 Quantity
               </div>
             </th>
-            <th className="w-[25%] p-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500] text-dark">
+            <th className="w-[15%] min-w-[6rem] p-4 text-[12px]">
+              <div className="flex items-center justify-start font-[500] text-dark min-w-[6rem]">
                 Price
               </div>
             </th>
@@ -44,19 +43,21 @@ const VariantTable = ({
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => (
-            <VariantTableItem
-              QuantityHandler={QuantityHandler}
-              key={index}
-              item={item}
-              index={index}
-              submitImage={submitVariantImage}
-              quantityHandler={quantityHandler}
-              priceHandler={priceHandler}
-              handleChecked={handleChecked}
-              handleDeleteVariantFromTable={handleDeleteVariantFromTable}
-            />
-          ))}
+          {data.map((item, index) => {
+            return (
+              <VariantTableItem
+                QuantityHandler={QuantityHandler}
+                key={index}
+                item={item}
+                index={index}
+                submitImage={submitVariantImage}
+                quantityHandler={quantityHandler}
+                priceHandler={priceHandler}
+                handleChecked={handleChecked}
+                handleDeleteVariantFromTable={handleDeleteVariantFromTable}
+              />
+            )
+          })}
         </tbody>
       </table>
     </div>

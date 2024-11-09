@@ -166,7 +166,7 @@ const AddProduct = () => {
               retained: [],
               deleted: [],
             },
-            prize: productFormData.productPrice,
+            price: productFormData.productPrice,
             size: modifySizeHandler(size[size.length - 1]),
             quantity: productFormData.productQuantity,
           },
@@ -188,10 +188,11 @@ const AddProduct = () => {
   };
 
   const handleDeleteVariantFromTable = (id, color) => {
-    setProductFormData((prevData) => {
-      return { ...prevData, variantSizes: [] }
-    })
-    setVariantTable(variantTable.filter((item) => item.id !== id))
+    const newVariants = variantTable.filter((item) => item.id !== id && item.color !== color)
+    setVariantTable(newVariants)
+    // setProductFormData((prevData) => {
+    //   return { ...prevData, variantSizes: [] }
+    // })
   }
 
   const handleVariantChecked = (data, id, color) => {
@@ -199,7 +200,7 @@ const AddProduct = () => {
       if (item.id === id && item.color === color) {
         return {
           id: item.id,
-          prize: item.prize,
+          price: item.price,
           images: item.images,
           color: item.color,
           checked: data,
@@ -223,10 +224,23 @@ const AddProduct = () => {
     setVariantTable(prevVariantTable);
   };
 
-  const priceHandler = (value, index) => {
-    let prevVariantTable = variantTable;
-    prevVariantTable[index].prize = value;
-    setVariantTable(prevVariantTable);
+  const priceHandler = (value, id, color) => {
+    const newVariantTable = variantTable.map((item) => {
+      if (item.id === id && item.color === color) {
+        return {
+          id: item.id,
+          price: value,
+          images: item.images,
+          color: item.color,
+          checked: item.checked,
+          quantity: item.quantity,
+          size: item.size,
+        };
+      } else {
+        return item;
+      }
+    });
+    setVariantTable(newVariantTable);
   };
 
   const handleSubmit = async () => {
@@ -268,10 +282,11 @@ const AddProduct = () => {
             deleted: deletedFiles,
           },
           variants: variantTable.map((item) => {
+            console.log(item)
             let varantItem = {
               color: item.color,
               size: item.size,
-              price: 90,
+              price: item.price,
               quantity: item.quantity,
               images: {
                 retained: item.images.retained,
@@ -343,10 +358,12 @@ const AddProduct = () => {
 
           setAcessories(
             response.data.data.accessories.map((item) => {
-              return { image: item.images[0].secure_url, id: item._id };
+              return {
+                image: item.images[0].secure_url, id: item._id,
+                price: item.price
+              };
             })
           );
-
           const variantColors = response.data.data.variants.map((item) => {
             if (!item.color.hex.includes("https://res.cloudinary.com")) {
               return item.color.hex;
@@ -368,6 +385,7 @@ const AddProduct = () => {
           setVariantTable(
             response.data.data.variants.map((item) => {
               return {
+                id: uuidv4(),
                 color: item.color.hex,
                 size: item.size.value,
                 price: item.price,
@@ -783,7 +801,6 @@ const AddProduct = () => {
                       />
                     </div></div>)}
                   <div>
-
                     <div className="my-4">
                       <Button
                         loading={isLoading}

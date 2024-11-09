@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import classes from "./index.module.css";
 import trashIcon from "../../public/assets/svg/trash.svg";
 import imageicon from "../../public/assets/svg/image.svg";
@@ -14,7 +14,17 @@ const MaterialInput = ({
   removeMaterialHandler,
   loading,
 }) => {
-  console.log(value)
+
+  const [items, setItems] = useState(value);
+
+  const removeDuplicates = () => {
+    const uniqueItems = [...new Set(items)];
+    setItems(uniqueItems);
+  };
+
+  useEffect(() => {
+    removeDuplicates()
+  }, [value])
   return (
     <div>
       <label className="text-[14px] text-dark">{label}</label>
@@ -27,7 +37,7 @@ const MaterialInput = ({
         <div
           className={` ${classes.scrollbarElement} flex items-center gap-4 h-full pl-2`}
         >
-          {value.map((item, index) => {
+          {items.map((item, index) => {
             let dataUrl = item && item;
             if (item) {
               return (<div

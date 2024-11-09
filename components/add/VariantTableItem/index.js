@@ -30,7 +30,8 @@ const VariantTableItem = ({
       </td>
       <td className="text-[12px] font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
         <PriceComp
-          listIndex={index}
+          id={item.id}
+          color={item.color}
           productAmount={item.price}
           priceHandler={priceHandler}
         />

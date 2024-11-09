@@ -1,9 +1,13 @@
 import Typography from "@/components/Typography";
-import { useState } from "react";
-const PriceComp = ({ priceHandler, productAmount, listIndex }) => {
+import { useEffect, useState } from "react";
+const PriceComp = ({ priceHandler, productAmount, id, color }) => {
   const [price, setPrice] = useState(productAmount);
+
+  useEffect(() => {
+    setPrice(productAmount)
+  }, [productAmount])
   return (
-    <div className="flex items-center  px-4 rounded-[6px] justify-between border-[1px] border-solid border-gray-300">
+    <div className="flex items-center  px-2 rounded-[6px] justify-between border-[1px] border-solid border-gray-300">
       <div className="cursor-pointer py-1">
         <Typography
           textColor="text-primary"
@@ -18,9 +22,9 @@ const PriceComp = ({ priceHandler, productAmount, listIndex }) => {
         value={price}
         onChange={(e) => {
           setPrice(e.target.value);
-          priceHandler(e.target.value, listIndex);
+          priceHandler(e.target.value, id, color);
         }}
-        className="w-full h-full ml-6 font-[500] text-[16px]"
+        className="w-full h-full ml-2 font-[500] text-[16px]"
       />
     </div>
   );

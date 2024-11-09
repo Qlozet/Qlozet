@@ -5,22 +5,19 @@ const ProductItemDropDown = ({ data, handleSelect, outSideCLicked }) => {
   const [positionTop, setPositionTop] = useState(false);
 
   const calculatePosition = () => {
-    if (dropDownRef.current.getBoundingClientRect().
-      bottom > window.innerHeight) {
-      setPositionTop(false)
-    } else {
-      setPositionTop(true)
-    }
+    const { height } = dropDownRef.current.getBoundingClientRect()
+    window.addEventListener("click", (e) => {
+      if ((window.innerHeight - e.clientY) > height) {
+        setPositionTop(true)
+      } else {
+        setPositionTop(false)
+      }
+    })
   }
-
-  //   let { bottom }: any = selectElementRef.current?.getBoundingClientRect();
-  //   setCanFitDropdown(window.innerHeight - (bottom + 5) > 250);
-  //   // console.log("Ran resize");
-  // }
   useEffect(() => { calculatePosition() }, [])
 
   return (
-    <div className={`absolute right-[4rem] ${positionTop ? "top-0" : "bottom-0"}`} style={{ zIndex: 10 }} ref={dropDownRef}>
+    <div className={`absolute right-[4rem] ${positionTop ? "top-8" : "bottom-8"}`} style={{ zIndex: 100 }} ref={dropDownRef}>
       <div
         className={`border-[1px] border-solid border-gray-200 bg-white rounded-[8px] min-w-[12rem]`}
       >

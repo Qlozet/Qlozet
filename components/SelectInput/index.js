@@ -77,7 +77,7 @@ const SelectInput = ({
                 setShowDropDown(false);
               }}
             >
-              <p className="rounded-b-[12px] overflow-hidden text-[12px]">{item.text}</p>
+              <p className="rounded-b-[12px] overflow-hidden text-[12px] pl-1">{item.text}</p>
             </div>
           ))}
         </div>

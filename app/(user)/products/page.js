@@ -173,7 +173,6 @@ const Products = () => {
                       </span>
                     }
                     btnSize="small"
-                    minWidth=""
                     variant="outline"
                     clickHandler={() => {
                       router.push("/add");
@@ -283,7 +282,7 @@ const Products = () => {
                         setValue={(startDate, endDate) => {
                           handleFilterWithDate(startDate, endDate);
                         }}
-                        // zIndex={100}
+                      // zIndex={100}
                       />
                     </div>
                   </div>

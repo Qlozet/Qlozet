@@ -149,20 +149,18 @@ const Wallet = () => {
                 <div className="items-start gap-6 pt-5 flex ">
                   <Button
                     children="Send money"
-                    btnSize="large"
+                    btnSize="small"
                     variant="outline"
-                    minWidth="min-w-[10rem]"
-                    maxWidth="max-w-[10rem]"
+                    minWidth={"103px"}
                     clickHandler={() => {
                       setShowSendMoney("Send Money");
                     }}
                   />
                   <Button
                     children="Fund wallet"
-                    btnSize="large"
+                    btnSize="small"
                     variant="primary"
-                    minWidth="min-w-[10rem]"
-                    maxWidth="max-w-[10rem]"
+                    minWidth={"103px"}
                     clickHandler={() => {
                       setSetUpWalletWallet(true);
                     }}
@@ -193,18 +191,18 @@ const Wallet = () => {
                 <div className="items-start gap-6 pt-5 hidden lg:flex">
                   <Button
                     children="Send money"
-                    btnSize="large"
+                    btnSize="small"
                     variant="outline"
-                    minWidth="min-w-[10rem]"
+                    // minWidth="min-w-[10rem]"
                     clickHandler={() => {
                       setShowSendMoney("Send Money");
                     }}
                   />
                   <Button
                     children="Fund wallet"
-                    btnSize="large"
+                    btnSize="small"
                     variant="primary"
-                    minWidth="min-w-[10rem]"
+                    // minWidth="min-w-[6rem] lg:min-w-[10rem]"
                     clickHandler={() => {
                       setSetUpWalletWallet(true);
                     }}
@@ -212,13 +210,13 @@ const Wallet = () => {
                 </div>
               </div>
               <div className="">
-                <div className="flex items-center justify-between mt-14 mb-2 ">
+                <div className="lg:flex items-center justify-between mt-14 mb-2 hidden ">
                   <Typography
                     textColor="text-dark"
                     textWeight="font-bold"
                     textSize="text-[18px]"
                   >
-                    Wallet
+                    Wallet History
                   </Typography>
                   <div className="">
                     <DropDown

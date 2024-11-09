@@ -7,7 +7,7 @@ import Typography from "../Typography";
 import classes from "./index.module.css";
 import customisationIcon from "../../public/assets/svg/customisation-icon.svg";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 const ColorInput = ({
   label,
   error,
@@ -76,6 +76,16 @@ const ColorInput = ({
     setSelectedColors(selectedColors.filter((item) => item !== color));
     removeColorHandler(color, index);
   };
+
+
+  const removeDuplicates = () => {
+    const uniqueItems = [...new Set(selectedColors)];
+    setSelectedColors(uniqueItems);
+  };
+
+  useEffect(() => {
+    removeDuplicates()
+  }, [value])
   return (
     <div
       className="relative"

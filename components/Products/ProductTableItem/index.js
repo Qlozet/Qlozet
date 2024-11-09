@@ -19,7 +19,6 @@ const ProductTableItem = ({
   handleSelect,
   variantCount,
 }) => {
-  const dropDownButtonRef = useRef();
   const [showDropDown, setShowDropDown] = useState(false);
   const closeDropDown = (item) => {
     setProductId(id);
@@ -27,14 +26,10 @@ const ProductTableItem = ({
     handleSelect(item);
   };
 
-  document.addEventListener("click", (e) => {
-    if (showDropDown) {
-      setShowDropDown(false);
-    } else if (e.target === dropDownButtonRef.current) {
-      setShowDropDown(true);
-    }
-  });
-
+  window.addEventListener("scroll", () => {
+    setShowDropDown(false)
+  })
+  
   return (
     <tr className="border-b-[1px] border-solid border-gray-300 bg-white ">
       <td className="text-[12px] font-normal py-4 text-dark pl-4">
@@ -59,7 +54,6 @@ const ProductTableItem = ({
       <td className="text-[12px] font-normal py-4 px-2 text-dark relative">
         <div className="flex items-center justify-center">
           <Image
-            ref={dropDownButtonRef}
             alt="Product Image"
             src={dottedIcon}
             onClick={() => {
