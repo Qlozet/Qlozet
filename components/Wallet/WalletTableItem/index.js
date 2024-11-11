@@ -13,16 +13,16 @@ const WalletTableItem = ({
 }) => {
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-[12px] font-normal p-4 text-dark pl-6">
+      <td className="text-xs font-normal p-4 text-dark pl-6">
         {moment(date).format("YYYY-MM-DD")}
       </td>
-      <td className="text-[12px] font-normal p-4 text-dark">{transactionId}</td>
-      <td className="text-[12px] font-normal p-4 text-dark">
+      <td className="text-xs font-normal p-4 text-dark">{transactionId}</td>
+      <td className="text-xs font-normal p-4 text-dark">
         {transactionType}
       </td>
-      <td className="text-[12px] font-normal p-4 text-dark">{narration}</td>
-      <td className="text-[12px] font-normal p-4 text-dark">{amount}</td>
-      <td className="text-[12px] font-normal p-4 text-dark">
+      <td className="text-xs font-normal p-4 text-dark">{narration}</td>
+      <td className="text-xs font-normal p-4 text-dark">{amount}</td>
+      <td className="text-xs font-normal p-4 text-dark">
         <OrderStatus
           text={status.text}
           bgColor={status.bgColor}
@@ -30,7 +30,7 @@ const WalletTableItem = ({
           addMaxWidth={true}
         />
       </td>
-      <td className="text-[12px] font-normal p-4 text-dark flex items-center justify-end" >
+      <td className="text-xs font-normal p-4 text-dark flex items-center justify-end" >
         <div className="border rounded-[5px] max-w-[91px] ">
           <OrderStatus
             text="View details"

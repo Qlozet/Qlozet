@@ -17,7 +17,7 @@ const CustomerTableItem = ({
   const date = new Date(lastOrderDate);
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-[12px] font-normal py-3 px-2 pl-6 text-dark min-h-[5rem]">
+      <td className="text-xs font-normal py-3 px-2 pl-6 text-dark min-h-[5rem]">
         <Image
           src={picture}
           width={30}
@@ -29,14 +29,14 @@ const CustomerTableItem = ({
           alt=""
         />
       </td>
-      <td className="text-[12px] font-normal py-3 px-2 text-dark ">{customerName}</td>
-      {/* <td className="text-[12px] font-normal py-3 px-2 text-dark">{emailAddress}</td>
-      <td className="text-[12px] font-normal py-3 px-2 text-dark">{phone}</td> */}
-      <td className="text-[12px] font-normal py-3 px-2 text-dark">{totalOrders}</td>
-      <td className="text-[12px] font-normal py-3 px-2 text-dark">
+      <td className="text-xs font-normal py-3 px-2 text-dark ">{customerName}</td>
+      {/* <td className="text-xs font-normal py-3 px-2 text-dark">{emailAddress}</td>
+      <td className="text-xs font-normal py-3 px-2 text-dark">{phone}</td> */}
+      <td className="text-xs font-normal py-3 px-2 text-dark">{totalOrders}</td>
+      <td className="text-xs font-normal py-3 px-2 text-dark">
         {moment(date).format("DD/MM/YYYY")}
       </td>
-      <td className="text-[12px] font-normal py-3 px-2 text-dark">
+      <td className="text-xs font-normal py-3 px-2 text-dark">
         <OrderStatus
           text={status.text}
           bgColor={status.bgColor}
@@ -45,7 +45,7 @@ const CustomerTableItem = ({
         />
       </td>
 
-      <td className="text-[12px] font-normal py-3 px-2 text-dark  flex items-center justify-end">
+      <td className="text-xs font-normal py-3 px-2 text-dark  flex items-center justify-end">
         <div className="border rounded-[12px] max-w-[6rem]">
           <OrderStatus
             text="View details"

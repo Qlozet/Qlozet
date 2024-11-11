@@ -46,15 +46,15 @@ const ReviewItem = ({ review }) => {
         <div className="flex justify-between w-[100%]">
           <Typography
             children={review.user.fullName}
-            textSize="text-[12px]"
+            textSize="text-xs"
           ></Typography>
           <Typography
             children={moment(review.updatedAt).format("DD/MM/YYYY")}
-            textSize="text-[12px]"
+            textSize="text-xs"
           ></Typography>
         </div>
         <Typography
-          textSize="text-[12px]"
+          textSize="text-xs"
           textWeight="font-[500]"
           verticalPadding="py-4"
         >
@@ -63,7 +63,7 @@ const ReviewItem = ({ review }) => {
         {!addReview && (
           <div className="flex items-center justify-end">
             <a
-              className="underline text-[#5465FF] text-[12px] cursor-pointer"
+              className="underline text-[#5465FF] text-xs cursor-pointer"
               onClick={addReviewHandler}
             >
               Reply comment
@@ -73,13 +73,13 @@ const ReviewItem = ({ review }) => {
         {addReview && (
           <div className="border-[1px] border-primary-100 border-solid flex rounded-[6px] overflow-hidden">
             <input
-              className="px-4 w-full  text-dark placeholder-gray-200 border-none outline-none text-[12px]"
+              className="px-4 w-full  text-dark placeholder-gray-200 border-none outline-none text-xs"
               placeholder="Add review"
               onChange={(e) => setDescription(e.target.value)}
               value={description}
             ></input>
             <button
-              className="bg-primary py-2 px-5 text-white text-[12px]"
+              className="bg-primary py-2 px-5 text-white text-xs"
               onClick={replyComment}
             >
               {loading ? "Loading..." : "Submit"}

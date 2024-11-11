@@ -250,7 +250,7 @@ const Customer = () => {
                     <Typography
                       textColor="text-dark"
                       textWeight="font-[400]"
-                      textSize="text-[12px]"
+                      textSize="text-xs"
                     >
                       Name
                     </Typography>
@@ -259,7 +259,7 @@ const Customer = () => {
                     <Typography
                       textColor="text-dark"
                       textWeight="font-bold"
-                      textSize="text-[12px]"
+                      textSize="text-xs"
                     >
                       {customer.customerName}
                     </Typography>
@@ -270,7 +270,7 @@ const Customer = () => {
                     <Typography
                       textColor="text-dark"
                       textWeight="font-[400]"
-                      textSize="text-[12px]"
+                      textSize="text-xs"
                     >
                       Email address
                     </Typography>
@@ -279,7 +279,7 @@ const Customer = () => {
                     <Typography
                       textColor="text-dark"
                       textWeight="font-bold"
-                      textSize="text-[12px]"
+                      textSize="text-xs"
                     >
                       {customer.emailAddress}
                     </Typography>
@@ -290,7 +290,7 @@ const Customer = () => {
                     <Typography
                       textColor="text-dark"
                       textWeight="font-[400]"
-                      textSize="text-[12px]"
+                      textSize="text-xs"
                     >
                       Phone number 1
                     </Typography>
@@ -299,7 +299,7 @@ const Customer = () => {
                     <Typography
                       textColor="text-dark"
                       textWeight="font-bold"
-                      textSize="text-[12px]"
+                      textSize="text-xs"
                     >
                       {customer.phone}
                     </Typography>
@@ -310,7 +310,7 @@ const Customer = () => {
                     <Typography
                       textColor="text-dark"
                       textWeight="font-[400]"
-                      textSize="text-[12px]"
+                      textSize="text-xs"
                     >
                       Phone number 2
                     </Typography>
@@ -319,7 +319,7 @@ const Customer = () => {
                     <Typography
                       textColor="text-dark"
                       textWeight="font-bold"
-                      textSize="text-[12px]"
+                      textSize="text-xs"
                     >
                       {customer.phone}
                     </Typography>
@@ -330,7 +330,7 @@ const Customer = () => {
                     <Typography
                       textColor="text-dark"
                       textWeight="font-[400]"
-                      textSize="text-[12px]"
+                      textSize="text-xs"
                     >
                       Shipping address
                     </Typography>
@@ -339,7 +339,7 @@ const Customer = () => {
                     <Typography
                       textColor="text-dark"
                       textWeight="font-bold"
-                      textSize="text-[12px]"
+                      textSize="text-xs"
                     >
                       {/* {customer.custmerAddress} */}
                     </Typography>

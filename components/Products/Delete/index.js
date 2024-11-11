@@ -52,7 +52,7 @@ const DeleteProduct = ({ deleteFunction }) => {
       <Typography
         textColor="text-black"
         textWeight="font-normal"
-        textSize="text-[12px]"
+        textSize="text-xs"
         align="text-center"
       >
         Removing this product will erase all stored information about it from

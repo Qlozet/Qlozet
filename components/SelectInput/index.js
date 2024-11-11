@@ -54,7 +54,7 @@ const SelectInput = ({
           {showDropDown ? <ChevronUp /> : <ChevronDown />}
         </div>
         {error && (
-          <p className="text-danger text-[12px] font-[400]">
+          <p className="text-danger text-xs font-[400]">
             {label} cannot be empty!
           </p>
         )}
@@ -77,7 +77,7 @@ const SelectInput = ({
                 setShowDropDown(false);
               }}
             >
-              <p className="rounded-b-[12px] overflow-hidden text-[12px] pl-1">{item.text}</p>
+              <p className="rounded-b-[12px] overflow-hidden text-xs pl-1">{item.text}</p>
             </div>
           ))}
         </div>

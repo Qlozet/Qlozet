@@ -225,7 +225,7 @@ const Products = () => {
                     <Typography
                       textColor="text-black"
                       textWeight="font-[400]"
-                      textSize="text-[12px]"
+                      textSize="text-xs"
                     >
                       Sales By Product Category
                     </Typography>
@@ -235,7 +235,7 @@ const Products = () => {
                         <Typography
                           textColor="text-black"
                           textWeight="font-[400]"
-                          textSize="text-[12px]"
+                          textSize="text-xs"
                         >
                           Female
                         </Typography>
@@ -245,7 +245,7 @@ const Products = () => {
                         <Typography
                           textColor="text-black"
                           textWeight="font-[400]"
-                          textSize="text-[12px]"
+                          textSize="text-xs"
                         >
                           Male
                         </Typography>

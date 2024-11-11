@@ -9,14 +9,14 @@ const OrderItem = ({ order }) => {
           <Typography
             textColor="text-primary"
             textWeight="font-normal"
-            textSize="text-[12px]"
+            textSize="text-xs"
           >
             {order.orderItems[0].name}
           </Typography>
           <Typography
             textColor="text-primary"
             textWeight="font-normal"
-            textSize="text-[12px]"
+            textSize="text-xs"
           >
             {`${order.customer.firstName}  ${order.customer.lastName}`}
           </Typography>
@@ -25,7 +25,7 @@ const OrderItem = ({ order }) => {
           <Typography
             textColor="text-primary"
             textWeight="font-normal"
-            textSize="text-[12px]"
+            textSize="text-xs"
           >
             {order.amountPaid.toLocaleString()}
           </Typography>

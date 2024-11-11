@@ -98,7 +98,7 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg, zIndex }) => {
             ? "rounded-t-lg bg-gray-300 border-solid border-[2px] border-primary"
             : "rounded-[10px] "
             } ${option ? "bg-primary text-white" : "bg-gray-400 text-black"
-            }  w-full p-2 outline-none text-[12px]  placeholder-gray-200 text-dark border-[1.5px] border-solid border-gray-200`}
+            }  w-full p-2 outline-none text-xs  placeholder-gray-200 text-dark border-[1.5px] border-solid border-gray-200`}
         />
         <div className="absolute top-[10px] right-2 z-50"></div>
         {showDropDown && (
@@ -110,7 +110,7 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg, zIndex }) => {
               <div
                 tabIndex={0}
                 key={index}
-                className={`cursor-pointer text-[12px] p-2 ${index < data.length - 1 &&
+                className={`cursor-pointer text-xs p-2 ${index < data.length - 1 &&
                   "border-solid border-gray-200 border-b-[1px] w-full "
                   }`}
                 onClick={() => handleSetValue(item)}

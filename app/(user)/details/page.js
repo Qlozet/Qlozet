@@ -203,7 +203,7 @@ const ProductDetails = () => {
                           {vendorName}
                         </p>
                         {/* <div className="items-center hidden lg:flex">
-                          <p className="text-[12px] leading-[18px] underline font-bold text-primary-100">
+                          <p className="text-xs leading-[18px] underline font-bold text-primary-100">
                             View product in main site
                           </p>
                           <Image
@@ -245,7 +245,7 @@ const ProductDetails = () => {
                             {/* {productFormData.reviews.length} */}
                           </span>
                           <p
-                            className="underline font-light text-[12px] leading-[16px] text-[#495057] cursor-pointer ml-2"
+                            className="underline font-light text-xs leading-[16px] text-[#495057] cursor-pointer ml-2"
                             onClick={handleShowReview}
                           >
                             Read reviews
@@ -261,7 +261,7 @@ const ProductDetails = () => {
                         </h2> */}
                       </div>
 
-                      <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[12px]">
+                      <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[12px]">
                         <p className="font-light col-span-1">Category</p>
                         {productFormData.productCategory.map((item, index) => (
                           <p className="font-bold col-span-2" key={index}>
@@ -269,13 +269,13 @@ const ProductDetails = () => {
                           </p>
                         ))}
                       </div>
-                      <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[12px]">
+                      <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[12px]">
                         <p className="font-light col-span-1">Tag</p>
                         <p className="font-bold col-span-2">
                           {productFormData.productTag}
                         </p>
                       </div>
-                      <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[12px]">
+                      <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[12px]">
                         <p className="font-light col-span-1">
                           Available colours
                         </p>
@@ -317,7 +317,7 @@ const ProductDetails = () => {
                           })}
                         </div>
                       </div>
-                      <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[12px]">
+                      <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[12px]">
                         <p className="font-light col-span-1">
                           Available quantity
                         </p>
@@ -325,7 +325,7 @@ const ProductDetails = () => {
                           {productFormData.productQuantity}
                         </p>
                       </div>
-                      <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[12px]">
+                      <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[12px]">
                         <p className="font-light col-span-1">Available Sizes</p>
                         <p className="font-bold col-span-2">
                           {variants.map((item) => {
@@ -333,13 +333,13 @@ const ProductDetails = () => {
                           XS, S, M, L, XL, XXL
                         </p>
                       </div>
-                      <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[12px]">
+                      <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[12px]">
                         <p className="font-light col-span-1">Product type</p>
                         <p className="font-bold col-span-2">
                           {productFormData.productType}
                         </p>
                       </div>
-                      <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[12px]">
+                      <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[12px]">
                         <p className="font-light col-span-1">
                           Available discount
                         </p>

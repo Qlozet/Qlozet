@@ -82,11 +82,9 @@ const ColorInput = ({
           <div
             type="text"
             className={` min-h-[2.8rem] cursor-pointer px-4 w-full border-solid border-[1.5px]  text-dark placeholder-gray-200
-          focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 ${
-            error && "border-danger"
-          } border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 ${
-              disabled && "border-0 bg-gray-300 cursor-not-allowed "
-            } `}
+          focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 ${error && "border-danger"
+              } border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 ${disabled && "border-0 bg-gray-300 cursor-not-allowed "
+              } `}
             // value={value}
             // disabled={disabled}
             // placeholder={placeholder}
@@ -128,7 +126,7 @@ const ColorInput = ({
         </div>
         {rightIcon}
         {error && (
-          <p className="text-danger text-[12px] font-[400]">
+          <p className="text-danger text-xs font-[400]">
             {label} cannot be empty!
           </p>
         )}
@@ -177,14 +175,14 @@ const ColorInput = ({
                       <Typography
                         textColor="text-white"
                         textWeight="font-[500]"
-                        textSize="text-[12px]"
+                        textSize="text-xs"
                       >
                         Hex
                       </Typography>
                     </div>
                     <div className="w-[75%]  h-[1.5rem] border-solid border-[2px] border-[rgba(13,153,255)] flex items-center">
                       <div className="w-[70%] flex items-center">
-                        <p className="font-[500] text-[12px] text-white bg-[rgba(13,153,255,.2)] ml-[1px]">
+                        <p className="font-[500] text-xs text-white bg-[rgba(13,153,255,.2)] ml-[1px]">
                           {currentColor}
                         </p>
                       </div>

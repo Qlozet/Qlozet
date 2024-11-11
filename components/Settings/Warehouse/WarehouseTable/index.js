@@ -12,42 +12,42 @@ const WearhousetTable = ({ data, handleFilterData }) => {
       <table className="w-full hidden lg:block">
         <thead className="w-full bg-[#F4F4F4] ">
           <tr>
-            <th className="w-[8%] p-4 text-[12px]">
+            <th className="w-[8%] p-4 text-xs">
               <div className="flex items-center justify-start font-[500]   text-dark ">
                 Warehouse name
               </div>
             </th>
-            <th className="w-[8%] p-4 text-[12px]">
+            <th className="w-[8%] p-4 text-xs">
               <div className="flex items-center justify-start font-[500]   text-dark">
                 Vendor’s name
               </div>
             </th>
-            <th className="w-[10%] p-4 text-[12px]">
+            <th className="w-[10%] p-4 text-xs">
               <div className="flex items-center justify-start font-[500]   text-dark">
                 Warehouse address{" "}
               </div>
             </th>
-            <th className="w-[8%] p-4 text-[12px]">
+            <th className="w-[8%] p-4 text-xs">
               <div className="flex items-center justify-start font-[500]   text-dark">
                 Contact name
               </div>
             </th>
-            <th className="w-[8%] p-4 text-[12px]">
+            <th className="w-[8%] p-4 text-xs">
               <div className="flex items-center justify-start font-[500]   text-dark">
                 Phone number
               </div>
             </th>
-            <th className="w-[8%] p-4 text-[12px]">
+            <th className="w-[8%] p-4 text-xs">
               <div className="flex items-center justify-start font-[500]   text-dark">
                 email
               </div>
             </th>
-            <th className="w-[8%] p-4 text-[12px]">
+            <th className="w-[8%] p-4 text-xs">
               <div className="flex items-center justify-start font-[500]   text-dark">
                 Status
               </div>
             </th>
-            <th className="w-[3%] p-4 text-[12px]"></th>
+            <th className="w-[3%] p-4 text-xs"></th>
           </tr>
         </thead>
         <tbody>

@@ -44,7 +44,7 @@ const Beneficiary = ({ closeModal }) => {
         });
         setBeneficairy(savedBeneneficiaries);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
   useEffect(() => {
     getBeneficiary();
@@ -92,7 +92,7 @@ const Beneficiary = ({ closeModal }) => {
                           <Typography
                             textColor="text-gray-100"
                             textWeight="font-bold"
-                            textSize="text-[12px]"
+                            textSize="text-xs"
                           >
                             {item.accountNumber}
                           </Typography>
@@ -104,7 +104,7 @@ const Beneficiary = ({ closeModal }) => {
                           <Typography
                             textColor="text-gray-100"
                             textWeight="font-bold"
-                            textSize="text-[12px]"
+                            textSize="text-xs"
                           >
                             {item.bankName}
                           </Typography>

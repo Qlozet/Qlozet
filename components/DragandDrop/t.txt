@@ -108,7 +108,7 @@
     //                             <Typography
     //                               textColor="text-white"
     //                               textWeight="font-[500]"
-    //                               textSize="text-[12px]"
+    //                               textSize="text-xs"
     //                             >
     //                               Top
     //                             </Typography>
@@ -133,7 +133,7 @@
     //                           <Typography
     //                             textColor="text-white"
     //                             textWeight="font-[500]"
-    //                             textSize="text-[12px]"
+    //                             textSize="text-xs"
     //                           >
     //                             Bottom
     //                           </Typography>
@@ -156,7 +156,7 @@
     //                           <Typography
     //                             textColor="text-white"
     //                             textWeight="font-[500]"
-    //                             textSize="text-[12px]"
+    //                             textSize="text-xs"
     //                           >
     //                             Shirt
     //                           </Typography>
@@ -180,7 +180,7 @@
     //                           <Typography
     //                             textColor="text-white"
     //                             textWeight="font-[500]"
-    //                             textSize="text-[12px]"
+    //                             textSize="text-xs"
     //                           >
     //                             Dress
     //                           </Typography>
@@ -208,7 +208,7 @@
     //                           <Typography
     //                             textColor="text-white"
     //                             textWeight="font-[500]"
-    //                             textSize="text-[12px]"
+    //                             textSize="text-xs"
     //                           >
     //                             Outfit
     //                           </Typography>

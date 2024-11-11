@@ -33,7 +33,7 @@ const NumberInput = ({
       ></input>
       {rightIcon}
       {error && (
-        <p className="text-danger text-[12px] font-[400]">
+        <p className="text-danger text-xs font-[400]">
           {label} cannot be empty!
         </p>
       )}

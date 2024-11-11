@@ -36,7 +36,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-[400]"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 Name
               </Typography>
@@ -45,7 +45,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-bold"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 {customer.customerName}
               </Typography>
@@ -56,7 +56,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-[400]"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 Email address
               </Typography>
@@ -65,7 +65,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-bold"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 {customer.emailAddress}
               </Typography>
@@ -76,7 +76,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-[400]"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 Phone number 1
               </Typography>
@@ -85,7 +85,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-bold"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 {customer.phone}
               </Typography>
@@ -96,7 +96,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-[400]"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 Phone number 2
               </Typography>
@@ -105,7 +105,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-bold"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 {customer.phone}
               </Typography>
@@ -116,7 +116,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-[400]"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 Shipping address
               </Typography>
@@ -125,7 +125,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-bold"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 {customer.custmerAddress}
               </Typography>

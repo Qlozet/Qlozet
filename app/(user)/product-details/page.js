@@ -48,7 +48,7 @@ const ProductDetails = () => {
                 <div className="flex items-center justify-between w-full">
                   <p className="text-[14px] leading-[20px]">MISKAY BOUTIQUE</p>
                   <div className="flex items-center gap-1">
-                    <p className="text-[12px] leading-[18px] underline font-bold">
+                    <p className="text-xs leading-[18px] underline font-bold">
                       View product in main site
                     </p>
                     <Image src={arrowRIcon} />
@@ -75,7 +75,7 @@ const ProductDetails = () => {
                     <span className="font-bold text-[14px] leading-[20px] mr-1">
                       100
                     </span>
-                    <p className="underline font-light text-[12px] leading-[16px] text-[#495057]">
+                    <p className="underline font-light text-xs leading-[16px] text-[#495057]">
                       Read reviews
                     </p>
                   </div>
@@ -90,15 +90,15 @@ const ProductDetails = () => {
                   </h2>
                 </div>
 
-                <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[18px]">
+                <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[18px]">
                   <p className="font-light col-span-1">Category</p>
                   <p className="font-bold col-span-2">Two piece</p>
                 </div>
-                <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[18px]">
+                <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[18px]">
                   <p className="font-light col-span-1">Tag</p>
                   <p className="font-bold col-span-2">Women</p>
                 </div>
-                <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[18px]">
+                <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[18px]">
                   <p className="font-light col-span-1">Available colours</p>
                   <div className="font-bold col-span-2 flex items-center gap-2">
                     <div className="w-[20px] h-[20px] rounded-full bg-[#0500FC]" />
@@ -109,19 +109,19 @@ const ProductDetails = () => {
                     <div className="w-[20px] h-[20px] rounded-full bg-[#FC0079]" />
                   </div>
                 </div>
-                <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[18px]">
+                <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[18px]">
                   <p className="font-light col-span-1">Available quantity</p>
                   <p className="font-bold col-span-2">10</p>
                 </div>
-                <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[18px]">
+                <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[18px]">
                   <p className="font-light col-span-1">Available Sizes</p>
                   <p className="font-bold col-span-2">XS, S, M, L, XL, XXL</p>
                 </div>
-                <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[18px]">
+                <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[18px]">
                   <p className="font-light col-span-1">Product type</p>
                   <p className="font-bold col-span-2">Customisable</p>
                 </div>
-                <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-[12px] leading-[18px] py-[18px]">
+                <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[18px]">
                   <p className="font-light col-span-1">Available discount</p>
                   <p className="font-bold col-span-2">20% off</p>
                 </div>
