@@ -61,6 +61,10 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg, zIndex }) => {
     }
   };
 
+  window.addEventListener("scroll", () => {
+    setShowDropDown(false)
+  })
+
   useEffect(() => {
     if (showDropDown) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -74,9 +78,8 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg, zIndex }) => {
 
   return (
     <div
-      className={` bg-gray-300 ${maxWidth} block max-w-48 ${
-        showDropDown ? "shadow-2xl" : ""
-      } rounded-lg `}
+      className={` bg-gray-300 ${maxWidth} block max-w-48 ${showDropDown ? "shadow-2xl" : ""
+        } rounded-lg `}
       style={{
         zIndex: zIndex ? zIndex : 20,
       }}
@@ -85,34 +88,31 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg, zIndex }) => {
         <Image src={arrowDownIcon} className="absolute top-2 right-3" alt="" />
         <input
           readOnly
-          onChange={() => {}}
+          onChange={() => { }}
           onClick={() => {
             setShowDropDown(true);
           }}
           value={option}
           placeholder={placeholder}
-          className={`${
-            showDropDown
-              ? "rounded-t-lg bg-gray-300 border-solid border-[2px] border-primary"
-              : "rounded-[10px] "
-          } ${
-            option ? "bg-primary text-white" : "bg-gray-400 text-black"
-          }  w-full p-2 outline-none text-[12px]  placeholder-gray-200 text-dark border-[1.5px] border-solid border-gray-200`}
+          className={`${showDropDown
+            ? "rounded-t-lg bg-gray-300 border-solid border-[2px] border-primary"
+            : "rounded-[10px] "
+            } ${option ? "bg-primary text-white" : "bg-gray-400 text-black"
+            }  w-full p-2 outline-none text-xs  placeholder-gray-200 text-dark border-[1.5px] border-solid border-gray-200`}
         />
         <div className="absolute top-[10px] right-2 z-50"></div>
         {showDropDown && (
           <div
             ref={dropDownRef}
-            className="bg-white w-full absolute rounded-b-lg border-solid border-gray-200 border-b-[1px] border-r-[1px] border-l-[1px] "
+            className="bg-white w-full absolute rounded-b-lg shadow-sm border-b-[1px]"
           >
             {data.map((item, index) => (
               <div
                 tabIndex={0}
                 key={index}
-                className={`cursor-pointer text-[12px] p-2 ${
-                  index < data.length - 1 &&
+                className={`cursor-pointer text-xs p-2 ${index < data.length - 1 &&
                   "border-solid border-gray-200 border-b-[1px] w-full "
-                }`}
+                  }`}
                 onClick={() => handleSetValue(item)}
               >
                 {item}

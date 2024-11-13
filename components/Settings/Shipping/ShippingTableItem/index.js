@@ -15,13 +15,13 @@ const ShippingTableItem = ({
 
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-[12px] font-[400] p-4  text-dark">{Name}</td>
-      <td className="text-[12px] font-[400] p-4  text-dark">{Address}</td>
-      <td className="text-[12px] font-[400] p-4  text-dark">{PhoneNumber}</td>
-      <td className="text-[12px] font-[400] p-4  text-dark">{emailAddress}</td>
-      <td className="text-[12px] font-[400] p-4  text-dark">{noOfDeliveries}</td>
-      <td className="text-[12px] font-[400] p-4  text-dark">{adminName}</td>
-      <td className="text-[12px] font-[400] p-4  text-dark">
+      <td className="text-xs font-[400] p-4  text-dark">{Name}</td>
+      <td className="text-xs font-[400] p-4  text-dark">{Address}</td>
+      <td className="text-xs font-[400] p-4  text-dark">{PhoneNumber}</td>
+      <td className="text-xs font-[400] p-4  text-dark">{emailAddress}</td>
+      <td className="text-xs font-[400] p-4  text-dark">{noOfDeliveries}</td>
+      <td className="text-xs font-[400] p-4  text-dark">{adminName}</td>
+      <td className="text-xs font-[400] p-4  text-dark">
         <OrderStatus
           text="Out for delivery"
           bgColor="bg-[#FFF7DE]"
@@ -29,7 +29,7 @@ const ShippingTableItem = ({
           addMaxWidth={true}
         />
       </td>
-      {/* <td className="text-[12px] font-[400] p-4  text-dark relative">
+      {/* <td className="text-xs font-[400] p-4  text-dark relative">
         <div
           className="cursor-pointer"
           onClick={() => {

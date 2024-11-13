@@ -42,22 +42,12 @@ const Dresses = ({ data }) => {
               name={item.class}
             />
           ))}
-          {/* <Design image={icon23} />
-          <Design image={icon25} /> */}
+
         </div>
       </div>
       <div>
         <div className="m-4">
-          {/* <Button
-            // loading={isLoading}
-            maxWidth="max-w-[6rem]"
-            children="Submit"
-            btnSize="large"
-            variant="primary"
-            clickHandler={() => {
-              // handleLogin();
-            }}
-          /> */}
+
         </div>
       </div>
     </div>

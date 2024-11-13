@@ -7,7 +7,7 @@ const VendorCountLine = ({ value }) => {
           <Typography
             textColor="text-gray-100"
             textWeight="font-normal"
-            textSize="text-[12px]"
+            textSize="text-xs"
           >
             {parseInt(`${value}`.slice(0, -3)).toLocaleString()}K
           </Typography>

@@ -167,13 +167,12 @@ const Products = () => {
                 <div className="block">
                   <Button
                     children={
-                      <span className="flex justify-center items-center">
+                      <span className="flex justify-center items-center ">
                         <span>Import</span> <span className="hidden lg:block ml-[2px]"> Product</span>
                         <Image src={importIcon} className="ml-4" alt="" />
                       </span>
                     }
                     btnSize="small"
-                    minWidth="min-w-[8rem] lg:min-w-[8rem]"
                     variant="outline"
                     clickHandler={() => {
                       router.push("/add");
@@ -226,7 +225,7 @@ const Products = () => {
                     <Typography
                       textColor="text-black"
                       textWeight="font-[400]"
-                      textSize="text-[12px]"
+                      textSize="text-xs"
                     >
                       Sales By Product Category
                     </Typography>
@@ -236,7 +235,7 @@ const Products = () => {
                         <Typography
                           textColor="text-black"
                           textWeight="font-[400]"
-                          textSize="text-[12px]"
+                          textSize="text-xs"
                         >
                           Female
                         </Typography>
@@ -246,7 +245,7 @@ const Products = () => {
                         <Typography
                           textColor="text-black"
                           textWeight="font-[400]"
-                          textSize="text-[12px]"
+                          textSize="text-xs"
                         >
                           Male
                         </Typography>
@@ -268,7 +267,7 @@ const Products = () => {
                     >
                       Products
                     </Typography>
-                    <div className="relative" style={{ zIndex: 500 }}>
+                    <div className="relative" style={{ zIndex: 1 }}>
                       <DropDown
                         data={[
                           "This week",
@@ -283,7 +282,7 @@ const Products = () => {
                         setValue={(startDate, endDate) => {
                           handleFilterWithDate(startDate, endDate);
                         }}
-                        zIndex={5000}
+                      // zIndex={100}
                       />
                     </div>
                   </div>
@@ -298,23 +297,23 @@ const Products = () => {
             </div>
           )}
         </div>
-      
-          <Modal
+
+        <Modal
           show={viewCustomerDetails}
-            content={
-              <>{viewCustomerDetails&&(<CustomerDetails
-                topNavData={topNavData}
-                closeModal={closeModal}
-              />)}</>
-            }
-          ></Modal>
-          <Modal
-            show={showHostory}
-            content={
-              <>{showHostory&&(<OrderHistory topNavData={topNavData} closeModal={closeModal} />
-)}</>
-            }
-          ></Modal>
+          content={
+            <>{viewCustomerDetails && (<CustomerDetails
+              topNavData={topNavData}
+              closeModal={closeModal}
+            />)}</>
+          }
+        ></Modal>
+        <Modal
+          show={showHostory}
+          content={
+            <>{showHostory && (<OrderHistory topNavData={topNavData} closeModal={closeModal} />
+            )}</>
+          }
+        ></Modal>
       </div>
     </section>
   );

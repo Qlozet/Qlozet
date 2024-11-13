@@ -208,7 +208,7 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
 
               </label>
               {accessoriesRequired.image && (
-                <p className="text-danger text-[12px] font-[400]">
+                <p className="text-danger text-xs font-[400]">
                   Image cannot be empty!
                 </p>
               )}

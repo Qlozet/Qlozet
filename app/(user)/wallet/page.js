@@ -20,6 +20,7 @@ import Typography from "@/components/Typography";
 import DropDown from "@/components/DropDown";
 import moment from "moment";
 import { useAppSelector } from "@/redux/store";
+import { walletStatusCheck } from "@/utils/helper";
 const Wallet = () => {
   const filterData = useAppSelector((state) => state.filter.state);
 
@@ -62,20 +63,7 @@ const Wallet = () => {
       response?.data && setLoadPage(false);
       if (response?.data) {
         response?.data?.data.map((item) => {
-          let status;
-          if ((item.status = "Successful")) {
-            status = {
-              text: item.status,
-              bgColor: "bg-success-300",
-              color: "text-[#33CC33]",
-            };
-          } else if ((item.status = "Failed")) {
-            status = {
-              text: item.status,
-              bgColor: "bg-[#FFF5F5]",
-              color: "text-[#FF3A3A]",
-            };
-          }
+          let status = walletStatusCheck(item.status);
           const transactionItem = {
             transactionId: item?.transactionId,
             amount: `₦${parseInt(item?.amount).toLocaleString()}`,
@@ -161,20 +149,18 @@ const Wallet = () => {
                 <div className="items-start gap-6 pt-5 flex ">
                   <Button
                     children="Send money"
-                    btnSize="large"
+                    btnSize="small"
                     variant="outline"
-                    minWidth="min-w-[10rem]"
-                    maxWidth="max-w-[10rem]"
+                    minWidth={"103px"}
                     clickHandler={() => {
                       setShowSendMoney("Send Money");
                     }}
                   />
                   <Button
                     children="Fund wallet"
-                    btnSize="large"
+                    btnSize="small"
                     variant="primary"
-                    minWidth="min-w-[10rem]"
-                    maxWidth="max-w-[10rem]"
+                    minWidth={"103px"}
                     clickHandler={() => {
                       setSetUpWalletWallet(true);
                     }}
@@ -183,7 +169,7 @@ const Wallet = () => {
               </div>
               <div className="flex justify-between">
                 <div
-                  className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
+                  className={` ${classes.scrollbarElement} flex flex-2 items-center gap-4 overflow-x-scroll`}
                 >
                   <DashboardTopCard
                     name="Wallet Balance"
@@ -205,18 +191,18 @@ const Wallet = () => {
                 <div className="items-start gap-6 pt-5 hidden lg:flex">
                   <Button
                     children="Send money"
-                    btnSize="large"
+                    btnSize="small"
                     variant="outline"
-                    minWidth="min-w-[10rem]"
+                    // minWidth="min-w-[10rem]"
                     clickHandler={() => {
                       setShowSendMoney("Send Money");
                     }}
                   />
                   <Button
                     children="Fund wallet"
-                    btnSize="large"
+                    btnSize="small"
                     variant="primary"
-                    minWidth="min-w-[10rem]"
+                    // minWidth="min-w-[6rem] lg:min-w-[10rem]"
                     clickHandler={() => {
                       setSetUpWalletWallet(true);
                     }}
@@ -224,13 +210,13 @@ const Wallet = () => {
                 </div>
               </div>
               <div className="">
-                <div className="flex items-center justify-between mt-14 mb-2 ">
+                <div className="lg:flex items-center justify-between mt-14 mb-2 hidden ">
                   <Typography
                     textColor="text-dark"
                     textWeight="font-bold"
                     textSize="text-[18px]"
                   >
-                    Wallet
+                    Wallet History
                   </Typography>
                   <div className="">
                     <DropDown
@@ -264,67 +250,67 @@ const Wallet = () => {
           )}
         </div>
 
-          <Modal
-            show={setUpWalletWallet}
-            content={
-              <>{setUpWalletWallet && (<SetUpAltireWallet
-                closeModal={() => {
-                  setSetUpWalletWallet(false);
-                }}
-              />)}</>  
-            }
-          ></Modal>
-          <Modal
+        <Modal
+          show={setUpWalletWallet}
+          content={
+            <>{setUpWalletWallet && (<SetUpAltireWallet
+              closeModal={() => {
+                setSetUpWalletWallet(false);
+              }}
+            />)}</>
+          }
+        ></Modal>
+        <Modal
           show={showTransactiondetails}
-            content={
-              <>{showTransactiondetails&&(<TransactionDetails
-                closeModal={() => {
-                  setShowTransactiondetails(false);
-                }}
-                details={
-                  transactionData.filter(
-                    (item) => item.transactionId == transactionId
-                  )[0]
-                }
-              />)}</>
-            }
-          ></Modal>
-          <Modal
-            show={showSendMoney === "Send Money"?true:false}
-            content={
-              <>{showSendMoney === "Send Money"&&(<SendMoney
-                closeModal={(name) => {
-                  setShowSendMoney(name);
-                }}
-              />)}</>
-            }
-          ></Modal>
-  
-          <Modal
-            show={showSendMoney === "Manually"?true:false}
-            content={
-              <>{showSendMoney && (<SendMoneyForm
-                banks={allBanks}
-                closeModal={() => {
-                  setShowSendMoney(false);
-                }}
-              />)}</>
-             
-            }
-          ></Modal>
-        
-    
-          <Modal
+          content={
+            <>{showTransactiondetails && (<TransactionDetails
+              closeModal={() => {
+                setShowTransactiondetails(false);
+              }}
+              details={
+                transactionData.filter(
+                  (item) => item.transactionId == transactionId
+                )[0]
+              }
+            />)}</>
+          }
+        ></Modal>
+        <Modal
+          show={showSendMoney === "Send Money" ? true : false}
+          content={
+            <>{showSendMoney === "Send Money" && (<SendMoney
+              closeModal={(name) => {
+                setShowSendMoney(name);
+              }}
+            />)}</>
+          }
+        ></Modal>
+
+        <Modal
+          show={showSendMoney === "Manually" ? true : false}
+          content={
+            <>{showSendMoney && (<SendMoneyForm
+              banks={allBanks}
+              closeModal={() => {
+                setShowSendMoney(false);
+              }}
+            />)}</>
+
+          }
+        ></Modal>
+
+
+        <Modal
           show={showSendMoney === "Beneficiaries"}
-            content={
-              showSendMoney === "Beneficiaries" && (<Beneficiary
-                closeModal={() => {
-                  setShowSendMoney(false);
-                }}
-              />)
-            }
-          ></Modal>
-        
+          content={
+            showSendMoney === "Beneficiaries" && (<Beneficiary
+              closeModal={() => {
+                setShowSendMoney(false);
+              }}
+            />)
+          }
+        ></Modal>
+
       </div>
     </section>
   );

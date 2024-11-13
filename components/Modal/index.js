@@ -10,7 +10,7 @@ const Modal = ({ content, show }) => {
       initial={{ scale: 0 }}
       className={`${style.modal}  px-4 lg:px-0  h-screen fixed top-0 left-0 w-screen bg-[#00000080] overflow-y-scroll`}
       style={{
-        zIndex: 999,
+        zIndex: 9999,
       }}
     >
       {content}
@@ -18,7 +18,7 @@ const Modal = ({ content, show }) => {
       animate={{ scale: 0, opacity: 0 }}
       transition={{ delay: .1, duration: .1 }}
       initial={{ scale: 0 }}
-        className={`${style.modal}  px-4 lg:px-0  h-screen fixed top-0 left-0 w-screen bg-[#00000080] overflow-y-scroll`}
+      className={`${style.modal}  px-4 lg:px-0  h-screen fixed top-0 left-0 w-screen bg-[#00000080] overflow-y-scroll`}
       style={{
         zIndex: 999,
       }}

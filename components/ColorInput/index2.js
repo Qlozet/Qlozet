@@ -7,7 +7,7 @@ import Typography from "../Typography";
 import classes from "./index.module.css";
 import customisationIcon from "../../public/assets/svg/customisation-icon.svg";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 const ColorInput = ({
   label,
   error,
@@ -76,6 +76,16 @@ const ColorInput = ({
     setSelectedColors(selectedColors.filter((item) => item !== color));
     removeColorHandler(color, index);
   };
+
+
+  const removeDuplicates = () => {
+    const uniqueItems = [...new Set(selectedColors)];
+    setSelectedColors(uniqueItems);
+  };
+
+  useEffect(() => {
+    removeDuplicates()
+  }, [value])
   return (
     <div
       className="relative"
@@ -142,7 +152,7 @@ const ColorInput = ({
         </div>
         {rightIcon}
         {error && (
-          <p className="text-danger text-[12px] font-[400]">
+          <p className="text-danger text-xs font-[400]">
             {label} cannot be empty!
           </p>
         )}
@@ -191,14 +201,14 @@ const ColorInput = ({
                       <Typography
                         textColor="text-white"
                         textWeight="font-[500]"
-                        textSize="text-[12px]"
+                        textSize="text-xs"
                       >
                         Hex
                       </Typography>
                     </div>
                     <div className="w-[75%]  h-[1.5rem] border-solid border-[2px] border-[rgba(13,153,255)] flex items-center">
                       <div className="w-[70%] flex items-center">
-                        <p className="font-[500] text-[12px] text-white bg-[rgba(13,153,255,.2)] ml-[1px]">
+                        <p className="font-[500] text-xs text-white bg-[rgba(13,153,255,.2)] ml-[1px]">
                           {currentColor}
                         </p>
                       </div>

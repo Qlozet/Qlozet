@@ -17,46 +17,46 @@ const CustomerTable = ({
   handleFilterWithDate,
 }) => {
   return (
-    <div className="mt-4 min-h-[50vh]">
-      <table className="w-full hidden md:block">
+    <div className="mt-4 min-h-[50vh] overflow-hidden rounded-xl">
+      <table className="w-full hidden md:block overflow-hidden rounded-xl">
         <thead className="w-full bg-[#F4F4F4] text-dark ">
           <tr>
-            <th className="w-[8%] px-2 py-3 pl-6 text-[12px]">
+            <th className="w-[8%] px-2 py-3 pl-6 text-xs">
               <div className="flex items-center justify-start font-[500]  text-dark">
                 Picture
               </div>
             </th>
-            <th className="w-[12%] px-2 py-3 text-[12px]">
+            <th className="w-[12%] px-2 py-3 text-xs">
               <div className="flex items-center justify-start font-[500]  text-dark">
                 Customer name
               </div>
             </th>
-            {/* <th className="w-[8%] px-2 py-3 text-[12px]">
+            {/* <th className="w-[8%] px-2 py-3 text-xs">
               <div className="flex items-center justify-start font-[500]  text-dark">
                 Email address
               </div>
             </th>
-            <th className="w-[8%] px-2 py-3 text-[12px]">
+            <th className="w-[8%] px-2 py-3 text-xs">
               <div className="flex items-center justify-start font-[500]  text-dark">
                 Phone number
               </div>
             </th> */}
-            <th className="w-[8%] px-2 py-3 text-[12px]">
+            <th className="w-[8%] px-2 py-3 text-xs">
               <div className="flex items-center justify-start font-[500]  text-dark">
                 Total orders
               </div>
             </th>
-            <th className="w-[8%] px-2 py-3 text-[12px]">
+            <th className="w-[8%] px-2 py-3 text-xs">
               <div className="flex items-center justify-start font-[500]  text-dark">
                 Last Order date
               </div>
             </th>
-            <th className="w-[6%] px-2 py-3 text-[12px]">
+            <th className="w-[6%] px-2 py-3 text-xs">
               <div className="flex items-center justify-start font-[500]  text-dark">
                 Status
               </div>
             </th>
-            <th className="w-[12%] px-2 py-3 text-[12px] border-solid ">
+            <th className="w-[12%] px-2 py-3 text-xs border-solid ">
               <div className=" flex items-center justify-end  ">
                 <div className="border-primary border-[1.5px] rounded-lg">
                   <ExportComponent

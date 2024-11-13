@@ -23,7 +23,7 @@ const TracKOrderCard = ({ item, text, icon, bgColor }) => {
         <Typography
           textColor="text-primary"
           textWeight="font-normal"
-          textSize="text-[12px]"
+          textSize="text-xs"
           align="center"
         >
           {text}

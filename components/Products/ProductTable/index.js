@@ -41,52 +41,54 @@ const ProductTable = ({
     setProductData(data);
   }, [data]);
   return (
-    <div className="mt-4 min-h-[50vh] " style={{ zIndex: -1 }}>
-      <div className="hidden lg:block">
-        <table className="w-full">
-          <thead className="w-full bg-[#F4F4F4] text-dark ">
-            <tr>
-              <th className="w-[5%] px-2 py-4 text-[12px]">
-                <div className="flex items-center justify-start font-[500] text-dark pl-4">
+    <div className="mt-4 min-h-[50vh]  rounded-xl mb-8" style={{
+      zIndex: -1,
+    }} >
+      <div className="hidden lg:block ">
+        <table className="w-full ">
+          <thead className="w-full bg-[#F4F4F4] text-dark rounded-[12px] " >
+            <tr className="">
+              <th className="w-[5%] px-2 py-4 text-xs">
+                <div className="flex items-center justify-start font-[500] text-dark pl-4" >
                   Picture
                 </div>
               </th>
-              <th className="w-[12%] px-2 py-4 text-[12px]">
+              <th className="w-[12%] px-2 py-4 text-xs">
                 <div className="flex items-center justify-start font-[500]  text-dark">
                   Product Name
                 </div>
               </th>
-              <th className="w-[12%] px-2 py-4 text-[12px]">
+              <th className="w-[12%] px-2 py-4 text-xs">
                 <div className="flex items-center justify-start font-[500]  text-dark">
                   Product price
                 </div>
               </th>
-              <th className="w-[8%] px-2 py-4 text-[12px]">
+              <th className="w-[8%] px-2 py-4 text-xs">
                 <div className="flex items-center justify-start font-[500]  text-dark">
                   Category
                 </div>
               </th>
-              <th className="w-[10%] px-2 py-4 text-[12px]">
+              <th className="w-[10%] px-2 py-4 text-xs">
                 <div className="flex items-center justify-start font-[500]  text-dark">
                   Product type
                 </div>
               </th>
-              <th className="w-[4%] px-2 py-4 text-[12px]">
+              <th className="w-[4%] px-2 py-4 text-xs">
                 <div className="flex items-center justify-start font-[500]  text-dark">
                   Tag
                 </div>
               </th>
-              <th className="w-[9%] px-2 py-4 text-[12px]">
+              <th className="w-[9%] px-2 py-4 text-xs">
                 <div className="flex items-center justify-start font-[500]  text-dark">
                   Quantity
                 </div>
               </th>
-              <th className="w-[12%] px-2 py-4 text-[12px]">
+              <th className="w-[12%] px-2 py-4 text-xs">
                 <div className="flex items-center justify-start font-[500]  text-dark">
                   Product Status
                 </div>
               </th>
-              <th className="w-[12%] px-2 py-4 text-[12px]">
+              <th className="w-[12%] px-2 py-4 text-xs">
                 <ExportComponent
                   handleExport={() => {
                     handleExport(data);
@@ -97,7 +99,7 @@ const ProductTable = ({
           </thead>
           <tbody>
             {productData.map((item, index) => {
-            
+
               return (
                 <ProductTableItem
                   key={index}
@@ -176,36 +178,36 @@ const ProductTable = ({
           />
         ))}
       </div>
-        <Modal
-        show={dropdownOption === "Delete product"?true:false}
-          content={
-            <div className="flex items-center justify-center h-[100%] ">
-              {dropdownOption && (<DeleteProduct
-                deleteFunction={(productId) => {
-                  setDropDownOption("");
-                  setProductData(
-                    productData.filter((item) => item.id !== productId)
-                  );
-                }}
-              />)}
-            </div>
-          }
-        />
-      
-    
-        <Modal
-        show={dropdownOption === "Schedule activation"?true:false}
-          content={
-            <div className="">
-              {dropdownOption && (<ShecduleProduct
-                closeSchedule={() => {
-                  setDropDownOption("");
-                }}
-              />)}
-           
-            </div>
-          }
-        />
+      <Modal
+        show={dropdownOption === "Delete product" ? true : false}
+        content={
+          <div className="flex items-center justify-center h-[100%] ">
+            {dropdownOption && (<DeleteProduct
+              deleteFunction={(productId) => {
+                setDropDownOption("");
+                setProductData(
+                  productData.filter((item) => item.id !== productId)
+                );
+              }}
+            />)}
+          </div>
+        }
+      />
+
+
+      <Modal
+        show={dropdownOption === "Schedule activation" ? true : false}
+        content={
+          <div className="">
+            {dropdownOption && (<ShecduleProduct
+              closeSchedule={() => {
+                setDropDownOption("");
+              }}
+            />)}
+
+          </div>
+        }
+      />
     </div>
   );
 };

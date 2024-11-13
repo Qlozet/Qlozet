@@ -16,7 +16,7 @@ const DashboardTopCard = ({
   const navigate = useRouter();
   return (
     <div
-      className={` min-w-[265px] max-h-[119px] lg:min-w-0 p-6 flex bg-white rounded-[12px] mt-4 ${addMaxWidth ? "min-w-[265px] max-w-[265px]" : ""
+      className={`min-w-[265px] max-h-[119px] lg:min-w-0 p-6 flex bg-white rounded-[12px] mt-4 ${addMaxWidth ? "min-w-[265px] max-w-[290px]" : ""
         }  w-full ${minHeight ? minHeight : ""}`}
     >
       <div
@@ -26,18 +26,18 @@ const DashboardTopCard = ({
       </div>
       <div className="pl-4">
         <div>
-          <p className="text-[12px] text-gray-100">{name}</p>
+          <p className="text-xs text-gray-100">{name}</p>
           <p className="font-bold text-[24px] text-[#495057]">{total}</p>
         </div>
         <div className="flex justify-between items-center gap-12">
           <div className="flex items-center gap-1">
-            <p className="text-[12px] text-[#33CC33]">{percentage}</p>
+            <p className="text-xs text-[#33CC33]">{percentage}</p>
             <Image src={arrowUpSuccess} alt="" />
           </div>
           {link && (
             <div className="flex items-center gap-1 cursor-pointer">
               <p
-                className="text-[12px] text-[#33CC33]"
+                className="text-xs text-[#33CC33]"
                 onClick={() => {
                   navigate.push(link);
                 }}

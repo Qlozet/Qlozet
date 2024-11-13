@@ -88,7 +88,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                               <Typography
                                 textColor="text-primary"
                                 textWeight="font-normal"
-                                textSize="text-[12px]"
+                                textSize="text-xs"
                                 align="center"
                               >
                                 items
@@ -107,7 +107,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                               <Typography
                                 textColor="text-primary"
                                 textWeight="font-normal"
-                                textSize="text-[12px]"
+                                textSize="text-xs"
                                 align="center"
                               >
                                 Profit
@@ -151,7 +151,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                         <Typography
                           textColor="text-primary"
                           textWeight="font-normal"
-                          textSize="text-[12px]"
+                          textSize="text-xs"
                         >
                           Out of 5 star
                         </Typography>
@@ -161,7 +161,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                       <Typography
                         textColor="text-primary"
                         textWeight="font-normal"
-                        textSize="text-[12px]"
+                        textSize="text-xs"
                       >
                         Overall rating of 100 customer’s reviews
                       </Typography>
@@ -212,7 +212,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                 <Typography
                   textColor="text-primary"
                   textWeight="font-normal"
-                  textSize="text-[12px]"
+                  textSize="text-xs"
                 >
                   All
                 </Typography>
@@ -224,7 +224,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                 <Typography
                   textColor="text-primary"
                   textWeight="font-normal"
-                  textSize="text-[12px]"
+                  textSize="text-xs"
                 >
                   Delivered
                 </Typography>
@@ -236,7 +236,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                 <Typography
                   textColor="text-primary"
                   textWeight="font-normal"
-                  textSize="text-[12px]"
+                  textSize="text-xs"
                 >
                   Order
                 </Typography>

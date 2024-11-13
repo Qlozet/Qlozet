@@ -30,41 +30,39 @@ const StypePositioning = ({
                 (item) =>
                   item.imageIndex === imageIndex && item.style === stylesType
               ).length > 0 &&
-              `${
+              `${customeStylesUiPosition.filter(
+                (item) =>
+                  item.imageIndex === imageIndex && item.style === stylesType
+              )[
                 customeStylesUiPosition.filter(
                   (item) =>
-                    item.imageIndex === imageIndex && item.style === stylesType
-                )[
-                  customeStylesUiPosition.filter(
-                    (item) =>
-                      item.imageIndex === imageIndex &&
-                      item.style === stylesType
-                  ).length - 1
-                ].left
+                    item.imageIndex === imageIndex &&
+                    item.style === stylesType
+                ).length - 1
+              ].left
               }px`,
             top:
               customeStylesUiPosition.filter(
                 (item) =>
                   item.imageIndex === imageIndex && item.style === stylesType
               ).length > 0 &&
-              `${
+              `${customeStylesUiPosition.filter(
+                (item) =>
+                  item.imageIndex === imageIndex && item.style === stylesType
+              )[
                 customeStylesUiPosition.filter(
                   (item) =>
-                    item.imageIndex === imageIndex && item.style === stylesType
-                )[
-                  customeStylesUiPosition.filter(
-                    (item) =>
-                      item.imageIndex === imageIndex &&
-                      item.style === stylesType
-                  ).length - 1
-                ].top
+                    item.imageIndex === imageIndex &&
+                    item.style === stylesType
+                ).length - 1
+              ].top
               }px`,
           }}
         >
           <Typography
             textColor="text-white"
             textWeight="font-[500]"
-            textSize="text-[12px]"
+            textSize="text-xs"
           >
             {stylesType}
           </Typography>

@@ -1,4 +1,3 @@
-import ExportComponent from "@/components/ExportButton";
 import VariantTableItem from "../VariantTableItem";
 import styles from "./index.module.css";
 const VariantTable = ({
@@ -15,48 +14,50 @@ const VariantTable = ({
       <table className="w-full shadow py-4">
         <thead className="w-full bg-[#F4F4F4] ">
           <tr>
-            <th className="w-[10%] p-4 text-[12px]">
+            <th className="w-[10%] p-4 text-xs">
               <div className="flex items-center justify-start font-[500] text-dark">
                 Variants
               </div>
             </th>
-            <th className="w-[15%] p-4 text-[12px] min-w-[7rem]">
+            <th className="w-[15%] p-4 text-xs min-w-[7rem]">
               <div className="flex items-center justify-start font-[500] text-dark">
                 Quantity
               </div>
             </th>
-            <th className="w-[25%] p-4 text-[12px]">
-              <div className="flex items-center justify-start font-[500] text-dark">
+            <th className="w-[15%] min-w-[6rem] p-4 text-xs">
+              <div className="flex items-center justify-start font-[500] text-dark min-w-[6rem]">
                 Price
               </div>
             </th>
-            <th className="w-[35%] p-4 text-[12px] min-w-[17rem]">
+            <th className="w-[35%] p-4 text-xs min-w-[17rem]">
               <div className="flex items-center justify-start font-[500] text-dark">
                 Add Product images
               </div>
             </th>
-            <th className="w-[5%] p-4 text-[12px] min-w-[4rem]">
+            <th className="w-[5%] p-4 text-xs min-w-[4rem]">
               <div className="flex items-center justify-start font-[500] text-dark"></div>
             </th>
-            <th className="w-[5%] p-4 text-[12px] min-w-[4rem]">
+            <th className="w-[5%] p-4 text-xs min-w-[4rem]">
               <div className="flex items-center justify-start font-[500] text-dark"></div>
             </th>
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => (
-            <VariantTableItem
-              QuantityHandler={QuantityHandler}
-              key={index}
-              item={item}
-              index={index}
-              submitImage={submitVariantImage}
-              quantityHandler={quantityHandler}
-              priceHandler={priceHandler}
-              handleChecked={handleChecked}
-              handleDeleteVariantFromTable={handleDeleteVariantFromTable}
-            />
-          ))}
+          {data.map((item, index) => {
+            return (
+              <VariantTableItem
+                QuantityHandler={QuantityHandler}
+                key={index}
+                item={item}
+                index={index}
+                submitImage={submitVariantImage}
+                quantityHandler={quantityHandler}
+                priceHandler={priceHandler}
+                handleChecked={handleChecked}
+                handleDeleteVariantFromTable={handleDeleteVariantFromTable}
+              />
+            )
+          })}
         </tbody>
       </table>
     </div>

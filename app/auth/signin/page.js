@@ -141,7 +141,7 @@ const SignIn = () => {
                       <Typography
                         textColor="text-primary"
                         textWeight="font-[400]"
-                        textSize="text-[12px]"
+                        textSize="text-xs"
                       >
                         Forgot password
                       </Typography>

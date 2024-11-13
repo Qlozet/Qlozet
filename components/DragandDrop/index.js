@@ -288,7 +288,7 @@ const DragDrop = ({
                         <Typography
                           textColor="text-white"
                           textWeight="font-[500]"
-                          textSize="text-[12px]"
+                          textSize="text-xs"
                         >
                           Top
                         </Typography>
@@ -311,7 +311,7 @@ const DragDrop = ({
                         <Typography
                           textColor="text-white"
                           textWeight="font-[500]"
-                          textSize="text-[12px]"
+                          textSize="text-xs"
                         >
                           Bottom
                         </Typography>
@@ -334,7 +334,7 @@ const DragDrop = ({
                         <Typography
                           textColor="text-white"
                           textWeight="font-[500]"
-                          textSize="text-[12px]"
+                          textSize="text-xs"
                         >
                           Shirt
                         </Typography>
@@ -357,7 +357,7 @@ const DragDrop = ({
                         <Typography
                           textColor="text-white"
                           textWeight="font-[500]"
-                          textSize="text-[12px]"
+                          textSize="text-xs"
                         >
                           Dress
                         </Typography>
@@ -380,7 +380,7 @@ const DragDrop = ({
                         <Typography
                           textColor="text-white"
                           textWeight="font-[500]"
-                          textSize="text-[12px]"
+                          textSize="text-xs"
                         >
                           Outfit
                         </Typography>

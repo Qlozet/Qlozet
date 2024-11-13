@@ -39,11 +39,9 @@ const Design = ({ id, image, name, reduce }) => {
 
   return (
     <div
-      className={`flex-col gap-2 border  ${
-        reduce ? "items-center" : ""
-      }  justify-center border-solid  rounded-[6px] ${
-        reduce ? "" : ""
-      }`}
+      className={` flex-col gap-2   ${reduce ? "items-center" : ""
+        }  justify-center border-solid  rounded-[6px] ${reduce ? "" : ""
+        }`}
     >
       <div className="relative">
         {selected && (
@@ -62,9 +60,8 @@ const Design = ({ id, image, name, reduce }) => {
           <Image
             src={image}
             alt=""
-            className={`${
-              reduce ? "w-[100%]" : "w-[4rem] h-auto"
-            } cursor-pointer `}
+            className={`${reduce ? "w-[100%]" : "w-full h-auto"
+              } cursor-pointer `}
             onClick={selecteHandler}
             width={18}
             height={18}
@@ -74,8 +71,8 @@ const Design = ({ id, image, name, reduce }) => {
 
       <Typography
         textColor="text-dark"
-        textWeight="font-[400]"
-        textSize="text-[10px]"
+        textWeight="font-[500]"
+        textSize="text-xs"
         align="center"
       >
         {name}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import moreIcon from "../../../public/assets/svg/more.svg";
 import Image from "next/image";
 import ProductItemDropDown from "../ProductItemDropDown";
@@ -6,7 +6,6 @@ import Typography from "@/components/Typography";
 import Quantity from "../Quantity";
 import OrderStatus from "@/components/order/OrderStatus";
 import { setProductId } from "@/utils/localstorage";
-import { useRouter } from "next/navigation";
 
 const MobileTable = ({
   id,
@@ -21,8 +20,29 @@ const MobileTable = ({
   handleSelect,
   variantCount,
 }) => {
-  const router = useRouter();
+  const dropDownRef = useRef()
   const [showDropDown, setShowDropDown] = useState(false);
+  const [positionTop, setPositionTop] = useState(false)
+  const calculatePosition = () => {
+    if (dropDownRef.current) {
+      const { height } = dropDownRef.current.getBoundingClientRect()
+      window.addEventListener("click", (e) => {
+        if ((window.innerHeight - e.clientY) > height) {
+          setPositionTop(true)
+        } else {
+          setPositionTop(false)
+        }
+      })
+    }
+  }
+  useEffect(() => { calculatePosition() }, [])
+  document.addEventListener("click", (e) => {
+    if (showDropDown) {
+      setShowDropDown(false);
+    } else if (e.target === dropDownRef.current) {
+      setShowDropDown(true);
+    }
+  });
 
   return (
     <div className="bg-white relative">
@@ -47,7 +67,8 @@ const MobileTable = ({
           <div>
             {showDropDown && (
               <div
-                className="absolute right-[0rem] top-[1rem]"
+                ref={dropDownRef}
+                className={`absolute right-[0rem] ${positionTop ? "top-0" : "bottom-0"}`}
                 style={{ zIndex: 10 }}
               >
                 <ProductItemDropDown
@@ -76,21 +97,19 @@ const MobileTable = ({
               <Typography
                 textColor="text-gray-100"
                 textWeight="font-normal"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 Product
               </Typography>
               <p className="overflow-hidden text-ellipsis pr-4 whitespace-nowrap max-w-[117px] text-dark text-[14px]">
-
                 {productName}
               </p>
-
             </div>
             <div className="flex flex-col gap-1 mt-2 items-end">
               <Typography
                 textColor="text-gray-100"
                 textWeight="font-normal"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 Category
               </Typography>
@@ -108,7 +127,7 @@ const MobileTable = ({
               <Typography
                 textColor="text-gray-100"
                 textWeight="font-normal"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 Quantity
               </Typography>
@@ -118,7 +137,7 @@ const MobileTable = ({
               <Typography
                 textColor="text-gray-100"
                 textWeight="font-normal"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 Status
               </Typography>

@@ -82,7 +82,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-[400]"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 Order date:
               </Typography>
@@ -91,7 +91,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-[700]"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 {order.date}
               </Typography>
@@ -102,7 +102,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-[400]"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 Order ID:
               </Typography>
@@ -112,7 +112,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-[700]"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 {order.orderId}
               </Typography>
@@ -123,7 +123,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-[400]"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 Preferred outfit measurement
               </Typography>
@@ -132,7 +132,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-[700]"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 {order.orderId}
               </Typography>
@@ -144,7 +144,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-[400]"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 Preferred color
               </Typography>
@@ -153,7 +153,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-[700]"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 {order.orderId}
               </Typography>
@@ -165,7 +165,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-[400]"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 Customer’s name:
               </Typography>
@@ -174,7 +174,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-[700]"
-                textSize="text-[12px]"
+                textSize="text-xs"
               >
                 {order.customerName}
               </Typography>
@@ -187,7 +187,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
             <Typography
               textColor="text-dark"
               textWeight="font-[400]"
-              textSize="text-[12px]"
+              textSize="text-xs"
             >
               Customer’s address:
             </Typography>
@@ -196,7 +196,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
             <Typography
               textColor="text-dark"
               textWeight="font-[700]"
-              textSize="text-[12px]"
+              textSize="text-xs"
             >
               {order.shippingAddress}
             </Typography>
@@ -207,7 +207,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
             <Typography
               textColor="text-dark"
               textWeight="font-[400]"
-              textSize="text-[12px]"
+              textSize="text-xs"
             >
               Shipping address{" "}
             </Typography>
@@ -216,7 +216,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
             <Typography
               textColor="text-dark"
               textWeight="font-[700]"
-              textSize="text-[12px]"
+              textSize="text-xs"
             >
               {order.shippingAddress}
             </Typography>
@@ -227,7 +227,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
             <Typography
               textColor="text-dark"
               textWeight="font-[400]"
-              textSize="text-[12px]"
+              textSize="text-xs"
             >
               Customer’s phone number
             </Typography>
@@ -236,7 +236,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
             <Typography
               textColor="text-dark"
               textWeight="font-[700]"
-              textSize="text-[12px]"
+              textSize="text-xs"
             >
               {order.customerPhoneNumber}
             </Typography>
@@ -249,7 +249,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
               children="Reject Order"
               btnSize="large"
               variant="outline"
-              clickHandler={() => {}}
+              clickHandler={() => { }}
               maxWidth="max-w-[14rem]"
             />
           </div>
@@ -258,7 +258,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
               children="Confirm order "
               btnSize="large"
               variant="primary"
-              clickHandler={() => {}}
+              clickHandler={() => { }}
               maxWidth="max-w-[14rem]"
             />
           </div>

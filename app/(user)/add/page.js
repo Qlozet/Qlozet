@@ -166,7 +166,7 @@ const AddProduct = () => {
               retained: [],
               deleted: [],
             },
-            prize: productFormData.productPrice,
+            price: productFormData.productPrice,
             size: modifySizeHandler(size[size.length - 1]),
             quantity: productFormData.productQuantity,
           },
@@ -188,10 +188,11 @@ const AddProduct = () => {
   };
 
   const handleDeleteVariantFromTable = (id, color) => {
-    setProductFormData((prevData) => {
-      return { ...prevData, variantSizes: [] }
-    })
-    setVariantTable(variantTable.filter((item) => item.id !== id))
+    const newVariants = variantTable.filter((item) => item.id !== id && item.color !== color)
+    setVariantTable(newVariants)
+    // setProductFormData((prevData) => {
+    //   return { ...prevData, variantSizes: [] }
+    // })
   }
 
   const handleVariantChecked = (data, id, color) => {
@@ -199,7 +200,7 @@ const AddProduct = () => {
       if (item.id === id && item.color === color) {
         return {
           id: item.id,
-          prize: item.prize,
+          price: item.price,
           images: item.images,
           color: item.color,
           checked: data,
@@ -223,10 +224,23 @@ const AddProduct = () => {
     setVariantTable(prevVariantTable);
   };
 
-  const priceHandler = (value, index) => {
-    let prevVariantTable = variantTable;
-    prevVariantTable[index].prize = value;
-    setVariantTable(prevVariantTable);
+  const priceHandler = (value, id, color) => {
+    const newVariantTable = variantTable.map((item) => {
+      if (item.id === id && item.color === color) {
+        return {
+          id: item.id,
+          price: value,
+          images: item.images,
+          color: item.color,
+          checked: item.checked,
+          quantity: item.quantity,
+          size: item.size,
+        };
+      } else {
+        return item;
+      }
+    });
+    setVariantTable(newVariantTable);
   };
 
   const handleSubmit = async () => {
@@ -266,13 +280,13 @@ const AddProduct = () => {
               };
             }),
             deleted: deletedFiles,
-            // deleted: [],
           },
           variants: variantTable.map((item) => {
+            console.log(item)
             let varantItem = {
               color: item.color,
               size: item.size,
-              price: 90,
+              price: item.price,
               quantity: item.quantity,
               images: {
                 retained: item.images.retained,
@@ -344,10 +358,12 @@ const AddProduct = () => {
 
           setAcessories(
             response.data.data.accessories.map((item) => {
-              return { image: item.images[0].secure_url, id: item._id };
+              return {
+                image: item.images[0].secure_url, id: item._id,
+                price: item.price
+              };
             })
           );
-
           const variantColors = response.data.data.variants.map((item) => {
             if (!item.color.hex.includes("https://res.cloudinary.com")) {
               return item.color.hex;
@@ -369,6 +385,7 @@ const AddProduct = () => {
           setVariantTable(
             response.data.data.variants.map((item) => {
               return {
+                id: uuidv4(),
                 color: item.color.hex,
                 size: item.size.value,
                 price: item.price,
@@ -431,22 +448,24 @@ const AddProduct = () => {
   return (
     <section>
       <div className="flex bg-[#F8F9FA] ">
-        <div className="w-full p-4">
+        <div className="w-full px-4 pb-4">
           {pageLoading ? (
             <Loader></Loader>
           ) : (
             <div>
               <div className="mt-4 lg:mt-0"></div>
               <div className="">
-                <div className="mx-0 bg-gray-300 lg:bg-white pt-4 px-4  rounded-t-lg lg:translate-x-2">
-                  <CheckBoxInput label="Add variants if product comes in multiple versions like different sizes and colours" handleChange={(data) => {
-                    setAddVaient(data)
-                    setProductFormData((prevData) => {
-                      return { ...prevData, isVariantAvailable: data }
-                    })
-                  }} />
+                <h5 className="hidden lg:block text-[18px] font-bold">Add product</h5>
+                <div className="lg:py-5 "> <CheckBoxInput label="Add variants if product comes in multiple versions like different sizes and colours" handleChange={(data) => {
+                  setAddVaient(data)
+                  setProductFormData((prevData) => {
+                    return { ...prevData, isVariantAvailable: data }
+                  })
+                }} /></div>
+                <div className="mx-0 mt-2 bg-gray-[#F4F4F4] lg:bg-white rounded-t-lg lg:translate-x-2 border-[1px] border-solid lg:border-none">
+                  <h4 className=" font-medium pt-2 px-4 pb-2 lg:hidden"> Product Info</h4>
                 </div>
-                <div className="bg-white w-full p-4 mx-0 lg:mx-2">
+                <div className="bg-white w-full p-4 mx-0 lg:mx-2 lg:rounded-2xl">
                   <DashedComponent name={"Product info"} />
                   <div className="block lg:flex items-center justify-between  gap-6">
                     <div className="w-full">
@@ -782,7 +801,6 @@ const AddProduct = () => {
                       />
                     </div></div>)}
                   <div>
-
                     <div className="my-4">
                       <Button
                         loading={isLoading}
@@ -804,7 +822,7 @@ const AddProduct = () => {
           <Modal
             show={showCustomiseOrder}
             content={
-              <>{showCustomiseOrder&&(<CustomizeOrder
+              <>{showCustomiseOrder && (<CustomizeOrder
                 styleData={styles}
                 closeModal={() => {
                   setShowCustomiseOrder(false);
@@ -817,7 +835,7 @@ const AddProduct = () => {
           <Modal
             show={showAddAccessories}
             content={
-              <>{showAddAccessories&&(<AddAcessories
+              <>{showAddAccessories && (<AddAcessories
                 submitAcessories={submitAcessories}
                 closeModal={() => {
                   setShowAddAccessories(false);

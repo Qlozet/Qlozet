@@ -17,25 +17,26 @@ const VariantTableItem = ({
 }) => {
   return (
     <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-[12px] font-normal px-4 py-3 text-dark border-solid border-r-[1px] border-gray-300 flex items-center gap-2">
+      <td className="text-xs font-normal px-4 py-3 text-dark border-solid border-r-[1px] border-gray-300 flex items-center gap-2">
         <Variant bg={item.color && item.color} />
         <Size value={item.size} />
       </td>
-      <td className="text-[12px] font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
+      <td className="text-xs font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
         <AddQuantity
           quantityHandler={quantityHandler}
           quantity={item.quantity}
           listIndex={index}
         />
       </td>
-      <td className="text-[12px] font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
+      <td className="text-xs font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
         <PriceComp
-          listIndex={index}
+          id={item.id}
+          color={item.color}
           productAmount={item.price}
           priceHandler={priceHandler}
         />
       </td>
-      <td className="text-[12px] font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
+      <td className="text-xs font-normal px-4 py-2 text-dark border-solid border-r-[1px] border-gray-300">
         <div className="flex items-center gap-3">
           <VariantImage
             id={item.id}
@@ -68,7 +69,7 @@ const VariantTableItem = ({
           />
         </div>
       </td>
-      <td className="text-[12px] font-normal px-1  text-dark  border-solid border-r-[1px] border-gray-300">
+      <td className="text-xs font-normal px-1  text-dark  border-solid border-r-[1px] border-gray-300">
         <div className="flex w-[100%] justify-between px-4">
           <div>
             <CheckBoxInput handleChange={(data) => {
@@ -77,7 +78,7 @@ const VariantTableItem = ({
           </div>
         </div>
       </td>
-      <td className="text-[12px] font-normal px-1  text-dark  border-solid border-r-[1px] border-gray-300">
+      <td className="text-xs font-normal px-1  text-dark  border-solid border-r-[1px] border-gray-300">
         <div className="flex w-[100%] justify-between px-3">
           <button className="hover:bg-primary p-1 rounded-sm" onClick={() => {
             handleDeleteVariantFromTable(item.id, item.color)
