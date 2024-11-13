@@ -21,15 +21,13 @@ import Logout from "../Logout";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Modal from "../Modal";
-import { setFilter } from "@/redux/slice";
+import { handlelogout, setFilter } from "@/redux/slice";
 import styles from './index.module.css'
 
 import { useAppDispatch } from "@/redux/store";
 import Link from "next/link";
 const SideBar = ({ active }) => {
   const dispatch = useAppDispatch();
-
-  const [showLogOutModal, setShowLogOutModal] = useState(false);
   const router = useRouter();
   const sidebaritems = [
     {
@@ -89,14 +87,10 @@ const SideBar = ({ active }) => {
       defaultIcon: loggoutDefault,
       activeIcon: loggoutDefault,
       function: () => {
-        setShowLogOutModal(true);
+        dispatch(handlelogout({ logout: true }))
       },
     },
   ];
-
-  const logoutFunction = () => {
-    setShowLogOutModal(false);
-  };
 
   return (
     <div
@@ -143,14 +137,7 @@ const SideBar = ({ active }) => {
           </div>
         ))}
       </div>
-        <Modal
-        show={showLogOutModal}
-          content={
-            <div className="flex items-center justify-center h-[100%] ">
-              <Logout logoutFunction={logoutFunction} />
-            </div>
-          }
-        />
+
     </div>
   );
 };
