@@ -2,7 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   state: "",
-  email: ""
+  email: "",
+  logout: false
 };
 
 export const filterSlice = createSlice({
@@ -12,12 +13,16 @@ export const filterSlice = createSlice({
     setFilter: (state, action) => {
       state.state = action.payload;
     },
-
     setEmail: (state, action) => {
       state.email = action.payload
+    },
+    handlelogout: (state, action) => {
+      state.logout = action.payload.logout
     }
   },
 });
 
-export const { setFilter, setEmail } = filterSlice.actions;
+export const { setFilter, setEmail, handlelogout } = filterSlice.actions;
+export const reduxData = (state) => state.filter;
+
 export const sliceReducer = filterSlice.reducer;

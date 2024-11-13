@@ -24,7 +24,10 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Modal from "../Modal";
 import logo from "../../public/assets/image/logobrown.png";
+import { handlelogout } from "@/redux/slice";
+import { useAppDispatch } from "@/redux/store";
 const MobileSideBar = ({ active, closeSideBar, showMobileNav }) => {
+  const dispatch = useAppDispatch()
   const [showLogOutModal, setShowLogOutModal] = useState(false);
   const router = useRouter();
   const sidebaritems = [
@@ -33,21 +36,21 @@ const MobileSideBar = ({ active, closeSideBar, showMobileNav }) => {
       link: "dashboard",
       defaultIcon: dashboardIcon,
       activeIcon: activeDashboardIcon,
-      function: () => {},
+      function: () => { },
     },
     {
       name: "Orders",
       link: "orders",
       defaultIcon: vendorDefault,
       activeIcon: vendorActive,
-      function: () => {},
+      function: () => { },
     },
     {
       name: "Products",
       link: "products",
       defaultIcon: shoppingBag,
       activeIcon: activeshopping,
-      function: () => {},
+      function: () => { },
     },
 
     {
@@ -55,14 +58,14 @@ const MobileSideBar = ({ active, closeSideBar, showMobileNav }) => {
       link: "wallet",
       defaultIcon: wallet,
       activeIcon: walletActive,
-      function: () => {},
+      function: () => { },
     },
     {
       name: "Customers",
       link: "customers",
       defaultIcon: cutomerDefault,
       activeIcon: cutomerActive,
-      function: () => {},
+      function: () => { },
     },
 
     {
@@ -70,14 +73,14 @@ const MobileSideBar = ({ active, closeSideBar, showMobileNav }) => {
       link: "settings",
       defaultIcon: settingsDefault,
       activeIcon: settingsActive,
-      function: () => {},
+      function: () => { },
     },
     {
       name: "Support",
       link: "support",
       defaultIcon: supportDefault,
       activeIcon: supportActive,
-      function: () => {},
+      function: () => { },
     },
     {
       name: "Logout",
@@ -85,7 +88,7 @@ const MobileSideBar = ({ active, closeSideBar, showMobileNav }) => {
       defaultIcon: loggoutDefault,
       activeIcon: loggoutDefault,
       function: () => {
-        setShowLogOutModal(true);
+        dispatch(handlelogout({ logout: true }))
       },
     },
   ];
@@ -96,9 +99,8 @@ const MobileSideBar = ({ active, closeSideBar, showMobileNav }) => {
   };
   return (
     <div
-      className={`w-screen ${
-        showMobileNav ? "block" : "hidden"
-      } bg-[rgba(0,0,0,.2)] fixed h-[100rem] z-40 top-0 `}
+      className={`w-screen ${showMobileNav ? "block" : "hidden"
+        } bg-[rgba(0,0,0,.2)] fixed h-[100rem] z-40 top-0 `}
       style={{ zIndex: 50 }}
       onClick={() => {
         closeSideBar();
@@ -129,23 +131,14 @@ const MobileSideBar = ({ active, closeSideBar, showMobileNav }) => {
                 <Image src={item.defaultIcon} alt="" />
               )}
               <p
-                className={`font-normal text-[14px] ${
-                  active === item.name ? "text-primary" : " text-gray-100"
-                }`}
+                className={`font-normal text-[14px] ${active === item.name ? "text-primary" : " text-gray-100"
+                  }`}
               >
                 {item.name}
               </p>
             </div>
           ))}
         </div>
-          <Modal
-          show={showLogOutModal} 
-            content={
-              <div className="flex items-center justify-center h-[100%] ">
-                <Logout logoutFunction={logoutFunction} />
-              </div>
-            }
-          />
       </div>
     </div>
   );

@@ -8,15 +8,16 @@ import getVendorDetails from "@/api/request";
 import { clearToken, setUserData } from "@/utils/localstorage";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { useRouter } from "next/navigation";
-
-
+import { handlelogout, logout, sliceReducer } from "@/redux/slice";
 import { setFilter } from "@/redux/slice";
+import { reduxData } from "@/redux/slice";
+import Modal from "@/components/Modal";
+import Logout from "@/components/Logout";
 const Layout = ({ children }) => {
   const router = useRouter();
-  const filterData = useAppSelector((state) => state.filter.state);
+  const stateData = useAppSelector(reduxData);
   const dispatch = useAppDispatch();
   const pathname = usePathname();
-
   const [userDetails, setUserDetails] = useState({
     businessName: "",
     profileImage: "",
@@ -102,7 +103,7 @@ const Layout = ({ children }) => {
           <div className="lg:ml-[280px]">
             <div className="p-4">
               <DasboardNavWithOutSearch userDetails={userDetails}
-                value={filterData}
+                value={stateData.state}
                 addSearch={addSearch}
                 setValue={(data) => {
                   dispatch(setFilter(data));
@@ -113,7 +114,18 @@ const Layout = ({ children }) => {
             </div>
             <div className="max-w-[1148px] lg:m-auto"> {children}</div>
           </div>
-        </div></div>)}
+        </div>
+        <Modal
+          show={stateData.
+            logout
+          }
+          content={
+            <div className="flex items-center justify-center h-[100%] ">
+              <Logout logoutFunction={() => { dispatch(handlelogout({ logout: false })) }} />
+            </div>
+          }
+        />
+      </div>)}
 
     </div>
   );
