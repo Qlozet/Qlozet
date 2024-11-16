@@ -28,7 +28,7 @@ const RejectOrderModal = ({ closeModal }) => {
         <Typography
           textColor="text-primary"
           textWeight="font-bold"
-          textSize="text-[14px]"
+          textSize="text-sm"
         >
           Reject Order
         </Typography>
@@ -40,7 +40,7 @@ const RejectOrderModal = ({ closeModal }) => {
         <Typography
           textColor="text-primary"
           textWeight="font-[300]"
-          textSize="text-[14px]"
+          textSize="text-sm"
         >
           Tell us why you’re rejecting this order
         </Typography>
@@ -65,7 +65,7 @@ const RejectOrderModal = ({ closeModal }) => {
               children="Submit"
               btnSize="large"
               variant="primary"
-              clickHandler={() => {}}
+              clickHandler={() => { }}
               maxWidth="max-w-[12rem]"
             />
           </div>

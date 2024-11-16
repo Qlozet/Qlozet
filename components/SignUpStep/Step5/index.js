@@ -65,7 +65,7 @@ const Step5 = ({ formData, setFormData, requiredData, setRequiredData }) => {
         </Typography>
         <Typography
           textWeight="font-normal"
-          textSize="text-[14px]"
+          textSize="text-sm"
           verticalPadding="my-2"
           textColor="text-dark"
         >
@@ -73,7 +73,7 @@ const Step5 = ({ formData, setFormData, requiredData, setRequiredData }) => {
         </Typography>
         <Typography
           textWeight="font-bold"
-          textSize="text-[14px]"
+          textSize="text-sm"
           verticalPadding="my-4"
           textColor="text-dark"
         >

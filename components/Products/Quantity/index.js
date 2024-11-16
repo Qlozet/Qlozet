@@ -10,7 +10,7 @@ const Quantity = ({ variant, quantity }) => {
       <Typography
         textColor="text-dark"
         textWeight="font-normal"
-        textSize="text-[14px]"
+        textSize="text-sm"
       >
         In
       </Typography>
@@ -20,7 +20,7 @@ const Quantity = ({ variant, quantity }) => {
       <Typography
         textColor="text-dark"
         textWeight="font-normal"
-        textSize="text-[14px]"
+        textSize="text-sm"
       >
         variant
       </Typography>

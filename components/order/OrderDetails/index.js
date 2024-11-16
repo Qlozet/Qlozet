@@ -37,7 +37,7 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
                     <Typography
                       textColor="text-dark"
                       textWeight="font-[700]"
-                      textSize="text-[14px]"
+                      textSize="text-sm"
                     >
                       {item.name}
                     </Typography>
@@ -60,14 +60,14 @@ const OrderDetails = ({ topNavData, closeModal, order }) => {
             <Typography
               textColor="text-dark"
               textWeight="font-bold"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               Ship Order
             </Typography>
             <Typography
               textColor="text-dark"
               textWeight="font-normal"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               Toggle button to set order as ready to ship
             </Typography>

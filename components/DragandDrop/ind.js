@@ -228,7 +228,7 @@ const DragDrop = ({
           <Typography
             textColor="text-dark"
             textWeight="font-[600]"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             Drag & Drop parts of the cloth
           </Typography>

@@ -88,7 +88,7 @@ const SignIn = () => {
                     </Typography>
                     <Typography
                       textWeight="font-normal"
-                      textSize="text-[14px]"
+                      textSize="text-sm"
                       verticalPadding="my-1"
                     >
                       Please enter your login details below

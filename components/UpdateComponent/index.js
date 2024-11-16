@@ -14,7 +14,7 @@ const UpdateComponent = () => {
         <Typography
           textColor="text-gray-100"
           textWeight="font-normal"
-          textSize="text-[14px]"
+          textSize="text-sm"
         >
           To access all ALTIREs service, please complete your KYC verification
           process
@@ -23,7 +23,7 @@ const UpdateComponent = () => {
           <Typography
             textColor="text-[#FFB020]"
             textWeight="font-[600]"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             Update Profile
           </Typography>

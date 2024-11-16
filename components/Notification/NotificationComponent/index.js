@@ -39,7 +39,7 @@ const Notification = ({ id, read, title, desc, date }) => {
           {isOpen && <Typography
             textColor="text-primary"
             textWeight="font-normal"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             {desc}
           </Typography>}
@@ -50,7 +50,7 @@ const Notification = ({ id, read, title, desc, date }) => {
         <Typography
           textColor="text-gray-1"
           textWeight="font-normal"
-          textSize="text-[14px]"
+          textSize="text-sm"
         >
           {moment(date).format("DD/MM/YYYY")}
         </Typography>

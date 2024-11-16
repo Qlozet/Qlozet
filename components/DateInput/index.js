@@ -17,10 +17,10 @@ const DateInput = ({
   return (
     <div className="my-3 relative">
       {leftIcon}
-      <label className="text-[14px] font-light my-2 text-dark"> {label}</label>
+      <label className="text-sm font-light my-2 text-dark"> {label}</label>
       <input
         value={value}
-        className={`border-solid border-[1.5px] placeholder-gray-200 text-dark block w-full p-2 focus:border-primary-100 border-gray-2 rounded-[8px] focus:outline-none focus:bg-[#DDE2E5] text-[14px]`}
+        className={`border-solid border-[1.5px] placeholder-gray-200 text-dark block w-full p-2 focus:border-primary-100 border-gray-2 rounded-[8px] focus:outline-none focus:bg-[#DDE2E5] text-sm`}
         onChange={() => {
           setValue(e.target.value);
         }}

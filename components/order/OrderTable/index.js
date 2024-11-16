@@ -96,26 +96,24 @@ const OrderTable = ({
               </div>
             </div>
           </div>
-          <div className="p-2 flex items-center justify-between mt-8  bg-[#F4F4F4] rounded-t-[12px] ">
+          <div className="p-2 flex items-center justify-between mt-4  bg-[#F4F4F4] rounded-t-[12px] ">
             <Typography
               textColor="text-dark"
-              textWeight="font-bold"
+              textWeight="font-medium"
               textSize="text-[18px]"
             >
               Orders
             </Typography>
             <DropDown
               data={[
-                "This week",
-                "Last week",
-                "This month",
-                "Last month",
-                "Choose month",
-                "Custom",
+                "Delivered",
+                "Pending",
+                "Failed",
+
               ]}
               maxWidth={"max-w-[8rem]"}
               placeholder="Time Range"
-              setValue={(startDate, endDate) => {
+              setValue={(startDate, endDate, value) => {
                 handleFilterWithDate(startDate, endDate);
               }}
             />

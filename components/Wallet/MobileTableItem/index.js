@@ -1,64 +1,63 @@
 import OrderStatus from "@/components/order/OrderStatus";
-
 const { default: Typography } = require("@/components/Typography");
-
 const MobileItem = ({ item, index }) => {
   return (
-    <div className="p-4 bg-white" key={index}>
+    <div className="px-4 py-6 bg-white border-b-[1.5px] border-solid border-gray-300" key={index}>
       <div className="flex justify-between items-center">
         <div className="flex flex-col gap-1">
-          <Typography
+          <div>  <Typography
             textColor="text-gray-200"
             textWeight="font-normal"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             transaction Id
           </Typography>
-          <Typography
-            textColor="text-dark"
-            textWeight="font-normal"
-            textSize="text-[16px]"
-          >
-            {12345}
-          </Typography>
-          <Typography
+            <Typography
+              textColor="text-dark"
+              textWeight="font-normal"
+              textSize="text-[16px]"
+            >
+              {12345}
+            </Typography></div>
+          <div className="mt-4"> <Typography
             textColor="text-gray-200"
             textWeight="font-normal"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             Amount
           </Typography>
-          <Typography
-            textColor="text-dark"
-            textWeight="font-normal"
-            textSize="text-[16px]"
-          >
-            {item.amount}
-          </Typography>
+            <Typography
+              textColor="text-dark"
+              textWeight="font-normal"
+              textSize="text-[16px]"
+            >
+              {item.amount}
+            </Typography></div>
         </div>
         <div className="flex flex-col items-end">
           <OrderStatus
-            text="Out for delivery"
-            bgColor="bg-[#DEF1FF]"
-            color="text-[#3893FE]"
+            text={item.status.text}
+            bgColor={item.status.bgColor}
+            color={item.status.color}
             addMaxWidth={true}
           />
-          <div className="my-2">
+          <div className="flex flex-col items-end mt-6">
             <Typography
               textColor="text-gray-200"
               textWeight="font-normal"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               Product
             </Typography>
+            <Typography
+              textColor="text-dark"
+              textWeight="font-normal"
+              textSize="text-[16px]"
+            >
+              12345678910
+            </Typography>
           </div>
-          <Typography
-            textColor="text-dark"
-            textWeight="font-normal"
-            textSize="text-[16px]"
-          >
-            12345678910
-          </Typography>
+
         </div>
       </div>
     </div>

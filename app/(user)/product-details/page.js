@@ -46,7 +46,7 @@ const ProductDetails = () => {
 
               <div className="w-full text-[#3E1C01]">
                 <div className="flex items-center justify-between w-full">
-                  <p className="text-[14px] leading-[20px]">MISKAY BOUTIQUE</p>
+                  <p className="text-sm leading-[20px]">MISKAY BOUTIQUE</p>
                   <div className="flex items-center gap-1">
                     <p className="text-xs leading-[18px] underline font-bold">
                       View product in main site
@@ -60,19 +60,19 @@ const ProductDetails = () => {
                 <div className="flex items-center gap-6 mb-6">
                   <div className="flex items-center gap-2">
                     <Image src={starIcon} />
-                    <span className="font-bold text-[14px] leading-[20px]">
+                    <span className="font-bold text-sm leading-[20px]">
                       4.8
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Image src={heartIcon} />
-                    <span className="font-bold text-[14px] leading-[20px]">
+                    <span className="font-bold text-sm leading-[20px]">
                       200
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Image src={chatIcon} />
-                    <span className="font-bold text-[14px] leading-[20px] mr-1">
+                    <span className="font-bold text-sm leading-[20px] mr-1">
                       100
                     </span>
                     <p className="underline font-light text-xs leading-[16px] text-[#495057]">
@@ -128,7 +128,7 @@ const ProductDetails = () => {
               </div>
             </div>
             <div className="flex w-full justify-end">
-              <Button className="text-[14px] leading-[20px]" variant="primary">
+              <Button className="text-sm leading-[20px]" variant="primary">
                 Edit Product
               </Button>
             </div>

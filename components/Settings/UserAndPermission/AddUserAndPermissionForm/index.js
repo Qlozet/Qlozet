@@ -40,7 +40,7 @@ const AddNewUserAndPermissionForm = ({ closeModal }) => {
           <Typography
             textColor="text-primary"
             textWeight="font-bold"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             Add new warehouse
           </Typography>
@@ -54,17 +54,17 @@ const AddNewUserAndPermissionForm = ({ closeModal }) => {
         <TextInput
           label="Full name"
           placeholder="Enter full name"
-          setValue={(data) => {}}
+          setValue={(data) => { }}
         />
         <TextInput
           label="Email  address"
           placeholder="Enter email address"
-          setValue={(data) => {}}
+          setValue={(data) => { }}
         />
         <TextInput
           label="Phone number"
           placeholder="Enter phone number"
-          setValue={(data) => {}}
+          setValue={(data) => { }}
         />
         <SelectInput
           placeholder={"Select an option"}

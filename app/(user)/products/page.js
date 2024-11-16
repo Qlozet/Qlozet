@@ -257,7 +257,7 @@ const Products = () => {
               <div>
                 <div className="relative">
                   <div
-                    className="flex items-center justify-between mt-8 mb-2"
+                    className=" hidden lg:flex items-center justify-between mt-8 mb-2"
                     style={{ zIndex: "20" }}
                   >
                     <Typography
@@ -292,12 +292,12 @@ const Products = () => {
                   showModal={showModal}
                   statusChangeHandler={toggleStatus}
                   handleFilterData={handleFilterData}
+                    handleFilterWithDate={handleFilterWithDate}
                 />
               </div>
             </div>
           )}
         </div>
-
         <Modal
           show={viewCustomerDetails}
           content={

@@ -15,12 +15,15 @@ import { putRequest } from "@/api/method";
 import Toast from "@/components/ToastComponent/toast";
 import toast from "react-hot-toast";
 import { handleExport } from "@/utils/helper";
+import DropDown from "@/components/DropDown";
+import Typography from "@/components/Typography";
 
 const ProductTable = ({
   data,
   showModal,
   statusChangeHandler,
   handleFilterData,
+  handleFilterWithDate
 }) => {
   const [productData, setProductData] = useState(data);
   const router = useRouter();
@@ -152,6 +155,30 @@ const ProductTable = ({
               <Image src={exportIcon} alt="" />
             </div>
           </div>
+        </div>
+        <div className="p-2 flex items-center justify-between mt-4  bg-[#F4F4F4] rounded-t-[12px] ">
+          <Typography
+            textColor="text-dark"
+            textWeight="font-medium"
+            textSize="text-[18px]"
+          >
+            Products
+          </Typography>
+          <DropDown
+            data={[
+              "This week",
+              "Last week",
+              "This month",
+              "Last month",
+              "Choose month",
+              "Custom",
+            ]}
+            maxWidth={"max-w-[8rem]"}
+            placeholder="Time Range"
+            setValue={(startDate, endDate, value) => {
+              handleFilterWithDate(startDate, endDate);
+            }}
+          />
         </div>
         {productData.map((item, index) => (
           <MobileTable

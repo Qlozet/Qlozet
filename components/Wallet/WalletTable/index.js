@@ -97,10 +97,10 @@ const WalletTable = ({
               </div>
             </div>
           </div>
-          <div className="p-2 flex items-center justify-between mt-14   bg-[#F4F4F4] rounded-t-[12px]">
+          <div className="p-2 flex items-center justify-between mt-6  bg-[#F4F4F4] rounded-t-[12px]">
             <Typography
               textColor="text-dark"
-              textWeight="font-bold"
+              textWeight="font-medium"
               textSize="text-[18px]"
             >
               Wallet

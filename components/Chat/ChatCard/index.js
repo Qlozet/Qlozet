@@ -14,7 +14,7 @@ const ChatCard = ({ text, graph }) => {
         <Typography
           textColor="text-gray-100"
           textWeight="font-bold"
-          textSize="text-[14px]"
+          textSize="text-sm"
         >
           {text}
         </Typography>

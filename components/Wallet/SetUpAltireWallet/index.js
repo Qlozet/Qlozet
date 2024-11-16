@@ -14,7 +14,7 @@ const SetUpAltireWallet = ({ closeModal }) => {
             <Typography
               textColor="text-black"
               textWeight="font-[500]"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               Set total order per day
             </Typography>
@@ -28,13 +28,13 @@ const SetUpAltireWallet = ({ closeModal }) => {
               <NumberInput
                 label="Bank verification number"
                 placeholder="1234567891"
-            setValue={(data)=>{}}  />
+                setValue={(data) => { }} />
             </div>
             <div className="mt-4">
               <TextInput
                 label="Name"
                 placeholder="Enter name"
-                setValue={(data) => {}}
+                setValue={(data) => { }}
               />
             </div>
             <div className="mt-4">
@@ -45,7 +45,7 @@ const SetUpAltireWallet = ({ closeModal }) => {
                 children="Submit"
                 btnSize="large"
                 variant="primary"
-                clickHandler={() => {}}
+                clickHandler={() => { }}
                 maxWidth="max-w-[12rem]"
               />
             </div>

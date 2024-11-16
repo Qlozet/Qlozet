@@ -169,7 +169,7 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
           </div>
           <div>
             <div className="my-3 relative">
-              <p className="text-[14px] font-light my-2 text-dark">
+              <p className="text-sm font-light my-2 text-dark">
                 Upload Image
               </p>
               <input

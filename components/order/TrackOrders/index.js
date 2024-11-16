@@ -51,7 +51,7 @@ const TrackOrder = ({ data, closeModal }) => {
                 <Typography
                   textColor="text-primary"
                   textWeight="font-bold"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                   align="center"
                 >
                   +234 8103456789
@@ -59,7 +59,7 @@ const TrackOrder = ({ data, closeModal }) => {
                 <Typography
                   textColor="text-dark"
                   textWeight="font-normal"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                   align="center"
                 >
                   Order taken by Salims

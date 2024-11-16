@@ -101,7 +101,9 @@ const Layout = ({ children }) => {
       </div>
         <div>
           <div className="lg:ml-[280px]">
-            <div className="p-4">
+            <div className="p-4 sticky left-0 top-0 bg-white lg:bg-gray-400" style={{
+              zIndex: 950
+            }}>
               <DasboardNavWithOutSearch userDetails={userDetails}
                 value={stateData.state}
                 addSearch={addSearch}

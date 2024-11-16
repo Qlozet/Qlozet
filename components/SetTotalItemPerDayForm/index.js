@@ -13,7 +13,7 @@ const SetTotalOrderPerDay = ({ closeModal }) => {
             <Typography
               textColor="text-dark"
               textWeight="font-[500]"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               Set total order per day
             </Typography>
@@ -26,7 +26,7 @@ const SetTotalOrderPerDay = ({ closeModal }) => {
             <Typography
               textColor="text-dark"
               textWeight="font-[300]"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               You can set the number of orders you want to receive for your
               customisable/tailored outflit
@@ -35,15 +35,15 @@ const SetTotalOrderPerDay = ({ closeModal }) => {
               <NumberInput
                 label="Set number of orders you want to receive in a day"
                 placeholder="Enter number"
-             setValue={(data)=>{}}
-             />
+                setValue={(data) => { }}
+              />
             </div>
             <div className="mt-10 flex items-center justify-end">
               <Button
                 children="Continue"
                 btnSize="large"
                 variant="primary"
-                clickHandler={() => {}}
+                clickHandler={() => { }}
                 maxWidth="max-w-[12rem]"
               />
             </div>

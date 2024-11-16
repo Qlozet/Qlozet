@@ -14,15 +14,14 @@ const CustomizeNav = ({
 }) => {
   return (
     <div
-      className={`${width ? width : "w-full lg:w-[50%]"} ${
-        bg ? bg : "bg-white "
-      } py-1 px-5 rounded-t-[12px] `}
+      className={`${width ? width : "w-full lg:w-[50%]"} ${bg ? bg : "bg-white "
+        } py-1 px-5 rounded-t-[12px] `}
     >
       <div className="flex items-center justify-between py-4">
         <Typography
           textColor="text-dark"
           textWeight="font-[600]"
-          textSize="text-[14px]"
+          textSize="text-sm"
         >
           Customize
         </Typography>
@@ -39,21 +38,19 @@ const CustomizeNav = ({
           {data.map((item, index) => (
             <div
               key={index}
-              className={`cursor-pointer ${
-                active === item.item
+              className={`cursor-pointer ${active === item.item
                   ? "border-solid border-b-[2px] border-primary"
                   : ""
-              }`}
+                }`}
               onClick={() => {
                 clickCurrentNav(item.item);
               }}
             >
               <Typography
-                textColor={`${
-                  active === item.item ? "text-primary" : "text-dark"
-                }`}
+                textColor={`${active === item.item ? "text-primary" : "text-dark"
+                  }`}
                 textWeight="font-[400]"
-                textSize="text-[14px]"
+                textSize="text-sm"
               >
                 {item.item}
               </Typography>

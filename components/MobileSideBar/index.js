@@ -99,9 +99,9 @@ const MobileSideBar = ({ active, closeSideBar, showMobileNav }) => {
   };
   return (
     <div
-      className={`w-screen ${showMobileNav ? "block" : "hidden"
+      className={`w-screen   ${showMobileNav ? "block lg:hidden" : "hidden"
         } bg-[rgba(0,0,0,.2)] fixed h-[100rem] z-40 top-0 `}
-      style={{ zIndex: 50 }}
+      style={{ zIndex: 10000 }}
       onClick={() => {
         closeSideBar();
       }}
@@ -131,7 +131,7 @@ const MobileSideBar = ({ active, closeSideBar, showMobileNav }) => {
                 <Image src={item.defaultIcon} alt="" />
               )}
               <p
-                className={`font-normal text-[14px] ${active === item.name ? "text-primary" : " text-gray-100"
+                className={`font-normal text-sm ${active === item.name ? "text-primary" : " text-gray-100"
                   }`}
               >
                 {item.name}

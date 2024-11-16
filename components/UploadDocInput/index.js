@@ -165,15 +165,15 @@ function UploadDocInput({ handleSelect, uploadfiles, singleUpload }) {
 
         <input {...getInputProps()} />
         {isDragActive ? (
-          <p className="text-center font-[700] text-[14px] text-dark">
+          <p className="text-center font-[700] text-sm text-dark">
             Drop the files here ...
           </p>
         ) : (
           <div>
-            {files.length === 0 && (<div>  <p className="text-center font-[700] text-[14px]  text-dark">
+            {files.length === 0 && (<div>  <p className="text-center font-[700] text-sm  text-dark">
               You can also
             </p>
-              <p className="text-center font-[700] text-[14px]  text-dark">
+              <p className="text-center font-[700] text-sm  text-dark">
                 Drag and drop your file here
               </p></div>)}
 

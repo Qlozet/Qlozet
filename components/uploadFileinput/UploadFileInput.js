@@ -48,7 +48,7 @@ const FileInput = ({
 
   return (
     <div className="my-3 w-full">
-      <label className="text-[14px] text-dark">{label}</label>
+      <label className="text-sm text-dark">{label}</label>
       <div className="overflow-hidden">
         <div
           className={`${classes.scrollbarElement} w-full h-[7rem] flex items-center gap-4 px-4 border-[1.5px] border-solid border-primary-200 rounded-[12px]`}
@@ -95,7 +95,7 @@ const FileInput = ({
         type="file" name="files" multiple="multiple"
         id={"files"}
         className={`py-3 px-4 w-full border-solid border-[1.5px] 
-            focus:outline-none focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 ${disabled && "border-0 bg-gray-300 cursor-not-allowed min-h-[82px]"
+            focus:outline-none focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-sm text-font-light placeholder:font-300 ${disabled && "border-0 bg-gray-300 cursor-not-allowed min-h-[82px]"
           } hidden`}
         disabled={disabled}
         placeholder={placeholder}

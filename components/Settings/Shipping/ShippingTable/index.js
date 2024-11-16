@@ -118,7 +118,7 @@ const ShippingTable = () => {
                 <Typography
                   textColor="text-dark"
                   textWeight="font-[400]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Name
                 </Typography>
@@ -126,7 +126,7 @@ const ShippingTable = () => {
                   <Typography
                     textColor="text-dark"
                     textWeight="font-[500]"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     {item.Name}
                   </Typography>
@@ -136,7 +136,7 @@ const ShippingTable = () => {
                 <Typography
                   textColor="text-dark"
                   textWeight="font-[400]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Phone Number
                 </Typography>
@@ -144,7 +144,7 @@ const ShippingTable = () => {
                   <Typography
                     textColor="text-dark"
                     textWeight="font-[500]"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     {item.PhoneNumber}
                   </Typography>
@@ -155,7 +155,7 @@ const ShippingTable = () => {
                 <Typography
                   textColor="text-dark"
                   textWeight="font-[400]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   No of Deliveries
                 </Typography>
@@ -163,7 +163,7 @@ const ShippingTable = () => {
                   <Typography
                     textColor="text-dark"
                     textWeight="font-[500]"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     {item.noOfDeliveries}
                   </Typography>
@@ -173,7 +173,7 @@ const ShippingTable = () => {
                 <Typography
                   textColor="text-dark"
                   textWeight="font-[400]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Email address
                 </Typography>
@@ -181,7 +181,7 @@ const ShippingTable = () => {
                   <Typography
                     textColor="text-dark"
                     textWeight="font-[500]"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     {item.emailAddress}
                   </Typography>
@@ -191,7 +191,7 @@ const ShippingTable = () => {
                 <Typography
                   textColor="text-dark"
                   textWeight="font-[400]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Address
                 </Typography>
@@ -199,7 +199,7 @@ const ShippingTable = () => {
                   <Typography
                     textColor="text-dark"
                     textWeight="font-[500]"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     {item.Address}
                   </Typography>

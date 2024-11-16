@@ -37,14 +37,14 @@ const CustomerDetails = ({ topNavData, closeModal }) => {
             <Typography
               textColor="text-black"
               textWeight="font-bold"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               Ship Order
             </Typography>
             <Typography
               textColor="text-black"
               textWeight="font-normal"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               Toggle button to set order as ready to ship
             </Typography>
@@ -57,14 +57,14 @@ const CustomerDetails = ({ topNavData, closeModal }) => {
             <Typography
               textColor="text-black"
               textWeight="font-normal"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               Amasi Queen Shirt
             </Typography>
             <Typography
               textColor="text-black"
               textWeight="font-bold"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               Amasi Queen Shirt
             </Typography>
@@ -73,14 +73,14 @@ const CustomerDetails = ({ topNavData, closeModal }) => {
             <Typography
               textColor="text-black"
               textWeight="font-normal"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               Amasi Queen Shirt
             </Typography>
             <Typography
               textColor="text-black"
               textWeight="font-bold"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               Amasi Queen Shirt
             </Typography>
@@ -89,14 +89,14 @@ const CustomerDetails = ({ topNavData, closeModal }) => {
             <Typography
               textColor="text-black"
               textWeight="font-normal"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               Amasi Queen Shirt
             </Typography>
             <Typography
               textColor="text-black"
               textWeight="font-bold"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               Amasi Queen Shirt
             </Typography>
@@ -105,14 +105,14 @@ const CustomerDetails = ({ topNavData, closeModal }) => {
             <Typography
               textColor="text-black"
               textWeight="font-normal"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               Amasi Queen Shirt
             </Typography>
             <Typography
               textColor="text-black"
               textWeight="font-bold"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               Amasi Queen Shirt
             </Typography>
@@ -125,7 +125,7 @@ const CustomerDetails = ({ topNavData, closeModal }) => {
               children="Reject Order"
               btnSize="large"
               variant="outline"
-              clickHandler={() => {}}
+              clickHandler={() => { }}
               maxWidth="max-w-[14rem]"
             />
           </div>
@@ -134,7 +134,7 @@ const CustomerDetails = ({ topNavData, closeModal }) => {
               children="Confirm order "
               btnSize="large"
               variant="primary"
-              clickHandler={() => {}}
+              clickHandler={() => { }}
               maxWidth="max-w-[14rem]"
             />
           </div>

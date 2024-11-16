@@ -722,7 +722,7 @@ const AddProduct = () => {
                   </div>
                   {addVariant && (<div> <div className="w-full">
                     <ColorInput
-                      index={50}
+                      index={1200}
                       value={selectedColors}
                       label="Colour"
                       placeholder="Choose colours available for this product"

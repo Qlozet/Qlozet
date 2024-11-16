@@ -72,7 +72,7 @@ const AddNewWarehouseForm = ({ closeModal }) => {
       error && setIsloading(false);
     }
   };
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
   return (
     <div className="bg-white rounded-[12px] w-full lg:w-[40%]  m-auto px-4 py-6 my-6">
       <div>
@@ -80,7 +80,7 @@ const AddNewWarehouseForm = ({ closeModal }) => {
           <Typography
             textColor="text-primary"
             textWeight="font-bold"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             {/* Not check when integrating, if Id is available change Add to Edit  */}
             Add new warehouse

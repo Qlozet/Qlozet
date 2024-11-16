@@ -46,7 +46,7 @@ const ShecduleProduct = ({ closeSchedule }) => {
               <Typography
                 textColor="text-primary"
                 textWeight="font-bold"
-                textSize="text-[14px]"
+                textSize="text-sm"
               >
                 Schedule product activation
               </Typography>
