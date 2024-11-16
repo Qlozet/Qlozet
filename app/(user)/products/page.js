@@ -184,7 +184,7 @@ const Products = () => {
                   <Button
                     children={
                       <span className="flex justify-center items-center">
-                        <span>Add new product</span>
+                        <span>New product</span>
                         <Image src={addIcon} className="ml-4" alt="" />
                       </span>
                     }
