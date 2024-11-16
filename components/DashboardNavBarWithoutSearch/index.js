@@ -28,7 +28,7 @@ const DasboardNavWithOutSearch = ({
 
   return (
     <div>
-      <div className={` ${!hideNav ? " " : "pt-2"} rounded-[15px] max-w-[1118px] lg:m-auto`}>
+      <div className={` ${!hideNav ? " " : "pt-2"} rounded-[15px] max-w-[1118px] lg:m-auto `}>
         <div className="block lg:hidden">
           <div className="items-center justify-between px-3 py-3 bg-gray-400 rounded-[12px] hidden">
             <Image src={transformText} alt="" />
@@ -36,7 +36,7 @@ const DasboardNavWithOutSearch = ({
             <Image src={clockwise} alt="" />
           </div>
           {!hideNav && (
-            <div className="flex items-center justify-between mt-4">
+            <div className="flex items-center justify-between mt-0 lg:mt-0">
               <div className="flex items-center gap-4">
                 <div
                   className="w-[2rem] h-[2rem] bg-primary flex items-center justify-center  rounded-[8px] cursor-pointer"
@@ -108,7 +108,7 @@ const DasboardNavWithOutSearch = ({
                   }}
                   placeholder="Search"
                   className={`py-2 pl-12 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark focus:outline-none
-              focus:border-none border-gray-2 rounded-[12px] overflow-hidden text-[14px] text-font-light placeholder:font-300 bg-[#F8F9FA] 
+              focus:border-none border-gray-2 rounded-[12px] overflow-hidden text-sm text-font-light placeholder:font-300 bg-[#F8F9FA] 
        `}
                 />
               </div>

@@ -30,6 +30,7 @@ import { statusHandler } from "@/utils/helper";
 
 // redux
 import { useAppSelector } from "@/redux/store";
+import Button from "@/components/Button";
 
 const Order = () => {
   const filterData = useAppSelector((state) => state.filter.state);
@@ -139,7 +140,17 @@ const Order = () => {
     } catch (error) { }
   };
 
-  const handleFilterWithDate = (startDate, endDate) => {
+  const handleFilterWithDate = (startDate, endDate, value) => {
+    setFilteredOrders(
+      orders.filter(
+        (item) =>
+          moment(item.createdAt).valueOf() >= startDate &&
+          moment(item.createdAt).valueOf() <= endDate
+      )
+    );
+  };
+  const handleFilterWithStatus = (startDate, endDate, value) => {
+    console.log(value)
     setFilteredOrders(
       orders.filter(
         (item) =>
@@ -158,6 +169,8 @@ const Order = () => {
       )
     );
   };
+
+
   // function ends
 
   useEffect(() => {
@@ -175,45 +188,44 @@ const Order = () => {
             <Loader></Loader>
           ) : (
             <div>
-              <div
-                className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4 lg:hidden`}
-              >
-                <DashboardTopCard
-                  name="Total Orders"
-                  total={orders.length}
-                  percentage="2.5"
-                  bgColor="bg-[#57CAEB]"
-                  icon={TotalOrderIcon}
-                  addMaxWidth={false}
-                  link={false}
-                />
-                <DashboardTopCard
-                  name="Orders Delivered"
-                  total={deliveredOrder}
-                  percentage="2.5"
-                  bgColor="bg-[#5DDAB4]"
-                  icon={sendIcon}
-                  addMaxWidth={false}
-                />
-                <DashboardTopCard
-                  name="Orders in Transit"
-                  total={orderInTransit}
-                  percentage="2.5"
-                  bgColor="bg-[#FF7676]"
-                  icon={carIcon}
-                  addMaxWidth={false}
-                />
-                <DashboardTopCard
-                  name="Most purchased order"
-                  total="1000"
-                  percentage="2.5"
-                  bgColor="bg-[#FF9E57]"
-                  icon={shippingIcon}
-                  addMaxWidth={false}
+
+              <div className="flex items-center justify-end py-4 gap-6">
+
+                <div>
+                  <Button
+                    children={
+                      <span className="flex justify-center items-center">
+                        <span>Orders per week</span>
+                        {/* <Image src={addIcon} className="ml-4" alt="" /> */}
+                      </span>
+                    }
+                    btnSize="small"
+                    minWidth="lg:min-w-[14rem]"
+                    variant="primary"
+                    clickHandler={() => {
+                      // router.push("/add");
+                      // clearProductId();
+                    }}
+                  />
+                </div>
+                <DropDown
+                  data={[
+                    "This week",
+                    "Last week",
+                    "This month",
+                    "Last month",
+                    "Choose month",
+                    "Custom",
+                  ]}
+                  maxWidth={"max-w-[8rem]"}
+                  placeholder="Time Range"
+                  setValue={(startDate, endDate) => {
+                    handleFilterWithDate(startDate, endDate);
+                  }}
                 />
               </div>
               <div
-                className={`${classes.scrollbarElement} border-solid border-primary-100 items-center gap-4 overflow-x-scroll hidden lg:flex`}
+                className={`${classes.scrollbarElement} border-solid border-primary-100 items-center gap-4 overflow-x-scroll  flex`}
               >
                 <DashboardTopCard
                   name="Total Orders"
@@ -249,7 +261,7 @@ const Order = () => {
                 />
               </div>
               <div className="">
-                <div className="items-center justify-between mt-8 mb-2 hidden md:flex">
+                <div className="items-center justify-between mt-8 mb-2 hidden lg:flex">
                   <Typography
                     textColor="text-dark"
                     textWeight="font-bold"
@@ -260,17 +272,15 @@ const Order = () => {
                   <div className="">
                     <DropDown
                       data={[
-                        "This week",
-                        "Last week",
-                        "This month",
-                        "Last month",
-                        "Choose month",
-                        "Custom",
+                        "Delivered",
+                        "Pending",
+                        "Failed",
                       ]}
                       maxWidth={"max-w-[8rem]"}
-                      placeholder="Time Range"
-                      setValue={(startDate, endDate) => {
-                        handleFilterWithDate(startDate, endDate);
+                      placeholder="Delivery status"
+                      setValue={(startDate, endDate, value) => {
+                        console.log(value)
+                        handleFilterWithStatus(value);
                       }}
                     />
                   </div>
@@ -305,7 +315,6 @@ const Order = () => {
           show={showTrack}
           content={<>{showTrack && (<TrackOrder data={topNavData} closeModal={closeModal} />)}</>}
         ></Modal>
-
         <Modal
           show={showCustomer}
           content={

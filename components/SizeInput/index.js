@@ -45,7 +45,7 @@ const SizeInput = ({
       style={{ zIndex: index ? index : 10 }}
     >
       <div className={`${classes.container}`}>
-        <label className="text-[14px] text-dark">{label}</label>
+        <label className="text-sm text-dark">{label}</label>
         <input
           readOnly
           onChange={filterList}
@@ -62,7 +62,7 @@ const SizeInput = ({
           className={`py-3 ${disabled ? "bg-gray-300" : "bg-white"
             } ${error && "border-danger"
             } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  absolute top-[1.5rem] left-0
-            focus:outline-none focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 
+            focus:outline-none focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-sm text-font-light placeholder:font-300 
            `}
         ></input>
         <div className="absolute top-[2rem] left-[0.5rem] flex items-center gap-2 ">

@@ -4,24 +4,26 @@ import OrderStatus from "../OrderStatus";
 const MobileTableItem = ({ item }) => {
   return (
     <div className="">
-      <div className="flex justify-between items-center bg-white p-4">
-        <div className="flex flex-col gap-1">
+      <div className="flex justify-between items-center bg-white py-6 px-4 border-b-[.5px] border-gray-300 border-solid ">
+        <div className="flex flex-col gap-1 text-sm" >
+          <div className="mb-4">
+            <Typography
+              textColor="text-[#707FA3]"
+              textWeight="font-normal"
+              textSize="text-sm"
+            >
+              Ref ID
+            </Typography>
+            <Typography
+              textColor="text-dark"
+              textWeight="font-normal"
+              textSize="text-[16px]"
+            >
+              {item.orderId}
+            </Typography>
+          </div>
           <Typography
-            textColor="text-gray-200"
-            textWeight="font-normal"
-            textSize="text-[14px]"
-          >
-            Ref ID
-          </Typography>
-          <Typography
-            textColor="text-dark"
-            textWeight="font-normal"
-            textSize="text-[16px]"
-          >
-            {item.orderId}
-          </Typography>
-          <Typography
-            textColor="text-gray-200"
+            textColor="text-[#707FA3]"
             textWeight="font-normal"
             textSize="text-[14px]"
           >
@@ -35,30 +37,27 @@ const MobileTableItem = ({ item }) => {
             {item.AmountPaid}
           </Typography>
         </div>
-        <div className="flex flex-col items-end">
-          <OrderStatus
+        <div className="flex flex-col items-end ">
+          <div className="mb-4">   <OrderStatus
             text={item.DeliveryStatus.name}
             bgColor={item.DeliveryStatus.bg}
             color={item.DeliveryStatus.text}
             addMaxWidth={true}
-          />
-          <div className="my-2">
-            <Typography
-              textColor="text-gray-200"
-              textWeight="font-normal"
-              textSize="text-[14px]"
-            >
-              Product
-            </Typography>
-          </div>
-          {/* <Typography
-            textColor="text-dark"
-            textWeight="font-normal"
-            textSize="text-[16px]"
-          > */}
-          <p className="overflow-hidden text-ellipsis  whitespace-nowrap max-w-[200px] "> {item.productName}</p>
+          /></div>
+          <div className="mt-4 flex flex-col items-end ">
+            <div className="flex-col ">
+              <Typography
+                textColor="text-[#707FA3]"
+                textWeight="font-normal"
+                textSize="text-[14px]"
+              >
+                Product
+              </Typography>
+            </div>
 
-          {/* </Typography> */}
+            <p className="overflow-hidden text-ellipsis  whitespace-nowrap max-w-[200px] "> {item.productName}</p></div>
+
+
         </div>
       </div>
     </div>

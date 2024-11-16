@@ -76,7 +76,7 @@ const Beneficiary = ({ closeModal }) => {
                   <div className="flex items-center">
                     <div className="flex items-center gap-4">
                       <div>
-                        <div className=" w-[2rem] h-[2rem] rounded-[50%] bg-[#FF9E57] flex items-center justify-center text-white font-[500] text-[14px]">
+                        <div className=" w-[2rem] h-[2rem] rounded-[50%] bg-[#FF9E57] flex items-center justify-center text-white font-[500] text-sm">
                           {item.accountName.slice(0, 2)}
                         </div>
                       </div>
@@ -84,7 +84,7 @@ const Beneficiary = ({ closeModal }) => {
                         <Typography
                           textColor="text-dark"
                           textWeight="font-bold"
-                          textSize="text-[14px]"
+                          textSize="text-sm"
                         >
                           {item.accountName}
                         </Typography>

@@ -27,7 +27,7 @@ const ProductItemDropDown = ({ data, handleSelect, outSideCLicked }) => {
             {data.map((item, index) => (
               <div
                 key={index}
-                className={`hover:bg-gray-400 cursor-pointer text-[14px] p-4 ${index < data.length - 1 &&
+                className={`hover:bg-gray-400 cursor-pointer text-sm p-4 ${index < data.length - 1 &&
                   "border-b-[1px] border-solid border-gray-300"
                   }    ${item === "Deactivate product" || item === "Delete product"
                     ? "text-danger"

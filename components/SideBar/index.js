@@ -96,7 +96,7 @@ const SideBar = ({ active }) => {
     <div
       className={`hidden lg:block bg-white fixed top-0 left-0 w-[260px] max-w-[260px] lg:min-w-[250px] h-screen ${styles.container}`}
       style={{
-        zIndex: 5000,
+        zIndex: 950,
       }}
     >
       <div className="py-10 lg:px-16 md:px-4">
@@ -129,7 +129,7 @@ const SideBar = ({ active }) => {
               <Image src={item.defaultIcon} alt="" />
             )}
             <p
-              className={`hidden md:block font-normal text-[14px] ${active === item.name ? "text-primary" : " text-gray-100"
+              className={`hidden md:block font-normal text-sm ${active === item.name ? "text-primary" : " text-gray-100"
                 }`}
             >
               {item.name}

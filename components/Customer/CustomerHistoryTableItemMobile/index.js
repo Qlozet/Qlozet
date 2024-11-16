@@ -10,7 +10,7 @@ const CustomerHistoryTableItem = ({ item, index }) => {
           <Typography
             textColor="text-gray-200"
             textWeight="font-normal"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             transaction Id
           </Typography>
@@ -24,7 +24,7 @@ const CustomerHistoryTableItem = ({ item, index }) => {
           <Typography
             textColor="text-gray-200"
             textWeight="font-normal"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             Amount
           </Typography>
@@ -47,7 +47,7 @@ const CustomerHistoryTableItem = ({ item, index }) => {
             <Typography
               textColor="text-gray-200"
               textWeight="font-normal"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               Product
             </Typography>

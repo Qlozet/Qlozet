@@ -14,7 +14,7 @@ const RequestCategoryForm = ({ closeModal }) => {
           <Typography
             textColor="text-primary"
             textWeight="font-bold"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             Add new warehouse
           </Typography>
@@ -28,12 +28,12 @@ const RequestCategoryForm = ({ closeModal }) => {
         <TextInput
           label="Company name"
           placeholder="Enter company name"
-          setValue={(data) => {}}
+          setValue={(data) => { }}
         />
         <TextInput
           label="Category type"
           placeholder="Enter category type"
-          setValue={(data) => {}}
+          setValue={(data) => { }}
         />
         <div className="mb-[10rem] mt-6 flex items-center justify-center lg:justify-end">
           <Button

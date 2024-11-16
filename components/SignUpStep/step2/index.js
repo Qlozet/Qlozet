@@ -18,7 +18,7 @@ const Step2 = ({ formData, setFormData, requiredData, setRequiredData }) => {
         </Typography>
         <Typography
           textWeight="font-normal"
-          textSize="text-[14px]"
+          textSize="text-sm"
           verticalPadding="my-1"
           textColor="text-dark"
         >

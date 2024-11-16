@@ -117,7 +117,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
                   <Typography
                     textColor="text-dark"
                     textWeight="font-[400]"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     Warehouse name
                   </Typography>
@@ -125,7 +125,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
                     <Typography
                       textColor="text-dark"
                       textWeight="font-[500]"
-                      textSize="text-[14px]"
+                      textSize="text-sm"
                     >
                       {item.warehouseName}
                     </Typography>
@@ -135,7 +135,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
                   <Typography
                     textColor="text-dark"
                     textWeight="font-[400]"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     Vendor ID
                   </Typography>
@@ -143,7 +143,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
                     <Typography
                       textColor="text-dark"
                       textWeight="font-[500]"
-                      textSize="text-[14px]"
+                      textSize="text-sm"
                     >
                       {item.vendorId}
                     </Typography>
@@ -153,7 +153,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
                   <Typography
                     textColor="text-dark"
                     textWeight="font-[400]"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     Phone number{" "}
                   </Typography>
@@ -161,7 +161,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
                     <Typography
                       textColor="text-dark"
                       textWeight="font-[500]"
-                      textSize="text-[14px]"
+                      textSize="text-sm"
                     >
                       {item.PhoneNumber}
                     </Typography>
@@ -171,7 +171,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
                   <Typography
                     textColor="text-dark"
                     textWeight="font-[400]"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     email address
                   </Typography>
@@ -179,7 +179,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
                     <Typography
                       textColor="text-dark"
                       textWeight="font-[500]"
-                      textSize="text-[14px]"
+                      textSize="text-sm"
                     >
                       {item.email}
                     </Typography>
@@ -189,7 +189,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
                   <Typography
                     textColor="text-dark"
                     textWeight="font-[400]"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     Address
                   </Typography>
@@ -197,7 +197,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
                     <Typography
                       textColor="text-dark"
                       textWeight="font-[500]"
-                      textSize="text-[14px]"
+                      textSize="text-sm"
                     >
                       {item.warehouseAddress}
                     </Typography>

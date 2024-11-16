@@ -25,7 +25,7 @@ const RecentOrder = ({ orders }) => {
           <Typography
             textColor="text-primary"
             textWeight="font-normal"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             View all
           </Typography>

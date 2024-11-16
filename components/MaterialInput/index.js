@@ -27,7 +27,7 @@ const MaterialInput = ({
   }, [value])
   return (
     <div>
-      <label className="text-[14px] text-dark">{label}</label>
+      <label className="text-sm text-dark">{label}</label>
       <div className="border-[1.5px] border-solid border-gray-200 relative h-[3rem] rounded-[8px]">
         <div className="absolute top-2 right-2 cursor-pointer  gap-4 flex justify-center items-center">
           <div className="">
@@ -87,7 +87,7 @@ const MaterialInput = ({
           type="file"
           id="material"
           className={`py-3 px-4 w-full border-solid border-[1.5px] 
-            focus:outline-none focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 ${disabled && "border-0 bg-gray-300 cursor-not-allowed min-h-[82px]"
+            focus:outline-none focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-sm text-font-light placeholder:font-300 ${disabled && "border-0 bg-gray-300 cursor-not-allowed min-h-[82px]"
             } hidden`}
           disabled={disabled}
           placeholder={placeholder}

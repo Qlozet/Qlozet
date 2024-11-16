@@ -17,9 +17,9 @@ const MobileCutomerItem = ({
 }) => {
   return (
     <div>
-      <div className="flex gap-6 ">
+      <div className="flex gap-6 mb-4 bg-white ">
         <div className="bg-primary w-1 h-[10rem]"></div>
-        <div className=" w-full flex flex-col  justify-between py-2">
+        <div className=" w-full flex flex-col  justify-between py-5 pr-4">
           <div className="flex items-center gap-3">
             <div className="w-[2rem] h-[2rem] bg-primary rounded-[12px] flex items-center justify-center">
               <Image src={exportIcon} />

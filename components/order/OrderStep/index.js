@@ -20,7 +20,7 @@ const OrderStep = ({ step }) => {
           <Typography
             textColor="text-black"
             textWeight="font-[700]"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             Order placed
           </Typography>
@@ -50,7 +50,7 @@ const OrderStep = ({ step }) => {
           <Typography
             textColor="text-black"
             textWeight="font-[700]"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             Order confirmed
           </Typography>
@@ -78,7 +78,7 @@ const OrderStep = ({ step }) => {
           <Typography
             textColor="text-black"
             textWeight="font-[700]"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             Order processed
           </Typography>
@@ -106,7 +106,7 @@ const OrderStep = ({ step }) => {
           <Typography
             textColor="text-black"
             textWeight="font-[700]"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             Ready to ship
           </Typography>
@@ -137,7 +137,7 @@ const OrderStep = ({ step }) => {
           <Typography
             textColor="text-black"
             textWeight="font-[700]"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             Out for delivery
           </Typography>
@@ -161,7 +161,7 @@ const OrderStep = ({ step }) => {
           <Typography
             textColor="text-black"
             textWeight="font-[700]"
-            textSize="text-[14px]"
+            textSize="text-sm"
           >
             Order Delivered
           </Typography>

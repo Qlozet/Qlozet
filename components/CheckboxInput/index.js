@@ -9,7 +9,7 @@ const CheckBoxInput = ({ value, handleChange, label }) => {
         }}
         className="accent-primary focus:accent-primary w-[16px] h-[16px] p-[10px] cursor-pointer border-primary border-solid bg-gray-400 text-primary border-[2px] rounded ring-0 ring-white focus:ring-white"
       />
-      <label className="font-normal text-[14px] text-[#495057]">{label}</label>
+      <label className="font-normal text-sm text-[#495057]">{label}</label>
     </div>
   );
 };

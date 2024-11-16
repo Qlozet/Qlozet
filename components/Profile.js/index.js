@@ -247,14 +247,14 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                 <Typography
                   textColor="text-primary"
                   textWeight="font-[300]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   #New Category add
                 </Typography>
                 <Typography
                   textColor="text-primary"
                   textWeight="font-normal"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Last Week
                 </Typography>
@@ -272,7 +272,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                   <Typography
                     textColor="text-primary"
                     textWeight="font-normal"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     5d ago
                   </Typography>
@@ -288,7 +288,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                   <Typography
                     textColor="text-primary"
                     textWeight="font-normal"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     5d ago
                   </Typography>
@@ -304,7 +304,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                   <Typography
                     textColor="text-primary"
                     textWeight="font-normal"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     5d ago
                   </Typography>
@@ -320,7 +320,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                   <Typography
                     textColor="text-primary"
                     textWeight="font-normal"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     5d ago
                   </Typography>

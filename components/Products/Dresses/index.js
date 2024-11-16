@@ -27,7 +27,7 @@ const Dresses = ({ data }) => {
       <Typography
         textColor="text-dark"
         textWeight="font-[600]"
-        textSize="text-[14px]"
+        textSize="text-sm"
       >
         Choose the customization options you'd like to present to your
         customers.

@@ -51,8 +51,8 @@ const Button = ({
         transition: { duration: .2 },
       }}
       whileTap={{ scale: .98 }}
-      className={` ${paddingVertical ? paddingVertical : "py-2"
-        } flex items-center justify-center gap-4 rounded-[5px] ${minWidth} ${maxWidth} ${variantClasses} ${sizeClasses} text-[14px] ${className} ${loading && "cursor-not-allowed"
+      className={` ${paddingVertical ? paddingVertical : "py-3"
+        } flex items-center justify-center gap-4 rounded-lg ${minWidth} ${maxWidth} ${variantClasses} ${sizeClasses} text-sm ${className} ${loading && "cursor-not-allowed"
         }`}
       {...rest}
       disabled={loading ? true : false}

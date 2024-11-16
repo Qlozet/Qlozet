@@ -135,11 +135,11 @@ const VariantInput = ({
     >
       <div className="my-3">
         {leftIcon}
-        <label className="text-[14px] my-2 text-dark">{label}</label>
+        <label className="text-sm my-2 text-dark">{label}</label>
         <div
           className={`flex items-center min-h-[2.8rem]  px-2 w-full border-solid border-[1.5px]  text-dark placeholder-gray-200
           focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 ${error && "border-danger"
-            } border-gray-2 rounded-[8px] overflow-x-hidden text-[14px] text-font-light placeholder:font-300 ${disabled && "border-0 bg-gray-300 cursor-not-allowed "
+            } border-gray-2 rounded-[8px] overflow-x-hidden text-sm text-font-light placeholder:font-300 ${disabled && "border-0 bg-gray-300 cursor-not-allowed "
             } `}
         >
           <div
@@ -220,7 +220,7 @@ const VariantInput = ({
                   <Typography
                     textColor="text-white"
                     textWeight="font-[600]"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     Custom
                   </Typography>
@@ -261,7 +261,7 @@ const VariantInput = ({
                         </p>
                       </div>
                       <div className="w-[30%] border-l-[1px] border-solid border-gray-400">
-                        <p className="font-[500] text-[14px] text-white pl-[10px]">
+                        <p className="font-[500] text-sm text-white pl-[10px]">
                           100%
                         </p>
                       </div>
@@ -274,7 +274,7 @@ const VariantInput = ({
                       <Typography
                         textColor="text-white"
                         textWeight="font-[600]"
-                        textSize="text-[14px]"
+                        textSize="text-sm"
                       >
                         Document Colors
                       </Typography>

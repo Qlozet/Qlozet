@@ -16,7 +16,7 @@ const VariantTableItem = ({
   handleDeleteVariantFromTable
 }) => {
   return (
-    <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
+    <tr className="border-b-[1.5px] border-solid border-gray-300 ">
       <td className="text-xs font-normal px-4 py-3 text-dark border-solid border-r-[1px] border-gray-300 flex items-center gap-2">
         <Variant bg={item.color && item.color} />
         <Size value={item.size} />

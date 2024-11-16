@@ -98,7 +98,7 @@ const ProductDetails = () => {
     // const
   }, []);
   return (
-    <div className="">
+    <div className="pb-8">
       <div>
         <div className="flex min-h-[100dvh] bg-gray-400">
           <div className="w-full">
@@ -121,7 +121,7 @@ const ProductDetails = () => {
                   </h2>
                 </div>
                 <div className="lg:bg-white w-full lg:p-4 lg:rounded-[12px]">
-                  <div className="bg-gray-300 p-4 rounded-t-[12px] lg:hidden mt-[1rem]">
+                    <div className="bg-[#F4F4F4] p-4 rounded-t-[12px] lg:hidden mt-[1rem]">
                     <Typography
                       textColor="text-dark"
                       textWeight="font-[700]"
@@ -186,7 +186,7 @@ const ProductDetails = () => {
                           width={50}
                           src={sliderImages[number]}
                           alt="product image"
-                          className="rounded-[1rem]"
+                          className="rounded-b-[1rem]"
                           style={{
                             width: "100%",
                             height: "auto",
@@ -197,9 +197,9 @@ const ProductDetails = () => {
                       </div>
                     </div>
 
-                    <div className="w-full p-8 lg:flex-1">
+                    <div className="w-full py-8 lg:p-8  lg:flex-1">
                       <div className="flex items-center justify-between w-full">
-                        <p className="text-[14px] text-primary-100">
+                        <p className="text-sm text-primary-100">
                           {vendorName}
                         </p>
                         {/* <div className="items-center hidden lg:flex">
@@ -218,13 +218,13 @@ const ProductDetails = () => {
                       <h1 className="text-[16px] lg:text-[32px] font-bold my-2 text-primary">
                         {productFormData.productName}
                       </h1>
-                      <h2 className="block lg:hidden font-bold text-[14px] leading-[36px] text-primary lg:text-[#33CC33]">
+                      <h2 className="block lg:hidden font-bold text-sm leading-[36px] text-primary lg:text-[#33CC33]">
                         {productFormData.quantity} Quantity
                       </h2>
                       <div className="flex items-center gap-6 my-4">
                         <div className="flex items-center gap-2">
                           <Image src={starIcon} alt="" width={20} height={20} />
-                          <span className="font-bold text-[14px] leading-[20px]  pt-[2px]">
+                          <span className="font-bold text-sm leading-[20px]  pt-[2px]">
                             {productFormData.likes.length}
                           </span>
                         </div>
@@ -235,13 +235,13 @@ const ProductDetails = () => {
                             width={20}
                             height={20}
                           />
-                          <span className="font-bold text-[14px] leading-[20px]  pt-[2px]">
+                          <span className="font-bold text-sm leading-[20px]  pt-[2px]">
                             {productFormData.likes.length}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Image src={chatIcon} alt="" width={20} height={20} />
-                          <span className="font-bold text-[14px] leading-[20px] mr-1 flex pt-[2px]">
+                          <span className="font-bold text-sm leading-[20px] mr-1 flex pt-[2px]">
                             {/* {productFormData.reviews.length} */}
                           </span>
                           <p
@@ -256,7 +256,7 @@ const ProductDetails = () => {
                         <h2 className="hidden lg:block font-bold text-[24px] leading-[36px]">
                           {productFormData.productPrice}
                         </h2>
-                        {/* <h2 className="font-[500] text-[14px] leading-[36px] text-primary lg:text-[#33CC33]">
+                        {/* <h2 className="font-[500] text-sm leading-[36px] text-primary lg:text-[#33CC33]">
                           1,000 items delivered
                         </h2> */}
                       </div>
@@ -351,8 +351,11 @@ const ProductDetails = () => {
                   </div>
                   <div className="flex w-full justify-end">
                     <Button
-                      className="text-[14px] leading-[20px]"
+                      className="text-sm leading-[20px]"
                       variant="primary"
+                      clickHandler={() => {
+                        router.push("/add")
+                      }}
                     >
                       Edit Product
                     </Button>

@@ -26,7 +26,7 @@ const DonutChart = ({ data, width, height, cutout }) => {
           ],
         },
         options: {
-          cutout: cutout && 55,
+          cutout: cutout && 60,
           responsive: true,
           maintainAspectRatio: false,
           borderWidth: 0,

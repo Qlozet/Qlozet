@@ -9,7 +9,7 @@ const Toast = ({ type, text }) => {
     <div className="rounded-[12px] bg-white">
       <div
         className={`lg:min-w-[312px] h-full text-center
-   px-4 py-3 flex items-center justify-start text-[14px] font-[400]  shadow
+   px-4 py-3 flex items-center justify-start text-sm font-[400]  shadow
    ${type === "danger" && " text-[#FF3A3A]  bg-[#FFF5F5]  border-[#FFAAAA] "}
    ${type === "success" && " text-[#33CC33]  bg-success-300  border-[#33CC33] "}
    ${type === "warning" && " text-[#FFB020]  bg-[#FFF7DE]  border-[#FFDD77] "}

@@ -31,7 +31,7 @@ const TransactionDetails = ({ closeModal, details }) => {
                 <Typography
                   textColor="text-black"
                   textWeight="font-[500]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Transaction ID
                 </Typography>
@@ -40,7 +40,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <Typography
                 textColor="text-black"
                 textWeight="font-[700]"
-                textSize="text-[14px]"
+                textSize="text-sm"
               >
                 {details.transactionId}
               </Typography>
@@ -50,7 +50,7 @@ const TransactionDetails = ({ closeModal, details }) => {
                 <Typography
                   textColor="text-black"
                   textWeight="font-[500]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Amount
                 </Typography>
@@ -59,7 +59,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <Typography
                 textColor="text-black"
                 textWeight="font-[700]"
-                textSize="text-[14px]"
+                textSize="text-sm"
               >
                 {details.amount}
               </Typography>
@@ -69,7 +69,7 @@ const TransactionDetails = ({ closeModal, details }) => {
                 <Typography
                   textColor="text-black"
                   textWeight="font-[500]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Date
                 </Typography>
@@ -77,7 +77,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <Typography
                 textColor="text-black"
                 textWeight="font-[700]"
-                textSize="text-[14px]"
+                textSize="text-sm"
               >
                 {details.date}
               </Typography>
@@ -87,7 +87,7 @@ const TransactionDetails = ({ closeModal, details }) => {
                 <Typography
                   textColor="text-black"
                   textWeight="font-[500]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Transaction type
                 </Typography>
@@ -95,7 +95,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <Typography
                 textColor="text-black"
                 textWeight="font-[700]"
-                textSize="text-[14px]"
+                textSize="text-sm"
               >
                 {details.transactionType}
               </Typography>
@@ -105,7 +105,7 @@ const TransactionDetails = ({ closeModal, details }) => {
                 <Typography
                   textColor="text-black"
                   textWeight="font-[500]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Beneficiary
                 </Typography>
@@ -113,7 +113,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <Typography
                 textColor="text-black"
                 textWeight="font-[700]"
-                textSize="text-[14px]"
+                textSize="text-sm"
               >
                 Kola Olushola
               </Typography>
@@ -123,7 +123,7 @@ const TransactionDetails = ({ closeModal, details }) => {
                 <Typography
                   textColor="text-black"
                   textWeight="font-[500]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Beneficiary account/bank
                 </Typography>
@@ -131,7 +131,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <Typography
                 textColor="text-black"
                 textWeight="font-[700]"
-                textSize="text-[14px]"
+                textSize="text-sm"
               >
                 3109876543 - Firstbank
               </Typography>
@@ -141,7 +141,7 @@ const TransactionDetails = ({ closeModal, details }) => {
                 <Typography
                   textColor="text-black"
                   textWeight="font-[500]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Narration
                 </Typography>
@@ -149,7 +149,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <Typography
                 textColor="text-black"
                 textWeight="font-[700]"
-                textSize="text-[14px]"
+                textSize="text-sm"
               >
                 {details.narration}
               </Typography>
@@ -159,7 +159,7 @@ const TransactionDetails = ({ closeModal, details }) => {
                 <Typography
                   textColor="text-black"
                   textWeight="font-[500]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Balance before
                 </Typography>
@@ -167,7 +167,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <Typography
                 textColor="text-black"
                 textWeight="font-[700]"
-                textSize="text-[14px]"
+                textSize="text-sm"
               >
                 NGN 200,000
               </Typography>
@@ -177,7 +177,7 @@ const TransactionDetails = ({ closeModal, details }) => {
                 <Typography
                   textColor="text-black"
                   textWeight="font-[500]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Balance after
                 </Typography>
@@ -185,7 +185,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <Typography
                 textColor="text-black"
                 textWeight="font-[700]"
-                textSize="text-[14px]"
+                textSize="text-sm"
               >
                 NGN 200,000
               </Typography>
@@ -195,7 +195,7 @@ const TransactionDetails = ({ closeModal, details }) => {
                 <Typography
                   textColor="text-black"
                   textWeight="font-[500]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Status
                 </Typography>
@@ -212,7 +212,7 @@ const TransactionDetails = ({ closeModal, details }) => {
                 children="Close"
                 btnSize="large"
                 variant="primary"
-                clickHandler={() => {}}
+                clickHandler={() => { }}
                 maxWidth="max-w-[12rem]"
               />
             </div>

@@ -144,7 +144,6 @@ const Customer = () => {
                     total="Lagos state"
                     percentage="2.5"
                     bgColor="bg-[#5DDAB4]"
-                    
                     icon={customerIcon}
                     addMaxWidth={true}
                     minHeight="min-h-[9rem]"

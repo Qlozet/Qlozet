@@ -31,7 +31,7 @@ const SelectInput = ({
       style={{ zIndex: index ? index : 10 }}
     >
       <div className={`${classes.container}  border-solid   `}>
-        <label className="text-[14px] text-dark">{label}</label>
+        <label className="text-sm text-dark">{label}</label>
         <input
           readOnly={readOnly}
           onChange={filterList}
@@ -47,7 +47,7 @@ const SelectInput = ({
           value={value}
           className={`py-3 ${error && "border-danger"
             } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  
-            focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-[14px] text-font-light placeholder:font-300 
+            focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-sm text-font-light placeholder:font-300 
            `}
         ></input>
         <div className="absolute top-[36px] right-2 ">
@@ -68,7 +68,7 @@ const SelectInput = ({
             <div
               key={index}
               tabIndex={0}
-              className={`p-2 ${index !== 0
+              className={`px-2 py-3 ${index !== 0
                 ? "border-t-[1px] border-solid border-gray-200"
                 : ""
                 } hover:bg-[#F4F4F4]`}

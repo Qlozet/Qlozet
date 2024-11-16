@@ -100,7 +100,7 @@ const CustomerTable = ({
               </div>
             </div>
           </div>
-          <div className="p-2 flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between px-2 py-4 bg-[#f4f4f4]">
             <Typography
               textColor="text-dark"
               textWeight="font-bold"

@@ -45,11 +45,11 @@ const MobileTable = ({
   });
 
   return (
-    <div className="bg-white relative">
+    <div className="bg-white relative" style={{ zIndex: 5000 }}>
       <div>
         <div className="flex items-center justify-between py-6  ">
           <div className="flex justify-between w-full">
-            <div className="ml-4 w-[66px] h-[64px] border-[1px] border-solid border-gray-200 rounded-lg " style={{ backgroundImage: `url(${picture})`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat" }}></div>
+            <div className="ml-4 w-[66px] h-[64px] border-[1px] border-solid border-gray-200 rounded-lg " style={{ backgroundImage: `url(${picture})`, backgroundPosition: "center", backgroundSize: "cover", backgroundRepeat: "no-repeat" }}></div>
             <div
               className="w-[1.5rem] h-[1.5rem]"
               onClick={() => {
@@ -101,7 +101,7 @@ const MobileTable = ({
               >
                 Product
               </Typography>
-              <p className="overflow-hidden text-ellipsis pr-4 whitespace-nowrap max-w-[117px] text-dark text-[14px]">
+              <p className="overflow-hidden text-ellipsis pr-4 whitespace-nowrap max-w-[117px] text-dark text-sm">
                 {productName}
               </p>
             </div>
@@ -116,7 +116,7 @@ const MobileTable = ({
               <Typography
                 textColor="text-dark"
                 textWeight="font-normal"
-                textSize="text-[14px]"
+                textSize="text-sm"
               >
                 {category}
               </Typography>

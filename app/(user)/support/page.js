@@ -57,7 +57,7 @@ const Support = () => {
                       <Typography
                         textColor="text-primary"
                         textWeight="font-bold"
-                        textSize="text-[14px]"
+                        textSize="text-sm"
                       >
                         Get support
                       </Typography>

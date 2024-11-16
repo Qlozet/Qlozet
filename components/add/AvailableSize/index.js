@@ -9,7 +9,7 @@ const AvailableSize = () => {
             <Typography
               textColor="text-primary"
               textWeight="font-[500]"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               S
             </Typography>
@@ -18,7 +18,7 @@ const AvailableSize = () => {
             <Typography
               textColor="text-primary"
               textWeight="font-[500]"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               M
             </Typography>
@@ -27,7 +27,7 @@ const AvailableSize = () => {
             <Typography
               textColor="text-primary"
               textWeight="font-[500]"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               L
             </Typography>
@@ -36,7 +36,7 @@ const AvailableSize = () => {
             <Typography
               textColor="text-primary"
               textWeight="font-[500]"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               XL
             </Typography>
@@ -45,7 +45,7 @@ const AvailableSize = () => {
             <Typography
               textColor="text-primary"
               textWeight="font-[500]"
-              textSize="text-[14px]"
+              textSize="text-sm"
             >
               XXL
             </Typography>

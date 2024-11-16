@@ -210,7 +210,7 @@ const Wallet = () => {
                 </div>
               </div>
               <div className="">
-                <div className="lg:flex items-center justify-between mt-14 mb-2 hidden ">
+                <div className="lg:flex items-center justify-between mt-6 mb-2 hidden ">
                   <Typography
                     textColor="text-dark"
                     textWeight="font-bold"

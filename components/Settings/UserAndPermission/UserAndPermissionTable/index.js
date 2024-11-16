@@ -107,7 +107,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
                 <Typography
                   textColor="text-dark"
                   textWeight="font-[400]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Name
                 </Typography>
@@ -115,7 +115,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
                   <Typography
                     textColor="text-dark"
                     textWeight="font-[500]"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     {item.name}
                   </Typography>
@@ -125,7 +125,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
                 <Typography
                   textColor="text-dark"
                   textWeight="font-[400]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Phone Number
                 </Typography>
@@ -133,7 +133,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
                   <Typography
                     textColor="text-dark"
                     textWeight="font-[500]"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     {item.phoneNumber}
                   </Typography>
@@ -144,7 +144,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
                 <Typography
                   textColor="text-dark"
                   textWeight="font-[400]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Roles
                 </Typography>
@@ -152,7 +152,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
                   <Typography
                     textColor="text-dark"
                     textWeight="font-[500]"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     {item.role}
                   </Typography>
@@ -162,7 +162,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
                 <Typography
                   textColor="text-dark"
                   textWeight="font-[400]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Email address
                 </Typography>
@@ -170,7 +170,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
                   <Typography
                     textColor="text-dark"
                     textWeight="font-[500]"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     {item.emailAddress}
                   </Typography>
@@ -180,7 +180,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
                 <Typography
                   textColor="text-dark"
                   textWeight="font-[400]"
-                  textSize="text-[14px]"
+                  textSize="text-sm"
                 >
                   Address
                 </Typography>
@@ -188,7 +188,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
                   <Typography
                     textColor="text-dark"
                     textWeight="font-[500]"
-                    textSize="text-[14px]"
+                    textSize="text-sm"
                   >
                     {item.address}
                   </Typography>

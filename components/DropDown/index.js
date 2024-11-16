@@ -9,11 +9,10 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg, zIndex }) => {
 
   const handleSetValue = (value, option) => {
     const today = moment();
-
     if (value === "This week") {
       const startOfWeek = moment().startOf("week").valueOf();
       const endOfWeek = moment().endOf("week").valueOf();
-      setValue(startOfWeek, endOfWeek);
+      setValue(startOfWeek, endOfWeek, value);
     }
     if (value === "Last week") {
       const startOfPreviousWeek = moment()
@@ -24,7 +23,7 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg, zIndex }) => {
         .subtract(1, "weeks")
         .endOf("week")
         .valueOf();
-      setValue(startOfPreviousWeek, endOfPreviousWeek);
+      setValue(startOfPreviousWeek, endOfPreviousWeek, value);
     }
     if (value === "This month") {
       const endOfMonth = moment().endOf("month").valueOf();
@@ -40,7 +39,7 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg, zIndex }) => {
         .subtract(1, "months")
         .endOf("month")
         .valueOf();
-      setValue(startOfPreviousMonth, endOfPreviousMonth);
+      setValue(startOfPreviousMonth, endOfPreviousMonth, value);
     }
     if (value === "Choose month") {
       option = "Choose month";
@@ -48,7 +47,7 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg, zIndex }) => {
     }
     if (value === "Custom") {
       option = "Custom";
-      setValue(today.subtract(62, "days").valueOf());
+      setValue(today.subtract(62, "days").valueOf(), "", value);
     }
     setOption(value);
 
@@ -110,7 +109,7 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg, zIndex }) => {
               <div
                 tabIndex={0}
                 key={index}
-                className={`cursor-pointer text-xs p-2 ${index < data.length - 1 &&
+                className={`cursor-pointer text-xs px-2 py-3 hover:bg-gray-400  ${index < data.length - 1 &&
                   "border-solid border-gray-200 border-b-[1px] w-full "
                   }`}
                 onClick={() => handleSetValue(item)}

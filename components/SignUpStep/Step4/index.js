@@ -16,7 +16,7 @@ const Step4 = ({ handleSelect, businessLogo }) => {
         </Typography>
         <Typography
           textWeight="font-normal"
-          textSize="text-[14px]"
+          textSize="text-sm"
           verticalPadding="my-2"
           textColor="text-dark"
         >
@@ -25,7 +25,7 @@ const Step4 = ({ handleSelect, businessLogo }) => {
         <ProgressBar step={3} />
         <Typography
           textWeight="font-bold"
-          textSize="text-[14px]"
+          textSize="text-sm"
           verticalPadding="my-4"
           textColor="text-dark"
         >

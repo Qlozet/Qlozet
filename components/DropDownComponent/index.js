@@ -9,7 +9,7 @@ const DropDownComponent = ({ data, dropdownTitle, width, clickHandler }) => {
         </div>
         {data.map((item) => (
           <div
-            className="p-4 text-[14px] cursor-pointer hover:bg-[#f4f4f4]"
+            className="p-4 text-sm cursor-pointer hover:bg-[#f4f4f4]"
             onClick={() => {
               clickHandler(item);
             }}

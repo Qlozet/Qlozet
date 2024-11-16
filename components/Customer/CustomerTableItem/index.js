@@ -16,7 +16,7 @@ const CustomerTableItem = ({
 }) => {
   const date = new Date(lastOrderDate);
   return (
-    <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
+    <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white ">
       <td className="text-xs font-normal py-3 px-2 pl-6 text-dark min-h-[5rem]">
         <Image
           src={picture}
