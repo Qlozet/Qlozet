@@ -35,14 +35,34 @@ const MobileTable = ({
       })
     }
   }
-  useEffect(() => { calculatePosition() }, [])
-  document.addEventListener("click", (e) => {
-    if (showDropDown) {
+  // useEffect(() => { calculatePosition() }, [])
+
+  const handleClickOutside = (e) => {
+    if (
+      dropDownRef.current &&
+      !dropDownRef.current.contains(e.target)
+    ) {
       setShowDropDown(false);
-    } else if (e.target === dropDownRef.current) {
-      setShowDropDown(true);
     }
-  });
+  };
+
+  useEffect(() => {
+    if (showDropDown) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [showDropDown]);
+
+  useEffect(() => {
+
+  }, [])
 
   return (
     <div className="bg-white relative" style={{ zIndex: 5000 }}>

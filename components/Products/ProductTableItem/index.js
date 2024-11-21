@@ -19,7 +19,7 @@ const ProductTableItem = ({
   handleSelect,
   variantCount,
 }) => {
-  const buttonRef = useRef()
+  const dropDownRef = useRef()
   const [showDropDown, setShowDropDown] = useState(false);
   const closeDropDown = (item) => {
     setProductId(id);
@@ -27,24 +27,31 @@ const ProductTableItem = ({
     handleSelect(item);
   };
 
-  const handleClickOutside = (event) => {
-    if (buttonRef.current && !buttonRef.current.contains(event.target)) {
-      setShowDropDown(false);
-    }
-  };
 
   window.addEventListener("scroll", () => {
     setShowDropDown(false)
   })
 
+  const handleClickOutside = (e) => {
+    if (
+      dropDownRef.current &&
+      !dropDownRef.current.contains(e.target)
+    ) {
+      setShowDropDown(false);
+    }
+  };
+
   useEffect(() => {
     if (showDropDown) {
       document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, [showDropDown]);
 
@@ -71,7 +78,7 @@ const ProductTableItem = ({
       </td>
       <td className="text-xs font-normal py-4 px-2 text-dark relative">
         <div className="flex items-center justify-center">
-          <Image ref={buttonRef}
+          <Image
             alt="Product Image"
             src={dottedIcon}
             onClick={() => {
@@ -80,7 +87,7 @@ const ProductTableItem = ({
             className="cursor-pointer"
           />
           {showDropDown && (
-            <ProductItemDropDown
+            <div ref={dropDownRef}> <ProductItemDropDown
               handleSelect={(item) => {
                 closeDropDown(item);
               }}
@@ -96,7 +103,8 @@ const ProductTableItem = ({
               outSideCLicked={() => {
                 setShowDropDown(false);
               }}
-            />
+            /></div>
+
           )}
         </div>
       </td>
