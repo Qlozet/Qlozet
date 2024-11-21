@@ -13,19 +13,7 @@ import Typography from "@/components/Typography";
 const NotificationPage = () => {
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
-  const [notification, setNotification] = useState([{
-    id: "Id",
-    read: false,
-    title: "Hello world Checking if the product was delivered.",
-    desc: "Hello world Checking if the product was delivered",
-    date: new Date().toISOString(),
-  }, {
-    id: "Id",
-    read: false,
-    title: "Hello world Checking if the product was delivered.",
-    desc: "Hello world Checking if the product was delivered",
-    date: new Date().toISOString(),
-  }]);
+  const [notification, setNotification] = useState([]);
 
   const showSideBar = () => {
     setShowMobileNav(!showMobileNav);
@@ -47,7 +35,7 @@ const NotificationPage = () => {
           };
           notificationData.push(tableItem);
         });
-        // setNotification(notificationData);
+        setNotification(notificationData);
       } else {
         toast(<Toast text={response.message} type="danger" />);
       }
