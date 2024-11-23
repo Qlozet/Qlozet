@@ -66,6 +66,7 @@ export const handleExport = (data) => {
   const exportType = exportFromJSON.types.csv;
   exportFromJSON({ data, fileName, exportType });
 };
+
 export const uploadSingleImage = async (file) => {
   try {
     const formData = new FormData();

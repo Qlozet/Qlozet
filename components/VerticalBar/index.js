@@ -51,7 +51,7 @@ const VerticalBar = ({ date, value, per, color, highest, heightValue }) => {
           )}
         </div>
       </div>
-      <div className="translate-x-[-0px] flex items-center justify-center font-[400] text-xs text-[#495057] cursor-pointer">
+      <div className="translate-x-[-0px] flex items-center justify-center font-[400] text-xs text-[#495057] cursor-pointer mt-2 ">
         {date.substring(0, 3)}
       </div>
     </div>

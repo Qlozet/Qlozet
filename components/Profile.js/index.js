@@ -18,8 +18,8 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
     <div>
       <div>
         <div
-          className={`fixed  bg-[rgba(0,0,0,.3)] h-screen w-screen top-0 right-0 flex justify-end z-50 ${styles.container}`}
-          style={{ zIndex: 100 }}
+          className={`fixed  bg-[rgba(0,0,0,.3)] h-screen w-screen top-0 right-0 flex justify-end  ${styles.container}`}
+          style={{ zIndex: 300000 }}
         >
           {showProfile && (
             <div
