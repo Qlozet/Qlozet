@@ -17,7 +17,7 @@ const ProductItemDropDown = ({ data, handleSelect, outSideCLicked }) => {
   useEffect(() => { calculatePosition() }, [])
 
   return (
-    <div className={`absolute right-[4rem] ${positionTop ? "top-8" : "bottom-8"}`} style={{ zIndex: 100 }} ref={dropDownRef}>
+    <div className={`absolute right-5 lg:right-[5rem] ${positionTop ? "top-8" : "bottom-[-4rem]"}`} style={{ zIndex: 100 }} ref={dropDownRef}>
       <div
         className={`border-[1px] border-solid border-gray-200 bg-white rounded-[8px] min-w-[12rem]`}
       >
