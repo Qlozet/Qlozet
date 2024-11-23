@@ -61,7 +61,7 @@ const VerticalBarGraph = ({ data, name }) => {
           ]}
           maxWidth={"max-w-[7.5rem]"}
           placeholder="Time Range"
-          setValue={(data) => {}}
+          setValue={(data) => { }}
           bg={"bg-white"}
         />
       </div>
@@ -122,7 +122,7 @@ const VerticalBarGraph = ({ data, name }) => {
             <VendorCountLine value={0.001} />
           </div>
         </div>
-        <div className="absolute right-0 bottom-[.6rem] lg:bottom-[9px]  w-[94%] h-[96%] flex justify-between pl-2">
+        <div className="absolute right-0 bottom-[.3rem] lg:bottom-[4.5px]  w-[94%] h-[96%] flex justify-between pl-2">
           {daysArray.map((item, index) => {
             if (item.day == "Sun") {
               return (

@@ -173,6 +173,7 @@ const ProductTable = ({
               "Choose month",
               "Custom",
             ]}
+            zIndex={1}
             maxWidth={"max-w-[8rem]"}
             placeholder="Time Range"
             setValue={(startDate, endDate, value) => {
@@ -184,6 +185,7 @@ const ProductTable = ({
           <MobileTable
             key={index}
             {...item}
+            zIndex={productData.length - index}
             handleSelect={(option) => {
               setDropDownOption(option);
               if (option === "View product") {

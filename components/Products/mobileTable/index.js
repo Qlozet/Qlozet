@@ -19,6 +19,7 @@ const MobileTable = ({
   ProductStatus,
   handleSelect,
   variantCount,
+  zIndex
 }) => {
   const dropDownRef = useRef()
   const [showDropDown, setShowDropDown] = useState(false);
@@ -65,7 +66,7 @@ const MobileTable = ({
   }, [])
 
   return (
-    <div className="bg-white relative" style={{ zIndex: 5000 }}>
+    <div className="bg-white relative" >
       <div>
         <div className="flex items-center justify-between py-6  ">
           <div className="flex justify-between w-full">
@@ -87,9 +88,10 @@ const MobileTable = ({
           <div>
             {showDropDown && (
               <div
+                // ${positionTop ? "top-0" : "bottom-0"
                 ref={dropDownRef}
-                className={`absolute right-[0rem] ${positionTop ? "top-0" : "bottom-0"}`}
-                style={{ zIndex: 10 }}
+                className={`absolute right-[0rem] top-0`}
+              // style={{ zIndex: 10 }}
               >
                 <ProductItemDropDown
                   handleSelect={(item) => {
