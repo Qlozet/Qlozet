@@ -1,12 +1,11 @@
 import StyleComp from ".";
-const Styles = ({ data, price }) => {
-
+const Styles = ({ data, handleEditStylePrice }) => {
   return (
     <div className="flex items-center gap-2">
       {data &&
         data.map((item, index) => {
           return (
-            <StyleComp price={item.price} image={item.image} key={index} />
+            <StyleComp id={item.id} price={item.price} image={item.image} key={index} handleEditStylePrice={handleEditStylePrice} />
           )
         })}
     </div>

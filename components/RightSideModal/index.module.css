@@ -1,0 +1,15 @@
+.modal::-webkit-scrollbar {
+  width: 2px;
+  height: 3px;
+}
+
+.modal::-webkit-scrollbar-track {
+  background: #f4f4f4;
+  border-radius: 2px;
+  height: 3px;
+}
+
+.modal::-webkit-scrollbar-thumb {
+  background: var(--main-color);
+  border-radius: 6px;
+}

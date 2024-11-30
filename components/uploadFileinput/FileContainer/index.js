@@ -17,30 +17,30 @@ const SelectedFile = ({ removeItemFromList, index, item }) => {
         setIsActive(!isActive);
       }}
     >
-      {isActive && (
-        <div className="absolute right-0 top-0 w-full h-full bg-[rgba(0,0,0,.6)] rounded"></div>
-      )}
-      {isActive && (
-        <div
-          className="absolute right-[-0.3rem] top-[-0.3rem] rounded-[50%] cursor-pointer bg-primary"
-          onClick={() => {
-            removeItemFromList(index);
-          }}
-        >
-          <Image src={closeIcon} alt={""} width={18} height={18} />
-        </div>
-      )}
       {/* <div className="min-w-[5rem] h-[auto] rounded"
         style={{ backgroundImage: `url(${item.secure_url})`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat" }}></div> */}
-
-      <Image
+      <div className="w-[74px] h-[70px] border-[1px] border-solid border-gray-200 rounded-lg relative" style={{ backgroundImage: `url(${item.secure_url})`, backgroundPosition: "center", backgroundSize: "cover", backgroundRepeat: "no-repeat" }}>
+        {isActive && (
+          <div className="absolute right-0 top-0 w-full h-full bg-[rgba(0,0,0,.3)] rounded">
+            <div
+              className="absolute right-[-0.3rem] top-[-0.3rem] rounded-[50%] cursor-pointer bg-primary"
+              onClick={() => {
+                removeItemFromList(index);
+              }}
+            >
+              <Image src={closeIcon} alt={""} width={18} height={18} />
+            </div>
+          </div>
+        )}
+      </div>
+      {/* <Image
         width={500}
         height={500}
-        src={item.secure_url}
+        src={}
         style={{ width: "auto", height: "5rem" }}
         alt=""
         unoptimized
-      />
+      /> */}
     </div>
   );
 };

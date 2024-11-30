@@ -4,7 +4,7 @@ import Typography from "../Typography";
 import arrowLeft from "../../public/assets/svg/arrrowLeft.svg";
 import arrowRight from "../../public/assets/svg/arrowRightt.svg";
 import closeIcon from "../../public/assets/svg/material-symbols_close-rounded.svg";
-import style from "./index.module.css";
+import styles from "./index.module.css";
 import StypePositioning from "./style";
 const DragDrop = ({
   closeModal,
@@ -13,35 +13,7 @@ const DragDrop = ({
   handleSelectStyle,
 }) => {
   const imageRef = useRef();
-  const draggedRef = useRef();
   const subRef = useRef();
-  const data = [
-    {
-      asset_id: "d6afe2b799693f827bf55ac805756e43",
-      public_id: "ri87pudm2jss5jtbmbw6",
-      secure_url:
-        "https://res.cloudinary.com/dfnmx7vgc/image/upload/v1723845336/dfkela1w4k0vzuqknqrc.jpg",
-    },
-    {
-      asset_id: "d6afe2b799693f827bf55ac805756e43",
-      public_id: "ri87pudm2jss5jtbmbw6",
-      secure_url:
-        "https://res.cloudinary.com/dfnmx7vgc/image/upload/v1723845383/wbiecjerb3gp5vsu3grd.jpg",
-    },
-    {
-      asset_id: "d6afe2b799693f827bf55ac805756e43",
-      public_id: "ri87pudm2jss5jtbmbw6",
-      secure_url:
-        "https://res.cloudinary.com/dfnmx7vgc/image/upload/v1723845383/wbiecjerb3gp5vsu3grd.jpg",
-    },
-    {
-      asset_id: "d6afe2b799693f827bf55ac805756e43",
-      public_id: "ri87pudm2jss5jtbmbw6",
-      secure_url:
-        "https://res.cloudinary.com/dfnmx7vgc/image/upload/v1723845336/dfkela1w4k0vzuqknqrc.jpg",
-    },
-  ];
-
   const [imageIndex, setImageIndex] = useState(0);
   const [customStyles, setCustomStyles] = useState([]);
   const [startCal, setStartCal] = useState(false);
@@ -49,6 +21,8 @@ const DragDrop = ({
   const [touchPoint, setTouchPoint] = useState({ x: 0, y: 0 });
   const [currentStyle, setCurrentStyle] = useState();
   const [customeStylesUiPosition, setCustomStylesUiPosition] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
   const handleSetCurentStyle = (style, imgIndex) => {
     setStartCal(true);
     setCurrentStyle({ name: style, imageIndex: imgIndex });
@@ -61,8 +35,6 @@ const DragDrop = ({
       customeStylesUiPosition[customeStylesUiPosition.length - 1]
     ) {
       const { width, height } = imageRef.current.getBoundingClientRect();
-      // This is to process return when the image is not inside the image
-      // 40 is the half width of the drag drop
       if (
         customeStylesUiPosition[customeStylesUiPosition.length - 1].left <
         width - 40
@@ -93,6 +65,7 @@ const DragDrop = ({
             return { ...item };
           }
         });
+
         setCustomStyles(newSTyles);
         setCustomeStyleOfAllImage(newCustomStyleofAllImage);
         handleSelectStyle(newCustomStyleofAllImage, width, height);
@@ -181,6 +154,7 @@ const DragDrop = ({
           bottom: item.position.bottom,
           imageIndex: item.imageIndex,
           style: item.name,
+          price: item.price
         };
       })
     );
@@ -199,6 +173,7 @@ const DragDrop = ({
       const newItem = {
         id: item.id,
         name: item.name,
+        price: item.price
       };
 
       setCustomStyles((prevData) => {
@@ -216,7 +191,7 @@ const DragDrop = ({
         calcultePosition();
       }}
     >
-      <div className="bg-white m-auto min-w-[97%] lg:mt-[4rem] p-6 rounded-[10px] relative md:min-w-[450px] max-w-[450px]">
+      <div className={`bg-white m-auto min-w-[97%] lg:mt-[4rem] p-6 rounded-[10px] relative md:min-w-[450px] max-w-[450px] ${styles.sizecontainer}`}>
         <button
           onClick={() => {
             closeModal();
@@ -296,9 +271,9 @@ const DragDrop = ({
                     maxWidth: "300px",
                   }}
                   unoptimized
+                  onLoad={() => setIsLoaded(true)}
                 />
-                {/* <div className="w-full h-auto rounded" ref={imageRef}
-                  style={{ backgroundImage: `url(${productImages[imageIndex].secure_url})`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat" }}></div> */}
+
               </div>
             )}
           </div>

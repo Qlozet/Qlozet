@@ -1,33 +1,35 @@
 import { useEffect, useRef } from "react";
 import style from "./index.module.css";
 import { motion, useAnimation } from "framer-motion";
-const Modal = ({ content, show, closeModal }) => {
+const RightSideModal = ({ content, show, closeModal }) => {
   const contentRef = useRef()
   const animation = useAnimation();
+
+
   return (
     <>{show ? (<motion.div
       animate={{ scale: 1 }}
-      transition={{ delay: .1 }}
       initial={{ scale: 0 }}
-      className={`${style.modal}  px-4 lg:px-0  h-screen fixed top-0 left-0 w-screen bg-[#00000080] overflow-y-scroll`}
+      transition={{ delay: 0, duration: 0 }}
+      className={`${style.modal}  px-4 lg:px-0  h-screen fixed top-0 left-0 w-screen bg-[rgba(0,0,0,.2)]`}
       style={{
         zIndex: 9999,
       }}
     >
-      {content}
-    </motion.div>) : (<motion.div
+      <div ref={contentRef} className="">{content}</div>
+    </motion.div>) : (<motion.div ref={contentRef}
       animate={{ scale: 0, opacity: 0 }}
-      transition={{ delay: .1, duration: .1 }}
+      transition={{ delay: 0, duration: 0 }}
       initial={{ scale: 0 }}
       className={`${style.modal}  px-4 lg:px-0  h-screen fixed top-0 left-0 w-screen bg-[#00000080] overflow-y-scroll`}
       style={{
         zIndex: 999,
       }}
     >
-      {content}
+      <div ref={contentRef} className="border-solid border-primary border-4">{content}</div>
     </motion.div>)}
     </>
   );
 };
 
-export default Modal;
+export default RightSideModal;

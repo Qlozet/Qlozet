@@ -25,25 +25,31 @@ const FileInput = ({
     handleSelect(newImages, [...deletedFiles, deletFile[0]]);
   };
 
-  const handleSubmitFile = async (files) => {
+  const handleSubmitFile = async (e) => {
+    const files = e.target.files
     const filesArr = Array.from(files);
     const imageArray = []
     filesArr.forEach(async (file) => {
       try {
         setIsloading(true);
         const ImageInfo = await uploadSingleImage(file);
-        if (ImageInfo) {
+        if (ImageInfo
+        ) {
           imageArray.push(ImageInfo)
           setFiles((prevData) => {
             return [...prevData, ImageInfo]
           });
-          handleSelect([...files, ImageInfo])
+
         }
+
         setIsloading(false)
       } catch (error) {
         console.log(error)
       }
     })
+    handleSelect(imageArray)
+    // Reset Input
+    e.target.value = ""
   };
 
   return (
@@ -100,7 +106,7 @@ const FileInput = ({
         disabled={disabled}
         placeholder={placeholder}
         onChange={(e) => {
-          handleSubmitFile(e.target.files);
+          handleSubmitFile(e);
         }}
       />
     </div>

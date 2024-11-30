@@ -28,9 +28,9 @@ const ProductTableItem = ({
   };
 
 
-  window.addEventListener("scroll", () => {
-    setShowDropDown(false)
-  })
+  // window.addEventListener("scroll", () => {
+  //   setShowDropDown(false)
+  // })
 
   const handleClickOutside = (e) => {
     if (

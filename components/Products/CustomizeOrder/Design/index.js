@@ -65,6 +65,7 @@ const Design = ({ id, image, name, reduce }) => {
             onClick={selecteHandler}
             width={18}
             height={18}
+            unoptimized
           />
         </div>
       </div>

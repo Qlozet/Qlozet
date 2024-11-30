@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { useState } from "react";
-const StyleComp = ({ image, setPriceHandler, price }) => {
+const StyleComp = ({ id, image, handleEditStylePrice, price }) => {
+  const [stylePrice, setStylePrice] = useState(price)
+  console.log(id)
   return (
     <div className=" max-w-[80px]">
       <Image
@@ -15,9 +17,12 @@ const StyleComp = ({ image, setPriceHandler, price }) => {
           $
         </div>
         <input
-          value={price}
+          value={stylePrice}
           className="max-w-[50px] border-none outline-none font-medium text-sm py-1 focus:border-0"
           onChange={(e) => {
+            const newPrice = e.target.value
+            setStylePrice(newPrice)
+            handleEditStylePrice(newPrice, id)
           }}
         />
       </div>

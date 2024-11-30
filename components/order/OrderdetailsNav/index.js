@@ -13,17 +13,14 @@ const OrderDetailNav = ({
 }) => {
   return (
     <div
-      className={`${width ? width : "w-full lg:w-[40%]"} ${
-        bg ? bg : "bg-white "
-      } py-8 px-5 rounded-t-[18px] flex justify-between items-center overflow-x-scroll ${
-        classes.scrollbarElement
-      }`}
+      className={`${width ? width : "w-full lg:w-[40%]"} ${bg ? bg : "bg-white "
+        } py-8 px-5 rounded-t-[18px] flex justify-between items-center overflow-x-scroll ${classes.scrollbarElement
+        }`}
     >
       <div className="flex justify-between items-center border-gray-200 border-b-[0] lg:border-b-[1.5px] border-dashed mb-[-2px] w-full">
         <div
-          className={`flex justify-between items-center ${
-            full ? "w-full" : "gap-4"
-          } `}
+          className={`flex justify-between items-center ${full ? "w-full" : " gap-4 lg:gap-12"
+            } `}
         >
           {data.map((item, index) => (
             <div
@@ -36,9 +33,9 @@ const OrderDetailNav = ({
               <div className="flex items-center justify-between cursor-pointer">
                 <div>
                   <Typography
-                    textColor="text-primary"
-                    textWeight="font-bold"
-                    textSize="text-[16px]"
+                    textWeight="font-[400]"
+                    textSize="text-[14px]"
+                    textColor={active ? "text-dark" : "text-primary"}
                   >
                     {item.item}
                   </Typography>
