@@ -14,13 +14,18 @@ const MaterialInput = ({
   removeMaterialHandler,
   loading,
 }) => {
-
   const [items, setItems] = useState(value);
 
   const removeDuplicates = () => {
     const uniqueItems = [...new Set(items)];
-    setItems(uniqueItems);
+    setItems(value);
   };
+
+  const handleUploads = (e) => {
+    handleSelect(e.target.files[0])
+    // reset Input
+    e.target.value = ""
+  }
 
   useEffect(() => {
     removeDuplicates()
@@ -92,7 +97,7 @@ const MaterialInput = ({
           disabled={disabled}
           placeholder={placeholder}
           onChange={(e) => {
-            handleSelect(e.target.files[0]);
+            handleUploads(e)
           }}
         />
       </div>

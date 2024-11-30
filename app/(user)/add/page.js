@@ -49,7 +49,7 @@ const AddProduct = () => {
   const [positionStyles, setPositionStyles] = useState([]);
   const [accessories, setAcessories] = useState([]);
   const [materialUploadLoading, setMaterialUploadLoading] = useState(false);
-  const [addVariant, setAddVaient] = useState(false)
+  const [addVariant, setAddVariant] = useState(false)
   const [productFormData, setProductFormData] = useState({
     productName: "",
     productPrice: "",
@@ -78,6 +78,8 @@ const AddProduct = () => {
 
   // Functions
   const handleSelectFile = async (files, deletedFiles) => {
+    console.log(files)
+
     setProductFormData((prevData) => {
       return { ...prevData, images: files };
     });
@@ -86,10 +88,13 @@ const AddProduct = () => {
     } else {
       setDeletedFiles([]);
     }
+
+    if (files.length < 1) {
+      setSelectedStyles([])
+    }
   };
 
   const submitAcessories = (acess) => {
-    console.log(acess)
     setAcessories((prevData) => {
       return [...prevData, { image: acess.images, id: acess.id, price: acess.price }];
     });
@@ -105,10 +110,12 @@ const AddProduct = () => {
       })
       .flat()
       .map((item) => {
+        console.log(item)
         return {
-          id: item.id,
+          ...item,
           position: item.position,
           imageIndex: item.imageIndex,
+
         };
       });
     const containsPostion = stylesExist.filter((item) => {
@@ -131,6 +138,7 @@ const AddProduct = () => {
   const addToVariantTable = async (data) => {
     if (data instanceof File) {
       setMaterialUploadLoading(true);
+
       const imageUrl = await uploadSingleImage(data);
       imageUrl && setMaterialUploadLoading(false);
       imageUrl &&
@@ -243,6 +251,17 @@ const AddProduct = () => {
     setVariantTable(newVariantTable);
   };
 
+  const handleEditStylePrice = (stylesPricerice, styleId) => {
+    setPositionStyles(positionStyles.map((item) => {
+      if (item.id === styleId) {
+        return { ...item, price: stylesPricerice }
+      } else {
+        return item
+      }
+    }))
+
+  }
+
   const handleSubmit = async () => {
     const productId = getProductId();
     const { status, data, id } = validator(
@@ -282,7 +301,6 @@ const AddProduct = () => {
             deleted: deletedFiles,
           },
           variants: variantTable.map((item) => {
-            console.log(item)
             let varantItem = {
               color: item.color,
               size: item.size,
@@ -382,6 +400,10 @@ const AddProduct = () => {
 
           const newsw = response.data.data.variants.map((item) => item.color.hex.includes("https://res.cloudinary.com"))
           setSelectedVariantFiles(variantMaterials)
+          if (response.data.data.variants.length > 0) {
+            setAddVariant(true)
+          }
+
           setVariantTable(
             response.data.data.variants.map((item) => {
               return {
@@ -414,9 +436,10 @@ const AddProduct = () => {
               position: stylePositionExist && stylePositionExist[0].position,
               imageIndex:
                 stylePositionExist && stylePositionExist[0].imageIndex,
+              price: stylePositionExist && stylePositionExist[0].price
             };
           });
-
+          setPositionStyles(productStyles)
           setSelectedStyles(productStyles);
           localStorage.setItem("styleTypes", JSON.stringify(productStyles));
           setPageLoading(false);
@@ -442,7 +465,9 @@ const AddProduct = () => {
     const localData = localStorage.getItem("styleTypes");
     if (localData) {
       const savedData = JSON.parse(localData);
-      savedData && setSelectedStyles(savedData);
+      savedData && setSelectedStyles(savedData.map((item) => {
+        return { ...item, price: productFormData.productPrice ? productFormData.productPrice : 0 }
+      }));
     }
   }, [showCustomiseOrder]);
   return (
@@ -457,7 +482,7 @@ const AddProduct = () => {
               <div className="">
                 <h5 className="hidden lg:block text-[18px] font-bold">Add product</h5>
                 <div className="lg:py-5 "> <CheckBoxInput label="Add variants if product comes in multiple versions like different sizes and colours" handleChange={(data) => {
-                  setAddVaient(data)
+                  setAddVariant(data)
                   setProductFormData((prevData) => {
                     return { ...prevData, isVariantAvailable: data }
                   })
@@ -465,7 +490,7 @@ const AddProduct = () => {
                 <div className="mx-0 mt-2 bg-gray-[#F4F4F4] lg:bg-white rounded-t-lg lg:translate-x-2 border-[1px] border-solid lg:border-none">
                   <h4 className=" font-medium pt-2 px-4 pb-2 lg:hidden"> Product Info</h4>
                 </div>
-                <div className="bg-white w-full p-4 mx-0 lg:mx-2 lg:rounded-2xl">
+                <div className="bg-white w-full p-4 mx-0 lg:rounded-2xl">
                   <DashedComponent name={"Product info"} />
                   <div className="block lg:flex items-center justify-between  gap-6">
                     <div className="w-full">
@@ -692,6 +717,7 @@ const AddProduct = () => {
                       }}
                     />
                     <Styles
+                      handleEditStylePrice={handleEditStylePrice}
                       data={selectedStyles}
                       price={productFormData.productPrice}
                     />
@@ -831,7 +857,6 @@ const AddProduct = () => {
               />)}</>
             }
           ></Modal>
-
           <Modal
             show={showAddAccessories}
             content={

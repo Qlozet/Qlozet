@@ -15,30 +15,30 @@ const CustomizeOrder = ({ closeModal, styleData }) => {
     {
       item: "Tops",
       link: "",
-      handleFunction: (data) => {},
+      handleFunction: (data) => { },
     },
     {
       item: "Bottoms",
       link: "",
-      handleFunction: (data) => {},
+      handleFunction: (data) => { },
     },
     {
       item: "Dresses",
       navWidth: "min-w-[8rem] lg:min-w-w-[0]",
       link: "",
-      handleFunction: (data) => {},
+      handleFunction: (data) => { },
     },
     {
       item: "Outfits",
       link: "",
       navWidth: "min-w-[10rem] lg:min-w-w-[0]",
-      handleFunction: (data) => {},
+      handleFunction: (data) => { },
     },
     {
       item: "Skirts",
       link: "",
       navWidth: "min-w-[13rem] lg:min-w-w-[0]",
-      handleFunction: (data) => {},
+      handleFunction: (data) => { },
     },
   ];
 

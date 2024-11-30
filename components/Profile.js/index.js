@@ -49,6 +49,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                         alt=""
                         onClick={showProfileHandler}
                         className="cursor-pointer"
+                        unoptimized
                       />
                     </div>
                     <div>
@@ -63,6 +64,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                           }}
                           alt=""
                           className="my-2 mx-auto rounded-[50%]"
+                          unoptimized
                         />
                         <div className="p-1 flex justify-center items-center">
                           <Typography
@@ -184,7 +186,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                       />
 
                       <Performance
-                        name="Avg. Below"
+                        name="Avg. Bel"
                         value={userDetails.ratings.belowAverage * 10}
                         color={"bg-primary-300"}
                       />

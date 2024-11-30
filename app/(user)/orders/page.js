@@ -31,6 +31,7 @@ import { statusHandler } from "@/utils/helper";
 // redux
 import { useAppSelector } from "@/redux/store";
 import Button from "@/components/Button";
+import RightSideModal from "@/components/RightSideModal";
 
 const Order = () => {
   const filterData = useAppSelector((state) => state.filter.state);
@@ -300,31 +301,18 @@ const Order = () => {
             </div>
           )}
         </div>
-        <Modal
+        <RightSideModal
+          closeModal={closeModal}
           show={viewOrderDetails}
           content={
             <>{viewOrderDetails && (<OrderDetails
+              show={viewOrderDetails}
               topNavData={topNavData}
               closeModal={closeModal}
               order={order}
             />)}</>
           }
-        ></Modal>
-
-        <Modal
-          show={showTrack}
-          content={<>{showTrack && (<TrackOrder data={topNavData} closeModal={closeModal} />)}</>}
-        ></Modal>
-        <Modal
-          show={showCustomer}
-          content={
-            <>{showCustomer && (<CustomerDetails
-              topNavData={topNavData}
-              closeModal={closeModal}
-              customer={order}
-            />)}</>
-          }
-        ></Modal>
+        ></RightSideModal>
         <Modal
           show={rejectModal}
           content={

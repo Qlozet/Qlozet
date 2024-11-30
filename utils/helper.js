@@ -76,7 +76,7 @@ export const uploadSingleImage = async (file) => {
       formData,
       true
     );
-    if (response.data) {
+    if (response.data.secure_url) {
       return {
         asset_id: response?.data.asset_id,
         public_id: response?.data.public_id,
