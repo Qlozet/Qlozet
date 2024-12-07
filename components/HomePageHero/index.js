@@ -21,7 +21,7 @@ const HomePageHero = () => {
           <div className="ml-12 mt-[4rem] w-[65%]">
             <Typography
               textColor="text-white"
-              textWeight="font-[500]"
+              textWeight="font-medium"
               textSize="text-[54px]"
             >
               Welcome to Altire

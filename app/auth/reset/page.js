@@ -26,7 +26,7 @@ const Page = () => {
             <Typography
               textColor="text-dark"
               textWeight="font-normal"
-              textSize="text-[16px]"
+              textSize=""
               align="text-center"
             >
               We've sent a code to the email associated with your business

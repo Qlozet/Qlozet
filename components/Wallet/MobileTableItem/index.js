@@ -15,7 +15,7 @@ const MobileItem = ({ item, index }) => {
             <Typography
               textColor="text-dark"
               textWeight="font-normal"
-              textSize="text-[16px]"
+              textSize=""
             >
               {12345}
             </Typography></div>
@@ -29,7 +29,7 @@ const MobileItem = ({ item, index }) => {
             <Typography
               textColor="text-dark"
               textWeight="font-normal"
-              textSize="text-[16px]"
+              textSize=""
             >
               {item.amount}
             </Typography></div>
@@ -52,7 +52,7 @@ const MobileItem = ({ item, index }) => {
             <Typography
               textColor="text-dark"
               textWeight="font-normal"
-              textSize="text-[16px]"
+              textSize=""
             >
               12345678910
             </Typography>

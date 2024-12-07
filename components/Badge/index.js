@@ -20,7 +20,7 @@ const Badge = ({ variant, children, ...rest }) => {
 
   return (
     <div
-      className={`py-2 flex items-center justify-center ${variantClasses} text-[16px] font-[300] w-[108px] h-[30px] rounded`}
+      className={`py-2 flex items-center justify-center ${variantClasses}  font-[300] w-[108px] h-[30px] rounded`}
       {...rest}
     >
       {children}

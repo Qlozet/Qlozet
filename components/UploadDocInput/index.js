@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, } from "react";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import dropdownIcon from "../../public/assets/svg/arrow-down-gray.svg";
@@ -8,14 +8,44 @@ import driveIcon from "../../public/assets/svg/drive.svg";
 import dropboxIcon from "../../public/assets/svg/dropbox.svg";
 import fomLinkIcon from "../../public/assets/svg/form-link.svg";
 import closeCircle from "../../public/assets/svg/close-circle.svg";
-import Button from "../Button";
+import DropboxChooser from "react-dropbox-chooser";
 import classes from "./index.module.css";
+import useDrivePicker from 'react-google-drive-picker'
 
 function UploadDocInput({ handleSelect, uploadfiles, singleUpload }) {
   // state
   const [showDropDown, setShowDropDown] = useState(false);
   const [files, setFiles] = useState(uploadfiles);
+
+  const [openPicker, authResponse] = useDrivePicker();
+
+
   // functions
+  // const customViewsArray = [new google.picker.DocsView()]; // custom view
+  const handleOpenPicker = () => {
+    openPicker({
+      clientId: "932740940236-n3muogdmfum11u63oqdue9dl86fhtp9p.apps.googleusercontent.com",
+      developerKey: "AIzaSyAU7Ae3aKeyrntyKo_ijv-vZwsQKEPzRrw",
+      viewId: "DOCS",
+      // token: token, // pass oauth token in case you already have one
+      showUploadView: true,
+      showUploadFolders: true,
+      supportDrives: true,
+      multiselect: true,
+      // customViews: customViewsArray, // custom view
+      callbackFunction: (data) => {
+        if (data.action === 'cancel') {
+          console.log('User clicked cancel/close button')
+        }
+        if (data.docs) {
+          setFiles((prevData) => {
+            handleSelect([...prevData, data.docs[0]]);
+            return [...prevData, data.docs[0]];
+          });
+        }
+      },
+    })
+  }
   const showdropDownHandler = () => {
     setShowDropDown(!showDropDown);
   };
@@ -32,12 +62,45 @@ function UploadDocInput({ handleSelect, uploadfiles, singleUpload }) {
     });
   }, []);
 
+  function handleSuccess(files) {
+    if (files) {
+      setFiles((prevData) => {
+        handleSelect([...prevData, files[0]]);
+        return [...prevData, files[0]];
+      });
+    }
+  }
+
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     noClick: true,
     multiple: true,
   });
 
+
+  const option = [
+    {
+      text: "From Device",
+      icon: deviceIcon,
+      function: () => { open() }
+    },
+    {
+      text: "From Drive",
+      icon: driveIcon,
+      function: () => { handleOpenPicker() }
+    },
+    {
+      text: "From Dropbox",
+      icon: dropboxIcon,
+      function: () => { open() }
+    },
+    {
+      text: "From Link",
+      icon: fomLinkIcon,
+      function: () => { open() }
+    },
+  ]
+  const DROPBOX_APP_KEY = "yc9t3c75udyuzjj"
   return (
     <div
       className="border-[1.5px] border-dashed border-gray-200 py-14 rounded-[8px] px-6 text-black"
@@ -46,37 +109,52 @@ function UploadDocInput({ handleSelect, uploadfiles, singleUpload }) {
       {files.length < 1 ? (
         <div
           className={`flex items-center bg-dark cursor-pointer ${showDropDown ? "rounded-t-lg" : "rounded-[8px]"
-            }  justify-between py-2 mb-6 relative`}
+            }  justify-between py-3 mb-6 relative`}
           onClick={showdropDownHandler}
         >
-          <p className="text-white px-4 ">Choose file</p>
+          <p className="text-white px-6 ">Choose file</p>
           <span className="px-4 border-l-[1px]">
             <Image src={dropdownIcon} alt=""></Image>
           </span>
           {showDropDown && (
             <div
-              className={`absolute left-0 top-[100%] w-full cursor-pointer text-black`}
+              className={`absolute left-0 top-[100%] w-full border-solid border-[2px] border-gray-200 rounded-b-lg overflow-hidden`}
             >
-              <div
-                className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid text-[16px] text-black"
-                onClick={open}
-              >
-                <Image src={deviceIcon} alt=""></Image>
-                <span className="text-gray-100 font-bold ">From Device</span>
-              </div>
-              <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid">
-                <Image src={driveIcon} alt=""></Image>
-                <span className="text-gray-100 font-bold ">From Drive</span>
-              </div>
-              <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid">
-                <Image src={dropboxIcon} alt=""></Image>
-                <span className="text-gray-100 font-bold ">From Dropbox</span>
-              </div>
+              {option.map((item, index) => {
+                if (item.text === "From Dropbox") {
+                  return (
 
-              <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 rounded-b-lg border-t-[2px] border-white border-solid">
-                <Image src={fomLinkIcon} alt=""></Image>
-                <span className="text-gray-100 font-bold ">From Link</span>
-              </div>
+                    <div key={index}><DropboxChooser
+                      appKey={DROPBOX_APP_KEY}
+                      success={handleSuccess}
+                      // extensions={[".pdf", ".doc", ".docx"]}
+                      linkType="direct"
+                      cancel={() => console.log("closed")}
+                      folderselect={true}
+                      multiselect={true}
+                    >
+                      <div
+                        className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid  text-black"
+                      >
+                        <Image src={item.icon} alt=""></Image>
+                        <span className="text-gray-100 font-normal">{item.text}</span>
+                      </div>
+                    </DropboxChooser></div>)
+                } else {
+                  return (
+                    <div key={index}
+                      className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid  text-black"
+                      onClick={item.function}
+                    >
+                      <Image src={item.icon} alt=""></Image>
+                      <span className="text-gray-100 font-normal">{item.text}</span>
+                    </div>
+                  )
+                }
+
+              })}
+
+
             </div>
           )}
         </div>
@@ -89,7 +167,7 @@ function UploadDocInput({ handleSelect, uploadfiles, singleUpload }) {
                   key={index}
                   className="relative bg-gray-300 flex items-center justify-between py-2 px-5 rounded-[8px] mt-1 "
                 >
-                  <p className="font-bold text-[16px] pt-[3px] h-[30px]  overflow-hidden text-ellipsis text-dark">
+                  <p className="font-bold  pt-[3px] h-[30px]  overflow-hidden text-ellipsis text-dark">
                     {item.name}
                   </p>
                   <div
@@ -124,39 +202,45 @@ function UploadDocInput({ handleSelect, uploadfiles, singleUpload }) {
                   <Image src={dropdownDarkIcon} alt=""></Image>
                 </span>
                 {showDropDown && (
-                  <div className={`absolute left-0 top-[100%] w-full`}>
-                    <div
-                      className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid text-[16px]"
-                      onClick={open}
-                    >
-                      <Image src={deviceIcon} alt=""></Image>
-                      <span className="text-gray-100 font-bold ">
-                        From Device
-                      </span>
-                    </div>
-                    <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid">
-                      <Image src={driveIcon} alt=""></Image>
-                      <span className="text-gray-100 font-bold ">
-                        From Drive
-                      </span>
-                    </div>
-                    <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid">
-                      <Image src={dropboxIcon} alt=""></Image>
-                      <span className="text-gray-100 font-bold ">
-                        From Dropbox
-                      </span>
-                    </div>
+                  <div className={`absolute left-0 top-[100%] w-full border-solid border-[2px] border-gray-200 rounded-b-lg overflow-hidden`}>
+                    {option.map((item, index) => {
+                      if (item.text === "From Dropbox") {
+                        return (
 
-                    <div className="px-6 py-3 bg-gray-300 flex items-center gap-5 rounded-b-lg border-t-[2px] border-white border-solid">
-                      <Image src={fomLinkIcon} alt=""></Image>
-                      <span className="text-gray-100 font-bold">From Link</span>
-                    </div>
+                          <div key={index}><DropboxChooser
+                            appKey={DROPBOX_APP_KEY}
+                            success={handleSuccess}
+                            // extensions={[".pdf", ".doc", ".docx"]}
+                            linkType="direct"
+                            cancel={() => console.log("closed")}
+                            folderselect={true}
+                            multiselect={true}
+                          >
+                            <div
+                              className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid  text-black"
+                            >
+                              <Image src={item.icon} alt=""></Image>
+                              <span className="text-gray-100 font-normal">{item.text}</span>
+                            </div>
+                          </DropboxChooser></div>)
+                      } else {
+                        return (
+                          <div key={index}
+                            className="px-6 py-3 bg-gray-300 flex items-center gap-5 border-t-[2px] border-white border-solid  text-black"
+                            onClick={item.function}
+                          >
+                            <Image src={item.icon} alt=""></Image>
+                            <span className="text-gray-100 font-normal">{item.text}</span>
+                          </div>
+                        )
+                      }
+
+                    })}
                   </div>
                 )}
+
               </div>
-              <div className="flex-1">
-                <Button children="Continue" btnSize="large" variant="primary" />
-              </div>
+
             </div>
           )}
         </div>

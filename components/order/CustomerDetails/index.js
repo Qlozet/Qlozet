@@ -18,7 +18,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
             height: "auto",
           }}
           unoptimized
-          className="rounded-[6px]"
+          className="rounded-md"
         />
       </div>
       <div className="flex justify-between items-center py-4">
@@ -76,7 +76,7 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
             </Typography>
           </div>
           <div className="flex-1">
-         
+
           </div>
         </div>
 

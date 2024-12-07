@@ -17,7 +17,7 @@ const MobileTableItem = ({ item }) => {
             <Typography
               textColor="text-dark"
               textWeight="font-normal"
-              textSize="text-[16px]"
+              textSize=""
             >
               {item.orderId}
             </Typography>
@@ -32,7 +32,7 @@ const MobileTableItem = ({ item }) => {
           <Typography
             textColor="text-dark"
             textWeight="font-normal"
-            textSize="text-[16px]"
+            textSize=""
           >
             {item.AmountPaid}
           </Typography>

@@ -9,7 +9,7 @@ const CategoryTable = ({ handleEdit }) => {
       <thead className="w-full bg-[#F4F4F4] ">
         <tr>
           <th className="w-[8%] p-4 text-xs">
-            <div className="flex items-center justify-start font-[500]">
+            <div className="flex items-center justify-start font-medium">
               Name
             </div>
           </th>

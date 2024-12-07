@@ -17,7 +17,7 @@ const CustomerMobileHistory = ({ history, index }) => {
           <Typography
             textColor="text-dark"
             textWeight="font-normal"
-            textSize="text-[16px]"
+            textSize=""
           >
             {"12345678"}
           </Typography>
@@ -31,7 +31,7 @@ const CustomerMobileHistory = ({ history, index }) => {
           <Typography
             textColor="text-dark"
             textWeight="font-normal"
-            textSize="text-[16px]"
+            textSize=""
           >
             {"12345678"}
           </Typography>
@@ -55,7 +55,7 @@ const CustomerMobileHistory = ({ history, index }) => {
           <Typography
             textColor="text-dark"
             textWeight="font-normal"
-            textSize="text-[16px]"
+            textSize=""
           >
             12345678910
           </Typography>

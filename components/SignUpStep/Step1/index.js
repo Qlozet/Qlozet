@@ -16,22 +16,22 @@ const step1 = ({
   return (
     <div>
       <div className="mt-4 mx-4  lg:mx-0 pt-5 px-2 p lg:px-0 ">
-        <Typography
+        <div className="mb-12"> <Typography
           textColor="text-primary"
           textWeight="font-bold"
           textSize="text-[32px]"
         >
           Sign Up
         </Typography>
-        <Typography
-          textWeight="font-normal"
-          textSize="text-sm"
-          verticalPadding="my-1"
-          textColor="text-dark"
-        >
-          Please fill in the information below to register as a vendor
-        </Typography>
-        <ProgressBar step={1} />
+          <Typography
+            textWeight="font-normal"
+            textSize="text-sm"
+            verticalPadding="my-1"
+            textColor="text-dark"
+          >
+            Please fill in the information below to register as a vendor
+          </Typography>
+          <ProgressBar step={1} /></div>
         <TextInput
           value={formData.businessName}
           label="Business name"

@@ -7,12 +7,12 @@ const PriceComp = ({ priceHandler, productAmount, id, color }) => {
     setPrice(productAmount)
   }, [productAmount])
   return (
-    <div className="flex items-center  px-2 rounded-[6px] justify-between border-[1px] border-solid border-gray-300">
+    <div className="flex items-center  px-2 rounded-md justify-between border-[1px] border-solid border-gray-300">
       <div className="cursor-pointer py-1">
         <Typography
           textColor="text-primary"
-          textWeight="font-[500]"
-          textSize="text-[16px]"
+          textWeight="font-medium"
+          textSize=""
         >
           $
         </Typography>
@@ -24,7 +24,7 @@ const PriceComp = ({ priceHandler, productAmount, id, color }) => {
           setPrice(e.target.value);
           priceHandler(e.target.value, id, color);
         }}
-        className="w-full h-full ml-2 font-[500] text-[16px]"
+        className="w-full h-full ml-2 font-medium  p-1"
       />
     </div>
   );

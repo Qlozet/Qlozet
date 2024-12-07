@@ -125,7 +125,7 @@ const DasboardNavWithOutSearch = ({
               <Typography
                 textColor="text-dark"
                 textWeight="font-normal"
-                textSize="text-[16px]"
+                textSize=""
               >
                 {userDetails.personalName}
               </Typography>

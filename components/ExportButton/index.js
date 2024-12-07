@@ -11,8 +11,8 @@ const ExportComponent = ({ handleExport }) => {
       <Image src={excelIcon} alt="" />
       <Typography
         textColor="text-primary"
-        textWeight="font-[500]"
-        textSize="text-[16px]"
+        textWeight="font-medium"
+        textSize=""
       >
         Export
       </Typography>

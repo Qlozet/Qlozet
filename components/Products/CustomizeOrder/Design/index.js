@@ -40,7 +40,7 @@ const Design = ({ id, image, name, reduce }) => {
   return (
     <div
       className={` flex-col gap-2   ${reduce ? "items-center" : ""
-        }  justify-center border-solid  rounded-[6px] ${reduce ? "" : ""
+        }  justify-center border-solid  rounded-md ${reduce ? "" : ""
         }`}
     >
       <div className="relative">
@@ -72,7 +72,7 @@ const Design = ({ id, image, name, reduce }) => {
 
       <Typography
         textColor="text-dark"
-        textWeight="font-[500]"
+        textWeight="font-medium"
         textSize="text-xs"
         align="center"
       >

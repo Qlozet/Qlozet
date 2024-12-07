@@ -46,7 +46,7 @@ const VerticalBarGraph = ({ data, name }) => {
         <Typography
           textColor="text-black"
           textWeight="font-bold"
-          textSize="text-[16px]"
+          textSize=""
         >
           {name}
         </Typography>

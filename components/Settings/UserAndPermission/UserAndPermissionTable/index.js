@@ -37,27 +37,27 @@ const UserAndPermissionTable = ({ handleEdit }) => {
         <thead className="w-full bg-[#F4F4F4] ">
           <tr>
             <th className="w-[8%] p-4  text-dark text-xs">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-medium">
                 Name
               </div>
             </th>
             <th className="w-[8%] p-4  text-dark text-xs">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-medium">
                 Email address
               </div>
             </th>
             <th className="w-[10%] p-4  text-dark text-xs">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-medium">
                 Phone number
               </div>
             </th>
             <th className="w-[8%] p-4  text-dark text-xs">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-medium">
                 Role
               </div>
             </th>
             <th className="w-[8%] p-4  text-dark text-xs">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-medium">
                 Status
               </div>
             </th>
@@ -94,7 +94,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
             <Typography
               textColor="text-dark"
               textWeight="font-[700]"
-              textSize="text-[16px]"
+              textSize=""
             >
               Users and permissions
             </Typography>
@@ -114,7 +114,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
                 <div className="flex items-center justify-end">
                   <Typography
                     textColor="text-dark"
-                    textWeight="font-[500]"
+                    textWeight="font-medium"
                     textSize="text-sm"
                   >
                     {item.name}
@@ -132,7 +132,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
                 <div className="flex items-center justify-end">
                   <Typography
                     textColor="text-dark"
-                    textWeight="font-[500]"
+                    textWeight="font-medium"
                     textSize="text-sm"
                   >
                     {item.phoneNumber}
@@ -151,7 +151,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
                 <div className="flex items-center justify-end">
                   <Typography
                     textColor="text-dark"
-                    textWeight="font-[500]"
+                    textWeight="font-medium"
                     textSize="text-sm"
                   >
                     {item.role}
@@ -169,7 +169,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
                 <div className="flex items-center justify-end">
                   <Typography
                     textColor="text-dark"
-                    textWeight="font-[500]"
+                    textWeight="font-medium"
                     textSize="text-sm"
                   >
                     {item.emailAddress}
@@ -187,7 +187,7 @@ const UserAndPermissionTable = ({ handleEdit }) => {
                 <div className="flex items-center justify-end">
                   <Typography
                     textColor="text-dark"
-                    textWeight="font-[500]"
+                    textWeight="font-medium"
                     textSize="text-sm"
                   >
                     {item.address}

@@ -30,7 +30,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <div className="w-[40%]">
                 <Typography
                   textColor="text-black"
-                  textWeight="font-[500]"
+                  textWeight="font-medium"
                   textSize="text-sm"
                 >
                   Transaction ID
@@ -49,7 +49,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <div className="w-[40%]">
                 <Typography
                   textColor="text-black"
-                  textWeight="font-[500]"
+                  textWeight="font-medium"
                   textSize="text-sm"
                 >
                   Amount
@@ -68,7 +68,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <div className="w-[40%]">
                 <Typography
                   textColor="text-black"
-                  textWeight="font-[500]"
+                  textWeight="font-medium"
                   textSize="text-sm"
                 >
                   Date
@@ -86,7 +86,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <div className="w-[40%]">
                 <Typography
                   textColor="text-black"
-                  textWeight="font-[500]"
+                  textWeight="font-medium"
                   textSize="text-sm"
                 >
                   Transaction type
@@ -104,7 +104,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <div className="w-[40%]">
                 <Typography
                   textColor="text-black"
-                  textWeight="font-[500]"
+                  textWeight="font-medium"
                   textSize="text-sm"
                 >
                   Beneficiary
@@ -122,7 +122,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <div className="w-[40%]">
                 <Typography
                   textColor="text-black"
-                  textWeight="font-[500]"
+                  textWeight="font-medium"
                   textSize="text-sm"
                 >
                   Beneficiary account/bank
@@ -140,7 +140,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <div className="w-[40%]">
                 <Typography
                   textColor="text-black"
-                  textWeight="font-[500]"
+                  textWeight="font-medium"
                   textSize="text-sm"
                 >
                   Narration
@@ -158,7 +158,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <div className="w-[40%]">
                 <Typography
                   textColor="text-black"
-                  textWeight="font-[500]"
+                  textWeight="font-medium"
                   textSize="text-sm"
                 >
                   Balance before
@@ -176,7 +176,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <div className="w-[40%]">
                 <Typography
                   textColor="text-black"
-                  textWeight="font-[500]"
+                  textWeight="font-medium"
                   textSize="text-sm"
                 >
                   Balance after
@@ -194,7 +194,7 @@ const TransactionDetails = ({ closeModal, details }) => {
               <div className="w-[40%]">
                 <Typography
                   textColor="text-black"
-                  textWeight="font-[500]"
+                  textWeight="font-medium"
                   textSize="text-sm"
                 >
                   Status

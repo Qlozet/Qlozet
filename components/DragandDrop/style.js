@@ -17,7 +17,7 @@ const StypePositioning = ({
           onMouseDown={() => {
             handleSetCurentStyle(stylesType, imageIndex);
           }}
-          className="relative bg-[#0D0C0CBD] rounded-[6px] px-6 py-2 cursor-move w-[5rem] mb-4"
+          className="relative bg-[#0D0C0CBD] rounded-md px-6 py-2 cursor-move w-[5rem] mb-4"
           style={{
             position: customeStylesUiPosition.filter(
               (item) =>
@@ -61,7 +61,7 @@ const StypePositioning = ({
         >
           <Typography
             textColor="text-white"
-            textWeight="font-[500]"
+            textWeight="font-medium"
             textSize="text-xs"
           >
             {stylesType}

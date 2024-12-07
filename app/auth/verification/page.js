@@ -38,7 +38,7 @@ const Verication = ({ params }) => {
             <Typography
               textColor="text-dark"
               textWeight="font-normal"
-              textSize="text-[16px]"
+              textSize=""
               align="text-center"
             >
               Your Altire account has been successfully set up, and we've
@@ -49,7 +49,7 @@ const Verication = ({ params }) => {
             </Typography>
             <div>
               <p
-                className="text-primary font-[500] text-sm center cursor-pointer"
+                className="text-primary font-medium text-sm center cursor-pointer"
                 onClick={() => {
                   router.push("/auth/signin");
                 }}

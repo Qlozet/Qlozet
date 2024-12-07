@@ -25,28 +25,28 @@ const OrderTable = ({
         <thead className="w-full bg-[#F4F4F4]  px-[8px] border-solid border-primary rounded-tl-xl rounded-tr-xl">
           <tr className="">
             <th className="w-[8%] px-6 py-3 text-xs">
-              <div className="flex items-center justify-start font-[500] text-dark">
+              <div className="flex items-center justify-start font-medium text-dark">
                 Date
               </div>
             </th>
             <th className="w-[5%] px-3 py-3 text-xs">
-              <div className="flex items-center justify-start font-[500] text-dark">
+              <div className="flex items-center justify-start font-medium text-dark">
                 Order ID
               </div>
             </th>
 
             <th className="w-[10%] px-3 py-3 text-xs">
-              <div className="flex items-center justify-start font-[500] text-dark">
+              <div className="flex items-center justify-start font-medium text-dark">
                 Customer name
               </div>
             </th>
             <th className="w-[8%] px-3 py-3 text-xs">
-              <div className="flex items-center justify-start font-[500] text-dark">
+              <div className="flex items-center justify-start font-medium text-dark">
                 Amount paid
               </div>
             </th>
             <th className="w-[9%] px-3 py-3 text-xs">
-              <div className="flex items-center justify-start font-[500] text-dark">
+              <div className="flex items-center justify-start font-medium text-dark">
                 Delivery Status
               </div>
             </th>
