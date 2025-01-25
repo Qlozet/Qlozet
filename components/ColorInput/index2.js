@@ -1,12 +1,12 @@
 import colourIcon from "../../public/assets/svg/colour-icon.svg";
 import closeIcon from "../../public/assets/svg/material-symbol-close-icon.svg";
 import Image from "next/image";
-import { ColorPicker, useColor } from "react-color-palette";
+import { ColorPicker, ColorService, useColor } from "react-color-palette";
 import ColorInputContainer from "../ColorPicker";
 import Typography from "../Typography";
 import classes from "./index.module.css";
 import customisationIcon from "../../public/assets/svg/customisation-icon.svg";
-
+import { getRandomHexColor } from "@/utils/helper";
 import { useEffect, useState } from "react";
 const ColorInput = ({
   label,
@@ -20,6 +20,7 @@ const ColorInput = ({
   index,
   removeColorHandler
 }) => {
+  const [color, setColor] = useColor("#561ecb");
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [currentColor, setCurrentColor] = useState("#561ecb");
   const [selectedColors, setSelectedColors] = useState(value);
@@ -70,7 +71,6 @@ const ColorInput = ({
     "#4D80CC",
     "#9900B3",
   ];
-  const [color, setColor] = useColor("#561ecb");
 
   const removeColor = (color, index) => {
     setSelectedColors(selectedColors.filter((item) => item !== color));
@@ -86,6 +86,13 @@ const ColorInput = ({
   useEffect(() => {
     removeDuplicates()
   }, [value])
+
+
+  useEffect(() => {
+    const randonCol = getRandomHexColor()
+    setColor(ColorService.convert("hex", randonCol));
+    setCurrentColor(randonCol)
+  }, [showColorPicker])
   return (
     <div
       className="relative"
@@ -200,7 +207,7 @@ const ColorInput = ({
                     <div className="w-[25%] h-[1.5rem] flex items-center justify-center px-2">
                       <Typography
                         textColor="text-white"
-                        textWeight="font-medium"
+                        textWeight="font-[500]"
                         textSize="text-xs"
                       >
                         Hex
@@ -208,12 +215,12 @@ const ColorInput = ({
                     </div>
                     <div className="w-[75%]  h-[1.5rem] border-solid border-[2px] border-[rgba(13,153,255)] flex items-center">
                       <div className="w-[70%] flex items-center">
-                        <p className="font-medium text-xs text-white bg-[rgba(13,153,255,.2)] ml-[1px]">
+                        <p className="font-[500] text-xs text-white bg-[rgba(13,153,255,.2)] ml-[1px]">
                           {currentColor}
                         </p>
                       </div>
                       <div className="w-[30%] border-l-[1px] border-solid border-gray-400">
-                        <p className="font-medium text-sm text-white pl-[10px]">
+                        <p className="font-[500] text-sm text-white pl-[10px]">
                           100%
                         </p>
                       </div>

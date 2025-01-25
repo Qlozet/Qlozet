@@ -7,7 +7,7 @@
 }
 
 .scrollbarElement {
-  overflow-x: scroll;
+  /* overflow-x: scroll; */
 }
 
 .scrollbarElement::-webkit-scrollbar {

@@ -209,14 +209,14 @@ const DragDrop = ({
           </Typography>
         </div>
         <div
-          className={`flex gap-4 relative overflow-hidden `}
+          className={`flex flex-col lg:flex-row gap-4 relative overflow-hidden `}
           onMouseDown={(e) => {
             setStartCal(true);
           }}
           onMouseMove={mouseMove}
           onTouchMove={touchMove}
         >
-          <div className="w-[70%] ">
+          <div className="lg:w-[70%] w-full">
             {productImages.length > 0 && (
               <div className={`relative`}>
                 <div className="absolute top-[50%] left-0 flex items-center justify-between w-[100%] px-6">
@@ -268,7 +268,7 @@ const DragDrop = ({
                   style={{
                     width: "100%",
                     height: "auto",
-                    maxWidth: "300px",
+
                   }}
                   unoptimized
                   onLoad={() => setIsLoaded(true)}
@@ -277,7 +277,7 @@ const DragDrop = ({
               </div>
             )}
           </div>
-          <div className="flex flex-col gap-4  bg-[#EBEBEBEB] py-4 w-[30%]">
+          <div className="flex flex-col gap-4  bg-[#EBEBEBEB] py-4 lg:w-[30%] w-full">
             {productImages.map(
               (item, index) =>
                 index == imageIndex && (

@@ -25,7 +25,7 @@ const ReviewItem = ({ review }) => {
       if (response.code === 200) {
         toast(<Toast text={"Reply successful"} type="success" />);
       } else {
-        toast(<Toast text={response?.message} type="danger" />);
+        toast(<Toast text={"An error occured"} type="danger" />);
       }
     } catch (error) {
       setIsloading(false);

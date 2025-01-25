@@ -6,7 +6,7 @@ const SelectedFile = ({ removeItemFromList, index, item }) => {
   const [isActive, setIsActive] = useState(false);
   return (
     <div
-      className="relative cursor-pointer"
+      className="relative cursor-pointer h-full"
       onMouseEnter={() => {
         setIsActive(true);
       }}
@@ -19,7 +19,7 @@ const SelectedFile = ({ removeItemFromList, index, item }) => {
     >
       {/* <div className="min-w-[5rem] h-[auto] rounded"
         style={{ backgroundImage: `url(${item.secure_url})`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat" }}></div> */}
-      <div className="w-[74px] h-[70px] border-[1px] border-solid border-gray-200 rounded-lg relative" style={{ backgroundImage: `url(${item.secure_url})`, backgroundPosition: "center", backgroundSize: "cover", backgroundRepeat: "no-repeat" }}>
+      <div className="w-[106px] h-full border-[1px] border-solid border-gray-200 rounded-lg relative" style={{ backgroundImage: `url(${item.secure_url})`, backgroundPosition: "center", backgroundSize: "cover", backgroundRepeat: "no-repeat", height: "100%" }}>
         {isActive && (
           <div className="absolute right-0 top-0 w-full h-full bg-[rgba(0,0,0,.3)] rounded">
             <div
@@ -33,14 +33,7 @@ const SelectedFile = ({ removeItemFromList, index, item }) => {
           </div>
         )}
       </div>
-      {/* <Image
-        width={500}
-        height={500}
-        src={}
-        style={{ width: "auto", height: "5rem" }}
-        alt=""
-        unoptimized
-      /> */}
+
     </div>
   );
 };

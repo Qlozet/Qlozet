@@ -5,12 +5,15 @@ import classes from "./index.module.css";
 import { Oval } from "react-loader-spinner";
 import SelectedFile from "./FileContainer";
 import { uploadSingleImage } from "@/utils/helper";
+import { Upload } from "lucide-react";
+import ToolTip from "../ToolTip";
 const FileInput = ({
   label,
   handleSelect,
   value,
   placeholder,
   disabled = false,
+  tooltips
 }) => {
   const [files, setFiles] = useState(value);
   const [deletedFiles, setDeletedFiles] = useState([]);
@@ -44,6 +47,7 @@ const FileInput = ({
 
         setIsloading(false)
       } catch (error) {
+
         console.log(error)
       }
     })
@@ -54,10 +58,13 @@ const FileInput = ({
 
   return (
     <div className="my-3 w-full">
-      <label className="text-sm text-dark">{label}</label>
-      <div className="overflow-hidden">
+      <div className="flex items-center justify-start gap-2">
+        <label className="text-sm my-2 text-dark"> {label}</label>
+        {tooltips && <ToolTip text={`${label} is required`} />
+        }
+      </div>      <div className="overflow-hidden">
         <div
-          className={`${classes.scrollbarElement} w-full h-[7rem] flex items-center gap-4 px-4 border-[1.5px] border-solid border-primary-200 rounded-[12px]`}
+          className={`${classes.scrollbarElement} w-full h-[186px] flex items-center gap-4 px-4 border-[1.5px] border-solid border-primary rounded-[12px] py-4`}
         >
           {files.map((item, index) => {
             return (
@@ -72,16 +79,18 @@ const FileInput = ({
           })}
           {!isloading ? (
             <label
-              className="border-[1px] border-solid border-primary-200 block min-w-[5rem] h-[5rem] rounded-[12px] "
+              className="border-[1.5px] border-dashed border-gray-200 block  h-full rounded-[12px] min-w-[157px]"
               htmlFor={"files"}
             >
-              <div className="border-[1px] border-solid border-gray-200 h-[100%] cursor-pointer rounded-[12px] flex justify-center items-center bg-white">
-                <Image src={documentIcon} alt="" />
+              <div className="h-[100%] cursor-pointer rounded-[12px] flex justify-center  items-center flex-col bg-white gap-4 py-2 px-6">
+                <Upload height={24} width={24} />
+                <button className="bg-gray-300 rounded-md px-2 py-1">Add image</button>
+                <p className="text-gray-100 text-xs font-medium">Add from URL</p>
               </div>
             </label>
           ) : (
-            <div className="border-[1px] border-solid border-primary-200 block min-w-[5rem] h-[5rem] rounded-[12px] relative">
-              <div className="border-[1px] border-solid border-gray-200 h-[100%] cursor-pointer rounded-[12px] flex justify-center items-center  bg-[rgba-(0,0,0,1)]">
+            <div className="border-[1px] border-solid border-primary-200 block w-[106px] h-[100%] rounded-[12px] relative">
+              <div className="border-[1px] border-solid border-gray-200 cursor-pointer rounded-[12px] flex justify-center items-center  bg-[rgba-(0,0,0,1)] w-full h-[100%] ">
                 <Oval
                   visible={true}
                   height={24}

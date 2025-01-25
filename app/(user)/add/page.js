@@ -10,7 +10,7 @@ import FileInput from "@/components/uploadFileinput/UploadFileInput";
 import Typography from "@/components/Typography";
 import CustomiSationButton from "@/components/CustomizationButton";
 import CustomizeOrder from "@/components/Products/CustomizeOrder";
-import VariantTable from '../../../components/add/VariantTable'
+import VariantTable from "../../../components/add/VariantTable/index2.js";
 import NumberInput from "@/components/NumberInput";
 import TextArea from "@/components/TextAreaInput";
 import { getRequest, postRequest } from "@/api/method";
@@ -49,7 +49,7 @@ const AddProduct = () => {
   const [positionStyles, setPositionStyles] = useState([]);
   const [accessories, setAcessories] = useState([]);
   const [materialUploadLoading, setMaterialUploadLoading] = useState(false);
-  const [addVariant, setAddVariant] = useState(false)
+  const [addVariant, setAddVariant] = useState(false);
   const [productFormData, setProductFormData] = useState({
     productName: "",
     productPrice: "",
@@ -78,7 +78,7 @@ const AddProduct = () => {
 
   // Functions
   const handleSelectFile = async (files, deletedFiles) => {
-    console.log(files)
+    console.log(files);
 
     setProductFormData((prevData) => {
       return { ...prevData, images: files };
@@ -90,13 +90,16 @@ const AddProduct = () => {
     }
 
     if (files.length < 1) {
-      setSelectedStyles([])
+      setSelectedStyles([]);
     }
   };
 
   const submitAcessories = (acess) => {
     setAcessories((prevData) => {
-      return [...prevData, { image: acess.images, id: acess.id, price: acess.price }];
+      return [
+        ...prevData,
+        { image: acess.images, id: acess.id, price: acess.price },
+      ];
     });
   };
 
@@ -110,12 +113,11 @@ const AddProduct = () => {
       })
       .flat()
       .map((item) => {
-        console.log(item)
+        console.log(item);
         return {
           ...item,
           position: item.position,
           imageIndex: item.imageIndex,
-
         };
       });
     const containsPostion = stylesExist.filter((item) => {
@@ -129,9 +131,24 @@ const AddProduct = () => {
 
   const submitVariantImage = async (file, id, imageIndex, color) => {
     const imageUrl = await uploadSingleImage(file);
-    const orderItems = variantTable.filter((item) => item.id !== id)
-    const targetItems = variantTable.filter((item) => item.id === id)
-    targetItems[0].images.retained = [...targetItems[0].images.retained, imageUrl]
+    const orderItems = variantTable.filter((item) => item.color !== color);
+    const targetItems = variantTable.filter((item) => item.color === color);
+    targetItems[0].images.retained = [
+      ...targetItems[0].images.retained,
+      imageUrl,
+    ];
+    const targetColors = targetItems.map((item) => {
+      return {
+        id: item.id,
+        price: item.price,
+        color: item.color,
+        checked: item.checked,
+        quantity: item.quantity,
+        size: item.size,
+        index: item.index,
+        images: { retained: [...item.images.retained, imageUrl] },
+      };
+    });
     setVariantTable([...targetItems, ...orderItems]);
   };
 
@@ -157,16 +174,26 @@ const AddProduct = () => {
 
   const addSizeToVariant = (size) => {
     const id = uuidv4();
-    const addColorAndMaterial = [...selectedColors.filter((item) => item !== undefined), ...selectedVariantFiles.filter((item) => item !== undefined)];
+    const addColorAndMaterial = [
+      ...selectedColors.filter((item) => item !== undefined),
+      ...selectedVariantFiles.filter((item) => item !== undefined),
+    ];
     setProductFormData((prevData) => {
-      return { ...prevData, variantSizes: [...productFormData.variantSizes, { size: size[size.length - 1], id: id }] }
-    })
-    addColorAndMaterial.map((item) => {
+      return {
+        ...prevData,
+        variantSizes: [
+          ...productFormData.variantSizes,
+          { size: size[size.length - 1], id: id },
+        ],
+      };
+    });
+    addColorAndMaterial.map((item, index) => {
       const variantId = uuidv4();
       setVariantTable((prevData) => {
         return [
           ...prevData,
           {
+            index: index,
             id: variantId,
             checked: false,
             color: item,
@@ -174,9 +201,13 @@ const AddProduct = () => {
               retained: [],
               deleted: [],
             },
-            price: productFormData.productPrice,
+            price: productFormData.productPrice
+              ? productFormData.productPrice
+              : 0,
             size: modifySizeHandler(size[size.length - 1]),
-            quantity: productFormData.productQuantity,
+            quantity: productFormData.productQuantity
+              ? productFormData.productQuantity
+              : 0,
           },
         ];
       });
@@ -195,30 +226,56 @@ const AddProduct = () => {
     setVariantTable(variantTable.filter((item) => item.color !== material));
   };
 
-  const handleDeleteVariantFromTable = (id, color) => {
-    const newVariants = variantTable.filter((item) => item.id !== id && item.color !== color)
-    setVariantTable(newVariants)
-    // setProductFormData((prevData) => {
-    //   return { ...prevData, variantSizes: [] }
-    // })
-  }
+  const handleDeleteVariantFromTable = (id, color, size) => {
+    let newVariants = [];
+    if (id) {
+      // Remove all item with id = id
+      newVariants = variantTable.filter((item) => item.id !== id);
+    } else {
+      // Remove all item with color = color
+      newVariants = variantTable.filter((item) => item.color !== color);
+    }
+    setVariantTable(newVariants);
+  };
 
   const handleVariantChecked = (data, id, color) => {
-    const newVariantTable = variantTable.map((item) => {
-      if (item.id === id && item.color === color) {
-        return {
-          id: item.id,
-          price: item.price,
-          images: item.images,
-          color: item.color,
-          checked: data,
-          quantity: item.quantity,
-          size: item.size,
-        };
-      } else {
-        return item;
-      }
-    });
+    let newVariantTable = [];
+    if (id) {
+      newVariantTable = variantTable.map((item) => {
+        if (item.id === id) {
+          return {
+            id: item.id,
+            price: item.price,
+            images: item.images,
+            color: item.color,
+            checked: data,
+            quantity: item.quantity,
+            size: item.size,
+            index: item.index,
+          };
+        } else {
+          return item;
+        }
+      });
+    } else {
+      newVariantTable = variantTable.map((item) => {
+        if (item.color === color) {
+          return {
+            id: item.id,
+            price: item.price,
+            images: item.images,
+            color: item.color,
+            checked: data,
+            quantity: item.quantity,
+            size: item.size,
+            index: item.index,
+          };
+        } else {
+          return item;
+        }
+      });
+    }
+
     setVariantTable(newVariantTable);
   };
 
@@ -233,34 +290,57 @@ const AddProduct = () => {
   };
 
   const priceHandler = (value, id, color) => {
-    const newVariantTable = variantTable.map((item) => {
-      if (item.id === id && item.color === color) {
-        return {
-          id: item.id,
-          price: value,
-          images: item.images,
-          color: item.color,
-          checked: item.checked,
-          quantity: item.quantity,
-          size: item.size,
-        };
-      } else {
-        return item;
-      }
-    });
+    let newVariantTable = [];
+    if (id) {
+      newVariantTable = variantTable.map((item) => {
+        if (item.id === id) {
+          return {
+            id: item.id,
+            price: value,
+            images: item.images,
+            color: item.color,
+            checked: item.checked,
+            quantity: item.quantity,
+            size: item.size,
+            index: item.index,
+          };
+        } else {
+          return item;
+        }
+      });
+    } else {
+      newVariantTable = variantTable.map((item) => {
+        if (item.color === color) {
+          return {
+            id: item.id,
+            price: value,
+            images: item.images,
+            color: item.color,
+            checked: item.checked,
+            quantity: item.quantity,
+            size: item.size,
+            index: item.index,
+          };
+        } else {
+          return item;
+        }
+      });
+    }
+
     setVariantTable(newVariantTable);
   };
 
   const handleEditStylePrice = (stylesPricerice, styleId) => {
-    setPositionStyles(positionStyles.map((item) => {
-      if (item.id === styleId) {
-        return { ...item, price: stylesPricerice }
-      } else {
-        return item
-      }
-    }))
-
-  }
+    setPositionStyles(
+      positionStyles.map((item) => {
+        if (item.id === styleId) {
+          return { ...item, price: stylesPricerice };
+        } else {
+          return item;
+        }
+      })
+    );
+  };
 
   const handleSubmit = async () => {
     const productId = getProductId();
@@ -323,7 +403,7 @@ const AddProduct = () => {
           setIsLoading(false);
           toast(<Toast text={response?.message} type="success" />);
         } else {
-          toast(<Toast text={response?.message} type="danger" />);
+          toast(<Toast text={"An error occured"} type="danger" />);
         }
       } catch (error) {
         setIsLoading(false);
@@ -337,12 +417,14 @@ const AddProduct = () => {
   };
 
   const removeSizeFromVariant = (sizeInfo) => {
-    const newVariants = productFormData.variantSizes.filter((item) => item.id !== sizeInfo.id)
-    setVariantTable(variantTable.filter((item) => item.id !== sizeInfo.id))
+    const newVariants = productFormData.variantSizes.filter(
+      (item) => item.id !== sizeInfo.id
+    );
+    setVariantTable(variantTable.filter((item) => item.id !== sizeInfo.id));
     setProductFormData((prevData) => {
-      return { ...prevData, variantSizes: newVariants }
-    })
-  }
+      return { ...prevData, variantSizes: newVariants };
+    });
+  };
 
   const fetchProduct = async () => {
     const productId = getProductId();
@@ -377,8 +459,9 @@ const AddProduct = () => {
           setAcessories(
             response.data.data.accessories.map((item) => {
               return {
-                image: item.images[0].secure_url, id: item._id,
-                price: item.price
+                image: item.images[0].secure_url,
+                id: item._id,
+                price: item.price,
               };
             })
           );
@@ -386,26 +469,26 @@ const AddProduct = () => {
             if (!item.color.hex.includes("https://res.cloudinary.com")) {
               return item.color.hex;
             }
-          })
-          setSelectedColors(
-            variantColors
-          );
+          });
+          setSelectedColors(variantColors);
           const variantMaterials = response.data.data.variants.map((item) => {
             if (item.color.hex.includes("https://res.cloudinary.com")) {
               return item.color.hex;
             } else {
-
             }
-          })
+          });
 
-          const newsw = response.data.data.variants.map((item) => item.color.hex.includes("https://res.cloudinary.com"))
-          setSelectedVariantFiles(variantMaterials)
+          const newsw = response.data.data.variants.map((item) =>
+            item.color.hex.includes("https://res.cloudinary.com")
+          );
+          setSelectedVariantFiles(variantMaterials);
           if (response.data.data.variants.length > 0) {
-            setAddVariant(true)
+            setAddVariant(true);
           }
 
           setVariantTable(
             response.data.data.variants.map((item) => {
+              console.log(item);
               return {
                 id: uuidv4(),
                 color: item.color.hex,
@@ -413,7 +496,7 @@ const AddProduct = () => {
                 price: item.price,
                 quantity: item.qty,
                 images: {
-                  retained: [],
+                  retained: item.images,
                   deleted: [],
                 },
               };
@@ -436,10 +519,10 @@ const AddProduct = () => {
               position: stylePositionExist && stylePositionExist[0].position,
               imageIndex:
                 stylePositionExist && stylePositionExist[0].imageIndex,
-              price: stylePositionExist && stylePositionExist[0].price
+              price: stylePositionExist && stylePositionExist[0].price,
             };
           });
-          setPositionStyles(productStyles)
+          setPositionStyles(productStyles);
           setSelectedStyles(productStyles);
           localStorage.setItem("styleTypes", JSON.stringify(productStyles));
           setPageLoading(false);
@@ -448,7 +531,7 @@ const AddProduct = () => {
         // setPageLoading(false);
       }
     } else {
-      setPageLoading(false)
+      setPageLoading(false);
     }
   };
 
@@ -465,9 +548,17 @@ const AddProduct = () => {
     const localData = localStorage.getItem("styleTypes");
     if (localData) {
       const savedData = JSON.parse(localData);
-      savedData && setSelectedStyles(savedData.map((item) => {
-        return { ...item, price: productFormData.productPrice ? productFormData.productPrice : 0 }
-      }));
+      savedData &&
+        setSelectedStyles(
+          savedData.map((item) => {
+            return {
+              ...item,
+              price: productFormData.productPrice
+                ? productFormData.productPrice
+                : 0,
+            };
+          })
+        );
     }
   }, [showCustomiseOrder]);
   return (
@@ -480,21 +571,33 @@ const AddProduct = () => {
             <div>
               <div className="mt-4 lg:mt-0"></div>
               <div className="">
-                <h5 className="hidden lg:block text-[18px] font-bold">Add product</h5>
-                <div className="lg:py-5 "> <CheckBoxInput label="Add variants if product comes in multiple versions like different sizes and colours" handleChange={(data) => {
-                  setAddVariant(data)
-                  setProductFormData((prevData) => {
-                    return { ...prevData, isVariantAvailable: data }
-                  })
-                }} /></div>
+                <h5 className="hidden lg:block text-[18px] font-bold">
+                  Add product
+                </h5>
+                <div className="lg:py-5 ">
+                  {" "}
+                  <CheckBoxInput
+                    label="Add variants if product comes in multiple versions like different sizes and colours"
+                    handleChange={(data) => {
+                      setAddVariant(data);
+                      setProductFormData((prevData) => {
+                        return { ...prevData, isVariantAvailable: data };
+                      });
+                    }}
+                  />
+                </div>
                 <div className="mx-0 mt-2 bg-gray-[#F4F4F4] lg:bg-white rounded-t-lg lg:translate-x-2 border-[1px] border-solid lg:border-none">
-                  <h4 className=" font-medium pt-2 px-4 pb-2 lg:hidden"> Product Info</h4>
+                  <h4 className=" font-medium pt-2 px-4 pb-2 lg:hidden">
+                    {" "}
+                    Product Info
+                  </h4>
                 </div>
                 <div className="bg-white w-full p-4 mx-0 lg:rounded-2xl">
                   <DashedComponent name={"Product info"} />
                   <div className="block lg:flex items-center justify-between  gap-6">
-                    <div className="w-full">
+                    <div className="w-full lg:w-3/5">
                       <TextInput
+                        tooltips={true}
                         value={productFormData.productName}
                         label="Product name"
                         placeholder="Enter product name"
@@ -515,30 +618,71 @@ const AddProduct = () => {
                         error={requiredproductFormData.productName}
                       />
                     </div>
-                    <div className="w-full">
-                      <NumberInput
-                        value={productFormData.productPrice}
-                        label="Price"
-                        placeholder="Enter price"
+                    <div className="w-full lg:w-2/5">
+                      <TextInput
+                        tooltips={"Product name is required"}
+                        value={productFormData.productName}
+                        label="Product name"
+                        placeholder="Enter product name"
                         setValue={(data) => {
                           setProductFormData((prevData) => {
-                            return { ...prevData, productPrice: data };
+                            return { ...prevData, productName: data };
                           });
                           if (data) {
                             setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productPrice: false };
+                              return { ...prevData, productName: false };
                             });
                           } else {
                             setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productPrice: true };
+                              return { ...prevData, productName: true };
                             });
                           }
                         }}
-                        error={requiredproductFormData.productPrice}
+                        error={requiredproductFormData.productName}
                       />
                     </div>
-                    <div className="w-full">
+                    {/* <div className="w-full"> */}
+
+                    {/* </div> */}
+                  </div>
+
+                  <div className="block lg:flex items-start justify-between gap-6 h-full lg:my-4">
+                    <div className="w-full lg:w-3/5" style={{ height: "100%" }}>
+                      <TextArea
+                        tooltips={true}
+                        label="Product description"
+                        placeholder="Enter description"
+                        value={productFormData.description}
+                        setValue={(data) => {
+                          setProductFormData((prevData) => {
+                            return { ...prevData, description: data };
+                          });
+                          if (data) {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, description: false };
+                            });
+                          } else {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, description: true };
+                            });
+                          }
+                        }}
+                        error={requiredproductFormData.description}
+                      />
+                    </div>
+                    <div className="w-full lg:w-2/5">
+                      <div className="lg:mt-8">
+                        {" "}
+                        <Typography
+                          textColor="text-primary"
+                          textWeight="font-semibold"
+                          textSize="text-lg"
+                        >
+                          Product organization
+                        </Typography>
+                      </div>
                       <SelectInput
+                        tooltips={true}
                         readOnly={true}
                         index={20}
                         placeholder={"Product Tags"}
@@ -561,13 +705,9 @@ const AddProduct = () => {
                         error={requiredproductFormData.productTag}
                         data={[{ text: "Male" }, { text: "Female" }]}
                       />
-                    </div>
-                  </div>
-                  <div className="block lg:flex items-center justify-between  gap-6">
-                    <div className="w-full">
                       <SelectInput
+                        tooltips={true}
                         readOnly={true}
-
                         placeholder={"Category"}
                         value={productFormData.productCategory}
                         setValue={(data) => {
@@ -589,9 +729,34 @@ const AddProduct = () => {
                         label="Category"
                         index={15}
                       />
-                    </div>
-                    <div className="w-full">
                       <SelectInput
+                        tooltips={true}
+
+                        readOnly={true}
+                        placeholder={"Sub-category"}
+                        value={productFormData.productCategory}
+                        setValue={(data) => {
+                          setProductFormData((prevData) => {
+                            return { ...prevData, productCategory: data };
+                          });
+                          if (data) {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, productCategory: false };
+                            });
+                          } else {
+                            setrequiredproductFormData((prevData) => {
+                              return { ...prevData, productCategory: true };
+                            });
+                          }
+                        }}
+                        error={requiredproductFormData.productCategory}
+                        data={[{ text: "Two Piece" }, { text: "Dress" }]}
+                        label="Sub category"
+                        index={15}
+                      />
+
+                      <SelectInput
+                        tooltips={true}
                         readOnly={true}
                         placeholder={"Enter product type"}
                         value={productFormData.productType}
@@ -615,74 +780,74 @@ const AddProduct = () => {
                         index={10}
                       />
                     </div>
-                    <div className="w-full ">
-                      <div className="w-full">
-                        <NumberInput
-                          label="Available discount"
-                          placeholder="Enter available discount?"
-                          value={productFormData.discount}
-                          setValue={(data) => {
-                            setProductFormData((prevData) => {
-                              return { ...prevData, discount: data };
-                            });
-                          }}
-                          error={requiredproductFormData.discount}
-                        />
-                      </div>
-                    </div>
                   </div>
-                  <div className="block lg:grid grid-cols-3  justify-between gap-6">
-                    <div className="w-full max--full">
+
+                  <div className="block lg:flex items-start justify-between gap-6 h-full lg:my-4">
+                    <div className="w-full lg:w-3/5">
                       <FileInput
+                        tooltips={true}
                         handleSelect={handleSelectFile}
                         label="Upload product image"
                         value={productFormData.images}
                       />
                     </div>
-                    <div className="w-full">
-                      <TextArea
-                        label="Product description"
-                        placeholder="Enter description"
-                        value={productFormData.description}
-                        setValue={(data) => {
-                          setProductFormData((prevData) => {
-                            return { ...prevData, description: data };
-                          });
-                          if (data) {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, description: false };
-                            });
-                          } else {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, description: true };
-                            });
-                          }
-                        }}
-                        error={requiredproductFormData.description}
-                      />
-                    </div>
-                    <div className="w-full">
+                    <div></div>
+                    <div className="w-full lg:w-2/5">
+                      <div className="lg:mt-4">
+                        {" "}
+                        <Typography
+                          textColor="text-primary"
+                          textWeight="font-semibold"
+                          textSize="text-lg"
+                        >
+                          Pricing
+                        </Typography>
+                      </div>
                       <NumberInput
-                        label="Available quantity"
-                        placeholder="Enter quantity"
-                        value={productFormData.productQuantity}
+                        tooltips={true}
+
+                        value={productFormData.productPrice}
+                        label="Price"
+                        placeholder="Enter price"
                         setValue={(data) => {
                           setProductFormData((prevData) => {
-                            return { ...prevData, productQuantity: data };
+                            return { ...prevData, productPrice: data };
                           });
                           if (data) {
                             setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productQuantity: false };
+                              return { ...prevData, productPrice: false };
                             });
                           } else {
                             setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productQuantity: true };
+                              return { ...prevData, productPrice: true };
                             });
                           }
                         }}
-                        error={requiredproductFormData.productQuantity}
+                        error={requiredproductFormData.productPrice}
+                      />
+                      <NumberInput
+                        tooltips={true}
+                        label="Available discount"
+                        placeholder="Enter available discount?"
+                        value={productFormData.discount}
+                        setValue={(data) => {
+                          setProductFormData((prevData) => {
+                            return { ...prevData, discount: data };
+                          });
+                        }}
+                        error={requiredproductFormData.discount}
                       />
                     </div>
+                  </div>
+
+                  {/* </div> */}
+                  {/* <div className="w-full"> */}
+
+                  <div className="block lg:flex items-center justify-between  gap-6">
+
+                  </div>
+                  <div className="block lg:grid grid-cols-3  justify-between gap-6">
+                    <div className="w-full "></div>
                   </div>
                   <div className="block lg:flex  justify-between  gap-6">
                     <div className="w-full flex items-start justify-start"></div>
@@ -710,11 +875,13 @@ const AddProduct = () => {
                       handleClick={() => {
                         if (productFormData.images.length > 0) {
                           setShowCustomiseOrder(true);
-
                         } else {
-                          toast(<Toast text={"Add product Image"} type="danger" />);
+                          toast(
+                            <Toast text={"Add product Image"} type="danger" />
+                          );
                         }
                       }}
+                      text={"Price:"}
                     />
                     <Styles
                       handleEditStylePrice={handleEditStylePrice}
@@ -746,86 +913,92 @@ const AddProduct = () => {
                     {/* The accesorries is returning only id he should return the full data */}
                     <Styles data={accessories} />
                   </div>
-                  {addVariant && (<div> <div className="w-full">
-                    <ColorInput
-                      index={1200}
-                      value={selectedColors}
-                      label="Colour"
-                      placeholder="Choose colours available for this product"
-                      setValue={addToVariantTable}
-                      removeColorHandler={removeColorVariant}
-                    />
-                  </div>
-                    <div className="w-full">
-                      <MaterialInput
-                        label="Material"
-                        placeholder="Choose available for this product"
-                        handleSelect={addToVariantTable}
-                        value={selectedVariantFiles}
-                        removeMaterialHandler={removeMaterialHandler}
-                        loading={materialUploadLoading}
-                      />
-                    </div>
-                    <div className="w-full">
-                      <SizeInput
-                        disabled={
-                          [...selectedColors, ...selectedVariantFiles].length > 0
-                            ? false
-                            : true
-                        }
-                        value={productFormData.variantSizes}
-                        setValue={(data, index) => {
-                          if (index !== undefined) {
-
-                          } else {
-                            addSizeToVariant(data);
-                          }
-                          if (data) {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, variantSizes: false };
-                            });
-                          } else {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, variantSizes: true };
-                            });
-                          }
-                        }}
-                        error={requiredproductFormData.variantSizes}
-                        data={[
-                          "Extra small",
-                          "Small",
-                          "Medium",
-                          "Large",
-                          "Extra large",
-                        ]}
-                        label="Sizes"
-                        index={40}
-                        removeSizeFromVariant={removeSizeFromVariant}
-                      />
-                    </div>
-                    <div className="my-8">
-                      <DashedComponent name={"Product variants"} />
-                    </div>
-                    <div className="flex items-center">
-                      <Typography
-                        textWeight="font-[700]"
-                        textSize="text-[18px]"
-                        verticalPadding="my-2"
-                        textColor="text-dark"
-                      >
-                        Variant Table
-                      </Typography>
-                    </div>
+                  {addVariant && (
                     <div>
-                      <VariantTable
-                        handleChecked={handleVariantChecked}
-                        data={variantTable}
-                        submitVariantImage={submitVariantImage}
-                        quantityHandler={VariantQuantityHandler}
-                        priceHandler={priceHandler}
-                        handleDeleteVariantFromTable={handleDeleteVariantFromTable}
-                      />
-                    </div></div>)}
+                      <div className="w-full">
+                        <ColorInput
+                          index={1200}
+                          value={selectedColors}
+                          label="Colour"
+                          placeholder="Choose colours available for this product"
+                          setValue={addToVariantTable}
+                          removeColorHandler={removeColorVariant}
+                        />
+                      </div>
+                      <div className="w-full">
+                        <MaterialInput
+                          label="Material"
+                          placeholder="Choose available for this product"
+                          handleSelect={addToVariantTable}
+                          value={selectedVariantFiles}
+                          removeMaterialHandler={removeMaterialHandler}
+                          loading={materialUploadLoading}
+                        />
+                      </div>
+                      <div className="w-full">
+                        <SizeInput
+                          disabled={
+                            [...selectedColors, ...selectedVariantFiles]
+                              .length > 0
+                              ? false
+                              : true
+                          }
+                          value={productFormData.variantSizes}
+                          setValue={(data, index) => {
+                            if (index !== undefined) {
+                            } else {
+                              addSizeToVariant(data);
+                            }
+                            if (data) {
+                              setrequiredproductFormData((prevData) => {
+                                return { ...prevData, variantSizes: false };
+                              });
+                            } else {
+                              setrequiredproductFormData((prevData) => {
+                                return { ...prevData, variantSizes: true };
+                              });
+                            }
+                          }}
+                          error={requiredproductFormData.variantSizes}
+                          data={[
+                            "Extra small",
+                            "Small",
+                            "Medium",
+                            "Large",
+                            "Extra large",
+                          ]}
+                          label="Sizes"
+                          index={40}
+                          removeSizeFromVariant={removeSizeFromVariant}
+                        />
+                      </div>
+                      <div className="my-8">
+                        <DashedComponent name={"Product variants"} />
+                      </div>
+                      <div className="flex items-center">
+                        <Typography
+                          textWeight="font-[700]"
+                          textSize="text-[18px]"
+                          verticalPadding="my-2"
+                          textColor="text-dark"
+                        >
+                          Variant Table
+                        </Typography>
+                      </div>
+                      <div>
+                        <VariantTable
+                          handleChecked={handleVariantChecked}
+                          data={variantTable}
+                          submitVariantImage={submitVariantImage}
+                          quantityHandler={VariantQuantityHandler}
+                          priceHandler={priceHandler}
+                          handleDeleteVariantFromTable={
+                            handleDeleteVariantFromTable
+                          }
+                        />
+                      </div>
+                    </div>
+                  )}
                   <div>
                     <div className="my-4">
                       <Button
@@ -840,7 +1013,6 @@ const AddProduct = () => {
                       />
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
@@ -848,24 +1020,32 @@ const AddProduct = () => {
           <Modal
             show={showCustomiseOrder}
             content={
-              <>{showCustomiseOrder && (<CustomizeOrder
-                styleData={styles}
-                closeModal={() => {
-                  setShowCustomiseOrder(false);
-                  setPositionModal(true);
-                }}
-              />)}</>
+              <>
+                {showCustomiseOrder && (
+                  <CustomizeOrder
+                    styleData={styles}
+                    closeModal={() => {
+                      setShowCustomiseOrder(false);
+                      setPositionModal(true);
+                    }}
+                  />
+                )}
+              </>
             }
           ></Modal>
           <Modal
             show={showAddAccessories}
             content={
-              <>{showAddAccessories && (<AddAcessories
-                submitAcessories={submitAcessories}
-                closeModal={() => {
-                  setShowAddAccessories(false);
-                }}
-              />)}</>
+              <>
+                {showAddAccessories && (
+                  <AddAcessories
+                    submitAcessories={submitAcessories}
+                    closeModal={() => {
+                      setShowAddAccessories(false);
+                    }}
+                  />
+                )}
+              </>
             }
           ></Modal>
         </div>
@@ -873,17 +1053,20 @@ const AddProduct = () => {
       <Modal
         show={positionModal}
         content={
-          <>{positionModal && (<DragDrop
-            handleSelectStyle={handleSelectStyle}
-            productImages={productFormData.images}
-            selectedStyles={selectedStyles}
-            closeModal={() => {
-              setPositionModal(false);
-            }}
-          ></DragDrop>)}</>
+          <>
+            {positionModal && (
+              <DragDrop
+                handleSelectStyle={handleSelectStyle}
+                productImages={productFormData.images}
+                selectedStyles={selectedStyles}
+                closeModal={() => {
+                  setPositionModal(false);
+                }}
+              ></DragDrop>
+            )}
+          </>
         }
       ></Modal>
-
     </section>
   );
 };

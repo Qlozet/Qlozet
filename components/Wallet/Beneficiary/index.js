@@ -44,7 +44,7 @@ const Beneficiary = ({ closeModal }) => {
         });
         setBeneficairy(savedBeneneficiaries);
       }
-    } catch (error) { }
+    } catch (error) { toast(<Toast text={"An error occured"} type="danger" />); }
   };
   useEffect(() => {
     getBeneficiary();

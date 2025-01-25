@@ -37,7 +37,7 @@ const ProductTable = ({
         toast(<Toast text={response?.message} type="success" />);
       } else {
       }
-    } catch (error) { }
+    } catch (error) { toast(<Toast text={"An error occured"} type="danger" />); }
   };
 
   useEffect(() => {

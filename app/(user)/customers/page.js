@@ -192,7 +192,6 @@ const Customer = () => {
           )}
         </div>
         <div className="hidden lg:block">
-
           <Modal
             show={viewCustomerDetails}
             content={

@@ -13,6 +13,8 @@ import VerticalBarGraph from "@/components/VerticalBarGraph";
 import RecentOrder from "@/components/RecentOrder";
 import { getRequest } from "@/api/method";
 import Loader from "@/components/Loader";
+import toast from "react-hot-toast";
+import Toast from "@/components/ToastComponent/toast";
 const Dashboard = () => {
   const [totalCustomer, setTotalCustomer] = useState("0");
   const [topEarning, setTopEarning] = useState("0");
@@ -24,15 +26,7 @@ const Dashboard = () => {
   const [recentOrders, setRecentOrders] = useState([]);
   const [dailyEarnings, setDailyEarning] = useState([]);
   const [dailyOrder, setDailyOrder] = useState([]);
-  const [data, setData] = useState([
-    { date: "Sun", value: 4300 },
-    { date: "Mon", value: 5100 },
-    { date: "Tue", value: 4200 },
-    { date: "Wed", value: 4900 },
-    { date: "Thu", value: 6100 },
-    { date: "Fri", value: 5300 },
-    { date: "Sat", value: 5300 },
-  ]);
+
   const [genderByOrder, setGenderByOrder] = useState({
     labels: ["Male", "Female"],
     values: [0, 0],
@@ -66,7 +60,6 @@ const Dashboard = () => {
       const response = await getRequest(
         "/vendor/dashboard/orders/top-locations"
       );
-      setCustomerLocation(response.data.totalCount);
       response?.data?.data?.locations.map((location) => {
         const singleLocatin = {
           location: location.location,
@@ -76,7 +69,10 @@ const Dashboard = () => {
         locationData.push(singleLocatin);
       });
       setTop4Location(locationData);
-    } catch (error) { }
+      await setCustomerLocation(response.data.totalCount);
+    } catch (error) {
+
+    }
   };
 
   const get4Topproduct = async () => {
@@ -159,6 +155,7 @@ const Dashboard = () => {
         "/vendor/orders/daily-order?filter=thisMonth"
       );
       if (response.data) {
+        console.log(response.data.data)
         setDailyOrder(response.data.data);
       }
     } catch (error) { }

@@ -138,7 +138,7 @@ const Order = () => {
       setOrders(ordersData);
       setFilteredOrders(ordersData);
       setPageLoading(false);
-    } catch (error) { }
+    } catch (error) { toast(<Toast text={"An error occured"} type="danger" />); }
   };
 
   const handleFilterWithDate = (startDate, endDate, value) => {
