@@ -8,13 +8,13 @@
   --background-end-rgb: white;
 }
 
-input{
+/* input{
   outline: none !important;
 }
 
 input:focus{
   outline: none !important;
-}
+} */
 
 @media (prefers-color-scheme: dark) {
   :root {

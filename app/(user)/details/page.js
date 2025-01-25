@@ -121,11 +121,11 @@ const ProductDetails = () => {
                   </h2>
                 </div>
                 <div className="lg:bg-white w-full lg:p-4 lg:rounded-[12px]">
-                    <div className="bg-[#F4F4F4] p-4 rounded-t-[12px] lg:hidden mt-[1rem]">
+                  <div className="bg-[#F4F4F4] p-4 rounded-t-[12px] lg:hidden mt-[1rem]">
                     <Typography
                       textColor="text-dark"
                       textWeight="font-[700]"
-                      textSize="text-[16px]"
+                      textSize=""
                     >
                       Product Info
                     </Typography>
@@ -215,7 +215,7 @@ const ProductDetails = () => {
                           />
                         </div> */}
                       </div>
-                      <h1 className="text-[16px] lg:text-[32px] font-bold my-2 text-primary">
+                      <h1 className=" lg:text-[32px] font-bold my-2 text-primary">
                         {productFormData.productName}
                       </h1>
                       <h2 className="block lg:hidden font-bold text-sm leading-[36px] text-primary lg:text-[#33CC33]">
@@ -256,7 +256,7 @@ const ProductDetails = () => {
                         <h2 className="hidden lg:block font-bold text-[24px] leading-[36px]">
                           {productFormData.productPrice}
                         </h2>
-                        {/* <h2 className="font-[500] text-sm leading-[36px] text-primary lg:text-[#33CC33]">
+                        {/* <h2 className="font-medium text-sm leading-[36px] text-primary lg:text-[#33CC33]">
                           1,000 items delivered
                         </h2> */}
                       </div>

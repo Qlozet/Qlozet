@@ -13,7 +13,7 @@ const SetUpAltireWallet = ({ closeModal }) => {
           <div className="flex items-center justify-between">
             <Typography
               textColor="text-black"
-              textWeight="font-[500]"
+              textWeight="font-medium"
               textSize="text-sm"
             >
               Set total order per day

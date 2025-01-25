@@ -12,7 +12,7 @@ const RecentOrder = ({ orders }) => {
         <Typography
           textColor="text-black"
           textWeight="font-bold"
-          textSize="text-[16px]"
+          textSize=""
         >
           Recent orders
         </Typography>

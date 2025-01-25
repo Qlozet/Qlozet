@@ -1,8 +1,15 @@
 import Image from "next/image";
 import icon from "../../../public/assets/svg/image-frame.svg";
-import { useState } from "react";
-const VariantImage = ({ submitImage, id, imageIndex, color }) => {
+import { useEffect, useState } from "react";
+const VariantImage = ({ submitImage, id, imageIndex, color, source }) => {
+  console.log(source)
   const [file, setFile] = useState("");
+
+  useEffect(() => {
+    if (source) {
+      setFile(source)
+    }
+  }, [source])
   return (
     <div>
       <input
@@ -12,6 +19,7 @@ const VariantImage = ({ submitImage, id, imageIndex, color }) => {
         onChange={(e) => {
           setFile(e.target.files[0]);
           submitImage(e.target.files[0], id, imageIndex, color);
+          e.target.value = ""
         }}
       />
       <label

@@ -1,5 +1,6 @@
 import { BallTriangle } from "react-loader-spinner";
 import Loader from "../Loader";
+import ToolTip from "../ToolTip";
 
 const NumberInput = ({
   label,
@@ -11,12 +12,16 @@ const NumberInput = ({
   placeholder,
   disabled = false,
   isLoading,
+  tooltips
 }) => {
   return (
-    <div className="my-3 relative">
+    <div className="my-3 relative w-full">
       {leftIcon}
-      <label className="text-sm my-2 text-dark"> {label}</label>
-      <input
+      <div className="flex items-center justify-start gap-2">
+        <label className="text-sm my-2 text-dark"> {label}</label>
+        {tooltips && <ToolTip text={`${label} is required`} />
+        }
+      </div>      <input
         className={`py-3 ${error && "border-danger"
           } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  
           focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-sm text-font-light placeholder:font-300 ${disabled && "border-0 bg-gray-300 cursor-not-allowed"
@@ -27,7 +32,7 @@ const NumberInput = ({
         onChange={(e) => {
           const re = /^[0-9\b]+$/;
           if (e.target.value === "" || re.test(e.target.value)) {
-            e.target.value && setValue(e.target.value);
+            setValue(e.target.value);
           }
         }}
       ></input>

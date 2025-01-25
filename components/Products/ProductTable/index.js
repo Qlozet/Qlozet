@@ -37,7 +37,7 @@ const ProductTable = ({
         toast(<Toast text={response?.message} type="success" />);
       } else {
       }
-    } catch (error) { }
+    } catch (error) { toast(<Toast text={"An error occured"} type="danger" />); }
   };
 
   useEffect(() => {
@@ -52,42 +52,42 @@ const ProductTable = ({
           <thead className="w-full bg-[#F4F4F4] text-dark rounded-[12px] " >
             <tr className="">
               <th className="w-[5%] px-2 py-4 text-xs">
-                <div className="flex items-center justify-start font-[500] text-dark pl-4" >
+                <div className="flex items-center justify-start font-medium text-dark pl-4" >
                   Picture
                 </div>
               </th>
               <th className="w-[12%] px-2 py-4 text-xs">
-                <div className="flex items-center justify-start font-[500]  text-dark">
+                <div className="flex items-center justify-start font-medium  text-dark">
                   Product Name
                 </div>
               </th>
               <th className="w-[12%] px-2 py-4 text-xs">
-                <div className="flex items-center justify-start font-[500]  text-dark">
+                <div className="flex items-center justify-start font-medium  text-dark">
                   Product price
                 </div>
               </th>
               <th className="w-[8%] px-2 py-4 text-xs">
-                <div className="flex items-center justify-start font-[500]  text-dark">
+                <div className="flex items-center justify-start font-medium  text-dark">
                   Category
                 </div>
               </th>
               <th className="w-[10%] px-2 py-4 text-xs">
-                <div className="flex items-center justify-start font-[500]  text-dark">
+                <div className="flex items-center justify-start font-medium  text-dark">
                   Product type
                 </div>
               </th>
               <th className="w-[4%] px-2 py-4 text-xs">
-                <div className="flex items-center justify-start font-[500]  text-dark">
+                <div className="flex items-center justify-start font-medium  text-dark">
                   Tag
                 </div>
               </th>
               <th className="w-[9%] px-2 py-4 text-xs">
-                <div className="flex items-center justify-start font-[500]  text-dark">
+                <div className="flex items-center justify-start font-medium  text-dark">
                   Quantity
                 </div>
               </th>
               <th className="w-[12%] px-2 py-4 text-xs">
-                <div className="flex items-center justify-start font-[500]  text-dark">
+                <div className="flex items-center justify-start font-medium  text-dark">
                   Product Status
                 </div>
               </th>

@@ -27,7 +27,7 @@ const MobileCutomerItem = ({
             <Typography
               textColor="text-black"
               textWeight="font-normal"
-              textSize="text-[16px]"
+              textSize=""
             >
               {customerName}
             </Typography>
@@ -36,14 +36,14 @@ const MobileCutomerItem = ({
             <Typography
               textColor="text-black"
               textWeight="font-normal"
-              textSize="text-[16px]"
+              textSize=""
             >
               Total Orders
             </Typography>
             <Typography
               textColor="text-black"
               textWeight="font-normal"
-              textSize="text-[16px]"
+              textSize=""
             >
               {totalOrders}
             </Typography>

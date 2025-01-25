@@ -9,32 +9,32 @@ const HistoryTable = ({ data, modal }) => {
         <thead className="w-full bg-[#F4F4F4] ">
           <tr>
             <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-[500] text-dark">
+              <div className="flex items-center justify-start font-medium text-dark">
                 Date
               </div>
             </th>
             <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-[500] text-dark">
+              <div className="flex items-center justify-start font-medium text-dark">
                 Product name
               </div>
             </th>
             <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-[500] text-dark">
+              <div className="flex items-center justify-start font-medium text-dark">
                 Product price
               </div>
             </th>
             <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-[500] text-dark">
+              <div className="flex items-center justify-start font-medium text-dark">
                 Amount paid
               </div>
             </th>
             <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-[500] text-dark">
+              <div className="flex items-center justify-start font-medium text-dark">
                 Delivery Status
               </div>
             </th>
             <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-[500] text-dark"></div>
+              <div className="flex items-center justify-start font-medium text-dark"></div>
             </th>
           </tr>
         </thead>

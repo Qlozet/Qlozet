@@ -1,12 +1,12 @@
 import colourIcon from "../../public/assets/svg/colour-icon.svg";
 import closeIcon from "../../public/assets/svg/material-symbol-close-icon.svg";
 import Image from "next/image";
-import { ColorPicker, useColor } from "react-color-palette";
+import { ColorPicker, ColorService, useColor } from "react-color-palette";
 import ColorInputContainer from "../ColorPicker";
 import Typography from "../Typography";
 import classes from "./index.module.css";
 import customisationIcon from "../../public/assets/svg/customisation-icon.svg";
-
+import { getRandomHexColor } from "@/utils/helper";
 import { useEffect, useState } from "react";
 const ColorInput = ({
   label,
@@ -20,6 +20,7 @@ const ColorInput = ({
   index,
   removeColorHandler
 }) => {
+  const [color, setColor] = useColor("#561ecb");
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [currentColor, setCurrentColor] = useState("#561ecb");
   const [selectedColors, setSelectedColors] = useState(value);
@@ -70,7 +71,6 @@ const ColorInput = ({
     "#4D80CC",
     "#9900B3",
   ];
-  const [color, setColor] = useColor("#561ecb");
 
   const removeColor = (color, index) => {
     setSelectedColors(selectedColors.filter((item) => item !== color));
@@ -86,6 +86,13 @@ const ColorInput = ({
   useEffect(() => {
     removeDuplicates()
   }, [value])
+
+
+  useEffect(() => {
+    const randonCol = getRandomHexColor()
+    setColor(ColorService.convert("hex", randonCol));
+    setCurrentColor(randonCol)
+  }, [showColorPicker])
   return (
     <div
       className="relative"

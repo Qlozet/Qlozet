@@ -80,7 +80,6 @@ const SignUp = () => {
   };
 
   const handleSelectLogo = (file) => {
-    console.log(file)
     setBusinessLogo(file);
   };
 

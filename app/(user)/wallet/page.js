@@ -53,7 +53,7 @@ const Wallet = () => {
         setWalletBalance(response?.data?.data);
       } else {
       }
-    } catch (error) { }
+    } catch (error) { toast(<Toast text={"An error occured"} type="danger" />); }
   };
 
   const getTransaction = async () => {
@@ -91,7 +91,7 @@ const Wallet = () => {
       if (response?.data) {
         setAllBanks(response?.data?.data?.data);
       }
-    } catch (error) { }
+    } catch (error) { toast(<Toast text={"An error occured"} type="danger" />); }
   };
 
   const handleFilterData = (data) => {

@@ -43,7 +43,7 @@ const CompanyDetails = ({
         <div className="p-1 flex justify-center items-center">
           <Typography
             textColor="text-dark"
-            textWeight="font-[500]"
+            textWeight="font-medium"
             textSize="text-[20px]"
           >
             {shopDetails.vendorName}
@@ -52,7 +52,7 @@ const CompanyDetails = ({
         <div className="flex justify-center items-center">
           <Typography
             textColor="text-gray-100"
-            textWeight="font-[500]"
+            textWeight="font-medium"
             textSize="text-[20px]"
           >
             {shopDetails.companyName}
@@ -62,7 +62,7 @@ const CompanyDetails = ({
           <Typography
             textColor="text-gray-200"
             textWeight="font-normal"
-            textSize="text-[16px]"
+            textSize=""
           >
             {shopDetails.email}
           </Typography>
@@ -75,7 +75,7 @@ const CompanyDetails = ({
           <Typography
             textColor="text-dark"
             textWeight="font-[700]"
-            textSize="text-[16px]"
+            textSize=""
           >
             Company Info
           </Typography>

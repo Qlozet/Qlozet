@@ -15,30 +15,30 @@ const VariantTable = ({
         <thead className="w-full bg-[#F4F4F4] ">
           <tr>
             <th className="w-[10%] p-4 text-xs">
-              <div className="flex items-center justify-start font-[500] text-dark">
+              <div className="flex items-center justify-start font-medium text-dark">
                 Variants
               </div>
             </th>
             <th className="w-[15%] p-4 text-xs min-w-[7rem]">
-              <div className="flex items-center justify-start font-[500] text-dark">
+              <div className="flex items-center justify-start font-medium text-dark">
                 Quantity
               </div>
             </th>
             <th className="w-[15%] min-w-[6rem] p-4 text-xs">
-              <div className="flex items-center justify-start font-[500] text-dark min-w-[6rem]">
+              <div className="flex items-center justify-start font-medium text-dark min-w-[6rem]">
                 Price
               </div>
             </th>
             <th className="w-[35%] p-4 text-xs min-w-[17rem]">
-              <div className="flex items-center justify-start font-[500] text-dark">
+              <div className="flex items-center justify-start font-medium text-dark">
                 Add Product images
               </div>
             </th>
             <th className="w-[5%] p-4 text-xs min-w-[4rem]">
-              <div className="flex items-center justify-start font-[500] text-dark"></div>
+              <div className="flex items-center justify-start font-medium text-dark"></div>
             </th>
             <th className="w-[5%] p-4 text-xs min-w-[4rem]">
-              <div className="flex items-center justify-start font-[500] text-dark"></div>
+              <div className="flex items-center justify-start font-medium text-dark"></div>
             </th>
           </tr>
         </thead>

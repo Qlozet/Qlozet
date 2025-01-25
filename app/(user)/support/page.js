@@ -35,7 +35,7 @@ const Support = () => {
           setFormData({ message: "", issueType: "" });
           toast(<Toast text={response?.message} type="success" />);
         }
-      } catch (error) { }
+      } catch (error) { toast(<Toast text={"An error occured"} type="danger" />); }
     } else {
       setRequiredFormData((prevData) => {
         return { prevData, ...data };

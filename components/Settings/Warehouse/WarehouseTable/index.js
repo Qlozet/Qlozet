@@ -13,37 +13,37 @@ const WearhousetTable = ({ data, handleFilterData }) => {
         <thead className="w-full bg-[#F4F4F4] ">
           <tr>
             <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-[500]   text-dark ">
+              <div className="flex items-center justify-start font-medium   text-dark ">
                 Warehouse name
               </div>
             </th>
             <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-[500]   text-dark">
+              <div className="flex items-center justify-start font-medium   text-dark">
                 Vendor’s name
               </div>
             </th>
             <th className="w-[10%] p-4 text-xs">
-              <div className="flex items-center justify-start font-[500]   text-dark">
+              <div className="flex items-center justify-start font-medium   text-dark">
                 Warehouse address{" "}
               </div>
             </th>
             <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-[500]   text-dark">
+              <div className="flex items-center justify-start font-medium   text-dark">
                 Contact name
               </div>
             </th>
             <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-[500]   text-dark">
+              <div className="flex items-center justify-start font-medium   text-dark">
                 Phone number
               </div>
             </th>
             <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-[500]   text-dark">
+              <div className="flex items-center justify-start font-medium   text-dark">
                 email
               </div>
             </th>
             <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-[500]   text-dark">
+              <div className="flex items-center justify-start font-medium   text-dark">
                 Status
               </div>
             </th>
@@ -91,7 +91,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
               <Typography
                 textColor="text-dark"
                 textWeight="font-[700]"
-                textSize="text-[16px]"
+                textSize=""
               >
                 Warehouse
               </Typography>
@@ -124,7 +124,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
                   <div className="flex items-center justify-end">
                     <Typography
                       textColor="text-dark"
-                      textWeight="font-[500]"
+                      textWeight="font-medium"
                       textSize="text-sm"
                     >
                       {item.warehouseName}
@@ -142,7 +142,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
                   <div className="flex items-center justify-end">
                     <Typography
                       textColor="text-dark"
-                      textWeight="font-[500]"
+                      textWeight="font-medium"
                       textSize="text-sm"
                     >
                       {item.vendorId}
@@ -160,7 +160,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
                   <div className="flex items-center justify-end">
                     <Typography
                       textColor="text-dark"
-                      textWeight="font-[500]"
+                      textWeight="font-medium"
                       textSize="text-sm"
                     >
                       {item.PhoneNumber}
@@ -178,7 +178,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
                   <div className="flex items-center justify-end">
                     <Typography
                       textColor="text-dark"
-                      textWeight="font-[500]"
+                      textWeight="font-medium"
                       textSize="text-sm"
                     >
                       {item.email}
@@ -196,7 +196,7 @@ const WearhousetTable = ({ data, handleFilterData }) => {
                   <div className="flex items-center justify-end">
                     <Typography
                       textColor="text-dark"
-                      textWeight="font-[500]"
+                      textWeight="font-medium"
                       textSize="text-sm"
                     >
                       {item.warehouseAddress}

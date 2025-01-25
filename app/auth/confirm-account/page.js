@@ -29,7 +29,7 @@ const Verication = () => {
             <Typography
               textColor="text-dark"
               textWeight="font-normal"
-              textSize="text-[16px]"
+              textSize=""
               align="text-center"
             >
               We've sent a verification email to <span className="font-medium">{email}</span>. Please check your inbox for the email and click the verification link inside to activate your account.

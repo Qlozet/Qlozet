@@ -22,37 +22,37 @@ const CustomerTable = ({
         <thead className="w-full bg-[#F4F4F4] text-dark ">
           <tr>
             <th className="w-[8%] px-2 py-3 pl-6 text-xs">
-              <div className="flex items-center justify-start font-[500]  text-dark">
+              <div className="flex items-center justify-start font-medium  text-dark">
                 Picture
               </div>
             </th>
             <th className="w-[12%] px-2 py-3 text-xs">
-              <div className="flex items-center justify-start font-[500]  text-dark">
+              <div className="flex items-center justify-start font-medium  text-dark">
                 Customer name
               </div>
             </th>
             {/* <th className="w-[8%] px-2 py-3 text-xs">
-              <div className="flex items-center justify-start font-[500]  text-dark">
+              <div className="flex items-center justify-start font-medium  text-dark">
                 Email address
               </div>
             </th>
             <th className="w-[8%] px-2 py-3 text-xs">
-              <div className="flex items-center justify-start font-[500]  text-dark">
+              <div className="flex items-center justify-start font-medium  text-dark">
                 Phone number
               </div>
             </th> */}
             <th className="w-[8%] px-2 py-3 text-xs">
-              <div className="flex items-center justify-start font-[500]  text-dark">
+              <div className="flex items-center justify-start font-medium  text-dark">
                 Total orders
               </div>
             </th>
             <th className="w-[8%] px-2 py-3 text-xs">
-              <div className="flex items-center justify-start font-[500]  text-dark">
+              <div className="flex items-center justify-start font-medium  text-dark">
                 Last Order date
               </div>
             </th>
             <th className="w-[6%] px-2 py-3 text-xs">
-              <div className="flex items-center justify-start font-[500]  text-dark">
+              <div className="flex items-center justify-start font-medium  text-dark">
                 Status
               </div>
             </th>

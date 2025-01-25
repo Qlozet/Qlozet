@@ -79,7 +79,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                           <Typography
                             textColor="text-primary"
                             textWeight="font-normal"
-                            textSize="text-[16px]"
+                            textSize=""
                           >
                             {userDetails.businessName}
                           </Typography>
@@ -267,7 +267,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                   <Typography
                     textColor="text-primary"
                     textWeight="font-bold"
-                    textSize="text-[16px]"
+                    textSize=""
                   >
                     Restock New kaftan products
                   </Typography>
@@ -283,7 +283,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                   <Typography
                     textColor="text-primary"
                     textWeight="font-bold"
-                    textSize="text-[16px]"
+                    textSize=""
                   >
                     Restock New kaftan products
                   </Typography>
@@ -299,7 +299,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                   <Typography
                     textColor="text-primary"
                     textWeight="font-bold"
-                    textSize="text-[16px]"
+                    textSize=""
                   >
                     Restock New kaftan products
                   </Typography>
@@ -315,7 +315,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }) => {
                   <Typography
                     textColor="text-primary"
                     textWeight="font-bold"
-                    textSize="text-[16px]"
+                    textSize=""
                   >
                     Restock New kaftan products
                   </Typography>

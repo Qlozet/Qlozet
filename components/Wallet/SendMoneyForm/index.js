@@ -48,7 +48,7 @@ const SendMoneyForm = ({ closeModal, banks }) => {
         closeModal("");
         toast(<Toast text={response?.message} type="success" />);
       }
-    } catch (error) { }
+    } catch (error) { toast(<Toast text={"An error occured"} type="danger" />); }
   };
 
   const getUserAccountName = async () => {

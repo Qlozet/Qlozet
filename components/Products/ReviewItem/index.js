@@ -25,7 +25,7 @@ const ReviewItem = ({ review }) => {
       if (response.code === 200) {
         toast(<Toast text={"Reply successful"} type="success" />);
       } else {
-        toast(<Toast text={response?.message} type="danger" />);
+        toast(<Toast text={"An error occured"} type="danger" />);
       }
     } catch (error) {
       setIsloading(false);
@@ -55,7 +55,7 @@ const ReviewItem = ({ review }) => {
         </div>
         <Typography
           textSize="text-xs"
-          textWeight="font-[500]"
+          textWeight="font-medium"
           verticalPadding="py-4"
         >
           {review.description}
@@ -71,7 +71,7 @@ const ReviewItem = ({ review }) => {
           </div>
         )}
         {addReview && (
-          <div className="border-[1px] border-primary-100 border-solid flex rounded-[6px] overflow-hidden">
+          <div className="border-[1px] border-primary-100 border-solid flex rounded-md overflow-hidden">
             <input
               className="px-4 w-full  text-dark placeholder-gray-200 border-none outline-none text-xs"
               placeholder="Add review"

@@ -45,6 +45,10 @@ module.exports = {
         300: "rgba(221, 226, 229, 1)",
         400: "rgba(248, 249, 250, 1)",
       },
+      outline: {
+        DEFAULT: "#3E1C01",
+
+      },
     },
     screens: {
       sm: "640px", // Small screens (e.g., phones)

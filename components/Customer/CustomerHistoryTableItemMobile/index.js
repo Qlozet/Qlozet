@@ -17,7 +17,7 @@ const CustomerHistoryTableItem = ({ item, index }) => {
           <Typography
             textColor="text-dark"
             textWeight="font-normal"
-            textSize="text-[16px]"
+            textSize=""
           >
             {item.transactionId}
           </Typography>
@@ -31,7 +31,7 @@ const CustomerHistoryTableItem = ({ item, index }) => {
           <Typography
             textColor="text-dark"
             textWeight="font-normal"
-            textSize="text-[16px]"
+            textSize=""
           >
             {item.amount}
           </Typography>
@@ -55,7 +55,7 @@ const CustomerHistoryTableItem = ({ item, index }) => {
           <Typography
             textColor="text-dark"
             textWeight="font-normal"
-            textSize="text-[16px]"
+            textSize=""
           >
             12345678910
           </Typography>

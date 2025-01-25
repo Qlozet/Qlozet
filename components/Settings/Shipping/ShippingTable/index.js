@@ -40,37 +40,37 @@ const ShippingTable = () => {
         <thead className="w-full bg-[#F4F4F4] ">
           <tr>
             <th className="w-[8%] p-4  text-dark text-xs">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-medium">
                 Name
               </div>
             </th>
             <th className="w-[8%] p-4  text-dark text-xs">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-medium">
                 Address
               </div>
             </th>
             <th className="w-[10%] p-4  text-dark text-xs">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-medium">
                 Phone number
               </div>
             </th>
             <th className="w-[8%] p-4  text-dark text-xs">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-medium">
                 Email address
               </div>
             </th>
             <th className="w-[8%] p-4  text-dark text-xs">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-medium">
                 No of deliveries
               </div>
             </th>
             <th className="w-[8%] p-4  text-dark text-xs">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-medium">
                 Admin name
               </div>
             </th>
             <th className="w-[8%] p-4  text-dark text-xs">
-              <div className="flex items-center justify-start font-[500]">
+              <div className="flex items-center justify-start font-medium">
                 Status
               </div>
             </th>
@@ -105,7 +105,7 @@ const ShippingTable = () => {
             <Typography
               textColor="text-dark"
               textWeight="font-[700]"
-              textSize="text-[16px]"
+              textSize=""
             >
               Shipping partners
             </Typography>
@@ -125,7 +125,7 @@ const ShippingTable = () => {
                 <div className="flex items-center justify-end">
                   <Typography
                     textColor="text-dark"
-                    textWeight="font-[500]"
+                    textWeight="font-medium"
                     textSize="text-sm"
                   >
                     {item.Name}
@@ -143,7 +143,7 @@ const ShippingTable = () => {
                 <div className="flex items-center justify-end">
                   <Typography
                     textColor="text-dark"
-                    textWeight="font-[500]"
+                    textWeight="font-medium"
                     textSize="text-sm"
                   >
                     {item.PhoneNumber}
@@ -162,7 +162,7 @@ const ShippingTable = () => {
                 <div className="flex items-center justify-end">
                   <Typography
                     textColor="text-dark"
-                    textWeight="font-[500]"
+                    textWeight="font-medium"
                     textSize="text-sm"
                   >
                     {item.noOfDeliveries}
@@ -180,7 +180,7 @@ const ShippingTable = () => {
                 <div className="flex items-center justify-end">
                   <Typography
                     textColor="text-dark"
-                    textWeight="font-[500]"
+                    textWeight="font-medium"
                     textSize="text-sm"
                   >
                     {item.emailAddress}
@@ -198,7 +198,7 @@ const ShippingTable = () => {
                 <div className="flex items-center justify-end">
                   <Typography
                     textColor="text-dark"
-                    textWeight="font-[500]"
+                    textWeight="font-medium"
                     textSize="text-sm"
                   >
                     {item.Address}

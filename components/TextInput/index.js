@@ -1,5 +1,8 @@
 import { BallTriangle } from "react-loader-spinner";
+import tooltipsIcon from "../../public/assets/svg/information.svg"
 import Loader from "../Loader";
+import { Info } from "lucide-react";
+import ToolTip from "../ToolTip";
 const TextInput = ({
   label,
   error,
@@ -10,15 +13,20 @@ const TextInput = ({
   placeholder,
   disabled = false,
   isLoading,
+  tooltips
 }) => {
   return (
     <div className="my-3 relative">
       {leftIcon}
-      <label className="text-sm my-2 text-dark"> {label}</label>
+      <div className="flex items-center justify-start gap-2">
+        <label className="text-sm my-2 text-dark"> {label}</label>
+        {tooltips && <ToolTip text={`${label} is required`} />
+        }
+      </div>
       <input
         type="text"
-        className={`py-3 px-4 w-full border-solid border-[1.5px]  text-dark placeholder-gray-200
-        focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 ${error && "border-danger"
+        className={`py-3 px-4 w-full border-solid border-[1.5px] text-dark placeholder-gray-200
+        focus:bg-white focus:outline focus:outline-4 focus:outline-[#3E1C0114] focus:border-primary-100 ${error && "border-danger"
           } border-gray-2 rounded-[8px] overflow-hidden text-sm text-font-light placeholder:font-300 ${disabled && "border-0 bg-gray-300 cursor-not-allowed "
           } `}
         value={value}

@@ -4,6 +4,7 @@ import arrowDownIcon from "../../public/assets/svg/arrow-down.svg";
 import Typography from "../Typography";
 import classes from "./index.module.css";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import ToolTip from "../ToolTip";
 const SelectInput = ({
   value,
   placeholder,
@@ -12,7 +13,8 @@ const SelectInput = ({
   label,
   index,
   error,
-  readOnly
+  readOnly,
+  tooltips
 }) => {
   const [showDropDown, setShowDropDown] = useState(false);
   const dropDownRef = useRef();
@@ -31,8 +33,11 @@ const SelectInput = ({
       style={{ zIndex: index ? index : 10 }}
     >
       <div className={`${classes.container}  border-solid   `}>
-        <label className="text-sm text-dark">{label}</label>
-        <input
+        <div className="flex items-center justify-start gap-2">
+          <label className="text-sm my-2 text-dark"> {label}</label>
+          {tooltips && <ToolTip text={`${label} is required`} />
+          }
+        </div>        <input
           readOnly={readOnly}
           onChange={filterList}
           onClick={() => {
@@ -61,7 +66,7 @@ const SelectInput = ({
       </div>
       {showDropDown && (
         <div
-          className={` cursor-pointer absolute top-[73px] bg-white rounded-lg max-h-[15rem] ${classes.datalist} shadow-md  w-[95%]`}
+          className={` cursor-pointer absolute top-[73px] bg-white rounded-lg max-h-[15rem] ${classes.datalist} shadow-md  w-full`}
           ref={dropDownRef}
         >
           {list.map((item, index) => (
