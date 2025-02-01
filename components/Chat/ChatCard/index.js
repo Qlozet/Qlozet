@@ -1,12 +1,7 @@
 import Typography from "../../Typography";
 import ChatLabel from "../ChatLabel";
 const ChatCard = ({ text, graph }) => {
-  const chartData = {
-    labels: ["Male", "Female"],
-    values: [12, 19],
-    colors: ["#3E1C01", "#9C8578"],
-    borderAlign: "center",
-  };
+
   return (
     // shadow-md
     <div className=" bg-white rounded-[12px] p-6 w-full h-[22rem] flex flex-col justify-between ">

@@ -17,7 +17,7 @@ const OrderDetailNav = ({
         } py-8 px-5 rounded-t-[18px] flex justify-between items-center overflow-x-scroll ${classes.scrollbarElement
         }`}
     >
-      <div className="flex justify-between items-center border-gray-200 border-b-[0] lg:border-b-[1.5px] border-dashed mb-[-2px] w-full">
+      <div className="flex justify-between items-center border-gray-500 border-b-[0] lg:border-b-[1.2px] border-solid mb-[-2px] w-full">
         <div
           className={`flex justify-between items-center ${full ? "w-full" : " gap-4 lg:gap-12"
             } `}

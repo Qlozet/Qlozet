@@ -13,8 +13,6 @@ import VerticalBarGraph from "@/components/VerticalBarGraph";
 import RecentOrder from "@/components/RecentOrder";
 import { getRequest } from "@/api/method";
 import Loader from "@/components/Loader";
-import toast from "react-hot-toast";
-import Toast from "@/components/ToastComponent/toast";
 const Dashboard = () => {
   const [totalCustomer, setTotalCustomer] = useState("0");
   const [topEarning, setTopEarning] = useState("0");
@@ -105,7 +103,6 @@ const Dashboard = () => {
 
   const getOrderByGender = async () => {
     try {
-      const productData = [];
       const response = await getRequest("/vendor/dashboard/orders/tag");
       if (response?.data) {
         setGenderByOrder({
@@ -221,25 +218,7 @@ const Dashboard = () => {
                 />
               </div>
               <div className=" bg-[#F8F9FA] px-4">
-                {/* <div className="flex items-center justify-between mb-2 mt-4">
-                  <UpdateComponent />
-                  <div className="hidden lg:block">
-                    <DropDown
-                      data={[
-                        "This week",
-                        "Last week",
-                        "Last month",
-                        "This month",
-                        "Choose month",
-                        "Custom",
-                      ]}
-                      maxWidth={"max-w-[7.5rem]"}
-                      placeholder="Time Range"
-                      setValue={(data) => {}}
-                      bg={"bg-white"}
-                    />
-                  </div>
-                </div> */}
+
                 <div className="md:flex block lg:flex items-center w-full md:gap-[21px] gap-4 ">
                   <div
                     className={`${classes.first_container} block lg:flex items-center md:gap-[21px] gap-4 mt-4 w-full md:flex`}
