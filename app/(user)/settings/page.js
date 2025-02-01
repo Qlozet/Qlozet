@@ -10,6 +10,7 @@ import { getRequest, putRequest } from "@/api/method";
 import Loader from "@/components/Loader";
 import Toast from "@/components/ToastComponent/toast";
 import toast from "react-hot-toast";
+import OrderSetting from "@/components/Settings/OrderSettings/OrderSettings";
 const Dashboard = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const [isLoading, setIsloading] = useState(false);
@@ -75,6 +76,15 @@ const Dashboard = () => {
     },
     {
       item: "Users and permissions",
+      link: "",
+      navWidth: "min-w-[13rem] lg:min-w-w-[0]",
+      handleFunction: (data) => {
+        setCurrentNav(data);
+
+      },
+    },
+    {
+      item: "Order Settings",
       link: "",
       navWidth: "min-w-[13rem] lg:min-w-w-[0]",
       handleFunction: (data) => {
@@ -184,6 +194,7 @@ const Dashboard = () => {
               {/* {currentNav === "Shipping partners" && <Shipping />} */}
               {currentNav === "Users and permissions" && <UserAndPermission />}
               {currentNav === "Categories" && <Category />}
+              {currentNav === "Order Settings" && <OrderSetting />}
             </div>
           )}
         </div>

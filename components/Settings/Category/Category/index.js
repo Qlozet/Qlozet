@@ -29,10 +29,10 @@ const Category = () => {
         <div></div>
       </div>
       <CategoryTable handleEdit={handleEdit} />
-        <Modal
-          show={showAddModal}
+      <Modal
+        show={showAddModal}
         content={<>{showAddModal && (<RequestCategoryForm closeModal={closeAddModal} />)}</>}
-        ></Modal>
+      ></Modal>
     </div>
   );
 };

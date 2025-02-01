@@ -4,7 +4,7 @@ const HorizontalChat = ({ data }) => {
     <div className="h-[200px] ">
       {data.map((item, index) => {
         return (
-          <div className={`${index !== 0 && "mt-8"}`} key={index}>
+          <div className={`${index !== 0 && "mt-6"}`} key={index}>
             <HorizontalChatBar
               location={item.location}
               male={item.male}

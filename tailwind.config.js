@@ -44,6 +44,10 @@ module.exports = {
         200: "rgba(172, 181, 189, 1)",
         300: "rgba(221, 226, 229, 1)",
         400: "rgba(248, 249, 250, 1)",
+        500: "#ACB5BD",
+      },
+      darkBlue: {
+        DEFAULT: "#1A1A25"
       },
       outline: {
         DEFAULT: "#3E1C01",
