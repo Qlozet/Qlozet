@@ -14,6 +14,7 @@ import { reduxData } from "@/redux/slice";
 import Modal from "@/components/Modal";
 import Logout from "@/components/Logout";
 import handIcon from "../../public/assets/svg/hand-tone.svg";
+import { X } from "lucide-react";
 const Layout = ({ children }) => {
   const router = useRouter();
   const stateData = useAppSelector(reduxData);
@@ -29,6 +30,7 @@ const Layout = ({ children }) => {
     items: "",
   });
   const [loadingPage, setLoadingPage] = useState(true);
+  const [showKycPopUp, setShowKycPopUp] = useState(true);
   const getVendorDetailshandler = async () => {
     try {
       const response = await getVendorDetails();
@@ -137,8 +139,7 @@ const Layout = ({ children }) => {
           />
         </div>
       )}
-
-      <div className="bg-[#FDEBE0] rounded-[12px] fixed bottom-2 left-2 z-[100000] flex items-center justify-between px-4 py-6 gap-4">
+      {showKycPopUp && <div className="bg-[#FDEBE0] rounded-[12px] fixed bottom-2 left-2 z-[100000] flex items-center justify-between px-4 py-6 gap-4">
         <button className=" w-8 h-8 bg-[#F8DBCB] rounded-[12px] flex items-center justify-center">
           <img src={handIcon} />
         </button>
@@ -148,8 +149,9 @@ const Layout = ({ children }) => {
             Complete KYC registration of your business profile to start work.
           </p>
         </div>
-        <button></button>
-      </div>
+        <button className="w-8 h-8 bg-[#F8DBCB] rounded-[12px] flex items-center justify-center" onClick={() => setShowKycPopUp(false)}><X /></button>
+      </div>}
+
     </div>
   );
 };
