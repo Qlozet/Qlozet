@@ -31,7 +31,6 @@ import { v4 as uuidv4 } from "uuid";
 import SelectMultipleInput from "@/components/SelectMultipleInput/index.js";
 import GoBack from "@/components/GoBack/index.js";
 import informationIcon from "../../../public/assets/svg/information.svg";
-import RichTextEditor from "@/components/Editor/index.js";
 import TextArea from "@/components/TextAreaInput/index.js";
 import SingleCustomzeCard from "@/components/Products/SingleCustomizeCard/index.js";
 
