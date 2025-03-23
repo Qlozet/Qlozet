@@ -15,7 +15,6 @@ const ColorInput = ({
   value,
   rightIcon,
   leftIcon,
-  placeholder,
   disabled = false,
   index,
   removeColorHandler

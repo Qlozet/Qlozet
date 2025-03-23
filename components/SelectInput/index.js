@@ -19,6 +19,7 @@ const SelectInput = ({
   const [showDropDown, setShowDropDown] = useState(false);
   const dropDownRef = useRef();
   const [list, setList] = useState(data);
+  const [selectedList, setSelectedList] = useState([])
   const filterList = (e) => {
     setValue(e.target.value);
     setList(
@@ -37,7 +38,8 @@ const SelectInput = ({
           <label className="text-sm my-2 text-dark"> {label}</label>
           {tooltips && <ToolTip text={`${label} is required`} />
           }
-        </div>        <input
+        </div>
+        <input
           readOnly={readOnly}
           onChange={filterList}
           onClick={() => {
@@ -54,7 +56,7 @@ const SelectInput = ({
             } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  
             focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-sm text-font-light placeholder:font-300 
            `}
-        ></input>
+        />
         <div className="absolute top-[36px] right-2 ">
           {showDropDown ? <ChevronUp /> : <ChevronDown />}
         </div>

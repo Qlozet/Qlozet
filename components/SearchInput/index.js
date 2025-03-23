@@ -12,7 +12,7 @@ const SearchInput = ({
   disabled = false,
 }) => {
   return (
-    <div className="block">
+    <div className="block w-full">
       <div className="my-3 relative">
         <Image
           src={searchIcon}

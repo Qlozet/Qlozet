@@ -292,7 +292,7 @@ const Products = () => {
                   showModal={showModal}
                   statusChangeHandler={toggleStatus}
                   handleFilterData={handleFilterData}
-                    handleFilterWithDate={handleFilterWithDate}
+                  handleFilterWithDate={handleFilterWithDate}
                 />
               </div>
             </div>

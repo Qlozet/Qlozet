@@ -112,14 +112,14 @@ const Footer = () => {
     return (
         <div className="bg-white ">
             <div className="w-[80%] mx-auto py-12">
-                <div className=" flex items-start justify-between">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 items-start justify-between">
                     <div>
                         <div>
-                            <h5 className="font-semibold text-normal pb-2">Customer Care</h5>
+                            <h5 className="text-center lg:text-start font-semibold text-normal pb-2">Customer Care</h5>
                             <ul className="">
                                 {firstList.map((item, index) => {
                                     return (
-                                        <li className="text-sm py-2" key={index}>
+                                        <li className="text-center lg:text-start text-sm py-2" key={index}>
                                             <Link href={item.link}>{item.name}</Link>
                                         </li>
                                     );
@@ -127,11 +127,11 @@ const Footer = () => {
                             </ul>
                         </div>
                         <div className="mt-6">
-                            <h5 className="font-semibold text-normal pb-2">Sell WIth Us</h5>
+                            <h5 className="text-center lg:text-start font-semibold text-normal pb-2">Sell WIth Us</h5>
                             <ul className="">
                                 {firstList2.map((item, index) => {
                                     return (
-                                        <li className="text-sm py-2" key={index}>
+                                        <li className="text-center lg:text-start text-sm py-2" key={index}>
                                             <Link href={item.link}>{item.name}</Link>
                                         </li>
                                     );
@@ -140,11 +140,11 @@ const Footer = () => {
                         </div>
                     </div>
                     <div>
-                        <h5 className="font-semibold text-normal pb-2">Services</h5>
+                        <h5 className="text-center lg:text-start font-semibold text-normal pb-2">Services</h5>
                         <ul className="">
                             {secondList.map((item, index) => {
                                 return (
-                                    <li className="text-sm py-2" key={index}>
+                                    <li className="text-center lg:text-start text-sm py-2" key={index}>
                                         <Link href={item.link}>{item.name}</Link>
                                     </li>
                                 );
@@ -152,11 +152,11 @@ const Footer = () => {
                         </ul>
                     </div>
                     <div>
-                        <h5 className="font-semibold text-normal pb-2">About Altire</h5>
+                        <h5 className="text-center lg:text-start font-semibold text-normal pb-2">About Altire</h5>
                         <ul className="">
                             {thirdList.map((item, index) => {
                                 return (
-                                    <li className="text-sm py-2" key={index}>
+                                    <li className="text-center lg:text-start text-sm py-2" key={index}>
                                         <Link href={item.link}>{item.name}</Link>
                                     </li>
                                 );
@@ -164,11 +164,11 @@ const Footer = () => {
                         </ul>
                     </div>{" "}
                     <div>
-                        <h5 className="font-semibold text-normal pb-2">Made To Last</h5>
+                        <h5 className="text-center lg:text-start font-semibold text-normal pb-2">Made To Last</h5>
                         <ul className="">
                             {fourthList.map((item, index) => {
                                 return (
-                                    <li className="text-sm py-2" key={index}>
+                                    <li className="text-center lg:text-start text-sm py-2" key={index}>
                                         <Link href={item.link}>{item.name}</Link>
                                     </li>
                                 );
@@ -176,13 +176,13 @@ const Footer = () => {
                         </ul>
                     </div>{" "}
                     <div>
-                        <h5 className="font-semibold text-normal pb-2">
+                        <h5 className="text-center lg:text-start font-semibold text-normal pb-2">
                             Select Your Region
                         </h5>
                         <ul className="">
                             {fifthList.map((item, index) => {
                                 return (
-                                    <li className="text-sm py-2" key={index}>
+                                    <li className="text-center lg:text-start text-sm py-2" key={index}>
                                         <Link href={item.link}>{item.name}</Link>
                                     </li>
                                 );
@@ -193,8 +193,8 @@ const Footer = () => {
 
                 <div></div>
             </div>
-            <div className="border-t-[1.5px] border-b-[1.5px] border-gray-200 border-solid py-8 mx-6">
-                <div className="w-[80%] mx-auto flex items-start justify-between">
+            <div className="border-t-[1px] border-b-[1px] border-gray-200 border-solid py-8 px-6">
+                <div className="lg:w-[80%] mx-auto  lg:flex items-start justify-between gap-2 lg:gap-0">
                     <div>
                         <Typography
                             textColor="text-dark"
@@ -214,9 +214,9 @@ const Footer = () => {
                         >
                             Sign Up For Updates
                         </Typography>
-                        <div className="flex border-[1.5px] border-primary border-solid mt-2">
+                        <div className="flex border-[1px] border-primary border-solid mt-2 rounded-md overflow-hidden">
                             <input
-                                className="placeholder:text-[#808080] placeholder:text-sm min-w-[255px]"
+                                className="placeholder:text-[#808080] placeholder:text-sm min-w-[255px] px-4 py-2 outline-none"
                                 placeholder="Enter your email"
                             ></input>
                             <button className="font-semibold  bg-primary min-h-full px-10 text-white flex items-center ">
@@ -241,7 +241,6 @@ const Footer = () => {
                     </ul>
                 </div>
                 <div className="m-4">
-                    {" "}
                     <Logo brown={true} />
                 </div>
             </div>

@@ -1,0 +1,14 @@
+.heroContainer{
+    background-position: 0 -650px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+
+@media (max-width:800px) {
+   .heroContainer{
+    background-position: 0 -0px;
+    background-size: contain;
+    background-repeat: no-repeat;
+} 
+}

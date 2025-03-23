@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import Modal from "@/components/Modal";
-import CheckBoxInput from "@/components/CheckboxInput";
 import TextInput from "@/components/TextInput";
 import Button from "@/components/Button";
 import DashedComponent from "@/components/DashedComponent";
@@ -12,7 +11,6 @@ import CustomiSationButton from "@/components/CustomizationButton";
 import CustomizeOrder from "@/components/Products/CustomizeOrder";
 import VariantTable from "../../../components/add/VariantTable/index2.js";
 import NumberInput from "@/components/NumberInput";
-import TextArea from "@/components/TextAreaInput";
 import { getRequest, postRequest } from "@/api/method";
 import validator from "@/utils/validator";
 import toast from "react-hot-toast";
@@ -30,6 +28,12 @@ import style from "./index.module.css";
 import Styles from "@/components/Products/StyleComponent/style";
 import ColorInput from "@/components/ColorInput/index2";
 import { v4 as uuidv4 } from "uuid";
+import SelectMultipleInput from "@/components/SelectMultipleInput/index.js";
+import GoBack from "@/components/GoBack/index.js";
+import informationIcon from "../../../public/assets/svg/information.svg";
+import RichTextEditor from "@/components/Editor/index.js";
+import TextArea from "@/components/TextAreaInput/index.js";
+import SingleCustomzeCard from "@/components/Products/SingleCustomizeCard/index.js";
 
 const AddProduct = () => {
   const router = useRouter();
@@ -64,6 +68,7 @@ const AddProduct = () => {
     images: [],
     variantSizes: [],
   });
+  const [editorContent, setEditorContent] = useState("");
 
   const [requiredproductFormData, setrequiredproductFormData] = useState({
     productName: false,
@@ -565,27 +570,26 @@ const AddProduct = () => {
     <section>
       <div className="flex bg-[#F8F9FA] ">
         <div className="w-full px-4 pb-4">
+          <div className="my-4">
+            {" "}
+            <GoBack />
+          </div>
+
+          <div className="bg-[#F8F5F2] p-4 rounded-xl flex item-center gap-4 max-w-[622px]  mt-6">
+            <span className="w-[32px] h-[32px] bg-primary flex items-center justify-center  rounded">
+              <img src={informationIcon.src} />
+            </span>
+            <span className="text-[13px] text-[#808192]">
+              Upload picture products with close to white background in high
+              resolution and quality
+            </span>{" "}
+          </div>
           {pageLoading ? (
             <Loader></Loader>
           ) : (
             <div>
-              <div className="mt-4 lg:mt-0"></div>
               <div className="">
-                <h5 className="hidden lg:block text-[18px] font-bold">
-                  Add product
-                </h5>
-                <div className="lg:py-5 ">
-                  {" "}
-                  <CheckBoxInput
-                    label="Add variants if product comes in multiple versions like different sizes and colours"
-                    handleChange={(data) => {
-                      setAddVariant(data);
-                      setProductFormData((prevData) => {
-                        return { ...prevData, isVariantAvailable: data };
-                      });
-                    }}
-                  />
-                </div>
+                <div className="lg:py-3"></div>
                 <div className="mx-0 mt-2 bg-gray-[#F4F4F4] lg:bg-white rounded-t-lg lg:translate-x-2 border-[1px] border-solid lg:border-none">
                   <h4 className=" font-medium pt-2 px-4 pb-2 lg:hidden">
                     {" "}
@@ -641,144 +645,74 @@ const AddProduct = () => {
                         error={requiredproductFormData.productName}
                       />
                     </div>
-                    {/* <div className="w-full"> */}
-
-                    {/* </div> */}
                   </div>
-
-                  <div className="block lg:flex items-start justify-between gap-6 h-full lg:my-4">
-                    <div className="w-full lg:w-3/5" style={{ height: "100%" }}>
-                      <TextArea
-                        tooltips={true}
-                        label="Product description"
-                        placeholder="Enter description"
-                        value={productFormData.description}
-                        setValue={(data) => {
-                          setProductFormData((prevData) => {
-                            return { ...prevData, description: data };
-                          });
-                          if (data) {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, description: false };
-                            });
-                          } else {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, description: true };
-                            });
-                          }
-                        }}
-                        error={requiredproductFormData.description}
-                      />
+                  <div className="block lg:flex items-start justify-between gap-6 ">
+                    <div className="w-full lg:w-3/5 h-full ">
+                      {/* <RichTextEditor onChange={setEditorContent} /> */}
+                      <TextArea setValue={() => { }} value={""} />
                     </div>
                     <div className="w-full lg:w-2/5">
-                      <div className="lg:mt-8">
-                        {" "}
+                      <div className="lg:mt-6 pb-3">
                         <Typography
-                          textColor="text-primary"
+                          textColor="text-sectionHeader"
                           textWeight="font-semibold"
-                          textSize="text-lg"
+                          textSize="text-[18px]"
+                          verticalPadding={0}
                         >
                           Product organization
                         </Typography>
                       </div>
-                      <SelectInput
-                        tooltips={true}
-                        readOnly={true}
-                        index={20}
-                        placeholder={"Product Tags"}
-                        label="Tags"
-                        value={productFormData.productTag}
-                        setValue={(data) => {
-                          setProductFormData((prevData) => {
-                            return { ...prevData, productTag: data };
-                          });
-                          if (data) {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productTag: false };
-                            });
-                          } else {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productTag: true };
-                            });
-                          }
-                        }}
-                        error={requiredproductFormData.productTag}
-                        data={[{ text: "Male" }, { text: "Female" }]}
-                      />
-                      <SelectInput
-                        tooltips={true}
-                        readOnly={true}
-                        placeholder={"Category"}
-                        value={productFormData.productCategory}
-                        setValue={(data) => {
-                          setProductFormData((prevData) => {
-                            return { ...prevData, productCategory: data };
-                          });
-                          if (data) {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productCategory: false };
-                            });
-                          } else {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productCategory: true };
-                            });
-                          }
-                        }}
-                        error={requiredproductFormData.productCategory}
-                        data={[{ text: "Two Piece" }, { text: "Dress" }]}
-                        label="Category"
-                        index={15}
-                      />
-                      <SelectInput
-                        tooltips={true}
-
-                        readOnly={true}
-                        placeholder={"Sub-category"}
-                        value={productFormData.productCategory}
-                        setValue={(data) => {
-                          setProductFormData((prevData) => {
-                            return { ...prevData, productCategory: data };
-                          });
-                          if (data) {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productCategory: false };
-                            });
-                          } else {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productCategory: true };
-                            });
-                          }
-                        }}
-                        error={requiredproductFormData.productCategory}
-                        data={[{ text: "Two Piece" }, { text: "Dress" }]}
-                        label="Sub category"
-                        index={15}
-                      />
-
-                      <SelectInput
-                        tooltips={true}
-                        readOnly={true}
-                        placeholder={"Enter product type"}
-                        value={productFormData.productType}
-                        setValue={(data) => {
-                          setProductFormData((prevData) => {
-                            return { ...prevData, productType: data };
-                          });
-                          if (data) {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productType: false };
-                            });
-                          } else {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productType: true };
-                            });
-                          }
-                        }}
-                        error={requiredproductFormData.productType}
-                        data={[{ text: "Customizable" }, { text: "Outright" }]}
-                        label="Product type"
-                        index={10}
-                      />
+                      <div className="w-full flex flex-col gap-2">
+                        <SelectMultipleInput
+                          zIndex={60}
+                          tooltips={true}
+                          value={selectedColors}
+                          data={[
+                            { text: "Men", id: 1 },
+                            { text: "Formal", id: 2 },
+                            { text: "Casual", id: 2 },
+                          ]}
+                          label="Tag"
+                          setValue={addToVariantTable}
+                          removeColorHandler={removeColorVariant}
+                        />
+                        <SelectMultipleInput
+                          zIndex={50}
+                          tooltips={true}
+                          value={selectedColors}
+                          data={[
+                            { text: "Dress", id: 1 },
+                            { text: "Traditional", id: 2 },
+                          ]}
+                          label="Category"
+                          setValue={addToVariantTable}
+                          removeColorHandler={removeColorVariant}
+                        />
+                        <SelectMultipleInput
+                          zIndex={40}
+                          tooltips={true}
+                          value={selectedColors}
+                          data={[
+                            { text: "Male", id: 1 },
+                            { text: "Female", id: 2 },
+                          ]}
+                          label="Sub-category"
+                          setValue={addToVariantTable}
+                          removeColorHandler={removeColorVariant}
+                        />
+                        <SelectMultipleInput
+                          zIndex={30}
+                          tooltips={true}
+                          value={selectedColors}
+                          data={[
+                            { text: "Male", id: 1 },
+                            { text: "Female", id: 2 },
+                          ]}
+                          label="Product type"
+                          setValue={addToVariantTable}
+                          removeColorHandler={removeColorVariant}
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -796,16 +730,16 @@ const AddProduct = () => {
                       <div className="lg:mt-4">
                         {" "}
                         <Typography
-                          textColor="text-primary"
+                          textColor="text-sectionHeader"
                           textWeight="font-semibold"
-                          textSize="text-lg"
+                          textSize="text-[18px]"
+                          verticalPadding={0}
                         >
                           Pricing
                         </Typography>
                       </div>
                       <NumberInput
                         tooltips={true}
-
                         value={productFormData.productPrice}
                         label="Price"
                         placeholder="Enter price"
@@ -843,9 +777,7 @@ const AddProduct = () => {
                   {/* </div> */}
                   {/* <div className="w-full"> */}
 
-                  <div className="block lg:flex items-center justify-between  gap-6">
-
-                  </div>
+                  <div className="block lg:flex items-center justify-between  gap-6"></div>
                   <div className="block lg:grid grid-cols-3  justify-between gap-6">
                     <div className="w-full "></div>
                   </div>
@@ -856,149 +788,165 @@ const AddProduct = () => {
                   <div className="my-4">
                     <DashedComponent name={"Customization"} />
                   </div>
-                  <div>
-                    <div className="">
-                      <Typography
-                        textWeight="font-[700]"
-                        textSize="text-[18px]"
-                        verticalPadding="my-2"
-                        textColor="text-dark"
-                      >
-                        Add Customization
-                      </Typography>
-                    </div>
-                  </div>
-                  <div
-                    className={`flex overflow-x-scroll gap-4 pb-2 ${style.scrollbarElement}`}
-                  >
-                    <CustomiSationButton
-                      handleClick={() => {
-                        if (productFormData.images.length > 0) {
-                          setShowCustomiseOrder(true);
-                        } else {
-                          toast(
-                            <Toast text={"Add product Image"} type="danger" />
-                          );
-                        }
-                      }}
-                      text={"Price:"}
-                    />
-                    <Styles
-                      handleEditStylePrice={handleEditStylePrice}
-                      data={selectedStyles}
-                      price={productFormData.productPrice}
-                    />
-                  </div>
-                  <div>
-                    <div className="">
-                      <Typography
-                        textWeight="font-[700]"
-                        textSize="text-[18px]"
-                        verticalPadding="my-2"
-                        textColor="text-dark"
-                      >
-                        Add Accessories
-                      </Typography>
-                    </div>
-                  </div>
-                  <div
-                    className={`flex overflow-x-scroll gap-4 ${style.scrollbarElement}`}
-                  >
-                    <CustomiSationButton
-                      handleClick={() => {
-                        setShowAddAccessories(true);
-                      }}
-                    />
 
-                    {/* The accesorries is returning only id he should return the full data */}
-                    <Styles data={accessories} />
-                  </div>
-                  {addVariant && (
-                    <div>
-                      <div className="w-full">
-                        <ColorInput
-                          index={1200}
-                          value={selectedColors}
-                          label="Colour"
-                          placeholder="Choose colours available for this product"
-                          setValue={addToVariantTable}
-                          removeColorHandler={removeColorVariant}
-                        />
-                      </div>
-                      <div className="w-full">
-                        <MaterialInput
-                          label="Material"
-                          placeholder="Choose available for this product"
-                          handleSelect={addToVariantTable}
-                          value={selectedVariantFiles}
-                          removeMaterialHandler={removeMaterialHandler}
-                          loading={materialUploadLoading}
-                        />
-                      </div>
-                      <div className="w-full">
-                        <SizeInput
-                          disabled={
-                            [...selectedColors, ...selectedVariantFiles]
-                              .length > 0
-                              ? false
-                              : true
-                          }
-                          value={productFormData.variantSizes}
-                          setValue={(data, index) => {
-                            if (index !== undefined) {
-                            } else {
-                              addSizeToVariant(data);
-                            }
-                            if (data) {
-                              setrequiredproductFormData((prevData) => {
-                                return { ...prevData, variantSizes: false };
-                              });
-                            } else {
-                              setrequiredproductFormData((prevData) => {
-                                return { ...prevData, variantSizes: true };
-                              });
-                            }
-                          }}
-                          error={requiredproductFormData.variantSizes}
-                          data={[
-                            "Extra small",
-                            "Small",
-                            "Medium",
-                            "Large",
-                            "Extra large",
-                          ]}
-                          label="Sizes"
-                          index={40}
-                          removeSizeFromVariant={removeSizeFromVariant}
-                        />
-                      </div>
-                      <div className="my-8">
-                        <DashedComponent name={"Product variants"} />
-                      </div>
-                      <div className="flex items-center">
-                        <Typography
-                          textWeight="font-[700]"
-                          textSize="text-[18px]"
-                          verticalPadding="my-2"
-                          textColor="text-dark"
+                  <div className="flex flex-col gap-6">
+                    <SingleCustomzeCard
+                      text={"Add Styles"}
+                      children={
+                        <div>
+                          <div
+                            className={`flex overflow-x-scroll gap-4 pb-2 ${style.scrollbarElement}`}
+                          >
+                            <CustomiSationButton
+                              handleClick={() => {
+                                if (productFormData.images.length > 0) {
+                                  setShowCustomiseOrder(true);
+                                } else {
+                                  toast(
+                                    <Toast
+                                      text={"Add product Image"}
+                                      type="danger"
+                                    />
+                                  );
+                                }
+                              }}
+                              text={"Price:"}
+                            />
+                            <Styles
+                              handleEditStylePrice={handleEditStylePrice}
+                              data={selectedStyles}
+                              price={productFormData.productPrice}
+                            />
+                          </div>
+                        </div>
+                      }
+                    />
+                    <SingleCustomzeCard
+                      text={"Additional Component"}
+                      children={
+                        <div
+                          className={`flex overflow-x-scroll gap-4 ${style.scrollbarElement}`}
                         >
-                          Variant Table
-                        </Typography>
-                      </div>
-                      <div>
-                        <VariantTable
-                          handleChecked={handleVariantChecked}
-                          data={variantTable}
-                          submitVariantImage={submitVariantImage}
-                          quantityHandler={VariantQuantityHandler}
-                          priceHandler={priceHandler}
-                          handleDeleteVariantFromTable={
-                            handleDeleteVariantFromTable
-                          }
-                        />
-                      </div>
-                    </div>
-                  )}
+                          <CustomiSationButton
+                            handleClick={() => {
+                              setShowAddAccessories(true);
+                            }}
+                          />
+
+                          {/* The accesorries is returning only id he should return the full data */}
+                          <Styles data={accessories} />
+                        </div>
+                      }
+                    />
+                  </div>
+
+                  <div className="my-4">
+                    <DashedComponent name={"Customization"} />
+                  </div>
+
+                  <div className="flex flex-col gap-6">
+                    <SingleCustomzeCard
+                      text={"Additional Component"}
+                      children={
+                        <div
+                          className={`flex overflow-x-scroll gap-4 ${style.scrollbarElement}`}
+                        >
+                          <div>
+                            <div className="w-full">
+                              <ColorInput
+                                index={1200}
+                                value={selectedColors}
+                                label="Colour"
+                                placeholder="Choose colours available for this product"
+                                setValue={addToVariantTable}
+                                removeColorHandler={removeColorVariant}
+                              />
+                            </div>
+                            <div className="w-full">
+                              <MaterialInput
+                                label="Material"
+                                placeholder="Choose available for this product"
+                                handleSelect={addToVariantTable}
+                                value={selectedVariantFiles}
+                                removeMaterialHandler={removeMaterialHandler}
+                                loading={materialUploadLoading}
+                              />
+                            </div>
+
+                            <div className="w-full">
+                              <SizeInput
+                                disabled={
+                                  [...selectedColors, ...selectedVariantFiles]
+                                    .length > 0
+                                    ? false
+                                    : true
+                                }
+                                value={productFormData.variantSizes}
+                                setValue={(data, index) => {
+                                  if (index !== undefined) {
+                                  } else {
+                                    addSizeToVariant(data);
+                                  }
+                                  if (data) {
+                                    setrequiredproductFormData((prevData) => {
+                                      return {
+                                        ...prevData,
+                                        variantSizes: false,
+                                      };
+                                    });
+                                  } else {
+                                    setrequiredproductFormData((prevData) => {
+                                      return {
+                                        ...prevData,
+                                        variantSizes: true,
+                                      };
+                                    });
+                                  }
+                                }}
+                                error={requiredproductFormData.variantSizes}
+                                data={[
+                                  "Extra small",
+                                  "Small",
+                                  "Medium",
+                                  "Large",
+                                  "Extra large",
+                                ]}
+                                label="Sizes"
+                                index={40}
+                                removeSizeFromVariant={removeSizeFromVariant}
+                              />
+                            </div>
+                            <div className="my-8">
+                              <DashedComponent name={"Product variants"} />
+                            </div>
+                            <div className="flex items-center">
+                              <Typography
+                                textWeight="font-[700]"
+                                textSize="text-[18px]"
+                                verticalPadding="my-2"
+                                textColor="text-dark"
+                              >
+                                Variant Table
+                              </Typography>
+                            </div>
+                            <div>
+                              <VariantTable
+                                handleChecked={handleVariantChecked}
+                                data={variantTable}
+                                submitVariantImage={submitVariantImage}
+                                quantityHandler={VariantQuantityHandler}
+                                priceHandler={priceHandler}
+                                handleDeleteVariantFromTable={
+                                  handleDeleteVariantFromTable
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    />
+                  </div>
+
                   <div>
                     <div className="my-4">
                       <Button

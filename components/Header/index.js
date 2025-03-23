@@ -1,41 +1,36 @@
 import style from "./index.module.css";
 import Image from "next/image";
+import brownLogo from "../../public/assets/image/logowhite.png";
 import Button from "../Button";
-import brownLogo from "../../public/assets/image/logobrown.png";
+import { useRouter } from "next/navigation";
+
 const HomePageHeader = () => {
+  const router = useRouter();
+
   return (
-    <div className="w-[95%] mx-auto py-6">
-      <div className="flex items-center justify-between ">
-        <Image
-          src={brownLogo}
-          alt=""
-          style={{
-            width: "100px",
-            height: "auto",
+    <div className="w-full mx-auto  flex items-center justify-between px-4 lg:px-[87.5px] py-8">
+      <Image src={brownLogo} alt="Logo" width={83} height={50} />
+      <ul
+        className={`${style.list_container} hidden lg:flex gap-[3rem] items-center text-white font-semibold text-[13px] `}
+      >
+        <div>What we do</div>
+        <li>Services</li>
+        <li>Pricing</li>
+        <li>How it works</li>
+        <li>About us</li>
+      </ul>
+
+      <div>
+        <Button
+          loading={false}
+          children="Signin / signup"
+          btnSize="large"
+          variant="outline"
+          className="bg-white w-[144px]   text-xs font-extrabold"
+          clickHandler={() => {
+            router.push("/auth/signin")
           }}
         />
-        <div className="flex items-center gap-[3rem]">
-          <ul
-            className={`${style.list_container} flex gap-[3rem] items-center`}
-          >
-            <div className="min-w-[6rem]">What we do</div>
-            <li>Services</li>
-            <li>Pricing</li>
-            <li>Api</li>
-            <li className="min-w-[7rem]">How it works</li>
-          </ul>
-          {/* <Button
-            loading={false}
-            children="Watch demo"
-            btnSize="large"
-            variant="primary"
-            maxWidth="max-w-[10rem]"
-            clickHandler={() => {
-              //   handleSubmit();
-            }}
-          /> */}
-          <button  className="px-4 py-2  bg-dark flex items-center h-[2.8rem] text-white rounded-2xl">Watch demo</button>
-        </div>
       </div>
     </div>
   );

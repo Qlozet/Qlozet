@@ -52,8 +52,8 @@ const Button = ({
       }}
       whileTap={{ scale: .98 }}
       className={` ${paddingVertical ? paddingVertical : "py-3"
-        } flex items-center justify-center gap-4 rounded-lg ${minWidth} ${maxWidth} ${variantClasses} ${sizeClasses} text-sm ${className} ${loading && "cursor-not-allowed"
-        }`}
+        } flex items-center justify-center gap-4 rounded-lg ${minWidth} ${maxWidth} ${variantClasses} ${sizeClasses} text-sm  ${loading && "cursor-not-allowed"
+        } ${className}`}
       {...rest}
       disabled={loading ? true : false}
       onClick={clickHandler}
