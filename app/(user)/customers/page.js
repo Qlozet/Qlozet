@@ -118,7 +118,7 @@ const Customer = () => {
     getCustomers();
   }, []);
   return (
-    <section className={` ${classes.main_container}`}>
+    <section className={`${classes.main_container}`}>
       <div className="flex bg-[#F8F9FA] ">
         <div className="w-full p-4 ">
           {pageLoading ? (

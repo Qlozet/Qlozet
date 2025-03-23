@@ -54,16 +54,17 @@ const DropDown = ({ placeholder, setValue, data, maxWidth, bg, zIndex }) => {
     setShowDropDown(false); // Close the dropdown when an option is selected
   };
 
-  const handleClickOutside = (event) => {
-    if (dropDownRef.current && !dropDownRef.current.contains(event.target)) {
-      setShowDropDown(false);
-    }
-  };
+
 
   window.addEventListener("scroll", () => {
     setShowDropDown(false)
   })
 
+  const handleClickOutside = (event) => {
+    if (dropDownRef.current && !dropDownRef.current.contains(event.target)) {
+      setShowDropDown(false);
+    }
+  };
   useEffect(() => {
     if (showDropDown) {
       document.addEventListener("mousedown", handleClickOutside);

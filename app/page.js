@@ -1,119 +1,177 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import HomePageHeader from "@/components/Header";
-import HomePageHero from "@/components/HomePageHero";
-import SectionFlex from "@/components/sectionFlex";
-import image1 from "../public/assets/svg/frame7.svg";
-import image2 from "../public/assets/svg/frame10.svg";
-import image3 from "../public/assets/svg/frame11.svg";
-import image4 from "../public/assets/svg/frame12.svg";
-import image13 from "../public/assets/svg/frame13.svg";
-import Typography from "@/components/Typography";
-import Sponsors from "@/components/Sponsors";
 import Image from "next/image";
 import Footer from "@/components/Footer";
+import headerImage from "../public/assets/image/headerImage.jpg";
+import VideoContainer from "@/components/VideoContainer/VideoContainer";
+import HeaderSection from "@/components/HeaderSection/HeaderSection";
+import DownPointer from "@/components/DownPointer";
+import section2Image from "../public/assets/image/VariantImage.png";
+import shippingcompanyImage from "../public/assets/image/shippingPartners.png";
+import image2 from "../public/assets/image/homepageimage3.png";
+import dashboardImage from "../public/assets/image/Dashboard 1.png";
+import dashboardImage1 from "../public/assets/image/productChartPage.png";
+
+import card1 from "../public/assets/image/card1.png";
+import card2 from "../public/assets/image/card2.png";
+import card3 from "../public/assets/image/card3.png";
+
+import Typography from "@/components/Typography";
+import Button from "@/components/Button";
+
+import classes from "./index.module.css"
+import BrandPartners from "@/components/BrandPartners";
+
 export default function Home() {
+  const designersImage = [
+    {
+      image: card1,
+      title: "Get started fast",
+      description:
+        "Designer Victoria started his Solaces selling unique kaftans and Agbada online and in person.",
+    },
+    {
+      image: card2,
+      title: "Grow as big as you want",
+      description:
+        "Suited grew from working form a home to becoming the giant it is now with $500,000 sales today.",
+    },
+    {
+      image: card3,
+      title: "Raise the bar",
+      description:
+        "With the help of Qlozet, Garm Island sells their Iconic street wars direct to customers around the world.",
+    },
+  ];
   useEffect(() => {
     // router.push("/auth/signin");
   }, []);
 
   return (
-    <main className="bg-white h-[100vh] m-auto">
-      <HomePageHeader />
-      <div className="pb-6">
-        <HomePageHero />
-      </div>
-      <div className=" bg-[#C0C0C0] p-8 overflow-hidden">
-        <SectionFlex
-          image1={image1}
-          image2={image2}
-          heading={"Increased Visibility "}
-          subText={
-            "Showcase your fashion designs to a wider audience across Nigeria and beyond, increasing your brand exposure and attracting potential customers."
-          }
-        ></SectionFlex>
+    <main className="m-auto">
+      <div className={` ${classes.heroContainer}`}
+        style={{
+          backgroundImage: `url(${headerImage.src})`,
+        }}
+      >
+        <div className="w-full  bg-[rgba(0,0,0,.5)]">
+          <HomePageHeader />
+          <div className="flex flex-col items-start justify-center gap-6 w-full lg:w-[641px]  lg:ml-[87.5px] h-[700px] lg:h-[925px]">
+            <Typography
+              textColor={"text-white"}
+              align={"text-left"}
+              className={"font-bold text-3xl lg:font-[600] lg:text-[64px] "} >
+              Welcome to Qlozet
 
-        <SectionFlex
-          heading={"Flexible Selling Options"}
-          subText={`Choose your preferred selling model - whether it's selling ready-to-wear items, offering made-to-order services, or providing customizations, Altire accommodates various selling preferences.
-`}
-          reverseFlex={true}
-          image1={image3}
-          image2={image4}
-        ></SectionFlex>
-
-        <SectionFlex
-          image1={image1}
-          image2={image2}
-          heading={"Sales Analytics and Insighs"}
-          subText={
-            "Gain valuable insights into your sales performance and customer preferences through Altire's analytics tools, helping you make informed decisions to optimize your business."
-          }
-        ></SectionFlex>
-        <SectionFlex
-          reverseFlex={true}
-          image1={image1}
-          image2={image2}
-          heading={"Hassle-Free Logistics"}
-          subText={`Let Altire handle the logistics and delivery process, saving you time and effort in managing shipping and order fulfillment.
-`}
-        ></SectionFlex>
-        <SectionFlex
-          heading={`Marketing Support`}
-          subText={`Benefit from Altire's marketing efforts to promote your designs, including social media campaigns, email newsletters, and targeted advertising to boost your sales.`}
-          image1={image3}
-          image2={image4}
-        ></SectionFlex>
-        <SectionFlex
-          reverseFlex={true}
-          image1={image1}
-          image2={image2}
-          heading={`Cost-Effective Solution`}
-          subText={`Benefit from Altire's affordable subscription plans or commission-based pricing structure, offering a cost-effective way to start and grow your fashion business online.`}
-        ></SectionFlex>
+            </Typography>
+            <Typography
+              textColor={"text-white"}
+              textWeight="font-[400]"
+              align={"text-left"}
+              textSize="text-[20px]"
+            >
+              We are the driving force behind the dreams of emerging designers and tailors entrepreneurs
+            </Typography>
+            <div> <Button
+              loading={false}
+              children="SELL WITH US"
+              btnSize="large"
+              variant="outline"
+              className="bg-white w-[144px]   text-xs font-bold"
+              clickHandler={() => {
+              }}
+            /></div>
+          </div>
+          <div className="bg-[#F4F4F4] rounded-tr-[40px] rounded-tl-[40px] lg:rounded-tr-[100px] lg:rounded-tl-[100px] pt-[138px] flex flex-col gap-4">
+            <HeaderSection
+              title={"Sales and Analytics"}
+              text={`Gain valuable insights into your sales performance and customer
+                preferences through Qlozet's analytics tools, helping you make informed
+                decisions to optimize your business.`}
+            />
+            <VideoContainer />
+            <DownPointer />
+            <HeaderSection
+              title={"Flexible Selling Options"}
+              text={`Choose your preferred selling model - whether it's selling
+             ready-to-wear items, offering made-to-order services, or providing customizations,
+              Qlozet accommodates various selling preferences.`}
+            />
+            <div className="lg:h-[627px] lg:w-[1016px] flex items-center justify-center mx-auto">
+              <Image
+                className="h-full w-full"
+                src={section2Image}
+                unoptimized
+              />
+            </div>
+            <DownPointer />
+            <HeaderSection
+              title={"Hassle-Free Logistics"}
+              text={`Let Qlozet handle the logistics and delivery process, 
+                saving you time and effort in managing shipping and order fulfillment.`}
+            />
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-8 w-full
+             lg:w-[927px] mx-auto">
+              <Image src={shippingcompanyImage} />
+              <Image src={image2} className="w-full lg:w-[405px] h-auto lg:h-[404px]" />
+            </div>
+            <HeaderSection
+              title={"Hassle-Free Logistics"}
+              text={`Let Qlozet handle the logistics and delivery process, 
+                saving you time and effort in managing shipping and order fulfillment.`}
+            />
+            <div className="flex items-center justify-center gap-8 w-full lg:max-w-[1206px] mx-auto">
+              <Image src={dashboardImage} unoptimized />
+              <Image src={dashboardImage1} unoptimized className="hidden lg:block" />
+              <Image src={dashboardImage} unoptimized className="hidden lg:block" />
+            </div>
+            <DownPointer />
+            <HeaderSection
+              title={"Hassle-Free Logistics"}
+              text={`Let Qlozet handle the logistics and delivery process, 
+                saving you time and effort in managing shipping and order fulfillment.`}
+            />
+            <div className=" grid grid-cols-1 lg:grid-cols-3  gap-8 w-full lg:w-[1206px] mx-auto">
+              {designersImage.map((item, index) => (
+                <div className={`flex flex-col items-center justify-center`} key={index}>
+                  <Image src={item.image} unoptimized />
+                  <div className="flex flex-col gap-3 mt-4 items-center justify-center lg:item-start lg:justify-start">
+                    <Typography
+                      textWeight="font-normal"
+                      textSize="text-[28px]"
+                      className={"text-center lg:text-left"}
+                    >
+                      {item.title}
+                    </Typography>
+                    <Typography
+                      textWeight="font-normal"
+                      textSize="text-[16px]"
+                      className={"text-center lg:text-left"}
+                    >
+                      {item.description}
+                    </Typography>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="bg-white ">
+            <DownPointer />
+          </div>
+        </div>
       </div>
-      <div className="flex flex-col items-center bg-[#C0C0C0] py-4">
+      {/* <div>
         <Typography
-          textColor="dark"
-          textWeight="font-bold"
-          textSize="text-5xl"
-          align={"center"}
+          textWeight="font-normal"
+          align={"text-center"}
+          textSize="text-[46px]"
         >
           Free from our brand partners
         </Typography>
-        <Sponsors />
-      </div>
-      <div className="bg-[#C0C0C0] pb-12">
-        <div className="px-12 w-[80%] m-auto" style={{
-        background: 'linear-gradient(180deg, black 50%, white , #C0C0C0)'
-      }}>
-        <div className="w-[80%] m-auto">
-          <div className="py-12">
-            <Typography
-              textColor="text-white"
-              textWeight="font-bold"
-              textSize="text-5xl"
-              align={"left"}
-            >
-              Applications and Solutions
-            </Typography>
-            <div className="py-4"> <Typography
-              textColor="text-white"
-              textWeight="font-bold"
-              textSize="text-medium"
-              align={"left"}
-            >
-              Altire is an e-commerce platform that connects customers to the
-              best designers, fabroc dealers’ tailors and sty;ist at afforadable
-              rates. Enables customers select every detail from fabric to style
-              to time period.
-            </Typography></div>
-          </div>
-          <Image src={image13} alt=""/>
-        </div>
-      </div></div>
+      </div> */}
 
+      <BrandPartners />
       <Footer />
     </main>
   );

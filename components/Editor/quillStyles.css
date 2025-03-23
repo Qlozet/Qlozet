@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .quill-container {
+    @apply w-full flex flex-col border border-gray-300 rounded-lg overflow-hidden h-full;
+  }
+
+  .ql-toolbar {
+    @apply bg-gray-100 border-b border-gray-300;
+  }
+
+  .ql-container {
+    @apply flex-1 w-full min-h-0 p-2;
+  }
+
+  .ql-editor {
+    @apply flex-1 h-full min-h-0 text-gray-800 w-full bg-primary;
+  }
+}

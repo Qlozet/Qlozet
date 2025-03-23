@@ -20,6 +20,7 @@ module.exports = {
         200: "rgba(156, 133, 120, 1)",
         300: "rgba(212, 207, 202, 1)",
       },
+      sectionHeader: { DEFAULT: "#121212" },
       success: {
         DEFAULT: "rgba(51, 204, 51, 1)",
         100: "rgba(51, 204, 51, 0.7)",
@@ -45,6 +46,8 @@ module.exports = {
         300: "rgba(221, 226, 229, 1)",
         400: "rgba(248, 249, 250, 1)",
         500: "#ACB5BD",
+        600: "#7A7777",
+        700: "#DDE2E5",
       },
       darkBlue: {
         DEFAULT: "#1A1A25"
@@ -61,5 +64,8 @@ module.exports = {
       xl: "1280px", // Extra large screens (e.g., desktops)
       "2xl": "1536px", // 2xl screens (e.g., large desktops)
     },
-  }
+  },
+  plugins: [
+    require("tailwind-scrollbar-hide"),
+  ],
 };
