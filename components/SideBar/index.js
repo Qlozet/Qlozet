@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
 import Logo from "../Logo";
 import dashboardIcon from "../../public/assets/svg/dashboardIcon.svg";
 import activeDashboardIcon from "../../public/assets/svg/activeDashboardIcon.svg";
@@ -22,49 +22,70 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Modal from "../Modal";
 import { handlelogout, setFilter } from "@/redux/slice";
-import styles from './index.module.css'
+import styles from "./index.module.css";
+import { FaAngleUp, FaAngleDown } from "react-icons/fa6";
 
 import { useAppDispatch } from "@/redux/store";
 import Link from "next/link";
 const SideBar = ({ active }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const [productsDropdownOpen, setProductsDropdownOpen] = useState(false);
   const sidebaritems = [
     {
       name: "Dashboard",
       link: "dashboard",
       defaultIcon: dashboardIcon,
       activeIcon: activeDashboardIcon,
-      function: () => { },
+      function: () => {},
     },
     {
       name: "Orders",
       link: "orders",
       defaultIcon: vendorDefault,
       activeIcon: vendorActive,
-      function: () => { },
+      function: () => {},
     },
     {
       name: "Products",
       link: "products",
       defaultIcon: shoppingBag,
       activeIcon: activeshopping,
-      function: () => { },
+      function: () => setProductsDropdownOpen(!productsDropdownOpen),
+      subPages: [
+        {
+          name: "Cloths",
+          link: "products/cloths",
+          defaultIcon: shoppingBag,
+          activeIcon: activeshopping,
+        },
+        {
+          name: "Accessories",
+          link: "products/accessories",
+          defaultIcon: shoppingBag,
+          activeIcon: activeshopping,
+        },
+        {
+          name: "Fabrics",
+          link: "products/fabrics",
+          defaultIcon: shoppingBag,
+          activeIcon: activeshopping,
+        },
+      ],
     },
-
     {
       name: "Wallet",
       link: "wallet",
       defaultIcon: wallet,
       activeIcon: walletActive,
-      function: () => { },
+      function: () => {},
     },
     {
       name: "Customers",
       link: "customers",
       defaultIcon: cutomerDefault,
       activeIcon: cutomerActive,
-      function: () => { },
+      function: () => {},
     },
 
     {
@@ -72,14 +93,14 @@ const SideBar = ({ active }) => {
       link: "settings",
       defaultIcon: settingsDefault,
       activeIcon: settingsActive,
-      function: () => { },
+      function: () => {},
     },
     {
       name: "Support",
       link: "support",
       defaultIcon: supportDefault,
       activeIcon: supportActive,
-      function: () => { },
+      function: () => {},
     },
     {
       name: "Logout",
@@ -87,7 +108,7 @@ const SideBar = ({ active }) => {
       defaultIcon: loggoutDefault,
       activeIcon: loggoutDefault,
       function: () => {
-        dispatch(handlelogout({ logout: true }))
+        dispatch(handlelogout({ logout: true }));
       },
     },
   ];
@@ -100,44 +121,85 @@ const SideBar = ({ active }) => {
       }}
     >
       <div className="py-10 lg:px-16 md:px-4">
-        <Link href="/dashboard">  <Image
-          alt=""
-          src={brownLogo}
-          style={{
-            width: "100px",
-            height: "auto",
-          }}
-        /></Link>
+        <Link href="/dashboard">
+          {" "}
+          <Image
+            alt=""
+            src={brownLogo}
+            style={{
+              width: "100px",
+              height: "auto",
+            }}
+          />
+        </Link>
       </div>
       <div className="">
         {sidebaritems.map((item, index) => (
-          <div
-            className="lg:px-16 md:px-4 flex items-center gap-4  py-3 cursor-pointer hover:bg-[#f4f4f4] min-w-[90px] md:min-w-[90px] "
-            key={index}
-            onClick={() => {
-              // reset search string
-              dispatch(setFilter(""));
-              item.function();
-              if (item.link !== "") {
-                router.push(`../${item.link}`);
-              }
-            }}
-          >
-            {active === item.name ? (
-              <Image src={item.activeIcon} alt="" />
-            ) : (
-              <Image src={item.defaultIcon} alt="" />
-            )}
-            <p
-              className={`hidden md:block font-normal text-sm ${active === item.name ? "text-primary" : " text-gray-100"
-                }`}
+          <Fragment>
+            <div
+              className="lg:px-16 md:px-4 flex items-center gap-4  py-3 cursor-pointer hover:bg-[#f4f4f4] min-w-[90px] md:min-w-[90px] relative"
+              key={index}
+              onClick={() => {
+                dispatch(setFilter(""));
+                item.function();
+                if (item.subPages) {
+                  setProductsDropdownOpen(!productsDropdownOpen);
+                } else if (item.link !== "") {
+                  router.push(`../${item.link}`);
+                }
+              }}
             >
-              {item.name}
-            </p>
-          </div>
+              <div className="absolute left-9 top-4">
+                {item.subPages &&
+                  (productsDropdownOpen ? (
+                    <FaAngleUp className={"text-gray-100"} />
+                  ) : (
+                    <FaAngleDown className={"text-gray-100"} />
+                  ))}
+              </div>
+
+              {active === item.name ? (
+                <Image src={item.activeIcon} alt="" />
+              ) : (
+                <Image src={item.defaultIcon} alt="" />
+              )}
+              <p
+                className={`hidden md:block font-normal text-sm ${
+                  active === item.name ? "text-primary" : " text-gray-100"
+                }`}
+              >
+                {item.name}
+              </p>
+            </div>
+            {item.subPages && productsDropdownOpen && (
+              <div className="pl-8">
+                {item.subPages.map((subPage) => (
+                  <Link
+                    key={subPage.link}
+                    href={`/products/${subPage.link.split("/").pop()}`}
+                    className="lg:px-16 md:px-4 flex items-center gap-4 py-3 cursor-pointer hover:bg-[#f4f4f4] min-w-[90px] md:min-w-[90px]"
+                  >
+                    {active === subPage.name ? (
+                      <Image src={subPage.activeIcon} alt="" />
+                    ) : (
+                      <Image src={subPage.defaultIcon} alt="" />
+                    )}
+                    <p
+                      className={`font-normal text-sm ${
+                        active === subPage.name
+                          ? "text-primary"
+                          : " text-gray-100"
+                      }`}
+                    >
+                      {subPage.name}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </Fragment>
         ))}
       </div>
-
     </div>
   );
 };

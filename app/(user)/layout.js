@@ -84,7 +84,8 @@ const Layout = ({ children }) => {
         : false
     );
     setPage(
-      pathname.replace("/", "").charAt(0).toUpperCase() + pathname.slice(2)
+      pathname.replace(/^\//, "").split("/")[0].charAt(0).toUpperCase() +
+        pathname.replace(/^\//, "").split("/")[0].slice(1)
     );
     getVendorDetailshandler();
   }, [pathname]);
@@ -139,19 +140,25 @@ const Layout = ({ children }) => {
           />
         </div>
       )}
-      {showKycPopUp && <div className="bg-[#FDEBE0] rounded-[12px] fixed bottom-2 left-2 z-[100000] flex items-center justify-between px-4 py-6 gap-4">
-        <button className=" w-8 h-8 bg-[#F8DBCB] rounded-[12px] flex items-center justify-center">
-          <img src={handIcon} />
-        </button>
-        <div>
-          <h4 className="font-medium text-darkBlue">Almost done!</h4>
-          <p className="text-sm text-darkBlue w-[80%]">
-            Complete KYC registration of your business profile to start work.
-          </p>
+      {showKycPopUp && (
+        <div className="bg-[#FDEBE0] rounded-[12px] fixed bottom-2 left-2 z-[100000] flex items-center justify-between px-4 py-6 gap-4">
+          <button className=" w-8 h-8 bg-[#F8DBCB] rounded-[12px] flex items-center justify-center">
+            <img src={handIcon} />
+          </button>
+          <div>
+            <h4 className="font-medium text-darkBlue">Almost done!</h4>
+            <p className="text-sm text-darkBlue w-[80%]">
+              Complete KYC registration of your business profile to start work.
+            </p>
+          </div>
+          <button
+            className="w-8 h-8 bg-[#F8DBCB] rounded-[12px] flex items-center justify-center"
+            onClick={() => setShowKycPopUp(false)}
+          >
+            <X />
+          </button>
         </div>
-        <button className="w-8 h-8 bg-[#F8DBCB] rounded-[12px] flex items-center justify-center" onClick={() => setShowKycPopUp(false)}><X /></button>
-      </div>}
-
+      )}
     </div>
   );
 };
