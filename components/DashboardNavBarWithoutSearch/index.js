@@ -26,9 +26,15 @@ const DasboardNavWithOutSearch = ({
     setShowProfile(!showProfile);
   };
 
+  console.log("userDetails", userDetails);
+
   return (
     <div>
-      <div className={` ${!hideNav ? " " : "pt-2"} rounded-[15px] max-w-[1118px] lg:m-auto `}>
+      <div
+        className={` ${
+          !hideNav ? " " : "pt-2"
+        } rounded-[15px] max-w-[1118px] lg:m-auto `}
+      >
         <div className="block lg:hidden">
           <div className="items-center justify-between px-3 py-3 bg-gray-400 rounded-[12px] hidden">
             <Image src={transformText} alt="" />
@@ -70,14 +76,16 @@ const DasboardNavWithOutSearch = ({
                     textWeight="font-semibold"
                     textSize="text-[18px]"
                   >
-                    {userDetails.personalName}
+                    {userDetails && userDetails.personalName}
                   </Typography>
                 </div>
                 <div className="rounded-[12px] p-2 bg-[#F8F9FA] cursor-pointer">
                   <Image
                     alt=""
                     src={mobileProfile}
-                    onClick={() => { setShowProfile(true) }}
+                    onClick={() => {
+                      setShowProfile(true);
+                    }}
                     className="cursor-pointer"
                   />
                 </div>
@@ -127,7 +135,7 @@ const DasboardNavWithOutSearch = ({
                 textWeight="font-normal"
                 textSize=""
               >
-                {userDetails.personalName}
+                {userDetails && userDetails.personalName}
               </Typography>
               <div className="rounded-[12px] p-2 bg-[#F8F9FA] cursor-pointer">
                 <Image
