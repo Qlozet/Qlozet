@@ -29,11 +29,10 @@ const DasboardNavWithOutSearch = ({
   console.log("userDetails", userDetails);
 
   return (
-    <div>
+    <div className="">
       <div
-        className={` ${
-          !hideNav ? " " : "pt-2"
-        } rounded-[15px] max-w-[1118px] lg:m-auto `}
+        className={` ${!hideNav ? " " : "pt-2"
+          } rounded-[15px] max-w-[1200px] lg:m-0  shadow-[0px_4px_10px_#AEAEC026] `}
       >
         <div className="block lg:hidden">
           <div className="items-center justify-between px-3 py-3 bg-gray-400 rounded-[12px] hidden">
@@ -53,7 +52,7 @@ const DasboardNavWithOutSearch = ({
                 <div className="hidden md:block">
                   <Typography
                     textColor="text-dark"
-                    textWeight="font-bold"
+                    textWeight="font-medium"
                     textSize="text-[18px]"
                   >
                     {name}
@@ -93,11 +92,11 @@ const DasboardNavWithOutSearch = ({
             </div>
           )}
         </div>
-        <div className="hidden lg:flex items-center justify-between bg-white border-[#DDE2E5] border-solid border-[1.5px] py-2 px-6 rounded-[12px]">
+        <div className="hidden lg:flex items-center justify-between bg-white  py-2 px-6 rounded-[12px]">
           <div className="hidden md:block">
             <Typography
               textColor="text-dark"
-              textWeight="font-bold"
+              textWeight="font-medium"
               textSize="text-[18px]"
             >
               {name}
