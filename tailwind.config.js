@@ -6,6 +6,7 @@ module.exports = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    // shadow:{0,},
     extend: {
       gridTemplateColumns: {
         'auto-fill-minmax': 'repeat(auto-fill, minmax(75px, max-content))',
@@ -54,8 +55,12 @@ module.exports = {
       },
       outline: {
         DEFAULT: "#3E1C01",
-
       },
+      shadow: {
+        DEFAULT: "#AEAEC026"
+      }
+      ,
+
     },
     screens: {
       sm: "640px", // Small screens (e.g., phones)

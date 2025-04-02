@@ -85,7 +85,7 @@ const Layout = ({ children }) => {
     );
     setPage(
       pathname.replace(/^\//, "").split("/")[0].charAt(0).toUpperCase() +
-        pathname.replace(/^\//, "").split("/")[0].slice(1)
+      pathname.replace(/^\//, "").split("/")[0].slice(1)
     );
     getVendorDetailshandler();
   }, [pathname]);
@@ -105,9 +105,9 @@ const Layout = ({ children }) => {
             />
           </div>
           <div>
-            <div className="lg:ml-[280px]">
+            <div className="lg:ml-[280px] ">
               <div
-                className="p-4 sticky left-0 top-0 bg-white lg:bg-gray-400"
+                className="p-4 sticky left-0 top-0 bg-white lg:bg-gray-400 "
                 style={{
                   zIndex: 950,
                 }}
@@ -123,7 +123,7 @@ const Layout = ({ children }) => {
                   showSideBar={showSideBar}
                 />
               </div>
-              <div className="max-w-[1148px] lg:m-auto"> {children}</div>
+              <div className="max-w-[1200px] lg:m-0"> {children}</div>
             </div>
           </div>
           <Modal

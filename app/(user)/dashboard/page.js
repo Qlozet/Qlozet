@@ -180,7 +180,7 @@ const Dashboard = () => {
           ) : (
             <div>
               <div
-                className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4 `}
+                className={`${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll px-4 bg-transparent py-2`}
               >
                 <DashboardTopCard
                   name="Total Order"
@@ -217,8 +217,7 @@ const Dashboard = () => {
                   addMaxWidth={false}
                 />
               </div>
-              <div className=" bg-[#F8F9FA] px-4">
-
+              <div className=" bg-[#F8F9FA] px-4 lg:px-0">
                 <div className="md:flex block lg:flex items-center w-full md:gap-[21px] gap-4 ">
                   <div
                     className={`${classes.first_container} block lg:flex items-center md:gap-[21px] gap-4 mt-4 w-full md:flex`}
@@ -258,15 +257,15 @@ const Dashboard = () => {
                   <div
                     className={`${classes.first_container} block md:flex md:gap-[21px] gap-4 mt-3 w-full `}
                   >
-                    <div className="w-full  bg-white rounded-[12px] p-6 block">
+                    <div className="w-full  bg-white rounded-[12px] p-6 block  shadow-[0px_4px_10px_#AEAEC026] ">
                       <VerticalBarGraph name="Earning" data={dailyEarnings} />
                     </div>
-                    <div className="w-full bg-white rounded-[12px] p-6 block mt-4 md:mt-0">
+                    <div className="w-full bg-white rounded-[12px] p-6 block mt-4 md:mt-0  shadow-[0px_4px_10px_#AEAEC026] ">
                       <VerticalBarGraph name="Order Count" data={dailyOrder} />
                     </div>
                   </div>
                   <div className={`${classes.second_container} flex  mt-4`}>
-                    <div className="bg-white rounded-[12px] w-full flex gap-4 h-full ">
+                    <div className="bg-white rounded-[12px] w-full flex gap-4 h-full  shadow-[0px_4px_10px_#AEAEC026]  ">
                       {
                         <div className="p-3 text-dark w-full">
                           <RecentOrder orders={recentOrders} />
