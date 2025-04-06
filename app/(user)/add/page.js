@@ -570,7 +570,7 @@ const AddProduct = () => {
       <div className="flex bg-[#F8F9FA] ">
         <div className="w-full px-4 pb-4">
           <div className="my-4">
-            {" "}
+            {" "} 
             <GoBack />
           </div>
 

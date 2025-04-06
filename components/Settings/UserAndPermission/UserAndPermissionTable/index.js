@@ -81,11 +81,11 @@ const UserAndPermissionTable = ({ handleEdit }) => {
             <SearchInput placeholder="Search" />
           </div>
           <div className="flex items-center justify-center">
-            <Image src={icon} />
+            <Image src={icon} alt="" />
           </div>
           <div className="flex items-center justify-center">
             <div className="w-[3rem] h-[3rem] bg-primary rounded-[12px] flex items-center justify-center">
-              <Image src={exportIcon} />
+              <Image src={exportIcon} alt="" />
             </div>
           </div>
         </div>
