@@ -135,7 +135,7 @@ const SideBar = ({ active }) => {
       </div>
       <div className="">
         {sidebaritems.map((item, index) => (
-          <Fragment>
+          <Fragment key={index}>
             <div
               className="lg:px-16 md:px-4 flex items-center gap-4  py-3 cursor-pointer hover:bg-[#f4f4f4] min-w-[90px] md:min-w-[90px] relative"
               key={index}

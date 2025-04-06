@@ -96,7 +96,7 @@ const CustomerTable = ({
                   handleExport(data);
                 }}
               >
-                <Image src={exportIcon} />
+                <Image src={exportIcon} alt="" />
               </div>
             </div>
           </div>

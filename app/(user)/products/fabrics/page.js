@@ -32,6 +32,7 @@ import moment from "moment";
 // redux
 import { useAppSelector } from "@/redux/store";
 import { activeCheck } from "@/utils/helper";
+import AddFabricModal from "@/components/AddFabricModal.tsx";
 
 const Products = () => {
   const filterData = useAppSelector((state) => state.filter.state);
@@ -43,6 +44,7 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [filteredProduct, setFilterdProduct] = useState([]);
   const [activatedProduct, setActivatedProduct] = useState(0);
+  const [showAddFabric, setShowAddFabric] = useState(false);
   const [tagData, setTagData] = useState({
     labels: ["Male", "Female"],
     values: [0, 0],
@@ -206,7 +208,7 @@ const Products = () => {
                   <Button
                     children={
                       <span className="flex justify-center items-center">
-                        <span>New product</span>
+                        <span>Add new product</span>
                         <Image src={addIcon} className="ml-4" alt="" />
                       </span>
                     }
@@ -214,7 +216,7 @@ const Products = () => {
                     minWidth="lg:min-w-[14rem]"
                     variant="primary"
                     clickHandler={() => {
-                      router.push("/add");
+                      setShowAddFabric(true);
                       clearProductId();
                     }}
                   />
@@ -339,6 +341,21 @@ const Products = () => {
             <>
               {showHostory && (
                 <OrderHistory topNavData={topNavData} closeModal={closeModal} />
+              )}
+            </>
+          }
+        ></Modal>
+        <Modal
+          show={showAddFabric}
+          content={
+            <>
+              {showAddFabric && (
+                <AddFabricModal
+                  // submitAcessories={submitAcessories}
+                  closeModal={() => {
+                    setShowAddFabric(false);
+                  }}
+                />
               )}
             </>
           }
