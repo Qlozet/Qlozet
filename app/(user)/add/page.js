@@ -81,7 +81,7 @@ const AddProduct = () => {
           "name": values.productName,
           "price": 40000,
           "discountedPrice": 32000,
-          "description": "this is a new product",
+          "description": formik.values.productDes,
           "quantity": 23,
           images: values.productImage,
           "isCustomizable": false,
@@ -732,6 +732,8 @@ const AddProduct = () => {
     fetchProduct();
   }, []);
 
+  console.log(formik.errors)
+
   useEffect(() => {
     const localData = localStorage.getItem("styleTypes");
     if (localData) {
@@ -817,7 +819,7 @@ const AddProduct = () => {
                     <div className="w-full lg:w-3/5 h-full ">
 
                       <RichTextEditor onChange={(html) => {
-                        console.log(html)
+                        formik.setFieldValue("productDes", html);
                       }} label="Product description"
                       />
                       {/* <TextArea
