@@ -22,10 +22,10 @@ const NumberInput = ({
         {tooltips && <ToolTip text={`${label} is required`} />
         }
       </div>      <input
-        className={`py-3 ${error && "border-danger"
-          } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  
-          focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-sm text-font-light placeholder:font-300 ${disabled && "border-0 bg-gray-300 cursor-not-allowed"
-          }`}
+        className={`py-3 px-4 w-full border-solid border-[1.5px] text-dark placeholder-gray-200
+          focus:bg-white focus:outline focus:outline-4 focus:outline-[#3E1C0114] focus:border-primary-100 ${error && "border-danger"
+          } border-gray-200 rounded-[8px] overflow-hidden text-sm text-font-light placeholder:font-300 ${disabled && "border-0 bg-gray-300 cursor-not-allowed "
+            } `}
         value={value}
         disabled={isLoading ? true : false}
         placeholder={placeholder}

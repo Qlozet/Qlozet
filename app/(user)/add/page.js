@@ -33,11 +33,176 @@ import GoBack from "@/components/GoBack/index.js";
 import informationIcon from "../../../public/assets/svg/information.svg";
 import TextArea from "@/components/TextAreaInput/index.js";
 import SingleCustomzeCard from "@/components/Products/SingleCustomizeCard/index.js";
-
+import { useFormik } from "formik";
+import { object, string, number, date, InferType, array } from "yup";
+import RichTextEditor from "@/components/Editor/index.js";
 const AddProduct = () => {
   const router = useRouter();
 
   // States
+  const formik = useFormik({
+    initialValues: {
+      productName: "",
+      productStatus: "",
+      productTag: [],
+      productDes: "",
+      category: [],
+      subCategory: [],
+      productType: "",
+      pricing: "",
+      discount: "",
+      productImage: [],
+      styles: []
+    },
+
+    validationSchema: object().shape({
+      productName: string().required("Product name is required"),
+      productStatus: string().required("Status is required"),
+      productTag: array()
+        .of(string().required("Tag is required"))
+        .min(1, "At least one tag is required")
+        .required("Product tag is required"),
+      productDes: string().required("Description name is required"),
+      category: array().of(string().required("Category is required")),
+      productType: string().required("Type is required"),
+      pricing: string().required("Pricing name is required"),
+      discount: string().required("Discount name is required"),
+      productImage: array().of(
+        object().shape({
+          secure_url: string().required("Secure url is required"),
+          public_id: string().required("Public id is required"),
+          asset_id: string().required("Asset id is required"),
+        })
+      ),
+    }),
+    onSubmit: async (values) => {
+      try {
+        const payload = {
+          "name": values.productName,
+          "price": 40000,
+          "discountedPrice": 32000,
+          "description": formik.values.productDes,
+          "quantity": 23,
+          images: values.productImage,
+          "isCustomizable": false,
+          "isDesigned": false,
+          "colors": ["#808080"],
+          "status": false,
+          "discount": 0,
+          "subcategories": [
+            "67c9a406db0c68345ea9bcf1", "67c9a424db0c68345ea9bcf7"
+          ],
+          // "fabrics": [
+          //   "67c5b44db744ede73b052514"
+          // ],
+          fabrics: [],
+          accessories: [],
+          // "accessories": [
+          //   "674b4c0c6754bcc1207247be"
+          // ],
+          "isFeatured": false,
+          "pickupAvailable": false,
+          "sizeOptions": [
+            {
+              "size": "XL",
+              "quantityAvailable": 100
+            }
+          ],
+          "tag": "woman",
+          "type": "customizable",
+          "isPromo": true,
+          "isVariantAvailable": false,
+          tribes: [],
+          // "tribes": ["667bc853fbc0fff35605b1d3"],
+          // "bodyFit": ["petite"],
+          bodyFit: [],
+          // "occassion": ["dinner"],
+          occassion: [],
+          "isOnSale": true,
+          "usdPrice": 100,
+          "productStatus": "draft"
+        }
+        const response = await postRequest("/vendor/products", {
+          ...payload
+          // name: values.productName,
+          // price: values.pricing,
+          // discountedPrice: values.discount,
+          // discountPercentage: 0,
+          // discountDate: "Unknown Type: Date",
+          // description: values.productDes,
+          // quantity: 0,
+          // details: ["string"],
+          // isCustomizable: false,
+          // customStyles: [
+          // {
+          //   imageIndex: 0,
+          //   id: "string",
+          //   price: 0,
+          //   position: {
+          //     left: 0,
+          //     right: 0,
+          //     top: 0,
+          //     bottom: 0,
+          //   },
+          // },
+          // ],
+          // isDesigned: false,
+          // design: ["string"],
+          // status: values.productStatus === "active" ? true : false,
+          // colors: [],
+          // discount: 0,
+          // categories: [
+          //   {
+          //     name: "string",
+          //     parentCategory: "string",
+          //   },
+          // ],
+          // collections: [],
+          // isFeatured: false,
+          // images: values.productImage,
+          // likes: ["string"],
+          // viewCount: {
+          //   count: 0,
+          //   date: "2025-05-24T10:34:27.401Z",
+          // },
+          // reviews: ["string"],
+          // pickupAvailable: false,
+          // sizeOptions: [
+          // {
+          //   size: "string",
+          //   quantityAvailable: 0,
+          // },
+          // ],
+          // tag: values.productTag,
+          // type: values.productType,
+          // variants: [
+          //   {
+          //     color: "string",
+          //     size: "string",
+          //     quantity: 0,
+          //     price: 0,
+          //     images: {
+          //       retained: ["string"],
+          //       deleted: ["string"],
+          //     },
+          //   },
+          // ],
+          // variant: [],
+          // isPromo: false,
+          // accessories: [],
+          // fabrics: ["string"],
+          // isVariantAvailable: false,
+          // tribes: ["string"],
+          // bodyFit: [],
+          // occasion: [],
+          // isOnSale: false,
+          // productStatus: "archived",
+        });
+        console.log(response);
+      } catch (error) { }
+    },
+  });
+  const [categories, setCategories] = useState([]);
   const [variantTable, setVariantTable] = useState([]);
   const [showCustomiseOrder, setShowCustomiseOrder] = useState(false);
   const [showAddAccessories, setShowAddAccessories] = useState(false);
@@ -55,6 +220,7 @@ const AddProduct = () => {
   const [addVariant, setAddVariant] = useState(false);
   const [productFormData, setProductFormData] = useState({
     productName: "",
+    productStatus: "",
     productPrice: "",
     productTag: "",
     description: "",
@@ -71,6 +237,7 @@ const AddProduct = () => {
 
   const [requiredproductFormData, setrequiredproductFormData] = useState({
     productName: false,
+    productStatus: false,
     productPrice: false,
     productTag: false,
     description: false,
@@ -82,11 +249,7 @@ const AddProduct = () => {
 
   // Functions
   const handleSelectFile = async (files, deletedFiles) => {
-    console.log(files);
-
-    setProductFormData((prevData) => {
-      return { ...prevData, images: files };
-    });
+    formik.setFieldValue("productImage", files);
     if (deletedFiles) {
       setDeletedFiles(deletedFiles);
     } else {
@@ -539,14 +702,37 @@ const AddProduct = () => {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await getRequest(
+        "/vendor/products/vendor/all-categories"
+      );
+      if (response.status === 200) {
+        setCategories(
+          response?.data?.data.map((item) => {
+            return {
+              text: item.name,
+              id: item._id,
+            };
+          })
+        );
+      } else {
+        toast("An error occured fetching category");
+      }
+    } catch (error) { }
+  };
+
   useEffect(() => {
     localStorage.removeItem("styleTypes");
     // fetchStyles();
   }, []);
 
   useEffect(() => {
+    fetchCategories();
     fetchProduct();
   }, []);
+
+  console.log(formik.errors)
 
   useEffect(() => {
     const localData = localStorage.getItem("styleTypes");
@@ -570,7 +756,6 @@ const AddProduct = () => {
       <div className="flex bg-[#F8F9FA] ">
         <div className="w-full px-4 pb-4">
           <div className="my-4">
-            {" "} 
             <GoBack />
           </div>
 
@@ -601,54 +786,51 @@ const AddProduct = () => {
                     <div className="w-full lg:w-3/5">
                       <TextInput
                         tooltips={true}
-                        value={productFormData.productName}
+                        value={formik.values.productName}
                         label="Product name"
                         placeholder="Enter product name"
                         setValue={(data) => {
-                          setProductFormData((prevData) => {
-                            return { ...prevData, productName: data };
-                          });
-                          if (data) {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productName: false };
-                            });
-                          } else {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productName: true };
-                            });
-                          }
+                          formik.setFieldValue("productName", data);
                         }}
-                        error={requiredproductFormData.productName}
+                        error={formik.touched.productName ? formik.errors.productName : ""}
                       />
                     </div>
                     <div className="w-full lg:w-2/5">
-                      <TextInput
-                        tooltips={"Product name is required"}
-                        value={productFormData.productName}
-                        label="Product name"
-                        placeholder="Enter product name"
+                      <SelectInput
+                        zIndex={30}
+                        tooltips={true}
+                        label="Product status"
+                        value={formik.values.productStatus}
+                        data={[
+                          { text: "Active", id: "active" },
+                          { text: "Inactive", id: "inactive" },
+                          { text: "Draft", id: "draft" },
+
+                        ]}
                         setValue={(data) => {
-                          setProductFormData((prevData) => {
-                            return { ...prevData, productName: data };
-                          });
-                          if (data) {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productName: false };
-                            });
-                          } else {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productName: true };
-                            });
-                          }
+                          formik.setFieldValue("productStatus", data);
                         }}
-                        error={requiredproductFormData.productName}
                       />
                     </div>
                   </div>
                   <div className="block lg:flex items-start justify-between gap-6 ">
+
+
                     <div className="w-full lg:w-3/5 h-full ">
-                      {/* <RichTextEditor onChange={setEditorContent} /> */}
-                      <TextArea setValue={() => { }} value={""} />
+
+                      <RichTextEditor onChange={(html) => {
+                        formik.setFieldValue("productDes", html);
+                      }} label="Product description"
+                      />
+                      {/* <TextArea
+                        label="Product description"
+                        placeholder="Enter description"
+                        value={formik.values.productDes}
+                        setValue={(data) => {
+                          formik.setFieldValue("productDes", data);
+                        }}
+                        error={formik.errors.productDes}
+                      /> */}
                     </div>
                     <div className="w-full lg:w-2/5">
                       <div className="lg:mt-6 pb-3">
@@ -665,50 +847,62 @@ const AddProduct = () => {
                         <SelectMultipleInput
                           zIndex={60}
                           tooltips={true}
-                          value={selectedColors}
+                          value={formik.values.productTag}
                           data={[
                             { text: "Men", id: 1 },
                             { text: "Formal", id: 2 },
-                            { text: "Casual", id: 2 },
+                            { text: "Casual", id: 3 },
                           ]}
                           label="Tag"
-                          setValue={addToVariantTable}
-                          removeColorHandler={removeColorVariant}
+                          setValue={(data) => {
+                            formik.setFieldValue(
+                              "productTag",
+                              data.map((item) => item.text)
+                            );
+                          }}
                         />
                         <SelectMultipleInput
                           zIndex={50}
                           tooltips={true}
-                          value={selectedColors}
-                          data={[
-                            { text: "Dress", id: 1 },
-                            { text: "Traditional", id: 2 },
-                          ]}
+                          value={formik.values.category}
+                          data={categories}
                           label="Category"
-                          setValue={addToVariantTable}
-                          removeColorHandler={removeColorVariant}
+                          setValue={(data) => {
+                            console.log(data)
+                            formik.setFieldValue(
+                              "category",
+                              data.map((item) => item.id)
+                            );
+                          }}
                         />
                         <SelectMultipleInput
                           zIndex={40}
                           tooltips={true}
-                          value={selectedColors}
+                          value={formik.values.subCategory}
                           data={[
                             { text: "Male", id: 1 },
                             { text: "Female", id: 2 },
                           ]}
                           label="Sub-category"
-                          setValue={addToVariantTable}
-                          removeColorHandler={removeColorVariant}
+                          setValue={(data) => {
+                            formik.setFieldValue(
+                              "subCategory",
+                              data.map((item) => item.text)
+                            );
+                          }}
                         />
-                        <SelectMultipleInput
+                        <SelectInput
                           zIndex={30}
                           tooltips={true}
-                          value={selectedColors}
+                          value={formik.values.productType}
                           data={[
-                            { text: "Male", id: 1 },
-                            { text: "Female", id: 2 },
+                            { text: "Customizable", id: "customizable" },
+                            { text: "Normal", id: "normal" },
                           ]}
                           label="Product type"
-                          setValue={addToVariantTable}
+                          setValue={(data) => {
+                            formik.setFieldValue("productType", data);
+                          }}
                           removeColorHandler={removeColorVariant}
                         />
                       </div>
@@ -739,36 +933,22 @@ const AddProduct = () => {
                       </div>
                       <NumberInput
                         tooltips={true}
-                        value={productFormData.productPrice}
                         label="Price"
                         placeholder="Enter price"
+                        value={formik.values.pricing}
                         setValue={(data) => {
-                          setProductFormData((prevData) => {
-                            return { ...prevData, productPrice: data };
-                          });
-                          if (data) {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productPrice: false };
-                            });
-                          } else {
-                            setrequiredproductFormData((prevData) => {
-                              return { ...prevData, productPrice: true };
-                            });
-                          }
+                          formik.setFieldValue("pricing", data);
                         }}
-                        error={requiredproductFormData.productPrice}
                       />
+
                       <NumberInput
                         tooltips={true}
                         label="Available discount"
                         placeholder="Enter available discount?"
-                        value={productFormData.discount}
+                        value={formik.values.discount}
                         setValue={(data) => {
-                          setProductFormData((prevData) => {
-                            return { ...prevData, discount: data };
-                          });
+                          formik.setFieldValue("discount", data);
                         }}
-                        error={requiredproductFormData.discount}
                       />
                     </div>
                   </div>
@@ -798,16 +978,17 @@ const AddProduct = () => {
                           >
                             <CustomiSationButton
                               handleClick={() => {
-                                if (productFormData.images.length > 0) {
-                                  setShowCustomiseOrder(true);
-                                } else {
-                                  toast(
-                                    <Toast
-                                      text={"Add product Image"}
-                                      type="danger"
-                                    />
-                                  );
-                                }
+                                // if (productFormData.images.length > 0) {
+                                //   setShowCustomiseOrder(true);
+                                // } else {
+                                //   toast(
+                                //     <Toast
+                                //       text={"Add product Image"}
+                                //       type="danger"
+                                //     />
+                                //   );
+                                // }
+                                setShowCustomiseOrder(true);
                               }}
                               text={"Price:"}
                             />
@@ -838,12 +1019,7 @@ const AddProduct = () => {
                       }
                     />
                   </div>
-
-                  <div className="my-4">
-                    <DashedComponent name={"Customization"} />
-                  </div>
-
-                  <div className="flex flex-col gap-6">
+                  <div className="flex flex-col gap-6 my-4">
                     <SingleCustomzeCard
                       text={"Additional Component"}
                       children={
@@ -955,7 +1131,7 @@ const AddProduct = () => {
                         variant="primary"
                         maxWidth="max-w-[10rem]"
                         clickHandler={() => {
-                          handleSubmit();
+                          formik.handleSubmit();
                         }}
                       />
                     </div>
@@ -970,6 +1146,7 @@ const AddProduct = () => {
               <>
                 {showCustomiseOrder && (
                   <CustomizeOrder
+                    formik={formik}
                     styleData={styles}
                     closeModal={() => {
                       setShowCustomiseOrder(false);
@@ -1004,8 +1181,8 @@ const AddProduct = () => {
             {positionModal && (
               <DragDrop
                 handleSelectStyle={handleSelectStyle}
-                productImages={productFormData.images}
-                selectedStyles={selectedStyles}
+                productImages={formik.values.productImage}
+                selectedStyles={formik.values.styles}
                 closeModal={() => {
                   setPositionModal(false);
                 }}

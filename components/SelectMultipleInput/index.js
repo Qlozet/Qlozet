@@ -23,10 +23,8 @@ const SelectMultipleInput = ({
 }) => {
   const dropDownRef = useRef();
   const [showDropDown, setShowDropDown] = useState(false);
-  const [selectedColors, setSelectedColors] = useState(value);
   const [list, setList] = useState(data);
-  const [selectedList, setSelectedList] = useState([]);
-
+  const [selectedList, setSelectedList] = useState(value);
   const handleClickOutside = (event) => {
     if (dropDownRef.current && !dropDownRef.current.contains(event.target)) {
       setShowDropDown(false);
@@ -52,7 +50,7 @@ const SelectMultipleInput = ({
   }
 
   useEffect(() => {
-
+    setValue(selectedList)
     setList(filterExcludedItems(list, selectedList, "id"))
   }, [selectedList])
 
@@ -68,16 +66,17 @@ const SelectMultipleInput = ({
         <label className="text-sm text-dark ">{label}</label>    {tooltips && <ToolTip text={`${label} is required`} />
         }
       </div>
-      <div className={`flex items-center gap-2 w-full border-solid border-[1.5px]  rounded-[8px] text-dark  ${showDropDown ? "bg-[#DDE2E5] border-primary-100" : "border-gray-2"}`}>
+      <div className={`border-solid border-[4px]  rounded-[12px] ${showDropDown ? "border-[#3E1C0114]" : "border-white"}`}>    
+          <div className={`flex items-center gap-2 w-full border-solid border-[1.5px]  rounded-[8px] text-dark  ${showDropDown ? "bg-[#DDE2E5] border-primary-100" : "border-gray-2"}`}>
         <div className={`w-full flex items-center gap-4 text-sm text-font-light placeholder:font-300 px-2`} onClick={() => { setShowDropDown(!showDropDown); }} >
           <div className={`${styles.scrollContainer} overflow-x-auto flex items-center gap-4 w-[95%] py-2`}>
             {selectedList.length > 0 ? selectedList.map((item) => (
               <span className="flex items-center gap-1 p-1 bg-gray-700 rounded-[6px] text-sm" onClick={() => { removeItem(item.id) }} key={item.id}>{item.text} <button><X width={16} height={16} color={"#777777"} /></button></span>
             )) : (<span className="h-8"></span>)}
           </div>
-          <button className="w-[5%]">{showDropDown ? <ChevronUp /> : <ChevronDown />}</button>
+          <button className="absolute top-[40px] right-[16px]">{showDropDown ? <ChevronUp /> : <ChevronDown />}</button>
         </div>
-      </div>
+      </div></div>
       {showDropDown && (
         <div
           className={` cursor-pointer absolute top-[75px] bg-white rounded-lg max-h-[15rem] ${classes.datalist} shadow-md  w-full`}
@@ -92,7 +91,6 @@ const SelectMultipleInput = ({
                 } hover:bg-[#F4F4F4]`}
               onClick={() => {
                 setSelectedList([...selectedList, item]);
-                // setList(filterExcludedItems(list, [...selectedList, item], "id"))
                 setShowDropDown(false);
               }}
             >
@@ -101,7 +99,6 @@ const SelectMultipleInput = ({
           ))}</> : (<p className="text-sm p-2 rounded-sm">No Available item</p>)}
         </div>
       )}
-
     </div>
   );
 };
