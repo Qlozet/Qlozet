@@ -1,6 +1,6 @@
 import Image from "next/image";
 import documentIcon from "../../public/assets/svg/document-upload.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import classes from "./index.module.css";
 import { Oval } from "react-loader-spinner";
 import SelectedFile from "./FileContainer";
@@ -56,6 +56,7 @@ const FileInput = ({
     e.target.value = ""
   };
 
+
   return (
     <div className="my-3 w-full">
       <div className="flex items-center justify-start gap-2">
@@ -64,7 +65,7 @@ const FileInput = ({
         }
       </div>      <div className="overflow-hidden">
         <div
-          className={`${classes.scrollbarElement} w-full h-[186px] flex items-center gap-4 px-4 border-[1.5px] border-solid border-primary rounded-[12px] py-4`}
+          className={`${classes.scrollbarElement} w-full h-[151px] flex items-center gap-4 px-4 border-[1.5px] border-solid border-primary rounded-[12px] py-4`}
         >
           {files.map((item, index) => {
             return (
@@ -79,13 +80,13 @@ const FileInput = ({
           })}
           {!isloading ? (
             <label
-              className="border-[1.5px] border-dashed border-gray-200 block  h-full rounded-[12px] min-w-[157px]"
+              className="border-[1.5px] border-dashed border-gray-200 block  h-full rounded-[12px] min-w-[127px]"
               htmlFor={"files"}
             >
               <div className="h-[100%] cursor-pointer rounded-[12px] flex justify-center  items-center flex-col bg-white gap-4 py-2 px-6">
                 <Upload height={24} width={24} />
-                <button className="bg-gray-300 rounded-md px-2 py-1">Add image</button>
-                <p className="text-gray-100 text-xs font-medium">Add from URL</p>
+                <button className="bg-gray-300 rounded-md px-2 py-1 text-[10px]">Add image</button>
+                <p className="text-gray-100 font-medium text-xs">Add from URL</p>
               </div>
             </label>
           ) : (

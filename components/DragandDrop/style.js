@@ -7,9 +7,20 @@ const StypePositioning = ({
   customeStylesUiPosition,
   imageIndex,
 }) => {
+  console.log(customeStylesUiPosition)
+  console.log(customeStylesUiPosition.filter(
+    (item) =>
+      item.imageIndex === imageIndex && item.style === stylesType
+  )[
+    customeStylesUiPosition.filter(
+      (item) =>
+        item.imageIndex === imageIndex &&
+        item.style === stylesType
+    ).length - 1
+  ])
   return (
     <div>
-      {selectedStyles.filter((item) => item.name === stylesType).length > 0 && (
+      {selectedStyles.filter((item) => item.style === stylesType).length > 0 && (
         <div
           onTouchStart={() => {
             handleSetCurentStyle(stylesType, imageIndex);
@@ -19,12 +30,13 @@ const StypePositioning = ({
           }}
           className="relative bg-[#0D0C0CBD] rounded-md px-6 py-2 cursor-move w-[5rem] mb-4"
           style={{
-            position: customeStylesUiPosition.filter(
-              (item) =>
-                item.imageIndex === imageIndex && item.style === stylesType
-            ).length
-              ? "absolute"
-              : "relative",
+            // position: customeStylesUiPosition.filter(
+            //   (item) =>
+            //     item.imageIndex === imageIndex && item.style === stylesType
+            // ).length
+            //   ? "absolute"
+            //   : "relative",
+            position: "relative",
             left:
               customeStylesUiPosition.filter(
                 (item) =>

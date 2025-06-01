@@ -1,36 +1,69 @@
-import React, { useState } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import "./quillStyles.css";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Image from "@tiptap/extension-image";
+import styles from "./index.module.css";
+import { Bold, Italic, Underline } from "lucide-react";
+import { BsImage } from "react-icons/bs";
+import ToolTip from "../ToolTip";
+import { useState } from "react";
 
-const RichTextEditor = ({ onChange }) => {
-    const [content, setContent] = useState("");
+function RichTextEditor({ onChange, label, tooltips }) {
+    const [isFocused, setIsFocused] = useState(false);
+    const editor = useEditor({
+        extensions: [StarterKit, Image],
+        content: ``,
+        onUpdate({ editor }) {
+            const html = editor.getHTML();
+            onChange(html);
+        },
+        onFocus: () => setIsFocused(true),
+        onBlur: () => setIsFocused(false),
+    });
 
-    const handleChange = (value) => {
-        setContent(value);
-        onChange(value);
+    const insertImage = () => {
+        const url = window.prompt("Image URL");
+        if (url) editor?.chain().focus().setImage({ src: url }).run();
     };
 
     return (
-        <div className="w-full h-full flex flex-col">
-            <label className="text-sm font-medium text-gray-700">Description</label>
-            <div className="quill-container flex-1 flex flex-col">
-                <ReactQuill
-                    value={content}
-                    onChange={handleChange}
-                    modules={{
-                        toolbar: [
-                            ["bold", "italic", "underline"],
-                            [{ header: 1 }, { header: 2 }],
-                            [{ list: "ordered" }, { list: "bullet" }],
-                            ["link", "image"],
-                            ["emoji"],
-                        ],
-                    }}
-                />
+        <div>
+            <div className="flex items-center justify-start gap-2">
+                <label className="text-sm my-2 text-dark"> {label}</label>
+                {tooltips && <ToolTip text={`${label} is required`} />
+                }
             </div>
+            <div className={`border-solid border-[1.5px] rounded-lg ${isFocused ? 'border-primary' : 'border-gray-200'}`}>
+                <div className="flex gap-6 p-4">
+                    <button onClick={() => editor?.chain().focus().toggleBold().run()} className="font-bold">
+                        <Bold size={16} />
+                    </button>
+                    <button onClick={() => editor?.chain().focus().toggleItalic().run()}>
+                        <Italic size={16} />
+                    </button>
+                    <button onClick={() => editor?.chain().focus().toggleUnderline().run()}>
+                        <Underline size={16} />
+
+                    </button>
+                    {/* <button
+                    onClick={() => editor?.chain().focus().toggleBulletList().run()}
+                >
+                    • List
+                </button>
+                <button onClick={() => editor?.chain().focus().setParagraph().run()}>
+                    ¶
+                </button>
+                <button
+                    onClick={() => editor?.chain().focus().setHeading({ level: 2 }).run()}
+                >
+                    H2
+                </button> */}
+                    <button onClick={() => insertImage()}><BsImage size={16} /></button>
+                </div>
+                <div className={`${styles.editor} p-4`} >
+                    <EditorContent editor={editor} />
+                </div></div>
         </div>
     );
-};
+}
 
 export default RichTextEditor;

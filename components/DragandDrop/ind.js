@@ -25,7 +25,7 @@ const DragDrop = ({
 
   const handleSetCurentStyle = (style, imgIndex) => {
     setStartCal(true);
-    setCurrentStyle({ name: style, imageIndex: imgIndex });
+    setCurrentStyle({ class: style, imageIndex: imgIndex });
   };
 
   const calcultePosition = () => {
@@ -52,7 +52,7 @@ const DragDrop = ({
           bottom: 0,
         };
         const newSTyles = customStyles.map((item) => {
-          if (item.name === currentStyle.name) {
+          if (item.class === currentStyle.class) {
             return { ...item, imageIndex: imageIndex, position: position };
           } else {
             return { ...item };
@@ -83,7 +83,6 @@ const DragDrop = ({
             }
           }
         );
-
         setCustomStylesUiPosition(newCustomeStylesUiPositionay);
       }
     }
@@ -101,13 +100,14 @@ const DragDrop = ({
           y: e.changedTouches[i].clientY - y,
         });
       }
+
       setCustomStylesUiPosition((prevData) => {
         return [
           ...prevData,
           {
             left: touchPoint.x,
             top: touchPoint.y,
-            style: currentStyle.name,
+            style: currentStyle.class,
             imageIndex: imageIndex,
           },
         ];
@@ -133,7 +133,7 @@ const DragDrop = ({
             {
               left: e.clientX - left,
               top: e.clientY - y,
-              style: currentStyle.name,
+              style: currentStyle.class,
               imageIndex: imageIndex,
             },
           ];
@@ -153,7 +153,7 @@ const DragDrop = ({
           top: (item.position.top * height) / 100,
           bottom: item.position.bottom,
           imageIndex: item.imageIndex,
-          style: item.name,
+          style: item.class,
           price: item.price
         };
       })
@@ -172,7 +172,7 @@ const DragDrop = ({
     selectedStyles.map((item, index) => {
       const newItem = {
         id: item.id,
-        name: item.name,
+        class: item.class,
         price: item.price
       };
 

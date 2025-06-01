@@ -39,7 +39,8 @@ const SelectInput = ({
           {tooltips && <ToolTip text={`${label} is required`} />
           }
         </div>
-        <input
+
+        <div className={`border-solid border-[4px]  rounded-[12px] ${showDropDown ? "border-[#3E1C0114]" : "border-white"}`}> <input
           readOnly={readOnly}
           onChange={filterList}
           onClick={() => {
@@ -56,8 +57,10 @@ const SelectInput = ({
             } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  
             focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-sm text-font-light placeholder:font-300 
            `}
-        />
-        <div className="absolute top-[36px] right-2 ">
+        /></div>
+
+
+        <div className="absolute top-[50px] right-2 ">
           {showDropDown ? <ChevronUp /> : <ChevronDown />}
         </div>
         {error && (
@@ -80,7 +83,7 @@ const SelectInput = ({
                 : ""
                 } hover:bg-[#F4F4F4]`}
               onClick={() => {
-                setValue(item.text);
+                setValue(item.text, item.id);
                 setShowDropDown(false);
               }}
             >
