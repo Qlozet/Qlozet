@@ -13,7 +13,7 @@ const SingleCustomzeCard = ({ text, ToolTipText, children }) => {
                 <Typography
                     textColor="text-sectionHeader"
                     textWeight="font-semibold"
-                    textSize="text-[18px]"
+                    textSize="text-[14px]"
                     verticalPadding={0}
                 >
                     {text}
@@ -23,7 +23,8 @@ const SingleCustomzeCard = ({ text, ToolTipText, children }) => {
                     {showChilderen ? <ChevronUp /> : <ChevronDown />}
                 </button>
             </div>
-            {showChilderen && children}
+            {showChilderen && (<div className="border-solid border-borderColor border rounded-[12px] p-[15px] mt-[10px]">{children}</div>
+            )}
         </div>
     );
 };

@@ -58,8 +58,10 @@ module.exports = {
       },
       shadow: {
         DEFAULT: "#AEAEC026"
+      },
+      borderColor: {
+        DEFAULT: "#CDCDCD"
       }
-      ,
 
     },
     screens: {

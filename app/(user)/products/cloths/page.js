@@ -125,7 +125,7 @@ const Products = () => {
       } else {
         toast(<Toast text={response.message} type="danger" />);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const handleFilterData = (data) => {
@@ -164,13 +164,13 @@ const Products = () => {
         .split("/")[0]
         .charAt(0)
         .toUpperCase() +
-        pathname
-          .split("/")
-          .filter(Boolean)
-          .slice(1)
-          .join("/")
-          .split("/")[0]
-          .slice(1)
+      pathname
+        .split("/")
+        .filter(Boolean)
+        .slice(1)
+        .join("/")
+        .split("/")[0]
+        .slice(1)
     );
   }, [isLoading]);
   return (
@@ -186,7 +186,7 @@ const Products = () => {
                   <Button
                     children={
                       <span className="flex justify-center items-center ">
-                        <span>Import</span>{" "}
+                        <span>Import</span>
                         <span className="hidden lg:block ml-[2px]">
                           {" "}
                           Product
@@ -304,7 +304,7 @@ const Products = () => {
                         setValue={(startDate, endDate) => {
                           handleFilterWithDate(startDate, endDate);
                         }}
-                        // zIndex={100}
+                      // zIndex={100}
                       />
                     </div>
                   </div>

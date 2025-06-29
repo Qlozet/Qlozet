@@ -48,7 +48,6 @@ const FileInput = ({
         setIsloading(false)
       } catch (error) {
 
-        console.log(error)
       }
     })
     handleSelect(imageArray)
@@ -80,8 +79,11 @@ const FileInput = ({
           })}
           {!isloading ? (
             <label
-              className="border-[1.5px] border-dashed border-gray-200 block  h-full rounded-[12px] min-w-[127px]"
+              className="block  h-full rounded-[12px] min-w-[127px]"
               htmlFor={"files"}
+              style={{
+                background: `url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%239A9CA3' stroke-width='2' stroke-dasharray='6%2c 18' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e")`,
+              }}
             >
               <div className="h-[100%] cursor-pointer rounded-[12px] flex justify-center  items-center flex-col bg-white gap-4 py-2 px-6">
                 <Upload height={24} width={24} />
