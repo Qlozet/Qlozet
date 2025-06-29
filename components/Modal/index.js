@@ -5,27 +5,28 @@ const Modal = ({ content, show, closeModal }) => {
   const contentRef = useRef()
   const animation = useAnimation();
   return (
-    <>{show ? (<motion.div
-      animate={{ scale: 1 }}
-      transition={{ delay: .1 }}
-      initial={{ scale: 0 }}
-      className={`${style.modal}  px-4 lg:px-0  h-screen fixed top-0 left-0 w-screen bg-[#00000080] overflow-y-scroll`}
-      style={{
-        zIndex: 9999,
-      }}
-    >
-      {content}
-    </motion.div>) : (<motion.div
-      animate={{ scale: 0, opacity: 0 }}
-      transition={{ delay: .1, duration: .1 }}
-      initial={{ scale: 0 }}
-      className={`${style.modal}  px-4 lg:px-0  h-screen fixed top-0 left-0 w-screen bg-[#00000080] overflow-y-scroll`}
-      style={{
-        zIndex: 999,
-      }}
-    >
-      {content}
-    </motion.div>)}
+    <>
+      {show ? (<motion.div
+        animate={{ scale: 1 }}
+        transition={{ delay: .1 }}
+        initial={{ scale: 0 }}
+        className={`${style.modal}  px-4 lg:px-0  h-screen fixed top-0 left-0 w-screen bg-[#00000080] overflow-y-scroll border-solid border border-primary`}
+        style={{
+          zIndex: 9999,
+        }}
+      >
+        {content}
+      </motion.div>) : (<motion.div
+        animate={{ scale: 0, opacity: 0 }}
+        transition={{ delay: .1, duration: .1 }}
+        initial={{ scale: 0 }}
+        className={`${style.modal}  px-4 lg:px-0  h-screen fixed top-0 left-0 w-screen bg-[#00000080] overflow-y-scroll`}
+        style={{
+          zIndex: 999,
+        }}
+      >
+        {content}
+      </motion.div>)}
     </>
   );
 };

@@ -41,7 +41,6 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
           price: accessories.price,
           images: [accessories.image],
         });
-        console.log(response)
         submitAcessories({
           name: accessories.name,
           type: accessories.type,
@@ -84,7 +83,7 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
   };
 
   return (
-    <div className="block md:flex justify-center w-full my-4 bg-white max-w-[728px] m-auto  rounded-[12px] gap-4 overflow-hidden relative">
+    <div className="block md:flex justify-center w-full my-4 bg-white max-w-[1180px] m-auto  rounded-[12px] gap-4 overflow-hidden relative px-[38px] py-[43px]">
       <button
         onClick={() => {
           closeModal();
@@ -92,143 +91,148 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
       >
         <Image src={closeIcon} alt="" className="absolute top-4 right-4" />
       </button>
-      <div className="pb-8 flex-1 p-6">
-        <Typography
-          textColor="text-dark"
-          textWeight="font-[700]"
-          textSize="text-[24px]"
-        >
-          Upload Accessories
-        </Typography>
-        <div>
-          <div className="w-full">
-            <TextInput
-              value={accessories.name}
-              label="Accessory name"
-              placeholder="Enter accessory name"
-              setValue={(data) => {
-                setAcesssories((prevData) => {
-                  return { ...prevData, name: data };
-                });
-                if (data) {
-                  setAcesssoriesRequired((prevData) => {
-                    return { ...prevData, name: false };
-                  });
-                } else {
-                  setAcesssoriesRequired((prevData) => {
-                    return { ...prevData, name: true };
-                  });
-                }
-              }}
-              error={accessoriesRequired.name}
-            />
-          </div>
-          <div className="w-full">
-            <TextInput
-              value={accessories.type}
-              label="Accessory type"
-              placeholder="Enter accessory type"
-              setValue={(data) => {
-                setAcesssories((prevData) => {
-                  return { ...prevData, type: data };
-                });
-                if (data) {
-                  setAcesssoriesRequired((prevData) => {
-                    return { ...prevData, type: false };
-                  });
-                } else {
-                  setAcesssoriesRequired((prevData) => {
-                    return { ...prevData, type: true };
-                  });
-                }
-              }}
-              error={accessoriesRequired.type}
-            />
-          </div>
-          <div className="w-full">
-            <NumberInput
-              label="Price"
-              placeholder="Enter Price"
-              value={accessories.productQuantity}
-              setValue={(data) => {
-                setAcesssories((prevData) => {
-                  return { ...prevData, price: data };
-                });
-                if (data) {
-                  setAcesssoriesRequired((prevData) => {
-                    return { ...prevData, price: false };
-                  });
-                } else {
-                  setAcesssoriesRequired((prevData) => {
-                    return { ...prevData, price: true };
-                  });
-                }
-              }}
-              error={accessoriesRequired.price}
-            />
-          </div>
-          <div>
-            <div className="my-3 relative">
-              <p className="text-sm font-light my-2 text-dark">
-                Upload Image
-              </p>
-              <input
-                type="file"
-                className={`hidden `}
-                onChange={(e) => {
-                  handleUpload(e.target.files[0]);
-                  setAcesssoriesRequired((prevData) => {
-                    return { ...prevData, image: false };
-                  });
-                }}
-                id="accessories"
-              ></input>
-              <label
-                className="py-5 px-4 w-full border-solid border-[1.5px] block rounded-[8px] cursor-pointer relative"
-                htmlFor="accessories"
-              >
-                {!loadingImageUpload ? <Image
-                  src={icon}
-                  alt=""
-                  width={24}
-                  height={24}
-                  className="absolute top-2 right-2 "
-
-                /> : <Oval
-                  visible={true}
-                  height="30"
-                  width="30"
-                  color="rgba(62, 28, 1, 1)"
-                  ariaLabel="oval-loading"
-                  secondaryColor="#f4f4f4"
-                  wrapperStyle={{
+      <div className="flex items-start w-full border-solid border-primary border">
+        <div className="w-full">
+          <Typography
+            textWeight="font-[500]"
+            textSize="text-[24px]"
+            className={"text-[#495057]"}
+          >
+            Upload Accessories
+          </Typography>
+          <div className="">
+            <div className="pb-8">
+              <div className="w-full">
+                <TextInput
+                  value={accessories.name}
+                  label="Accessory name"
+                  placeholder="Enter accessory name"
+                  setValue={(data) => {
+                    setAcesssories((prevData) => {
+                      return { ...prevData, name: data };
+                    });
+                    if (data) {
+                      setAcesssoriesRequired((prevData) => {
+                        return { ...prevData, name: false };
+                      });
+                    } else {
+                      setAcesssoriesRequired((prevData) => {
+                        return { ...prevData, name: true };
+                      });
+                    }
                   }}
-                  wrapperClass="absolute top-2 right-2"
-                />}
-
-              </label>
-              {accessoriesRequired.image && (
-                <p className="text-danger text-xs font-[400]">
-                  Image cannot be empty!
-                </p>
-              )}
+                  error={accessoriesRequired.name}
+                />
+              </div>
+              <div className="w-full">
+                <TextInput
+                  value={accessories.type}
+                  label="Accessory type"
+                  placeholder="Enter accessory type"
+                  setValue={(data) => {
+                    setAcesssories((prevData) => {
+                      return { ...prevData, type: data };
+                    });
+                    if (data) {
+                      setAcesssoriesRequired((prevData) => {
+                        return { ...prevData, type: false };
+                      });
+                    } else {
+                      setAcesssoriesRequired((prevData) => {
+                        return { ...prevData, type: true };
+                      });
+                    }
+                  }}
+                  error={accessoriesRequired.type}
+                />
+              </div>
+              <div className="w-full">
+                <NumberInput
+                  label="Price"
+                  placeholder="Enter Price"
+                  value={accessories.productQuantity}
+                  setValue={(data) => {
+                    setAcesssories((prevData) => {
+                      return { ...prevData, price: data };
+                    });
+                    if (data) {
+                      setAcesssoriesRequired((prevData) => {
+                        return { ...prevData, price: false };
+                      });
+                    } else {
+                      setAcesssoriesRequired((prevData) => {
+                        return { ...prevData, price: true };
+                      });
+                    }
+                  }}
+                  error={accessoriesRequired.price}
+                />
+              </div>
             </div>
-          </div>
-          <div className="mt-8">
-            <Button
-              loading={loading}
-              children="Upload Accessory"
-              btnSize="large"
-              variant="primary"
-              maxWidth="max-w-[10rem]"
-              clickHandler={() => {
-                handleSubmit();
-              }}
-            />
+            <div>
+              {/* <div>
+                <div className="my-3 relative">
+                  <p className="text-sm font-light my-2 text-dark">Upload Image</p>
+                  <input
+                    type="file"
+                    className={`hidden `}
+                    onChange={(e) => {
+                      handleUpload(e.target.files[0]);
+                      setAcesssoriesRequired((prevData) => {
+                        return { ...prevData, image: false };
+                      });
+                    }}
+                    id="accessories"
+                  ></input>
+                  <label
+                    className="py-5 px-4 w-full border-solid border-[1.5px] block rounded-[8px] cursor-pointer relative"
+                    htmlFor="accessories"
+                  >
+                    {!loadingImageUpload ? (
+                      <Image
+                        src={icon}
+                        alt=""
+                        width={24}
+                        height={24}
+                        className="absolute top-2 right-2 "
+                      />
+                    ) : (
+                      <Oval
+                        visible={true}
+                        height="30"
+                        width="30"
+                        color="rgba(62, 28, 1, 1)"
+                        ariaLabel="oval-loading"
+                        secondaryColor="#f4f4f4"
+                        wrapperStyle={{}}
+                        wrapperClass="absolute top-2 right-2"
+                      />
+                    )}
+                  </label>
+                  {accessoriesRequired.image && (
+                    <p className="text-danger text-xs font-[400]">
+                      Image cannot be empty!
+                    </p>
+                  )}
+                </div>
+              </div> */}
+              <div className="mt-8">
+                <Button
+                  loading={loading}
+                  children="Upload Accessory"
+                  btnSize="large"
+                  variant="primary"
+                  maxWidth="max-w-[10rem]"
+                  clickHandler={() => {
+                    handleSubmit();
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div className="pb-8 min-w-[300px] bg-gray-400 flex-1 p-6 ">
+      <div className="pb-8 min-w-[300px] bg-gray-400 flex-1 basis-1/2">
         <Typography
           textColor="text-dark"
           textWeight="font-[700]"
@@ -248,8 +252,15 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
           //   }}
           //   unoptimized
           // />
-          <div className="w-full h-full rounded-lg " style={{ backgroundImage: `url(${accessories.image.secure_url})`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat" }}></div>
-
+          <div
+            className="w-full h-full rounded-lg "
+            style={{
+              backgroundImage: `url(${accessories.image.secure_url})`,
+              backgroundPosition: "center",
+              backgroundSize: "contain",
+              backgroundRepeat: "no-repeat",
+            }}
+          ></div>
         )}
       </div>
     </div>

@@ -95,6 +95,8 @@ const AddProduct = () => {
           // "fabrics": [
           //   "67c5b44db744ede73b052514"
           // ],
+          customStyles: positionStyles,
+
           fabrics: [],
           accessories: [],
           // "accessories": [
@@ -108,7 +110,7 @@ const AddProduct = () => {
               "quantityAvailable": 100
             }
           ],
-          "tag": "woman",
+          tag: values.tag,
           "type": "customizable",
           "isPromo": true,
           "isVariantAvailable": false,
@@ -198,7 +200,10 @@ const AddProduct = () => {
           // isOnSale: false,
           // productStatus: "archived",
         });
-        console.log(response);
+
+        if (response.code == 200) {
+          router.push('/products/cloths')
+        }
       } catch (error) { }
     },
   });
@@ -280,7 +285,6 @@ const AddProduct = () => {
       })
       .flat()
       .map((item) => {
-        console.log(item);
         return {
           ...item,
           position: item.position,
@@ -293,6 +297,7 @@ const AddProduct = () => {
       } else {
       }
     });
+    console.log(containsPostion)
     setPositionStyles(containsPostion);
   };
 
@@ -655,7 +660,6 @@ const AddProduct = () => {
 
           setVariantTable(
             response.data.data.variants.map((item) => {
-              console.log(item);
               return {
                 id: uuidv4(),
                 color: item.color.hex,
@@ -732,12 +736,11 @@ const AddProduct = () => {
     fetchProduct();
   }, []);
 
-  console.log(formik.errors)
-
   useEffect(() => {
     const localData = localStorage.getItem("styleTypes");
     if (localData) {
       const savedData = JSON.parse(localData);
+
       savedData &&
         setSelectedStyles(
           savedData.map((item) => {
@@ -978,29 +981,20 @@ const AddProduct = () => {
                           >
                             <CustomiSationButton
                               handleClick={() => {
-                                // if (productFormData.images.length > 0) {
-                                //   setShowCustomiseOrder(true);
-                                // } else {
-                                //   toast(
-                                //     <Toast
-                                //       text={"Add product Image"}
-                                //       type="danger"
-                                //     />
-                                //   );
-                                // }
                                 setShowCustomiseOrder(true);
                               }}
                               text={"Price:"}
                             />
                             <Styles
                               handleEditStylePrice={handleEditStylePrice}
-                              data={selectedStyles}
+                              data={formik.values.styles}
                               price={productFormData.productPrice}
                             />
                           </div>
                         </div>
                       }
                     />
+
                     <SingleCustomzeCard
                       text={"Additional Component"}
                       children={
@@ -1121,11 +1115,10 @@ const AddProduct = () => {
                       }
                     />
                   </div>
-
                   <div>
                     <div className="my-4">
                       <Button
-                        loading={isLoading}
+                        loading={formik.isSubmitting}
                         children="Save"
                         btnSize="large"
                         variant="primary"

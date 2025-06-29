@@ -20,14 +20,18 @@ const DasboardNavWithOutSearch = ({
   hideNav,
   userDetails,
 }) => {
+
   const router = useRouter();
   const [showProfile, setShowProfile] = useState(false);
   const showProfileHandler = () => {
     setShowProfile(!showProfile);
   };
 
-  console.log("userDetails", userDetails);
+  const capitalizedName = name
+    ? name.replace(/\b\w/g, (char) => char.toUpperCase())
+    : "";
 
+  console.log(capitalizedName)
   return (
     <div className="">
       <div
@@ -55,7 +59,7 @@ const DasboardNavWithOutSearch = ({
                     textWeight="font-medium"
                     textSize="text-[18px]"
                   >
-                    {name}
+                    {capitalizedName}
                   </Typography>
                 </div>
               </div>
@@ -99,7 +103,7 @@ const DasboardNavWithOutSearch = ({
               textWeight="font-medium"
               textSize="text-[18px]"
             >
-              {name}
+              {capitalizedName}
             </Typography>
           </div>
           <div className="flex items-center justify-end gap-6">
@@ -115,8 +119,7 @@ const DasboardNavWithOutSearch = ({
                   }}
                   placeholder="Search"
                   className={`py-2 pl-12 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark focus:outline-none
-              focus:border-none border-gray-2 rounded-[12px] overflow-hidden text-sm text-font-light placeholder:font-300 bg-[#F8F9FA] 
-       `}
+              focus:border-none border-gray-2 rounded-[12px] overflow-hidden text-sm text-font-light placeholder:font-300 bg-[#F8F9FA]`}
                 />
               </div>
             )}

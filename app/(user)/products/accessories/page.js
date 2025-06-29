@@ -32,12 +32,15 @@ import moment from "moment";
 // redux
 import { useAppSelector } from "@/redux/store";
 import { activeCheck } from "@/utils/helper";
+import AccessoriesTable from "@/components/Products/AccessoriesTable";
+import AddAcessories from "@/components/Products/Accessories";
 
 const Products = () => {
   const filterData = useAppSelector((state) => state.filter.state);
   const router = useRouter();
   const pathname = usePathname();
   const [viewCustomerDetails, setCustomerDetails] = useState(false);
+  const [showAddAccessoriesModal, setShowAddAccessoriesModal] = useState(true);
   const [showHostory, setShowHistory] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);
@@ -125,7 +128,7 @@ const Products = () => {
       } else {
         toast(<Toast text={response.message} type="danger" />);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const handleFilterData = (data) => {
@@ -149,6 +152,8 @@ const Products = () => {
     );
   };
 
+  const submitAcessories = async () => { }
+
   useEffect(() => {
     handleFilterData(filterData);
   }, [filterData]);
@@ -164,13 +169,13 @@ const Products = () => {
         .split("/")[0]
         .charAt(0)
         .toUpperCase() +
-        pathname
-          .split("/")
-          .filter(Boolean)
-          .slice(1)
-          .join("/")
-          .split("/")[0]
-          .slice(1)
+      pathname
+        .split("/")
+        .filter(Boolean)
+        .slice(1)
+        .join("/")
+        .split("/")[0]
+        .slice(1)
     );
   }, [isLoading]);
   return (
@@ -186,10 +191,9 @@ const Products = () => {
                   <Button
                     children={
                       <span className="flex justify-center items-center ">
-                        <span>Import</span>{" "}
+                        <span>Import</span>
                         <span className="hidden lg:block ml-[2px]">
-                          {" "}
-                          Product
+                          accessory
                         </span>
                         <Image src={importIcon} className="ml-4" alt="" />
                       </span>
@@ -197,8 +201,7 @@ const Products = () => {
                     btnSize="small"
                     variant="outline"
                     clickHandler={() => {
-                      router.push("/add");
-                      clearProductId();
+                      setShowAddAccessoriesModal(true)
                     }}
                   />
                 </div>
@@ -206,7 +209,7 @@ const Products = () => {
                   <Button
                     children={
                       <span className="flex justify-center items-center">
-                        <span>New product</span>
+                        <span>New accessory</span>
                         <Image src={addIcon} className="ml-4" alt="" />
                       </span>
                     }
@@ -214,8 +217,7 @@ const Products = () => {
                     minWidth="lg:min-w-[14rem]"
                     variant="primary"
                     clickHandler={() => {
-                      router.push("/add");
-                      clearProductId();
+                      setShowAddAccessoriesModal(true)
                     }}
                   />
                 </div>
@@ -304,12 +306,12 @@ const Products = () => {
                         setValue={(startDate, endDate) => {
                           handleFilterWithDate(startDate, endDate);
                         }}
-                        // zIndex={100}
+                      // zIndex={100}
                       />
                     </div>
                   </div>
                 </div>
-                <ProductTable
+                <AccessoriesTable
                   data={filteredProduct}
                   showModal={showModal}
                   statusChangeHandler={toggleStatus}
@@ -320,30 +322,25 @@ const Products = () => {
             </div>
           )}
         </div>
-        <Modal
-          show={viewCustomerDetails}
-          content={
-            <>
-              {viewCustomerDetails && (
-                <CustomerDetails
-                  topNavData={topNavData}
-                  closeModal={closeModal}
-                />
-              )}
-            </>
-          }
-        ></Modal>
-        <Modal
-          show={showHostory}
-          content={
-            <>
-              {showHostory && (
-                <OrderHistory topNavData={topNavData} closeModal={closeModal} />
-              )}
-            </>
-          }
-        ></Modal>
+
+
       </div>
+      <Modal
+      
+        show={showAddAccessoriesModal}
+        content={
+          <>
+            {showAddAccessoriesModal && (
+              <AddAcessories
+                submitAcessories={submitAcessories}
+                closeModal={() => {
+                  setShowAddAccessoriesModal(false);
+                }}
+              />
+            )}
+          </>
+        }
+      ></Modal>
     </section>
   );
 };
