@@ -54,7 +54,6 @@ const AddProduct = () => {
       productImage: [],
       styles: []
     },
-
     validationSchema: object().shape({
       productName: string().required("Product name is required"),
       productStatus: string().required("Status is required"),
@@ -93,16 +92,12 @@ const AddProduct = () => {
             "67c9a406db0c68345ea9bcf1", "67c9a424db0c68345ea9bcf7"
           ],
 
-          // "fabrics": [
-          //   "67c5b44db744ede73b052514"
-          // ],
+
           customStyles: positionStyles,
 
           fabrics: [],
           accessories: [],
-          // "accessories": [
-          //   "674b4c0c6754bcc1207247be"
-          // ],
+
           "isFeatured": false,
           "pickupAvailable": false,
           "sizeOptions": [
