@@ -59,7 +59,7 @@ const ProductDetails = () => {
         productTag: response.data.data.tag,
         description: response.data.data.description,
         productQuantity: response.data.data.quantity,
-        productCategory: response.data.data.categories.map((item) => {
+        productCategory: response.data.data.subcategories.map((item) => {
           return item.name;
         }),
         productType: response.data.data.type,

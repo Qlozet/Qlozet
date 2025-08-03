@@ -66,7 +66,7 @@ const AddProduct = () => {
       category: array().of(string().required("Category is required")),
       productType: string().required("Type is required"),
       pricing: string().required("Pricing name is required"),
-      discount: string().required("Discount name is required"),
+      discount: string().optional(),
       productImage: array().of(
         object().shape({
           secure_url: string().required("Secure url is required"),
@@ -79,8 +79,8 @@ const AddProduct = () => {
       try {
         const payload = {
           "name": values.productName,
-          "price": 40000,
-          "discountedPrice": 32000,
+          "price": formik.values.pricing,
+          "discountedPrice": formik.values.discount,
           "description": formik.values.productDes,
           "quantity": 23,
           images: values.productImage,
@@ -92,6 +92,7 @@ const AddProduct = () => {
           "subcategories": [
             "67c9a406db0c68345ea9bcf1", "67c9a424db0c68345ea9bcf7"
           ],
+
           // "fabrics": [
           //   "67c5b44db744ede73b052514"
           // ],
@@ -713,6 +714,7 @@ const AddProduct = () => {
       );
       if (response.status === 200) {
         setCategories(
+
           response?.data?.data.map((item) => {
             return {
               text: item.name,
@@ -725,6 +727,7 @@ const AddProduct = () => {
       }
     } catch (error) { }
   };
+
 
   useEffect(() => {
     localStorage.removeItem("styleTypes");

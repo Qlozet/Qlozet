@@ -1,0 +1,45 @@
+{
+    "name": "Test Product",
+    "price": 40000,
+    "discountedPrice": 32000,
+    "description": "<p>escription</p>",
+    "quantity": 23,
+    "images": [
+        {
+            "asset_id": "58f6571fdf251da4733a222f1095a686",
+            "public_id": "bewka1jolusjbemxnye3",
+            "secure_url": "https://res.cloudinary.com/dfnmx7vgc/image/upload/v1754222519/bewka1jolusjbemxnye3.jpg"
+        }
+    ],
+    "isCustomizable": false,
+    "isDesigned": false,
+    "colors": [
+        "#808080"
+    ],
+    "status": false,
+    "discount": 0,
+    "subcategories": [
+        "67c9a406db0c68345ea9bcf1",
+        "67c9a424db0c68345ea9bcf7"
+    ],
+    "customStyles": [],
+    "fabrics": [],
+    "accessories": [],
+    "isFeatured": false,
+    "pickupAvailable": false,
+    "sizeOptions": [
+        {
+            "size": "XL",
+            "quantityAvailable": 100
+        }
+    ],
+    "type": "customizable",
+    "isPromo": true,
+    "isVariantAvailable": false,
+    "tribes": [],
+    "bodyFit": [],
+    "occassion": [],
+    "isOnSale": true,
+    "usdPrice": 100,
+    "productStatus": "draft"
+}
