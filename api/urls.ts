@@ -1,0 +1,1 @@
+export const BASE_URL: string = 'https://qlozet-d25f73468b6d.herokuapp.com/api';

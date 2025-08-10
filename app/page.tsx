@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import HomePageHeader from "@/components/Header";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import Footer from "@/components/Footer";
 import headerImage from "../public/assets/image/headerImage.jpg";
 import VideoContainer from "@/components/VideoContainer/VideoContainer";
@@ -20,11 +20,20 @@ import card3 from "../public/assets/image/card3.png";
 import Typography from "@/components/Typography";
 import Button from "@/components/Button";
 
-import classes from "./index.module.css"
+import classes from "./index.module.css";
 import BrandPartners from "@/components/BrandPartners";
+import React from "react";
 
-export default function Home() {
-  const designersImage = [
+// Type definition for the objects in the designersImage array.
+// This ensures type safety and provides autocompletion for properties.
+interface DesignerCard {
+  image: StaticImageData; // Use StaticImageData for imported image files.
+  title: string;
+  description: string;
+}
+
+const Home: React.FC = () => {
+  const designersImage: DesignerCard[] = [
     {
       image: card1,
       title: "Get started fast",
@@ -44,13 +53,15 @@ export default function Home() {
         "With the help of Qlozet, Garm Island sells their Iconic street wars direct to customers around the world.",
     },
   ];
+
   useEffect(() => {
     // router.push("/auth/signin");
   }, []);
 
   return (
     <main className="m-auto">
-      <div className={` ${classes.heroContainer}`}
+      <div
+        className={` ${classes.heroContainer}`}
         style={{
           backgroundImage: `url(${headerImage.src})`,
         }}
@@ -61,9 +72,9 @@ export default function Home() {
             <Typography
               textColor={"text-white"}
               align={"text-left"}
-              className={"font-bold text-3xl lg:font-[600] lg:text-[64px] "} >
+              className={"font-bold text-3xl lg:font-[600] lg:text-[64px] "}
+            >
               Welcome to Qlozet
-
             </Typography>
             <Typography
               textColor={"text-white"}
@@ -71,17 +82,20 @@ export default function Home() {
               align={"text-left"}
               textSize="text-[20px]"
             >
-              We are the driving force behind the dreams of emerging designers and tailors entrepreneurs
+              We are the driving force behind the dreams of emerging designers
+              and tailors entrepreneurs
             </Typography>
-            <div> <Button
-              loading={false}
-              children="SELL WITH US"
-              btnSize="large"
-              variant="outline"
-              className="bg-white w-[144px]   text-xs font-bold"
-              clickHandler={() => {
-              }}
-            /></div>
+            <div>
+              {" "}
+              <Button
+                loading={false}
+                children="SELL WITH US"
+                btnSize="large"
+                variant="outline"
+                className="bg-white w-[144px]   text-xs font-bold"
+                clickHandler={() => {}}
+              />
+            </div>
           </div>
           <div className="bg-[#F4F4F4] rounded-tr-[40px] rounded-tl-[40px] lg:rounded-tr-[100px] lg:rounded-tl-[100px] pt-[138px] flex flex-col gap-4">
             <HeaderSection
@@ -102,19 +116,26 @@ export default function Home() {
               <Image
                 className="h-full w-full"
                 src={section2Image}
+                alt="Flexible Selling Options"
                 unoptimized
               />
             </div>
             <DownPointer />
             <HeaderSection
               title={"Hassle-Free Logistics"}
-              text={`Let Qlozet handle the logistics and delivery process, 
+              text={`Let Qlozet handle the logistics and a delivery process, 
                 saving you time and effort in managing shipping and order fulfillment.`}
             />
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-8 w-full
-             lg:w-[927px] mx-auto">
-              <Image src={shippingcompanyImage} />
-              <Image src={image2} className="w-full lg:w-[405px] h-auto lg:h-[404px]" />
+            <div
+              className="flex flex-col lg:flex-row items-center justify-between gap-8 w-full
+             lg:w-[927px] mx-auto"
+            >
+              <Image src={shippingcompanyImage} alt="Shipping Partners" />
+              <Image
+                src={image2}
+                alt="Logistics"
+                className="w-full lg:w-[405px] h-auto lg:h-[404px]"
+              />
             </div>
             <HeaderSection
               title={"Hassle-Free Logistics"}
@@ -122,9 +143,19 @@ export default function Home() {
                 saving you time and effort in managing shipping and order fulfillment.`}
             />
             <div className="flex items-center justify-center gap-8 w-full lg:max-w-[1206px] mx-auto">
-              <Image src={dashboardImage} unoptimized />
-              <Image src={dashboardImage1} unoptimized className="hidden lg:block" />
-              <Image src={dashboardImage} unoptimized className="hidden lg:block" />
+              <Image src={dashboardImage} alt="Dashboard Preview 1" unoptimized />
+              <Image
+                src={dashboardImage1}
+                alt="Dashboard Preview 2"
+                unoptimized
+                className="hidden lg:block"
+              />
+              <Image
+                src={dashboardImage}
+                alt="Dashboard Preview 3"
+                unoptimized
+                className="hidden lg:block"
+              />
             </div>
             <DownPointer />
             <HeaderSection
@@ -134,8 +165,11 @@ export default function Home() {
             />
             <div className=" grid grid-cols-1 lg:grid-cols-3  gap-8 w-full lg:w-[1206px] mx-auto">
               {designersImage.map((item, index) => (
-                <div className={`flex flex-col items-center justify-center`} key={index}>
-                  <Image src={item.image} unoptimized />
+                <div
+                  className={`flex flex-col items-center justify-center`}
+                  key={index}
+                >
+                  <Image src={item.image} alt={item.title} unoptimized />
                   <div className="flex flex-col gap-3 mt-4 items-center justify-center lg:item-start lg:justify-start">
                     <Typography
                       textWeight="font-normal"
@@ -161,18 +195,10 @@ export default function Home() {
           </div>
         </div>
       </div>
-      {/* <div>
-        <Typography
-          textWeight="font-normal"
-          align={"text-center"}
-          textSize="text-[46px]"
-        >
-          Free from our brand partners
-        </Typography>
-      </div> */}
-
       <BrandPartners />
       <Footer />
     </main>
   );
-}
+};
+
+export default Home;
