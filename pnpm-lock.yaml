@@ -150,6 +150,9 @@ importers:
         specifier: ^1.6.1
         version: 1.6.1
     devDependencies:
+      '@types/chart.js':
+        specifier: ^4.0.1
+        version: 4.0.1
       '@types/node':
         specifier: ^24.2.1
         version: 24.2.1
@@ -589,6 +592,10 @@ packages:
 
   '@tiptap/starter-kit@2.12.0':
     resolution: {integrity: sha512-wlcEEtexd6u0gbR311/OFZnbtRWU97DUsY6/GsSQzN4rqZ7Ra6YbfHEN5Lutu+I/anomK8vKy8k9NyvfY5Hllg==}
+
+  '@types/chart.js@4.0.1':
+    resolution: {integrity: sha512-OwXJ6Eg14eFpCsTG6sljiGnvVpit5R9rapG7nwDnQlljsdplVIOYVuCSwy07IduCtihrOwvOnbhXKLyp3nvPcw==}
+    deprecated: This is a stub types definition. chart.js provides its own type definitions, so you do not need this installed.
 
   '@types/hoist-non-react-statics@3.3.6':
     resolution: {integrity: sha512-lPByRJUer/iN/xa4qpyL0qmL11DqNW81iU/IG1S3uvRUq4oKagz8VCxZjiWkumgt66YT3vOdDgZ0o32sGKtCEw==}
@@ -2241,6 +2248,10 @@ snapshots:
       '@tiptap/extension-text': 2.12.0(@tiptap/core@2.12.0(@tiptap/pm@2.12.0))
       '@tiptap/extension-text-style': 2.12.0(@tiptap/core@2.12.0(@tiptap/pm@2.12.0))
       '@tiptap/pm': 2.12.0
+
+  '@types/chart.js@4.0.1':
+    dependencies:
+      chart.js: 4.4.8
 
   '@types/hoist-non-react-statics@3.3.6':
     dependencies:

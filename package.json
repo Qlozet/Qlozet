@@ -58,6 +58,7 @@
     "yup": "^1.6.1"
   },
   "devDependencies": {
+    "@types/chart.js": "^4.0.1",
     "@types/node": "^24.2.1",
     "@types/react": "^19.1.9",
     "autoprefixer": "^10.0.1",

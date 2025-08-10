@@ -1,4 +1,6 @@
-const ChatLabel = () => {
+import React from 'react';
+
+const ChatLabel: React.FC = () => {
   return (
     <div className="flex items-center justify-center gap-10 ">
       <div className="flex items-center gap-3">
