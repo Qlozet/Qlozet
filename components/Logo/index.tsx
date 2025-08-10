@@ -1,19 +1,26 @@
 import Image from "next/image";
 import brownLogo from "../../public/assets/image/logobrown.png";
 import whiteLogo from "../../public/assets/image/logowhite.png";
+import React from "react";
 
-const Logo = ({ brown }) => {
+// Define the props interface for the Logo component
+interface LogoProps {
+  brown?: boolean;
+}
+
+const Logo: React.FC<LogoProps> = ({ brown }) => {
   return (
     <div>
       {brown ? (
         <div className="items-center justify-center lg:justify-start flex">
           <Image
             src={brownLogo}
-            alt=""
+            alt="Qlozet Logo"
             style={{
               width: "100px",
               height: "auto",
             }}
+            priority
           />
         </div>
       ) : (
@@ -21,21 +28,23 @@ const Logo = ({ brown }) => {
           <div className="items-center justify-center lg:justify-start hidden lg:flex">
             <Image
               src={brownLogo}
-              alt=""
+              alt="Qlozet Logo"
               style={{
                 width: "100px",
                 height: "auto",
               }}
+              priority
             />
           </div>
           <div className="items-center justify-center lg:justify-start flex lg:hidden">
             <Image
               src={whiteLogo}
-              alt=""
+              alt="Qlozet Logo"
               style={{
                 width: "100px",
                 height: "auto",
               }}
+              priority
             />
           </div>
         </div>

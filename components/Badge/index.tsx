@@ -1,8 +1,13 @@
 import React from "react";
-import Typography from "../Typography";
-const Badge = ({ variant, children, ...rest }) => {
+
+// Define the props interface for the Badge component
+interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant: 'success' | 'danger' | 'warning';
+  children: React.ReactNode;
+}
+
+const Badge: React.FC<BadgeProps> = ({ variant, children, ...rest }) => {
   let variantClasses = "";
-  let sizeClasses = "";
 
   switch (variant) {
     case "success":

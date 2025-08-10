@@ -1,6 +1,21 @@
 import React from "react";
 import { motion } from "framer-motion";
-const Button = ({
+
+// Define the props interface for the Button component
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant: 'primary' | 'outline' | 'danger';
+  children: React.ReactNode;
+  btnSize?: 'large' | 'small';
+  disabled?: boolean;
+  clickHandler?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  maxWidth?: string;
+  minWidth?: string;
+  loading?: boolean;
+  className?: string;
+  paddingVertical?: string;
+}
+
+const Button: React.FC<ButtonProps> = ({
   variant,
   children,
   btnSize,
@@ -55,7 +70,7 @@ const Button = ({
         } flex items-center justify-center gap-4 rounded-lg ${minWidth} ${maxWidth} ${variantClasses} ${sizeClasses} text-sm  ${loading && "cursor-not-allowed"
         } ${className}`}
       {...rest}
-      disabled={loading ? true : false}
+      disabled={loading ? true : disabled}
       onClick={clickHandler}
     >
       {!loading ? children : "Loading..."}
