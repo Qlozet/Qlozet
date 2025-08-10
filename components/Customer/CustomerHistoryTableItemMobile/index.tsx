@@ -1,8 +1,17 @@
+import React from 'react';
 import OrderStatus from "@/components/order/OrderStatus";
+import Typography from "@/components/Typography";
 
-const { default: Typography } = require("@/components/Typography");
+interface CustomerHistoryTableItemProps {
+  item: {
+    transactionId: string;
+    amount: string;
+    // Add other properties of item if available
+  };
+  index: number;
+}
 
-const CustomerHistoryTableItem = ({ item, index }) => {
+const CustomerHistoryTableItem: React.FC<CustomerHistoryTableItemProps> = ({ item, index }) => {
   return (
     <div className="p-4 bg-white" key={index}>
       <div className="flex justify-between items-center">

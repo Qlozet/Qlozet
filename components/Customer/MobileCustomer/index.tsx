@@ -4,6 +4,7 @@ import Typography from "@/components/Typography";
 import Button from "@/components/Button";
 import Image from "next/image";
 import { setCustomerId } from "@/utils/localstorage";
+
 const MobileCutomerItem = ({
   picture,
   customerName,
@@ -22,7 +23,7 @@ const MobileCutomerItem = ({
         <div className=" w-full flex flex-col  justify-between py-5 pr-4">
           <div className="flex items-center gap-3">
             <div className="w-[2rem] h-[2rem] bg-primary rounded-[12px] flex items-center justify-center">
-              <Image src={exportIcon} />
+              <Image src={exportIcon} alt="export icon" />
             </div>
             <Typography
               textColor="text-black"

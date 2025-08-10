@@ -2,6 +2,7 @@ import Image from "next/image";
 import closeIcon from "../../../public/assets/svg/material-symbols_close-rounded.svg";
 import Typography from "../../Typography";
 import classes from "./index.module.css";
+
 const OrderDetailNav = ({
   active,
   data,
