@@ -1,10 +1,18 @@
-const CheckBoxInput = ({ value, handleChange, label }) => {
+import React from 'react';
+
+interface CheckBoxInputProps {
+  value: boolean;
+  handleChange: (checked: boolean) => void;
+  label: string;
+}
+
+const CheckBoxInput: React.FC<CheckBoxInputProps> = ({ value, handleChange, label }) => {
   return (
     <div className="flex items-center gap-4">
       <input
         type="checkbox"
         checked={value}
-        onChange={(e) => {
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           handleChange(e.target.checked);
         }}
         className="accent-primary focus:accent-primary w-[16px] h-[16px] p-[10px] cursor-pointer border-primary border-solid bg-gray-400 text-primary border-[2px] rounded ring-0 ring-white focus:ring-white"
