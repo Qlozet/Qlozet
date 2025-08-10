@@ -52,9 +52,10 @@ export const clearProductId = (): boolean => {
   return true;
 };
 
-export const setCustomerId = (data: string): void => {
-  localStorage.setItem(CUSTOMER_KEY, JSON.stringify(data));
-};
+interface LocalStorageHandlers {
+  getCustomerId: () => string | null;
+  setCustomerId: (id: string) => void;
+}
 
 export const getCustomerId = (): string | null => {
   const data = localStorage.getItem(CUSTOMER_KEY);

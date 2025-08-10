@@ -1,9 +1,22 @@
-import threeDotIcon from "../../../public/assets/svg/three-dot.svg";
+import React from 'react';
 import Image from "next/image";
 import moment from "moment";
 import OrderStatus from "../../order/OrderStatus";
 import { setCustomerId } from "@/utils/localstorage";
-const CustomerTableItem = ({
+
+interface CustomerTableItemProps {
+  picture: string;
+  customerName: string;
+  status: { text: string; bgColor: string; color: string };
+  totalOrders: number;
+  lastOrderDate: string;
+  phone: string;
+  emailAddress: string;
+  viewDetails: (customerId: string) => void;
+  customerId: string;
+}
+
+const CustomerTableItem: React.FC<CustomerTableItemProps> = ({
   picture,
   customerName,
   status,
@@ -26,12 +39,10 @@ const CustomerTableItem = ({
             width: "2rem",
             height: "auto",
           }}
-          alt=""
+          alt={`${customerName}'s profile picture`}
         />
       </td>
       <td className="text-xs font-normal py-3 px-2 text-dark ">{customerName}</td>
-      {/* <td className="text-xs font-normal py-3 px-2 text-dark">{emailAddress}</td>
-      <td className="text-xs font-normal py-3 px-2 text-dark">{phone}</td> */}
       <td className="text-xs font-normal py-3 px-2 text-dark">{totalOrders}</td>
       <td className="text-xs font-normal py-3 px-2 text-dark">
         {moment(date).format("DD/MM/YYYY")}
@@ -58,7 +69,6 @@ const CustomerTableItem = ({
           />
         </div>
       </td>
-      {/* <Modal content={<OrderDetails />}></Modal> */}
     </tr>
   );
 };

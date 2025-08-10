@@ -1,11 +1,23 @@
-import icon from "../../../public/assets/svg/Icon container.svg";
-import exportIcon from "../../../public/assets/svg/Content.svg";
+import React from 'react';
+import Image from "next/image";
 import Typography from "@/components/Typography";
 import Button from "@/components/Button";
-import Image from "next/image";
 import { setCustomerId } from "@/utils/localstorage";
+import exportIcon from "../../../public/assets/svg/Content.svg"; // Assuming this is the correct path
 
-const MobileCutomerItem = ({
+interface MobileCustomerItemProps {
+  picture: string;
+  customerName: string;
+  status: { text: string; bgColor: string; color: string };
+  totalOrders: number;
+  lastOrderDate: string;
+  phone: string;
+  emailAddress: string;
+  viewDetails: (customerId: string) => void;
+  customerId: string;
+}
+
+const MobileCustomerItem: React.FC<MobileCustomerItemProps> = ({
   picture,
   customerName,
   status,
@@ -23,7 +35,7 @@ const MobileCutomerItem = ({
         <div className=" w-full flex flex-col  justify-between py-5 pr-4">
           <div className="flex items-center gap-3">
             <div className="w-[2rem] h-[2rem] bg-primary rounded-[12px] flex items-center justify-center">
-              <Image src={exportIcon} alt="export icon" />
+              <Image src={exportIcon} alt="Export Icon" />
             </div>
             <Typography
               textColor="text-black"
@@ -66,4 +78,4 @@ const MobileCutomerItem = ({
   );
 };
 
-export default MobileCutomerItem;
+export default MobileCustomerItem;

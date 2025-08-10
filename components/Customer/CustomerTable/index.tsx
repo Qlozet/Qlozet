@@ -1,15 +1,35 @@
+import React from 'react';
+import Image from "next/image";
 import { handleExport } from "@/utils/helper";
 import ExportComponent from "../../ExportButton";
 import icon from "../../../public/assets/svg/Icon container.svg";
 import exportIcon from "../../../public/assets/svg/Content.svg";
 import CustomerTableItem from "../CustomerTableItem";
 import DropDown from "@/components/DropDown";
-import Image from "next/image";
 import SearchInput from "@/components/SearchInput";
 import Typography from "@/components/Typography";
-import Button from "@/components/Button";
 import MobileCutomerItem from "../MobileCustomer";
-const CustomerTable = ({
+
+interface CustomerTableItemData {
+  picture: string;
+  customerName: string;
+  status: { text: string; bgColor: string; color: string };
+  totalOrders: number;
+  lastOrderDate: string;
+  phone: string;
+  emailAddress: string;
+  customerId: string;
+}
+
+interface CustomerTableProps {
+  data: CustomerTableItemData[];
+  viewDetails: (customerId: string) => void;
+  showModal: (customerId: string) => void;
+  handleFilterData: (data: string) => void;
+  handleFilterWithDate: (startDate: string, endDate: string) => void;
+}
+
+const CustomerTable: React.FC<CustomerTableProps> = ({
   data,
   viewDetails,
   showModal,
@@ -31,16 +51,6 @@ const CustomerTable = ({
                 Customer name
               </div>
             </th>
-            {/* <th className="w-[8%] px-2 py-3 text-xs">
-              <div className="flex items-center justify-start font-medium  text-dark">
-                Email address
-              </div>
-            </th>
-            <th className="w-[8%] px-2 py-3 text-xs">
-              <div className="flex items-center justify-start font-medium  text-dark">
-                Phone number
-              </div>
-            </th> */}
             <th className="w-[8%] px-2 py-3 text-xs">
               <div className="flex items-center justify-start font-medium  text-dark">
                 Total orders
@@ -81,13 +91,14 @@ const CustomerTable = ({
             <div className="w-[70%] block">
               <SearchInput
                 placeholder="Search"
-                setValue={(data) => {
-                  handleFilterData(data);
+                setValue={(val) => {
+                  handleFilterData(val);
                 }}
+                value={''} // Provide a default value or manage state for SearchInput
               />
             </div>
             <div className="flex items-center justify-center">
-              <Image src={icon} alt="" />
+              <Image src={icon} alt="Filter Icon" />
             </div>
             <div className="flex items-center justify-center">
               <div
@@ -96,7 +107,7 @@ const CustomerTable = ({
                   handleExport(data);
                 }}
               >
-                <Image src={exportIcon} alt="" />
+                <Image src={exportIcon} alt="Export Icon" />
               </div>
             </div>
           </div>
@@ -110,18 +121,21 @@ const CustomerTable = ({
             </Typography>
             <DropDown
               data={[
-                "This week",
-                "Last week",
-                "This month",
-                "Last month",
-                "Choose month",
-                "Custom",
+                { id: "this-week", text: "This week" },
+                { id: "last-week", text: "Last week" },
+                { id: "this-month", text: "This month" },
+                { id: "last-month", text: "Last month" },
+                { id: "choose-month", text: "Choose month" },
+                { id: "custom", text: "Custom" },
               ]}
               maxWidth={"max-w-[8rem]"}
               placeholder="Time Range"
-              setValue={(startDate, endDate) => {
-                handleFilterWithDate(startDate, endDate);
+              setValue={(text, id) => {
+                // Assuming DropDown setValue passes text and id
+                // You might need to adjust handleFilterWithDate to accept these
+                handleFilterWithDate(text, id as string);
               }}
+              value={''} // Provide a default value or manage state for DropDown
             />
           </div>
           <div>

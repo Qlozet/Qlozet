@@ -1,6 +1,18 @@
+import React from 'react';
 import Image from "next/image";
 import OrderStatus from "../../order/OrderStatus";
-const HistoryTableItem = ({
+
+interface HistoryTableItemProps {
+  id: string;
+  date: string;
+  productName: string;
+  productPrice: string;
+  AmountPaid: string;
+  DeliveryStatus: string;
+  modal: () => void;
+}
+
+const HistoryTableItem: React.FC<HistoryTableItemProps> = ({
   id,
   date,
   productName,

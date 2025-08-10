@@ -1,7 +1,23 @@
+import React from 'react';
 import Typography from "@/components/Typography";
 import OrderStatus from "../OrderStatus";
 
-const MobileTableItem = ({ item }) => {
+interface DeliveryStatus {
+  name: string;
+  bg: string;
+  text: string;
+}
+
+interface MobileTableItemProps {
+  item: {
+    orderId: string;
+    AmountPaid: string;
+    DeliveryStatus: DeliveryStatus;
+    productName: string;
+  };
+}
+
+const MobileTableItem: React.FC<MobileTableItemProps> = ({ item }) => {
   return (
     <div className="">
       <div className="flex justify-between items-center bg-white py-6 px-4 border-b-[.5px] border-gray-300 border-solid ">

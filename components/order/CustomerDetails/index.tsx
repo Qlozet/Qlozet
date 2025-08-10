@@ -1,11 +1,23 @@
-import OrderDetailNav from "../../order/OrderdetailsNav";
+import React from 'react';
+import OrderDetailNav from "./OrderdetailsNav";
 import Image from "next/image";
 import Typography from "../../Typography";
 
-const CustomerDetails = ({ topNavData, closeModal, customer }) => {
+interface CustomerData {
+  picture: string;
+  customerName: string;
+  // Add other customer properties as needed
+}
+
+interface CustomerDetailsProps {
+  topNavData: any[]; // Define a more specific type if possible
+  closeModal: () => void;
+  customer: CustomerData;
+}
+
+const CustomerDetails: React.FC<CustomerDetailsProps> = ({ topNavData, closeModal, customer }) => {
   return (
     <div className="w-full h-full">
-
       <div className="p-4 rounded-b-[8px] bg-white max-w-[618px] mt-8 mx-auto">
         <OrderDetailNav
           active="Customer details"
@@ -86,16 +98,6 @@ const CustomerDetails = ({ topNavData, closeModal, customer }) => {
 
         <div className="flex justify-end items-center gap-5  ">
           <div className="mt-10 flex items-center justify-end"></div>
-          {/* <div className="mt-10 flex items-center justify-end">
-          <Button
-            children="Close"
-            btnSize="large"
-            variant="primary"
-            clickHandler={closeModal}
-            maxWidth="max-w-[14rem]"
-            minWidth="w-[9rem]"
-          />
-        </div> */}
         </div>
       </div>
     </div>

@@ -1,8 +1,17 @@
+import React from 'react';
 import OrderStatus from "@/components/order/OrderStatus";
+import Typography from "@/components/Typography";
 
-const { default: Typography } = require("@/components/Typography");
+interface CustomerMobileHistoryProps {
+  history: {
+    transactionId: string;
+    amount: string;
+    // Add other properties of history if available
+  };
+  index: number;
+}
 
-const CustomerMobileHistory = ({ history, index }) => {
+const CustomerMobileHistory: React.FC<CustomerMobileHistoryProps> = ({ history, index }) => {
   return (
     <div className="p-4 bg-white" key={index}>
       <div className="flex justify-between items-center">
@@ -19,7 +28,7 @@ const CustomerMobileHistory = ({ history, index }) => {
             textWeight="font-normal"
             textSize=""
           >
-            {"12345678"}
+            {history.transactionId}
           </Typography>
           <Typography
             textColor="text-gray-200"
@@ -33,7 +42,7 @@ const CustomerMobileHistory = ({ history, index }) => {
             textWeight="font-normal"
             textSize=""
           >
-            {"12345678"}
+            {history.amount}
           </Typography>
         </div>
         <div className="flex flex-col items-end">
