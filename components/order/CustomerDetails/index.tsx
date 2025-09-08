@@ -1,5 +1,5 @@
 import React from 'react';
-import OrderDetailNav from "./OrderdetailsNav";
+import OrderDetailNav from "../OrderdetailsNav";
 import Image from "next/image";
 import Typography from "../../Typography";
 

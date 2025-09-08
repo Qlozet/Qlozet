@@ -2,6 +2,7 @@ import { postRequest } from "@/api/method";
 import Toast from "@/components/ToastComponent/toast";
 import exportFromJSON from "export-from-json";
 import toast from "react-hot-toast";
+import { ValidationResult } from "@/types";
 
 export const handlerContainsNumber = (str: string): boolean => {
   const regex = /\d/;
@@ -13,17 +14,12 @@ export const handleContainsSymbolOrCharacter = (str: string): boolean => {
   return regex.test(str);
 };
 
-interface ValidationResult {
-  status: boolean;
-  data: { [key: string]: boolean };
-  id?: string;
-}
-
 export const validator = (formData: { [key: string]: any }, requiredFormData: { [key: string]: any }): ValidationResult => {
-  let firstErrorId: string | undefined;
+  let firstErrorId: string | undefined = undefined;
   let result: ValidationResult = {
     status: true,
     data: {},
+    id: undefined,
   };
 
   for (const key in formData) {
@@ -62,9 +58,9 @@ export const calculatePrice = (data: Priceable[]): number => {
 };
 
 export const handleExport = (data: any[]): void => {
-  const fileName = "download";
-  const exportType = exportFromJSON.types.csv;
-  exportFromJSON({ data, fileName, exportType });
+  const name = "download";
+  const type = "csv";
+  exportFromJSON({ data, name, type });
 };
 
 interface UploadResponse {

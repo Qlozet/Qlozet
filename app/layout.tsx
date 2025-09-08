@@ -1,0 +1,49 @@
+import "./globals.css";
+import { Toaster } from "react-hot-toast";
+import { Poppins } from "next/font/google";
+import dynamic from "next/dynamic";
+import { Metadata } from "next";
+const ReduxProvider = dynamic(() => import("@/redux/provider"), {
+  ssr: false,
+});
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
+export const metadata: Metadata = {
+  title: "Qlozet vendor",
+  description: "Cloth ecomance",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en" className="bg-gray-400">
+      <body className={poppins.className}>
+        <ReduxProvider>
+          <div className={`mx-auto relative`}>{children}</div>
+        </ReduxProvider>
+        <Toaster
+          toastOptions={{
+            duration: 5000,
+            style: {
+              padding: "0",
+              borderRadius: "0",
+              margin: "0",
+              gap: "0",
+              top: "0",
+              right: "0",
+              bottom: "0",
+              left: "0",
+              boxShadow: "none",
+              background: "transparent",
+            },
+          }}
+        />
+      </body>
+    </html>
+  );
+}

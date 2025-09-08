@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import OrderDetailNav from "./OrderdetailsNav";
+import OrderDetailNav from "../OrderdetailsNav";
 import Typography from "../../Typography";
 import Button from "../../Button";
 import CustomerDetails from "../CustomerDetails";

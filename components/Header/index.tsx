@@ -1,7 +1,6 @@
 import React from 'react';
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import style from "./index.module.css";
 import brownLogo from "../../public/assets/image/logowhite.png";
 import Button from "../Button";
 
@@ -12,7 +11,7 @@ const HomePageHeader: React.FC = () => {
     <div className="w-full mx-auto flex items-center justify-between px-4 lg:px-[87.5px] py-8">
       <Image src={brownLogo} alt="Logo" width={83} height={50} priority />
       <ul
-        className={`${style.list_container} hidden lg:flex gap-[3rem] items-center text-white font-semibold text-[13px] `}
+        className="list-none hidden lg:flex gap-[3rem] items-center text-white font-semibold text-[13px]"
       >
         <li>What we do</li>
         <li>Services</li>

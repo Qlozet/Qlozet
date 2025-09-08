@@ -13,7 +13,7 @@ export const settingNav: NavItem[] = [
       item: "Shop details",
       link: "",
       navWidth: "min-w-[7.5rem] lg:min-w-w-[0]",
-      handleFunction: (data) => {
+      handleFunction: (data: string) => {
         // This function would need to be connected to component state setters
         console.log(data);
       },
@@ -22,7 +22,7 @@ export const settingNav: NavItem[] = [
       item: "Billing and invoice",
       navWidth: "min-w-[10.5rem] lg:min-w-w-[0]",
       link: "",
-      handleFunction: (data) => {
+      handleFunction: (data: string) => {
         console.log(data);
       },
     },
@@ -30,7 +30,7 @@ export const settingNav: NavItem[] = [
       item: "Warehouses",
       navWidth: "min-w-[8rem] lg:min-w-w-[0]",
       link: "",
-      handleFunction: (data) => {
+      handleFunction: (data: string) => {
         console.log(data);
       },
     },
@@ -38,14 +38,15 @@ export const settingNav: NavItem[] = [
       item: "Users and permissions",
       link: "",
       navWidth: "min-w-[13rem] lg:min-w-w-[0]",
-      handleFunction: (data) => {
+      handleFunction: (data: string) => {
         console.log(data);
       },
     },
     {
       item: "Categories",
+      link: "",
       navWidth: "min-w-[8rem] lg:min-w-w-[0]",
-      handleFunction: (data) => {
+      handleFunction: (data: string) => {
         console.log(data);
       },
     },

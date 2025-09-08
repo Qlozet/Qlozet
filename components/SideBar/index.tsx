@@ -24,7 +24,6 @@ import vendorDefault from "../../public/assets/svg/user-octagon.svg";
 import vendorActive from "../../public/assets/svg/user-octagon-active.svg";
 import brownLogo from "../../public/assets/image/logobrown.png";
 
-import styles from "./index.module.css";
 
 interface SubPage {
   name: string;
@@ -57,7 +56,7 @@ const SideBar: React.FC<SideBarProps> = ({ active }) => {
 
   return (
     <div
-      className={`hidden lg:block bg-white fixed top-0 left-0 w-[260px] max-w-[260px] lg:min-w-[250px] h-screen ${styles.container}`}
+      className="hidden lg:block bg-white fixed top-0 left-0 w-[260px] max-w-[260px] lg:min-w-[250px] sidebar-scrollbar"
       style={{ zIndex: 950 }}
     >
       <div className="py-10 lg:px-16 md:px-4">

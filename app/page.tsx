@@ -20,7 +20,6 @@ import card3 from "../public/assets/image/card3.png";
 import Typography from "@/components/Typography";
 import Button from "@/components/Button";
 
-import classes from "./index.module.css";
 import BrandPartners from "@/components/BrandPartners";
 import React from "react";
 
@@ -61,7 +60,7 @@ const Home: React.FC = () => {
   return (
     <main className="m-auto">
       <div
-        className={` ${classes.heroContainer}`}
+        className="hero-container"
         style={{
           backgroundImage: `url(${headerImage.src})`,
         }}

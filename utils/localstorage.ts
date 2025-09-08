@@ -62,6 +62,10 @@ export const getCustomerId = (): string | null => {
   return data ? JSON.parse(data) : null;
 };
 
+export const setCustomerId = (id: string): void => {
+  localStorage.setItem(CUSTOMER_KEY, JSON.stringify(id));
+};
+
 export const clearCustomerId = (): boolean => {
   localStorage.removeItem(CUSTOMER_KEY);
   return true;

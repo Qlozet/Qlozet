@@ -1,14 +1,11 @@
-interface ValidationResult {
-  status: boolean;
-  data: { [key: string]: boolean };
-  id?: string;
-}
+import { ValidationResult } from "@/types";
 
 const validator = (formData: { [key: string]: any }, requiredFormData: { [key: string]: any }): ValidationResult => {
-  let firstErrorId: string | undefined;
+  let firstErrorId: string | undefined = undefined;
   let result: ValidationResult = {
     status: true,
     data: {},
+    id: undefined,
   };
 
   for (const key in formData) {
