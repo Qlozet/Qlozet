@@ -1,13 +1,29 @@
-"use client";
+'use client'
 
-import { Provider } from "react-redux";
-import { persistStore } from "redux-persist";
-import { store } from "./store";
-persistStore(store);
-interface ReduxProviderProps {
-  children: React.ReactNode;
-}
+import { ReactNode } from 'react'
+import {
+    // persistor,
+    store
+} from './store'
+import { Provider } from 'react-redux'
+// import { PersistGate } from 'redux-persist/integration/react'
+import { Toaster } from 'sonner'
+import NiceModal from '@ebay/nice-modal-react'
+import { TooltipProvider } from '@oolom/ui'
 
-export default function ReduxProvider({ children }: ReduxProviderProps) {
-  return <Provider store={store}>{children}</Provider>;
+export const Providers = ({ children }: { children: ReactNode }) => {
+    return (
+        <>
+            <Provider store={store}>
+                <Toaster position='top-center' richColors />
+                <NiceModal.Provider>
+                    {/* <PersistGate persistor={persistor}> */}
+                    <TooltipProvider>
+                        {children}
+                    </TooltipProvider>
+                    {/* </PersistGate> */}
+                </NiceModal.Provider>
+            </Provider>
+        </>
+    )
 }

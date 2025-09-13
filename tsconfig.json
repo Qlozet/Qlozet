@@ -31,22 +31,24 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
+      "@/*": ["./src/*"],
       "@/public/*": ["./public/*"],
-      "@/components/*": ["./components/*"],
-      "@/types/*": ["./types/*"],
-      "@/utils/*": ["./utils/*"],
-      "@/api/*": ["./api/*"],
-      "@/redux/*": ["./redux/*"]
+      "@/components/*": ["./src/components/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/utils/*": ["./src/utils/*"],
+      "@/api/*": ["./src/api/*"],
+      "@/redux/*": ["./src/redux/*"],
+      "@/patterns/*": ["./src/patterns/*"],
+      "@/app/*": ["./src/app/*"],
+      "@/lib/*": ["./src/lib/*"]
     }
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     ".next/types/**/*.ts",
-    "types/**/*.d.ts",
-    "components/AddFabricModal"
+    "src/types/**/*.d.ts"
   ],
   "exclude": ["node_modules"]
 }

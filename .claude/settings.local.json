@@ -9,7 +9,9 @@
       "Bash(npm install:*)",
       "Bash(npm view:*)",
       "Bash(npx:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(mkdir:*)",
+      "Bash(realpath:*)"
     ],
     "deny": [],
     "ask": []
