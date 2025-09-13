@@ -1,9 +1,9 @@
 import { fileURLToPath } from "node:url";
 import { createJiti } from "jiti";
-const jiti = createJiti(fileURLToPath(import.meta.url));
-import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const jiti = createJiti(fileURLToPath(import.meta.url));
+
+const nextConfig = {
   images: {
     remotePatterns: [
       {

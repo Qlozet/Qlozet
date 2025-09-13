@@ -11,7 +11,8 @@
       "Bash(npx:*)",
       "Bash(npm run build:*)",
       "Bash(mkdir:*)",
-      "Bash(realpath:*)"
+      "Bash(realpath:*)",
+      "Bash(wc:*)"
     ],
     "deny": [],
     "ask": []
