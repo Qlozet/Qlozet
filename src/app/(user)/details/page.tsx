@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useGetProductDetailsQuery } from "@/redux/services/product-details/product-details.api-slice";
 import arrowLeftIcon from "@/public/assets/svg/arrow-left.svg";
 import starIcon from "@/public/assets/svg/productdetailstar.svg";
 import heartIcon from "@/public/assets/svg/productdetailsheart.svg";
@@ -9,7 +10,6 @@ import Image from "next/image";
 import Button from "@/components/Button";
 import Typography from "@/components/Typography";
 import { getGetUserDetails, getProductId } from "@/utils/localstorage";
-import { getRequest } from "@/api/method";
 import Loader from "@/components/Loader";
 import arrowLeft from "@/public/assets/svg/arrrowLeft.svg";
 import arrowRight from "@/public/assets/svg/arrowRightt.svg";
@@ -18,85 +18,51 @@ import ProductReview from "@/components/Products/ReviewComponent";
 
 const ProductDetails: React.FC = () => {
   const router = useRouter();
-  const [pageLoading, setPageLoading] = useState(true);
   const [showReview, setShowReview] = useState(false);
   const [vendorName, setVendorName] = useState("");
   const [number, setNumber] = useState(0);
-  const [variants, setVariants] = useState([]);
-  const [sliderImages, setSliderImages] = useState([])
-  const [productFormData, setProductFormData] = useState({
-    productName: "",
-    productPrice: "",
-    productTag: "",
-    description: "",
-    productQuantity: "",
-    productCategory: "",
-    productType: "",
-    discount: "",
-    isFeatured: false,
-    colors: [],
-    images: [],
-    likes: [],
-    reviews: [],
+  const [sliderImages, setSliderImages] = useState<string[]>([]);
+  
+  const productId = getProductId();
+  const { data: product, isLoading, error } = useGetProductDetailsQuery(productId || "", {
+    skip: !productId
   });
-  const fetchProduct = async () => {
-    const productId = getProductId();
 
-    try {
-      const response = await getRequest(`/vendor/products/${productId}`);
-      let colors = [];
-      response.data.data.colors.map((item) => {
-        colors.push(item.hex);
-      });
-      setVariants(
-        response.data.data.variants.map((item) => {
-          return item;
-        })
-      );
-      setProductFormData({
-        productName: response.data.data.name,
-        productPrice: `₦${response.data.data.price.toLocaleString()}`,
-        productTag: response.data.data.tag,
-        description: response.data.data.description,
-        productQuantity: response.data.data.quantity,
-        productCategory: response.data.data.subcategories.map((item) => {
-          return item.name;
-        }),
-        productType: response.data.data.type,
-        discount: response.data.data.discount,
-        isFeatured: 0,
-        colors: colors,
-        likes: response.data.data.likes,
-        reviews: response.data.data.reviews,
-
-
-        images: response.data.data.images.map((image) => {
-          return image?.secure_url;
-        }),
-      });
-      setSliderImages(response.data.data.images.map((image) => {
-        return image?.secure_url;
-      }))
-
-      setPageLoading(false);
-    } catch (error) {
-      setPageLoading(false);
+  // Initialize slider images and vendor name when product data loads
+  useEffect(() => {
+    if (product) {
+      setSliderImages(product.images.map(img => img.secure_url));
     }
-  };
+    const vendor = getGetUserDetails();
+    if (vendor) {
+      setVendorName(vendor.businessName);
+    }
+  }, [product]);
 
-  const handleSetSliderImageToVariantImage = (variant) => {
-    setSliderImages(variant.images.map((item) => item.secure_url))
-  }
+  const handleSetSliderImageToVariantImage = (variant: any) => {
+    setSliderImages(variant.images.map((item: any) => item.secure_url));
+  };
+  
   const handleShowReview = () => {
     setShowReview(!showReview);
   };
 
-  useEffect(() => {
-    const vendor = getGetUserDetails();
-    setVendorName(vendor.businessName);
-    fetchProduct();
-    // const
-  }, []);
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (error || !product) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">Error loading product details</p>
+          <Button onClick={() => router.push("../products")} variant="primary">
+            Back to Products
+          </Button>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="pb-8">
       <div>
@@ -216,7 +182,7 @@ const ProductDetails: React.FC = () => {
                         </div> */}
                       </div>
                       <h1 className=" lg:text-[32px] font-bold my-2 text-primary">
-                        {productFormData.productName}
+                        {product.name}
                       </h1>
                       <h2 className="block lg:hidden font-bold text-sm leading-[36px] text-primary lg:text-[#33CC33]">
                         {productFormData.quantity} Quantity
@@ -225,7 +191,7 @@ const ProductDetails: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <Image src={starIcon} alt="" width={20} height={20} />
                           <span className="font-bold text-sm leading-[20px]  pt-[2px]">
-                            {productFormData.likes.length}
+                            {product.likes?.length || 0}
                           </span>
                         </div>
                         <div className="flex items-center gap-2 ">

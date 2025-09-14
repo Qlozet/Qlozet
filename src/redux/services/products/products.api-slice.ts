@@ -81,7 +81,7 @@ export interface ProductsFilters {
 }
 
 // API slice
-export const productsApi = baseAPI.injectEndpoints({
+export const productsApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // Get all products with filters
     getProducts: builder.query<ProductsResponse, ProductsFilters>({
@@ -106,7 +106,7 @@ export const productsApi = baseAPI.injectEndpoints({
         url: `/products/${id}`,
         method: 'GET',
       }),
-      providesTags: (result, error, id) => [{ type: 'Product', id }],
+      providesTags: ['Product', 'Products'],
     }),
 
     // Create new product
@@ -126,9 +126,9 @@ export const productsApi = baseAPI.injectEndpoints({
         method: 'PUT',
         body: productData,
       }),
-      invalidatesTags: (result, error, { _id }) => [
-        { type: 'Product', id: _id },
-        { type: 'Products',},
+      invalidatesTags: [
+        'Product',
+        'Products'
       ],
     }),
 
@@ -138,9 +138,9 @@ export const productsApi = baseAPI.injectEndpoints({
         url: `/products/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [
-        { type: 'Product', id },
-        { type: 'Products' },
+      invalidatesTags: [
+        'Product',
+        'Products'
       ],
     }),
 
@@ -150,7 +150,7 @@ export const productsApi = baseAPI.injectEndpoints({
         url: '/categories',
         method: 'GET',
       }),
-      providesTags: [{ type: 'Category', id: 'LIST' }],
+      providesTags: ['Category'],
     }),
 
     // Upload product images
@@ -172,7 +172,7 @@ export const productsApi = baseAPI.injectEndpoints({
         method: 'PATCH',
         body: { productIds, status },
       }),
-      invalidatesTags: [{ type: 'Product', id: 'LIST' }],
+      invalidatesTags: ['Product'],
     }),
 
     // Get product analytics/stats
@@ -191,11 +191,6 @@ export const productsApi = baseAPI.injectEndpoints({
   }),
 });
 
-// Update base API tag types
-export const enhancedBaseAPI = baseAPI.enhanceEndpoints({
-  addTagTypes: ['Product', 'Category', 'Products'],
-});
-
 // Export hooks
 export const {
   useGetProductsQuery,
@@ -209,4 +204,4 @@ export const {
   useGetProductStatsQuery,
   useLazyGetProductsQuery,
   useLazyGetProductQuery,
-} = productsApi;
+} = productsApiSlice;

@@ -1,75 +1,65 @@
 "use client";
-import { useState, useEffect } from "react";
-import ChatCard from "@//components/Chat/ChatCard";
-import HorizontalChat from "@//components/Chat/HorizontalChart";
-import DasboardNavWithOutSearch from "@//components/DashboardNavBarWithoutSearch";
-import DashboardTopCard from "@//components/DashboardTopCard";
-import SideBar from "@//components/SideBar";
-import Notification from "@//components/Notification/NotificationComponent";
-import MobileSideBar from "@/components/MobileSideBar";
-import { getRequest } from "@/api/method";
+import React from "react";
+import { useGetNotificationsQuery } from "@/redux/services/notification/notification.api-slice";
+import Notification from "@/components/Notification/NotificationComponent";
 import Loader from "@/components/Loader";
 import Typography from "@/components/Typography";
 const NotificationPage: React.FC = () => {
-  const [showMobileNav, setShowMobileNav] = useState(false);
-  const [pageLoading, setPageLoading] = useState(true);
-  const [notification, setNotification] = useState([]);
+  const { data: notifications = [], isLoading, error } = useGetNotificationsQuery({});
 
-  const showSideBar = () => {
-    setShowMobileNav(!showMobileNav);
-  };
+  if (isLoading) {
+    return <Loader />;
+  }
 
-  const getNotification = async () => {
-    try {
-      let response = await getRequest("/vendor/notification");
-      let notificationData = [];
-      if (response?.data) {
-        setPageLoading(false);
-        response?.data?.data?.map((item) => {
-          const tableItem = {
-            id: item.id,
-            read: item.read,
-            title: item.title,
-            desc: item?.description,
-            date: item.createdAt,
-          };
-          notificationData.push(tableItem);
-        });
-        setNotification(notificationData);
-      } else {
-        toast(<Toast text={response.message} type="danger" />);
-      }
-    } catch (error) {
-      // console.er(error);
-    }
-  };
-  useEffect(() => {
-    getNotification();
-  }, []);
+  if (error) {
+    return (
+      <section>
+        <div className="flex mt-4">
+          <div className="w-full px-4">
+            <div className="flex items-center justify-center min-h-[50vh]">
+              <div className="text-center">
+                <p className="text-red-500">Error loading notifications</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section>
       <div className="flex mt-4">
-        <div className="w-full px-4 ">
-          {pageLoading ? (
-            <Loader></Loader>
-          ) : (
-            <div className="rounded-[12px] overflow-hidden">
-              <div className="p-2 flex items-center justify-between mt-4 lg:mb-4 bg-[#F4F4F4] rounded-t-[12px] lg:hidden ">
-                <Typography
-                  textColor="text-[#121212]"
-                  textWeight="font-medium"
-                  textSize="text-[14px]"
-                >
-                  Notifications
-                </Typography>
-              </div>
-              <div className="bg-white">  {notification.map((item, index) => (
-                <Notification {...item} key={index} />
-              ))}</div>
-
+        <div className="w-full px-4">
+          <div className="rounded-[12px] overflow-hidden">
+            <div className="p-2 flex items-center justify-between mt-4 lg:mb-4 bg-[#F4F4F4] rounded-t-[12px] lg:hidden">
+              <Typography
+                textColor="text-[#121212]"
+                textWeight="font-medium"
+                textSize="text-[14px]"
+              >
+                Notifications ({notifications.length})
+              </Typography>
             </div>
-          )}
+            <div className="bg-white">
+              {notifications.length > 0 ? (
+                notifications.map((item, index) => (
+                  <Notification
+                    key={item.id || index}
+                    id={item.id}
+                    read={item.read}
+                    title={item.title}
+                    desc={item.description}
+                    date={item.createdAt}
+                  />
+                ))
+              ) : (
+                <div className="p-8 text-center text-gray-500">
+                  <p>No notifications found</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </section>

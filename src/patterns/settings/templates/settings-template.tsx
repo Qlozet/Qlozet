@@ -1,97 +1,60 @@
-// Settings Page - Template
-// Page-level layout structure for settings
+// Settings Template - Template
+// Complete settings page template with navigation and content areas
 
-import React from "react";
+import React from 'react';
+import { cn } from '@/lib/utils';
+import { SettingsNavigation } from '../molecules/settings-navigation';
+import { SettingsContent } from '../organisms/settings-content';
 
-interface SettingsTemplateProps {
-  loading: boolean;
-  currentNav: string;
-  shopDetails: any;
-  settingsNavigation: Array<{
-    item: string;
-    link: string;
-    handleFunction: () => void;
-  }>;
-  handlers: {
-    onNavChange: (navItem: string) => void;
-    onSaveShopDetails: (details: any) => void;
-    onUpdateSettings: (section: string, data: any) => void;
-  };
+interface NavigationItem {
+  item: string;
+  navWidth?: string;
+  handleFunction: (item: string) => void;
 }
 
-const SettingsTemplate: React.FC<SettingsTemplateProps> = ({
-  loading,
-  currentNav,
+interface ShopDetails {
+  companyName: string;
+  addressLine1: string;
+  addressLine2: string;
+  state: string;
+  timeZone: string;
+  Phone: string;
+  email: string;
+  city: string;
+  country: string;
+  nin: string;
+  bvn: string;
+  logo: string[];
+  cacDocs: string[];
+}
+
+interface SettingsTemplateProps {
+  navigationItems: NavigationItem[];
+  activeTab: string;
+  shopDetails: ShopDetails;
+  className?: string;
+}
+
+export const SettingsTemplate: React.FC<SettingsTemplateProps> = ({
+  navigationItems,
+  activeTab,
   shopDetails,
-  settingsNavigation,
-  handlers,
+  className
 }) => {
   return (
-    <section className="min-h-screen bg-[#F8F9FA]">
-      <div className="container mx-auto">
-        {loading ? (
-          <div className="loader-section">
-            {/* Loader component */}
-          </div>
-        ) : (
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* Settings Navigation */}
-            <div className="lg:w-1/4">
-              <div className="bg-white rounded-lg p-4 shadow-sm">
-                {/* OrderDetailNav component */}
-                {/* Navigation items */}
-              </div>
-            </div>
-
-            {/* Settings Content */}
-            <div className="lg:w-3/4">
-              <div className="bg-white rounded-lg p-6 shadow-sm">
-                {/* Dynamic content based on currentNav */}
-                {currentNav === "Shop details" && (
-                  <div>
-                    {/* CompanyDetails organism */}
-                  </div>
-                )}
-                
-                {currentNav === "Billing & Invoice" && (
-                  <div>
-                    {/* BillingAndInvoice organism */}
-                  </div>
-                )}
-
-                {currentNav === "Warehouse" && (
-                  <div>
-                    {/* Warehouse organism */}
-                  </div>
-                )}
-
-                {currentNav === "Users & Permission" && (
-                  <div>
-                    {/* UserAndPermission organism */}
-                  </div>
-                )}
-
-                {currentNav === "Category" && (
-                  <div>
-                    {/* Category organism */}
-                  </div>
-                )}
-
-                {currentNav === "Order Settings" && (
-                  <div>
-                    {/* OrderSetting organism */}
-                  </div>
-                )}
-
-                {currentNav === "Shipping" && (
-                  <div>
-                    {/* Shipping organism */}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
+    <section className={cn("", className)}>
+      <div className="flex bg-[#F8F9FA]">
+        <div className="w-full p-4">
+          <SettingsNavigation
+            navigationItems={navigationItems}
+            activeTab={activeTab}
+          />
+          
+          <SettingsContent
+            activeTab={activeTab}
+            shopDetails={shopDetails}
+          />
+        </div>
       </div>
     </section>
   );

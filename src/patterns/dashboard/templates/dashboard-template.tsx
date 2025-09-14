@@ -1,62 +1,49 @@
-// Dashboard Page - Template
-// Page-level layout structure for dashboard
+// Dashboard Template - Template
+// Complete dashboard page template
 
-import React from "react";
-import { TopCardsSection } from "../organisms";
-import { RecentOrder } from "../organisms";
+import React from 'react';
+import { cn } from '@/lib/utils';
+import { DashboardContent } from '../organisms/dashboard-content';
 
 interface DashboardTemplateProps {
-  loading: boolean;
-  metricsData: {
-    totalOrder: string;
-    topEarning: string;
-    totalCustomer: string;
-    totalReturn: string;
+  data: {
+    metrics: Array<{
+      title: string;
+      value: string | number;
+      icon: any;
+      bgColor: string;
+      link?: string;
+    }>;
+    charts: Array<{
+      title: string;
+      chart: React.ReactNode;
+      isLoading?: boolean;
+    }>;
+    analytics: Array<{
+      name: string;
+      data: any[];
+      component: React.ComponentType<{ name: string; data: any[] }>;
+    }>;
+    recentOrders: any[];
+    recentOrdersComponent: React.ReactNode;
   };
-  chartsData: {
-    genderByOrder: any;
-    top4Location: any[];
-    top4Product: any[];
-    dailyEarnings: any[];
-    dailyOrder: any[];
-  };
-  recentOrders: any[];
+  isLoading?: boolean;
+  className?: string;
 }
 
-const DashboardTemplate: React.FC<DashboardTemplateProps> = ({
-  loading,
-  metricsData,
-  chartsData,
-  recentOrders,
+export const DashboardTemplate: React.FC<DashboardTemplateProps> = ({
+  data,
+  isLoading = false,
+  className
 }) => {
   return (
-    <section>
+    <section className={cn("", className)}>
       <div className="flex bg-gray-400 w-full h-full">
         <div className="w-full mb-[2rem]">
-          {loading ? (
-            <div className="loader-section">
-              {/* Loader component */}
-            </div>
-          ) : (
-            <div>
-              {/* Top Cards Section */}
-              <TopCardsSection {...metricsData} />
-              
-              {/* Charts and Analytics Section */}
-              <div className="bg-[#F8F9FA] px-4 lg:px-0">
-                {/* Chart components layout */}
-                <div className="md:flex block lg:flex items-center w-full md:gap-[21px] gap-4">
-                  {/* Charts grid */}
-                </div>
-                
-                {/* Bottom section with graphs and recent orders */}
-                <div className="block md:flex lg:flex w-full md:gap-[21px] gap-4 mt-4">
-                  {/* Graphs section */}
-                  {/* Recent orders section */}
-                </div>
-              </div>
-            </div>
-          )}
+          <DashboardContent 
+            data={data}
+            isLoading={isLoading}
+          />
         </div>
       </div>
     </section>
