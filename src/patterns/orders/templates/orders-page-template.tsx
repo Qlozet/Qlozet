@@ -14,7 +14,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { useGetOrdersQuery, useGetOrderStatsQuery } from '@/redux/services/orders/orders.api-slice';
 import { OrderFilterData } from '@/lib/validations/order';
 import { Plus, Download, Upload, FileText, Truck } from 'lucide-react';
-import Typography from '@/components/Typography';
+import Typography from '@/components/compat/Typography';
 
 interface OrdersPageTemplateProps {
   title?: string;

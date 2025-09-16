@@ -1,3 +1,4 @@
+import { env } from '@/env';
 import { setCookie, parseCookies } from 'nookies';
 
 interface ISaveCookie {
@@ -11,7 +12,7 @@ export const saveCookie = ({ key, value, isObject }: ISaveCookie) => {
     setCookie(null, key, updatedValue, {
         maxAge: 86400,
         path: '/',
-        secure: process.env.NODE_ENV === 'production',
+        secure: env.NODE_ENV === 'production',
     });
 };
 
@@ -37,6 +38,6 @@ export const removeCookie = (key: string) => {
     setCookie(null, key, '', {
         maxAge: -1,
         path: '/',
-        secure: process.env.NODE_ENV === 'production',
+        secure: env.NODE_ENV === 'production',
     });
 };

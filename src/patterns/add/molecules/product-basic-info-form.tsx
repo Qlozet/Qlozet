@@ -5,7 +5,7 @@ import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { CompleteProductData } from "@/lib/validations/product";
 import { Category } from "@/redux/services/products/products.api-slice";
-import Typography from "@/components/Typography";
+import Typography from "@/components/compat/Typography";
 import Loader from "@/components/Loader";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

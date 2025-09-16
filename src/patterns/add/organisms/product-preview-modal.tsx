@@ -5,7 +5,7 @@ import React from "react";
 import { create, useModal } from "@ebay/nice-modal-react";
 import { CompleteProductData } from "@/lib/validations/product";
 import { Category } from "@/redux/services/products/products.api-slice";
-import Typography from "@/components/Typography";
+import Typography from "@/components/compat/Typography";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

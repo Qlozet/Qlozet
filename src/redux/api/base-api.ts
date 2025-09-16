@@ -2,7 +2,7 @@ import { getCookies, removeCookie } from "@/lib/helpers/cookies-manager";
 import { Middleware } from "@reduxjs/toolkit";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { SESSION_COOKIE_KEY } from "../../lib/constants";
-import { env } from "@/env/client";
+import { env } from "@/env";
 
 const BASE_URL = env.NEXT_PUBLIC_BASE_URL;
 

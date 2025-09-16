@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { useGetProductsQuery, useGetCategoriesQuery, useUpdateProductMutation } from '@/redux/services/products/products.api-slice';
 import { Plus, Download, Upload, FileText, Package } from 'lucide-react';
-import Typography from '@/components/Typography';
+import Typography from '@/components/compat/Typography';
 import { toast } from 'react-hot-toast';
 
 interface ProductsPageTemplateProps {
@@ -217,8 +217,8 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
             >
               {title}
             </Typography>
-            <Typography 
-              variant="body2" 
+            <Typography
+              variant="body"
               className="text-gray-600 mt-1"
             >
               Manage your product inventory and catalog

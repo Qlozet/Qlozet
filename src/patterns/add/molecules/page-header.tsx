@@ -3,7 +3,7 @@
 
 import React from "react";
 import GoBack from "@/components/GoBack";
-import Typography from "@/components/Typography";
+import Typography from "@/components/compat/Typography";
 import { Separator } from "@/components/ui/separator";
 
 interface PageHeaderProps {

@@ -20,7 +20,7 @@ import { ProductPreviewModal } from "./product-preview-modal";
 import { show } from "@ebay/nice-modal-react";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import Typography from "@/components/Typography";
+import Typography from "@/components/compat/Typography";
 import { Separator } from "@/components/ui/separator";
 
 interface AddProductFormProps {

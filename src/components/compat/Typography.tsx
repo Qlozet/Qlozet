@@ -32,9 +32,9 @@ const typographyVariants = cva("", {
 
 interface TypographyProps
   extends React.HTMLAttributes<HTMLElement>,
-  VariantProps<typeof typographyVariants> {
+    VariantProps<typeof typographyVariants> {
   children: React.ReactNode
-  as?: keyof JSX.IntrinsicElements
+  as?: keyof React.JSX.IntrinsicElements
 
   // Legacy props for compatibility
   textSize?: string
@@ -43,9 +43,12 @@ interface TypographyProps
   horizontalPadding?: string
   verticalPadding?: string
   align?: string
+
+  // Explicitly define variant prop to ensure it's recognized
+  variant?: "h1" | "h2" | "h3" | "h4" | "p" | "blockquote" | "list" | "lead" | "large" | "small" | "muted" | "body" | "caption"
 }
 
-const getDefaultElement = (variant: string | null | undefined): keyof JSX.IntrinsicElements => {
+const getDefaultElement = (variant: string | null | undefined): keyof React.JSX.IntrinsicElements => {
   switch (variant) {
     case 'h1': return 'h1'
     case 'h2': return 'h2'
@@ -72,7 +75,7 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(
     align,
     ...props
   }, ref) => {
-    const Comp = as || getDefaultElement(variant)
+    const Component = as || getDefaultElement(variant)
 
     // Combine new variant classes with legacy prop classes
     const combinedClassName = cn(
@@ -88,14 +91,14 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       className
     )
 
-    return (
-      <Comp
-        className={combinedClassName}
-        ref={ref as any}
-        {...props}
-      >
-        {children}
-      </Comp>
+    return React.createElement(
+      Component,
+      {
+        className: combinedClassName,
+        ref: ref as any,
+        ...props
+      },
+      children
     )
   }
 )

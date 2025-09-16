@@ -13,7 +13,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { useGetCustomersQuery, useGetCustomerStatsQuery } from '@/redux/services/customers/customers.api-slice';
 import { CustomerFilterData } from '@/lib/validations/customer';
 import { Plus, Download, Upload } from 'lucide-react';
-import Typography from '@/components/Typography';
+import Typography from '@/components/compat/Typography';
 
 interface CustomersPageTemplateProps {
   title?: string;

@@ -4,7 +4,7 @@
 import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { CompleteProductData } from "@/lib/validations/product";
-import Typography from "@/components/Typography";
+import Typography from "@/components/compat/Typography";
 import Loader from "@/components/Loader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
