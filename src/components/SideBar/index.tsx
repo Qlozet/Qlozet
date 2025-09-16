@@ -2,6 +2,7 @@ import React, { Fragment, useState } from "react";
 import Link from "next/link";
 import Image, { StaticImageData } from "next/image";
 import { useRouter } from "next/navigation";
+import { APP_ROUTES } from '@/lib/routes';
 import { useAppDispatch } from "@/redux/store";
 import { handlelogout, setFilter } from "@/redux/slices/filter-slice";
 import { FaAngleUp, FaAngleDown } from "react-icons/fa6";
@@ -60,7 +61,7 @@ const SideBar: React.FC<SideBarProps> = ({ active }) => {
       style={{ zIndex: 950 }}
     >
       <div className="py-10 lg:px-16 md:px-4">
-        <Link href="/dashboard">
+        <Link href={APP_ROUTES.dashboard}>
           <Image src={brownLogo} alt="Qlozet Logo" style={{ width: "100px", height: "auto" }} priority />
         </Link>
       </div>

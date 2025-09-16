@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { AUTH_ROUTES } from '@/lib/routes';
 import { AuthLayout } from '../organisms/auth-layout';
 import { MultiStepSignupForm, SignupFormData } from '../molecules/multi-step-signup-form';
 import { useRegisterMutation } from '@/redux/services/auth/auth.api-slice';
@@ -45,7 +46,7 @@ export const SignupTemplate: React.FC<SignupTemplateProps> = ({
         // dispatch(setEmail(data.businessEmail));
         
         toast(<Toast text="Account created successfully! Please check your email for verification." type="success" />);
-        router.push('/auth/verification');
+        router.push(AUTH_ROUTES.verification);
       }
     } catch (error: any) {
       const errorMessage = error?.data?.message || 'Failed to create account. Please try again.';

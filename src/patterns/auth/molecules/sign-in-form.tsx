@@ -11,6 +11,7 @@ import { AuthButton } from '../atoms/auth-button';
 import { AuthLink } from '../atoms/auth-link';
 import { cn } from '@/lib/utils';
 import arrowRight from '@/public/assets/svg/arrow-right.svg';
+import { AUTH_ROUTES } from '@/lib/routes';
 
 const signInSchema = z.object({
   businessEmail: z
@@ -64,7 +65,7 @@ export const SignInForm: React.FC<SignInFormProps> = ({
 
         <div className="flex items-center justify-end">
           <AuthLink 
-            href="/auth/forgot-password" 
+            href={AUTH_ROUTES.forgotPassword} 
             icon={arrowRight}
             iconAlt="Arrow right"
           >

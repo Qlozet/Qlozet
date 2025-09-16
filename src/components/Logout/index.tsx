@@ -1,5 +1,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
+import { AUTH_ROUTES } from '@/lib/routes';
 import Image from "next/image";
 import Typography from "../Typography";
 import Button from "../Button";
@@ -19,7 +20,7 @@ const Logout: React.FC<LogoutProps> = ({ logoutFunction }) => {
   };
 
   const handleContinueClick = (): void => {
-    router.push("/auth/signin");
+    router.push(AUTH_ROUTES.signin);
     clearToken() && logoutFunction();
   };
 

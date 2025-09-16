@@ -4,9 +4,11 @@ import React from 'react';
 import { SignInForm, SignInFormData } from '../molecules/sign-in-form';
 import { useSignInMutation } from '@/redux/services/auth/auth.api-slice';
 import { useRouter } from 'next/navigation';
-import { setToken } from '@/utils/localstorage';
 import toast from 'react-hot-toast';
 import Toast from '@/components/ToastComponent/toast';
+import { saveCookie } from '@/lib/helpers/cookies-manager';
+import { SESSION_COOKIE_KEY } from '@/lib/constants';
+import { APP_ROUTES } from '@/lib/routes';
 
 interface SignInSectionProps {
   className?: string;
@@ -26,8 +28,12 @@ export const SignInSection: React.FC<SignInSectionProps> = ({
       }).unwrap();
 
       // Store token and redirect
-      setToken(JSON.stringify(response.data));
-      router.push('/dashboard');
+      saveCookie({
+        key: SESSION_COOKIE_KEY,
+        value: response?.data?.token,
+        isObject: false,
+      });
+      router.push(APP_ROUTES.dashboard);
       toast(<Toast text="Sign in successful!" type="success" />);
     } catch (error: any) {
       const errorMessage = error?.data?.message || 'Sign in failed. Please try again.';

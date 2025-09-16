@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { AUTH_ROUTES } from '@/lib/routes';
 import { AuthLayout } from '../organisms/auth-layout';
 import { AuthInput } from '../atoms/auth-input';
 import { AuthButton } from '../atoms/auth-button';
@@ -47,7 +48,7 @@ export const VerificationTemplate: React.FC<VerificationTemplateProps> = ({
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       toast(<Toast text="Email verified successfully!" type="success" />);
-      router.push('/auth/sign-in');
+      router.push(AUTH_ROUTES.signIn);
     } catch (error) {
       toast(<Toast text="Invalid verification code. Please try again." type="danger" />);
     } finally {

@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { AUTH_ROUTES } from '@/lib/routes';
 import brownLogo from "@/public/assets/image/logowhite.png";
 import Button from "../Button";
 
@@ -28,7 +29,7 @@ const HomePageHeader: React.FC = () => {
           variant="outline"
           className="bg-white w-[144px] text-xs font-extrabold"
           clickHandler={() => {
-            router.push("/auth/signin");
+            router.push(AUTH_ROUTES.signin);
           }}
         />
       </div>
