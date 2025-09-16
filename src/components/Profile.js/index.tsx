@@ -4,7 +4,6 @@ import rotate from "@/public/assets/svg/rotate-icon.svg";
 import Image from "next/image";
 import Performance from "../Performance";
 import Rating from "../Rating";
-import styles from "./index.module.css";
 import { useRef } from "react";
 import { ProfileProps } from "../../types";
 const Profile = ({ userDetails, showProfile, showProfileHandler }: ProfileProps) => {
@@ -19,7 +18,7 @@ const Profile = ({ userDetails, showProfile, showProfileHandler }: ProfileProps)
     <div>
       <div>
         <div
-          className={`fixed  bg-[rgba(0,0,0,.3)] h-screen w-screen top-0 right-0 flex justify-end  ${styles.container}`}
+          className="fixed bg-[rgba(0,0,0,.3)] h-screen w-screen top-0 right-0 flex justify-end sidebar-scrollbar"
           style={{ zIndex: 300000 }}
         >
           {showProfile && (

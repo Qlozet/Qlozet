@@ -5,6 +5,13 @@ import { baseAPI } from '@/redux/api/base-api';
 
 // Types
 export interface LoginRequest {
+  businessEmail: string;
+  password: string;
+  rememberMe?: boolean;
+}
+
+// Unified interface for sign-in (covers both email formats)
+export interface SignInRequest {
   email: string;
   password: string;
   rememberMe?: boolean;
@@ -31,14 +38,28 @@ export interface LoginResponse {
 }
 
 export interface RegisterRequest {
-  name: string;
-  email: string;
+  businessName: string;
+  businessEmail: string;
+  businessPhoneNumber: string;
+  businessAddress: string;
+  personalName: string;
+  phoneName: string;
+  nationalIdentityNumber: string;
+  bankVerificationNumber: string;
   password: string;
   confirmPassword: string;
-  phone?: string;
-  businessName?: string;
-  businessType?: string;
   agreeToTerms: boolean;
+}
+
+export interface ForgotPasswordRequest {
+  businessEmail?: string;
+  email?: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  password: string;
+  confirmPassword: string;
 }
 
 export interface RegisterResponse {
@@ -54,15 +75,6 @@ export interface RegisterResponse {
   };
 }
 
-export interface ForgotPasswordRequest {
-  email: string;
-}
-
-export interface ResetPasswordRequest {
-  token: string;
-  password: string;
-  confirmPassword: string;
-}
 
 export interface ChangePasswordRequest {
   currentPassword: string;
@@ -89,10 +101,24 @@ export interface RefreshTokenRequest {
 // API Slice
 export const authApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
-    // Login
+    // Unified Login (handles both email formats)
+    signIn: builder.mutation<LoginResponse, SignInRequest>({
+      query: (credentials) => ({
+        url: '/vendor/login',
+        method: 'POST',
+        body: {
+          businessEmail: credentials.email,
+          password: credentials.password,
+          ...(credentials.rememberMe && { rememberMe: credentials.rememberMe }),
+        },
+      }),
+      invalidatesTags: ['Auth'],
+    }),
+
+    // Legacy Login (keeping for backward compatibility)
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: (credentials) => ({
-        url: '/login',
+        url: '/vendor/login',
         method: 'POST',
         body: credentials,
       }),
@@ -102,32 +128,54 @@ export const authApiSlice = baseAPI.injectEndpoints({
     // Register
     register: builder.mutation<RegisterResponse, RegisterRequest>({
       query: (userData) => ({
-        url: '/register',
+        url: '/vendor/signup',
         method: 'POST',
         body: userData,
+      }),
+    }),
+
+    // Forgot Password (vendor endpoint)
+    forgotPassword: builder.mutation<{ message: string; success?: boolean }, ForgotPasswordRequest>({
+      query: (data) => ({
+        url: '/vendor/forgot-password',
+        method: 'POST',
+        body: {
+          businessEmail: data.businessEmail || data.email,
+        },
+      }),
+    }),
+
+    // Reset Password (vendor endpoint)
+    resetPassword: builder.mutation<{ message: string; success?: boolean }, ResetPasswordRequest>({
+      query: (data) => ({
+        url: '/vendor/reset-password',
+        method: 'POST',
+        body: data,
       }),
     }),
 
     // Logout
     logout: builder.mutation<{ message: string }, void>({
       query: () => ({
-        url: '/logout',
+        url: '/vendor/logout',
         method: 'POST',
       }),
       invalidatesTags: ['Auth', 'Profile'],
     }),
 
-    // Forgot Password
-    forgotPassword: builder.mutation<{ message: string }, ForgotPasswordRequest>({
+    // General Forgot Password (fallback endpoint)
+    forgotPasswordGeneral: builder.mutation<{ message: string }, ForgotPasswordRequest>({
       query: (data) => ({
         url: '/forgot-password',
         method: 'POST',
-        body: data,
+        body: {
+          email: data.email || data.businessEmail,
+        },
       }),
     }),
 
-    // Reset Password
-    resetPassword: builder.mutation<{ message: string }, ResetPasswordRequest>({
+    // General Reset Password (fallback endpoint)
+    resetPasswordGeneral: builder.mutation<{ message: string }, ResetPasswordRequest>({
       query: (data) => ({
         url: '/reset-password',
         method: 'POST',
@@ -268,11 +316,14 @@ export const authApiSlice = baseAPI.injectEndpoints({
 
 // Export hooks
 export const {
+  useSignInMutation,
   useLoginMutation,
   useRegisterMutation,
   useLogoutMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
+  useForgotPasswordGeneralMutation,
+  useResetPasswordGeneralMutation,
   useChangePasswordMutation,
   useVerifyEmailMutation,
   useResendVerificationEmailMutation,

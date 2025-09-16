@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { AddProductTemplate } from "@/patterns";
+import AddProductTemplate from "@/patterns/add/templates/add-product-template";
 import toast from "react-hot-toast";
 
 const AddProduct: React.FC = () => {

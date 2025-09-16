@@ -206,7 +206,7 @@ export const customersApiSlice = baseAPI.injectEndpoints({
         return {
           url: `/vendor/customers/export?${searchParams.toString()}`,
           method: 'POST',
-          responseHandler: 'blob',
+          responseHandler: (response) => response.blob(),
         };
       },
     }),

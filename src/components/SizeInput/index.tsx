@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import React from "react";
 import Image from "next/image";
 import closeIcon from "@/public/assets/svg/material-symbol-close-icon.svg";
-import classes from "./index.module.css";
 import { filterSelectedItems } from "@/utils/helper";
 import { X } from "lucide-react";
 
@@ -67,7 +66,7 @@ const SizeInput: React.FC<SizeInputProps> = ({
       className={`w-full relative my-2 h-[4rem]`}
       style={{ zIndex: index ? index : 10 }}
     >
-      <div className={`${classes.container}`}>
+      <div className="w-full relative">
         <label className="text-sm text-dark">{label}</label>
         <input
           readOnly
@@ -117,7 +116,7 @@ const SizeInput: React.FC<SizeInputProps> = ({
       </div>
       {showDropDown && (
         <div
-          className={` cursor-pointer absolute top-[73px] bg-white rounded-lg max-h-[15rem] ${classes.datalist} shadow-md  w-full`}
+          className="cursor-pointer absolute top-[73px] bg-white rounded-lg max-h-[15rem] datalist-scroll shadow-md w-full"
           ref={dropDownRef}
         >
           {list.map((item: string, index: number) => (

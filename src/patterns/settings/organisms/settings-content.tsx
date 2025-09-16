@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import Toast from '@/components/ToastComponent/toast';
 
 // Import existing components for other sections
-import BillingAndInvoice from '@/components/Settings/BillingAndInvioce';
+import BillingAndInvoice from '@/components/Settings/BillingAndInvioceInfo';
 import Warehouse from '@/components/Settings/Warehouse/Warehouse';
 import UserAndPermission from '@/components/Settings/UserAndPermission/UserAndPermssion';
 import Category from '@/components/Settings/Category/Category';

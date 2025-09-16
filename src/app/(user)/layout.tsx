@@ -1,20 +1,22 @@
 "use client";
-import { useState, useEffect, ReactNode } from "react";
+
+import React, { useState, useEffect, ReactNode, useCallback, useMemo } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { X } from "lucide-react";
+import Image from "next/image";
+
 import DasboardNavWithOutSearch from "@/components/DashboardNavBarWithoutSearch";
 import MobileSideBar from "@/components/MobileSideBar";
 import SideBar from "@/components/SideBar";
-import { usePathname } from "next/navigation";
+import Modal from "@/components/Modal";
+import Logout from "@/components/Logout";
+
 import getVendorDetails from "@/api/request";
 import { clearToken, setUserData } from "@/utils/localstorage";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { useRouter } from "next/navigation";
-import { handlelogout } from "@/redux/slice";
-import { setFilter } from "@/redux/slice";
-import { reduxData } from "@/redux/slice";
-import Modal from "@/components/Modal";
-import Logout from "@/components/Logout";
+import { handlelogout, setFilter, reduxData } from "@/redux/slices/filter-slice";
+
 import handIcon from "@/public/assets/svg/hand-tone.svg";
-import { X } from "lucide-react";
 
 interface UserDetails {
   businessName: string;
@@ -27,15 +29,35 @@ interface UserDetails {
   ratings?: string;
 }
 
-interface LayoutProps {
+interface ApiResponse {
+  data?: {
+    data?: {
+      companyName?: string;
+      vendorName?: string;
+      profilePicture?: string;
+      ratings?: string;
+      items?: string;
+      profit?: string;
+      averageRating?: string;
+    };
+  };
+}
+
+interface LoadingState {
+  isLoading: boolean;
+  error: string | null;
+}
+
+interface UserLayoutProps {
   children: ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
   const router = useRouter();
   const stateData = useAppSelector(reduxData);
   const dispatch = useAppDispatch();
   const pathname = usePathname();
+  
   const [userDetails, setUserDetails] = useState<UserDetails>({
     businessName: "",
     profileImage: "",
@@ -45,137 +67,198 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     profit: "",
     items: "",
   });
-  const [loadingPage, setLoadingPage] = useState<boolean>(true);
+  
+  const [loadingState, setLoadingState] = useState<LoadingState>({
+    isLoading: true,
+    error: null,
+  });
+  
+  const [showMobileNav, setShowMobileNav] = useState<boolean>(false);
   const [showKycPopUp, setShowKycPopUp] = useState<boolean>(true);
-  const getVendorDetailshandler = async (): Promise<void> => {
+  const getVendorDetailsHandler = useCallback(async (): Promise<void> => {
     try {
-      const response = await getVendorDetails();
-      if (response?.data) {
-        const details = {
-          businessName: response?.data?.data?.companyName
-            ? response?.data?.data?.companyName
-            : "",
-          personalName: response?.data?.data?.vendorName
-            ? response?.data?.data?.vendorName
-            : "",
-          profileImage: response.data?.data
-            ? response.data?.data.profilePicture
-            : "",
-          ratings: response.data?.data ? response.data?.data.ratings : "",
-          items: response.data?.data ? response.data?.data?.items : "",
-          profit: response.data?.data ? response.data?.data?.profit : "",
-          averageRating: response.data?.data?.averageRating
-            ? response?.data?.data?.averageRating
-            : "",
+      setLoadingState(prev => ({ ...prev, isLoading: true, error: null }));
+      
+      const response: ApiResponse = await getVendorDetails();
+      
+      if (response?.data?.data) {
+        const apiData = response.data.data;
+        const details: UserDetails = {
+          businessName: apiData.companyName || "",
+          personalName: apiData.vendorName || "",
+          profileImage: apiData.profilePicture || "",
+          profilePic: apiData.profilePicture || "",
+          ratings: apiData.ratings || "",
+          items: apiData.items || "",
+          profit: apiData.profit || "",
+          averageRating: apiData.averageRating || "",
         };
+        
         setUserData(details);
         setUserDetails(details);
-        setLoadingPage(false);
-        if (details) {
-        }
-      } else if (!response.data) {
-        clearToken();
-        router.push("/auth/signin");
+        setLoadingState({ isLoading: false, error: null });
+      } else {
+        throw new Error("No user data found");
       }
     } catch (error) {
+      console.error("Failed to fetch vendor details:", error);
+      setLoadingState({ 
+        isLoading: false, 
+        error: error instanceof Error ? error.message : "Failed to load user data" 
+      });
+      
       clearToken();
-      router.push("/auth/signin");
+      router.push("/auth/sign-in");
     }
-  };
+  }, [router]);
 
-  const [showMobileNav, setShowMobileNav] = useState<boolean>(false);
-  const [addSearch, setAddSearch] = useState<boolean>(false);
-  const [page, setPage] = useState<string | boolean>(false);
-  const showSideBar = (): void => {
-    setShowMobileNav(!showMobileNav);
-  };
+  const toggleMobileSidebar = useCallback((): void => {
+    setShowMobileNav(prev => !prev);
+  }, []);
+  
+  const closeMobileSidebar = useCallback((): void => {
+    setShowMobileNav(false);
+  }, []);
+  
+  const handleLogoutAction = useCallback(() => {
+    dispatch(handlelogout({ logout: false }));
+  }, [dispatch]);
+  
+  const handleFilterChange = useCallback((data: string) => {
+    dispatch(setFilter(data));
+  }, [dispatch]);
 
-  useEffect(() => {
-    setAddSearch(
-      pathname.replace("/", "") === "orders" ||
-        pathname.replace("/", "") === "products" ||
-        pathname.replace("/", "") === "wallet" ||
-        pathname.replace("/", "") === "customer"
-        ? true
-        : false
-    );
-    // .join().replace(",", "")
-    setPage(
-      pathname.replace(/^\//, "").split("/")[1] ? pathname.replace(/^\//, "").split("/")[1] : pathname.replace(/^\//, "").split("/")[0]
-    );
-    getVendorDetailshandler();
+  // Memoized computed values
+  const { addSearch, currentPage } = useMemo(() => {
+    const cleanPath = pathname.replace(/^\//, "");
+    const pathSegments = cleanPath.split("/");
+    const basePage = pathSegments[0];
+    
+    const searchablePages = ["orders", "products", "wallet", "customers"];
+    
+    return {
+      addSearch: searchablePages.includes(basePage),
+      currentPage: pathSegments[1] || basePage,
+    };
   }, [pathname]);
-  return (
-    <div className="bg-gray-400 m-auto">
-      {loadingPage ? (
-        <div></div>
-      ) : (
-        <div>
-          <div className="">
-            <SideBar active={page} />
-            <MobileSideBar
-              showMobileNav={showMobileNav}
-              active={page}
-              closeSideBar={showSideBar}
-            />
-          </div>
-          <div>
-            <div className="lg:ml-[280px] ">
-              <div
-                className="p-4 sticky left-0 top-0 bg-white lg:bg-gray-400 "
-                style={{
-                  zIndex: 950,
-                }}
-              >
-                <DasboardNavWithOutSearch
-                  userDetails={userDetails}
-                  value={stateData.state}
-                  addSearch={addSearch}
-                  setValue={(data) => {
-                    dispatch(setFilter(data));
-                  }}
-                  name={page}
-                  showSideBar={showSideBar}
-                />
-              </div>
-              <div className="max-w-[1200px] lg:m-0"> {children}</div>
-            </div>
-          </div>
-          <Modal
-            show={stateData.logout}
-            content={
-              <div className="flex items-center justify-center h-[100%] ">
-                <Logout
-                  logoutFunction={() => {
-                    dispatch(handlelogout({ logout: false }));
-                  }}
-                />
-              </div>
-            }
-          />
+  
+  useEffect(() => {
+    getVendorDetailsHandler();
+  }, [getVendorDetailsHandler]);
+  if (loadingState.isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your dashboard...</p>
         </div>
-      )}
-      {showKycPopUp && (
-        <div className="bg-[#FDEBE0] rounded-[12px] fixed bottom-2 left-2 z-[100000] flex items-center justify-between px-4 py-6 gap-4">
-          <button className=" w-8 h-8 bg-[#F8DBCB] rounded-[12px] flex items-center justify-center">
-            <img src={handIcon.src} />
-          </button>
-          <div>
-            <h4 className="font-medium text-darkBlue">Almost done!</h4>
-            <p className="text-sm text-darkBlue w-[80%]">
-              Complete KYC registration of your business profile to start work.
-            </p>
-          </div>
-          <button
-            className="w-8 h-8 bg-[#F8DBCB] rounded-[12px] flex items-center justify-center"
-            onClick={() => setShowKycPopUp(false)}
+      </div>
+    );
+  }
+  
+  if (loadingState.error) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <div className="text-red-500 text-xl mb-4">⚠️</div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Something went wrong</h2>
+          <p className="text-gray-600 mb-4">{loadingState.error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
-            <X />
+            Retry
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {/* Sidebar Components */}
+      <SideBar active={currentPage} />
+      <MobileSideBar
+        showMobileNav={showMobileNav}
+        active={currentPage}
+        closeSideBar={closeMobileSidebar}
+      />
+      
+      {/* Main Content Area */}
+      <div className="lg:ml-[280px]">
+        {/* Sticky Navigation Header */}
+        <header 
+          className="sticky top-0 z-[950] p-4 bg-white lg:bg-gray-100 border-b border-gray-200 lg:border-none"
+        >
+          <DasboardNavWithOutSearch
+            userDetails={userDetails}
+            value={stateData.state}
+            addSearch={addSearch}
+            setValue={handleFilterChange}
+            name={currentPage}
+            showSideBar={toggleMobileSidebar}
+          />
+        </header>
+        
+        {/* Page Content */}
+        <main className="max-w-[1200px] p-4 lg:p-6">
+          {children}
+        </main>
+      </div>
+      
+      {/* Logout Modal */}
+      <Modal
+        show={stateData.logout}
+        closeModal={handleLogoutAction}
+        content={
+          <div className="flex items-center justify-center h-full p-4">
+            <Logout logoutFunction={handleLogoutAction} />
+          </div>
+        }
+      />
+      
+      {/* KYC Completion Popup */}
+      {showKycPopUp && (
+        <div 
+          className="fixed bottom-4 left-4 z-[10000] bg-orange-50 border border-orange-200 rounded-xl p-4 shadow-lg max-w-sm"
+          role="alert"
+          aria-live="polite"
+        >
+          <div className="flex items-start gap-3">
+            <button 
+              className="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center"
+              aria-label="KYC notification icon"
+            >
+              <Image 
+                src={handIcon} 
+                alt="Hand wave" 
+                width={16} 
+                height={16}
+                className="object-contain"
+              />
+            </button>
+            
+            <div className="flex-1 min-w-0">
+              <h4 className="font-medium text-gray-900 text-sm mb-1">
+                Almost done!
+              </h4>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                Complete KYC registration of your business profile to start work.
+              </p>
+            </div>
+            
+            <button
+              className="flex-shrink-0 w-6 h-6 bg-orange-100 rounded-md flex items-center justify-center hover:bg-orange-200 transition-colors"
+              onClick={() => setShowKycPopUp(false)}
+              aria-label="Close KYC notification"
+            >
+              <X size={12} className="text-gray-500" />
+            </button>
+          </div>
         </div>
       )}
     </div>
   );
 };
 
-export default Layout;
+export default UserLayout;

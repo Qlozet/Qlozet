@@ -9,7 +9,6 @@ import dropboxIcon from "@/public/assets/svg/dropbox.svg";
 import fomLinkIcon from "@/public/assets/svg/form-link.svg";
 import closeCircle from "@/public/assets/svg/close-circle.svg";
 import DropboxChooser from "react-dropbox-chooser";
-import classes from "./index.module.css";
 import useDrivePicker from 'react-google-drive-picker';
 
 interface FileItem {
@@ -204,7 +203,7 @@ function UploadDocInput({ handleSelect, uploadfiles, singleUpload }: UploadDocIn
             })}
           </div>
           {!singleUpload && (
-            <div className={`${classes.select_file_container} gap-4`}>
+            <div className="flex lg:flex lg:gap-4">
               <div
                 className={`flex-1 flex items-center bg-white border-[1.5px] cursor-pointer border-solid h-[50px] border-gray-200 ${showDropDown ? "rounded-t-lg" : "rounded-[8px]"
                   }  justify-between py-2 mb-6 relative`}

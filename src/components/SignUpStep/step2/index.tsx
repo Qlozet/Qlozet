@@ -1,0 +1,113 @@
+import React from "react";
+import Logo from "../../Logo";
+import Typography from "../../Typography";
+import ProgressBar from "../../ProgressBar";
+import TextInput from "../../TextInput";
+import NumberInput from "../../NumberInput";
+import Button from "../../Button";
+
+interface Step2FormData {
+  personalName: string;
+  phoneName: string;
+  nationalIdentityNumber: string;
+}
+
+interface Step2RequiredData {
+  personalName: boolean;
+  phoneName: boolean;
+  nationalIdentityNumber: boolean;
+}
+
+interface Step2Props {
+  formData: Step2FormData;
+  setFormData: React.Dispatch<React.SetStateAction<Step2FormData>>;
+  requiredData: Step2RequiredData;
+  setRequiredData: React.Dispatch<React.SetStateAction<Step2RequiredData>>;
+}
+
+const Step2: React.FC<Step2Props> = ({ formData, setFormData, requiredData, setRequiredData }) => {
+  return (
+    <div>
+      <div className="mt-4 mx-4  lg:mx-0 pt-5 px-2 p lg:px-0 ">
+        <Typography
+          textColor="text-primary"
+          textWeight="font-bold"
+          textSize="text-[32px]"
+        >
+          Sign Up
+        </Typography>
+        <Typography
+          textWeight="font-normal"
+          textSize="text-sm"
+          verticalPadding="my-1"
+          textColor="text-dark"
+        >
+          Please fill in the information below to register as a vendor
+        </Typography>
+        <ProgressBar step={2} />
+        <TextInput
+          label="Personal name"
+          placeholder="Enter your name"
+          value={formData.personalName}
+          error={requiredData.personalName}
+          setValue={(data) => {
+            setFormData((prevData) => {
+              return { ...prevData, personalName: data };
+            });
+            if (data) {
+              setRequiredData((prevData) => {
+                return { ...prevData, personalName: false };
+              });
+            } else {
+              setRequiredData((prevData) => {
+                return { ...prevData, personalName: true };
+              });
+            }
+          }}
+        />
+
+        <NumberInput
+          label="Phone number "
+          placeholder="Enter your phone number "
+          error={requiredData.phoneName}
+          setValue={(data) => {
+            setFormData((prevData) => {
+              return { ...prevData, phoneName: data };
+            });
+            if (data) {
+              setRequiredData((prevData) => {
+                return { ...prevData, phoneName: false };
+              });
+            } else {
+              setRequiredData((prevData) => {
+                return { ...prevData, phoneName: true };
+              });
+            }
+          }}
+          value={formData.phoneName}
+        />
+        <NumberInput
+          label="National Identity Number"
+          placeholder="Enter your business official phone number"
+          error={requiredData.nationalIdentityNumber}
+          setValue={(data) => {
+            setFormData((prevData) => {
+              return { ...prevData, nationalIdentityNumber: data };
+            });
+            if (data) {
+              setRequiredData((prevData) => {
+                return { ...prevData, nationalIdentityNumber: false };
+              });
+            } else {
+              setRequiredData((prevData) => {
+                return { ...prevData, nationalIdentityNumber: true };
+              });
+            }
+          }}
+          value={formData.nationalIdentityNumber}
+        />
+      </div>
+    </div>
+  );
+};
+export default Step2;

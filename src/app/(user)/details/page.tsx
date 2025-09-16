@@ -35,7 +35,7 @@ const ProductDetails: React.FC = () => {
     }
     const vendor = getGetUserDetails();
     if (vendor) {
-      setVendorName(vendor.businessName);
+      setVendorName(vendor.businessName || '');
     }
   }, [product]);
 
@@ -68,7 +68,7 @@ const ProductDetails: React.FC = () => {
       <div>
         <div className="flex min-h-[100dvh] bg-gray-400">
           <div className="w-full">
-            {pageLoading ? (
+            {isLoading ? (
               <Loader></Loader>
             ) : (
               <div className="px-4">
@@ -185,7 +185,7 @@ const ProductDetails: React.FC = () => {
                         {product.name}
                       </h1>
                       <h2 className="block lg:hidden font-bold text-sm leading-[36px] text-primary lg:text-[#33CC33]">
-                        {productFormData.quantity} Quantity
+                        {product?.quantity || 0} Quantity
                       </h2>
                       <div className="flex items-center gap-6 my-4">
                         <div className="flex items-center gap-2">
@@ -202,7 +202,7 @@ const ProductDetails: React.FC = () => {
                             height={20}
                           />
                           <span className="font-bold text-sm leading-[20px]  pt-[2px]">
-                            {productFormData.likes.length}
+                            {product?.likes?.length || 0}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -220,7 +220,7 @@ const ProductDetails: React.FC = () => {
                       </div>
                       <div className="hidden lg:flex items-center justify-between w-full mb-[30px]">
                         <h2 className="hidden lg:block font-bold text-[24px] leading-[36px]">
-                          {productFormData.productPrice}
+                          {product?.price || 0}
                         </h2>
                         {/* <h2 className="font-medium text-sm leading-[36px] text-primary lg:text-[#33CC33]">
                           1,000 items delivered
@@ -229,7 +229,7 @@ const ProductDetails: React.FC = () => {
 
                       <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[12px]">
                         <p className="font-light col-span-1">Category</p>
-                        {productFormData.productCategory.map((item, index) => (
+                        {product?.subcategories?.map((item: any, index: number) => (
                           <p className="font-bold col-span-2" key={index}>
                             {item}
                           </p>
@@ -238,7 +238,7 @@ const ProductDetails: React.FC = () => {
                       <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[12px]">
                         <p className="font-light col-span-1">Tag</p>
                         <p className="font-bold col-span-2">
-                          {productFormData.productTag}
+                          {product?.tag || ''}
                         </p>
                       </div>
                       <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[12px]">
@@ -246,7 +246,7 @@ const ProductDetails: React.FC = () => {
                           Available colours
                         </p>
                         <div className="font-bold col-span-2 flex items-center gap-2">
-                          {variants.map((item, index) => {
+                          {product?.variants?.map((item: any, index: number) => {
 
                             if (
                               item.color.hex.includes(
@@ -288,21 +288,19 @@ const ProductDetails: React.FC = () => {
                           Available quantity
                         </p>
                         <p className="font-bold col-span-2">
-                          {productFormData.productQuantity}
+                          {product?.quantity || 0}
                         </p>
                       </div>
                       <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[12px]">
                         <p className="font-light col-span-1">Available Sizes</p>
                         <p className="font-bold col-span-2">
-                          {variants.map((item) => {
-                          })}
-                          XS, S, M, L, XL, XXL
+                          {product?.variants?.map((item: any) => item.size).join(', ') || 'XS, S, M, L, XL, XXL'}
                         </p>
                       </div>
                       <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[12px]">
                         <p className="font-light col-span-1">Product type</p>
                         <p className="font-bold col-span-2">
-                          {productFormData.productType}
+                          {product?.type || ''}
                         </p>
                       </div>
                       <div className="w-full grid grid-cols-3 border-t-[0.5px] border-[#DDE2E5] text-[#121212] text-xs leading-[18px] py-[12px]">
@@ -310,7 +308,7 @@ const ProductDetails: React.FC = () => {
                           Available discount
                         </p>
                         <p className="font-bold col-span-2">
-                          {productFormData.discount}% off
+                          {product?.discount || 0}% off
                         </p>
                       </div>
                     </div>
@@ -333,10 +331,11 @@ const ProductDetails: React.FC = () => {
         </div>
         <Modal
           show={showReview}
+          closeModal={handleShowReview}
           content={
             <>   {showReview && (<ProductReview
-              productName={productFormData.productName}
-              reviews={productFormData.reviews}
+              productName={product?.name || ''}
+              reviews={product?.reviews || []}
               closeModal={handleShowReview}
             ></ProductReview>)}</>
           }

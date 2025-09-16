@@ -1,7 +1,6 @@
 import Image from "next/image";
 import closeIcon from "@/public/assets/svg/material-symbols_close-rounded.svg";
 import Typography from "../../Typography";
-import classes from "./index.module.css";
 
 const OrderDetailNav = ({
   active,
@@ -15,8 +14,7 @@ const OrderDetailNav = ({
   return (
     <div
       className={`${width ? width : "w-full lg:w-[40%]"} ${bg ? bg : "bg-white "
-        } py-8 px-5 rounded-t-[18px] flex justify-between items-center overflow-x-scroll ${classes.scrollbarElement
-        }`}
+        } py-8 px-5 rounded-t-[18px] flex justify-between items-center overflow-x-scroll scrollbar-hide"`}
     >
       <div className="flex justify-between items-center border-gray-500 border-b-[0] lg:border-b-[1.2px] border-solid mb-[-2px] w-full">
         <div

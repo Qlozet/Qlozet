@@ -11,7 +11,7 @@ interface LocationData {
 }
 
 interface ProductData {
-  location: string;
+  name: string; // Product name, not location
   female: number;
   male: number;
 }
@@ -28,133 +28,117 @@ interface DailyData {
   [key: string]: any;
 }
 
+// API Response interfaces for better type safety
+interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+interface CustomerResponse {
+  totalCount: number;
+}
+
+interface OrderResponse {
+  data: Array<{
+    id: string;
+    status: string;
+    [key: string]: any;
+  }>;
+}
+
+interface EarningsResponse {
+  data: {
+    earnings: number;
+  };
+}
+
 // API Slice
 export const dashboardApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
-    // Combined Dashboard Data Query - Single optimized query for all dashboard data
-    getDashboardData: builder.query<{
-      totalCustomers: number;
-      totalOrders: number;
-      totalEarnings: number;
-      totalReturns: number;
-      genderByOrder: GenderByOrderData;
-      topLocations: LocationData[];
-      topProducts: ProductData[];
-      dailyEarnings: DailyData[];
-      dailyOrders: DailyData[];
-      recentOrders: any[];
-    }, void>({
-      queryFn: async (arg, queryApi, extraOptions, baseQuery) => {
-        // Execute multiple queries in parallel
-        const [
-          customersResult,
-          ordersResult,
-          earningsResult,
-          genderResult,
-          locationsResult,
-          productsResult,
-          dailyEarningsResult,
-          dailyOrdersResult
-        ] = await Promise.all([
-          baseQuery('/vendor/customers/total-customers-sold-to'),
-          baseQuery('/vendor/orders'),
-          baseQuery('/vendor/dashboard/earnings'),
-          baseQuery('/vendor/dashboard/orders/tag'),
-          baseQuery('/vendor/dashboard/orders/top-locations'),
-          baseQuery('/vendor/dashboard/orders/top-products'),
-          baseQuery('/vendor/dashboard/daily-earnings?filter=thisMonth'),
-          baseQuery('/vendor/orders/daily-order?filter=thisMonth')
-        ]);
 
-        // Check for errors
-        if (customersResult.error || ordersResult.error || earningsResult.error) {
-          return { error: 'Failed to fetch dashboard data' };
-        }
-
-        // Transform and combine data
-        const customersData = customersResult.data as any;
-        const ordersData = ordersResult.data as any;
-        const earningsData = earningsResult.data as any;
-        const genderData = genderResult.data as any;
-        const locationsData = locationsResult.data as any;
-        const productsData = productsResult.data as any;
-        const dailyEarningsData = dailyEarningsResult.data as any;
-        const dailyOrdersData = dailyOrdersResult.data as any;
-
-        // Process top locations
-        const processedLocations: LocationData[] = [];
-        if (locationsData?.data?.data?.locations && locationsData?.data?.data?.totalOrders) {
-          locationsData.data.data.locations.forEach((location: any) => {
-            processedLocations.push({
-              location: location.location,
-              female: (location.female / locationsData.data.data.totalOrders) * 100,
-              male: (location.male / locationsData.data.data.totalOrders) * 100,
-            });
-          });
-        }
-
-        // Process top products
-        const processedProducts: ProductData[] = [];
-        if (productsData?.data?.data?.topProducts && productsData?.data?.data?.totalOrders) {
-          productsData.data.data.topProducts.forEach((product: any) => {
-            processedProducts.push({
-              location: product.name,
-              female: (product.female / productsData.data.data.totalOrders) * 100,
-              male: (product.male / productsData.data.data.totalOrders) * 100,
-            });
-          });
-        }
-
-        return {
-          data: {
-            totalCustomers: customersData?.data?.totalCount || 0,
-            totalOrders: ordersData?.data?.data?.length || 0,
-            totalEarnings: earningsData?.data?.data?.earnings || 0,
-            totalReturns: ordersData?.data?.data?.filter((item: any) => item.status === "return").length || 0,
-            genderByOrder: genderData?.data?.data || { male: 0, female: 0 },
-            topLocations: processedLocations,
-            topProducts: processedProducts,
-            dailyEarnings: dailyEarningsData?.data?.data || [],
-            dailyOrders: dailyOrdersData?.data?.data || [],
-            recentOrders: ordersData?.data?.data || []
-          }
-        };
-      },
-      providesTags: ['DashboardMetrics', 'DashboardCharts', 'DashboardAnalytics'],
-    }),
-
-    // Individual queries for specific use cases
-    getTotalCustomers: builder.query<{ totalCount: number }, void>({
-      query: () => '/vendor/customers/total-customers-sold-to',
+    // Get total customers count
+    getTotalCustomers: builder.query<ApiResponse<{ totalCount: number }>, void>({
+      query: () => ({
+        url: '/vendor/customers/total-customers-sold-to',
+        method: 'GET'
+      }),
       providesTags: ['DashboardMetrics'],
-      transformResponse: (response: any) => response.data,
     }),
 
-    getTotalEarnings: builder.query<{ earnings: number }, void>({
-      query: () => '/vendor/dashboard/earnings',
+    // Get all orders
+    getOrders: builder.query<ApiResponse<{ data: Array<{ id: string; status: string; [key: string]: any }> }>, void>({
+      query: () => ({
+        url: '/vendor/orders',
+        method: 'GET'
+      }),
       providesTags: ['DashboardMetrics'],
-      transformResponse: (response: any) => response.data?.data,
     }),
 
-    getDailyEarnings: builder.query<DailyData[], { filter?: string }>({
-      query: ({ filter = 'thisMonth' } = {}) => `/vendor/dashboard/daily-earnings?filter=${filter}`,
-      providesTags: ['DashboardAnalytics'],
-      transformResponse: (response: any) => response.data?.data,
+    // Get total earnings
+    getTotalEarnings: builder.query<ApiResponse<{ data: { earnings: number } }>, void>({
+      query: () => ({
+        url: '/vendor/dashboard/earnings',
+        method: 'GET'
+      }),
+      providesTags: ['DashboardMetrics'],
     }),
 
-    getDailyOrders: builder.query<DailyData[], { filter?: string }>({
-      query: ({ filter = 'thisMonth' } = {}) => `/vendor/orders/daily-order?filter=${filter}`,
+    // Get gender by order data
+    getGenderByOrder: builder.query<ApiResponse<{ data: GenderByOrderData }>, void>({
+      query: () => ({
+        url: '/vendor/dashboard/orders/tag',
+        method: 'GET'
+      }),
       providesTags: ['DashboardAnalytics'],
-      transformResponse: (response: any) => response.data?.data,
+    }),
+
+    // Get top locations
+    getTopLocations: builder.query<any, void>({
+      query: () => ({
+        url: '/vendor/dashboard/orders/top-locations',
+        method: 'GET'
+      }),
+      providesTags: ['DashboardAnalytics'],
+    }),
+
+    // Get top products
+    getTopProducts: builder.query<any, void>({
+      query: () => ({
+        url: '/vendor/dashboard/orders/top-products',
+        method: 'GET'
+      }),
+      providesTags: ['DashboardAnalytics'],
+    }),
+
+    // Get daily earnings
+    getDailyEarnings: builder.query<ApiResponse<{ data: DailyData[] }>, { filter?: string }>({
+      query: ({ filter = 'thisMonth' } = {}) => ({
+        url: `/vendor/dashboard/daily-earnings?filter=${filter}`,
+        method: 'GET',
+      }),
+      providesTags: ['DashboardAnalytics'],
+    }),
+
+    // Get daily orders
+    getDailyOrders: builder.query<ApiResponse<{ data: DailyData[] }>, { filter?: string }>({
+      query: ({ filter = 'thisMonth' } = {}) => ({
+        url: `/vendor/orders/daily-order?filter=${filter}`,
+        method: 'GET',
+      }),
+      providesTags: ['DashboardAnalytics'],
     }),
   }),
 });
 
 // Export hooks
 export const {
-  useGetDashboardDataQuery,
   useGetTotalCustomersQuery,
+  useGetOrdersQuery,
   useGetTotalEarningsQuery,
+  useGetGenderByOrderQuery,
+  useGetTopLocationsQuery,
+  useGetTopProductsQuery,
   useGetDailyEarningsQuery,
   useGetDailyOrdersQuery,
 } = dashboardApiSlice;

@@ -5,7 +5,6 @@ import colourIcon from "@/public/assets/svg/colour-icon.svg";
 import closeIcon from "@/public/assets/svg/material-symbol-close-icon.svg";
 import customisationIcon from "@/public/assets/svg/customisation-icon.svg";
 import Typography from "../Typography";
-import classes from "./index.module.css";
 import { getRandomHexColor } from "@/utils/helper";
 
 interface ColorInput2Props {
@@ -67,7 +66,7 @@ const ColorInput2: React.FC<ColorInput2Props> = ({
         <label className="text-sm my-2 text-dark">{label}</label>
         <div className="flex items-center w-full">
           <div className={`h-[3rem] px-2 w-full border-solid border-[1.5px] text-dark placeholder-gray-200 focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 ${error && "border-danger"} border-gray-2 rounded-[8px] overflow-x-hidden text-sm text-font-light placeholder:font-300 ${disabled && "border-0 bg-gray-300 cursor-not-allowed"}`}>
-            <div className={`${classes.scrollbarElement} overflow-x-scroll absolute top-[2rem] flex items-center gap-4 w-[75%]`}>
+            <div className="scrollbar-hide overflow-x-scroll absolute top-[2rem] flex items-center gap-4 w-[75%]">
                 {/* Color previews */}
             </div>
           </div>

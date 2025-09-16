@@ -6,9 +6,17 @@ const CUSTOMER_KEY = "customer";
 // Type safety for user data
 interface UserDetails {
   // Define the structure of your user object
-  id: string;
-  name: string;
-  email: string;
+  id?: string;
+  name?: string;
+  email?: string;
+  businessName?: string;
+  personalName?: string;
+  profileImage?: string;
+  profilePic?: string;
+  averageRating?: string;
+  profit?: string;
+  items?: string;
+  ratings?: string;
 }
 
 export const setToken = (data: string): void => {

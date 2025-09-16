@@ -5,7 +5,6 @@ import Typography from "../../Typography";
 import Button from "../../Button";
 import CustomerDetails from "../CustomerDetails";
 import TrackOrder from "../TrackOrders";
-import classes from "./index.module.css";
 
 interface OrderItem {
   picture: string;
@@ -98,7 +97,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ show, closeModal, order }) 
         <div className="w-full lg:w-[618px] bg-white px-4 pb-4 rounded-b-[14px] overflow-y-scroll h-screen">
           {active === "Order details" && (
             <div>
-              <div className={`${classes.scroll_container} flex gap-4 items-center`}>
+              <div className="custom-product-scrollbar overflow-x-scroll flex gap-4 items-center">
                 {order.orderItems.map((item, index) => (
                   <div className="min-w-[10rem]" key={index}>
                     <div>

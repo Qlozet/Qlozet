@@ -2,8 +2,8 @@ import React, { Fragment, useState } from "react";
 import Link from "next/link";
 import Image, { StaticImageData } from "next/image";
 import { useRouter } from "next/navigation";
-import { useAppDispatch } from "@/src/lib/hook"; // Adjusted path for TS
-import { handlelogout, setFilter } from "@/redux/slice"; // Assuming slice is now .ts
+import { useAppDispatch } from "@/redux/store";
+import { handlelogout, setFilter } from "@/redux/slices/filter-slice";
 import { FaAngleUp, FaAngleDown } from "react-icons/fa6";
 
 import Logo from "../Logo";

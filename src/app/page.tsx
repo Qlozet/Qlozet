@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect } from "react";
 import HomePageHeader from "@/components/Header";
 import Image, { StaticImageData } from "next/image";

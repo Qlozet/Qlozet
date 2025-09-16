@@ -19,10 +19,10 @@ const ProductDetails: React.FC = () => {
         <SideBar active="Products" />
       </div>
       <div className="w-full p-4">
-        <DasboardNavWithOutSearch name="Products" addSearch={true} />
+        <DasboardNavWithOutSearch name="Products" addSearch={true} showSideBar={() => {}} />
         <div className="px-4">
           <div className="flex items-center gap-4 mb-5">
-            <Image src={arrowLeftIcon} />
+            <Image src={arrowLeftIcon} alt="arrow left" />
             <h2 className="font-bold text-[18px] leading-[27px]">
               View Product
             </h2>
@@ -51,7 +51,7 @@ const ProductDetails: React.FC = () => {
                     <p className="text-xs leading-[18px] underline font-bold">
                       View product in main site
                     </p>
-                    <Image src={arrowRIcon} />
+                    <Image src={arrowRIcon} alt="arrow right" />
                   </div>
                 </div>
                 <h1 className="text-[42px] leading-[63px] font-bold mb-4">
@@ -59,19 +59,19 @@ const ProductDetails: React.FC = () => {
                 </h1>
                 <div className="flex items-center gap-6 mb-6">
                   <div className="flex items-center gap-2">
-                    <Image src={starIcon} />
+                    <Image src={starIcon} alt="star rating" />
                     <span className="font-bold text-sm leading-[20px]">
                       4.8
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Image src={heartIcon} />
+                    <Image src={heartIcon} alt="likes" />
                     <span className="font-bold text-sm leading-[20px]">
                       200
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Image src={chatIcon} />
+                    <Image src={chatIcon} alt="reviews" />
                     <span className="font-bold text-sm leading-[20px] mr-1">
                       100
                     </span>

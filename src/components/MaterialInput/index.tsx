@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import React from "react";
-import classes from "./index.module.css";
 import trashIcon from "@/public/assets/svg/trash.svg";
 import imageicon from "@/public/assets/svg/image.svg";
 import closeIcon from "@/public/assets/svg/material-symbol-close-icon.svg";
@@ -55,7 +54,7 @@ const MaterialInput: React.FC<MaterialInputProps> = ({
           </div>
         </div>
         <div
-          className={` ${classes.scrollbarElement} flex items-center gap-4 h-full pl-2`}
+          className="scrollbar-hide flex items-center gap-4 h-full pl-2"
         >
           {items.map((item: string, index: number) => {
             const dataUrl: string = item && item;

@@ -13,16 +13,6 @@ import {
 import { setupListeners } from "@reduxjs/toolkit/query";
 import rootReducer, { rootPersistConfig } from "./root-reducer";
 import { baseAPI, custom401Middleware } from "./api/base-api";
-import { productsApiSlice } from "./services/products/products.api-slice";
-import { customersApiSlice } from "./services/customers/customers.api-slice";
-import { ordersApiSlice } from "./services/orders/orders.api-slice";
-import { dashboardApiSlice } from "./services/dashboard/dashboard.api-slice";
-import { authApiSlice } from "./services/auth/auth.api-slice";
-import { settingsApiSlice } from "./services/settings/settings.api-slice";
-import { supportApiSlice } from "./services/support/support.api-slice";
-import { notificationApiSlice } from "./services/notification/notification.api-slice";
-import { walletApiSlice } from "./services/wallet/wallet.api-slice";
-import { productDetailsApiSlice } from "./services/product-details/product-details.api-slice";
 
 const reducer = persistReducer<ReturnType<typeof rootReducer>>(
   rootPersistConfig,
@@ -38,16 +28,6 @@ export const store = configureStore({
       },
     })
       .concat(baseAPI.middleware)
-      .concat(productsApiSlice.middleware)
-      .concat(customersApiSlice.middleware)
-      .concat(ordersApiSlice.middleware)
-      .concat(dashboardApiSlice.middleware)
-      .concat(authApiSlice.middleware)
-      .concat(settingsApiSlice.middleware)
-      .concat(supportApiSlice.middleware)
-      .concat(notificationApiSlice.middleware)
-      .concat(walletApiSlice.middleware)
-      .concat(productDetailsApiSlice.middleware)
       .concat(custom401Middleware),
 
   devTools: process.env.NODE_ENV !== "production",

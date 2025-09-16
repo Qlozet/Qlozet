@@ -5,7 +5,6 @@ import colourIcon from "@/public/assets/svg/colour-icon.svg";
 import closeIcon from "@/public/assets/svg/material-symbol-close-icon.svg";
 import customisationIcon from "@/public/assets/svg/customisation-icon.svg";
 import Typography from "../Typography";
-import classes from "./index.module.css";
 
 interface ColorInputProps {
   label: string;
@@ -62,7 +61,7 @@ const ColorInput: React.FC<ColorInputProps> = ({
         <div
           className={`flex items-center min-h-[2.8rem] cursor-pointer px-2 w-full border-solid border-[1.5px]  text-dark placeholder-gray-200
           focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 ${error && "border-danger"} border-gray-2 rounded-[8px] overflow-hidden text-sm text-font-light placeholder:font-300 ${disabled && "border-0 bg-gray-300 cursor-not-allowed "} `}>
-          <div className={`${classes.scrollbarElement} overflow-x-scroll  flex items-center gap-4 w-[99%]`}>
+          <div className="scrollbar-hide overflow-x-scroll flex items-center gap-4 w-[99%]">
             {selectedColors.map((c, i) => (
               <div className="relative my-2" key={i}>
                 <div className="absolute top-[-5px] right-[-5px] bg-primary-100 rounded-[50%] p-[1px]" style={{ zIndex: 200 }}>

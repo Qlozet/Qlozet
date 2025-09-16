@@ -1,5 +1,5 @@
-// Notifications API Service - RTK Query
-// Handles all notification-related API operations
+// Notifications API Service - RTK Query  
+// Handles all notification-related API operations (CONSOLIDATED)
 
 import { baseAPI } from '@/redux/api/base-api';
 

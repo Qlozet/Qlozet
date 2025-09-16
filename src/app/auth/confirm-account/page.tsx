@@ -1,11 +1,14 @@
 "use client";
-import { useState } from "react";
+
+import { FC } from "react";
 import Logo from "@/components/Logo";
 import classes from "./index.module.css";
 import Typography from "@/components/Typography";
 import { useAppSelector } from "@/redux/store";
-const Verication: React.FC = () => {
+
+const ConfirmAccount: FC = () => {
   const email = useAppSelector((state) => state.filter.email);
+
   return (
     <section
       className={` w-full h-screen p-4 flex justify-center bg-[#F8F9FA]`}
@@ -43,4 +46,4 @@ const Verication: React.FC = () => {
   );
 };
 
-export default Verication;
+export default ConfirmAccount;

@@ -89,12 +89,12 @@ const Products: React.FC = () => {
   const getProducts = async () => {
     try {
       let response = await getRequest("/vendor/products/all");
-      let productData = [];
+      let productData: any[] = [];
       if (response?.data) {
         setActivatedProduct(
-          response?.data.data.filter((product) => product.status).length
+          response?.data.data.filter((product: any) => product.status).length
         );
-        response?.data?.data?.map((product) => {
+        response?.data?.data?.map((product: any) => {
           let productStatus = activeCheck(product.status);
           let orderItem = {
             id: product._id,

@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import ToolTip from "../ToolTip";
-import classes from "./index.module.css";
 
 interface SelectOption {
   id: string | number;
@@ -48,7 +47,7 @@ const SelectInput: React.FC<SelectInputProps> = ({
 
   return (
     <div className={`bg-white w-full relative my-2`} style={{ zIndex: index ? index : 10 }}>
-      <div className={`${classes.container} border-solid`}>
+      <div className="w-full relative border-solid">
         <div className="flex items-center justify-start gap-2">
           <label className="text-sm my-2 text-dark">{label}</label>
           {tooltips && <ToolTip text={`${label} is required`} />}
@@ -77,7 +76,7 @@ const SelectInput: React.FC<SelectInputProps> = ({
       </div>
 
       {showDropDown && (
-        <div className={`cursor-pointer absolute top-[73px] bg-white rounded-lg max-h-[15rem] ${classes.datalist} shadow-md w-full`} ref={dropDownRef}>
+        <div className="cursor-pointer absolute top-[73px] bg-white rounded-lg max-h-[15rem] datalist-scroll shadow-md w-full" ref={dropDownRef}>
           {list.map((item, idx) => (
             <div
               key={item.id}

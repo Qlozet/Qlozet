@@ -1,14 +1,15 @@
 "use client";
 import React from "react";
-import { useGetNotificationsQuery } from "@/redux/services/notification/notification.api-slice";
+import { useGetNotificationsQuery } from "@/redux/services/notifications/notifications.api-slice";
 import Notification from "@/components/Notification/NotificationComponent";
 import Loader from "@/components/Loader";
 import Typography from "@/components/Typography";
 const NotificationPage: React.FC = () => {
-  const { data: notifications = [], isLoading, error } = useGetNotificationsQuery({});
+  const { data: notificationsResponse, isLoading, error } = useGetNotificationsQuery({});
+  const notifications = notificationsResponse?.data || [];
 
   if (isLoading) {
-    return <Loader />;
+    return <Loader small={false} height={100} width={100} />;
   }
 
   if (error) {
@@ -45,11 +46,11 @@ const NotificationPage: React.FC = () => {
               {notifications.length > 0 ? (
                 notifications.map((item, index) => (
                   <Notification
-                    key={item.id || index}
-                    id={item.id}
-                    read={item.read}
+                    key={item._id || index}
+                    id={item._id}
+                    read={item.isRead}
                     title={item.title}
-                    desc={item.description}
+                    desc={item.message}
                     date={item.createdAt}
                   />
                 ))

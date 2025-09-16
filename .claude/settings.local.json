@@ -12,7 +12,13 @@
       "Bash(npm run build:*)",
       "Bash(mkdir:*)",
       "Bash(realpath:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(while read file)",
+      "Bash(do mv \"$file\" \"$file%.js.ts\")",
+      "Bash(done)",
+      "Bash(powershell:*)",
+      "Bash(timeout 180 npm run build)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []

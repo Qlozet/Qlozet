@@ -151,7 +151,10 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
 
     // Get single order
     getOrder: builder.query<{ data: Order }, string>({
-      query: (orderId) => `/vendor/orders/${orderId}`,
+      query: (orderId) => ({
+        url: `/vendor/orders/${orderId}`,
+        method: "GET"
+      }),
       providesTags: ['Order'],
     }),
 
@@ -283,7 +286,7 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
         return {
           url: `/vendor/orders/report?${searchParams.toString()}`,
           method: 'POST',
-          responseHandler: 'blob',
+          responseHandler: (response) => response.blob(),
         };
       },
     }),
@@ -314,7 +317,7 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
     getOrderInvoice: builder.query<Blob, { orderId: string; format?: 'pdf' | 'html' }>({
       query: ({ orderId, format = 'pdf' }) => ({
         url: `/vendor/orders/${orderId}/invoice?format=${format}`,
-        responseHandler: 'blob',
+        responseHandler: (response) => response.blob(),
       }),
     }),
   }),

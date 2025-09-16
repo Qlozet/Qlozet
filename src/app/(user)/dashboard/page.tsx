@@ -1,7 +1,16 @@
 "use client";
 import React from "react";
 import { DashboardTemplate } from "@/patterns/dashboard/templates/dashboard-template";
-import { useGetDashboardDataQuery } from "@/redux/services/dashboard/dashboard.api-slice";
+import {
+  useGetTotalCustomersQuery,
+  useGetOrdersQuery,
+  useGetTotalEarningsQuery,
+  useGetGenderByOrderQuery,
+  useGetTopLocationsQuery,
+  useGetTopProductsQuery,
+  useGetDailyEarningsQuery,
+  useGetDailyOrdersQuery,
+} from "@/redux/services/dashboard/dashboard.api-slice";
 import HorizontalChat from "@/components/Chat/HorizontalChart";
 import DonutChart from "@/components/Chat/DoughnutChat";
 import VerticalBarGraph from "@/components/VerticalBarGraph";
@@ -13,24 +22,63 @@ import CartIcon from "@/public/assets/svg/customer-carticon.svg";
 import Loader from "@/components/Loader";
 
 const Dashboard: React.FC = () => {
-  const { data: dashboardData, isLoading, error } = useGetDashboardDataQuery();
+  // Individual API calls
+  const { data: customersData, isLoading: customersLoading } = useGetTotalCustomersQuery();
+  const { data: ordersData, isLoading: ordersLoading } = useGetOrdersQuery();
+  const { data: earningsData, isLoading: earningsLoading } = useGetTotalEarningsQuery();
+  const { data: genderData, isLoading: genderLoading } = useGetGenderByOrderQuery();
+  const { data: locationsData, isLoading: locationsLoading } = useGetTopLocationsQuery();
+  const { data: productsData, isLoading: productsLoading } = useGetTopProductsQuery();
+  const { data: dailyEarningsData, isLoading: dailyEarningsLoading } = useGetDailyEarningsQuery({ filter: 'thisMonth' });
+  const { data: dailyOrdersData, isLoading: dailyOrdersLoading } = useGetDailyOrdersQuery({ filter: 'thisMonth' });
+
+  const isLoading = customersLoading || ordersLoading || earningsLoading || genderLoading || 
+                    locationsLoading || productsLoading || dailyEarningsLoading || dailyOrdersLoading;
 
   if (isLoading) {
-    return <Loader />;
+    return <Loader small={false} height={100} width={100} />;
   }
 
-  if (error) {
+  if (!customersData || !ordersData || !earningsData) {
     return <div className="flex items-center justify-center min-h-screen">Error loading dashboard data</div>;
   }
 
-  if (!dashboardData) {
-    return <div className="flex items-center justify-center min-h-screen">No data available</div>;
+  // Process data
+  const totalCustomers = customersData?.data?.totalCount || 0;
+  const orders = ordersData?.data?.data || [];
+  const totalOrders = orders.length;
+  const totalEarnings = earningsData?.data?.data?.earnings || 0;
+  const totalReturns = orders.filter(order => order.status === "return").length;
+  const genderByOrderData = genderData?.data?.data || { male: 0, female: 0 };
+  
+  // Process locations data
+  const processedLocations: Array<{ location: string; female: number; male: number }> = [];
+  if (locationsData?.data?.data?.locations && locationsData?.data?.data?.totalOrders) {
+    locationsData.data.data.locations.forEach((location: any) => {
+      processedLocations.push({
+        location: location.location,
+        female: (location.female / locationsData.data.data.totalOrders) * 100,
+        male: (location.male / locationsData.data.data.totalOrders) * 100,
+      });
+    });
+  }
+
+  // Process products data
+  const processedProducts: Array<{ location: string; female: number; male: number }> = [];
+  if (productsData?.data?.data?.topProducts && productsData?.data?.data?.totalOrders) {
+    productsData.data.data.topProducts.forEach((product: any) => {
+      processedProducts.push({
+        location: product.name, // Map name to location for chart compatibility
+        female: (product.female / productsData.data.data.totalOrders) * 100,
+        male: (product.male / productsData.data.data.totalOrders) * 100,
+      });
+    });
   }
 
   // Prepare gender data for donut chart
   const genderByOrder = {
     labels: ["Male", "Female"],
-    values: [dashboardData.genderByOrder.male, dashboardData.genderByOrder.female],
+    values: [genderByOrderData.male, genderByOrderData.female],
     colors: ["#3E1C01", "#9C8578"],
     borderAlign: "center",
   };
@@ -40,7 +88,7 @@ const Dashboard: React.FC = () => {
     metrics: [
       {
         title: "Total Order",
-        value: dashboardData.totalOrders,
+        value: totalOrders,
         icon: <img src={TotalOrderIcon} alt="Total Orders" className="h-6 w-6" />,
         bgColor: "bg-[#57CAEB]",
         link: "orders",
@@ -48,21 +96,21 @@ const Dashboard: React.FC = () => {
       },
       {
         title: "Total earnings",
-        value: dashboardData.totalEarnings.toLocaleString(),
+        value: totalEarnings.toLocaleString(),
         icon: <img src={TotalearningIcon} alt="Total Earnings" className="h-6 w-6" />,
         bgColor: "bg-[#5DDAB4]",
         trend: { value: 2.5, isPositive: true }
       },
       {
         title: "Total Customers",
-        value: dashboardData.totalCustomers,
+        value: totalCustomers,
         icon: <img src={customerIcon} alt="Total Customers" className="h-6 w-6" />,
         bgColor: "bg-[#FF7976]",
         trend: { value: 2.5, isPositive: true }
       },
       {
         title: "Total returns",
-        value: dashboardData.totalReturns,
+        value: totalReturns,
         icon: <img src={CartIcon} alt="Total Returns" className="h-6 w-6" />,
         bgColor: "bg-[#FF3A3A]",
         trend: { value: 2.5, isPositive: false }
@@ -74,35 +122,35 @@ const Dashboard: React.FC = () => {
         chart: (
           <DonutChart
             data={genderByOrder}
-            width={"200"}
-            height={"200"}
+            width={200}
+            height={200}
             cutout={true}
           />
         )
       },
       {
         title: "Order by top location",
-        chart: <HorizontalChat data={dashboardData.topLocations} />
+        chart: <HorizontalChat data={processedLocations} />
       },
       {
         title: "Orders by product",
-        chart: <HorizontalChat data={dashboardData.topProducts} />
+        chart: <HorizontalChat data={processedProducts} />
       }
     ],
     analytics: [
       {
         name: "Earning",
-        data: dashboardData.dailyEarnings,
+        data: dailyEarningsData?.data?.data || [],
         component: VerticalBarGraph
       },
       {
         name: "Order Count",
-        data: dashboardData.dailyOrders,
+        data: dailyOrdersData?.data?.data || [],
         component: VerticalBarGraph
       }
     ],
-    recentOrders: dashboardData.recentOrders,
-    recentOrdersComponent: <RecentOrder orders={dashboardData.recentOrders} />
+    recentOrders: orders,
+    recentOrdersComponent: <RecentOrder orders={orders} />
   };
 
   return (

@@ -1,0 +1,304 @@
+import colourIcon from "@/public/assets/svg/colour-icon.svg";
+import closeIcon from "@/public/assets/svg/material-symbol-close-icon.svg";
+import Image from "next/image";
+import { ColorPicker, useColor } from "react-color-palette";
+import Typography from "../Typography";
+import trashIcon from "@/public/assets/svg/trash.svg";
+import customisationIcon from "@/public/assets/svg/customisation-icon.svg";
+import { useEffect, useState } from "react";
+var colorArray = [
+  "#FF6633",
+  "#FFB399",
+  "#FF33FF",
+  "#FFFF99",
+  "#00B3E6",
+  "#E6B333",
+  "#3366E6",
+  "#999966",
+  "#99FF99",
+  "#B34D4D",
+  "#80B300",
+  "#809900",
+  "#E6B3B3",
+  "#6680B3",
+  "#66991A",
+  "#FF99E6",
+  "#CCFF1A",
+  "#FF1A66",
+  "#E6331A",
+  "#33FFCC",
+  "#66994D",
+  "#B366CC",
+  "#4D8000",
+  "#B33300",
+  "#CC80CC",
+  "#66664D",
+  "#991AFF",
+  "#E666FF",
+  "#4DB3FF",
+  "#1AB399",
+  "#E666B3",
+  "#33991A",
+  "#CC9999",
+  "#B3B31A",
+  "#00E680",
+  "#4D8066",
+  "#809980",
+  "#E6FF80",
+  "#1AFF33",
+  "#999933",
+  "#FF3380",
+  "#CCCC00",
+  "#66E64D",
+  "#4D80CC",
+  "#9900B3",
+];
+const VariantInput = ({
+  label,
+  error,
+  setValue,
+  value,
+  rightIcon,
+  leftIcon,
+  placeholder,
+  disabled = false,
+  index,
+  removeColor,
+}) => {
+  const removeColorHandler = (color, index) => {
+    removeColor(color, index);
+    removeColor(color, index);
+    setSelectedColors(selectedColors.filter((item) => item !== color));
+  };
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [currentColor, setCurrentColor] = useState("#561ecb");
+  const [selectedColors, setSelectedColors] = useState(value);
+  var colorArray = [
+    "#FF6633",
+    "#FFB399",
+    "#FF33FF",
+    "#FFFF99",
+    "#00B3E6",
+    "#E6B333",
+    "#3366E6",
+    "#999966",
+    "#99FF99",
+    "#B34D4D",
+    "#80B300",
+    "#809900",
+    "#E6B3B3",
+    "#6680B3",
+    "#66991A",
+    "#FF99E6",
+    "#CCFF1A",
+    "#FF1A66",
+    "#E6331A",
+    "#33FFCC",
+    "#66994D",
+    "#B366CC",
+    "#4D8000",
+    "#B33300",
+    "#CC80CC",
+    "#66664D",
+    "#991AFF",
+    "#E666FF",
+    "#4DB3FF",
+    "#1AB399",
+    "#E666B3",
+    "#33991A",
+    "#CC9999",
+    "#B3B31A",
+    "#00E680",
+    "#4D8066",
+    "#809980",
+    "#E6FF80",
+    "#1AFF33",
+    "#999933",
+    "#FF3380",
+    "#CCCC00",
+    "#66E64D",
+    "#4D80CC",
+    "#9900B3",
+  ];
+  const [color, setColor] = useColor("#561ecb");
+
+  useEffect(() => {
+    setCurrentColor(value);
+  }, [value]);
+  return (
+    <div
+    // className="relative"
+    // style={{
+    //   zIndex: index ? index : 20,
+    // }}
+    >
+      <div className="my-3">
+        {leftIcon}
+        <label className="text-sm my-2 text-dark">{label}</label>
+        <div
+          className={`flex items-center min-h-[2.8rem]  px-2 w-full border-solid border-[1.5px]  text-dark placeholder-gray-200
+          focus:outline-none focus:bg-[#DDE2E5] focus:border-primary-100 ${error && "border-danger"
+            } border-gray-2 rounded-[8px] overflow-x-hidden text-sm text-font-light placeholder:font-300 ${disabled && "border-0 bg-gray-300 cursor-not-allowed "
+            } `}
+        >
+          <div
+            className="scrollbar-hide overflow-x-scroll flex items-center gap-4 w-[97%]"
+          >
+            {showColorPicker && (
+              <div className="">
+                <div
+                  className="w-[4rem] h-[2rem] rounded"
+                  style={{
+                    backgroundColor: currentColor,
+                  }}
+                ></div>
+              </div>
+            )}
+            {selectedColors.map((color, index) => {
+              return (
+                <div className="relative my-2">
+                  <div
+                    className="absolute top-[-5px] right-[-5px] bg-primary-100 rounded-[50%] p-[1px]"
+                    style={{ zIndex: 200 }}
+                  >
+                    <Image
+                      alt=""
+                      src={closeIcon}
+                      width={15}
+                      height={15}
+                      onClick={() => {
+                        removeColorHandler(color, index);
+                      }}
+                    />
+                  </div>
+                  <div
+                    className="w-[4rem] h-[2rem] rounded"
+                    style={{
+                      backgroundColor: color,
+                    }}
+                  ></div>
+                </div>
+              );
+            })}
+            <div
+              className="w-[4rem] h-[2rem] rounded border-[1px] border-solid flex items-center justify-center cursor-pointer"
+              onClick={() => {
+                setShowColorPicker(true);
+              }}
+            >
+              <Image src={customisationIcon} alt="" width={25} height={25} />
+            </div>
+          </div>
+          <div className="cursor-pointer flex items-center gap-4">
+            <Image src={colourIcon} alt="" />
+            <Image src={trashIcon} alt="" />
+          </div>
+        </div>
+
+        {error && (
+          <p className="text-danger text-xs font-[400]">
+            {label} cannot be empty!
+          </p>
+        )}
+      </div>
+      <div></div>
+      <div
+        className=""
+        style={{
+          backgroundColor: "rgb(44, 44, 44)",
+        }}
+      >
+        {showColorPicker && (
+          <div
+            className=" fixed top-0 left-0 h-screen w-screen"
+            style={{ zIndex: index }}
+          >
+            <div className="relaive overflow-y-scroll top-0 left-0 wfull bg-[rgba(0,0,0,.3)] flex items-center justify-center h-screen w-screen">
+              <div className="mx-w-[300px] top-[4.5rem] right-0 bg-[#2c2c2c] p-b-3 border-gray-200 rounded-[5px] border-solid border-[2px] border-[rgba(13,153,255)]">
+                <div className="p-4 flex items-center justify-between">
+                  <Typography
+                    textColor="text-white"
+                    textWeight="font-[600]"
+                    textSize="text-sm"
+                  >
+                    Custom
+                  </Typography>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setValue([currentColor, ...selectedColors]);
+                      setSelectedColors([currentColor, ...selectedColors]);
+                      setShowColorPicker(false);
+                    }}
+                  >
+                    <Image src={closeIcon} alt="" />
+                  </div>
+                </div>
+                <ColorPicker
+                  color={color}
+                  onChange={(currentColor) => {
+                    setColor(currentColor);
+
+                    setCurrentColor(currentColor.hex);
+                  }}
+                />
+                <div className="border-solid border-gray-200 border-b-[1px] px-2 pb-4">
+                  <div className="flex items-center">
+                    <div className="w-[25%] h-[1.5rem] flex items-center justify-center px-2">
+                      <Typography
+                        textColor="text-white"
+                        textWeight="font-medium"
+                        textSize="text-xs"
+                      >
+                        Hex
+                      </Typography>
+                    </div>
+                    <div className="w-[75%]  h-[1.5rem] border-solid border-[2px] border-[rgba(13,153,255)] flex items-center">
+                      <div className="w-[70%] flex items-center">
+                        <p className="font-medium text-xs text-white bg-[rgba(13,153,255,.2)] ml-[1px]">
+                          {currentColor}
+                        </p>
+                      </div>
+                      <div className="w-[30%] border-l-[1px] border-solid border-gray-400">
+                        <p className="font-medium text-sm text-white pl-[10px]">
+                          100%
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <div>
+                    <div>
+                      <Typography
+                        textColor="text-white"
+                        textWeight="font-[600]"
+                        textSize="text-sm"
+                      >
+                        Document Colors
+                      </Typography>
+                      <div className="grid grid-cols-9 gap-2 mt-2 cursor-pointer">
+                        {colorArray.map((col, index) => (
+                          <div
+                            key={index}
+                            onClick={() => {
+                              setCurrentColor(col);
+                            }}
+                            style={{ backgroundColor: col }}
+                            className="w-[1rem] h-[1rem]"
+                          ></div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default VariantInput;
