@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import HomePageHeader from "@/components/Header";
 import Image, { StaticImageData } from "next/image";
 import Footer from "@/components/Footer";
@@ -22,7 +22,6 @@ import Typography from "@/components/Typography";
 import Button from "@/components/Button";
 
 import BrandPartners from "@/components/BrandPartners";
-import React from "react";
 
 // Type definition for the objects in the designersImage array.
 // This ensures type safety and provides autocompletion for properties.
