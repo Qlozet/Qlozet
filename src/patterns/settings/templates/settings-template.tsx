@@ -39,21 +39,18 @@ export const SettingsTemplate: React.FC<SettingsTemplateProps> = ({
   navigationItems,
   activeTab,
   shopDetails,
-  className
+  className,
 }) => {
   return (
-    <section className={cn("", className)}>
-      <div className="flex bg-[#F8F9FA]">
-        <div className="w-full p-4">
+    <section className={cn('', className)}>
+      <div className='flex bg-[#F8F9FA]'>
+        <div className='w-full p-4'>
           <SettingsNavigation
             navigationItems={navigationItems}
             activeTab={activeTab}
           />
-          
-          <SettingsContent
-            activeTab={activeTab}
-            shopDetails={shopDetails}
-          />
+
+          <SettingsContent activeTab={activeTab} shopDetails={shopDetails} />
         </div>
       </div>
     </section>

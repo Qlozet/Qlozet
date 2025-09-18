@@ -1,4 +1,4 @@
-import { baseAPI } from "../../api/base-api";
+import { baseAPI } from '../../api/base-api';
 
 // Types for products
 export interface Product {
@@ -8,7 +8,7 @@ export interface Product {
   category: string;
   price: number;
   stock: number;
-  status: "active" | "draft" | "inactive";
+  status: 'active' | 'draft' | 'inactive';
   images: string[];
   variants?: ProductVariant[];
   customizations?: ProductCustomization[];
@@ -38,7 +38,7 @@ export interface Category {
   name: string;
   description?: string;
   parentId?: string;
-  status: "active" | "inactive";
+  status: 'active' | 'inactive';
   createdAt?: string;
   updatedAt?: string;
 }
@@ -49,7 +49,7 @@ export interface CreateProductRequest {
   category: string;
   price: number;
   stock: number;
-  status: "active" | "draft" | "inactive";
+  status: 'active' | 'draft' | 'inactive';
   images: string[];
   variants?: Omit<ProductVariant, 'id'>[];
   customizations?: Omit<ProductCustomization, 'id'>[];
@@ -97,7 +97,7 @@ export const productsApiSlice = baseAPI.injectEndpoints({
           method: 'GET',
         };
       },
-      providesTags: ['Products']
+      providesTags: ['Products'],
     }),
 
     // Get single product by ID
@@ -126,22 +126,19 @@ export const productsApiSlice = baseAPI.injectEndpoints({
         method: 'PUT',
         body: productData,
       }),
-      invalidatesTags: [
-        'Product',
-        'Products'
-      ],
+      invalidatesTags: ['Product', 'Products'],
     }),
 
     // Delete product
-    deleteProduct: builder.mutation<{ success: boolean; message: string }, string>({
+    deleteProduct: builder.mutation<
+      { success: boolean; message: string },
+      string
+    >({
       query: (id) => ({
         url: `/products/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: [
-        'Product',
-        'Products'
-      ],
+      invalidatesTags: ['Product', 'Products'],
     }),
 
     // Get categories
@@ -176,17 +173,88 @@ export const productsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Get product analytics/stats
-    getProductStats: builder.query<{
-      totalProducts: number;
-      activeProducts: number;
-      draftProducts: number;
-      inactiveProducts: number;
-      lowStockProducts: number;
-    }, void>({
+    getProductStats: builder.query<
+      {
+        totalProducts: number;
+        activeProducts: number;
+        draftProducts: number;
+        inactiveProducts: number;
+        lowStockProducts: number;
+      },
+      void
+    >({
       query: () => ({
         url: '/products/stats',
         method: 'GET',
       }),
+    }),
+
+    // Get all vendor products (for axios migration)
+    getAllVendorProducts: builder.query<any, void>({
+      query: () => ({
+        url: '/vendor/products/all',
+        method: 'GET',
+      }),
+      providesTags: ['Products'],
+    }),
+
+    // Create accessory product (for axios migration)
+    createAccessory: builder.mutation<any, any>({
+      query: (data) => ({
+        url: '/vendor/products/accessory',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Products'],
+    }),
+
+    // Toggle product status (for axios migration)
+    toggleProductStatus: builder.mutation<any, string>({
+      query: (productId) => ({
+        url: `/vendor/products/${productId}/toggle`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Products', 'Product'],
+    }),
+
+    // Delete vendor product (for axios migration)
+    deleteVendorProduct: builder.mutation<any, string>({
+      query: (productId) => ({
+        url: `/vendor/products/${productId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Products', 'Product'],
+    }),
+
+    // Upload single image (for axios migration)
+    uploadSingleImage: builder.mutation<any, FormData>({
+      query: (formData) => ({
+        url: '/vendor/products/single-image',
+        method: 'POST',
+        body: formData,
+      }),
+    }),
+
+    // Schedule product (for axios migration)
+    scheduleProduct: builder.mutation<
+      any,
+      { productId: string; date: string; time: string }
+    >({
+      query: ({ productId, date, time }) => ({
+        url: `/vendor/schedule/products?productId=${productId}&date=${date}&time=${time}`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Products', 'Product'],
+    }),
+
+    // Review item (for axios migration)
+    reviewItem: builder.mutation<any, { itemId: string; review: any }>({
+      query: ({ itemId, review }) => ({
+        url: `/vendor/products/review/${itemId}`,
+        method: 'PUT',
+        body: review,
+      }),
+      invalidatesTags: ['Products', 'Product'],
     }),
   }),
 });
@@ -204,4 +272,11 @@ export const {
   useGetProductStatsQuery,
   useLazyGetProductsQuery,
   useLazyGetProductQuery,
+  useGetAllVendorProductsQuery,
+  useCreateAccessoryMutation,
+  useToggleProductStatusMutation,
+  useDeleteVendorProductMutation,
+  useUploadSingleImageMutation,
+  useScheduleProductMutation,
+  useReviewItemMutation,
 } = productsApiSlice;

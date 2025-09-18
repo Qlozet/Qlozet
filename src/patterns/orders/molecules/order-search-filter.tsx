@@ -7,10 +7,26 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { orderFilterSchema, OrderFilterData } from '@/lib/validations/order';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form';
 import { Search, Filter, X, CalendarIcon } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -26,7 +42,7 @@ export const OrderSearchFilter: React.FC<OrderSearchFilterProps> = ({
   onFilter,
   onReset,
   isLoading = false,
-  initialFilters = {}
+  initialFilters = {},
 }) => {
   const form = useForm<OrderFilterData>({
     resolver: zodResolver(orderFilterSchema),
@@ -59,28 +75,29 @@ export const OrderSearchFilter: React.FC<OrderSearchFilterProps> = ({
     onReset();
   };
 
-  const hasActiveFilters = form.watch('search') || 
-                          form.watch('status') !== 'all' || 
-                          form.watch('paymentStatus') !== 'all' ||
-                          form.watch('dateRange');
+  const hasActiveFilters =
+    form.watch('search') ||
+    form.watch('status') !== 'all' ||
+    form.watch('paymentStatus') !== 'all' ||
+    form.watch('dateRange');
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
+        <div className='flex flex-col sm:flex-row gap-4'>
           {/* Search Field */}
           <FormField
             control={form.control}
-            name="search"
+            name='search'
             render={({ field }) => (
-              <FormItem className="flex-1">
+              <FormItem className='flex-1'>
                 <FormControl>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <div className='relative'>
+                    <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
                     <Input
                       {...field}
-                      placeholder="Search by order number, customer, or product..."
-                      className="pl-10"
+                      placeholder='Search by order number, customer, or product...'
+                      className='pl-10'
                       disabled={isLoading}
                     />
                   </div>
@@ -92,9 +109,9 @@ export const OrderSearchFilter: React.FC<OrderSearchFilterProps> = ({
           {/* Status Filter */}
           <FormField
             control={form.control}
-            name="status"
+            name='status'
             render={({ field }) => (
-              <FormItem className="w-full sm:w-48">
+              <FormItem className='w-full sm:w-48'>
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
@@ -102,18 +119,18 @@ export const OrderSearchFilter: React.FC<OrderSearchFilterProps> = ({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Order Status" />
+                      <SelectValue placeholder='Order Status' />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="confirmed">Confirmed</SelectItem>
-                    <SelectItem value="processing">Processing</SelectItem>
-                    <SelectItem value="shipped">Shipped</SelectItem>
-                    <SelectItem value="delivered">Delivered</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                    <SelectItem value="return">Return</SelectItem>
+                    <SelectItem value='all'>All Status</SelectItem>
+                    <SelectItem value='pending'>Pending</SelectItem>
+                    <SelectItem value='confirmed'>Confirmed</SelectItem>
+                    <SelectItem value='processing'>Processing</SelectItem>
+                    <SelectItem value='shipped'>Shipped</SelectItem>
+                    <SelectItem value='delivered'>Delivered</SelectItem>
+                    <SelectItem value='cancelled'>Cancelled</SelectItem>
+                    <SelectItem value='return'>Return</SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>
@@ -123,9 +140,9 @@ export const OrderSearchFilter: React.FC<OrderSearchFilterProps> = ({
           {/* Payment Status Filter */}
           <FormField
             control={form.control}
-            name="paymentStatus"
+            name='paymentStatus'
             render={({ field }) => (
-              <FormItem className="w-full sm:w-48">
+              <FormItem className='w-full sm:w-48'>
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
@@ -133,15 +150,15 @@ export const OrderSearchFilter: React.FC<OrderSearchFilterProps> = ({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Payment Status" />
+                      <SelectValue placeholder='Payment Status' />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="all">All Payments</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="failed">Failed</SelectItem>
-                    <SelectItem value="refunded">Refunded</SelectItem>
+                    <SelectItem value='all'>All Payments</SelectItem>
+                    <SelectItem value='pending'>Pending</SelectItem>
+                    <SelectItem value='paid'>Paid</SelectItem>
+                    <SelectItem value='failed'>Failed</SelectItem>
+                    <SelectItem value='refunded'>Refunded</SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>
@@ -149,21 +166,21 @@ export const OrderSearchFilter: React.FC<OrderSearchFilterProps> = ({
           />
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className='flex flex-col sm:flex-row gap-4'>
           {/* Date Range Filter */}
           <FormField
             control={form.control}
-            name="dateRange"
+            name='dateRange'
             render={({ field }) => (
-              <FormItem className="flex flex-col">
+              <FormItem className='flex flex-col'>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
-                        variant="outline"
+                        variant='outline'
                         className={cn(
-                          "w-full sm:w-64 pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
+                          'w-full sm:w-64 pl-3 text-left font-normal',
+                          !field.value && 'text-muted-foreground'
                         )}
                         disabled={isLoading}
                       >
@@ -172,17 +189,21 @@ export const OrderSearchFilter: React.FC<OrderSearchFilterProps> = ({
                         ) : (
                           <span>Pick a date range</span>
                         )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent className='w-auto p-0' align='start'>
                     <Calendar
-                      mode="range"
-                      selected={field.value ? {
-                        from: new Date(field.value.startDate),
-                        to: new Date(field.value.endDate),
-                      } : undefined}
+                      mode='range'
+                      selected={
+                        field.value
+                          ? {
+                              from: new Date(field.value.startDate),
+                              to: new Date(field.value.endDate),
+                            }
+                          : undefined
+                      }
                       onSelect={(range) => {
                         if (range?.from && range?.to) {
                           field.onChange({
@@ -204,9 +225,9 @@ export const OrderSearchFilter: React.FC<OrderSearchFilterProps> = ({
           {/* Sort By */}
           <FormField
             control={form.control}
-            name="sortBy"
+            name='sortBy'
             render={({ field }) => (
-              <FormItem className="w-full sm:w-48">
+              <FormItem className='w-full sm:w-48'>
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
@@ -214,15 +235,15 @@ export const OrderSearchFilter: React.FC<OrderSearchFilterProps> = ({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Sort by" />
+                      <SelectValue placeholder='Sort by' />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="orderNumber">Order Number</SelectItem>
-                    <SelectItem value="customerName">Customer</SelectItem>
-                    <SelectItem value="total">Amount</SelectItem>
-                    <SelectItem value="createdAt">Date Created</SelectItem>
-                    <SelectItem value="status">Status</SelectItem>
+                    <SelectItem value='orderNumber'>Order Number</SelectItem>
+                    <SelectItem value='customerName'>Customer</SelectItem>
+                    <SelectItem value='total'>Amount</SelectItem>
+                    <SelectItem value='createdAt'>Date Created</SelectItem>
+                    <SelectItem value='status'>Status</SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>
@@ -232,9 +253,9 @@ export const OrderSearchFilter: React.FC<OrderSearchFilterProps> = ({
           {/* Sort Order */}
           <FormField
             control={form.control}
-            name="sortOrder"
+            name='sortOrder'
             render={({ field }) => (
-              <FormItem className="w-full sm:w-32">
+              <FormItem className='w-full sm:w-32'>
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
@@ -246,8 +267,8 @@ export const OrderSearchFilter: React.FC<OrderSearchFilterProps> = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="asc">A-Z</SelectItem>
-                    <SelectItem value="desc">Z-A</SelectItem>
+                    <SelectItem value='asc'>A-Z</SelectItem>
+                    <SelectItem value='desc'>Z-A</SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>
@@ -256,25 +277,25 @@ export const OrderSearchFilter: React.FC<OrderSearchFilterProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2">
-          <Button 
-            type="submit" 
+        <div className='flex gap-2'>
+          <Button
+            type='submit'
             disabled={isLoading}
-            className="flex items-center gap-2"
+            className='flex items-center gap-2'
           >
-            <Filter className="h-4 w-4" />
+            <Filter className='h-4 w-4' />
             Filter
           </Button>
-          
+
           {hasActiveFilters && (
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type='button'
+              variant='outline'
               onClick={handleReset}
               disabled={isLoading}
-              className="flex items-center gap-2"
+              className='flex items-center gap-2'
             >
-              <X className="h-4 w-4" />
+              <X className='h-4 w-4' />
               Reset
             </Button>
           )}

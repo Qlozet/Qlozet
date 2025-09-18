@@ -4,8 +4,18 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { companyDetailsSchema, type CompanyDetailsData } from '@/lib/validations/settings';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  companyDetailsSchema,
+  type CompanyDetailsData,
+} from '@/lib/validations/settings';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FormSectionHeader } from '../atoms/form-section-header';
@@ -19,7 +29,7 @@ interface CompanyDetailsFormProps {
 export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
   initialData,
   onSubmit,
-  isLoading = false
+  isLoading = false,
 }) => {
   const form = useForm<CompanyDetailsData>({
     resolver: zodResolver(companyDetailsSchema),
@@ -41,20 +51,20 @@ export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
   });
 
   return (
-    <div className="bg-white rounded-[12px] p-6 shadow-sm">
-      <FormSectionHeader title="Shop Details" />
-      
+    <div className='bg-white rounded-[12px] p-6 shadow-sm'>
+      <FormSectionHeader title='Shop Details' />
+
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             <FormField
               control={form.control}
-              name="companyName"
+              name='companyName'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Company Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter company name" {...field} />
+                    <Input placeholder='Enter company name' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -63,12 +73,16 @@ export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
 
             <FormField
               control={form.control}
-              name="email"
+              name='email'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Business Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="Enter business email" {...field} />
+                    <Input
+                      type='email'
+                      placeholder='Enter business email'
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -77,12 +91,12 @@ export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
 
             <FormField
               control={form.control}
-              name="phone"
+              name='phone'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Phone Number</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter phone number" {...field} />
+                    <Input placeholder='Enter phone number' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -91,12 +105,12 @@ export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
 
             <FormField
               control={form.control}
-              name="timeZone"
+              name='timeZone'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Time Zone</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter time zone" {...field} />
+                    <Input placeholder='Enter time zone' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -105,12 +119,12 @@ export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
 
             <FormField
               control={form.control}
-              name="addressLine1"
+              name='addressLine1'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Address Line 1</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter address line 1" {...field} />
+                    <Input placeholder='Enter address line 1' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -119,12 +133,12 @@ export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
 
             <FormField
               control={form.control}
-              name="addressLine2"
+              name='addressLine2'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Address Line 2 (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter address line 2" {...field} />
+                    <Input placeholder='Enter address line 2' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -133,12 +147,12 @@ export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
 
             <FormField
               control={form.control}
-              name="city"
+              name='city'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>City</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter city" {...field} />
+                    <Input placeholder='Enter city' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -147,12 +161,12 @@ export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
 
             <FormField
               control={form.control}
-              name="state"
+              name='state'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>State</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter state" {...field} />
+                    <Input placeholder='Enter state' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -161,12 +175,12 @@ export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
 
             <FormField
               control={form.control}
-              name="country"
+              name='country'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Country</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter country" {...field} />
+                    <Input placeholder='Enter country' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -175,12 +189,12 @@ export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
 
             <FormField
               control={form.control}
-              name="nin"
+              name='nin'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>NIN (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter NIN" {...field} />
+                    <Input placeholder='Enter NIN' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -189,12 +203,12 @@ export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
 
             <FormField
               control={form.control}
-              name="bvn"
+              name='bvn'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>BVN (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter BVN" {...field} />
+                    <Input placeholder='Enter BVN' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -202,8 +216,8 @@ export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
             />
           </div>
 
-          <div className="flex justify-end">
-            <Button type="submit" disabled={isLoading}>
+          <div className='flex justify-end'>
+            <Button type='submit' disabled={isLoading}>
               {isLoading ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>

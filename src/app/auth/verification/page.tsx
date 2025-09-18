@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 import { VerificationTemplate } from '@/patterns/auth/templates/verification-template';

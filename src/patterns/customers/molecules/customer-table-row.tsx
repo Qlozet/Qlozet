@@ -28,11 +28,11 @@ interface CustomerTableRowProps {
   onSelect?: (customerId: string, selected: boolean) => void;
 }
 
-export const CustomerTableRow: React.FC<CustomerTableRowProps> = ({ 
-  customer, 
+export const CustomerTableRow: React.FC<CustomerTableRowProps> = ({
+  customer,
   onViewDetails,
   isSelected = false,
-  onSelect
+  onSelect,
 }) => {
   const handleViewDetails = () => {
     onViewDetails(customer._id);
@@ -43,31 +43,31 @@ export const CustomerTableRow: React.FC<CustomerTableRowProps> = ({
   };
 
   return (
-    <tr className="hover:bg-gray-50 transition-colors">
+    <tr className='hover:bg-gray-50 transition-colors'>
       {onSelect && (
         <CustomerTableCell>
           <input
-            type="checkbox"
+            type='checkbox'
             checked={isSelected}
             onChange={handleSelect}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            className='h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded'
           />
         </CustomerTableCell>
       )}
 
       <CustomerTableCell>
-        <div className="flex items-center space-x-3">
+        <div className='flex items-center space-x-3'>
           <CustomerAvatar
             src={customer.profileImage}
             alt={customer.name}
             name={customer.name}
-            size="md"
+            size='md'
           />
           <div>
-            <p className="font-medium text-gray-900">{customer.name}</p>
-            <div className="flex items-center space-x-2 mt-1">
-              <Mail className="h-3 w-3 text-gray-400" />
-              <p className="text-xs text-gray-500">{customer.email}</p>
+            <p className='font-medium text-gray-900'>{customer.name}</p>
+            <div className='flex items-center space-x-2 mt-1'>
+              <Mail className='h-3 w-3 text-gray-400' />
+              <p className='text-xs text-gray-500'>{customer.email}</p>
             </div>
           </div>
         </div>
@@ -79,43 +79,43 @@ export const CustomerTableRow: React.FC<CustomerTableRowProps> = ({
 
       <CustomerTableCell>
         {customer.phone ? (
-          <div className="flex items-center space-x-1">
-            <Phone className="h-3 w-3 text-gray-400" />
-            <span className="text-sm">{customer.phone}</span>
+          <div className='flex items-center space-x-1'>
+            <Phone className='h-3 w-3 text-gray-400' />
+            <span className='text-sm'>{customer.phone}</span>
           </div>
         ) : (
-          <span className="text-gray-400 text-sm">No phone</span>
+          <span className='text-gray-400 text-sm'>No phone</span>
         )}
       </CustomerTableCell>
 
-      <CustomerTableCell align="right">
+      <CustomerTableCell align='right'>
         {customer.orders?.length || 0} orders
       </CustomerTableCell>
 
-      <CustomerTableCell align="right">
+      <CustomerTableCell align='right'>
         {customer.totalSpent ? (
-          <span className="font-medium">
+          <span className='font-medium'>
             ${customer.totalSpent.toLocaleString()}
           </span>
         ) : (
-          <span className="text-gray-400">$0</span>
+          <span className='text-gray-400'>$0</span>
         )}
       </CustomerTableCell>
 
       <CustomerTableCell>
-        <span className="text-sm text-gray-500">
+        <span className='text-sm text-gray-500'>
           {format(new Date(customer.createdAt), 'MMM d, yyyy')}
         </span>
       </CustomerTableCell>
 
-      <CustomerTableCell align="right">
+      <CustomerTableCell align='right'>
         <Button
-          variant="outline"
-          size="sm"
+          variant='outline'
+          size='sm'
           onClick={handleViewDetails}
-          className="flex items-center space-x-1"
+          className='flex items-center space-x-1'
         >
-          <Eye className="h-3 w-3" />
+          <Eye className='h-3 w-3' />
           <span>View</span>
         </Button>
       </CustomerTableCell>

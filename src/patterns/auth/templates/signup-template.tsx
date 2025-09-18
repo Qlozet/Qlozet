@@ -1,10 +1,13 @@
-"use client";
+'use client';
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { AUTH_ROUTES } from '@/lib/routes';
 import { AuthLayout } from '../organisms/auth-layout';
-import { MultiStepSignupForm, SignupFormData } from '../molecules/multi-step-signup-form';
+import {
+  MultiStepSignupForm,
+  SignupFormData,
+} from '../molecules/multi-step-signup-form';
 import { useRegisterMutation } from '@/redux/services/auth/auth.api-slice';
 import { useDispatch } from 'react-redux';
 // import { setEmail } from '@/redux/slices/filter-slice'; // Assuming email is stored here
@@ -44,27 +47,30 @@ export const SignupTemplate: React.FC<SignupTemplateProps> = ({
       if (response) {
         // Store email for verification step if needed
         // dispatch(setEmail(data.businessEmail));
-        
-        toast(<Toast text="Account created successfully! Please check your email for verification." type="success" />);
+
+        toast(
+          <Toast
+            text='Account created successfully! Please check your email for verification.'
+            type='success'
+          />
+        );
         router.push(AUTH_ROUTES.verification);
       }
     } catch (error: any) {
-      const errorMessage = error?.data?.message || 'Failed to create account. Please try again.';
-      toast(<Toast text={errorMessage} type="danger" />);
+      const errorMessage =
+        error?.data?.message || 'Failed to create account. Please try again.';
+      toast(<Toast text={errorMessage} type='danger' />);
     }
   };
 
   return (
     <AuthLayout
-      title="Sign Up"
-      subtitle="Create your business account"
+      title='Sign Up'
+      subtitle='Create your business account'
       className={className}
       showImage={false} // Hide image for multi-step form to save space
     >
-      <MultiStepSignupForm 
-        onSubmit={handleSignup}
-        loading={isLoading}
-      />
+      <MultiStepSignupForm onSubmit={handleSignup} loading={isLoading} />
     </AuthLayout>
   );
 };

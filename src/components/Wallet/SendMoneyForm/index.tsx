@@ -1,26 +1,30 @@
-import Typography from "../../Typography";
-import Image from "next/image";
-import closeIcon from "@/public/assets/svg/material-symbols_close-rounded.svg";
-import Button from "../../Button";
-import TextInput from "../../TextInput";
-import SelectInput from "../../SelectInput";
-import NumberInput from "../../NumberInput";
-import CheckBoxInput from "../../CheckboxInput";
-import { useEffect, useState } from "react";
-import { getRequest, postRequest } from "@/api/method";
-import Toast from "@/components/ToastComponent/toast";
-import toast from "react-hot-toast";
+import Typography from '../../Typography';
+import Image from 'next/image';
+import closeIcon from '@/public/assets/svg/material-symbols_close-rounded.svg';
+import Button from '../../Button';
+import TextInput from '../../TextInput';
+import SelectInput from '../../SelectInput';
+import NumberInput from '../../NumberInput';
+import CheckBoxInput from '../../CheckboxInput';
+import { useEffect, useState } from 'react';
+import {
+  useCreateBeneficiaryMutation,
+  useLazyVerifyAccountNumberQuery,
+} from '@/redux/services/wallet/wallet.api-slice';
+import Toast from '@/components/ToastComponent/toast';
+import toast from 'react-hot-toast';
 const SendMoneyForm = ({ closeModal, banks }) => {
-  const [fetchingAccountName, setFetchingAccountName] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [createBeneficiary, { isLoading }] = useCreateBeneficiaryMutation();
+  const [verifyAccountNumber, { isLoading: fetchingAccountName }] =
+    useLazyVerifyAccountNumberQuery();
   const [pageLoading, setPageLoading] = useState(false);
   const [formData, setFormData] = useState({
-    bankName: "",
-    accountNumber: "",
-    accountName: "",
-    amount: "",
-    naration: "",
-    schedulePayment: "",
+    bankName: '',
+    accountNumber: '',
+    accountName: '',
+    amount: '',
+    naration: '',
+    schedulePayment: '',
     billingAddress: false,
   });
 
@@ -32,44 +36,42 @@ const SendMoneyForm = ({ closeModal, banks }) => {
     naration: false,
     schedulePayment: false,
   });
-  const [bankCode, setBankCode] = useState("");
+  const [bankCode, setBankCode] = useState('');
   const addBeneficiary = async () => {
     try {
-      const response = await postRequest("/vendor/beneficiaries", {
-        bank: formData.bankName,
+      await createBeneficiary({
+        name: formData.accountName,
         accountNumber: formData.accountNumber,
-        accountName: formData.accountName,
-        amount: formData.amount,
-        naration: formData.naration,
-        schedulePayment: formData.schedulePayment,
-      });
-      if (response.data) {
-        closeModal("");
-        toast(<Toast text={response?.message} type="success" />);
-      }
-    } catch (error) { toast(<Toast text={"An error occured"} type="danger" />); }
+        bankCode,
+      }).unwrap();
+
+      closeModal('');
+      toast(<Toast text='Beneficiary added successfully' type='success' />);
+    } catch (error) {
+      console.error('Error adding beneficiary:', error);
+      toast(<Toast text='An error occurred' type='danger' />);
+    }
   };
 
   const getUserAccountName = async () => {
-    if (formData.accountNumber.length === 10) {
+    if (formData.accountNumber.length === 10 && bankCode) {
       try {
-        setFetchingAccountName(true);
-        const response = await getRequest(
-          `vendor/transfer/name-enquiry?bankCode=${bankCode}&accountNumber=${formData.accountNumber}`
-        );
-        response && setFetchingAccountName(false);
-        if (response) {
+        const response = await verifyAccountNumber({
+          accountNumber: formData.accountNumber,
+          bankCode,
+        }).unwrap();
+
+        if (response?.data?.name) {
           setFormData((prevData) => {
             return {
               ...prevData,
-              accountName: response?.data?.data?.data?.account_name,
+              accountName: response.data.name,
             };
           });
-        } else {
-          setFetchingAccountName(false);
         }
       } catch (error) {
-        setFetchingAccountName(false);
+        console.error('Error verifying account:', error);
+        toast(<Toast text='Could not verify account' type='danger' />);
       }
     }
   };
@@ -77,19 +79,19 @@ const SendMoneyForm = ({ closeModal, banks }) => {
     getUserAccountName();
   }, [formData.accountNumber]);
   return (
-    <div className="w-full flex items-center justify-center mt-6 min-h-[50vh]">
-      <div className="bg-white p-4 rounded-[12px] w-full lg:w-[35%]  min-h-[80vh] mx-4 lg:mx-0">
+    <div className='w-full flex items-center justify-center mt-6 min-h-[50vh]'>
+      <div className='bg-white p-4 rounded-[12px] w-full lg:w-[35%]  min-h-[80vh] mx-4 lg:mx-0'>
         <div>
-          <div className="flex items-center justify-between">
+          <div className='flex items-center justify-between'>
             <Typography
-              textColor="text-black"
-              textWeight="font-[700]"
-              textSize="text-[18px]"
+              textColor='text-black'
+              textWeight='font-[700]'
+              textSize='text-[18px]'
             >
               Send Money
             </Typography>
-            <div onClick={closeModal} className="cursor-pointer">
-              <Image src={closeIcon} alt="" />
+            <div onClick={closeModal} className='cursor-pointer'>
+              <Image src={closeIcon} alt='' />
             </div>
           </div>
           <div
@@ -98,7 +100,7 @@ const SendMoneyForm = ({ closeModal, banks }) => {
             <SelectInput
               readOnly={false}
               error={requiredFormData.bankName}
-              placeholder={"Select an option"}
+              placeholder={'Select an option'}
               setValue={(data) => {
                 setFormData((prevData) => {
                   return { ...prevData, bankName: data };
@@ -117,19 +119,23 @@ const SendMoneyForm = ({ closeModal, banks }) => {
                 }
               }}
               data={banks.map((item) => {
-                return { text: item.name, color: "" };
+                return { text: item.name, color: '' };
               })}
-              label="Select bank"
+              label='Select bank'
               value={formData.bankName}
             />
             <NumberInput
-              label="Account number"
-              placeholder="Enter Account number"
+              label='Account number'
+              placeholder='Enter Account number'
               setValue={(data) => {
                 if (data) {
                   if (data.length < 11) {
                     setFormData((prevData) => {
-                      return { ...prevData, accountNumber: data, accountName: "" };
+                      return {
+                        ...prevData,
+                        accountNumber: data,
+                        accountName: '',
+                      };
                     });
                   }
                 } else {
@@ -144,8 +150,8 @@ const SendMoneyForm = ({ closeModal, banks }) => {
             />
 
             <TextInput
-              label="Account name"
-              placeholder="Enter Account name"
+              label='Account name'
+              placeholder='Enter Account name'
               setValue={(data) => {
                 if (data) {
                   setRequiredFormData((prevData) => {
@@ -162,8 +168,8 @@ const SendMoneyForm = ({ closeModal, banks }) => {
               disabled={true}
             />
             <NumberInput
-              label="Amount"
-              placeholder="Enter Amount"
+              label='Amount'
+              placeholder='Enter Amount'
               setValue={(data) => {
                 setFormData((prevData) => {
                   return { ...prevData, amount: data };
@@ -182,8 +188,8 @@ const SendMoneyForm = ({ closeModal, banks }) => {
               value={formData.amount}
             />
             <TextInput
-              label="Narration"
-              placeholder="Enter Narration"
+              label='Narration'
+              placeholder='Enter Narration'
               setValue={(data) => {
                 setFormData((prevData) => {
                   return { ...prevData, naration: data };
@@ -202,8 +208,8 @@ const SendMoneyForm = ({ closeModal, banks }) => {
               value={formData.naration}
             />
             <TextInput
-              label="Schedule payment"
-              placeholder="Enter Schedule payment"
+              label='Schedule payment'
+              placeholder='Enter Schedule payment'
               setValue={(data) => {
                 setFormData((prevData) => {
                   return { ...prevData, schedulePayment: data };
@@ -221,15 +227,15 @@ const SendMoneyForm = ({ closeModal, banks }) => {
               error={requiredFormData.schedulePayment}
               value={formData.schedulePayment}
             />
-            <CheckBoxInput label="Save recipient as beneficiary" />
+            <CheckBoxInput label='Save recipient as beneficiary' />
 
-            <div className="flex items-center justify-end mt-10">
+            <div className='flex items-center justify-end mt-10'>
               <Button
                 loading={isLoading}
-                children="Continue"
-                btnSize="large"
-                variant="primary"
-                maxWidth="max-w-[8rem]"
+                children='Continue'
+                btnSize='large'
+                variant='primary'
+                maxWidth='max-w-[8rem]'
                 clickHandler={() => {
                   addBeneficiary();
                 }}

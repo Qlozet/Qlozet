@@ -1,7 +1,7 @@
 import React from 'react';
-import ExportComponent from "../../ExportButton";
-import CustomerHistoryTableItem from "../CustomerHistoryTableItemMobile";
-import HistoryTableItem from "../HistoryTableItem";
+import ExportComponent from '../../ExportButton';
+import CustomerHistoryTableItem from '../CustomerHistoryTableItemMobile';
+import HistoryTableItem from '../HistoryTableItem';
 
 interface HistoryTableItemData {
   id: string;
@@ -19,27 +19,37 @@ interface HistoryTableProps {
 
 const HistoryTable: React.FC<HistoryTableProps> = ({ data, modal }) => {
   return (
-    <div className="">
-      <table className="w-full hidden md:block">
-        <thead className="w-full bg-[#F4F4F4] ">
+    <div className=''>
+      <table className='w-full hidden md:block'>
+        <thead className='w-full bg-[#F4F4F4] '>
           <tr>
-            <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-medium text-dark">Date</div>
+            <th className='w-[8%] p-4 text-xs'>
+              <div className='flex items-center justify-start font-medium text-dark'>
+                Date
+              </div>
             </th>
-            <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-medium text-dark">Product name</div>
+            <th className='w-[8%] p-4 text-xs'>
+              <div className='flex items-center justify-start font-medium text-dark'>
+                Product name
+              </div>
             </th>
-            <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-medium text-dark">Product price</div>
+            <th className='w-[8%] p-4 text-xs'>
+              <div className='flex items-center justify-start font-medium text-dark'>
+                Product price
+              </div>
             </th>
-            <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-medium text-dark">Amount paid</div>
+            <th className='w-[8%] p-4 text-xs'>
+              <div className='flex items-center justify-start font-medium text-dark'>
+                Amount paid
+              </div>
             </th>
-            <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-medium text-dark">Delivery Status</div>
+            <th className='w-[8%] p-4 text-xs'>
+              <div className='flex items-center justify-start font-medium text-dark'>
+                Delivery Status
+              </div>
             </th>
-            <th className="w-[8%] p-4 text-xs">
-              <div className="flex items-center justify-start font-medium text-dark"></div>
+            <th className='w-[8%] p-4 text-xs'>
+              <div className='flex items-center justify-start font-medium text-dark'></div>
             </th>
           </tr>
         </thead>
@@ -58,9 +68,7 @@ const HistoryTable: React.FC<HistoryTableProps> = ({ data, modal }) => {
           ))}
         </tbody>
       </table>
-      <div>
-        {/* Mobile view rendering can go here if needed */}
-      </div>
+      <div>{/* Mobile view rendering can go here if needed */}</div>
     </div>
   );
 };

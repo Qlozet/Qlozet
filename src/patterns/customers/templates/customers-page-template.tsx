@@ -9,8 +9,18 @@ import { CustomersTable } from '../organisms/customers-table';
 import { CustomerDetailsModal } from '../organisms/customer-details-modal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { useGetCustomersQuery, useGetCustomerStatsQuery } from '@/redux/services/customers/customers.api-slice';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+import {
+  useGetCustomersQuery,
+  useGetCustomerStatsQuery,
+} from '@/redux/services/customers/customers.api-slice';
 import { CustomerFilterData } from '@/lib/validations/customer';
 import { Plus, Download, Upload } from 'lucide-react';
 import Typography from '@/components/compat/Typography';
@@ -25,7 +35,7 @@ interface CustomersPageTemplateProps {
 }
 
 export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
-  title = "Customers",
+  title = 'Customers',
   showCreateButton = true,
   showBulkActions = true,
   onCreateCustomer,
@@ -45,17 +55,15 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
   const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
 
   // API queries
-  const { 
-    data: customersResponse, 
-    isLoading: loadingCustomers, 
+  const {
+    data: customersResponse,
+    isLoading: loadingCustomers,
     error: customersError,
     refetch: refetchCustomers,
   } = useGetCustomersQuery(filters);
 
-  const { 
-    data: statsResponse, 
-    isLoading: loadingStats 
-  } = useGetCustomerStatsQuery();
+  const { data: statsResponse, isLoading: loadingStats } =
+    useGetCustomerStatsQuery();
 
   const customers = customersResponse?.data || [];
   const totalPages = customersResponse?.totalPages || 1;
@@ -82,30 +90,31 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
 
   // Handle pagination
   const handlePageChange = (page: number) => {
-    setFilters(prev => ({ ...prev, page }));
+    setFilters((prev) => ({ ...prev, page }));
   };
 
   // Handle sorting
-  const handleSort = (field: keyof typeof customers[0], direction: 'asc' | 'desc') => {
-    setFilters(prev => ({ 
-      ...prev, 
+  const handleSort = (
+    field: keyof (typeof customers)[0],
+    direction: 'asc' | 'desc'
+  ) => {
+    setFilters((prev) => ({
+      ...prev,
       sortBy: field as any,
       sortOrder: direction,
-      page: 1 
+      page: 1,
     }));
   };
 
   // Handle customer selection
   const handleSelectCustomer = (customerId: string, selected: boolean) => {
-    setSelectedCustomers(prev => 
-      selected 
-        ? [...prev, customerId]
-        : prev.filter(id => id !== customerId)
+    setSelectedCustomers((prev) =>
+      selected ? [...prev, customerId] : prev.filter((id) => id !== customerId)
     );
   };
 
   const handleSelectAll = (selected: boolean) => {
-    setSelectedCustomers(selected ? customers.map(c => c._id) : []);
+    setSelectedCustomers(selected ? customers.map((c) => c._id) : []);
   };
 
   // Handle customer details modal
@@ -114,77 +123,78 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
   };
 
   // Handle bulk actions
-  const handleBulkAction = (action: 'activate' | 'deactivate' | 'delete' | 'export') => {
+  const handleBulkAction = (
+    action: 'activate' | 'deactivate' | 'delete' | 'export'
+  ) => {
     if (selectedCustomers.length === 0) return;
-    
+
     // Implement bulk actions here
     console.log(`Bulk ${action} for customers:`, selectedCustomers);
-    
+
     // Clear selection after action
     setSelectedCustomers([]);
   };
 
   // Prepare stats data
-  const statsData = stats ? {
-    totalCustomers: stats.totalCustomers || totalCount,
-    activeCustomers: stats.activeCustomers || 0,
-    topLocation: 'Lagos State', // This would come from stats API
-    growth: 12.5, // This would come from stats API
-  } : {
-    totalCustomers: totalCount,
-    activeCustomers: 0,
-    topLocation: 'Loading...',
-  };
+  const statsData = stats
+    ? {
+        totalCustomers: stats.totalCustomers || totalCount,
+        activeCustomers: stats.activeCustomers || 0,
+        topLocation: 'Lagos State', // This would come from stats API
+        growth: 12.5, // This would come from stats API
+      }
+    : {
+        totalCustomers: totalCount,
+        activeCustomers: 0,
+        topLocation: 'Loading...',
+      };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
+    <div className='min-h-screen bg-gray-50'>
+      <div className='max-w-7xl mx-auto p-6 space-y-6'>
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
           <div>
-            <Typography 
-              variant="h1" 
-              className="text-2xl font-bold text-gray-900"
+            <Typography
+              variant='h1'
+              className='text-2xl font-bold text-gray-900'
             >
               {title}
             </Typography>
-            <Typography 
-              variant="body2" 
-              className="text-gray-600 mt-1"
-            >
+            <Typography variant='body2' className='text-gray-600 mt-1'>
               Manage your customers and view their details
             </Typography>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className='flex items-center space-x-2'>
             {showBulkActions && (
               <>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant='outline'
                   onClick={onImportCustomers}
-                  className="flex items-center space-x-2"
+                  className='flex items-center space-x-2'
                 >
-                  <Upload className="h-4 w-4" />
+                  <Upload className='h-4 w-4' />
                   <span>Import</span>
                 </Button>
-                
-                <Button 
-                  variant="outline" 
+
+                <Button
+                  variant='outline'
                   onClick={onExportCustomers}
-                  className="flex items-center space-x-2"
+                  className='flex items-center space-x-2'
                 >
-                  <Download className="h-4 w-4" />
+                  <Download className='h-4 w-4' />
                   <span>Export</span>
                 </Button>
               </>
             )}
 
             {showCreateButton && (
-              <Button 
+              <Button
                 onClick={onCreateCustomer}
-                className="flex items-center space-x-2"
+                className='flex items-center space-x-2'
               >
-                <Plus className="h-4 w-4" />
+                <Plus className='h-4 w-4' />
                 <span>Add Customer</span>
               </Button>
             )}
@@ -192,10 +202,7 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
         </div>
 
         {/* Stats Section */}
-        <CustomerStatsSection 
-          stats={statsData} 
-          isLoading={loadingStats} 
-        />
+        <CustomerStatsSection stats={statsData} isLoading={loadingStats} />
 
         {/* Filters and Search */}
         <Card>
@@ -215,37 +222,38 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
         {/* Bulk Actions Bar */}
         {showBulkActions && selectedCustomers.length > 0 && (
           <Card>
-            <CardContent className="py-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">
-                  {selectedCustomers.length} customer{selectedCustomers.length !== 1 ? 's' : ''} selected
+            <CardContent className='py-4'>
+              <div className='flex items-center justify-between'>
+                <span className='text-sm text-gray-600'>
+                  {selectedCustomers.length} customer
+                  {selectedCustomers.length !== 1 ? 's' : ''} selected
                 </span>
-                
-                <div className="flex items-center space-x-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
+
+                <div className='flex items-center space-x-2'>
+                  <Button
+                    variant='outline'
+                    size='sm'
                     onClick={() => handleBulkAction('activate')}
                   >
                     Activate
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
+                  <Button
+                    variant='outline'
+                    size='sm'
                     onClick={() => handleBulkAction('deactivate')}
                   >
                     Deactivate
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
+                  <Button
+                    variant='outline'
+                    size='sm'
                     onClick={() => handleBulkAction('export')}
                   >
                     Export Selected
                   </Button>
-                  <Button 
-                    variant="destructive" 
-                    size="sm"
+                  <Button
+                    variant='destructive'
+                    size='sm'
                     onClick={() => handleBulkAction('delete')}
                   >
                     Delete
@@ -258,7 +266,7 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
 
         {/* Customer Table */}
         <Card>
-          <CardContent className="p-0">
+          <CardContent className='p-0'>
             <CustomersTable
               customers={customers}
               onViewDetails={handleViewDetails}
@@ -276,26 +284,33 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-600">
-              Showing {((filters.page - 1) * filters.limit) + 1} to{' '}
-              {Math.min(filters.page * filters.limit, totalCount)} of {totalCount} customers
+          <div className='flex items-center justify-between'>
+            <div className='text-sm text-gray-600'>
+              Showing {(filters.page - 1) * filters.limit + 1} to{' '}
+              {Math.min(filters.page * filters.limit, totalCount)} of{' '}
+              {totalCount} customers
             </div>
-            
+
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
-                  <PaginationPrevious 
-                    onClick={() => handlePageChange(Math.max(1, filters.page - 1))}
-                    className={filters.page === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  <PaginationPrevious
+                    onClick={() =>
+                      handlePageChange(Math.max(1, filters.page - 1))
+                    }
+                    className={
+                      filters.page === 1
+                        ? 'pointer-events-none opacity-50'
+                        : 'cursor-pointer'
+                    }
                   />
                 </PaginationItem>
-                
+
                 {[...Array(totalPages)].map((_, index) => {
                   const page = index + 1;
                   if (
-                    page === 1 || 
-                    page === totalPages || 
+                    page === 1 ||
+                    page === totalPages ||
                     (page >= filters.page - 1 && page <= filters.page + 1)
                   ) {
                     return (
@@ -303,7 +318,7 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
                         <PaginationLink
                           onClick={() => handlePageChange(page)}
                           isActive={filters.page === page}
-                          className="cursor-pointer"
+                          className='cursor-pointer'
                         >
                           {page}
                         </PaginationLink>
@@ -312,11 +327,17 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
                   }
                   return null;
                 })}
-                
+
                 <PaginationItem>
-                  <PaginationNext 
-                    onClick={() => handlePageChange(Math.min(totalPages, filters.page + 1))}
-                    className={filters.page === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  <PaginationNext
+                    onClick={() =>
+                      handlePageChange(Math.min(totalPages, filters.page + 1))
+                    }
+                    className={
+                      filters.page === totalPages
+                        ? 'pointer-events-none opacity-50'
+                        : 'cursor-pointer'
+                    }
                   />
                 </PaginationItem>
               </PaginationContent>
@@ -327,9 +348,9 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
         {/* Error handling */}
         {customersError && (
           <Card>
-            <CardContent className="p-6 text-center">
-              <p className="text-red-600 mb-4">Failed to load customers</p>
-              <Button onClick={() => refetchCustomers()} variant="outline">
+            <CardContent className='p-6 text-center'>
+              <p className='text-red-600 mb-4'>Failed to load customers</p>
+              <Button onClick={() => refetchCustomers()} variant='outline'>
                 Try Again
               </Button>
             </CardContent>

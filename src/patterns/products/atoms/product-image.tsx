@@ -14,12 +14,12 @@ interface ProductImageProps {
   fallback?: React.ReactNode;
 }
 
-export const ProductImage: React.FC<ProductImageProps> = ({ 
-  src, 
-  alt, 
+export const ProductImage: React.FC<ProductImageProps> = ({
+  src,
+  alt,
   size = 'md',
   className,
-  fallback
+  fallback,
 }) => {
   const sizeClasses = {
     xs: 'h-8 w-8',
@@ -30,13 +30,13 @@ export const ProductImage: React.FC<ProductImageProps> = ({
   };
 
   const defaultFallback = (
-    <div 
+    <div
       className={cn(
         'bg-gray-100 rounded-lg flex items-center justify-center',
         sizeClasses[size]
       )}
     >
-      <Package className="h-1/2 w-1/2 text-gray-400" />
+      <Package className='h-1/2 w-1/2 text-gray-400' />
     </div>
   );
 
@@ -45,7 +45,7 @@ export const ProductImage: React.FC<ProductImageProps> = ({
   }
 
   return (
-    <div 
+    <div
       className={cn(
         'relative overflow-hidden rounded-lg',
         sizeClasses[size],
@@ -56,8 +56,18 @@ export const ProductImage: React.FC<ProductImageProps> = ({
         src={src}
         alt={alt}
         fill
-        className="object-cover"
-        sizes={size === 'xs' ? '32px' : size === 'sm' ? '48px' : size === 'md' ? '64px' : size === 'lg' ? '96px' : '128px'}
+        className='object-cover'
+        sizes={
+          size === 'xs'
+            ? '32px'
+            : size === 'sm'
+              ? '48px'
+              : size === 'md'
+                ? '64px'
+                : size === 'lg'
+                  ? '96px'
+                  : '128px'
+        }
         onError={() => {
           // Could implement fallback logic here
         }}

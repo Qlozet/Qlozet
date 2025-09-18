@@ -9,9 +9,9 @@ interface ProductStatusBadgeProps {
   className?: string;
 }
 
-export const ProductStatusBadge: React.FC<ProductStatusBadgeProps> = ({ 
-  status, 
-  className 
+export const ProductStatusBadge: React.FC<ProductStatusBadgeProps> = ({
+  status,
+  className,
 }) => {
   const statusConfig = {
     draft: {
@@ -39,7 +39,7 @@ export const ProductStatusBadge: React.FC<ProductStatusBadgeProps> = ({
   const config = statusConfig[status] || statusConfig.draft;
 
   return (
-    <span 
+    <span
       className={cn(
         'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
         config.bgColor,

@@ -1,11 +1,11 @@
-import AddQuantity from "../Quantity";
-import Variant from "../Variant";
-import Image from "next/image";
-import trashGray from "@/public/assets/svg/trash-gray.svg";
-import Size from "@/components/Size/index.js";
-import VariantImage from "@/components/Products/VariantImage";
-import PriceComp from "../PriceComponent";
-import CheckBoxInput from "@/components/CheckboxInput";
+import AddQuantity from '../Quantity';
+import Variant from '../Variant';
+import Image from 'next/image';
+import trashGray from '@/public/assets/svg/trash-gray.svg';
+import Size from '@/components/Size/index.js';
+import VariantImage from '@/components/Products/VariantImage';
+import PriceComp from '../PriceComponent';
+import CheckBoxInput from '@/components/CheckboxInput';
 const VariantTableItem = ({
   item,
   index,

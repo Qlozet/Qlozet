@@ -10,10 +10,10 @@ interface CustomerTableCellProps {
   className?: string;
 }
 
-export const CustomerTableCell: React.FC<CustomerTableCellProps> = ({ 
-  children, 
+export const CustomerTableCell: React.FC<CustomerTableCellProps> = ({
+  children,
   align = 'left',
-  className 
+  className,
 }) => {
   const alignmentClasses = {
     left: 'text-left',
@@ -22,7 +22,7 @@ export const CustomerTableCell: React.FC<CustomerTableCellProps> = ({
   };
 
   return (
-    <td 
+    <td
       className={cn(
         'px-6 py-4 whitespace-nowrap text-sm text-gray-900',
         alignmentClasses[align],

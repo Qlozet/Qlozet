@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 import { Control, FieldPath, FieldValues } from 'react-hook-form';
@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 
 interface PasswordInputProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > {
   control: Control<TFieldValues>;
   name: TName;
@@ -30,7 +30,7 @@ interface PasswordInputProps<
 
 export const PasswordInput = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   control,
   name,
@@ -55,43 +55,43 @@ export const PasswordInput = <
         <FormItem className={cn('space-y-2', className)}>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <div className="relative">
+            <div className='relative'>
               <Input
                 type={showPassword ? 'text' : 'password'}
                 placeholder={placeholder}
                 disabled={disabled}
                 {...field}
-                className="pr-12"
+                className='pr-12'
               />
               <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                type='button'
+                variant='ghost'
+                size='sm'
+                className='absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent'
                 onClick={togglePasswordVisibility}
                 disabled={disabled}
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  <EyeOff className='h-4 w-4 text-muted-foreground' />
                 ) : (
-                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <Eye className='h-4 w-4 text-muted-foreground' />
                 )}
-                <span className="sr-only">
+                <span className='sr-only'>
                   {showPassword ? 'Hide password' : 'Show password'}
                 </span>
               </Button>
             </div>
           </FormControl>
           {description && (
-            <p className="text-sm text-muted-foreground">{description}</p>
+            <p className='text-sm text-muted-foreground'>{description}</p>
           )}
           {showStrengthIndicator && (
-            <div className="mt-2">
-              <div className="text-xs text-muted-foreground mb-1">
+            <div className='mt-2'>
+              <div className='text-xs text-muted-foreground mb-1'>
                 Password strength:
               </div>
-              <div className="w-full bg-secondary rounded-full h-1">
-                <div className="bg-destructive h-1 rounded-full w-1/4 transition-all" />
+              <div className='w-full bg-secondary rounded-full h-1'>
+                <div className='bg-destructive h-1 rounded-full w-1/4 transition-all' />
               </div>
             </div>
           )}

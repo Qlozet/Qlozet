@@ -36,26 +36,32 @@ interface SettingsContentProps {
 
 export const SettingsContent: React.FC<SettingsContentProps> = ({
   activeTab,
-  shopDetails
+  shopDetails,
 }) => {
-  const [updateVendorDetails, { isLoading: isUpdating }] = useUpdateVendorDetailsMutation();
+  const [updateVendorDetails, { isLoading: isUpdating }] =
+    useUpdateVendorDetailsMutation();
 
   const handleCompanyDetailsSubmit = async (data: CompanyDetailsData) => {
     try {
       const response = await updateVendorDetails(data).unwrap();
       if (response.success) {
-        toast(<Toast text={response.message} type="success" />);
+        toast(<Toast text={response.message} type='success' />);
       } else {
-        toast(<Toast text={response.message} type="danger" />);
+        toast(<Toast text={response.message} type='danger' />);
       }
     } catch (error: any) {
-      toast(<Toast text={error?.data?.message || "An error occurred"} type="danger" />);
+      toast(
+        <Toast
+          text={error?.data?.message || 'An error occurred'}
+          type='danger'
+        />
+      );
     }
   };
 
   const renderContent = () => {
     switch (activeTab) {
-      case "Shop details":
+      case 'Shop details':
         return (
           <CompanyDetailsForm
             initialData={{
@@ -77,30 +83,26 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
             isLoading={isUpdating}
           />
         );
-      
-      case "Billing and invoice":
+
+      case 'Billing and invoice':
         return <BillingAndInvoice />;
-      
-      case "Warehouses":
+
+      case 'Warehouses':
         return <Warehouse />;
-      
-      case "Users and permissions":
+
+      case 'Users and permissions':
         return <UserAndPermission />;
-      
-      case "Categories":
+
+      case 'Categories':
         return <Category />;
-      
-      case "Order Settings":
+
+      case 'Order Settings':
         return <OrderSetting />;
-      
+
       default:
         return null;
     }
   };
 
-  return (
-    <div className="mt-6">
-      {renderContent()}
-    </div>
-  );
+  return <div className='mt-6'>{renderContent()}</div>;
 };

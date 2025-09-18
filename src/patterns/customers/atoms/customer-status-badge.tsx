@@ -9,9 +9,9 @@ interface CustomerStatusBadgeProps {
   className?: string;
 }
 
-export const CustomerStatusBadge: React.FC<CustomerStatusBadgeProps> = ({ 
-  status, 
-  className 
+export const CustomerStatusBadge: React.FC<CustomerStatusBadgeProps> = ({
+  status,
+  className,
 }) => {
   const statusConfig = {
     active: {
@@ -29,7 +29,7 @@ export const CustomerStatusBadge: React.FC<CustomerStatusBadgeProps> = ({
   const config = statusConfig[status] || statusConfig.inactive;
 
   return (
-    <span 
+    <span
       className={cn(
         'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
         config.bgColor,

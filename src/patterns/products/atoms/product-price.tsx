@@ -13,13 +13,13 @@ interface ProductPriceProps {
   className?: string;
 }
 
-export const ProductPrice: React.FC<ProductPriceProps> = ({ 
-  price, 
+export const ProductPrice: React.FC<ProductPriceProps> = ({
+  price,
   originalPrice,
   currency = 'USD',
   size = 'md',
   showCurrency = true,
-  className 
+  className,
 }) => {
   const sizeClasses = {
     sm: 'text-sm',
@@ -31,14 +31,14 @@ export const ProductPrice: React.FC<ProductPriceProps> = ({
     if (currency === 'NGN' || currency === '₦') {
       return `₦${amount.toLocaleString()}`;
     }
-    
+
     if (!showCurrency) {
       return amount.toLocaleString();
     }
-    
+
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currency,
+      currency,
     }).format(amount);
   };
 
@@ -46,7 +46,7 @@ export const ProductPrice: React.FC<ProductPriceProps> = ({
 
   return (
     <div className={cn('flex items-center space-x-2', className)}>
-      <span 
+      <span
         className={cn(
           'font-medium text-gray-900',
           sizeClasses[size],
@@ -55,9 +55,9 @@ export const ProductPrice: React.FC<ProductPriceProps> = ({
       >
         {formatPrice(price, currency)}
       </span>
-      
+
       {hasDiscount && (
-        <span 
+        <span
           className={cn(
             'line-through text-gray-500',
             size === 'sm' ? 'text-xs' : size === 'md' ? 'text-sm' : 'text-base'

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import Image from "next/image";
-import passwordIcon from "@/public/assets/svg/password-icon.svg";
+import React, { useState } from 'react';
+import Image from 'next/image';
+import passwordIcon from '@/public/assets/svg/password-icon.svg';
 
 interface PasswordInputProps {
   label: string;
@@ -26,29 +26,31 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="my-3 relative">
+    <div className='my-3 relative'>
       {leftIcon}
-      <label className="text-sm font-light my-2 text-dark"> {label}</label>
+      <label className='text-sm font-light my-2 text-dark'> {label}</label>
       <input
-        type={showPassword ? "text" : "password"}
+        type={showPassword ? 'text' : 'password'}
         className={`py-3 px-4 w-full border-solid border-[1.5px] text-dark  
-            focus:outline-none ${error && "border-danger"}
-          focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-sm text-font-light placeholder:font-300 placeholder:text-gray-200 ${disabled && "border-0 bg-gray-300 cursor-not-allowed"}
+            focus:outline-none ${error && 'border-danger'}
+          focus:bg-[#DDE2E5] focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-sm text-font-light placeholder:font-300 placeholder:text-gray-200 ${disabled && 'border-0 bg-gray-300 cursor-not-allowed'}
         `}
         value={value}
         disabled={disabled}
         placeholder={placeholder}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setValue(e.target.value)
+        }
       />
       <div
-        className="absolute right-2 top-9 w-[24px] flex items-center justify-center cursor-pointer"
+        className='absolute right-2 top-9 w-[24px] flex items-center justify-center cursor-pointer'
         onClick={() => setShowPassword(!showPassword)}
       >
-        <Image src={passwordIcon} alt="Toggle password visibility" />
+        <Image src={passwordIcon} alt='Toggle password visibility' />
       </div>
       {rightIcon}
       {error && (
-        <p className="text-danger text-xs font-[400]">
+        <p className='text-danger text-xs font-[400]'>
           {label} cannot be empty!
         </p>
       )}

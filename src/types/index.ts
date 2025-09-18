@@ -205,7 +205,9 @@ export interface ValidatorResult {
 export interface Step1Props {
   formData: BusinessInfo;
   setFormData: React.Dispatch<React.SetStateAction<BusinessInfo>>;
-  setRequiredFormData: React.Dispatch<React.SetStateAction<SignupFormValidation>>;
+  setRequiredFormData: React.Dispatch<
+    React.SetStateAction<SignupFormValidation>
+  >;
   requiredFormData: SignupFormValidation;
 }
 
@@ -257,7 +259,7 @@ export interface ResetPasswordData {
   token?: string;
 }
 
-// Add Product Types  
+// Add Product Types
 export interface AddProductFormData {
   productName: string;
   productStatus: string;

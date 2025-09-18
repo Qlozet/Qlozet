@@ -17,15 +17,20 @@ interface ChartGridProps {
   className?: string;
 }
 
-export const ChartGrid: React.FC<ChartGridProps> = ({
-  charts,
-  className
-}) => {
+export const ChartGrid: React.FC<ChartGridProps> = ({ charts, className }) => {
   return (
-    <div className={cn("md:flex block lg:flex items-center w-full md:gap-[21px] gap-4", className)}>
-      <div className="w-full md:w-2/3 block lg:flex items-center md:gap-[21px] gap-4 mt-4 md:flex">
+    <div
+      className={cn(
+        'md:flex block lg:flex items-center w-full md:gap-[21px] gap-4',
+        className
+      )}
+    >
+      <div className='w-full md:w-2/3 block lg:flex items-center md:gap-[21px] gap-4 mt-4 md:flex'>
         {charts.slice(0, 2).map((chart, index) => (
-          <div key={index} className={cn("w-full", index === 1 && "mt-4 lg:mt-0")}>
+          <div
+            key={index}
+            className={cn('w-full', index === 1 && 'mt-4 lg:mt-0')}
+          >
             <ChartContainer
               title={chart.title}
               headerAction={chart.headerAction}
@@ -36,10 +41,10 @@ export const ChartGrid: React.FC<ChartGridProps> = ({
           </div>
         ))}
       </div>
-      
+
       {charts[2] && (
-        <div className="w-full md:w-1/3 block lg:flex items-center mt-4">
-          <div className="w-full flex items-center">
+        <div className='w-full md:w-1/3 block lg:flex items-center mt-4'>
+          <div className='w-full flex items-center'>
             <ChartContainer
               title={charts[2].title}
               headerAction={charts[2].headerAction}

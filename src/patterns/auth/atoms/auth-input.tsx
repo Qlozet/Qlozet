@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 import { Control, FieldPath, FieldValues } from 'react-hook-form';
@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 
 interface AuthInputProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > {
   control: Control<TFieldValues>;
   name: TName;
@@ -28,7 +28,7 @@ interface AuthInputProps<
 
 export const AuthInput = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   control,
   name,
@@ -55,7 +55,7 @@ export const AuthInput = <
             />
           </FormControl>
           {description && (
-            <p className="text-sm text-muted-foreground">{description}</p>
+            <p className='text-sm text-muted-foreground'>{description}</p>
           )}
           <FormMessage />
         </FormItem>

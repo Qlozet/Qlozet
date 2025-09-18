@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -47,37 +47,36 @@ export const SignInForm: React.FC<SignInFormProps> = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className={cn('space-y-6', className)}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className={cn('space-y-6', className)}
+      >
         <AuthInput
           control={form.control}
-          name="businessEmail"
-          label="Business email address"
-          type="email"
-          placeholder="Enter your business official email address"
+          name='businessEmail'
+          label='Business email address'
+          type='email'
+          placeholder='Enter your business official email address'
         />
 
         <PasswordInput
           control={form.control}
-          name="password"
-          label="Password"
-          placeholder="Enter your password"
+          name='password'
+          label='Password'
+          placeholder='Enter your password'
         />
 
-        <div className="flex items-center justify-end">
-          <AuthLink 
-            href={AUTH_ROUTES.forgotPassword} 
+        <div className='flex items-center justify-end'>
+          <AuthLink
+            href={AUTH_ROUTES.forgotPassword}
             icon={arrowRight}
-            iconAlt="Arrow right"
+            iconAlt='Arrow right'
           >
             Forgot password
           </AuthLink>
         </div>
 
-        <AuthButton
-          type="submit"
-          fullWidth
-          loading={loading}
-        >
+        <AuthButton type='submit' fullWidth loading={loading}>
           Sign In
         </AuthButton>
       </form>

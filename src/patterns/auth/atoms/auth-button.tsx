@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 import { Button, ButtonProps } from '@/components/ui/button';
@@ -25,13 +25,10 @@ export const AuthButton: React.FC<AuthButtonProps> = ({
     <Button
       disabled={disabled || loading}
       size={size}
-      className={cn(
-        fullWidth && 'w-full',
-        className
-      )}
+      className={cn(fullWidth && 'w-full', className)}
       {...props}
     >
-      {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+      {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
       {children}
     </Button>
   );

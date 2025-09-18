@@ -9,7 +9,12 @@ import { StockIndicator } from '../atoms/stock-indicator';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Eye, Edit, MoreHorizontal, Copy } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 
@@ -46,14 +51,14 @@ interface ProductTableRowProps {
   onSelect?: (productId: string, selected: boolean) => void;
 }
 
-export const ProductTableRow: React.FC<ProductTableRowProps> = ({ 
-  product, 
+export const ProductTableRow: React.FC<ProductTableRowProps> = ({
+  product,
   onViewDetails,
   onEdit,
   onDuplicate,
   onStatusChange,
   isSelected = false,
-  onSelect
+  onSelect,
 }) => {
   const handleViewDetails = () => {
     onViewDetails(product._id);
@@ -77,75 +82,71 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
 
   const isActive = product.status === 'active';
   const variantCount = product.variants?.length || 0;
-  const totalStock = product.variants?.reduce((sum, variant) => sum + variant.stock, 0) || product.stock;
+  const totalStock =
+    product.variants?.reduce((sum, variant) => sum + variant.stock, 0) ||
+    product.stock;
 
   return (
-    <tr className="hover:bg-gray-50 transition-colors">
+    <tr className='hover:bg-gray-50 transition-colors'>
       {onSelect && (
-        <td className="px-6 py-4 whitespace-nowrap">
+        <td className='px-6 py-4 whitespace-nowrap'>
           <input
-            type="checkbox"
+            type='checkbox'
             checked={isSelected}
             onChange={handleSelect}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            className='h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded'
           />
         </td>
       )}
 
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="flex items-center space-x-3">
-          <ProductImage
-            src={product.images[0]}
-            alt={product.name}
-            size="md"
-          />
+      <td className='px-6 py-4 whitespace-nowrap'>
+        <div className='flex items-center space-x-3'>
+          <ProductImage src={product.images[0]} alt={product.name} size='md' />
           <div>
-            <p className="font-medium text-gray-900 truncate max-w-48">
+            <p className='font-medium text-gray-900 truncate max-w-48'>
               {product.name}
             </p>
-            <p className="text-sm text-gray-500">
-              {product.category}
-            </p>
+            <p className='text-sm text-gray-500'>{product.category}</p>
           </div>
         </div>
       </td>
 
-      <td className="px-6 py-4 whitespace-nowrap">
-        <ProductPrice price={product.price} size="md" />
+      <td className='px-6 py-4 whitespace-nowrap'>
+        <ProductPrice price={product.price} size='md' />
       </td>
 
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className='px-6 py-4 whitespace-nowrap'>
         <StockIndicator stock={totalStock} showText={false} />
       </td>
 
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className='px-6 py-4 whitespace-nowrap'>
         <ProductStatusBadge status={product.status} />
       </td>
 
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="flex flex-wrap gap-1">
+      <td className='px-6 py-4 whitespace-nowrap'>
+        <div className='flex flex-wrap gap-1'>
           {product.tags.slice(0, 2).map((tag, index) => (
-            <Badge key={index} variant="secondary" className="text-xs">
+            <Badge key={index} variant='secondary' className='text-xs'>
               {tag}
             </Badge>
           ))}
           {product.tags.length > 2 && (
-            <Badge variant="outline" className="text-xs">
+            <Badge variant='outline' className='text-xs'>
               +{product.tags.length - 2}
             </Badge>
           )}
         </div>
       </td>
 
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+      <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
         {variantCount > 0 ? `${variantCount} variants` : 'No variants'}
       </td>
 
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+      <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-500'>
         {format(new Date(product.createdAt), 'MMM d, yyyy')}
       </td>
 
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className='px-6 py-4 whitespace-nowrap'>
         <Switch
           checked={isActive}
           onCheckedChange={handleStatusToggle}
@@ -153,31 +154,31 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
         />
       </td>
 
-      <td className="px-6 py-4 whitespace-nowrap text-right space-x-2">
+      <td className='px-6 py-4 whitespace-nowrap text-right space-x-2'>
         <Button
-          variant="outline"
-          size="sm"
+          variant='outline'
+          size='sm'
           onClick={handleViewDetails}
-          className="flex items-center space-x-1"
+          className='flex items-center space-x-1'
         >
-          <Eye className="h-3 w-3" />
+          <Eye className='h-3 w-3' />
           <span>View</span>
         </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm">
-              <MoreHorizontal className="h-4 w-4" />
+            <Button variant='ghost' size='sm'>
+              <MoreHorizontal className='h-4 w-4' />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align='end'>
             <DropdownMenuItem onClick={handleEdit}>
-              <Edit className="h-4 w-4 mr-2" />
+              <Edit className='h-4 w-4 mr-2' />
               Edit
             </DropdownMenuItem>
             {onDuplicate && (
               <DropdownMenuItem onClick={handleDuplicate}>
-                <Copy className="h-4 w-4 mr-2" />
+                <Copy className='h-4 w-4 mr-2' />
                 Duplicate
               </DropdownMenuItem>
             )}

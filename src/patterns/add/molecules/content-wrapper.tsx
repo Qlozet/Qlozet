@@ -1,8 +1,8 @@
 // Content Wrapper - Molecule
 // Wraps content with optional card layout
 
-import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface ContentWrapperProps {
   children: React.ReactNode;
@@ -12,12 +12,12 @@ interface ContentWrapperProps {
   className?: string;
 }
 
-export const ContentWrapper: React.FC<ContentWrapperProps> = ({ 
+export const ContentWrapper: React.FC<ContentWrapperProps> = ({
   children,
   useCard = true,
-  cardClassName = "",
-  contentClassName = "",
-  className = ""
+  cardClassName = '',
+  contentClassName = '',
+  className = '',
 }) => {
   if (useCard) {
     return (
@@ -31,9 +31,5 @@ export const ContentWrapper: React.FC<ContentWrapperProps> = ({
     );
   }
 
-  return (
-    <div className={`pb-8 ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={`pb-8 ${className}`}>{children}</div>;
 };

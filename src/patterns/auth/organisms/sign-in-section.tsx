@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 import { SignInForm, SignInFormData } from '../molecules/sign-in-form';
@@ -34,19 +34,17 @@ export const SignInSection: React.FC<SignInSectionProps> = ({
         isObject: false,
       });
       router.push(APP_ROUTES.dashboard);
-      toast(<Toast text="Sign in successful!" type="success" />);
+      toast(<Toast text='Sign in successful!' type='success' />);
     } catch (error: any) {
-      const errorMessage = error?.data?.message || 'Sign in failed. Please try again.';
-      toast(<Toast text={errorMessage} type="danger" />);
+      const errorMessage =
+        error?.data?.message || 'Sign in failed. Please try again.';
+      toast(<Toast text={errorMessage} type='danger' />);
     }
   };
 
   return (
     <div className={className}>
-      <SignInForm 
-        onSubmit={handleSignIn}
-        loading={isLoading}
-      />
+      <SignInForm onSubmit={handleSignIn} loading={isLoading} />
     </div>
   );
 };

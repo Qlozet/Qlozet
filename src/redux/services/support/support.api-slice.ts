@@ -24,7 +24,10 @@ interface SupportTicketResponse {
 export const supportApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // Submit Support Ticket
-    submitSupportTicket: builder.mutation<ApiResponse<SupportTicketResponse>, SupportData>({
+    submitSupportTicket: builder.mutation<
+      ApiResponse<SupportTicketResponse>,
+      SupportData
+    >({
       query: (data) => ({
         url: '/vendor/support',
         method: 'POST',
@@ -37,22 +40,27 @@ export const supportApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Get Support Tickets
-    getSupportTickets: builder.query<ApiResponse<SupportTicketResponse[]>, void>({
+    getSupportTickets: builder.query<
+      ApiResponse<SupportTicketResponse[]>,
+      void
+    >({
       query: () => ({
         url: '/vendor/support',
-        method: 'GET'
+        method: 'GET',
       }),
       providesTags: ['SupportTicket'],
     }),
 
     // Get Single Support Ticket
-    getSupportTicket: builder.query<ApiResponse<SupportTicketResponse>, string>({
-      query: (id) => ({
-        url: `/vendor/support/${id}`,
-        method: 'GET'
-      }),
-      providesTags: ['SupportTicket'],
-    }),
+    getSupportTicket: builder.query<ApiResponse<SupportTicketResponse>, string>(
+      {
+        query: (id) => ({
+          url: `/vendor/support/${id}`,
+          method: 'GET',
+        }),
+        providesTags: ['SupportTicket'],
+      }
+    ),
   }),
 });
 

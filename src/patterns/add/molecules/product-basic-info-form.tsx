@@ -1,17 +1,29 @@
 // Product Basic Info Form - Molecule
 // Form composition for basic product information
 
-import React from "react";
-import { UseFormReturn } from "react-hook-form";
-import { CompleteProductData } from "@/lib/validations/product";
-import { Category } from "@/redux/services/products/products.api-slice";
-import Typography from "@/components/compat/Typography";
-import Loader from "@/components/Loader";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import React from 'react';
+import { UseFormReturn } from 'react-hook-form';
+import { CompleteProductData } from '@/lib/validations/product';
+import { Category } from '@/redux/services/products/products.api-slice';
+import Typography from '@/components/compat/Typography';
+import Loader from '@/components/Loader';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from '@/components/ui/form';
 
 interface ProductBasicInfoFormProps {
   form: UseFormReturn<CompleteProductData>;
@@ -19,53 +31,59 @@ interface ProductBasicInfoFormProps {
   loadingCategories: boolean;
 }
 
-export const ProductBasicInfoForm: React.FC<ProductBasicInfoFormProps> = ({ 
-  form, 
-  categories, 
-  loadingCategories 
+export const ProductBasicInfoForm: React.FC<ProductBasicInfoFormProps> = ({
+  form,
+  categories,
+  loadingCategories,
 }) => {
   return (
-    <Card className="mb-6">
+    <Card className='mb-6'>
       <CardHeader>
-        <Typography variant="h3" className="text-lg font-semibold text-gray-900">
+        <Typography
+          variant='h3'
+          className='text-lg font-semibold text-gray-900'
+        >
           Basic Information
         </Typography>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <CardContent className='space-y-6'>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <FormField
             control={form.control}
-            name="name"
+            name='name'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Product Name *</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Enter product name"
-                    {...field}
-                  />
+                  <Input placeholder='Enter product name' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
-            name="category"
+            name='category'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category *</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder={loadingCategories ? "Loading categories..." : "Select a category"} />
+                      <SelectValue
+                        placeholder={
+                          loadingCategories
+                            ? 'Loading categories...'
+                            : 'Select a category'
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {loadingCategories ? (
-                        <SelectItem value="" disabled>
-                          <div className="flex items-center">
-                            <Loader size="sm" className="mr-2" />
+                        <SelectItem value='' disabled>
+                          <div className='flex items-center'>
+                            <Loader size='sm' className='mr-2' />
                             Loading...
                           </div>
                         </SelectItem>
@@ -84,16 +102,16 @@ export const ProductBasicInfoForm: React.FC<ProductBasicInfoFormProps> = ({
             )}
           />
         </div>
-        
+
         <FormField
           control={form.control}
-          name="description"
+          name='description'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Describe your product..."
+                  placeholder='Describe your product...'
                   rows={4}
                   {...field}
                 />
@@ -102,25 +120,29 @@ export const ProductBasicInfoForm: React.FC<ProductBasicInfoFormProps> = ({
             </FormItem>
           )}
         />
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
           <FormField
             control={form.control}
-            name="price"
+            name='price'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Price *</FormLabel>
                 <FormControl>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                  <div className='relative'>
+                    <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-500'>
+                      $
+                    </span>
                     <Input
-                      type="number"
-                      placeholder="0.00"
-                      step="0.01"
-                      min="0"
-                      className="pl-8"
+                      type='number'
+                      placeholder='0.00'
+                      step='0.01'
+                      min='0'
+                      className='pl-8'
                       {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      onChange={(e) =>
+                        field.onChange(parseFloat(e.target.value) || 0)
+                      }
                     />
                   </div>
                 </FormControl>
@@ -128,42 +150,44 @@ export const ProductBasicInfoForm: React.FC<ProductBasicInfoFormProps> = ({
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
-            name="stock"
+            name='stock'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Stock Quantity *</FormLabel>
                 <FormControl>
                   <Input
-                    type="number"
-                    placeholder="0"
-                    min="0"
+                    type='number'
+                    placeholder='0'
+                    min='0'
                     {...field}
-                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                    onChange={(e) =>
+                      field.onChange(parseInt(e.target.value) || 0)
+                    }
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
-            name="status"
+            name='status'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Status *</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
+                      <SelectValue placeholder='Select status' />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
+                      <SelectItem value='active'>Active</SelectItem>
+                      <SelectItem value='draft'>Draft</SelectItem>
+                      <SelectItem value='inactive'>Inactive</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>

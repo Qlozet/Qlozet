@@ -20,11 +20,11 @@ interface SettingsNavigationProps {
 export const SettingsNavigation: React.FC<SettingsNavigationProps> = ({
   navigationItems,
   activeTab,
-  className
+  className,
 }) => {
   return (
-    <div className={cn("mt-4", className)}>
-      <div className="flex flex-wrap gap-2 p-1 bg-gray-50 rounded-lg">
+    <div className={cn('mt-4', className)}>
+      <div className='flex flex-wrap gap-2 p-1 bg-gray-50 rounded-lg'>
         {navigationItems.map((navItem, index) => (
           <SettingsTabButton
             key={index}

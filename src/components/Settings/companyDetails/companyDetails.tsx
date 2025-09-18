@@ -1,13 +1,13 @@
-import { useState } from "react";
-import Image from "next/image";
-import Button from "../../Button";
-import NumberInput from "../../NumberInput";
-import TextInput from "../../TextInput";
-import FileInput from "../../uploadFileinput/UploadFileInput";
-import userIcon from "@/public/assets/svg/Frame.svg";
-import Typography from "@/components/Typography";
-import DashedComponent from "@/components/DashedComponent";
-import { uploadSingleImage } from "@/utils/helper";
+import { useState } from 'react';
+import Image from 'next/image';
+import Button from '../../Button';
+import NumberInput from '../../NumberInput';
+import TextInput from '../../TextInput';
+import FileInput from '../../uploadFileinput/UploadFileInput';
+import userIcon from '@/public/assets/svg/Frame.svg';
+import Typography from '@/components/Typography';
+import DashedComponent from '@/components/DashedComponent';
+import { uploadSingleImage } from '@/lib/utils';
 const CompanyDetails = ({
   shopDetails,
   setShopDetails,
@@ -37,54 +37,50 @@ const CompanyDetails = ({
     // });
   };
   return (
-    <div className=" w-full mx-0 lg:mx-2 py-2 px-2 lg:bg-white ">
-      <div className="block items-center justify-center lg:hidden p-4 shadow my-4 rounded-[12px] bg-white">
-        <Image src={userIcon} alt="" className="my-2 mx-auto" />
-        <div className="p-1 flex justify-center items-center">
+    <div className=' w-full mx-0 lg:mx-2 py-2 px-2 lg:bg-white '>
+      <div className='block items-center justify-center lg:hidden p-4 shadow my-4 rounded-[12px] bg-white'>
+        <Image src={userIcon} alt='' className='my-2 mx-auto' />
+        <div className='p-1 flex justify-center items-center'>
           <Typography
-            textColor="text-dark"
-            textWeight="font-medium"
-            textSize="text-[20px]"
+            textColor='text-dark'
+            textWeight='font-medium'
+            textSize='text-[20px]'
           >
             {shopDetails.vendorName}
           </Typography>
         </div>
-        <div className="flex justify-center items-center">
+        <div className='flex justify-center items-center'>
           <Typography
-            textColor="text-gray-100"
-            textWeight="font-medium"
-            textSize="text-[20px]"
+            textColor='text-gray-100'
+            textWeight='font-medium'
+            textSize='text-[20px]'
           >
             {shopDetails.companyName}
           </Typography>
         </div>
-        <div className="flex justify-center items-center">
+        <div className='flex justify-center items-center'>
           <Typography
-            textColor="text-gray-200"
-            textWeight="font-normal"
-            textSize=""
+            textColor='text-gray-200'
+            textWeight='font-normal'
+            textSize=''
           >
             {shopDetails.email}
           </Typography>
         </div>
       </div>
-      <DashedComponent name={"Company info"} />
+      <DashedComponent name={'Company info'} />
 
-      <div className="showdow bg-white">
-        <div className=" bg-[#F4F4F4] p-4 rounded-t-[12px] lg:hidden">
-          <Typography
-            textColor="text-dark"
-            textWeight="font-[700]"
-            textSize=""
-          >
+      <div className='showdow bg-white'>
+        <div className=' bg-[#F4F4F4] p-4 rounded-t-[12px] lg:hidden'>
+          <Typography textColor='text-dark' textWeight='font-[700]' textSize=''>
             Company Info
           </Typography>
         </div>
-        <div className="block lg:flex items-center justify-between gap-6 mx-2">
-          <div className="w-full">
+        <div className='block lg:flex items-center justify-between gap-6 mx-2'>
+          <div className='w-full'>
             <TextInput
-              label="Company name"
-              placeholder="Company name"
+              label='Company name'
+              placeholder='Company name'
               value={shopDetails.companyName}
               setValue={(data) => {
                 setShopDetails((prevData) => {
@@ -103,10 +99,10 @@ const CompanyDetails = ({
               error={requiredShopDetails.companyName}
             />
           </div>
-          <div className="w-full">
+          <div className='w-full'>
             <TextInput
-              label="Address line 1"
-              placeholder="Address line 1"
+              label='Address line 1'
+              placeholder='Address line 1'
               value={shopDetails.addressLine1}
               setValue={(data) => {
                 setShopDetails((prevData) => {
@@ -125,10 +121,10 @@ const CompanyDetails = ({
               error={requiredShopDetails.addressLine1}
             />
           </div>
-          <div className="w-full">
+          <div className='w-full'>
             <TextInput
-              label="Address line 2"
-              placeholder="Enter Address line 2"
+              label='Address line 2'
+              placeholder='Enter Address line 2'
               value={shopDetails.addressLine2}
               setValue={(data) => {
                 setShopDetails((prevData) => {
@@ -148,12 +144,12 @@ const CompanyDetails = ({
             />
           </div>
         </div>
-        <div className="block lg:flex items-center justify-between  gap-6 mx-2">
-          <div className="w-full">
+        <div className='block lg:flex items-center justify-between  gap-6 mx-2'>
+          <div className='w-full'>
             <TextInput
               value={shopDetails.country}
-              label="Country"
-              placeholder="EnterCountry"
+              label='Country'
+              placeholder='EnterCountry'
               setValue={(data) => {
                 setShopDetails((prevData) => {
                   return { ...prevData, country: data };
@@ -171,10 +167,10 @@ const CompanyDetails = ({
               error={requiredShopDetails.country}
             />
           </div>
-          <div className="w-full">
+          <div className='w-full'>
             <TextInput
-              label="State"
-              placeholder="Enter State"
+              label='State'
+              placeholder='Enter State'
               setValue={(data) => {
                 setShopDetails((prevData) => {
                   return { ...prevData, state: data };
@@ -191,12 +187,12 @@ const CompanyDetails = ({
               }}
               error={requiredShopDetails.state}
               value={shopDetails.state}
-            />{" "}
+            />{' '}
           </div>
-          <div className="w-full">
+          <div className='w-full'>
             <TextInput
-              label="City"
-              placeholder="Enter City"
+              label='City'
+              placeholder='Enter City'
               value={shopDetails.city}
               setValue={(data) => {
                 setShopDetails((prevData) => {
@@ -213,14 +209,14 @@ const CompanyDetails = ({
                 }
               }}
               error={requiredShopDetails.city}
-            />{" "}
+            />{' '}
           </div>
         </div>
-        <div className="block lg:flex items-center justify-between  gap-6 mx-2">
-          <div className="w-full">
+        <div className='block lg:flex items-center justify-between  gap-6 mx-2'>
+          <div className='w-full'>
             <TextInput
-              label="Timezone"
-              placeholder="Timezone Timezone"
+              label='Timezone'
+              placeholder='Timezone Timezone'
               setValue={(data) => {
                 setShopDetails((prevData) => {
                   return { ...prevData, timeZone: data };
@@ -238,10 +234,10 @@ const CompanyDetails = ({
               error={requiredShopDetails.timeZone}
             />
           </div>
-          <div className="w-full">
+          <div className='w-full'>
             <NumberInput
-              label="Phone number"
-              placeholder="EnterPhone number"
+              label='Phone number'
+              placeholder='EnterPhone number'
               setValue={(data) => {
                 setShopDetails((prevData) => {
                   return { ...prevData, Phone: data };
@@ -260,10 +256,10 @@ const CompanyDetails = ({
               value={shopDetails.Phone}
             />
           </div>
-          <div className="w-full">
+          <div className='w-full'>
             <TextInput
-              label="Email address"
-              placeholder="Enter Email address"
+              label='Email address'
+              placeholder='Enter Email address'
               setValue={(data) => {
                 setShopDetails((prevData) => {
                   return { ...prevData, email: data };
@@ -283,11 +279,11 @@ const CompanyDetails = ({
             />
           </div>
         </div>
-        <div className="block lg:flex items-center justify-between gap-6 mx-2">
-          <div className="w-full">
+        <div className='block lg:flex items-center justify-between gap-6 mx-2'>
+          <div className='w-full'>
             <TextInput
-              label="BVN"
-              placeholder="Enter BVN"
+              label='BVN'
+              placeholder='Enter BVN'
               setValue={(data) => {
                 setShopDetails((prevData) => {
                   return { ...prevData, bvn: data };
@@ -306,10 +302,10 @@ const CompanyDetails = ({
               value={shopDetails.bvn}
             />
           </div>
-          <div className="w-full">
+          <div className='w-full'>
             <TextInput
-              label="NIN"
-              placeholder="Enter NIN"
+              label='NIN'
+              placeholder='Enter NIN'
               setValue={(data) => {
                 setShopDetails((prevData) => {
                   return { ...prevData, nin: data };
@@ -328,46 +324,46 @@ const CompanyDetails = ({
               value={shopDetails.nin}
             />
           </div>
-          <div className="w-full"></div>
+          <div className='w-full'></div>
           <div></div>
         </div>
-        <div className="flex items-center justify-between my-6 mx-2">
-          <div className="border-gray-200 border-dashed border-[1px] w-full"></div>
-          <div className="min-w-[11rem] flex items-center justify-center ">
+        <div className='flex items-center justify-between my-6 mx-2'>
+          <div className='border-gray-200 border-dashed border-[1px] w-full'></div>
+          <div className='min-w-[11rem] flex items-center justify-center '>
             Upload Documents
           </div>
-          <div className="border-gray-200 border-dashed border-[1px] w-full"></div>
+          <div className='border-gray-200 border-dashed border-[1px] w-full'></div>
         </div>
-        <div className="block lg:flex items-center justify-between gap-6 mx-2">
-          <div className="w-full">
+        <div className='block lg:flex items-center justify-between gap-6 mx-2'>
+          <div className='w-full'>
             <FileInput
-              fileName="logo"
-              label="Upload company logo"
+              fileName='logo'
+              label='Upload company logo'
               // placeholder="Enter NIN"
-              setValue={(data) => { }}
+              setValue={(data) => {}}
               value={[]}
               handleSelect={handleSelectLogo}
             />
           </div>
-          <div className="w-full">
+          <div className='w-full'>
             <FileInput
-              fileName="cacdoc"
-              label="Upload CAC Document"
-              setValue={(data) => { }}
+              fileName='cacdoc'
+              label='Upload CAC Document'
+              setValue={(data) => {}}
               handleSelect={handleSelectDoc}
               value={[]}
             />
           </div>
-          <div className="w-full"></div>
+          <div className='w-full'></div>
           <div></div>
         </div>
-        <div className="my-4">
+        <div className='my-4'>
           <Button
             loading={isLoading}
-            children="Save"
-            btnSize="large"
-            variant="primary"
-            maxWidth="max-w-[10rem]"
+            children='Save'
+            btnSize='large'
+            variant='primary'
+            maxWidth='max-w-[10rem]'
             clickHandler={() => {
               submitCompanyInfo();
             }}

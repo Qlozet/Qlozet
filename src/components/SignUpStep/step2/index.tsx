@@ -1,10 +1,10 @@
-import React from "react";
-import Logo from "../../Logo";
-import Typography from "../../Typography";
-import ProgressBar from "../../ProgressBar";
-import TextInput from "../../TextInput";
-import NumberInput from "../../NumberInput";
-import Button from "../../Button";
+import React from 'react';
+import Logo from '../../Logo';
+import Typography from '../../Typography';
+import ProgressBar from '../../ProgressBar';
+import TextInput from '../../TextInput';
+import NumberInput from '../../NumberInput';
+import Button from '../../Button';
 
 interface Step2FormData {
   personalName: string;
@@ -25,29 +25,34 @@ interface Step2Props {
   setRequiredData: React.Dispatch<React.SetStateAction<Step2RequiredData>>;
 }
 
-const Step2: React.FC<Step2Props> = ({ formData, setFormData, requiredData, setRequiredData }) => {
+const Step2: React.FC<Step2Props> = ({
+  formData,
+  setFormData,
+  requiredData,
+  setRequiredData,
+}) => {
   return (
     <div>
-      <div className="mt-4 mx-4  lg:mx-0 pt-5 px-2 p lg:px-0 ">
+      <div className='mt-4 mx-4  lg:mx-0 pt-5 px-2 p lg:px-0 '>
         <Typography
-          textColor="text-primary"
-          textWeight="font-bold"
-          textSize="text-[32px]"
+          textColor='text-primary'
+          textWeight='font-bold'
+          textSize='text-[32px]'
         >
           Sign Up
         </Typography>
         <Typography
-          textWeight="font-normal"
-          textSize="text-sm"
-          verticalPadding="my-1"
-          textColor="text-dark"
+          textWeight='font-normal'
+          textSize='text-sm'
+          verticalPadding='my-1'
+          textColor='text-dark'
         >
           Please fill in the information below to register as a vendor
         </Typography>
         <ProgressBar step={2} />
         <TextInput
-          label="Personal name"
-          placeholder="Enter your name"
+          label='Personal name'
+          placeholder='Enter your name'
           value={formData.personalName}
           error={requiredData.personalName}
           setValue={(data) => {
@@ -67,8 +72,8 @@ const Step2: React.FC<Step2Props> = ({ formData, setFormData, requiredData, setR
         />
 
         <NumberInput
-          label="Phone number "
-          placeholder="Enter your phone number "
+          label='Phone number '
+          placeholder='Enter your phone number '
           error={requiredData.phoneName}
           setValue={(data) => {
             setFormData((prevData) => {
@@ -87,8 +92,8 @@ const Step2: React.FC<Step2Props> = ({ formData, setFormData, requiredData, setR
           value={formData.phoneName}
         />
         <NumberInput
-          label="National Identity Number"
-          placeholder="Enter your business official phone number"
+          label='National Identity Number'
+          placeholder='Enter your business official phone number'
           error={requiredData.nationalIdentityNumber}
           setValue={(data) => {
             setFormData((prevData) => {

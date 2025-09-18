@@ -1,8 +1,8 @@
-"use client";
-import React from "react";
-import { useRouter } from "next/navigation";
-import AddProductTemplate from "@/patterns/add/templates/add-product-template";
-import toast from "react-hot-toast";
+'use client';
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import AddProductTemplate from '@/patterns/add/templates/add-product-template';
+import toast from 'react-hot-toast';
 
 const AddProduct: React.FC = () => {
   const router = useRouter();
@@ -11,16 +11,15 @@ const AddProduct: React.FC = () => {
     try {
       // Here you would typically make an API call to save the product
       console.log('Product data to save:', productData);
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Show success message
       toast.success('Product added successfully!');
-      
+
       // Redirect to products page or product detail
       router.push('/products');
-      
     } catch (error) {
       console.error('Error adding product:', error);
       toast.error('Failed to add product. Please try again.');
@@ -29,11 +28,11 @@ const AddProduct: React.FC = () => {
   };
 
   return (
-    <AddProductTemplate 
+    <AddProductTemplate
       onProductAdded={handleProductAdded}
-      backUrl="/products"
-      title="Add New Product"
-      subtitle="Create and configure a new product for your store"
+      backUrl='/products'
+      title='Add New Product'
+      subtitle='Create and configure a new product for your store'
     />
   );
 };

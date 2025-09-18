@@ -11,11 +11,11 @@ interface OrderAmountProps {
   className?: string;
 }
 
-export const OrderAmount: React.FC<OrderAmountProps> = ({ 
-  amount, 
+export const OrderAmount: React.FC<OrderAmountProps> = ({
+  amount,
   currency = 'USD',
   size = 'md',
-  className 
+  className,
 }) => {
   const sizeClasses = {
     sm: 'text-sm',
@@ -27,20 +27,16 @@ export const OrderAmount: React.FC<OrderAmountProps> = ({
     if (currency === 'NGN' || currency === '₦') {
       return `₦${amount.toLocaleString()}`;
     }
-    
+
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currency,
+      currency,
     }).format(amount);
   };
 
   return (
-    <span 
-      className={cn(
-        'font-medium text-gray-900',
-        sizeClasses[size],
-        className
-      )}
+    <span
+      className={cn('font-medium text-gray-900', sizeClasses[size], className)}
     >
       {formatCurrency(amount, currency)}
     </span>

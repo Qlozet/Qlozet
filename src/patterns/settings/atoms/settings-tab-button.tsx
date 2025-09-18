@@ -15,16 +15,16 @@ export const SettingsTabButton: React.FC<SettingsTabButtonProps> = ({
   children,
   isActive,
   onClick,
-  className
+  className,
 }) => {
   return (
     <button
       onClick={onClick}
       className={cn(
-        "px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200",
-        isActive 
-          ? "bg-primary text-white" 
-          : "bg-gray-100 text-gray-700 hover:bg-gray-200",
+        'px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200',
+        isActive
+          ? 'bg-primary text-white'
+          : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
         className
       )}
     >

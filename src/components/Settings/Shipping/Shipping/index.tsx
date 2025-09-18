@@ -1,8 +1,8 @@
-import { useState } from "react";
-import Image from "next/image";
-import Button from "@/components/Button";
+import { useState } from 'react';
+import Image from 'next/image';
+import Button from '@/components/Button';
 // import addIcon from "@/components/..//public/assets/svg/add-square.svg";
-import ShippingTable from "../ShippingTable";
+import ShippingTable from '../ShippingTable';
 
 const Shipping = () => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -12,8 +12,7 @@ const Shipping = () => {
 
   return (
     <div>
-        <ShippingTable />
-   
+      <ShippingTable />
     </div>
   );
 };

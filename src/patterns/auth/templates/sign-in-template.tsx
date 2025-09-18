@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 import { AuthLayout } from '../organisms/auth-layout';
@@ -11,11 +11,10 @@ interface SignInTemplateProps {
 export const SignInTemplate: React.FC<SignInTemplateProps> = ({
   className = '',
 }) => {
-
   return (
     <AuthLayout
-      title="Sign In"
-      subtitle="Please enter your login details below"
+      title='Sign In'
+      subtitle='Please enter your login details below'
       className={className}
     >
       <SignInSection />

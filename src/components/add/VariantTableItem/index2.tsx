@@ -1,13 +1,13 @@
-import AddQuantity from "../Quantity";
-import Variant from "../Variant";
-import Image from "next/image";
-import trashGray from "@/public/assets/svg/trash-gray.svg";
-import Size from "@/components/Size/index.jsx";
-import VariantImage from "@/components/Products/VariantImage";
-import PriceComp from "../PriceComponent";
-import CheckBoxInput from "@/components/CheckboxInput";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import AddQuantity from '../Quantity';
+import Variant from '../Variant';
+import Image from 'next/image';
+import trashGray from '@/public/assets/svg/trash-gray.svg';
+import Size from '@/components/Size/index.jsx';
+import VariantImage from '@/components/Products/VariantImage';
+import PriceComp from '../PriceComponent';
+import CheckBoxInput from '@/components/CheckboxInput';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useState } from 'react';
 const VariantTableItem = ({
   item,
   index,
@@ -53,7 +53,7 @@ const VariantTableItem = ({
             source={
               data.data[0].images.retained[0]
                 ? data.data[0].images.retained[0].secure_url
-                : ""
+                : ''
             }
             id={data.data[0].id}
             imageIndex={0}
@@ -64,7 +64,7 @@ const VariantTableItem = ({
             source={
               data.data[0].images.retained[1]
                 ? data.data[0].images.retained[1].secure_url
-                : ""
+                : ''
             }
             id={data.data[0].id}
             imageIndex={1}
@@ -75,7 +75,7 @@ const VariantTableItem = ({
             source={
               data.data[0].images.retained[2]
                 ? data.data[0].images.retained[2].secure_url
-                : ""
+                : ''
             }
             id={data.data[0].id}
             imageIndex={2}
@@ -86,7 +86,7 @@ const VariantTableItem = ({
             source={
               data.data[0].images.retained[3]
                 ? data.data[0].images.retained[3].secure_url
-                : ""
+                : ''
             }
             id={data.data[0].id}
             imageIndex={3}
@@ -97,7 +97,7 @@ const VariantTableItem = ({
             source={
               data.data[0].images.retained[4]
                 ? data.data[0].images.retained[4].secure_url
-                : ""
+                : ''
             }
             id={data.data[0].id}
             imageIndex={4}

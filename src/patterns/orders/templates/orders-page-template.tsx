@@ -10,8 +10,18 @@ import { OrderDetailsModal } from '../organisms/order-details-modal';
 import { CustomerDetailsModal } from '../../customers/organisms/customer-details-modal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { useGetOrdersQuery, useGetOrderStatsQuery } from '@/redux/services/orders/orders.api-slice';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+import {
+  useGetOrdersQuery,
+  useGetOrderStatsQuery,
+} from '@/redux/services/orders/orders.api-slice';
 import { OrderFilterData } from '@/lib/validations/order';
 import { Plus, Download, Upload, FileText, Truck } from 'lucide-react';
 import Typography from '@/components/compat/Typography';
@@ -27,7 +37,7 @@ interface OrdersPageTemplateProps {
 }
 
 export const OrdersPageTemplate: React.FC<OrdersPageTemplateProps> = ({
-  title = "Orders",
+  title = 'Orders',
   showCreateButton = true,
   showBulkActions = true,
   onCreateOrder,
@@ -49,17 +59,15 @@ export const OrdersPageTemplate: React.FC<OrdersPageTemplateProps> = ({
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
 
   // API queries
-  const { 
-    data: ordersResponse, 
-    isLoading: loadingOrders, 
+  const {
+    data: ordersResponse,
+    isLoading: loadingOrders,
     error: ordersError,
     refetch: refetchOrders,
   } = useGetOrdersQuery(filters);
 
-  const { 
-    data: statsResponse, 
-    isLoading: loadingStats 
-  } = useGetOrderStatsQuery();
+  const { data: statsResponse, isLoading: loadingStats } =
+    useGetOrderStatsQuery();
 
   const orders = ordersResponse?.data || [];
   const totalPages = ordersResponse?.totalPages || 1;
@@ -87,35 +95,36 @@ export const OrdersPageTemplate: React.FC<OrdersPageTemplateProps> = ({
 
   // Handle pagination
   const handlePageChange = (page: number) => {
-    setFilters(prev => ({ ...prev, page }));
+    setFilters((prev) => ({ ...prev, page }));
   };
 
   // Handle sorting
-  const handleSort = (field: keyof typeof orders[0], direction: 'asc' | 'desc') => {
-    setFilters(prev => ({ 
-      ...prev, 
+  const handleSort = (
+    field: keyof (typeof orders)[0],
+    direction: 'asc' | 'desc'
+  ) => {
+    setFilters((prev) => ({
+      ...prev,
       sortBy: field as any,
       sortOrder: direction,
-      page: 1 
+      page: 1,
     }));
   };
 
   // Handle order selection
   const handleSelectOrder = (orderId: string, selected: boolean) => {
-    setSelectedOrders(prev => 
-      selected 
-        ? [...prev, orderId]
-        : prev.filter(id => id !== orderId)
+    setSelectedOrders((prev) =>
+      selected ? [...prev, orderId] : prev.filter((id) => id !== orderId)
     );
   };
 
   const handleSelectAll = (selected: boolean) => {
-    setSelectedOrders(selected ? orders.map(o => o._id) : []);
+    setSelectedOrders(selected ? orders.map((o) => o._id) : []);
   };
 
   // Handle order details modal
   const handleViewDetails = (orderId: string) => {
-    show(OrderDetailsModal, { 
+    show(OrderDetailsModal, {
       orderId,
       onOrderUpdated: () => refetchOrders(),
     });
@@ -127,89 +136,90 @@ export const OrdersPageTemplate: React.FC<OrdersPageTemplateProps> = ({
   };
 
   // Handle bulk actions
-  const handleBulkAction = (action: 'confirm' | 'ship' | 'cancel' | 'export') => {
+  const handleBulkAction = (
+    action: 'confirm' | 'ship' | 'cancel' | 'export'
+  ) => {
     if (selectedOrders.length === 0) return;
-    
+
     // Implement bulk actions here
     console.log(`Bulk ${action} for orders:`, selectedOrders);
-    
+
     // Clear selection after action
     setSelectedOrders([]);
   };
 
   // Prepare stats data
-  const statsData = stats ? {
-    totalOrders: stats.totalOrders || totalCount,
-    deliveredOrders: stats.completedOrders || 0,
-    inTransitOrders: stats.pendingOrders || 0,
-    pendingOrders: stats.pendingOrders || 0,
-    cancelledOrders: stats.cancelledOrders || 0,
-    totalRevenue: stats.totalRevenue || 0,
-  } : {
-    totalOrders: totalCount,
-    deliveredOrders: 0,
-    inTransitOrders: 0,
-    pendingOrders: 0,
-  };
+  const statsData = stats
+    ? {
+        totalOrders: stats.totalOrders || totalCount,
+        deliveredOrders: stats.completedOrders || 0,
+        inTransitOrders: stats.pendingOrders || 0,
+        pendingOrders: stats.pendingOrders || 0,
+        cancelledOrders: stats.cancelledOrders || 0,
+        totalRevenue: stats.totalRevenue || 0,
+      }
+    : {
+        totalOrders: totalCount,
+        deliveredOrders: 0,
+        inTransitOrders: 0,
+        pendingOrders: 0,
+      };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
+    <div className='min-h-screen bg-gray-50'>
+      <div className='max-w-7xl mx-auto p-6 space-y-6'>
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
           <div>
-            <Typography 
-              variant="h1" 
-              className="text-2xl font-bold text-gray-900"
+            <Typography
+              variant='h1'
+              className='text-2xl font-bold text-gray-900'
             >
               {title}
             </Typography>
-            <Typography 
-              variant="body2" 
-              className="text-gray-600 mt-1"
-            >
+            <Typography variant='body2' className='text-gray-600 mt-1'>
               Manage orders and track their fulfillment status
             </Typography>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className='flex items-center space-x-2'>
             {showBulkActions && (
               <>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant='outline'
                   onClick={onGenerateReport}
-                  className="flex items-center space-x-2"
+                  className='flex items-center space-x-2'
                 >
-                  <FileText className="h-4 w-4" />
+                  <FileText className='h-4 w-4' />
                   <span>Report</span>
                 </Button>
 
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant='outline'
                   onClick={onImportOrders}
-                  className="flex items-center space-x-2"
+                  className='flex items-center space-x-2'
                 >
-                  <Upload className="h-4 w-4" />
+                  <Upload className='h-4 w-4' />
                   <span>Import</span>
                 </Button>
-                
-                <Button 
-                  variant="outline" 
+
+                <Button
+                  variant='outline'
                   onClick={onExportOrders}
-                  className="flex items-center space-x-2"
+                  className='flex items-center space-x-2'
                 >
-                  <Download className="h-4 w-4" />
+                  <Download className='h-4 w-4' />
                   <span>Export</span>
                 </Button>
               </>
             )}
 
             {showCreateButton && (
-              <Button 
+              <Button
                 onClick={onCreateOrder}
-                className="flex items-center space-x-2"
+                className='flex items-center space-x-2'
               >
-                <Plus className="h-4 w-4" />
+                <Plus className='h-4 w-4' />
                 <span>New Order</span>
               </Button>
             )}
@@ -217,10 +227,7 @@ export const OrdersPageTemplate: React.FC<OrdersPageTemplateProps> = ({
         </div>
 
         {/* Stats Section */}
-        <OrderStatsSection 
-          stats={statsData} 
-          isLoading={loadingStats} 
-        />
+        <OrderStatsSection stats={statsData} isLoading={loadingStats} />
 
         {/* Filters and Search */}
         <Card>
@@ -240,40 +247,41 @@ export const OrdersPageTemplate: React.FC<OrdersPageTemplateProps> = ({
         {/* Bulk Actions Bar */}
         {showBulkActions && selectedOrders.length > 0 && (
           <Card>
-            <CardContent className="py-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">
-                  {selectedOrders.length} order{selectedOrders.length !== 1 ? 's' : ''} selected
+            <CardContent className='py-4'>
+              <div className='flex items-center justify-between'>
+                <span className='text-sm text-gray-600'>
+                  {selectedOrders.length} order
+                  {selectedOrders.length !== 1 ? 's' : ''} selected
                 </span>
-                
-                <div className="flex items-center space-x-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
+
+                <div className='flex items-center space-x-2'>
+                  <Button
+                    variant='outline'
+                    size='sm'
                     onClick={() => handleBulkAction('confirm')}
-                    className="flex items-center space-x-1"
+                    className='flex items-center space-x-1'
                   >
                     <span>Confirm</span>
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
+                  <Button
+                    variant='outline'
+                    size='sm'
                     onClick={() => handleBulkAction('ship')}
-                    className="flex items-center space-x-1"
+                    className='flex items-center space-x-1'
                   >
-                    <Truck className="h-3 w-3" />
+                    <Truck className='h-3 w-3' />
                     <span>Ship</span>
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
+                  <Button
+                    variant='outline'
+                    size='sm'
                     onClick={() => handleBulkAction('export')}
                   >
                     Export Selected
                   </Button>
-                  <Button 
-                    variant="destructive" 
-                    size="sm"
+                  <Button
+                    variant='destructive'
+                    size='sm'
                     onClick={() => handleBulkAction('cancel')}
                   >
                     Cancel
@@ -286,7 +294,7 @@ export const OrdersPageTemplate: React.FC<OrdersPageTemplateProps> = ({
 
         {/* Orders Table */}
         <Card>
-          <CardContent className="p-0">
+          <CardContent className='p-0'>
             <OrdersTable
               orders={orders}
               onViewDetails={handleViewDetails}
@@ -305,26 +313,33 @@ export const OrdersPageTemplate: React.FC<OrdersPageTemplateProps> = ({
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-600">
-              Showing {((filters.page - 1) * filters.limit) + 1} to{' '}
-              {Math.min(filters.page * filters.limit, totalCount)} of {totalCount} orders
+          <div className='flex items-center justify-between'>
+            <div className='text-sm text-gray-600'>
+              Showing {(filters.page - 1) * filters.limit + 1} to{' '}
+              {Math.min(filters.page * filters.limit, totalCount)} of{' '}
+              {totalCount} orders
             </div>
-            
+
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
-                  <PaginationPrevious 
-                    onClick={() => handlePageChange(Math.max(1, filters.page - 1))}
-                    className={filters.page === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  <PaginationPrevious
+                    onClick={() =>
+                      handlePageChange(Math.max(1, filters.page - 1))
+                    }
+                    className={
+                      filters.page === 1
+                        ? 'pointer-events-none opacity-50'
+                        : 'cursor-pointer'
+                    }
                   />
                 </PaginationItem>
-                
+
                 {[...Array(totalPages)].map((_, index) => {
                   const page = index + 1;
                   if (
-                    page === 1 || 
-                    page === totalPages || 
+                    page === 1 ||
+                    page === totalPages ||
                     (page >= filters.page - 1 && page <= filters.page + 1)
                   ) {
                     return (
@@ -332,7 +347,7 @@ export const OrdersPageTemplate: React.FC<OrdersPageTemplateProps> = ({
                         <PaginationLink
                           onClick={() => handlePageChange(page)}
                           isActive={filters.page === page}
-                          className="cursor-pointer"
+                          className='cursor-pointer'
                         >
                           {page}
                         </PaginationLink>
@@ -341,11 +356,17 @@ export const OrdersPageTemplate: React.FC<OrdersPageTemplateProps> = ({
                   }
                   return null;
                 })}
-                
+
                 <PaginationItem>
-                  <PaginationNext 
-                    onClick={() => handlePageChange(Math.min(totalPages, filters.page + 1))}
-                    className={filters.page === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  <PaginationNext
+                    onClick={() =>
+                      handlePageChange(Math.min(totalPages, filters.page + 1))
+                    }
+                    className={
+                      filters.page === totalPages
+                        ? 'pointer-events-none opacity-50'
+                        : 'cursor-pointer'
+                    }
                   />
                 </PaginationItem>
               </PaginationContent>
@@ -356,9 +377,9 @@ export const OrdersPageTemplate: React.FC<OrdersPageTemplateProps> = ({
         {/* Error handling */}
         {ordersError && (
           <Card>
-            <CardContent className="p-6 text-center">
-              <p className="text-red-600 mb-4">Failed to load orders</p>
-              <Button onClick={() => refetchOrders()} variant="outline">
+            <CardContent className='p-6 text-center'>
+              <p className='text-red-600 mb-4'>Failed to load orders</p>
+              <Button onClick={() => refetchOrders()} variant='outline'>
                 Try Again
               </Button>
             </CardContent>

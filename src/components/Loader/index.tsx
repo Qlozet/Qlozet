@@ -1,5 +1,5 @@
-import React from "react";
-import { BallTriangle } from "react-loader-spinner";
+import React from 'react';
+import { BallTriangle } from 'react-loader-spinner';
 
 interface LoaderProps {
   small?: boolean;
@@ -11,17 +11,17 @@ const Loader: React.FC<LoaderProps> = ({ small, height, width }) => {
   return (
     <div
       className={`${
-        small ? "bg-[#DDE2E5]" : "h-screen w-full bg-[#F8F9FA]"
+        small ? 'bg-[#DDE2E5]' : 'h-screen w-full bg-[#F8F9FA]'
       }  flex items-center justify-center max-w-[1324px] m-auto h-screen`}
     >
       <BallTriangle
         height={height ? height : 100}
         width={width ? width : 100}
         radius={5}
-        color="rgba(62, 28, 1, 1)"
-        ariaLabel="ball-triangle-loading"
+        color='rgba(62, 28, 1, 1)'
+        ariaLabel='ball-triangle-loading'
         wrapperStyle={{}}
-        wrapperClass=""
+        wrapperClass=''
         visible={true}
       />
     </div>

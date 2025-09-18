@@ -25,12 +25,12 @@ interface MetricsSectionProps {
 
 export const MetricsSection: React.FC<MetricsSectionProps> = ({
   metrics,
-  className
+  className,
 }) => {
   return (
-    <div 
+    <div
       className={cn(
-        "scrollbar-hide flex items-center gap-4 overflow-x-scroll px-4 bg-transparent py-2",
+        'scrollbar-hide flex items-center gap-4 overflow-x-scroll px-4 bg-transparent py-2',
         className
       )}
     >

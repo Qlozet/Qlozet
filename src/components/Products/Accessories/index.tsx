@@ -1,23 +1,23 @@
-import { useState } from "react";
-import Image from "next/image";
-import Typography from "@/components/Typography";
-import TextInput from "@/components/TextInput";
-import icon from "@/public/assets/svg/document-upload.svg";
-import Button from "@/components/Button";
-import closeIcon from "@/public/assets/svg/material-symbols_close-rounded.svg";
-import validator from "@/utils/validator";
-import { uploadSingleImage } from "@/utils/helper";
-import { postRequest } from "@/api/method";
-import NumberInput from "@/components/NumberInput";
-import Toast from "@/components/ToastComponent/toast";
-import toast from "react-hot-toast";
-import { Oval } from "react-loader-spinner";
+import { useState } from 'react';
+import Image from 'next/image';
+import Typography from '@/components/Typography';
+import TextInput from '@/components/TextInput';
+import icon from '@/public/assets/svg/document-upload.svg';
+import Button from '@/components/Button';
+import closeIcon from '@/public/assets/svg/material-symbols_close-rounded.svg';
+import validator from '@/lib/utils';
+import { uploadSingleImage } from '@/lib/utils';
+import { useCreateAccessoryMutation } from '@/redux/services/products/products.api-slice';
+import NumberInput from '@/components/NumberInput';
+import Toast from '@/components/ToastComponent/toast';
+import toast from 'react-hot-toast';
+import { Oval } from 'react-loader-spinner';
 const AddAcessories = ({ closeModal, submitAcessories }) => {
   const [accessories, setAcesssories] = useState({
-    name: "",
-    type: "",
-    image: "",
-    price: 230
+    name: '',
+    type: '',
+    image: '',
+    price: 230,
   });
 
   const [accessoriesRequired, setAcesssoriesRequired] = useState({
@@ -27,20 +27,21 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
     image: false,
   });
 
-  const [loading, setloading] = useState(false);
   const [loadingImageUpload, setloadingImageUpload] = useState(false);
+  const [createAccessory, { isLoading: loading }] =
+    useCreateAccessoryMutation();
 
   const handleSubmit = async () => {
     const { status, data, id } = validator(accessories, accessoriesRequired);
     if (status) {
-      setloading(true);
       try {
-        const response = await postRequest("/vendor/products/accessory", {
+        const response = await createAccessory({
           name: accessories.name,
           type: accessories.type,
           price: accessories.price,
           images: [accessories.image],
-        });
+        }).unwrap();
+
         submitAcessories({
           name: accessories.name,
           type: accessories.type,
@@ -48,12 +49,12 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
           price: accessories.price,
           id: response.data,
         });
-        response && setloading(false);
-        if (response.data) {
-          toast(<Toast text={"Accessories added"} type="success" />);
-        }
+
+        toast(<Toast text='Accessories added' type='success' />);
+        closeModal();
       } catch (error) {
-        error && setloading(false);
+        console.error('Error creating accessory:', error);
+        toast(<Toast text='Failed to add accessory' type='danger' />);
       }
     } else {
       setAcesssoriesRequired((prevData) => {
@@ -64,49 +65,53 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
 
   const handleUpload = async (file) => {
     try {
-      setloadingImageUpload(true)
+      setloadingImageUpload(true);
       const imageUrl = await uploadSingleImage(file);
       if (imageUrl) {
         setAcesssories((prevData) => {
           return { ...prevData, image: imageUrl };
         });
-        imageUrl && setloadingImageUpload(false)
+        imageUrl && setloadingImageUpload(false);
       } else {
-        toast(<Toast text={"Error occured while uploading accessory image."} type="danger" />);
-        setloadingImageUpload(false)
+        toast(
+          <Toast
+            text={'Error occured while uploading accessory image.'}
+            type='danger'
+          />
+        );
+        setloadingImageUpload(false);
       }
-
     } catch (error) {
-      setloadingImageUpload(false)
-      console.error(error)
+      setloadingImageUpload(false);
+      console.error(error);
     }
   };
 
   return (
-    <div className="block md:flex justify-center w-full my-4 bg-white max-w-[1180px] m-auto  rounded-[12px] gap-4 overflow-hidden relative px-[38px] py-[43px]">
+    <div className='block md:flex justify-center w-full my-4 bg-white max-w-[1180px] m-auto  rounded-[12px] gap-4 overflow-hidden relative px-[38px] py-[43px]'>
       <button
         onClick={() => {
           closeModal();
         }}
       >
-        <Image src={closeIcon} alt="" className="absolute top-4 right-4" />
+        <Image src={closeIcon} alt='' className='absolute top-4 right-4' />
       </button>
-      <div className="flex items-start w-full border-solid border-primary border">
-        <div className="w-full">
+      <div className='flex items-start w-full border-solid border-primary border'>
+        <div className='w-full'>
           <Typography
-            textWeight="font-[500]"
-            textSize="text-[24px]"
-            className={"text-[#495057]"}
+            textWeight='font-[500]'
+            textSize='text-[24px]'
+            className={'text-[#495057]'}
           >
             Upload Accessories
           </Typography>
-          <div className="">
-            <div className="pb-8">
-              <div className="w-full">
+          <div className=''>
+            <div className='pb-8'>
+              <div className='w-full'>
                 <TextInput
                   value={accessories.name}
-                  label="Accessory name"
-                  placeholder="Enter accessory name"
+                  label='Accessory name'
+                  placeholder='Enter accessory name'
                   setValue={(data) => {
                     setAcesssories((prevData) => {
                       return { ...prevData, name: data };
@@ -124,11 +129,11 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
                   error={accessoriesRequired.name}
                 />
               </div>
-              <div className="w-full">
+              <div className='w-full'>
                 <TextInput
                   value={accessories.type}
-                  label="Accessory type"
-                  placeholder="Enter accessory type"
+                  label='Accessory type'
+                  placeholder='Enter accessory type'
                   setValue={(data) => {
                     setAcesssories((prevData) => {
                       return { ...prevData, type: data };
@@ -146,10 +151,10 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
                   error={accessoriesRequired.type}
                 />
               </div>
-              <div className="w-full">
+              <div className='w-full'>
                 <NumberInput
-                  label="Price"
-                  placeholder="Enter Price"
+                  label='Price'
+                  placeholder='Enter Price'
                   value={accessories.productQuantity}
                   setValue={(data) => {
                     setAcesssories((prevData) => {
@@ -216,13 +221,13 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
                   )}
                 </div>
               </div> */}
-              <div className="mt-8">
+              <div className='mt-8'>
                 <Button
                   loading={loading}
-                  children="Upload Accessory"
-                  btnSize="large"
-                  variant="primary"
-                  maxWidth="max-w-[10rem]"
+                  children='Upload Accessory'
+                  btnSize='large'
+                  variant='primary'
+                  maxWidth='max-w-[10rem]'
                   clickHandler={() => {
                     handleSubmit();
                   }}
@@ -232,11 +237,11 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
           </div>
         </div>
       </div>
-      <div className="pb-8 min-w-[300px] bg-gray-400 flex-1 basis-1/2">
+      <div className='pb-8 min-w-[300px] bg-gray-400 flex-1 basis-1/2'>
         <Typography
-          textColor="text-dark"
-          textWeight="font-[700]"
-          textSize="text-[24px]"
+          textColor='text-dark'
+          textWeight='font-[700]'
+          textSize='text-[24px]'
         >
           Preview
         </Typography>
@@ -253,12 +258,12 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
           //   unoptimized
           // />
           <div
-            className="w-full h-full rounded-lg "
+            className='w-full h-full rounded-lg '
             style={{
               backgroundImage: `url(${accessories.image.secure_url})`,
-              backgroundPosition: "center",
-              backgroundSize: "contain",
-              backgroundRepeat: "no-repeat",
+              backgroundPosition: 'center',
+              backgroundSize: 'contain',
+              backgroundRepeat: 'no-repeat',
             }}
           ></div>
         )}

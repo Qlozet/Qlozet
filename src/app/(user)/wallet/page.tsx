@@ -1,34 +1,39 @@
-"use client";
-import { useState, useEffect } from "react";
-import DashboardTopCard from "@/components/DashboardTopCard";
-import vendorIcon from "@/public/assets/svg/vendor-total.svg";
-import customerIcon from "@/public/assets/svg/total-customer.svg";
-import Modal from "@/components/Modal";
-import Button from "@/components/Button";
-import WalletTable from "@/components/Wallet/WalletTable";
-import SetUpAltireWallet from "@/components/Wallet/SetUpAltireWallet";
-import TransactionDetails from "@/components/Wallet/TransactionDetails";
-import SendMoney from "@/components/Wallet/SendMoney";
-import SendMoneyForm from "@/components/Wallet/SendMoneyForm";
-import classes from "./index.module.css";
-import Beneficiary from "@/components/Wallet/Beneficiary";
-import { getRequest } from "@/api/method";
-import toast from "react-hot-toast";
-import Toast from "@/components/ToastComponent/toast";
-import Loader from "@/components/Loader";
-import Typography from "@/components/Typography";
-import DropDown from "@/components/DropDown";
-import moment from "moment";
-import { useAppSelector } from "@/redux/store";
-import { walletStatusCheck } from "@/utils/helper";
+'use client';
+import { useState, useEffect } from 'react';
+import DashboardTopCard from '@/components/DashboardTopCard';
+import vendorIcon from '@/public/assets/svg/vendor-total.svg';
+import customerIcon from '@/public/assets/svg/total-customer.svg';
+import Modal from '@/components/Modal';
+import Button from '@/components/Button';
+import WalletTable from '@/components/Wallet/WalletTable';
+import SetUpAltireWallet from '@/components/Wallet/SetUpAltireWallet';
+import TransactionDetails from '@/components/Wallet/TransactionDetails';
+import SendMoney from '@/components/Wallet/SendMoney';
+import SendMoneyForm from '@/components/Wallet/SendMoneyForm';
+import classes from './index.module.css';
+import Beneficiary from '@/components/Wallet/Beneficiary';
+import {
+  useGetWalletBalanceQuery,
+  useGetWalletTransactionsQuery,
+  useGetBanksQuery,
+  useLazyVerifyAccountNumberQuery,
+} from '@/redux/services/wallet/wallet.api-slice';
+import toast from 'react-hot-toast';
+import Toast from '@/components/ToastComponent/toast';
+import Loader from '@/components/Loader';
+import Typography from '@/components/Typography';
+import DropDown from '@/components/DropDown';
+import moment from 'moment';
+import { useAppSelector } from '@/redux/store';
+import { walletStatusCheck } from '@/lib/utils';
 const Wallet: React.FC = () => {
   const filterData = useAppSelector((state) => state.filter.state);
 
   const [setUpWalletWallet, setSetUpWalletWallet] = useState(false);
   const [showTransactiondetails, setShowTransactiondetails] = useState(false);
   const [walletBalance, setWalletBalance] = useState(0);
-  const [showSendMoney, setShowSendMoney] = useState("");
-  const [transactionId, setransactionId] = useState("");
+  const [showSendMoney, setShowSendMoney] = useState('');
+  const [transactionId, setransactionId] = useState('');
   const [allBanks, setAllBanks] = useState([]);
   const [loadPage, setLoadPage] = useState(true);
   const [transactionData, setTransactionData] = useState([]);
@@ -48,28 +53,30 @@ const Wallet: React.FC = () => {
 
   const getWalletBalance = async () => {
     try {
-      const response = await getRequest("/vendor/wallet/balance");
+      const response = await getRequest('/vendor/wallet/balance');
       if (response?.data) {
         setWalletBalance(response?.data?.data);
       } else {
       }
-    } catch (error) { toast(<Toast text={"An error occured"} type="danger" />); }
+    } catch (error) {
+      toast(<Toast text={'An error occured'} type='danger' />);
+    }
   };
 
   const getTransaction = async () => {
     try {
-      let response = await getRequest("/vendor/wallet/transactions");
-      let transactionDataArray = [];
+      const response = await getRequest('/vendor/wallet/transactions');
+      const transactionDataArray = [];
       response?.data && setLoadPage(false);
       if (response?.data) {
         response?.data?.data.map((item) => {
-          let status = walletStatusCheck(item.status);
+          const status = walletStatusCheck(item.status);
           const transactionItem = {
             transactionId: item?.transactionId,
             amount: `₦${parseInt(item?.amount).toLocaleString()}`,
             date: item?.date,
             narration: item.narration,
-            status: status,
+            status,
             transactionType: item.transType,
             createdAt: item.createdAt,
           };
@@ -80,18 +87,20 @@ const Wallet: React.FC = () => {
       } else {
       }
     } catch (error) {
-      error?.message && toast(<Toast text={error?.message} type="danger" />);
+      error?.message && toast(<Toast text={error?.message} type='danger' />);
       // error?.data && toast(<Toast text={error?.data} type="danger" />);
     }
   };
 
   const getBanks = async () => {
     try {
-      let response = await getRequest("/vendor/transfer/banks");
+      const response = await getRequest('/vendor/transfer/banks');
       if (response?.data) {
         setAllBanks(response?.data?.data?.data);
       }
-    } catch (error) { toast(<Toast text={"An error occured"} type="danger" />); }
+    } catch (error) {
+      toast(<Toast text={'An error occured'} type='danger' />);
+    }
   };
 
   const handleFilterData = (data) => {
@@ -117,13 +126,13 @@ const Wallet: React.FC = () => {
   const getTotalAmontRecievd = async () => {
     try {
       const response = await getRequest(
-        "/vendor/wallet/:vendorId/totalReceived"
+        '/vendor/wallet/:vendorId/totalReceived'
       );
       if (response.data) {
         setTotalAmountRecieved(response.data.data.totalReceived);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   };
   useEffect(() => {
@@ -139,69 +148,69 @@ const Wallet: React.FC = () => {
 
   return (
     <section>
-      <div className="flex bg-[#F8F9FA]">
-        <div className="w-full p-4">
+      <div className='flex bg-[#F8F9FA]'>
+        <div className='w-full p-4'>
           {loadPage ? (
             <Loader></Loader>
           ) : (
             <div>
-              <div className="flex justify-end items-center lg:hidden w-full">
-                <div className="items-start gap-6 pt-5 flex ">
+              <div className='flex justify-end items-center lg:hidden w-full'>
+                <div className='items-start gap-6 pt-5 flex '>
                   <Button
-                    children="Send money"
-                    btnSize="small"
-                    variant="outline"
-                    minWidth={"103px"}
+                    children='Send money'
+                    btnSize='small'
+                    variant='outline'
+                    minWidth={'103px'}
                     clickHandler={() => {
-                      setShowSendMoney("Send Money");
+                      setShowSendMoney('Send Money');
                     }}
                   />
                   <Button
-                    children="Fund wallet"
-                    btnSize="small"
-                    variant="primary"
-                    minWidth={"103px"}
+                    children='Fund wallet'
+                    btnSize='small'
+                    variant='primary'
+                    minWidth={'103px'}
                     clickHandler={() => {
                       setSetUpWalletWallet(true);
                     }}
                   />
                 </div>
               </div>
-              <div className="flex justify-between">
+              <div className='flex justify-between'>
                 <div
                   className={` ${classes.scrollbarElement} flex flex-2 items-center gap-4 overflow-x-scroll`}
                 >
                   <DashboardTopCard
-                    name="Wallet Balance"
+                    name='Wallet Balance'
                     total={walletBalance.toLocaleString()}
-                    percentage="2.5"
-                    bgColor="bg-[#57CAEB]"
+                    percentage='2.5'
+                    bgColor='bg-[#57CAEB]'
                     icon={vendorIcon}
                     addMaxWidth={true}
                   />
                   <DashboardTopCard
-                    name="Total Amount Received"
+                    name='Total Amount Received'
                     total={totalAmountRecived.toLocaleString()}
-                    percentage="2.5"
-                    bgColor="bg-[#5DDAB4]"
+                    percentage='2.5'
+                    bgColor='bg-[#5DDAB4]'
                     icon={customerIcon}
                     addMaxWidth={true}
                   />
                 </div>
-                <div className="items-start gap-6 pt-5 hidden lg:flex">
+                <div className='items-start gap-6 pt-5 hidden lg:flex'>
                   <Button
-                    children="Send money"
-                    btnSize="small"
-                    variant="outline"
+                    children='Send money'
+                    btnSize='small'
+                    variant='outline'
                     // minWidth="min-w-[10rem]"
                     clickHandler={() => {
-                      setShowSendMoney("Send Money");
+                      setShowSendMoney('Send Money');
                     }}
                   />
                   <Button
-                    children="Fund wallet"
-                    btnSize="small"
-                    variant="primary"
+                    children='Fund wallet'
+                    btnSize='small'
+                    variant='primary'
                     // minWidth="min-w-[6rem] lg:min-w-[10rem]"
                     clickHandler={() => {
                       setSetUpWalletWallet(true);
@@ -209,27 +218,27 @@ const Wallet: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="">
-                <div className="lg:flex items-center justify-between mt-6 mb-2 hidden ">
+              <div className=''>
+                <div className='lg:flex items-center justify-between mt-6 mb-2 hidden '>
                   <Typography
-                    textColor="text-dark"
-                    textWeight="font-bold"
-                    textSize="text-[18px]"
+                    textColor='text-dark'
+                    textWeight='font-bold'
+                    textSize='text-[18px]'
                   >
                     Wallet History
                   </Typography>
-                  <div className="">
+                  <div className=''>
                     <DropDown
                       data={[
-                        "This week",
-                        "Last week",
-                        "This month",
-                        "Last month",
-                        "Choose month",
-                        "Custom",
+                        'This week',
+                        'Last week',
+                        'This month',
+                        'Last month',
+                        'Choose month',
+                        'Custom',
                       ]}
-                      maxWidth={"max-w-[8rem]"}
-                      placeholder="Time Range"
+                      maxWidth={'max-w-[8rem]'}
+                      placeholder='Time Range'
                       setValue={(startDate, endDate) => {
                         handleFilterWithDate(startDate, endDate);
                       }}
@@ -253,64 +262,79 @@ const Wallet: React.FC = () => {
         <Modal
           show={setUpWalletWallet}
           content={
-            <>{setUpWalletWallet && (<SetUpAltireWallet
-              closeModal={() => {
-                setSetUpWalletWallet(false);
-              }}
-            />)}</>
+            <>
+              {setUpWalletWallet && (
+                <SetUpAltireWallet
+                  closeModal={() => {
+                    setSetUpWalletWallet(false);
+                  }}
+                />
+              )}
+            </>
           }
         ></Modal>
         <Modal
           show={showTransactiondetails}
           content={
-            <>{showTransactiondetails && (<TransactionDetails
-              closeModal={() => {
-                setShowTransactiondetails(false);
-              }}
-              details={
-                transactionData.filter(
-                  (item) => item.transactionId == transactionId
-                )[0]
-              }
-            />)}</>
+            <>
+              {showTransactiondetails && (
+                <TransactionDetails
+                  closeModal={() => {
+                    setShowTransactiondetails(false);
+                  }}
+                  details={
+                    transactionData.filter(
+                      (item) => item.transactionId == transactionId
+                    )[0]
+                  }
+                />
+              )}
+            </>
           }
         ></Modal>
         <Modal
-          show={showSendMoney === "Send Money" ? true : false}
+          show={showSendMoney === 'Send Money' ? true : false}
           content={
-            <>{showSendMoney === "Send Money" && (<SendMoney
-              closeModal={(name) => {
-                setShowSendMoney(name);
-              }}
-            />)}</>
+            <>
+              {showSendMoney === 'Send Money' && (
+                <SendMoney
+                  closeModal={(name) => {
+                    setShowSendMoney(name);
+                  }}
+                />
+              )}
+            </>
           }
         ></Modal>
 
         <Modal
-          show={showSendMoney === "Manually" ? true : false}
+          show={showSendMoney === 'Manually' ? true : false}
           content={
-            <>{showSendMoney && (<SendMoneyForm
-              banks={allBanks}
-              closeModal={() => {
-                setShowSendMoney(false);
-              }}
-            />)}</>
-
+            <>
+              {showSendMoney && (
+                <SendMoneyForm
+                  banks={allBanks}
+                  closeModal={() => {
+                    setShowSendMoney(false);
+                  }}
+                />
+              )}
+            </>
           }
         ></Modal>
-
 
         <Modal
-          show={showSendMoney === "Beneficiaries"}
+          show={showSendMoney === 'Beneficiaries'}
           content={
-            showSendMoney === "Beneficiaries" && (<Beneficiary
-              closeModal={() => {
-                setShowSendMoney(false);
-              }}
-            />)
+            showSendMoney === 'Beneficiaries' && (
+              <Beneficiary
+                closeModal={() => {
+                  setShowSendMoney(false);
+                }}
+              />
+            )
           }
         ></Modal>
-
       </div>
     </section>
   );

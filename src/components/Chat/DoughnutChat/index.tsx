@@ -1,5 +1,11 @@
-import React, { useEffect, useRef } from "react";
-import { Chart, DoughnutController, ArcElement, Tooltip, Legend } from 'chart.js';
+import React, { useEffect, useRef } from 'react';
+import {
+  Chart,
+  DoughnutController,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 
 // Register the necessary components for a doughnut chart
 Chart.register(DoughnutController, ArcElement, Tooltip, Legend);
@@ -14,7 +20,12 @@ interface DonutChartProps {
   cutout?: boolean;
 }
 
-const DonutChart: React.FC<DonutChartProps> = ({ data, width, height, cutout }) => {
+const DonutChart: React.FC<DonutChartProps> = ({
+  data,
+  width,
+  height,
+  cutout,
+}) => {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstance = useRef<Chart | null>(null);
 
@@ -28,11 +39,11 @@ const DonutChart: React.FC<DonutChartProps> = ({ data, width, height, cutout }) 
         }
 
         chartInstance.current = new Chart(ctx, {
-          type: "doughnut",
+          type: 'doughnut',
           data: {
             datasets: [
               {
-                label: "Gender chart",
+                label: 'Gender chart',
                 data: data.values,
                 backgroundColor: data.colors,
               },
@@ -45,7 +56,7 @@ const DonutChart: React.FC<DonutChartProps> = ({ data, width, height, cutout }) 
             borderWidth: 0,
             plugins: {
               legend: {
-                position: "bottom",
+                position: 'bottom',
                 labels: {
                   padding: 20, // Adjust padding as needed
                 },
@@ -66,7 +77,7 @@ const DonutChart: React.FC<DonutChartProps> = ({ data, width, height, cutout }) 
 
   return (
     <div>
-      <div className="">
+      <div className=''>
         <canvas ref={chartRef} width={width} height={height}></canvas>
       </div>
     </div>

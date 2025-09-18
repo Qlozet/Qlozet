@@ -40,31 +40,31 @@ interface DashboardContentProps {
 export const DashboardContent: React.FC<DashboardContentProps> = ({
   data,
   isLoading = false,
-  className
+  className,
 }) => {
   if (isLoading) {
     return (
-      <div className={cn("w-full", className)}>
-        <LoadingSkeleton variant="card" count={4} />
-        <div className="mt-8">
-          <LoadingSkeleton variant="chart" count={3} />
+      <div className={cn('w-full', className)}>
+        <LoadingSkeleton variant='card' count={4} />
+        <div className='mt-8'>
+          <LoadingSkeleton variant='chart' count={3} />
         </div>
       </div>
     );
   }
 
   return (
-    <div className={cn("w-full", className)}>
+    <div className={cn('w-full', className)}>
       {/* Metrics Cards */}
       <MetricsSection metrics={data.metrics} />
-      
+
       {/* Main Content Area */}
-      <div className="bg-[#F8F9FA] px-4 lg:px-0">
+      <div className='bg-[#F8F9FA] px-4 lg:px-0'>
         {/* Charts Section */}
         <ChartGrid charts={data.charts} />
-        
+
         {/* Analytics and Recent Orders */}
-        <div className="block md:flex lg:flex w-full md:gap-[21px] gap-4 mt-4">
+        <div className='block md:flex lg:flex w-full md:gap-[21px] gap-4 mt-4'>
           <AnalyticsGrid analytics={data.analytics} />
           <RecentOrdersSection orders={data.recentOrders}>
             {data.recentOrdersComponent}

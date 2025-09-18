@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React from 'react';
 import { CustomersPageTemplate } from '@/patterns/customers/templates/customers-page-template';
 
@@ -20,7 +20,7 @@ const Customer: React.FC = () => {
 
   return (
     <CustomersPageTemplate
-      title="Customers"
+      title='Customers'
       showCreateButton={true}
       showBulkActions={true}
       onCreateCustomer={handleCreateCustomer}

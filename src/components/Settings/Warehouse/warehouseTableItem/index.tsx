@@ -1,9 +1,9 @@
-import { useState } from "react";
-import threeDotIcon from "@/public/assets/svg/three-dot.svg";
-import Image from "next/image";
-import OrderStatus from "@/components/order/OrderStatus";
-import DropDown from "@/components/DropDown";
-import DropDownComponent from "@/components/DropDownComponent";
+import { useState } from 'react';
+import threeDotIcon from '@/public/assets/svg/three-dot.svg';
+import Image from 'next/image';
+import OrderStatus from '@/components/order/OrderStatus';
+import DropDown from '@/components/DropDown';
+import DropDownComponent from '@/components/DropDownComponent';
 const WarehouseTableItem = ({
   warehouseName,
   vendorName,
@@ -20,36 +20,36 @@ const WarehouseTableItem = ({
   };
 
   return (
-    <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-xs font-[400] p-4  text-dark">{warehouseName}</td>
-      <td className="text-xs font-[400] p-4  text-dark">{vendorName}</td>
-      <td className="text-xs font-[400] p-4  text-dark">{warehouseAddress}</td>
-      <td className="text-xs font-[400] p-4  text-dark">{contactName}</td>
-      <td className="text-xs font-[400] p-4  text-dark">{PhoneNumber}</td>
-      <td className="text-xs font-[400] p-4  text-dark">{Email}</td>
-      <td className="text-xs font-[400] p-4  text-dark">
+    <tr className='border-b-[1.5px] border-solid border-gray-300 bg-white'>
+      <td className='text-xs font-[400] p-4  text-dark'>{warehouseName}</td>
+      <td className='text-xs font-[400] p-4  text-dark'>{vendorName}</td>
+      <td className='text-xs font-[400] p-4  text-dark'>{warehouseAddress}</td>
+      <td className='text-xs font-[400] p-4  text-dark'>{contactName}</td>
+      <td className='text-xs font-[400] p-4  text-dark'>{PhoneNumber}</td>
+      <td className='text-xs font-[400] p-4  text-dark'>{Email}</td>
+      <td className='text-xs font-[400] p-4  text-dark'>
         <OrderStatus
-          text="Out for delivery"
-          bgColor="bg-[#FFF7DE]"
-          color="text-[#FFB020]"
+          text='Out for delivery'
+          bgColor='bg-[#FFF7DE]'
+          color='text-[#FFB020]'
           addMaxWidth={true}
         />
       </td>
-      <td className="text-xs font-[400] p-4  text-dark relative">
+      <td className='text-xs font-[400] p-4  text-dark relative'>
         <div
-          className="cursor-pointer"
+          className='cursor-pointer'
           onClick={() => {
             setShowDropDown(true);
           }}
         >
-          <Image src={threeDotIcon} alt="" />
+          <Image src={threeDotIcon} alt='' />
         </div>
         {showDropDown && (
-          <div className="absolute top-1 right-1">
+          <div className='absolute top-1 right-1'>
             <DropDownComponent
-              dropdownTitle="Warehouse menu"
-              width="w-[15rem]"
-              data={["Set as alternate warehouse", "Set as default warehouse"]}
+              dropdownTitle='Warehouse menu'
+              width='w-[15rem]'
+              data={['Set as alternate warehouse', 'Set as default warehouse']}
               clickHandler={selectDropDownHandler}
             />
           </div>

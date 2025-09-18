@@ -1,25 +1,25 @@
-import Image from "next/image";
-import closeIcon from "@/public/assets/svg/material-symbols_close-rounded.svg";
-import Typography from "@/components/Typography";
-import TextInput from "@/components/TextInput";
-import SearchInput from "@/components/SearchInput";
-import SelectInput from "@/components/SelectInput";
-import Button from "@/components/Button";
-import { useEffect, useState } from "react";
-import validator from "@/utils/validator";
-import { postRequest } from "@/api/method";
-import toast, { ToastBar } from "react-hot-toast";
-import Toast from "@/components/ToastComponent/toast";
+import Image from 'next/image';
+import closeIcon from '@/public/assets/svg/material-symbols_close-rounded.svg';
+import Typography from '@/components/Typography';
+import TextInput from '@/components/TextInput';
+import SearchInput from '@/components/SearchInput';
+import SelectInput from '@/components/SelectInput';
+import Button from '@/components/Button';
+import { useEffect, useState } from 'react';
+import validator from '@/lib/utils';
+import { useAddWarehouseMutation } from '@/redux/services/settings/settings.api-slice';
+import toast, { ToastBar } from 'react-hot-toast';
+import Toast from '@/components/ToastComponent/toast';
 const AddNewWarehouseForm = ({ closeModal }) => {
-  const [isLoading, setIsloading] = useState(false);
+  const [addWarehouse, { isLoading }] = useAddWarehouseMutation();
   const [formData, setFormData] = useState({
-    vendorName: "",
-    warehouseName: "",
-    warehouseAddress: "",
-    contactName: "",
-    contactPhoneNumber: "",
-    contactEmail: "",
-    warehouseStatus: "",
+    vendorName: '',
+    warehouseName: '',
+    warehouseAddress: '',
+    contactName: '',
+    contactPhoneNumber: '',
+    contactEmail: '',
+    warehouseStatus: '',
   });
   const [requiredFormData, setRequiredFormData] = useState({
     vendorName: false,
@@ -32,12 +32,12 @@ const AddNewWarehouseForm = ({ closeModal }) => {
   });
   const dropdownData = [
     {
-      text: "Set as default warehouse",
-      color: "",
+      text: 'Set as default warehouse',
+      color: '',
     },
     {
-      text: "Set as default warehouse",
-      color: "",
+      text: 'Set as default warehouse',
+      color: '',
     },
   ];
 
@@ -45,56 +45,51 @@ const AddNewWarehouseForm = ({ closeModal }) => {
     try {
       const { status, data } = validator(formData, requiredFormData);
       if (status) {
-        setIsloading(true);
-        const response = await postRequest(`/vendor/warehouse/add`, {
+        const response = await addWarehouse({
           vendorName: formData.vendorName,
           warehouseName: formData.warehouseName,
           warehouseAddress: formData.warehouseAddress,
           contactName: formData.contactName,
           contactPhoneNumber: formData.contactPhoneNumber,
           contactEmail: formData.contactEmail,
-          warehouseStatus: "alternative",
-        });
+          warehouseStatus: 'alternative',
+        }).unwrap();
 
-        response && setIsloading(false);
-        if (response?.data) {
-          closeModal();
-          toast(<Toast text={response.message} type="success" />);
-        } else {
-          toast(<Toast text={response.message} type="danger" />);
-        }
+        closeModal();
+        toast(<Toast text='Warehouse added successfully' type='success' />);
       } else {
         setRequiredFormData((prevData) => {
           return { prevData, ...data };
         });
       }
     } catch (error) {
-      error && setIsloading(false);
+      console.error('Error adding warehouse:', error);
+      toast(<Toast text='Failed to add warehouse' type='danger' />);
     }
   };
-  useEffect(() => { }, []);
+  useEffect(() => {}, []);
   return (
-    <div className="bg-white rounded-[12px] w-full lg:w-[40%]  m-auto px-4 py-6 my-6">
+    <div className='bg-white rounded-[12px] w-full lg:w-[40%]  m-auto px-4 py-6 my-6'>
       <div>
-        <div className="flex items-center justify-between  border-dashed border-b-[1.5px] border-gray-200 pb-4">
+        <div className='flex items-center justify-between  border-dashed border-b-[1.5px] border-gray-200 pb-4'>
           <Typography
-            textColor="text-primary"
-            textWeight="font-bold"
-            textSize="text-sm"
+            textColor='text-primary'
+            textWeight='font-bold'
+            textSize='text-sm'
           >
             {/* Not check when integrating, if Id is available change Add to Edit  */}
             Add new warehouse
           </Typography>
           <Image
             src={closeIcon}
-            alt=""
+            alt=''
             onClick={closeModal}
-            className="cursor-pointer"
+            className='cursor-pointer'
           />
         </div>
         <TextInput
-          label="Warehouse name"
-          placeholder="Enter your Warehouse name"
+          label='Warehouse name'
+          placeholder='Enter your Warehouse name'
           value={formData.warehouseName}
           setValue={(data) => {
             setFormData((prevData) => {
@@ -114,8 +109,8 @@ const AddNewWarehouseForm = ({ closeModal }) => {
           error={requiredFormData.warehouseName}
         />
         <TextInput
-          label="Vendor name"
-          placeholder="Enter your endor name"
+          label='Vendor name'
+          placeholder='Enter your endor name'
           value={formData.vendorName}
           setValue={(data) => {
             setFormData((prevData) => {
@@ -135,8 +130,8 @@ const AddNewWarehouseForm = ({ closeModal }) => {
           error={requiredFormData.vendorName}
         />
         <TextInput
-          label="Warehouse name"
-          placeholder="Enter your warehouse address"
+          label='Warehouse name'
+          placeholder='Enter your warehouse address'
           value={formData.warehouseAddress}
           setValue={(data) => {
             setFormData((prevData) => {
@@ -156,8 +151,8 @@ const AddNewWarehouseForm = ({ closeModal }) => {
           error={requiredFormData.warehouseAddress}
         />
         <TextInput
-          label="Contact name"
-          placeholder="Enter your contact name"
+          label='Contact name'
+          placeholder='Enter your contact name'
           value={formData.contactName}
           setValue={(data) => {
             setFormData((prevData) => {
@@ -177,8 +172,8 @@ const AddNewWarehouseForm = ({ closeModal }) => {
           error={requiredFormData.contactName}
         />
         <TextInput
-          label="Contact phone number"
-          placeholder="Enter your phone number"
+          label='Contact phone number'
+          placeholder='Enter your phone number'
           value={formData.contactPhoneNumber}
           setValue={(data) => {
             setFormData((prevData) => {
@@ -198,8 +193,8 @@ const AddNewWarehouseForm = ({ closeModal }) => {
           error={requiredFormData.contactPhoneNumber}
         />
         <TextInput
-          label="Contact email address"
-          placeholder="Enter your email address"
+          label='Contact email address'
+          placeholder='Enter your email address'
           value={formData.contactEmail}
           setValue={(data) => {
             setFormData((prevData) => {
@@ -219,7 +214,7 @@ const AddNewWarehouseForm = ({ closeModal }) => {
           error={requiredFormData.contactEmail}
         />
         <SelectInput
-          placeholder={"Select warehouse status"}
+          placeholder={'Select warehouse status'}
           // value={dropDownValue}
           value={formData.warehouseStatus}
           setValue={(data) => {
@@ -239,15 +234,15 @@ const AddNewWarehouseForm = ({ closeModal }) => {
           }}
           error={requiredFormData.warehouseStatus}
           data={dropdownData}
-          label="Set warehouse status"
+          label='Set warehouse status'
         />
-        <div className="my-6 flex items-center justify-end">
+        <div className='my-6 flex items-center justify-end'>
           <Button
             loading={isLoading}
-            children="Submit"
-            btnSize="small"
-            minWidth="min-w-[14rem]"
-            variant="primary"
+            children='Submit'
+            btnSize='small'
+            minWidth='min-w-[14rem]'
+            variant='primary'
             clickHandler={() => {
               handleSubmit();
               // closeModal();

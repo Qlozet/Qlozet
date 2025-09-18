@@ -1,19 +1,19 @@
-import Image from "next/image";
+import Image from 'next/image';
 
 const Variant = ({ bg }) => {
   return (
     <div>
-      {bg.includes("https://res.cloudinary.com") ? (
+      {bg.includes('https://res.cloudinary.com') ? (
         <div
-          className="relative my-2 w-[3.5rem] h-[2rem] rounded-[2px]"
+          className='relative my-2 w-[3.5rem] h-[2rem] rounded-[2px]'
           style={{
             backgroundImage: `url('${bg}')`,
-            backgroundPosition: "center",
+            backgroundPosition: 'center',
           }}
         ></div>
       ) : (
         <div
-            className={`w-[3.5rem] h-[2rem] rounded-[2px]`}
+          className={`w-[3.5rem] h-[2rem] rounded-[2px]`}
           style={{
             backgroundColor: bg,
           }}

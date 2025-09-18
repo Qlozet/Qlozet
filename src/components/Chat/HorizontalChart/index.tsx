@@ -1,5 +1,5 @@
 import React from 'react';
-import HorizontalChatBar from "../HorizontalChatBar";
+import HorizontalChatBar from '../HorizontalChatBar';
 
 interface ChartDataItem {
   location: string;
@@ -13,9 +13,9 @@ interface HorizontalChartProps {
 
 const HorizontalChart: React.FC<HorizontalChartProps> = ({ data }) => {
   return (
-    <div className="h-[200px] overflow-y-auto">
+    <div className='h-[200px] overflow-y-auto'>
       {data.map((item, index) => (
-        <div className={`${index !== 0 && "mt-6"}`} key={index}>
+        <div className={`${index !== 0 && 'mt-6'}`} key={index}>
           <HorizontalChatBar
             location={item.location}
             male={item.male}

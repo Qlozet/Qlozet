@@ -1,5 +1,5 @@
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ModalProps {
   content: React.ReactNode;
@@ -15,7 +15,7 @@ const Modal: React.FC<ModalProps> = ({ content, show, closeModal }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="modal-scrollbar px-4 lg:px-0 h-screen fixed top-0 left-0 w-screen bg-[#00000080] overflow-y-scroll border-solid border border-primary"
+          className='modal-scrollbar px-4 lg:px-0 h-screen fixed top-0 left-0 w-screen bg-[#00000080] overflow-y-scroll border-solid border border-primary'
           style={{ zIndex: 9999 }}
           onClick={closeModal} // Close modal on overlay click
         >

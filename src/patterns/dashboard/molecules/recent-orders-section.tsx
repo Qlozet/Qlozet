@@ -18,14 +18,12 @@ interface RecentOrdersSectionProps {
 export const RecentOrdersSection: React.FC<RecentOrdersSectionProps> = ({
   orders,
   className,
-  children
+  children,
 }) => {
   return (
-    <div className={cn("w-full md:w-1/3 flex mt-4", className)}>
-      <div className="bg-white rounded-[12px] w-full flex gap-4 h-full shadow-[0px_4px_10px_#AEAEC026]">
-        <div className="p-3 text-dark w-full">
-          {children}
-        </div>
+    <div className={cn('w-full md:w-1/3 flex mt-4', className)}>
+      <div className='bg-white rounded-[12px] w-full flex gap-4 h-full shadow-[0px_4px_10px_#AEAEC026]'>
+        <div className='p-3 text-dark w-full'>{children}</div>
       </div>
     </div>
   );

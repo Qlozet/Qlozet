@@ -12,9 +12,9 @@
 
 @media (max-width: 768px) {
   .section {
-    border: "1px solid red";
+    border: '1px solid red';
     padding: 0;
-    background-image: url("https://buffer.com/library/content/images/2023/10/free-images.jpg");
+    background-image: url('https://buffer.com/library/content/images/2023/10/free-images.jpg');
     background-repeat: no-repeat;
     background-position: center;
   }

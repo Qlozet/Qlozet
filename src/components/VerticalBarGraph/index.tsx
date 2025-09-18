@@ -1,71 +1,67 @@
-import { useEffect, useState } from "react";
-import VendorCountLine from "../VendorCountLine";
-import VerticalBar from "../VerticalBar";
-import Typography from "../Typography";
-import DropDown from "../DropDown";
-import { current } from "@reduxjs/toolkit";
+import { useEffect, useState } from 'react';
+import VendorCountLine from '../VendorCountLine';
+import VerticalBar from '../VerticalBar';
+import Typography from '../Typography';
+import DropDown from '../DropDown';
+import { current } from '@reduxjs/toolkit';
 
 const VerticalBarGraph = ({ data, name }) => {
   const daysArray = [
     {
-      day: "Mon",
+      day: 'Mon',
       value: data.Monday,
     },
     {
-      day: "Tue",
+      day: 'Tue',
       value: data.Tuesday,
     },
     {
-      day: "Wed",
+      day: 'Wed',
       value: data.Wednesday,
     },
     {
-      day: "Thu",
+      day: 'Thu',
       value: data.Thursday,
     },
     {
-      day: "Fri",
+      day: 'Fri',
       value: data.Friday,
     },
     {
-      day: "Sat",
+      day: 'Sat',
       value: data.Saturday,
     },
     {
-      day: "Sun",
+      day: 'Sun',
       value: data.Sunday,
     },
   ];
   daysArray.sort((a, b) => b.value - a.value);
-  let heightValue = daysArray[0].value > 0 ? daysArray[0].value : 10000;
+  const heightValue = daysArray[0].value > 0 ? daysArray[0].value : 10000;
 
   const numberOfLineFromZero = 6;
   return (
     <div>
-      <div className="flex my-4 items-center justify-between">
-        <Typography
-          textColor="text-black"
-          textWeight="font-bold"
-          textSize=""
-        >
+      <div className='flex my-4 items-center justify-between'>
+        <Typography textColor='text-black' textWeight='font-bold' textSize=''>
           {name}
         </Typography>
         <DropDown
           data={[
-            "This week",
-            "Last week",
-            "Last month",
-            "This month",
-            "Choose month",
-            "Custom",
+            'This week',
+            'Last week',
+            'Last month',
+            'This month',
+            'Choose month',
+            'Custom',
           ]}
-          maxWidth={"max-w-[7.5rem]"}
-          placeholder="Time Range"
-          setValue={(data) => { }}
-          bg={"bg-white"}
+          maxWidth={'max-w-[7.5rem]'}
+          placeholder='Time Range'
+          setValue={(data) => {}}
+          bg={'bg-white'}
         />
       </div>
-      <div className="relative ">
+      <div className='relative '>
         <div>
           <VendorCountLine
             value={
@@ -117,14 +113,14 @@ const VerticalBarGraph = ({ data, name }) => {
             }
           />
 
-          <div className="mb-[1rem] lg:mb-0">
+          <div className='mb-[1rem] lg:mb-0'>
             {/* did this because of the slice */}
             <VendorCountLine value={0.001} />
           </div>
         </div>
-        <div className="absolute right-0 bottom-[.3rem] lg:bottom-[4.5px]  w-[94%] h-[96%] flex justify-between pl-2">
+        <div className='absolute right-0 bottom-[.3rem] lg:bottom-[4.5px]  w-[94%] h-[96%] flex justify-between pl-2'>
           {daysArray.map((item, index) => {
-            if (item.day == "Sun") {
+            if (item.day == 'Sun') {
               return (
                 <VerticalBar
                   heightValue={heightValue}
@@ -138,7 +134,7 @@ const VerticalBarGraph = ({ data, name }) => {
             }
           })}
           {daysArray.map((item, index) => {
-            if (item.day == "Mon") {
+            if (item.day == 'Mon') {
               return (
                 <VerticalBar
                   heightValue={heightValue}
@@ -152,7 +148,7 @@ const VerticalBarGraph = ({ data, name }) => {
             }
           })}
           {daysArray.map((item, index) => {
-            if (item.day == "Tue") {
+            if (item.day == 'Tue') {
               return (
                 <VerticalBar
                   heightValue={heightValue}
@@ -166,7 +162,7 @@ const VerticalBarGraph = ({ data, name }) => {
             }
           })}
           {daysArray.map((item, index) => {
-            if (item.day == "Wed") {
+            if (item.day == 'Wed') {
               return (
                 <VerticalBar
                   heightValue={heightValue}
@@ -180,7 +176,7 @@ const VerticalBarGraph = ({ data, name }) => {
             }
           })}
           {daysArray.map((item, index) => {
-            if (item.day == "Thu") {
+            if (item.day == 'Thu') {
               return (
                 <VerticalBar
                   heightValue={heightValue}
@@ -194,7 +190,7 @@ const VerticalBarGraph = ({ data, name }) => {
             }
           })}
           {daysArray.map((item, index) => {
-            if (item.day == "Fri") {
+            if (item.day == 'Fri') {
               return (
                 <VerticalBar
                   heightValue={heightValue}
@@ -208,7 +204,7 @@ const VerticalBarGraph = ({ data, name }) => {
             }
           })}
           {daysArray.map((item, index) => {
-            if (item.day == "Sat") {
+            if (item.day == 'Sat') {
               return (
                 <VerticalBar
                   heightValue={heightValue}

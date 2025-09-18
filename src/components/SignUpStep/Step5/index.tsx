@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import Logo from "../../Logo";
-import Typography from "../../Typography";
-import ProgressBar from "../../ProgressBar";
-import PasswordInput from "../../PasswordInput";
-import PasswordValidate from "../../PasswordValidation";
+import { useEffect, useState } from 'react';
+import Logo from '../../Logo';
+import Typography from '../../Typography';
+import ProgressBar from '../../ProgressBar';
+import PasswordInput from '../../PasswordInput';
+import PasswordValidate from '../../PasswordValidation';
 import {
   handlerContainsNumber,
   handleContainsSymbolOrCharacter,
-} from "@/utils/helper";
+} from '@/lib/utils';
 const Step5 = ({ formData, setFormData, requiredData, setRequiredData }) => {
   const [checkPassword, setCheckPassword] = useState({
     moreThan8: false,
@@ -55,35 +55,35 @@ const Step5 = ({ formData, setFormData, requiredData, setRequiredData }) => {
   }, []);
   return (
     <div>
-      <div className="mt-4 mx-4  lg:mx-0 pt-5 px-2 p lg:px-0 ">
+      <div className='mt-4 mx-4  lg:mx-0 pt-5 px-2 p lg:px-0 '>
         <Typography
-          textColor="text-primary"
-          textWeight="font-bold"
-          textSize="text-[32px]"
+          textColor='text-primary'
+          textWeight='font-bold'
+          textSize='text-[32px]'
         >
           Create password
         </Typography>
         <Typography
-          textWeight="font-normal"
-          textSize="text-sm"
-          verticalPadding="my-2"
-          textColor="text-dark"
+          textWeight='font-normal'
+          textSize='text-sm'
+          verticalPadding='my-2'
+          textColor='text-dark'
         >
           Please fill in the information below to register as a vendor
         </Typography>
         <Typography
-          textWeight="font-bold"
-          textSize="text-sm"
-          verticalPadding="my-4"
-          textColor="text-dark"
+          textWeight='font-bold'
+          textSize='text-sm'
+          verticalPadding='my-4'
+          textColor='text-dark'
         >
           Create password to secure your account
         </Typography>
         <ProgressBar step={5} />
         <PasswordInput
           value={formData.password}
-          label="Create password"
-          placeholder="*********"
+          label='Create password'
+          placeholder='*********'
           setValue={(data) => {
             handleCheckPassword(data);
             setFormData((prevData) => {
@@ -101,11 +101,11 @@ const Step5 = ({ formData, setFormData, requiredData, setRequiredData }) => {
           }}
           error={requiredData.password}
         />
-        <div className="mt-2">
+        <div className='mt-2'>
           <PasswordInput
             value={formData.confirmPassword}
-            placeholder="*********"
-            label="Confirm password"
+            placeholder='*********'
+            label='Confirm password'
             setValue={(data) => {
               setFormData((prevData) => {
                 return { ...prevData, confirmPassword: data };
@@ -123,21 +123,21 @@ const Step5 = ({ formData, setFormData, requiredData, setRequiredData }) => {
             error={requiredData.confirmPassword}
           />
         </div>
-        <div className="mt-4">
+        <div className='mt-4'>
           <PasswordValidate
-            text="Password must contain at least 8 characters"
+            text='Password must contain at least 8 characters'
             checked={checkPassword.moreThan8}
           />
         </div>
-        <div className="mt-2">
+        <div className='mt-2'>
           <PasswordValidate
-            text="Password must contain a symbol or character"
+            text='Password must contain a symbol or character'
             checked={checkPassword.containSymbol}
           />
         </div>
-        <div className="mt-2">
+        <div className='mt-2'>
           <PasswordValidate
-            text="Password must contain a number"
+            text='Password must contain a number'
             checked={checkPassword.containNumber}
           />
         </div>

@@ -18,7 +18,20 @@
       "Bash(done)",
       "Bash(powershell:*)",
       "Bash(timeout 180 npm run build)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(timeout:*)",
+      "Bash(xargs sed:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm run lint:*)",
+      "Bash(printf '\\n')",
+      "Bash(pnpm remove:*)",
+      "Bash(pnpm run format:check:*)",
+      "Bash(pnpm run:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,10 +1,10 @@
-import Image from "next/image";
-import React, { useState, useRef, useEffect } from "react";
-import Typography from "../Typography";
-import arrowLeft from "@/public/assets/svg/arrrowLeft.svg";
-import arrowRight from "@/public/assets/svg/arrowRightt.svg";
-import closeIcon from "@/public/assets/svg/material-symbols_close-rounded.svg";
-import StypePositioning from "./style";
+import Image from 'next/image';
+import React, { useState, useRef, useEffect } from 'react';
+import Typography from '../Typography';
+import arrowLeft from '@/public/assets/svg/arrrowLeft.svg';
+import arrowRight from '@/public/assets/svg/arrowRightt.svg';
+import closeIcon from '@/public/assets/svg/material-symbols_close-rounded.svg';
+import StypePositioning from './style';
 const DragDrop = ({
   closeModal,
   productImages,
@@ -52,7 +52,7 @@ const DragDrop = ({
         };
         const newSTyles = customStyles.map((item) => {
           if (item.class === currentStyle.class) {
-            return { ...item, imageIndex: imageIndex, position: position };
+            return { ...item, imageIndex, position };
           } else {
             return { ...item };
           }
@@ -69,7 +69,7 @@ const DragDrop = ({
         setCustomeStyleOfAllImage(newCustomStyleofAllImage);
         handleSelectStyle(newCustomStyleofAllImage, width, height);
       } else {
-        let lastStyles =
+        const lastStyles =
           customeStylesUiPosition[customeStylesUiPosition.length - 1];
         const newCustomeStylesUiPositionay = customeStylesUiPosition.filter(
           (item) => {
@@ -107,7 +107,7 @@ const DragDrop = ({
             left: touchPoint.x,
             top: touchPoint.y,
             style: currentStyle.class,
-            imageIndex: imageIndex,
+            imageIndex,
           },
         ];
       });
@@ -133,7 +133,7 @@ const DragDrop = ({
               left: e.clientX - left,
               top: e.clientY - y,
               style: currentStyle.class,
-              imageIndex: imageIndex,
+              imageIndex,
             },
           ];
         });
@@ -153,7 +153,7 @@ const DragDrop = ({
           bottom: item.position.bottom,
           imageIndex: item.imageIndex,
           style: item.class,
-          price: item.price
+          price: item.price,
         };
       })
     );
@@ -172,7 +172,7 @@ const DragDrop = ({
       const newItem = {
         id: item.id,
         class: item.class,
-        price: item.price
+        price: item.price,
       };
 
       setCustomStyles((prevData) => {
@@ -182,7 +182,6 @@ const DragDrop = ({
   }, [selectedStyles]);
   return (
     <div
-
       onMouseUp={() => {
         calcultePosition();
       }}
@@ -190,19 +189,19 @@ const DragDrop = ({
         calcultePosition();
       }}
     >
-      <div className="bg-white m-auto min-w-[97%] lg:mt-[4rem] p-6 rounded-[10px] relative md:min-w-[450px] max-w-[450px] select-none">
+      <div className='bg-white m-auto min-w-[97%] lg:mt-[4rem] p-6 rounded-[10px] relative md:min-w-[450px] max-w-[450px] select-none'>
         <button
           onClick={() => {
             closeModal();
           }}
         >
-          <Image src={closeIcon} alt="" className="absolute top-4 right-4" />
+          <Image src={closeIcon} alt='' className='absolute top-4 right-4' />
         </button>
-        <div className="mb-4">
+        <div className='mb-4'>
           <Typography
-            textColor="text-dark"
-            textWeight="font-[600]"
-            textSize="text-sm"
+            textColor='text-dark'
+            textWeight='font-[600]'
+            textSize='text-sm'
           >
             Drag & Drop parts of the cloth
           </Typography>
@@ -215,14 +214,14 @@ const DragDrop = ({
           onMouseMove={mouseMove}
           onTouchMove={touchMove}
         >
-          <div className="lg:w-[70%] w-full">
+          <div className='lg:w-[70%] w-full'>
             {productImages.length > 0 && (
               <div className={`relative`}>
-                <div className="absolute top-[50%] left-0 flex items-center justify-between w-[100%] px-6">
-                  <div className="min-w-[70%] relative top-0 left-0 z-40">
+                <div className='absolute top-[50%] left-0 flex items-center justify-between w-[100%] px-6'>
+                  <div className='min-w-[70%] relative top-0 left-0 z-40'>
                     {imageIndex > 0 && (
                       <button
-                        className="bg-white w-[2rem] h-[2rem] flex items-center justify-center rounded-[50%] cursor-pointer"
+                        className='bg-white w-[2rem] h-[2rem] flex items-center justify-center rounded-[50%] cursor-pointer'
                         onClick={() => {
                           setImageIndex(imageIndex - 1);
                         }}
@@ -231,17 +230,17 @@ const DragDrop = ({
                           height={18}
                           width={18}
                           src={arrowLeft}
-                          alt="product image"
-                          className="rounded-b-[12px]"
+                          alt='product image'
+                          className='rounded-b-[12px]'
                           unoptimized
                         />
                       </button>
                     )}
                   </div>
-                  <div className="relative">
+                  <div className='relative'>
                     {imageIndex < productImages.length - 1 && (
                       <button
-                        className="bg-white w-[2rem] h-[2rem] flex items-center justify-center rounded-[50%] cursor-pointer"
+                        className='bg-white w-[2rem] h-[2rem] flex items-center justify-center rounded-[50%] cursor-pointer'
                         onClick={() => {
                           setImageIndex(imageIndex + 1);
                         }}
@@ -250,8 +249,8 @@ const DragDrop = ({
                           height={18}
                           width={18}
                           src={arrowRight}
-                          alt="product image"
-                          className="rounded-b-[12px]"
+                          alt='product image'
+                          className='rounded-b-[12px]'
                           unoptimized
                         />
                       </button>
@@ -260,59 +259,57 @@ const DragDrop = ({
                 </div>
                 <Image
                   ref={imageRef}
-                  alt=""
+                  alt=''
                   src={productImages[imageIndex].secure_url}
                   width={50}
                   height={50}
                   style={{
-                    width: "100%",
-                    height: "auto",
-
+                    width: '100%',
+                    height: 'auto',
                   }}
                   unoptimized
                   onLoad={() => setIsLoaded(true)}
                 />
-
               </div>
             )}
           </div>
-          <div className="flex flex-col gap-4  bg-[#EBEBEBEB] py-4 lg:w-[30%] w-full">
+          <div className='flex flex-col gap-4  bg-[#EBEBEBEB] py-4 lg:w-[30%] w-full'>
             {productImages.map(
               (item, index) =>
                 index == imageIndex && (
-                  <div className="px-3 rounded-[10px] " ref={subRef}>
+                  <div className='px-3 rounded-[10px] ' ref={subRef}>
                     <StypePositioning
                       imageIndex={imageIndex}
                       handleSetCurentStyle={handleSetCurentStyle}
-                      stylesType="tops"
+                      stylesType='tops'
                       customeStylesUiPosition={customeStylesUiPosition}
                       selectedStyles={selectedStyles}
                     ></StypePositioning>
                     <StypePositioning
                       imageIndex={imageIndex}
                       handleSetCurentStyle={handleSetCurentStyle}
-                      stylesType="bottoms"
+                      stylesType='bottoms'
                       customeStylesUiPosition={customeStylesUiPosition}
                       selectedStyles={selectedStyles}
                     ></StypePositioning>
                     <StypePositioning
                       imageIndex={imageIndex}
                       handleSetCurentStyle={handleSetCurentStyle}
-                      stylesType="skirts"
+                      stylesType='skirts'
                       customeStylesUiPosition={customeStylesUiPosition}
                       selectedStyles={selectedStyles}
                     ></StypePositioning>
                     <StypePositioning
                       imageIndex={imageIndex}
                       handleSetCurentStyle={handleSetCurentStyle}
-                      stylesType="dresses"
+                      stylesType='dresses'
                       customeStylesUiPosition={customeStylesUiPosition}
                       selectedStyles={selectedStyles}
                     ></StypePositioning>
                     <StypePositioning
                       imageIndex={imageIndex}
                       handleSetCurentStyle={handleSetCurentStyle}
-                      stylesType="outfits"
+                      stylesType='outfits'
                       customeStylesUiPosition={customeStylesUiPosition}
                       selectedStyles={selectedStyles}
                     ></StypePositioning>

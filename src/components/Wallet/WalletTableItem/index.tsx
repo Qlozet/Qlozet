@@ -1,6 +1,5 @@
-
-import OrderStatus from "../../order/OrderStatus";
-import moment from "moment";
+import OrderStatus from '../../order/OrderStatus';
+import moment from 'moment';
 const WalletTableItem = ({
   id,
   date,
@@ -12,17 +11,15 @@ const WalletTableItem = ({
   viewDetails,
 }) => {
   return (
-    <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-xs font-normal p-4 text-dark pl-6">
-        {moment(date).format("YYYY-MM-DD")}
+    <tr className='border-b-[1.5px] border-solid border-gray-300 bg-white'>
+      <td className='text-xs font-normal p-4 text-dark pl-6'>
+        {moment(date).format('YYYY-MM-DD')}
       </td>
-      <td className="text-xs font-normal p-4 text-dark">{transactionId}</td>
-      <td className="text-xs font-normal p-4 text-dark">
-        {transactionType}
-      </td>
-      <td className="text-xs font-normal p-4 text-dark">{narration}</td>
-      <td className="text-xs font-normal p-4 text-dark">{amount}</td>
-      <td className="text-xs font-normal p-4 text-dark">
+      <td className='text-xs font-normal p-4 text-dark'>{transactionId}</td>
+      <td className='text-xs font-normal p-4 text-dark'>{transactionType}</td>
+      <td className='text-xs font-normal p-4 text-dark'>{narration}</td>
+      <td className='text-xs font-normal p-4 text-dark'>{amount}</td>
+      <td className='text-xs font-normal p-4 text-dark'>
         <OrderStatus
           text={status.text}
           bgColor={status.bgColor}
@@ -30,11 +27,11 @@ const WalletTableItem = ({
           addMaxWidth={true}
         />
       </td>
-      <td className="text-xs font-normal p-4 text-dark flex items-center justify-end" >
-        <div className="border rounded-[5px] max-w-[91px] ">
+      <td className='text-xs font-normal p-4 text-dark flex items-center justify-end'>
+        <div className='border rounded-[5px] max-w-[91px] '>
           <OrderStatus
-            text="View details"
-            color="text-[#3E1C01]"
+            text='View details'
+            color='text-[#3E1C01]'
             addMaxWidth={true}
             clickHandler={() => {
               viewDetails(transactionId);
@@ -42,7 +39,6 @@ const WalletTableItem = ({
           />
         </div>
       </td>
-
     </tr>
   );
 };

@@ -1,12 +1,12 @@
 // Add Product Page - Template
 // Page-level layout structure for adding products
 
-import React from "react";
-import { PageContainer } from "../atoms/page-container";
-import { LoadingState } from "../atoms/loading-state";
-import { PageHeader } from "../molecules/page-header";
-import { ContentWrapper } from "../molecules/content-wrapper";
-import { ProductFormContainer } from "../organisms/product-form-container";
+import React from 'react';
+import { PageContainer } from '../atoms/page-container';
+import { LoadingState } from '../atoms/loading-state';
+import { PageHeader } from '../molecules/page-header';
+import { ContentWrapper } from '../molecules/content-wrapper';
+import { ProductFormContainer } from '../organisms/product-form-container';
 
 interface AddProductTemplateProps {
   /** Whether the page is in a loading state */
@@ -32,18 +32,18 @@ interface AddProductTemplateProps {
 const AddProductTemplate: React.FC<AddProductTemplateProps> = ({
   loading = false,
   onProductAdded,
-  title = "Add New Product",
-  subtitle = "Create a new product for your inventory",
+  title = 'Add New Product',
+  subtitle = 'Create a new product for your inventory',
   showBackButton = true,
-  backUrl = "/products",
+  backUrl = '/products',
   headerActions,
   useCardLayout = true,
-  className = "",
+  className = '',
 }) => {
   if (loading) {
     return (
       <PageContainer className={className}>
-        <LoadingState message="Loading..." size="lg" />
+        <LoadingState message='Loading...' size='lg' />
       </PageContainer>
     );
   }
@@ -57,7 +57,7 @@ const AddProductTemplate: React.FC<AddProductTemplateProps> = ({
         backUrl={backUrl}
         headerActions={headerActions}
       />
-      
+
       <ContentWrapper useCard={useCardLayout}>
         <ProductFormContainer onProductAdded={onProductAdded} />
       </ContentWrapper>

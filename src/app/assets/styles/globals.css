@@ -1,8 +1,11 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   /* Grid Templates */
-  --grid-template-columns-auto-fill-minmax: repeat(auto-fill, minmax(75px, max-content));
+  --grid-template-columns-auto-fill-minmax: repeat(
+    auto-fill,
+    minmax(75px, max-content)
+  );
 
   /* Custom Colors */
   --color-primary: #634833;
@@ -18,7 +21,7 @@
   --color-success-200: rgba(51, 204, 51, 0.4);
   --color-success-300: rgba(51, 204, 51, 0.1);
 
-  --color-warning: #FFB020;
+  --color-warning: #ffb020;
   --color-warning-100: rgba(255, 221, 119, 1);
   --color-warning-200: rgba(255, 236, 178, 1);
   --color-warning-300: rgba(255, 247, 222, 1);
@@ -32,14 +35,14 @@
   --color-gray-200: rgba(172, 181, 189, 1);
   --color-gray-300: rgba(221, 226, 229, 1);
   --color-gray-400: rgba(248, 249, 250, 1);
-  --color-gray-500: #ACB5BD;
-  --color-gray-600: #7A7777;
-  --color-gray-700: #DDE2E5;
+  --color-gray-500: #acb5bd;
+  --color-gray-600: #7a7777;
+  --color-gray-700: #dde2e5;
 
-  --color-dark-blue: #1A1A25;
-  --color-outline: #3E1C01;
-  --color-shadow: #AEAEC026;
-  --color-border-color: #CDCDCD;
+  --color-dark-blue: #1a1a25;
+  --color-outline: #3e1c01;
+  --color-shadow: #aeaec026;
+  --color-border-color: #cdcdcd;
 
   /* shadcn/ui colors */
   --color-background: hsl(var(--background));
@@ -80,13 +83,21 @@
 }
 
 @keyframes accordion-down {
-  from { height: 0; }
-  to { height: var(--radix-accordion-content-height); }
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
 }
 
 @keyframes accordion-up {
-  from { height: var(--radix-accordion-content-height); }
-  to { height: 0; }
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
 }
 
 @layer base {
@@ -175,13 +186,13 @@
   }
 
   /* Hide number input spin buttons */
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
 
-  input[type="number"] {
+  input[type='number'] {
     -moz-appearance: textfield;
   }
 
@@ -221,84 +232,84 @@ body {
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 .scrollbar-hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .custom-product-scrollbar::-webkit-scrollbar {
-    height: 3px;
-    width: 95%;
+  height: 3px;
+  width: 95%;
 }
 
 .custom-product-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-    border-radius: 50px;
-    max-width: 90%;
+  background: transparent;
+  border-radius: 50px;
+  max-width: 90%;
 }
 
 .custom-product-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(62, 28, 1, 1);
-    height: 3px;
-    border-radius: 6px;
+  background: rgba(62, 28, 1, 1);
+  height: 3px;
+  border-radius: 6px;
 }
 
 .custom-product-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #555;
+  background: #555;
 }
 
 .modal-scrollbar::-webkit-scrollbar {
-    width: 2px;
-    height: 3px;
+  width: 2px;
+  height: 3px;
 }
 
 .modal-scrollbar::-webkit-scrollbar-track {
-    background: #f4f4f4;
-    border-radius: 2px;
-    height: 3px;
+  background: #f4f4f4;
+  border-radius: 2px;
+  height: 3px;
 }
 
 .modal-scrollbar::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 6px;
+  background: var(--primary);
+  border-radius: 6px;
 }
 
 .sidebar-scrollbar {
-    height: 100vh;
-    overflow-y: scroll;
+  height: 100vh;
+  overflow-y: scroll;
 }
 
 .sidebar-scrollbar::-webkit-scrollbar {
-    width: 5px;
+  width: 5px;
 }
 
 .sidebar-scrollbar::-webkit-scrollbar-track {
-    background: var(--background);
-    margin-top: 3px;
-    margin-bottom: 3px;
-    border-radius: 6px;
+  background: var(--background);
+  margin-top: 3px;
+  margin-bottom: 3px;
+  border-radius: 6px;
 }
 
 .sidebar-scrollbar::-webkit-scrollbar-thumb {
-    background-color: rgba(62, 28, 1, 1);
-    border-radius: 6px;
+  background-color: rgba(62, 28, 1, 1);
+  border-radius: 6px;
 }
 
 .hero-container {
-    background-position: 0 -650px;
-    background-size: contain;
-    background-repeat: no-repeat;
+  background-position: 0 -650px;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 @media (max-width: 800px) {
-    .hero-container {
-        background-position: 0 0px;
-        background-size: contain;
-        background-repeat: no-repeat;
-    }
+  .hero-container {
+    background-position: 0 0px;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
 }
 
 /* Color picker styles */

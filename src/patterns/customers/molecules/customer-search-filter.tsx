@@ -4,11 +4,26 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { customerFilterSchema, CustomerFilterData } from '@/lib/validations/customer';
+import {
+  customerFilterSchema,
+  CustomerFilterData,
+} from '@/lib/validations/customer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form';
 import { Search, Filter, X } from 'lucide-react';
 
 interface CustomerSearchFilterProps {
@@ -22,7 +37,7 @@ export const CustomerSearchFilter: React.FC<CustomerSearchFilterProps> = ({
   onFilter,
   onReset,
   isLoading = false,
-  initialFilters = {}
+  initialFilters = {},
 }) => {
   const form = useForm<CustomerFilterData>({
     resolver: zodResolver(customerFilterSchema),
@@ -53,25 +68,26 @@ export const CustomerSearchFilter: React.FC<CustomerSearchFilterProps> = ({
     onReset();
   };
 
-  const hasActiveFilters = form.watch('search') || form.watch('status') !== 'all';
+  const hasActiveFilters =
+    form.watch('search') || form.watch('status') !== 'all';
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
+        <div className='flex flex-col sm:flex-row gap-4'>
           {/* Search Field */}
           <FormField
             control={form.control}
-            name="search"
+            name='search'
             render={({ field }) => (
-              <FormItem className="flex-1">
+              <FormItem className='flex-1'>
                 <FormControl>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <div className='relative'>
+                    <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
                     <Input
                       {...field}
-                      placeholder="Search customers by name or email..."
-                      className="pl-10"
+                      placeholder='Search customers by name or email...'
+                      className='pl-10'
                       disabled={isLoading}
                     />
                   </div>
@@ -83,9 +99,9 @@ export const CustomerSearchFilter: React.FC<CustomerSearchFilterProps> = ({
           {/* Status Filter */}
           <FormField
             control={form.control}
-            name="status"
+            name='status'
             render={({ field }) => (
-              <FormItem className="w-full sm:w-48">
+              <FormItem className='w-full sm:w-48'>
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
@@ -93,13 +109,13 @@ export const CustomerSearchFilter: React.FC<CustomerSearchFilterProps> = ({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Status" />
+                      <SelectValue placeholder='Status' />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value='all'>All Status</SelectItem>
+                    <SelectItem value='active'>Active</SelectItem>
+                    <SelectItem value='inactive'>Inactive</SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>
@@ -109,9 +125,9 @@ export const CustomerSearchFilter: React.FC<CustomerSearchFilterProps> = ({
           {/* Sort By */}
           <FormField
             control={form.control}
-            name="sortBy"
+            name='sortBy'
             render={({ field }) => (
-              <FormItem className="w-full sm:w-48">
+              <FormItem className='w-full sm:w-48'>
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
@@ -119,14 +135,14 @@ export const CustomerSearchFilter: React.FC<CustomerSearchFilterProps> = ({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Sort by" />
+                      <SelectValue placeholder='Sort by' />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="name">Name</SelectItem>
-                    <SelectItem value="email">Email</SelectItem>
-                    <SelectItem value="createdAt">Date Created</SelectItem>
-                    <SelectItem value="totalSpent">Total Spent</SelectItem>
+                    <SelectItem value='name'>Name</SelectItem>
+                    <SelectItem value='email'>Email</SelectItem>
+                    <SelectItem value='createdAt'>Date Created</SelectItem>
+                    <SelectItem value='totalSpent'>Total Spent</SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>
@@ -136,9 +152,9 @@ export const CustomerSearchFilter: React.FC<CustomerSearchFilterProps> = ({
           {/* Sort Order */}
           <FormField
             control={form.control}
-            name="sortOrder"
+            name='sortOrder'
             render={({ field }) => (
-              <FormItem className="w-full sm:w-32">
+              <FormItem className='w-full sm:w-32'>
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
@@ -150,8 +166,8 @@ export const CustomerSearchFilter: React.FC<CustomerSearchFilterProps> = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="asc">A-Z</SelectItem>
-                    <SelectItem value="desc">Z-A</SelectItem>
+                    <SelectItem value='asc'>A-Z</SelectItem>
+                    <SelectItem value='desc'>Z-A</SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>
@@ -160,25 +176,25 @@ export const CustomerSearchFilter: React.FC<CustomerSearchFilterProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2">
-          <Button 
-            type="submit" 
+        <div className='flex gap-2'>
+          <Button
+            type='submit'
             disabled={isLoading}
-            className="flex items-center gap-2"
+            className='flex items-center gap-2'
           >
-            <Filter className="h-4 w-4" />
+            <Filter className='h-4 w-4' />
             Filter
           </Button>
-          
+
           {hasActiveFilters && (
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type='button'
+              variant='outline'
               onClick={handleReset}
               disabled={isLoading}
-              className="flex items-center gap-2"
+              className='flex items-center gap-2'
             >
-              <X className="h-4 w-4" />
+              <X className='h-4 w-4' />
               Reset
             </Button>
           )}

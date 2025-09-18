@@ -1,6 +1,6 @@
-import { useState } from "react";
-import Image from "next/image";
-import OrderStatus from "@/components/order/OrderStatus";
+import { useState } from 'react';
+import Image from 'next/image';
+import OrderStatus from '@/components/order/OrderStatus';
 const ShippingTableItem = ({
   Name,
   Address,
@@ -12,20 +12,19 @@ const ShippingTableItem = ({
 }) => {
   const [showDropDown, setShowDropDown] = useState(false);
 
-
   return (
-    <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white">
-      <td className="text-xs font-[400] p-4  text-dark">{Name}</td>
-      <td className="text-xs font-[400] p-4  text-dark">{Address}</td>
-      <td className="text-xs font-[400] p-4  text-dark">{PhoneNumber}</td>
-      <td className="text-xs font-[400] p-4  text-dark">{emailAddress}</td>
-      <td className="text-xs font-[400] p-4  text-dark">{noOfDeliveries}</td>
-      <td className="text-xs font-[400] p-4  text-dark">{adminName}</td>
-      <td className="text-xs font-[400] p-4  text-dark">
+    <tr className='border-b-[1.5px] border-solid border-gray-300 bg-white'>
+      <td className='text-xs font-[400] p-4  text-dark'>{Name}</td>
+      <td className='text-xs font-[400] p-4  text-dark'>{Address}</td>
+      <td className='text-xs font-[400] p-4  text-dark'>{PhoneNumber}</td>
+      <td className='text-xs font-[400] p-4  text-dark'>{emailAddress}</td>
+      <td className='text-xs font-[400] p-4  text-dark'>{noOfDeliveries}</td>
+      <td className='text-xs font-[400] p-4  text-dark'>{adminName}</td>
+      <td className='text-xs font-[400] p-4  text-dark'>
         <OrderStatus
-          text="Out for delivery"
-          bgColor="bg-[#FFF7DE]"
-          color="text-[#FFB020]"
+          text='Out for delivery'
+          bgColor='bg-[#FFF7DE]'
+          color='text-[#FFB020]'
           addMaxWidth={true}
         />
       </td>

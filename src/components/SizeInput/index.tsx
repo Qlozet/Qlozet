@@ -1,9 +1,9 @@
-import { useState, useRef, useEffect } from "react";
-import React from "react";
-import Image from "next/image";
-import closeIcon from "@/public/assets/svg/material-symbol-close-icon.svg";
-import { filterSelectedItems } from "@/utils/helper";
-import { X } from "lucide-react";
+import { useState, useRef, useEffect } from 'react';
+import React from 'react';
+import Image from 'next/image';
+import closeIcon from '@/public/assets/svg/material-symbol-close-icon.svg';
+import { filterSelectedItems } from '@/lib/utils';
+import { X } from 'lucide-react';
 
 interface SizeItem {
   size: string;
@@ -66,8 +66,8 @@ const SizeInput: React.FC<SizeInputProps> = ({
       className={`w-full relative my-2 h-[4rem]`}
       style={{ zIndex: index ? index : 10 }}
     >
-      <div className="w-full relative">
-        <label className="text-sm text-dark">{label}</label>
+      <div className='w-full relative'>
+        <label className='text-sm text-dark'>{label}</label>
         <input
           readOnly
           onChange={filterList}
@@ -81,15 +81,16 @@ const SizeInput: React.FC<SizeInputProps> = ({
               }
             }
           }}
-          className={`py-3 ${disabled ? "bg-gray-300" : "bg-white"} ${error && "border-danger"
-            } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  absolute top-[1.5rem] left-0
+          className={`py-3 ${disabled ? 'bg-gray-300' : 'bg-white'} ${
+            error && 'border-danger'
+          } px-4 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark  absolute top-[1.5rem] left-0
             focus:outline-none focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-sm text-font-light placeholder:font-300 
            `}
         ></input>
-        <div className="absolute top-[2rem] left-[0.5rem] flex items-center gap-2 ">
+        <div className='absolute top-[2rem] left-[0.5rem] flex items-center gap-2 '>
           {value.map((item: SizeItem, index: number) => (
             <div
-              className="bg-gray-300 rounded-[5px] p-1 flex items-center justify-center relative gap-2"
+              className='bg-gray-300 rounded-[5px] p-1 flex items-center justify-center relative gap-2'
               key={index}
             >
               {item.size}
@@ -97,9 +98,9 @@ const SizeInput: React.FC<SizeInputProps> = ({
                 onClick={() => {
                   removeItemFromList(index, item);
                 }}
-                className="bg-transparent border-none outline-none"
+                className='bg-transparent border-none outline-none'
               >
-                <X className="h-4 w-4 cursor-pointer" />
+                <X className='h-4 w-4 cursor-pointer' />
               </button>
             </div>
           ))}
@@ -109,22 +110,23 @@ const SizeInput: React.FC<SizeInputProps> = ({
           <Image src={arrowDownIcon} alt="" />
         </div> */}
         {error && (
-          <p className="text-danger text-xs font-[400]">
+          <p className='text-danger text-xs font-[400]'>
             {label} cannot be empty!
           </p>
         )}
       </div>
       {showDropDown && (
         <div
-          className="cursor-pointer absolute top-[73px] bg-white rounded-lg max-h-[15rem] datalist-scroll shadow-md w-full"
+          className='cursor-pointer absolute top-[73px] bg-white rounded-lg max-h-[15rem] datalist-scroll shadow-md w-full'
           ref={dropDownRef}
         >
           {list.map((item: string, index: number) => (
             <div
               key={index}
               tabIndex={0}
-              className={`px-2 py-3 w-full ${index !== 0 ? "border-t-[1px] border-solid border-gray-200" : ""
-                } hover:bg-[#F4F4F4]`}
+              className={`px-2 py-3 w-full ${
+                index !== 0 ? 'border-t-[1px] border-solid border-gray-200' : ''
+              } hover:bg-[#F4F4F4]`}
               onClick={() => {
                 const sizeItem: SizeItem = { size: item };
                 setSelectedList((prevData) => [...prevData, sizeItem]);
@@ -132,7 +134,7 @@ const SizeInput: React.FC<SizeInputProps> = ({
                 setShowDropDown(false);
               }}
             >
-              <p className="rounded-b-[12px] overflow-hidden text-xs pl-1">
+              <p className='rounded-b-[12px] overflow-hidden text-xs pl-1'>
                 {item}
               </p>
             </div>

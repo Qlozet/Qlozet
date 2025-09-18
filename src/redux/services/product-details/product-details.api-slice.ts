@@ -89,20 +89,19 @@ export const productDetailsApiSlice = baseAPI.injectEndpoints({
     getProductDetails: builder.query<DetailedProduct, string>({
       query: (productId) => ({
         url: `/vendor/products/${productId}`,
-        method: "GET",
+        method: 'GET',
       }),
-      providesTags: [
-        'ProductDetails',
-        'ProductReviews',
-        'ProductLikes',
-      ],
+      providesTags: ['ProductDetails', 'ProductReviews', 'ProductLikes'],
     }),
 
     // Get product reviews
-    getProductReviews: builder.query<ProductReview[], { productId: string; page?: number; limit?: number }>({
+    getProductReviews: builder.query<
+      ProductReview[],
+      { productId: string; page?: number; limit?: number }
+    >({
       query: ({ productId, page = 1, limit = 10 }) => ({
         url: `/vendor/products/${productId}/reviews`,
-        method: "GET",
+        method: 'GET',
         params: {
           page,
           limit,
@@ -112,52 +111,64 @@ export const productDetailsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Get product analytics/stats
-    getProductAnalytics: builder.query<{
-      totalViews: number;
-      totalLikes: number;
-      totalReviews: number;
-      averageRating: number;
-      totalSales: number;
-      conversionRate: number;
-    }, string>({
+    getProductAnalytics: builder.query<
+      {
+        totalViews: number;
+        totalLikes: number;
+        totalReviews: number;
+        averageRating: number;
+        totalSales: number;
+        conversionRate: number;
+      },
+      string
+    >({
       query: (productId) => ({
         url: `/vendor/products/${productId}/analytics`,
-        method: "GET",
-      })
+        method: 'GET',
+      }),
     }),
 
     // Update product status
-    updateProductStatus: builder.mutation<ApiResponse<DetailedProduct>, {
-      productId: string;
-      status: 'active' | 'inactive' | 'draft'
-    }>({
+    updateProductStatus: builder.mutation<
+      ApiResponse<DetailedProduct>,
+      {
+        productId: string;
+        status: 'active' | 'inactive' | 'draft';
+      }
+    >({
       query: ({ productId, status }) => ({
         url: `/vendor/products/${productId}/status`,
         method: 'PUT',
         body: { status },
       }),
-      invalidatesTags: ['ProductDetails']
+      invalidatesTags: ['ProductDetails'],
     }),
 
     // Toggle product featured status
-    toggleProductFeatured: builder.mutation<ApiResponse<DetailedProduct>, {
-      productId: string;
-      isFeatured: boolean;
-    }>({
+    toggleProductFeatured: builder.mutation<
+      ApiResponse<DetailedProduct>,
+      {
+        productId: string;
+        isFeatured: boolean;
+      }
+    >({
       query: ({ productId, isFeatured }) => ({
         url: `/vendor/products/${productId}/featured`,
         method: 'PUT',
         body: { isFeatured },
       }),
-      invalidatesTags: ['ProductDetails']
+      invalidatesTags: ['ProductDetails'],
     }),
 
     // Update product inventory
-    updateProductInventory: builder.mutation<ApiResponse<DetailedProduct>, {
-      productId: string;
-      quantity: number;
-      variants?: Array<{ id: string; quantity: number }>;
-    }>({
+    updateProductInventory: builder.mutation<
+      ApiResponse<DetailedProduct>,
+      {
+        productId: string;
+        quantity: number;
+        variants?: Array<{ id: string; quantity: number }>;
+      }
+    >({
       query: ({ productId, quantity, variants }) => ({
         url: `/vendor/products/${productId}/inventory`,
         method: 'PUT',
@@ -172,14 +183,17 @@ export const productDetailsApiSlice = baseAPI.injectEndpoints({
         url: `/vendor/products/${productId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['ProductDetails']
+      invalidatesTags: ['ProductDetails'],
     }),
 
     // Duplicate product
-    duplicateProduct: builder.mutation<ApiResponse<DetailedProduct>, {
-      productId: string;
-      newName?: string;
-    }>({
+    duplicateProduct: builder.mutation<
+      ApiResponse<DetailedProduct>,
+      {
+        productId: string;
+        newName?: string;
+      }
+    >({
       query: ({ productId, newName }) => ({
         url: `/vendor/products/${productId}/duplicate`,
         method: 'POST',
@@ -188,17 +202,20 @@ export const productDetailsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Get similar products
-    getSimilarProducts: builder.query<DetailedProduct[], {
-      productId: string;
-      limit?: number
-    }>({
+    getSimilarProducts: builder.query<
+      DetailedProduct[],
+      {
+        productId: string;
+        limit?: number;
+      }
+    >({
       query: ({ productId, limit = 4 }) => ({
         url: `/vendor/products/${productId}/similar`,
-        method: "GET",
+        method: 'GET',
         params: {
-          limit
+          limit,
         },
-      })
+      }),
     }),
   }),
 });

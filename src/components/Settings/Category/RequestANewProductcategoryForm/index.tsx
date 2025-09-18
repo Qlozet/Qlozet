@@ -1,46 +1,46 @@
-import Image from "next/image";
-import closeIcon from "@/public/assets/svg/material-symbols_close-rounded.svg";
-import Typography from "@/components/Typography";
-import TextInput from "@/components/TextInput";
-import SearchInput from "@/components/SearchInput";
-import SelectInput from "@/components/SelectInput";
-import Button from "@/components/Button";
+import Image from 'next/image';
+import closeIcon from '@/public/assets/svg/material-symbols_close-rounded.svg';
+import Typography from '@/components/Typography';
+import TextInput from '@/components/TextInput';
+import SearchInput from '@/components/SearchInput';
+import SelectInput from '@/components/SelectInput';
+import Button from '@/components/Button';
 
 const RequestCategoryForm = ({ closeModal }) => {
   return (
-    <div className="bg-white rounded-[12px] w-full lg:w-[40%] m-auto px-4 py-6 my-6">
+    <div className='bg-white rounded-[12px] w-full lg:w-[40%] m-auto px-4 py-6 my-6'>
       <div>
-        <div className="flex items-center justify-between  border-dashed border-b-[1.5px] border-gray-200 pb-4">
+        <div className='flex items-center justify-between  border-dashed border-b-[1.5px] border-gray-200 pb-4'>
           <Typography
-            textColor="text-primary"
-            textWeight="font-bold"
-            textSize="text-sm"
+            textColor='text-primary'
+            textWeight='font-bold'
+            textSize='text-sm'
           >
             Add new warehouse
           </Typography>
           <Image
             src={closeIcon}
-            alt=""
+            alt=''
             onClick={closeModal}
-            className="cursor-pointer"
+            className='cursor-pointer'
           />
         </div>
         <TextInput
-          label="Company name"
-          placeholder="Enter company name"
-          setValue={(data) => { }}
+          label='Company name'
+          placeholder='Enter company name'
+          setValue={(data) => {}}
         />
         <TextInput
-          label="Category type"
-          placeholder="Enter category type"
-          setValue={(data) => { }}
+          label='Category type'
+          placeholder='Enter category type'
+          setValue={(data) => {}}
         />
-        <div className="mb-[10rem] mt-6 flex items-center justify-center lg:justify-end">
+        <div className='mb-[10rem] mt-6 flex items-center justify-center lg:justify-end'>
           <Button
-            children="Add user"
-            btnSize="small"
-            minWidth="min-w-[14rem]"
-            variant="primary"
+            children='Add user'
+            btnSize='small'
+            minWidth='min-w-[14rem]'
+            variant='primary'
             clickHandler={() => {
               closeModal();
             }}

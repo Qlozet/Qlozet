@@ -11,11 +11,11 @@ interface StockIndicatorProps {
   showText?: boolean;
 }
 
-export const StockIndicator: React.FC<StockIndicatorProps> = ({ 
-  stock, 
+export const StockIndicator: React.FC<StockIndicatorProps> = ({
+  stock,
   lowStockThreshold = 10,
   className,
-  showText = true
+  showText = true,
 }) => {
   const getStockStatus = (stock: number) => {
     if (stock === 0) {
@@ -47,7 +47,7 @@ export const StockIndicator: React.FC<StockIndicatorProps> = ({
   if (showText) {
     return (
       <div className={cn('flex items-center space-x-2', className)}>
-        <span 
+        <span
           className={cn(
             'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
             stockStatus.bgColor,
@@ -56,7 +56,7 @@ export const StockIndicator: React.FC<StockIndicatorProps> = ({
         >
           {stockStatus.text}
         </span>
-        <span className="text-sm text-gray-600">
+        <span className='text-sm text-gray-600'>
           ({stock} {stock === 1 ? 'item' : 'items'})
         </span>
       </div>
@@ -65,7 +65,7 @@ export const StockIndicator: React.FC<StockIndicatorProps> = ({
 
   return (
     <div className={cn('flex items-center space-x-2', className)}>
-      <div 
+      <div
         className={cn(
           'w-2 h-2 rounded-full',
           stockStatus.status === 'out_of_stock' && 'bg-red-500',
@@ -73,9 +73,7 @@ export const StockIndicator: React.FC<StockIndicatorProps> = ({
           stockStatus.status === 'in_stock' && 'bg-green-500'
         )}
       />
-      <span className="text-sm text-gray-600">
-        {stock} in stock
-      </span>
+      <span className='text-sm text-gray-600'>{stock} in stock</span>
     </div>
   );
 };

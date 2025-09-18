@@ -1,5 +1,5 @@
-import React from "react";
-import ReactStars from "react-stars";
+import React from 'react';
+import ReactStars from 'react-stars';
 
 interface RatingProps {
   newRating?: number;
@@ -14,7 +14,7 @@ const Rating: React.FC<RatingProps> = ({ newRating }) => {
         count={5}
         onChange={ratingChanged}
         size={24}
-        color2={"#FFB020"}
+        color2={'#FFB020'}
         value={newRating}
       />
     </div>

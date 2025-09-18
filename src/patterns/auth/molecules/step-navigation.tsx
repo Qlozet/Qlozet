@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 import { AuthButton } from '../atoms/auth-button';
@@ -38,11 +38,11 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
       {/* Previous Button */}
       {!isFirstStep && canGoPrevious ? (
         <AuthButton
-          variant="ghost"
+          variant='ghost'
           onClick={onPrevious}
-          className="flex items-center gap-2"
+          className='flex items-center gap-2'
         >
-          <Image src={previousIcon} alt="Previous" width={16} height={16} />
+          <Image src={previousIcon} alt='Previous' width={16} height={16} />
           {previousLabel}
         </AuthButton>
       ) : (
@@ -50,17 +50,13 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
       )}
 
       {/* Step Indicator */}
-      <div className="flex items-center space-x-2">
+      <div className='flex items-center space-x-2'>
         {Array.from({ length: totalSteps }, (_, index) => (
           <div
             key={index}
             className={`
               w-3 h-3 rounded-full transition-colors
-              ${
-                index + 1 <= currentStep
-                  ? 'bg-primary'
-                  : 'bg-gray-300'
-              }
+              ${index + 1 <= currentStep ? 'bg-primary' : 'bg-gray-300'}
             `}
           />
         ))}
@@ -68,7 +64,7 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
 
       {/* Next Button */}
       <AuthButton
-        variant="default"
+        variant='default'
         onClick={onNext}
         loading={loading}
         disabled={!canGoNext}

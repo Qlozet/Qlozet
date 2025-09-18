@@ -9,9 +9,9 @@ interface PaymentStatusBadgeProps {
   className?: string;
 }
 
-export const PaymentStatusBadge: React.FC<PaymentStatusBadgeProps> = ({ 
-  status, 
-  className 
+export const PaymentStatusBadge: React.FC<PaymentStatusBadgeProps> = ({
+  status,
+  className,
 }) => {
   const statusConfig = {
     pending: {
@@ -39,7 +39,7 @@ export const PaymentStatusBadge: React.FC<PaymentStatusBadgeProps> = ({
   const config = statusConfig[status] || statusConfig.pending;
 
   return (
-    <span 
+    <span
       className={cn(
         'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
         config.bgColor,

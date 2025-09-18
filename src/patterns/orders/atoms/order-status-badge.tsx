@@ -5,13 +5,20 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 interface OrderStatusBadgeProps {
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'return';
+  status:
+    | 'pending'
+    | 'confirmed'
+    | 'processing'
+    | 'shipped'
+    | 'delivered'
+    | 'cancelled'
+    | 'return';
   className?: string;
 }
 
-export const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({ 
-  status, 
-  className 
+export const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({
+  status,
+  className,
 }) => {
   const statusConfig = {
     pending: {
@@ -54,7 +61,7 @@ export const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({
   const config = statusConfig[status] || statusConfig.pending;
 
   return (
-    <span 
+    <span
       className={cn(
         'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
         config.bgColor,

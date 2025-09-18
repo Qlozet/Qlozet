@@ -13,12 +13,12 @@ interface CustomerAvatarProps {
   className?: string;
 }
 
-export const CustomerAvatar: React.FC<CustomerAvatarProps> = ({ 
-  src, 
-  alt, 
-  name, 
+export const CustomerAvatar: React.FC<CustomerAvatarProps> = ({
+  src,
+  alt,
+  name,
   size = 'md',
-  className 
+  className,
 }) => {
   const sizeClasses = {
     sm: 'h-8 w-8 text-xs',
@@ -30,14 +30,14 @@ export const CustomerAvatar: React.FC<CustomerAvatarProps> = ({
   const getInitials = (name: string): string => {
     return name
       .split(' ')
-      .map(word => word.charAt(0))
+      .map((word) => word.charAt(0))
       .join('')
       .toUpperCase()
       .slice(0, 2);
   };
 
   return (
-    <div 
+    <div
       className={cn(
         'relative inline-flex items-center justify-center overflow-hidden rounded-full bg-gray-100',
         sizeClasses[size],
@@ -49,13 +49,19 @@ export const CustomerAvatar: React.FC<CustomerAvatarProps> = ({
           src={src}
           alt={alt}
           fill
-          className="object-cover"
-          sizes={size === 'sm' ? '32px' : size === 'md' ? '40px' : size === 'lg' ? '48px' : '64px'}
+          className='object-cover'
+          sizes={
+            size === 'sm'
+              ? '32px'
+              : size === 'md'
+                ? '40px'
+                : size === 'lg'
+                  ? '48px'
+                  : '64px'
+          }
         />
       ) : (
-        <span className="font-medium text-gray-600">
-          {getInitials(name)}
-        </span>
+        <span className='font-medium text-gray-600'>{getInitials(name)}</span>
       )}
     </div>
   );

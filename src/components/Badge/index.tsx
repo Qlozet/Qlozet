@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 // Define the props interface for the Badge component
 interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -7,16 +7,16 @@ interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const Badge: React.FC<BadgeProps> = ({ variant, children, ...rest }) => {
-  let variantClasses = "";
+  let variantClasses = '';
 
   switch (variant) {
-    case "success":
+    case 'success':
       variantClasses = `text-success  py-2 px-4  bg-success-300`;
       break;
-    case "danger":
+    case 'danger':
       variantClasses = ` text-gray-800    bg-[#FFF5F5] text-danger`;
       break;
-    case "warning":
+    case 'warning':
       variantClasses = `text-gray-800    bg-warning-300 text-warning`;
       break;
     default:

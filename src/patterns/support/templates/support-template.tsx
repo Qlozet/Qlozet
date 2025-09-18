@@ -15,18 +15,15 @@ interface SupportTemplateProps {
 export const SupportTemplate: React.FC<SupportTemplateProps> = ({
   onSubmit,
   isLoading = false,
-  className
+  className,
 }) => {
   return (
-    <section className={cn("", className)}>
-      <div className="flex bg-[#F8F9FA]">
-        <div className="w-full p-4">
-          <div className="min-h-[80vh]">
-            <div className="mt-4 mx-auto">
-              <SupportForm
-                onSubmit={onSubmit}
-                isLoading={isLoading}
-              />
+    <section className={cn('', className)}>
+      <div className='flex bg-[#F8F9FA]'>
+        <div className='w-full p-4'>
+          <div className='min-h-[80vh]'>
+            <div className='mt-4 mx-auto'>
+              <SupportForm onSubmit={onSubmit} isLoading={isLoading} />
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
-"use client";
+'use client';
+import '../../assets/styles/globals.css';
 
 import React from 'react';
 import { SignInTemplate } from '@/patterns/auth/templates/sign-in-template';

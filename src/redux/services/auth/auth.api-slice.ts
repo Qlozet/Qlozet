@@ -75,7 +75,6 @@ export interface RegisterResponse {
   };
 }
 
-
 export interface ChangePasswordRequest {
   currentPassword: string;
   newPassword: string;
@@ -135,7 +134,10 @@ export const authApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Forgot Password (vendor endpoint)
-    forgotPassword: builder.mutation<{ message: string; success?: boolean }, ForgotPasswordRequest>({
+    forgotPassword: builder.mutation<
+      { message: string; success?: boolean },
+      ForgotPasswordRequest
+    >({
       query: (data) => ({
         url: '/vendor/forgot-password',
         method: 'POST',
@@ -146,7 +148,10 @@ export const authApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Reset Password (vendor endpoint)
-    resetPassword: builder.mutation<{ message: string; success?: boolean }, ResetPasswordRequest>({
+    resetPassword: builder.mutation<
+      { message: string; success?: boolean },
+      ResetPasswordRequest
+    >({
       query: (data) => ({
         url: '/vendor/reset-password',
         method: 'POST',
@@ -164,7 +169,10 @@ export const authApiSlice = baseAPI.injectEndpoints({
     }),
 
     // General Forgot Password (fallback endpoint)
-    forgotPasswordGeneral: builder.mutation<{ message: string }, ForgotPasswordRequest>({
+    forgotPasswordGeneral: builder.mutation<
+      { message: string },
+      ForgotPasswordRequest
+    >({
       query: (data) => ({
         url: '/forgot-password',
         method: 'POST',
@@ -175,7 +183,10 @@ export const authApiSlice = baseAPI.injectEndpoints({
     }),
 
     // General Reset Password (fallback endpoint)
-    resetPasswordGeneral: builder.mutation<{ message: string }, ResetPasswordRequest>({
+    resetPasswordGeneral: builder.mutation<
+      { message: string },
+      ResetPasswordRequest
+    >({
       query: (data) => ({
         url: '/reset-password',
         method: 'POST',
@@ -184,7 +195,10 @@ export const authApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Change Password
-    changePassword: builder.mutation<{ message: string }, ChangePasswordRequest>({
+    changePassword: builder.mutation<
+      { message: string },
+      ChangePasswordRequest
+    >({
       query: (data) => ({
         url: '/change-password',
         method: 'POST',
@@ -203,7 +217,10 @@ export const authApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Resend Verification Email
-    resendVerificationEmail: builder.mutation<{ message: string }, { email: string }>({
+    resendVerificationEmail: builder.mutation<
+      { message: string },
+      { email: string }
+    >({
       query: (data) => ({
         url: '/resend-verification',
         method: 'POST',
@@ -230,7 +247,10 @@ export const authApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Update Profile
-    updateProfile: builder.mutation<{ data: LoginResponse['data']['user'] }, UpdateProfileRequest>({
+    updateProfile: builder.mutation<
+      { data: LoginResponse['data']['user'] },
+      UpdateProfileRequest
+    >({
       query: (data) => ({
         url: '/profile',
         method: 'PATCH',
@@ -240,7 +260,10 @@ export const authApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Upload Profile Image
-    uploadProfileImage: builder.mutation<{ data: { profileImage: string } }, FormData>({
+    uploadProfileImage: builder.mutation<
+      { data: { profileImage: string } },
+      FormData
+    >({
       query: (formData) => ({
         url: '/profile/upload-image',
         method: 'POST',
@@ -265,12 +288,15 @@ export const authApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Get Two-Factor Authentication Settings
-    getTwoFactorSettings: builder.query<{ 
-      data: { 
-        isEnabled: boolean; 
-        backupCodes?: string[]; 
-      }
-    }, void>({
+    getTwoFactorSettings: builder.query<
+      {
+        data: {
+          isEnabled: boolean;
+          backupCodes?: string[];
+        };
+      },
+      void
+    >({
       query: () => ({
         url: '/2fa/settings',
       }),
@@ -278,13 +304,16 @@ export const authApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Enable Two-Factor Authentication
-    enableTwoFactor: builder.mutation<{ 
-      data: { 
-        qrCode: string; 
-        secret: string; 
-        backupCodes: string[];
-      }
-    }, void>({
+    enableTwoFactor: builder.mutation<
+      {
+        data: {
+          qrCode: string;
+          secret: string;
+          backupCodes: string[];
+        };
+      },
+      void
+    >({
       query: () => ({
         url: '/2fa/enable',
         method: 'POST',
@@ -293,7 +322,10 @@ export const authApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Verify Two-Factor Authentication Setup
-    verifyTwoFactorSetup: builder.mutation<{ message: string }, { code: string }>({
+    verifyTwoFactorSetup: builder.mutation<
+      { message: string },
+      { code: string }
+    >({
       query: (data) => ({
         url: '/2fa/verify-setup',
         method: 'POST',
@@ -303,7 +335,10 @@ export const authApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Disable Two-Factor Authentication
-    disableTwoFactor: builder.mutation<{ message: string }, { password: string }>({
+    disableTwoFactor: builder.mutation<
+      { message: string },
+      { password: string }
+    >({
       query: (data) => ({
         url: '/2fa/disable',
         method: 'POST',

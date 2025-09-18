@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -38,21 +38,20 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className={cn('space-y-6', className)}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className={cn('space-y-6', className)}
+      >
         <AuthInput
           control={form.control}
-          name="businessEmail"
-          label="Business email address"
-          type="email"
-          placeholder="Enter your business email address"
+          name='businessEmail'
+          label='Business email address'
+          type='email'
+          placeholder='Enter your business email address'
           description="We'll send a password reset link to this email address"
         />
 
-        <AuthButton
-          type="submit"
-          fullWidth
-          loading={loading}
-        >
+        <AuthButton type='submit' fullWidth loading={loading}>
           Send Reset Link
         </AuthButton>
       </form>

@@ -56,39 +56,51 @@ interface EarningsResponse {
 // API Slice
 export const dashboardApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
-
     // Get total customers count
-    getTotalCustomers: builder.query<ApiResponse<{ totalCount: number }>, void>({
-      query: () => ({
-        url: '/vendor/customers/total-customers-sold-to',
-        method: 'GET'
-      }),
-      providesTags: ['DashboardMetrics'],
-    }),
+    getTotalCustomers: builder.query<ApiResponse<{ totalCount: number }>, void>(
+      {
+        query: () => ({
+          url: '/vendor/customers/total-customers-sold-to',
+          method: 'GET',
+        }),
+        providesTags: ['DashboardMetrics'],
+      }
+    ),
 
     // Get all orders
-    getOrders: builder.query<ApiResponse<{ data: Array<{ id: string; status: string; [key: string]: any }> }>, void>({
+    getOrders: builder.query<
+      ApiResponse<{
+        data: Array<{ id: string; status: string; [key: string]: any }>;
+      }>,
+      void
+    >({
       query: () => ({
         url: '/vendor/orders',
-        method: 'GET'
+        method: 'GET',
       }),
       providesTags: ['DashboardMetrics'],
     }),
 
     // Get total earnings
-    getTotalEarnings: builder.query<ApiResponse<{ data: { earnings: number } }>, void>({
+    getTotalEarnings: builder.query<
+      ApiResponse<{ data: { earnings: number } }>,
+      void
+    >({
       query: () => ({
         url: '/vendor/dashboard/earnings',
-        method: 'GET'
+        method: 'GET',
       }),
       providesTags: ['DashboardMetrics'],
     }),
 
     // Get gender by order data
-    getGenderByOrder: builder.query<ApiResponse<{ data: GenderByOrderData }>, void>({
+    getGenderByOrder: builder.query<
+      ApiResponse<{ data: GenderByOrderData }>,
+      void
+    >({
       query: () => ({
         url: '/vendor/dashboard/orders/tag',
-        method: 'GET'
+        method: 'GET',
       }),
       providesTags: ['DashboardAnalytics'],
     }),
@@ -97,7 +109,7 @@ export const dashboardApiSlice = baseAPI.injectEndpoints({
     getTopLocations: builder.query<any, void>({
       query: () => ({
         url: '/vendor/dashboard/orders/top-locations',
-        method: 'GET'
+        method: 'GET',
       }),
       providesTags: ['DashboardAnalytics'],
     }),
@@ -106,13 +118,16 @@ export const dashboardApiSlice = baseAPI.injectEndpoints({
     getTopProducts: builder.query<any, void>({
       query: () => ({
         url: '/vendor/dashboard/orders/top-products',
-        method: 'GET'
+        method: 'GET',
       }),
       providesTags: ['DashboardAnalytics'],
     }),
 
     // Get daily earnings
-    getDailyEarnings: builder.query<ApiResponse<{ data: DailyData[] }>, { filter?: string }>({
+    getDailyEarnings: builder.query<
+      ApiResponse<{ data: DailyData[] }>,
+      { filter?: string }
+    >({
       query: ({ filter = 'thisMonth' } = {}) => ({
         url: `/vendor/dashboard/daily-earnings?filter=${filter}`,
         method: 'GET',
@@ -121,7 +136,10 @@ export const dashboardApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Get daily orders
-    getDailyOrders: builder.query<ApiResponse<{ data: DailyData[] }>, { filter?: string }>({
+    getDailyOrders: builder.query<
+      ApiResponse<{ data: DailyData[] }>,
+      { filter?: string }
+    >({
       query: ({ filter = 'thisMonth' } = {}) => ({
         url: `/vendor/orders/daily-order?filter=${filter}`,
         method: 'GET',

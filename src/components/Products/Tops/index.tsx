@@ -1,6 +1,6 @@
-import Button from "@/components/Button";
-import Design from "../CustomizeOrder/Design";
-import Typography from "@/components/Typography";
+import Button from '@/components/Button';
+import Design from '../CustomizeOrder/Design';
+import Typography from '@/components/Typography';
 // import icon1 from "@/public/assets/image/icon1.jpg";
 // import icon2 from "@/public/assets/image/icon2.jpg";
 // import icon3 from "@/public/assets/image/icon3.jpg";
@@ -21,17 +21,17 @@ import Typography from "@/components/Typography";
 
 const Tops = ({ data }) => {
   return (
-    <div className="w-full lg:w-[50%] bg-white px-5 rounded-b-[14px] min-h-[25rem] flex-wrap">
+    <div className='w-full lg:w-[50%] bg-white px-5 rounded-b-[14px] min-h-[25rem] flex-wrap'>
       <Typography
-        textColor="text-dark"
-        textWeight="font-[600]"
-        textSize="text-sm"
+        textColor='text-dark'
+        textWeight='font-[600]'
+        textSize='text-sm'
       >
         Choose the customization options you'd like to present to your
         customers.
       </Typography>
       <div>
-        <div className="grid grid-cols-auto-fill-minmax gap-4 py-4">
+        <div className='grid grid-cols-auto-fill-minmax gap-4 py-4'>
           {data.map((item, index) => (
             <Design
               image={item.imageUrl}
@@ -65,7 +65,7 @@ const Tops = ({ data }) => {
           <Design image={icon17} reduce={true} />
           <Design image={icon3} reduce={true} />
         </div> */}
-        <div className="m-4">
+        <div className='m-4'>
           {/* <Button
             // loading={isLoading}
             maxWidth="max-w-[6rem]"

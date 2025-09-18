@@ -47,7 +47,9 @@ export const userPermissionSchema = z.object({
   name: z.string().min(1, 'User name is required'),
   email: z.string().email('Invalid email address'),
   role: z.string().min(1, 'Role is required'),
-  permissions: z.array(z.string()).min(1, 'At least one permission is required'),
+  permissions: z
+    .array(z.string())
+    .min(1, 'At least one permission is required'),
   isActive: z.boolean().optional(),
 });
 

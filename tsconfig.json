@@ -35,12 +35,12 @@
       "@/public/*": ["./public/*"],
       "@/components/*": ["./src/components/*"],
       "@/types/*": ["./src/types/*"],
-      "@/utils/*": ["./src/utils/*"],
       "@/api/*": ["./src/api/*"],
       "@/redux/*": ["./src/redux/*"],
       "@/patterns/*": ["./src/patterns/*"],
       "@/app/*": ["./src/app/*"],
-      "@/lib/*": ["./src/lib/*"]
+      "@/lib/*": ["./src/lib/*"],
+      "@/hooks/*": ["./src/lib/hooks/*"]
     }
   },
   "include": [

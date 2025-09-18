@@ -34,16 +34,13 @@ interface DashboardTemplateProps {
 export const DashboardTemplate: React.FC<DashboardTemplateProps> = ({
   data,
   isLoading = false,
-  className
+  className,
 }) => {
   return (
-    <section className={cn("", className)}>
-      <div className="flex bg-gray-400 w-full h-full">
-        <div className="w-full mb-[2rem]">
-          <DashboardContent 
-            data={data}
-            isLoading={isLoading}
-          />
+    <section className={cn('', className)}>
+      <div className='flex bg-gray-400 w-full h-full'>
+        <div className='w-full mb-[2rem]'>
+          <DashboardContent data={data} isLoading={isLoading} />
         </div>
       </div>
     </section>

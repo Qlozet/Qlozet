@@ -1,8 +1,8 @@
-"use client";
+'use client';
 import React from 'react';
 import { ProductsPageTemplate } from '@/patterns/products/templates/products-page-template';
 import { useRouter } from 'next/navigation';
-import { clearProductId } from '@/utils/localstorage';
+import { clearProductId } from '@/lib/utils';
 
 const Products: React.FC = () => {
   const router = useRouter();
@@ -32,7 +32,7 @@ const Products: React.FC = () => {
 
   return (
     <ProductsPageTemplate
-      title="Products"
+      title='Products'
       showCreateButton={true}
       showBulkActions={true}
       onCreateProduct={handleCreateProduct}

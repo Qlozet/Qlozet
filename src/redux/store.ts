@@ -1,5 +1,5 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux";
+import { configureStore } from '@reduxjs/toolkit';
+import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 import {
   FLUSH,
   PAUSE,
@@ -8,12 +8,12 @@ import {
   persistStore,
   PURGE,
   REGISTER,
-  REHYDRATE
-} from "redux-persist";
-import { setupListeners } from "@reduxjs/toolkit/query";
-import rootReducer, { rootPersistConfig } from "./root-reducer";
-import { baseAPI, custom401Middleware } from "./api/base-api";
-import env from "@/env";
+  REHYDRATE,
+} from 'redux-persist';
+import { setupListeners } from '@reduxjs/toolkit/query';
+import rootReducer, { rootPersistConfig } from './root-reducer';
+import { baseAPI, custom401Middleware } from './api/base-api';
+import env from '@/env';
 
 const reducer = persistReducer<ReturnType<typeof rootReducer>>(
   rootPersistConfig,
@@ -21,7 +21,7 @@ const reducer = persistReducer<ReturnType<typeof rootReducer>>(
 );
 
 export const store = configureStore({
-  reducer: reducer,
+  reducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
@@ -31,7 +31,7 @@ export const store = configureStore({
       .concat(baseAPI.middleware)
       .concat(custom401Middleware),
 
-  devTools: env.NODE_ENV !== "production",
+  devTools: env.NODE_ENV !== 'production',
 });
 
 // enable listener behavior for the store

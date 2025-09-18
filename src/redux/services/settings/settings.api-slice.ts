@@ -68,12 +68,15 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
     getVendorDetails: builder.query<ApiResponse<VendorDetailsResponse>, void>({
       query: () => ({
         url: '/vendor/settings/vendor-details',
-        method: 'GET'
+        method: 'GET',
       }),
       providesTags: ['VendorDetails'],
     }),
 
-    updateVendorDetails: builder.mutation<ApiResponse<VendorDetailsResponse>, CompanyDetailsData>({
+    updateVendorDetails: builder.mutation<
+      ApiResponse<VendorDetailsResponse>,
+      CompanyDetailsData
+    >({
       query: (data) => ({
         url: '/vendor/settings',
         method: 'PUT',
@@ -98,12 +101,24 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
     getWarehouses: builder.query<ApiResponse<WarehouseResponse[]>, void>({
       query: () => ({
         url: '/vendor/warehouses',
-        method: 'GET'
+        method: 'GET',
       }),
       providesTags: ['Warehouse'],
     }),
 
-    createWarehouse: builder.mutation<ApiResponse<WarehouseResponse>, WarehouseData>({
+    // Legacy warehouse endpoint for migration
+    getWarehouse: builder.query<any, void>({
+      query: () => ({
+        url: '/vendor/warehouse',
+        method: 'GET',
+      }),
+      providesTags: ['Warehouse'],
+    }),
+
+    createWarehouse: builder.mutation<
+      ApiResponse<WarehouseResponse>,
+      WarehouseData
+    >({
       query: (data) => ({
         url: '/vendor/warehouses',
         method: 'POST',
@@ -112,7 +127,20 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Warehouse'],
     }),
 
-    updateWarehouse: builder.mutation<ApiResponse<WarehouseResponse>, { id: string; data: WarehouseData }>({
+    // Legacy warehouse add endpoint for migration
+    addWarehouse: builder.mutation<any, any>({
+      query: (data) => ({
+        url: '/vendor/warehouse/add',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Warehouse'],
+    }),
+
+    updateWarehouse: builder.mutation<
+      ApiResponse<WarehouseResponse>,
+      { id: string; data: WarehouseData }
+    >({
       query: ({ id, data }) => ({
         url: `/vendor/warehouses/${id}`,
         method: 'PUT',
@@ -133,21 +161,26 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
     getUsers: builder.query<ApiResponse<UserResponse[]>, void>({
       query: () => ({
         url: '/vendor/users',
-        method: 'GET'
+        method: 'GET',
       }),
       providesTags: ['User'],
     }),
 
-    createUser: builder.mutation<ApiResponse<UserResponse>, UserPermissionData>({
-      query: (data) => ({
-        url: '/vendor/users',
-        method: 'POST',
-        body: data,
-      }),
-      invalidatesTags: ['User'],
-    }),
+    createUser: builder.mutation<ApiResponse<UserResponse>, UserPermissionData>(
+      {
+        query: (data) => ({
+          url: '/vendor/users',
+          method: 'POST',
+          body: data,
+        }),
+        invalidatesTags: ['User'],
+      }
+    ),
 
-    updateUser: builder.mutation<ApiResponse<UserResponse>, { id: string; data: UserPermissionData }>({
+    updateUser: builder.mutation<
+      ApiResponse<UserResponse>,
+      { id: string; data: UserPermissionData }
+    >({
       query: ({ id, data }) => ({
         url: `/vendor/users/${id}`,
         method: 'PUT',
@@ -170,7 +203,10 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       providesTags: ['Category'],
     }),
 
-    createCategory: builder.mutation<ApiResponse<CategoryResponse>, CategoryData>({
+    createCategory: builder.mutation<
+      ApiResponse<CategoryResponse>,
+      CategoryData
+    >({
       query: (data) => ({
         url: '/vendor/categories',
         method: 'POST',
@@ -179,7 +215,10 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Category'],
     }),
 
-    updateCategory: builder.mutation<ApiResponse<CategoryResponse>, { id: string; data: CategoryData }>({
+    updateCategory: builder.mutation<
+      ApiResponse<CategoryResponse>,
+      { id: string; data: CategoryData }
+    >({
       query: ({ id, data }) => ({
         url: `/vendor/categories/${id}`,
         method: 'PUT',
@@ -200,18 +239,29 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
     getOrderSettings: builder.query<ApiResponse<OrderSettingsData>, void>({
       query: () => ({
         url: '/vendor/settings/order-settings',
-        method: 'GET'
+        method: 'GET',
       }),
       providesTags: ['OrderSettings'],
     }),
 
-    updateOrderSettings: builder.mutation<ApiResponse<OrderSettingsData>, OrderSettingsData>({
+    updateOrderSettings: builder.mutation<
+      ApiResponse<OrderSettingsData>,
+      OrderSettingsData
+    >({
       query: (data) => ({
         url: '/vendor/settings/order-settings',
         method: 'PUT',
         body: data,
       }),
       invalidatesTags: ['OrderSettings'],
+    }),
+
+    // Verify vendor account
+    verifyVendorAccount: builder.query<ApiResponse<any>, string>({
+      query: (userid) => ({
+        url: `/vendor/verify/${userid}`,
+        method: 'GET',
+      }),
     }),
   }),
 });
@@ -221,7 +271,9 @@ export const {
   useGetVendorDetailsQuery,
   useUpdateVendorDetailsMutation,
   useGetWarehousesQuery,
+  useGetWarehouseQuery,
   useCreateWarehouseMutation,
+  useAddWarehouseMutation,
   useUpdateWarehouseMutation,
   useDeleteWarehouseMutation,
   useGetUsersQuery,
@@ -234,4 +286,5 @@ export const {
   useDeleteCategoryMutation,
   useGetOrderSettingsQuery,
   useUpdateOrderSettingsMutation,
+  useLazyVerifyVendorAccountQuery,
 } = settingsApiSlice;

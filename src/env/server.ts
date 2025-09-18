@@ -1,10 +1,12 @@
-import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
+import { createEnv } from '@t3-oss/env-nextjs';
+import { z } from 'zod';
 
 export const env = createEnv({
   server: {
     DATABASE_URL: z.string().url().optional(),
-    NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+    NODE_ENV: z
+      .enum(['development', 'test', 'production'])
+      .default('development'),
     NEXTAUTH_SECRET: z.string().optional(),
     NEXTAUTH_URL: z.string().url().optional(),
   },
@@ -15,5 +17,5 @@ export const env = createEnv({
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   },
-  skipValidation: !!process.env.SKIP_ENV_VALIDATION
+  skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 });

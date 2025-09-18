@@ -65,14 +65,17 @@ export interface UpdateCustomerRequest extends Partial<CreateCustomerRequest> {
 export const customersApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // Get all customers with pagination
-    getCustomers: builder.query<CustomersResponse, {
-      page?: number;
-      limit?: number;
-      search?: string;
-      status?: 'active' | 'inactive' | 'all';
-      sortBy?: 'name' | 'email' | 'createdAt' | 'totalSpent';
-      sortOrder?: 'asc' | 'desc';
-    }>({
+    getCustomers: builder.query<
+      CustomersResponse,
+      {
+        page?: number;
+        limit?: number;
+        search?: string;
+        status?: 'active' | 'inactive' | 'all';
+        sortBy?: 'name' | 'email' | 'createdAt' | 'totalSpent';
+        sortOrder?: 'asc' | 'desc';
+      }
+    >({
       query: (params = {}) => {
         const searchParams = new URLSearchParams();
         Object.entries(params).forEach(([key, value]) => {
@@ -80,10 +83,10 @@ export const customersApiSlice = baseAPI.injectEndpoints({
             searchParams.append(key, value.toString());
           }
         });
-        return ({
+        return {
           url: `/vendor/customers?${searchParams.toString()}`,
-          method: 'GET'
-        });
+          method: 'GET',
+        };
       },
       providesTags: ['Customer'],
     }),
@@ -92,33 +95,34 @@ export const customersApiSlice = baseAPI.injectEndpoints({
     getCustomer: builder.query<{ data: Customer }, string>({
       query: (customerId) => ({
         url: `/vendor/customers/${customerId}`,
-        method: 'GET'
+        method: 'GET',
       }),
       providesTags: ['Customer'],
     }),
 
     // Create customer
-    createCustomer: builder.mutation<{ data: Customer }, CreateCustomerRequest>({
-      query: (customerData) => ({
-        url: '/vendor/customers',
-        method: 'POST',
-        body: customerData,
-      }),
-      invalidatesTags: ['Customer', 'CustomerStats'],
-    }),
+    createCustomer: builder.mutation<{ data: Customer }, CreateCustomerRequest>(
+      {
+        query: (customerData) => ({
+          url: '/vendor/customers',
+          method: 'POST',
+          body: customerData,
+        }),
+        invalidatesTags: ['Customer', 'CustomerStats'],
+      }
+    ),
 
     // Update customer
-    updateCustomer: builder.mutation<{ data: Customer }, UpdateCustomerRequest>({
-      query: ({ _id, ...customerData }) => ({
-        url: `/vendor/customers/${_id}`,
-        method: 'PATCH',
-        body: customerData,
-      }),
-      invalidatesTags: [
-        'Customer',
-        'CustomerStats'
-      ],
-    }),
+    updateCustomer: builder.mutation<{ data: Customer }, UpdateCustomerRequest>(
+      {
+        query: ({ _id, ...customerData }) => ({
+          url: `/vendor/customers/${_id}`,
+          method: 'PATCH',
+          body: customerData,
+        }),
+        invalidatesTags: ['Customer', 'CustomerStats'],
+      }
+    ),
 
     // Delete customer
     deleteCustomer: builder.mutation<{ message: string }, string>({
@@ -126,17 +130,14 @@ export const customersApiSlice = baseAPI.injectEndpoints({
         url: `/vendor/customers/${customerId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: [
-        'Customer',
-        'CustomerStats'
-      ],
+      invalidatesTags: ['Customer', 'CustomerStats'],
     }),
 
     // Get customer statistics
     getCustomerStats: builder.query<{ data: CustomerStats }, void>({
       query: () => ({
         url: '/vendor/customers/stats',
-        method: 'GET'
+        method: 'GET',
       }),
       providesTags: ['CustomerStats'],
     }),
@@ -145,33 +146,39 @@ export const customersApiSlice = baseAPI.injectEndpoints({
     getTotalCustomers: builder.query<{ data: { totalCount: number } }, void>({
       query: () => ({
         url: '/vendor/customers/total-customers-sold-to',
-        method: 'GET'
+        method: 'GET',
       }),
       providesTags: ['CustomerStats'],
     }),
 
     // Get customers by location
-    getCustomersByLocation: builder.query<{
-      data: {
-        totalCount: number;
-        locations: CustomerLocationData[];
-      }
-    }, void>({
+    getCustomersByLocation: builder.query<
+      {
+        data: {
+          totalCount: number;
+          locations: CustomerLocationData[];
+        };
+      },
+      void
+    >({
       query: () => ({
         url: '/vendor/customers/highest-customers-by-location',
-        method: 'GET'
+        method: 'GET',
       }),
       providesTags: ['CustomerStats'],
     }),
 
     // Import customers from file
-    importCustomers: builder.mutation<{
-      data: {
-        imported: number;
-        failed: number;
-        errors?: string[];
-      }
-    }, FormData>({
+    importCustomers: builder.mutation<
+      {
+        data: {
+          imported: number;
+          failed: number;
+          errors?: string[];
+        };
+      },
+      FormData
+    >({
       query: (formData) => ({
         url: '/vendor/customers/import',
         method: 'POST',
@@ -181,16 +188,19 @@ export const customersApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Export customers
-    exportCustomers: builder.mutation<Blob, {
-      format: 'csv' | 'xlsx';
-      filters?: {
-        status?: 'active' | 'inactive' | 'all';
-        dateRange?: {
-          startDate: string;
-          endDate: string;
+    exportCustomers: builder.mutation<
+      Blob,
+      {
+        format: 'csv' | 'xlsx';
+        filters?: {
+          status?: 'active' | 'inactive' | 'all';
+          dateRange?: {
+            startDate: string;
+            endDate: string;
+          };
         };
-      };
-    }>({
+      }
+    >({
       query: ({ format, filters = {} }) => {
         const searchParams = new URLSearchParams();
         searchParams.append('format', format);

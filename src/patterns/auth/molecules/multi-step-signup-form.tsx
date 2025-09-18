@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -13,33 +13,42 @@ import { StepNavigation } from './step-navigation';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 
-const signupSchema = z.object({
-  // Business Information
-  businessName: z.string().min(1, 'Business name is required'),
-  businessEmail: z.string().email('Please enter a valid email address'),
-  businessPhoneNumber: z.string().min(1, 'Business phone number is required'),
-  businessAddress: z.string().min(1, 'Business address is required'),
-  
-  // Personal Information
-  personalName: z.string().min(1, 'Full name is required'),
-  phoneName: z.string().min(1, 'Personal phone number is required'),
-  nationalIdentityNumber: z.string().min(1, 'National Identity Number is required'),
-  bankVerificationNumber: z.string().min(1, 'Bank Verification Number is required'),
-  
-  // Password
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain uppercase, lowercase, and number'),
-  confirmPassword: z.string().min(1, 'Please confirm your password'),
-  
-  // Documents (optional)
-  businessLogo: z.any().optional(),
-  businessDocuments: z.any().optional(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const signupSchema = z
+  .object({
+    // Business Information
+    businessName: z.string().min(1, 'Business name is required'),
+    businessEmail: z.string().email('Please enter a valid email address'),
+    businessPhoneNumber: z.string().min(1, 'Business phone number is required'),
+    businessAddress: z.string().min(1, 'Business address is required'),
+
+    // Personal Information
+    personalName: z.string().min(1, 'Full name is required'),
+    phoneName: z.string().min(1, 'Personal phone number is required'),
+    nationalIdentityNumber: z
+      .string()
+      .min(1, 'National Identity Number is required'),
+    bankVerificationNumber: z
+      .string()
+      .min(1, 'Bank Verification Number is required'),
+
+    // Password
+    password: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        'Password must contain uppercase, lowercase, and number'
+      ),
+    confirmPassword: z.string().min(1, 'Please confirm your password'),
+
+    // Documents (optional)
+    businessLogo: z.any().optional(),
+    businessDocuments: z.any().optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 export type SignupFormData = z.infer<typeof signupSchema>;
 
@@ -62,7 +71,7 @@ export const MultiStepSignupForm: React.FC<MultiStepSignupFormProps> = ({
   className = '',
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
-  
+
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -84,10 +93,20 @@ export const MultiStepSignupForm: React.FC<MultiStepSignupFormProps> = ({
 
     switch (currentStep) {
       case 1:
-        fieldsToValidate = ['businessName', 'businessEmail', 'businessPhoneNumber', 'businessAddress'];
+        fieldsToValidate = [
+          'businessName',
+          'businessEmail',
+          'businessPhoneNumber',
+          'businessAddress',
+        ];
         break;
       case 2:
-        fieldsToValidate = ['personalName', 'phoneName', 'nationalIdentityNumber', 'bankVerificationNumber'];
+        fieldsToValidate = [
+          'personalName',
+          'phoneName',
+          'nationalIdentityNumber',
+          'bankVerificationNumber',
+        ];
         break;
       case 3:
         fieldsToValidate = ['password', 'confirmPassword'];
@@ -129,18 +148,18 @@ export const MultiStepSignupForm: React.FC<MultiStepSignupFormProps> = ({
     <Form {...form}>
       <div className={cn('space-y-8', className)}>
         {/* Progress Bar */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Step {currentStep} of {STEPS.length}</span>
+        <div className='space-y-2'>
+          <div className='flex justify-between text-sm text-muted-foreground'>
+            <span>
+              Step {currentStep} of {STEPS.length}
+            </span>
             <span>{STEPS[currentStep - 1]?.title}</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} className='h-2' />
         </div>
 
         {/* Step Content */}
-        <div className="min-h-[400px]">
-          {renderStep()}
-        </div>
+        <div className='min-h-[400px]'>{renderStep()}</div>
 
         {/* Navigation */}
         <StepNavigation

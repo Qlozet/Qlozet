@@ -1,8 +1,8 @@
 import React from 'react';
-import Image from "next/image";
-import moment from "moment";
-import OrderStatus from "../../order/OrderStatus";
-import { setCustomerId } from "@/utils/localstorage";
+import Image from 'next/image';
+import moment from 'moment';
+import OrderStatus from '../../order/OrderStatus';
+import { setCustomerId } from '@/lib/utils';
 
 interface CustomerTableItemProps {
   picture: string;
@@ -29,25 +29,27 @@ const CustomerTableItem: React.FC<CustomerTableItemProps> = ({
 }) => {
   const date = new Date(lastOrderDate);
   return (
-    <tr className="border-b-[1.5px] border-solid border-gray-300 bg-white ">
-      <td className="text-xs font-normal py-3 px-2 pl-6 text-dark min-h-[5rem]">
+    <tr className='border-b-[1.5px] border-solid border-gray-300 bg-white '>
+      <td className='text-xs font-normal py-3 px-2 pl-6 text-dark min-h-[5rem]'>
         <Image
           src={picture}
           width={30}
           height={30}
           style={{
-            width: "2rem",
-            height: "auto",
+            width: '2rem',
+            height: 'auto',
           }}
           alt={`${customerName}'s profile picture`}
         />
       </td>
-      <td className="text-xs font-normal py-3 px-2 text-dark ">{customerName}</td>
-      <td className="text-xs font-normal py-3 px-2 text-dark">{totalOrders}</td>
-      <td className="text-xs font-normal py-3 px-2 text-dark">
-        {moment(date).format("DD/MM/YYYY")}
+      <td className='text-xs font-normal py-3 px-2 text-dark '>
+        {customerName}
       </td>
-      <td className="text-xs font-normal py-3 px-2 text-dark">
+      <td className='text-xs font-normal py-3 px-2 text-dark'>{totalOrders}</td>
+      <td className='text-xs font-normal py-3 px-2 text-dark'>
+        {moment(date).format('DD/MM/YYYY')}
+      </td>
+      <td className='text-xs font-normal py-3 px-2 text-dark'>
         <OrderStatus
           text={status.text}
           bgColor={status.bgColor}
@@ -56,11 +58,11 @@ const CustomerTableItem: React.FC<CustomerTableItemProps> = ({
         />
       </td>
 
-      <td className="text-xs font-normal py-3 px-2 text-dark  flex items-center justify-end">
-        <div className="border rounded-[12px] max-w-[6rem]">
+      <td className='text-xs font-normal py-3 px-2 text-dark  flex items-center justify-end'>
+        <div className='border rounded-[12px] max-w-[6rem]'>
           <OrderStatus
-            text="View details"
-            color="text-[#3E1C01]"
+            text='View details'
+            color='text-[#3E1C01]'
             addMaxWidth={true}
             clickHandler={() => {
               setCustomerId(customerId);

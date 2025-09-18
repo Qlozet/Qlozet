@@ -11,16 +11,16 @@ interface FormSectionHeaderProps {
 
 export const FormSectionHeader: React.FC<FormSectionHeaderProps> = ({
   title,
-  className
+  className,
 }) => {
   return (
-    <div className={cn(
-      "flex items-center justify-between border-dashed border-b-[1.5px] border-gray-200 pb-4 mb-6",
-      className
-    )}>
-      <h2 className="text-sm font-bold text-primary">
-        {title}
-      </h2>
+    <div
+      className={cn(
+        'flex items-center justify-between border-dashed border-b-[1.5px] border-gray-200 pb-4 mb-6',
+        className
+      )}
+    >
+      <h2 className='text-sm font-bold text-primary'>{title}</h2>
     </div>
   );
 };

@@ -18,25 +18,25 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
   children,
   className,
   headerAction,
-  isLoading = false
+  isLoading = false,
 }) => {
   return (
     <Card className={cn('w-full', className)}>
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-gray-900">
+      <CardHeader className='pb-4'>
+        <div className='flex items-center justify-between'>
+          <CardTitle className='text-lg font-semibold text-gray-900'>
             {title}
           </CardTitle>
           {headerAction}
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent className='pt-0'>
         {isLoading ? (
-          <div className="h-64 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <div className='h-64 flex items-center justify-center'>
+            <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600'></div>
           </div>
         ) : (
-          <div className="h-64 flex items-center justify-center">
+          <div className='h-64 flex items-center justify-center'>
             {children}
           </div>
         )}

@@ -34,7 +34,14 @@ export interface Order {
   shipping: number;
   discount: number;
   total: number;
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'return';
+  status:
+    | 'pending'
+    | 'confirmed'
+    | 'processing'
+    | 'shipped'
+    | 'delivered'
+    | 'cancelled'
+    | 'return';
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
   paymentMethod: string;
   shippingAddress: {
@@ -120,19 +127,27 @@ export interface UpdateOrderRequest {
 export const ordersApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // Get all orders with pagination and filters
-    getOrders: builder.query<OrdersResponse, {
-      page?: number;
-      limit?: number;
-      search?: string;
-      status?: Order['status'] | 'all';
-      paymentStatus?: Order['paymentStatus'] | 'all';
-      dateRange?: {
-        startDate: string;
-        endDate: string;
-      };
-      sortBy?: 'orderNumber' | 'customerName' | 'total' | 'createdAt' | 'status';
-      sortOrder?: 'asc' | 'desc';
-    }>({
+    getOrders: builder.query<
+      OrdersResponse,
+      {
+        page?: number;
+        limit?: number;
+        search?: string;
+        status?: Order['status'] | 'all';
+        paymentStatus?: Order['paymentStatus'] | 'all';
+        dateRange?: {
+          startDate: string;
+          endDate: string;
+        };
+        sortBy?:
+          | 'orderNumber'
+          | 'customerName'
+          | 'total'
+          | 'createdAt'
+          | 'status';
+        sortOrder?: 'asc' | 'desc';
+      }
+    >({
       query: (params = {}) => {
         const searchParams = new URLSearchParams();
         Object.entries(params).forEach(([key, value]) => {
@@ -153,7 +168,7 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
     getOrder: builder.query<{ data: Order }, string>({
       query: (orderId) => ({
         url: `/vendor/orders/${orderId}`,
-        method: "GET"
+        method: 'GET',
       }),
       providesTags: ['Order'],
     }),
@@ -175,40 +190,37 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
         method: 'PATCH',
         body: orderData,
       }),
-      invalidatesTags: [
-        'Order',
-        'OrderStats'
-      ],
+      invalidatesTags: ['Order', 'OrderStats'],
     }),
 
     // Cancel order
-    cancelOrder: builder.mutation<{ data: Order }, { orderId: string; reason?: string }>({
+    cancelOrder: builder.mutation<
+      { data: Order },
+      { orderId: string; reason?: string }
+    >({
       query: ({ orderId, reason }) => ({
         url: `/vendor/orders/${orderId}/cancel`,
         method: 'PATCH',
         body: { reason },
       }),
-      invalidatesTags: [
-        'Order',
-        'OrderStats'
-      ],
+      invalidatesTags: ['Order', 'OrderStats'],
     }),
 
     // Process return
-    processReturn: builder.mutation<{ data: Order }, {
-      orderId: string;
-      items: { productId: string; quantity: number; reason: string }[];
-      refundAmount: number;
-    }>({
+    processReturn: builder.mutation<
+      { data: Order },
+      {
+        orderId: string;
+        items: { productId: string; quantity: number; reason: string }[];
+        refundAmount: number;
+      }
+    >({
       query: ({ orderId, items, refundAmount }) => ({
         url: `/vendor/orders/${orderId}/return`,
         method: 'PATCH',
         body: { items, refundAmount },
       }),
-      invalidatesTags: [
-        'Order',
-        'OrderStats'
-      ],
+      invalidatesTags: ['Order', 'OrderStats'],
     }),
 
     // Get order statistics
@@ -221,12 +233,15 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Get orders by location (for dashboard)
-    getOrdersByLocation: builder.query<{
-      data: {
-        locations: OrdersByLocation[];
-        totalOrders: number;
-      }
-    }, void>({
+    getOrdersByLocation: builder.query<
+      {
+        data: {
+          locations: OrdersByLocation[];
+          totalOrders: number;
+        };
+      },
+      void
+    >({
       query: () => ({
         url: '/vendor/dashboard/orders/top-locations',
         method: 'GET',
@@ -244,11 +259,14 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Get daily orders data
-    getDailyOrders: builder.query<{ data: DailyOrderData[] }, {
-      filter?: 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom';
-      startDate?: string;
-      endDate?: string;
-    }>({
+    getDailyOrders: builder.query<
+      { data: DailyOrderData[] },
+      {
+        filter?: 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom';
+        startDate?: string;
+        endDate?: string;
+      }
+    >({
       query: (params = {}) => {
         const searchParams = new URLSearchParams();
         Object.entries(params).forEach(([key, value]) => {
@@ -262,15 +280,18 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Generate order report
-    generateOrderReport: builder.mutation<Blob, {
-      format: 'pdf' | 'csv' | 'xlsx';
-      dateRange?: {
-        startDate: string;
-        endDate: string;
-      };
-      status?: Order['status'][];
-      includeItems?: boolean;
-    }>({
+    generateOrderReport: builder.mutation<
+      Blob,
+      {
+        format: 'pdf' | 'csv' | 'xlsx';
+        dateRange?: {
+          startDate: string;
+          endDate: string;
+        };
+        status?: Order['status'][];
+        includeItems?: boolean;
+      }
+    >({
       query: ({ format, dateRange, status, includeItems = true }) => {
         const searchParams = new URLSearchParams();
         searchParams.append('format', format);
@@ -292,19 +313,22 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Bulk update orders
-    bulkUpdateOrders: builder.mutation<{
-      data: {
-        updated: number;
-        failed: number;
-        errors?: string[];
+    bulkUpdateOrders: builder.mutation<
+      {
+        data: {
+          updated: number;
+          failed: number;
+          errors?: string[];
+        };
+      },
+      {
+        orderIds: string[];
+        updates: {
+          status?: Order['status'];
+          paymentStatus?: Order['paymentStatus'];
+        };
       }
-    }, {
-      orderIds: string[];
-      updates: {
-        status?: Order['status'];
-        paymentStatus?: Order['paymentStatus'];
-      };
-    }>({
+    >({
       query: ({ orderIds, updates }) => ({
         url: '/vendor/orders/bulk-update',
         method: 'PATCH',
@@ -314,7 +338,10 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Get order invoice
-    getOrderInvoice: builder.query<Blob, { orderId: string; format?: 'pdf' | 'html' }>({
+    getOrderInvoice: builder.query<
+      Blob,
+      { orderId: string; format?: 'pdf' | 'html' }
+    >({
       query: ({ orderId, format = 'pdf' }) => ({
         url: `/vendor/orders/${orderId}/invoice?format=${format}`,
         responseHandler: (response) => response.blob(),

@@ -1,11 +1,11 @@
-import React from "react";
-import Logo from "../../Logo";
-import Typography from "../../Typography";
-import ProgressBar from "../../ProgressBar";
-import TextInput from "../../TextInput";
-import NumberInput from "../../NumberInput";
-import EmailInptut from "../../EmailInput";
-import Image from "next/image";
+import React from 'react';
+import Logo from '../../Logo';
+import Typography from '../../Typography';
+import ProgressBar from '../../ProgressBar';
+import TextInput from '../../TextInput';
+import NumberInput from '../../NumberInput';
+import EmailInptut from '../../EmailInput';
+import Image from 'next/image';
 
 interface FormData {
   businessName: string;
@@ -36,27 +36,30 @@ const Step1: React.FC<Step1Props> = ({
 }) => {
   return (
     <div>
-      <div className="mt-4 mx-4  lg:mx-0 pt-5 px-2 p lg:px-0 ">
-        <div className="mb-12"> <Typography
-          textColor="text-primary"
-          textWeight="font-bold"
-          textSize="text-[32px]"
-        >
-          Sign Up
-        </Typography>
+      <div className='mt-4 mx-4  lg:mx-0 pt-5 px-2 p lg:px-0 '>
+        <div className='mb-12'>
+          {' '}
           <Typography
-            textWeight="font-normal"
-            textSize="text-sm"
-            verticalPadding="my-1"
-            textColor="text-dark"
+            textColor='text-primary'
+            textWeight='font-bold'
+            textSize='text-[32px]'
+          >
+            Sign Up
+          </Typography>
+          <Typography
+            textWeight='font-normal'
+            textSize='text-sm'
+            verticalPadding='my-1'
+            textColor='text-dark'
           >
             Please fill in the information below to register as a vendor
           </Typography>
-          <ProgressBar step={1} /></div>
+          <ProgressBar step={1} />
+        </div>
         <TextInput
           value={formData.businessName}
-          label="Business name"
-          placeholder="Enter your business name"
+          label='Business name'
+          placeholder='Enter your business name'
           setValue={(data) => {
             setFormData((prevData) => {
               return { ...prevData, businessName: data };
@@ -75,8 +78,8 @@ const Step1: React.FC<Step1Props> = ({
         />
         <EmailInptut
           value={formData.businessEmail}
-          label="Business email "
-          placeholder="Enter your business official email address"
+          label='Business email '
+          placeholder='Enter your business official email address'
           setValue={(data) => {
             setFormData((prevData) => {
               return { ...prevData, businessEmail: data };
@@ -95,8 +98,8 @@ const Step1: React.FC<Step1Props> = ({
         />
         <NumberInput
           value={formData.businessPhoneNumber}
-          label="Business phone number "
-          placeholder="Enter your business official phone number "
+          label='Business phone number '
+          placeholder='Enter your business official phone number '
           setValue={(data) => {
             setFormData((prevData) => {
               return { ...prevData, businessPhoneNumber: data };
@@ -115,8 +118,8 @@ const Step1: React.FC<Step1Props> = ({
         />
         <TextInput
           value={formData.businessAddress}
-          label="Business address"
-          placeholder="Enter your business official address"
+          label='Business address'
+          placeholder='Enter your business official address'
           setValue={(data) => {
             setFormData((prevData) => {
               return { ...prevData, businessAddress: data };

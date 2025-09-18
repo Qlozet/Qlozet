@@ -4,28 +4,37 @@
 import { z } from 'zod';
 
 // Password Schema (reusable)
-const passwordSchema = z.string()
+const passwordSchema = z
+  .string()
   .min(8, 'Password must be at least 8 characters')
   .max(128, 'Password is too long')
-  .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, 
-    'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character');
+  .regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+    'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+  );
 
 // Email Schema (reusable)
-const emailSchema = z.string()
+const emailSchema = z
+  .string()
   .min(1, 'Email is required')
   .email('Invalid email format')
   .max(255, 'Email is too long')
   .toLowerCase();
 
 // Name Schema (reusable)
-const nameSchema = z.string()
+const nameSchema = z
+  .string()
   .min(1, 'Name is required')
   .min(2, 'Name must be at least 2 characters')
   .max(100, 'Name is too long')
-  .regex(/^[a-zA-Z\s.-]+$/, 'Name can only contain letters, spaces, dots, and hyphens');
+  .regex(
+    /^[a-zA-Z\s.-]+$/,
+    'Name can only contain letters, spaces, dots, and hyphens'
+  );
 
 // Phone Schema (reusable)
-const phoneSchema = z.string()
+const phoneSchema = z
+  .string()
   .regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number format')
   .optional()
   .or(z.literal(''));
@@ -38,26 +47,34 @@ export const loginSchema = z.object({
 });
 
 // Register Schema
-export const registerSchema = z.object({
-  name: nameSchema,
-  email: emailSchema,
-  password: passwordSchema,
-  confirmPassword: z.string().min(1, 'Please confirm your password'),
-  phone: phoneSchema,
-  businessName: z.string()
-    .max(200, 'Business name is too long')
-    .optional()
-    .or(z.literal('')),
-  businessType: z.string()
-    .max(100, 'Business type is too long')
-    .optional()
-    .or(z.literal('')),
-  agreeToTerms: z.boolean()
-    .refine((val) => val === true, 'You must agree to the terms and conditions'),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
+export const registerSchema = z
+  .object({
+    name: nameSchema,
+    email: emailSchema,
+    password: passwordSchema,
+    confirmPassword: z.string().min(1, 'Please confirm your password'),
+    phone: phoneSchema,
+    businessName: z
+      .string()
+      .max(200, 'Business name is too long')
+      .optional()
+      .or(z.literal('')),
+    businessType: z
+      .string()
+      .max(100, 'Business type is too long')
+      .optional()
+      .or(z.literal('')),
+    agreeToTerms: z
+      .boolean()
+      .refine(
+        (val) => val === true,
+        'You must agree to the terms and conditions'
+      ),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 // Forgot Password Schema
 export const forgotPasswordSchema = z.object({
@@ -65,37 +82,44 @@ export const forgotPasswordSchema = z.object({
 });
 
 // Reset Password Schema
-export const resetPasswordSchema = z.object({
-  token: z.string().min(1, 'Reset token is required'),
-  password: passwordSchema,
-  confirmPassword: z.string().min(1, 'Please confirm your password'),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(1, 'Reset token is required'),
+    password: passwordSchema,
+    confirmPassword: z.string().min(1, 'Please confirm your password'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 // Change Password Schema
-export const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: passwordSchema,
-  confirmPassword: z.string().min(1, 'Please confirm your new password'),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-}).refine((data) => data.currentPassword !== data.newPassword, {
-  message: 'New password must be different from current password',
-  path: ['newPassword'],
-});
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: passwordSchema,
+    confirmPassword: z.string().min(1, 'Please confirm your new password'),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  })
+  .refine((data) => data.currentPassword !== data.newPassword, {
+    message: 'New password must be different from current password',
+    path: ['newPassword'],
+  });
 
 // Update Profile Schema
 export const updateProfileSchema = z.object({
   name: nameSchema.optional(),
   phone: phoneSchema,
-  businessName: z.string()
+  businessName: z
+    .string()
     .max(200, 'Business name is too long')
     .optional()
     .or(z.literal('')),
-  businessType: z.string()
+  businessType: z
+    .string()
     .max(100, 'Business type is too long')
     .optional()
     .or(z.literal('')),
@@ -113,7 +137,8 @@ export const resendVerificationEmailSchema = z.object({
 
 // Two-Factor Authentication Schemas
 export const twoFactorSetupSchema = z.object({
-  code: z.string()
+  code: z
+    .string()
     .min(6, 'Code must be 6 digits')
     .max(6, 'Code must be 6 digits')
     .regex(/^\d{6}$/, 'Code must contain only numbers'),
@@ -126,17 +151,28 @@ export const disableTwoFactorSchema = z.object({
 // Delete Account Schema
 export const deleteAccountSchema = z.object({
   password: z.string().min(1, 'Password is required'),
-  confirmation: z.string()
+  confirmation: z
+    .string()
     .min(1, 'Please type "DELETE" to confirm')
-    .refine((val) => val === 'DELETE', 'Please type "DELETE" to confirm account deletion'),
+    .refine(
+      (val) => val === 'DELETE',
+      'Please type "DELETE" to confirm account deletion'
+    ),
 });
 
 // Profile Image Upload Schema
 export const profileImageSchema = z.object({
-  image: z.instanceof(File)
-    .refine((file) => file.size <= 5 * 1024 * 1024, 'Image size must be less than 5MB')
+  image: z
+    .instanceof(File)
     .refine(
-      (file) => ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type),
+      (file) => file.size <= 5 * 1024 * 1024,
+      'Image size must be less than 5MB'
+    )
+    .refine(
+      (file) =>
+        ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(
+          file.type
+        ),
       'Only JPEG, PNG, and WebP images are allowed'
     ),
 });
@@ -154,7 +190,8 @@ export const pushSubscriptionSchema = z.object({
 export const loginTwoFactorSchema = z.object({
   email: emailSchema,
   password: z.string().min(1, 'Password is required'),
-  twoFactorCode: z.string()
+  twoFactorCode: z
+    .string()
     .min(6, 'Code must be 6 digits')
     .max(6, 'Code must be 6 digits')
     .regex(/^\d{6}$/, 'Code must contain only numbers'),
@@ -168,16 +205,19 @@ export const changeEmailSchema = z.object({
 });
 
 // Account Recovery Schema
-export const accountRecoverySchema = z.object({
-  recoveryCode: z.string()
-    .min(1, 'Recovery code is required')
-    .max(100, 'Recovery code is too long'),
-  newPassword: passwordSchema,
-  confirmPassword: z.string().min(1, 'Please confirm your password'),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
+export const accountRecoverySchema = z
+  .object({
+    recoveryCode: z
+      .string()
+      .min(1, 'Recovery code is required')
+      .max(100, 'Recovery code is too long'),
+    newPassword: passwordSchema,
+    confirmPassword: z.string().min(1, 'Please confirm your password'),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 // Type exports
 export type LoginData = z.infer<typeof loginSchema>;
@@ -187,7 +227,9 @@ export type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
 export type ChangePasswordData = z.infer<typeof changePasswordSchema>;
 export type UpdateProfileData = z.infer<typeof updateProfileSchema>;
 export type VerifyEmailData = z.infer<typeof verifyEmailSchema>;
-export type ResendVerificationEmailData = z.infer<typeof resendVerificationEmailSchema>;
+export type ResendVerificationEmailData = z.infer<
+  typeof resendVerificationEmailSchema
+>;
 export type TwoFactorSetupData = z.infer<typeof twoFactorSetupSchema>;
 export type DisableTwoFactorData = z.infer<typeof disableTwoFactorSchema>;
 export type DeleteAccountData = z.infer<typeof deleteAccountSchema>;
@@ -247,7 +289,9 @@ export const validateEmail = (email: string): boolean => {
   }
 };
 
-export const getPasswordStrength = (password: string): { score: number; feedback: string[] } => {
+export const getPasswordStrength = (
+  password: string
+): { score: number; feedback: string[] } => {
   const feedback: string[] = [];
   let score = 0;
 
@@ -255,7 +299,8 @@ export const getPasswordStrength = (password: string): { score: number; feedback
   else feedback.push('Use at least 8 characters');
 
   if (password.length >= 12) score += 1;
-  else if (password.length >= 8) feedback.push('Consider using 12 or more characters');
+  else if (password.length >= 8)
+    feedback.push('Consider using 12 or more characters');
 
   if (/[a-z]/.test(password)) score += 1;
   else feedback.push('Include lowercase letters');
@@ -283,7 +328,9 @@ export const validateEmailDomain = async (email: string): Promise<boolean> => {
 };
 
 // Password complexity check
-export const checkPasswordComplexity = (password: string): {
+export const checkPasswordComplexity = (
+  password: string
+): {
   hasMinLength: boolean;
   hasUppercase: boolean;
   hasLowercase: boolean;
@@ -296,13 +343,18 @@ export const checkPasswordComplexity = (password: string): {
   const hasLowercase = /[a-z]/.test(password);
   const hasNumber = /\d/.test(password);
   const hasSpecialChar = /[@$!%*?&]/.test(password);
-  
+
   return {
     hasMinLength,
     hasUppercase,
     hasLowercase,
     hasNumber,
     hasSpecialChar,
-    isValid: hasMinLength && hasUppercase && hasLowercase && hasNumber && hasSpecialChar,
+    isValid:
+      hasMinLength &&
+      hasUppercase &&
+      hasLowercase &&
+      hasNumber &&
+      hasSpecialChar,
   };
 };

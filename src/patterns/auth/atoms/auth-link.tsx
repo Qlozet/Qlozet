@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
@@ -35,9 +35,7 @@ export const AuthLink: React.FC<AuthLinkProps> = ({
       `}
     >
       {children}
-      {icon && (
-        <Image src={icon} alt={iconAlt} width={16} height={16} />
-      )}
+      {icon && <Image src={icon} alt={iconAlt} width={16} height={16} />}
     </div>
   );
 };
