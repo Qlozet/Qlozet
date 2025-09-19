@@ -2,7 +2,6 @@
 
 import { FC } from 'react';
 import Logo from '@/components/Logo';
-import classes from './index.module.css';
 import Typography from '@/components/Typography';
 import { useAppSelector } from '@/redux/store';
 
@@ -13,11 +12,16 @@ const ConfirmAccount: FC = () => {
     <section
       className={` w-full h-screen p-4 flex justify-center bg-[#F8F9FA]`}
     >
-      <div className={`${classes.container}  max-w-[735px] `}>
+      <div className='max-w-[735px]'>
         <div className='py-16 flex justify-center'>
           <Logo brown={true} />
         </div>
-        <div className={`${classes.sub_container} py-6 rounded-[16px] `}>
+        <div
+          className='py-6 rounded-[16px] shadow-sm bg-contain bg-no-repeat'
+          style={{
+            backgroundImage: "url('/assets/image/verificationbg.jpg')"
+          }}
+        >
           <div className='pb-2'>
             <Typography
               textColor='text-dark'
@@ -35,10 +39,10 @@ const ConfirmAccount: FC = () => {
               textSize=''
               align='text-center'
             >
-              We've sent a verification email to{' '}
+              We&apos;ve sent a verification email to{' '}
               <span className='font-medium'>{email}</span>. Please check your
               inbox for the email and click the verification link inside to
-              activate your account. If you haven't received the email, please
+              activate your account. If you haven&apos;t received the email, please
               check your spam or junk folder.{' '}
             </Typography>
             <div></div>

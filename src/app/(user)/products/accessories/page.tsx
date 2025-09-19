@@ -15,9 +15,6 @@ import Loader from '@/components/Loader';
 import DropDown from '@/components/DropDown';
 import Image from 'next/image';
 
-// stylse sheet
-import classes from './index.module.css';
-
 import { usePathname } from 'next/navigation';
 import { useGetAllVendorProductsQuery } from '@/redux/services/products/products.api-slice';
 import moment from 'moment';
@@ -171,9 +168,7 @@ const Products: React.FC = () => {
                   </Button>
                 </div>
               </div>
-              <div
-                className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
-              >
+              <div className='flex items-center gap-4 overflow-x-scroll scrollbar-hide'>
                 <DashboardTopCard
                   name='Total products'
                   total={products.length}

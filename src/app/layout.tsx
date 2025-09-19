@@ -18,12 +18,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
-      <body
-        className={`${poppins.variable} font-sans antialiased relative bg-background flex justify-center`}
-      >
-        <Providers>{children}</Providers>
-      </body>
-    </html>
+    <>
+      <html lang='en'>
+        <body
+          className={`${poppins.variable} font-sans antialiased relative bg-background flex justify-center`}
+        >
+          <Providers>{children}</Providers>
+        </body>
+      </html>
+    </>
   );
 }

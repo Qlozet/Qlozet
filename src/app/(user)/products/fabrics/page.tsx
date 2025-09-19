@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 // Svg import starts
 import addIcon from '@/public/assets/svg/add-square.svg';
 import importIcon from '@/public/assets/svg/import.svg';
@@ -16,17 +16,16 @@ import Loader from '@/components/Loader';
 import DropDown from '@/components/DropDown';
 import Image from 'next/image';
 
-// stylse sheet
-import classes from './index.module.css';
-
 import { useRouter, usePathname } from 'next/navigation';
 import { useGetAllVendorProductsQuery } from '@/redux/services/products/products.api-slice';
 import moment from 'moment';
 
 // redux
 import { useAppSelector } from '@/redux/store';
-import { activeCheck } from '@/lib/utils';
+import { activeCheck, clearProductId } from '@/lib/utils';
 import AddFabricModal from '@/components/AddFabricModal';
+import CustomerDetails from '@/components/Customer/Customer';
+import OrderHistory from '@/components/Customer/OrderHistory';
 
 const Products: React.FC = () => {
   const filterData = useAppSelector((state) => state.filter.state);
@@ -39,8 +38,8 @@ const Products: React.FC = () => {
     isLoading,
     refetch,
   } = useGetAllVendorProductsQuery();
-  const [products, setProducts] = useState([]);
-  const [filteredProduct, setFilterdProduct] = useState([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [filteredProduct, setFilterdProduct] = useState<any[]>([]);
   const [activatedProduct, setActivatedProduct] = useState(0);
   const [showAddFabric, setShowAddFabric] = useState(false);
   const [tagData, setTagData] = useState({
@@ -49,7 +48,7 @@ const Products: React.FC = () => {
     colors: ['#9C8578', '#3E1C01'],
     borderAlign: 'center',
   });
-  const [page, setPage] = useState(false);
+  const [page, setPage] = useState('');
 
   const closeModal = () => {
     setCustomerDetails(false);
@@ -86,11 +85,11 @@ const Products: React.FC = () => {
   // Process products data when it's available
   useEffect(() => {
     if (productsData?.data) {
-      const productData = [];
+      const productData: any[] = [];
       setActivatedProduct(
-        productsData.data.data.filter((product) => product.status).length
+        productsData.data.data.filter((product: any) => product.status).length
       );
-      productsData.data.data.map((product) => {
+      productsData.data.data.map((product: any) => {
         const productStatus = activeCheck(product.status);
         const orderItem = {
           id: product._id,
@@ -123,7 +122,7 @@ const Products: React.FC = () => {
     }
   }, [productsData]);
 
-  const handleFilterData = (data) => {
+  const handleFilterData = (data: string) => {
     setFilterdProduct(
       products.filter(
         (pro) =>
@@ -134,7 +133,7 @@ const Products: React.FC = () => {
     );
   };
 
-  const handleFilterWithDate = (startDate, endDate) => {
+  const handleFilterWithDate = (startDate: number, endDate: number) => {
     setFilterdProduct(
       products.filter(
         (item) =>
@@ -145,28 +144,18 @@ const Products: React.FC = () => {
   };
 
   useEffect(() => {
-    handleFilterData(filterData);
-  }, [filterData]);
+    if (products.length > 0) {
+      handleFilterData(filterData);
+    }
+  }, [filterData, products]);
 
   useEffect(() => {
-    setPage(
-      pathname
-        .split('/')
-        .filter(Boolean)
-        .slice(1)
-        .join('/')
-        .split('/')[0]
-        .charAt(0)
-        .toUpperCase() +
-        pathname
-          .split('/')
-          .filter(Boolean)
-          .slice(1)
-          .join('/')
-          .split('/')[0]
-          .slice(1)
-    );
-  }, [isLoading]);
+    const pathSegments = pathname.split('/').filter(Boolean).slice(1);
+    const basePath = pathSegments.join('/').split('/')[0];
+    const capitalizedPath =
+      basePath.charAt(0).toUpperCase() + basePath.slice(1);
+    setPage(capitalizedPath);
+  }, [pathname]);
   return (
     <section>
       <div className='flex bg-[#F8F9FA]'>
@@ -178,32 +167,22 @@ const Products: React.FC = () => {
               <div className='flex items-center justify-end py-4 gap-6'>
                 <div className='block'>
                   <Button
-                    children={
-                      <span className='flex justify-center items-center '>
-                        <span>Import</span>{' '}
-                        <span className='hidden lg:block ml-[2px]'>
-                          {' '}
-                          Product
-                        </span>
-                        <Image src={importIcon} className='ml-4' alt='' />
-                      </span>
-                    }
                     btnSize='small'
                     variant='outline'
                     clickHandler={() => {
                       router.push('/add');
                       clearProductId();
                     }}
-                  />
+                  >
+                    <span className='flex justify-center items-center '>
+                      <span>Import</span>
+                      <span className='hidden lg:block ml-[2px]'>Product</span>
+                      <Image src={importIcon} className='ml-4' alt='' />
+                    </span>
+                  </Button>
                 </div>
                 <div>
                   <Button
-                    children={
-                      <span className='flex justify-center items-center'>
-                        <span>Add new product</span>
-                        <Image src={addIcon} className='ml-4' alt='' />
-                      </span>
-                    }
                     btnSize='small'
                     minWidth='lg:min-w-[14rem]'
                     variant='primary'
@@ -211,12 +190,15 @@ const Products: React.FC = () => {
                       setShowAddFabric(true);
                       clearProductId();
                     }}
-                  />
+                  >
+                    <span className='flex justify-center items-center'>
+                      <span>Add new product</span>
+                      <Image src={addIcon} className='ml-4' alt='' />
+                    </span>
+                  </Button>
                 </div>
               </div>
-              <div
-                className={` ${classes.scrollbarElement} flex items-center gap-4 overflow-x-scroll`}
-              >
+              <div className='flex items-center gap-4 overflow-x-scroll scrollbar-hide'>
                 <DashboardTopCard
                   name='Total products'
                   total={products.length}
@@ -316,6 +298,7 @@ const Products: React.FC = () => {
         </div>
         <Modal
           show={viewCustomerDetails}
+          closeModal={closeModal}
           content={
             <>
               {viewCustomerDetails && (
@@ -329,6 +312,7 @@ const Products: React.FC = () => {
         ></Modal>
         <Modal
           show={showHostory}
+          closeModal={closeModal}
           content={
             <>
               {showHostory && (
@@ -339,11 +323,12 @@ const Products: React.FC = () => {
         ></Modal>
         <Modal
           show={showAddFabric}
+          closeModal={() => setShowAddFabric(false)}
           content={
             <>
               {showAddFabric && (
                 <AddFabricModal
-                  // submitAcessories={submitAcessories}
+                  submitAcessories={() => {}}
                   closeModal={() => {
                     setShowAddFabric(false);
                   }}

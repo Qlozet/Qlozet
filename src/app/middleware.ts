@@ -1,5 +1,5 @@
-import { AUTH_ROUTES } from '@/lib/routes';
-import { NextRequest, NextResponse } from 'next/server';
+import { AUTH_ROUTES } from "@/lib/routes";
+import { NextRequest, NextResponse } from "next/server";
 
 // List of public routes that don't require authentication
 const publicRoutes: string[] = [
@@ -12,19 +12,19 @@ const publicRoutes: string[] = [
 ];
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('SESSION_COOKIE_KEY')?.value;
+  const token = request.cookies.get("SESSION_COOKIE_KEY")?.value;
   const { pathname } = request.nextUrl;
   const isOnboarding =
-    request.nextUrl.searchParams.get('onboarding') === 'true';
+    request.nextUrl.searchParams.get("onboarding") === "true";
 
   if (!token && isOnboarding && !publicRoutes.includes(pathname)) {
-    const redirectUrl = new URL('/login', request.url);
-    redirectUrl.searchParams.delete('onboarding', 'true');
+    const redirectUrl = new URL("/login", request.url);
+    redirectUrl.searchParams.delete("onboarding", "true");
     return NextResponse.redirect(redirectUrl);
   }
 
   if (!token && !isOnboarding && !publicRoutes.includes(pathname)) {
-    const redirectUrl = new URL('/login', request.url);
+    const redirectUrl = new URL("/login", request.url);
     return NextResponse.redirect(redirectUrl);
   }
 
@@ -33,5 +33,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

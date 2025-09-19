@@ -10,16 +10,12 @@ import SetUpAltireWallet from '@/components/Wallet/SetUpAltireWallet';
 import TransactionDetails from '@/components/Wallet/TransactionDetails';
 import SendMoney from '@/components/Wallet/SendMoney';
 import SendMoneyForm from '@/components/Wallet/SendMoneyForm';
-import classes from './index.module.css';
 import Beneficiary from '@/components/Wallet/Beneficiary';
 import {
   useGetWalletBalanceQuery,
   useGetWalletTransactionsQuery,
   useGetBanksQuery,
-  useLazyVerifyAccountNumberQuery,
 } from '@/redux/services/wallet/wallet.api-slice';
-import toast from 'react-hot-toast';
-import Toast from '@/components/ToastComponent/toast';
 import Loader from '@/components/Loader';
 import Typography from '@/components/Typography';
 import DropDown from '@/components/DropDown';
@@ -31,79 +27,35 @@ const Wallet: React.FC = () => {
 
   const [setUpWalletWallet, setSetUpWalletWallet] = useState(false);
   const [showTransactiondetails, setShowTransactiondetails] = useState(false);
-  const [walletBalance, setWalletBalance] = useState(0);
   const [showSendMoney, setShowSendMoney] = useState('');
   const [transactionId, setransactionId] = useState('');
-  const [allBanks, setAllBanks] = useState([]);
-  const [loadPage, setLoadPage] = useState(true);
-  const [transactionData, setTransactionData] = useState([]);
-  const [filteredTransactionData, setFilteredTransactionData] = useState([]);
-  const [totalAmountRecived, setTotalAmountRecieved] = useState(0);
-  const [rejectModal, setShowReject] = useState(false);
+  const [filteredTransactionData, setFilteredTransactionData] = useState<any[]>(
+    []
+  );
+
+  const { data: walletBalanceData, isLoading: isLoadingBalance } =
+    useGetWalletBalanceQuery();
+
+  const { data: transactionsData, isLoading: isLoadingTransactions } =
+    useGetWalletTransactionsQuery();
+
+  const { data: banksData, isLoading: isLoadingBanks } = useGetBanksQuery();
+
+  const [transactionData, setTransactionData] = useState<any[]>([]);
+  const walletBalance = walletBalanceData?.data || 0;
+  const allBanks = banksData?.data || [];
+  const totalAmountRecived = 0; // TODO: Add proper API endpoint for this
+  const loadPage = isLoadingBalance || isLoadingTransactions || isLoadingBanks;
+
   const handleShowViewDetailModal = () => {
     setShowTransactiondetails(true);
   };
 
   const showRejectModal = () => {
-    setOrderDetails(false);
-    setShowTrack(false);
-    setShowCustomer(false);
-    setShowReject(true);
+    // TODO: Implement reject modal functionality
   };
 
-  const getWalletBalance = async () => {
-    try {
-      const response = await getRequest('/vendor/wallet/balance');
-      if (response?.data) {
-        setWalletBalance(response?.data?.data);
-      } else {
-      }
-    } catch (error) {
-      toast(<Toast text={'An error occured'} type='danger' />);
-    }
-  };
-
-  const getTransaction = async () => {
-    try {
-      const response = await getRequest('/vendor/wallet/transactions');
-      const transactionDataArray = [];
-      response?.data && setLoadPage(false);
-      if (response?.data) {
-        response?.data?.data.map((item) => {
-          const status = walletStatusCheck(item.status);
-          const transactionItem = {
-            transactionId: item?.transactionId,
-            amount: `₦${parseInt(item?.amount).toLocaleString()}`,
-            date: item?.date,
-            narration: item.narration,
-            status,
-            transactionType: item.transType,
-            createdAt: item.createdAt,
-          };
-          transactionDataArray.push(transactionItem);
-        });
-        setTransactionData(transactionDataArray);
-        setFilteredTransactionData(transactionDataArray);
-      } else {
-      }
-    } catch (error) {
-      error?.message && toast(<Toast text={error?.message} type='danger' />);
-      // error?.data && toast(<Toast text={error?.data} type="danger" />);
-    }
-  };
-
-  const getBanks = async () => {
-    try {
-      const response = await getRequest('/vendor/transfer/banks');
-      if (response?.data) {
-        setAllBanks(response?.data?.data?.data);
-      }
-    } catch (error) {
-      toast(<Toast text={'An error occured'} type='danger' />);
-    }
-  };
-
-  const handleFilterData = (data) => {
+  const handleFilterData = (data: string) => {
     setFilteredTransactionData(
       transactionData.filter(
         (tansact) =>
@@ -114,7 +66,7 @@ const Wallet: React.FC = () => {
     );
   };
 
-  const handleFilterWithDate = (startDate, endDate) => {
+  const handleFilterWithDate = (startDate: number, endDate: number) => {
     setFilteredTransactionData(
       transactionData.filter(
         (item) =>
@@ -123,28 +75,33 @@ const Wallet: React.FC = () => {
       )
     );
   };
-  const getTotalAmontRecievd = async () => {
-    try {
-      const response = await getRequest(
-        '/vendor/wallet/:vendorId/totalReceived'
-      );
-      if (response.data) {
-        setTotalAmountRecieved(response.data.data.totalReceived);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // Process transactions data when it's available
   useEffect(() => {
-    getTotalAmontRecievd();
-    getTransaction();
-    getWalletBalance();
-    getBanks();
-  }, []);
+    if (transactionsData?.data) {
+      const transactionDataArray: any[] = [];
+      transactionsData.data.data.map((item: any) => {
+        const status = walletStatusCheck(item.status);
+        const transactionItem = {
+          transactionId: item?.transactionId,
+          amount: `₦${parseInt(item?.amount).toLocaleString()}`,
+          date: item?.date,
+          narration: item.narration,
+          status,
+          transactionType: item.transType,
+          createdAt: item.createdAt,
+        };
+        transactionDataArray.push(transactionItem);
+      });
+      setTransactionData(transactionDataArray);
+      setFilteredTransactionData(transactionDataArray);
+    }
+  }, [transactionsData]);
 
   useEffect(() => {
-    handleFilterData(filterData);
-  }, [filterData]);
+    if (transactionData.length > 0) {
+      handleFilterData(filterData);
+    }
+  }, [filterData, transactionData]);
 
   return (
     <section>
@@ -157,29 +114,29 @@ const Wallet: React.FC = () => {
               <div className='flex justify-end items-center lg:hidden w-full'>
                 <div className='items-start gap-6 pt-5 flex '>
                   <Button
-                    children='Send money'
                     btnSize='small'
                     variant='outline'
                     minWidth={'103px'}
                     clickHandler={() => {
                       setShowSendMoney('Send Money');
                     }}
-                  />
+                  >
+                    Send money
+                  </Button>
                   <Button
-                    children='Fund wallet'
                     btnSize='small'
                     variant='primary'
                     minWidth={'103px'}
                     clickHandler={() => {
                       setSetUpWalletWallet(true);
                     }}
-                  />
+                  >
+                    Fund wallet
+                  </Button>
                 </div>
               </div>
               <div className='flex justify-between'>
-                <div
-                  className={` ${classes.scrollbarElement} flex flex-2 items-center gap-4 overflow-x-scroll`}
-                >
+                <div className='flex flex-2 items-center gap-4 overflow-x-scroll scrollbar-hide'>
                   <DashboardTopCard
                     name='Wallet Balance'
                     total={walletBalance.toLocaleString()}
@@ -199,23 +156,23 @@ const Wallet: React.FC = () => {
                 </div>
                 <div className='items-start gap-6 pt-5 hidden lg:flex'>
                   <Button
-                    children='Send money'
                     btnSize='small'
                     variant='outline'
-                    // minWidth="min-w-[10rem]"
                     clickHandler={() => {
                       setShowSendMoney('Send Money');
                     }}
-                  />
+                  >
+                    Send money
+                  </Button>
                   <Button
-                    children='Fund wallet'
                     btnSize='small'
                     variant='primary'
-                    // minWidth="min-w-[6rem] lg:min-w-[10rem]"
                     clickHandler={() => {
                       setSetUpWalletWallet(true);
                     }}
-                  />
+                  >
+                    Fund wallet
+                  </Button>
                 </div>
               </div>
               <div className=''>

@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Logo from '@/components/Logo';
-import classes from './index.module.css';
 import Typography from '@/components/Typography';
 import { useLazyVerifyVendorAccountQuery } from '@/redux/services/settings/settings.api-slice';
 import { useRouter } from 'next/navigation';
@@ -48,11 +47,16 @@ const Verication: React.FC<VerificationProps> = ({ params }) => {
       {loading ? (
         <Loader></Loader>
       ) : (
-        <div className={`${classes.container}  max-w-[735px] `}>
+        <div className="max-w-[735px]">
           <div className='py-16 flex justify-center'>
             <Logo brown={true} />
           </div>
-          <div className={`${classes.sub_container} py-6 rounded-[16px] `}>
+          <div
+            className="py-6 rounded-[16px] shadow-sm bg-contain bg-no-repeat"
+            style={{
+              backgroundImage: "url('/assets/image/verificationbg.jpg')"
+            }}
+          >
             <div className='pb-2'>
               <Typography
                 textColor='text-dark'
@@ -70,7 +74,7 @@ const Verication: React.FC<VerificationProps> = ({ params }) => {
                 textSize=''
                 align='text-center'
               >
-                Your Altire account has been successfully set up, and we've
+                Your Altire account has been successfully set up, and we&apos;ve
                 received your information. Our team will thoroughly review the
                 details and documents provided. Your account verification status
                 will be communicated to you via the email you provided within
