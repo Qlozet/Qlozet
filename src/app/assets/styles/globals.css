@@ -1,35 +1,20 @@
 @import "tailwindcss";
 
-@utility scrollbar-hide {
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
-
-@keyframes accordion-down {
-  from {
-    height: 0;
-  }
-  to {
-    height: var(--radix-accordion-content-height);
-  }
-}
-
-@keyframes accordion-up {
-  from {
-    height: var(--radix-accordion-content-height);
-  }
-  to {
-    height: 0;
-  }
-}
-
-:root {
+@theme {
   --foreground-rgb: white;
   --background-start-rgb: white;
   --background-end-rgb: white;
+
+  /* Default Tailwind font stacks */
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* Next.js Google Fonts integration with Tailwind utilities */
+  --font-dm-sans: var(--font-dmsans), var(--font-sans);
+  --font-poppins: var(--font-poppins), var(--font-sans);
+  --font-roboto-mono: var(--font-robotoMono), var(--font-mono);
+  --font-inter: var(--font-inter), var(--font-sans);
 
   /* shadcn/ui CSS variables - Light theme with custom brown primary */
   --background: 0 0% 100%;
@@ -84,6 +69,32 @@
   --chart-3: 30 80% 55%;
   --chart-4: 280 65% 60%;
   --chart-5: 340 75% 55%;
+}
+
+@utility scrollbar-hide {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
 }
 
 @utility custom-scrollbar {

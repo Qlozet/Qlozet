@@ -146,7 +146,7 @@ export const MultiStepSignupForm: React.FC<MultiStepSignupFormProps> = ({
 
   return (
     <Form {...form}>
-      <div className={cn('space-y-8', className)}>
+      <div className={cn('w-full space-y-8', className)}>
         {/* Progress Bar */}
         <div className='space-y-2'>
           <div className='flex justify-between text-sm text-muted-foreground'>

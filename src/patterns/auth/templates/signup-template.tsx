@@ -68,7 +68,7 @@ export const SignupTemplate: React.FC<SignupTemplateProps> = ({
       title='Sign Up'
       subtitle='Create your business account'
       className={className}
-      showImage={false} // Hide image for multi-step form to save space
+      showImage={true} // Hide image for multi-step form to save space
     >
       <MultiStepSignupForm onSubmit={handleSignup} loading={isLoading} />
     </AuthLayout>

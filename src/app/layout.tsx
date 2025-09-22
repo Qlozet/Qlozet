@@ -1,6 +1,6 @@
 import './assets/styles/globals.css';
 import React from 'react';
-import { poppins } from './assets/fonts';
+import { inter, poppins, roboto_mono } from './assets/fonts';
 import { Metadata } from 'next';
 import { Providers } from '@/redux/provider';
 
@@ -21,7 +21,7 @@ export default function RootLayout({
     <>
       <html lang='en'>
         <body
-          className={`${poppins.variable} font-sans antialiased relative bg-background flex justify-center`}
+          className={`${poppins.variable} ${inter.variable} ${roboto_mono.variable} font-poppins antialiased relative bg-background flex justify-center`}
         >
           <Providers>{children}</Providers>
         </body>
