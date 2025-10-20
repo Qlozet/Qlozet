@@ -12,8 +12,7 @@ import ShecduleProduct from '../ScheduleProduct';
 import { getProductId } from '@/lib/utils';
 import MobileTable from '../mobileTable';
 import { useToggleProductStatusMutation } from '@/redux/services/products/products.api-slice';
-import Toast from '@/components/ToastComponent/toast';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { handleExport } from '@/lib/utils';
 import DropDown from '@/components/DropDown';
 import Typography from '@/components/Typography';
@@ -35,12 +34,10 @@ const AccessoriesTable = ({
     try {
       const response = await toggleProductStatus(productId).unwrap();
       statusChangeHandler();
-      toast(
-        <Toast text='Product status updated successfully' type='success' />
-      );
+      toast.success('Product status updated successfully');
     } catch (error) {
       console.error('Error toggling product status:', error);
-      toast(<Toast text='An error occurred' type='danger' />);
+      toast.error('An error occurred');
     }
   };
 

@@ -8,8 +8,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { getProductId } from '@/lib/utils';
 import { useScheduleProductMutation } from '@/redux/services/products/products.api-slice';
-import Toast from '@/components/ToastComponent/toast';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { timearray } from './data';
 const ShecduleProduct = ({ closeSchedule }) => {
   const productId = getProductId();
@@ -25,11 +24,11 @@ const ShecduleProduct = ({ closeSchedule }) => {
         date: schedule.date,
         time: schedule.time,
       }).unwrap();
-      toast(<Toast text='Product scheduled successfully' type='success' />);
+      toast.success('Product scheduled successfully');
       closeSchedule();
     } catch (error) {
       console.error('Error scheduling product:', error);
-      toast(<Toast text='Failed to schedule product' type='danger' />);
+      toast.error('Failed to schedule product');
     }
   };
   return (

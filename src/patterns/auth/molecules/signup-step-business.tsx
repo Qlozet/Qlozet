@@ -30,38 +30,37 @@ export const SignupStepBusiness: React.FC<SignupStepBusinessProps> = ({
         <p className='text-muted-foreground'>Tell us about your business</p>
       </div>
 
+      {/* Business Name */}
       <AuthInput
         control={control}
         name='businessName'
         label='Business Name'
         placeholder='Enter your business name'
-        description='The legal name of your business'
       />
 
+      {/* Business Email */}
       <AuthInput
         control={control}
         name='businessEmail'
         label='Business Email'
-        type='email'
         placeholder='business@company.com'
-        description='Official email address for your business'
       />
 
+      {/* Business Phone number */}
       <AuthInput
         control={control}
         name='businessPhoneNumber'
         label='Business Phone Number'
         type='tel'
         placeholder='+1 (555) 000-0000'
-        description='Phone number for business inquiries'
       />
 
+      {/* Business Address */}
       <AuthInput
         control={control}
         name='businessAddress'
         label='Business Address'
         placeholder='Enter your business address'
-        description='Physical address of your business'
       />
     </div>
   );

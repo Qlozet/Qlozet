@@ -10,8 +10,7 @@ import validator from '@/lib/utils';
 import { uploadSingleImage } from '@/lib/utils';
 import { useCreateAccessoryMutation } from '@/redux/services/products/products.api-slice';
 import NumberInput from '@/components/NumberInput';
-import Toast from '@/components/ToastComponent/toast';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { Oval } from 'react-loader-spinner';
 import { FaChevronUp, FaChevronDown } from 'react-icons/fa6';
 
@@ -119,11 +118,11 @@ const AddFabricModal: React.FC<AddFabricModalProps> = ({
           id: response.data,
         });
 
-        toast(<Toast text='Fabric added successfully' type='success' />);
+        toast.success('Fabric added successfully');
         closeModal();
       } catch (error) {
         console.error('Error adding fabric:', error);
-        toast(<Toast text='Failed to add fabric' type='danger' />);
+        toast.error('Failed to add fabric');
       }
     } else {
       setAcesssoriesRequired((prevData) => {
@@ -142,12 +141,7 @@ const AddFabricModal: React.FC<AddFabricModalProps> = ({
         });
         imageUrl && setloadingImageUpload(false);
       } else {
-        toast(
-          <Toast
-            text={'Error occured while uploading accessory image.'}
-            type='danger'
-          />
-        );
+        toast.error('Error occured while uploading accessory image.');
         setloadingImageUpload(false);
       }
     } catch (error) {

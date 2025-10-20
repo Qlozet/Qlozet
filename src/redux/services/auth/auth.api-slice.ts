@@ -38,17 +38,15 @@ export interface LoginResponse {
 }
 
 export interface RegisterRequest {
-  businessName: string;
-  businessEmail: string;
-  businessPhoneNumber: string;
-  businessAddress: string;
-  personalName: string;
-  phoneName: string;
-  nationalIdentityNumber: string;
-  bankVerificationNumber: string;
-  password: string;
-  confirmPassword: string;
-  agreeToTerms: boolean;
+  business_name: string,
+  business_email: string,
+  business_phone_number: string,
+  business_address: string,
+  personal_name: string,
+  personal_email: string,
+  personal_phone_number: string,
+  national_identity_number: string,
+  password: string
 }
 
 export interface ForgotPasswordRequest {
@@ -102,13 +100,13 @@ export const authApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // Unified Login (handles both email formats)
     signIn: builder.mutation<LoginResponse, SignInRequest>({
-      query: (credentials) => ({
-        url: '/vendor/login',
+      query: ({ email, password }) => ({
+        url: '/auth/login/vendor',
         method: 'POST',
         body: {
-          businessEmail: credentials.email,
-          password: credentials.password,
-          ...(credentials.rememberMe && { rememberMe: credentials.rememberMe }),
+          email: email,
+          password: password
+          // ...(credentials.rememberMe && { rememberMe: credentials.rememberMe }),
         },
       }),
       invalidatesTags: ['Auth'],
@@ -127,7 +125,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
     // Register
     register: builder.mutation<RegisterResponse, RegisterRequest>({
       query: (userData) => ({
-        url: '/vendor/signup',
+        url: '/auth/register/vendor',
         method: 'POST',
         body: userData,
       }),

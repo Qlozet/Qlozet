@@ -3,8 +3,7 @@ import { useEffect, useState } from 'react';
 import { SettingsTemplate } from '@/patterns/settings/templates/settings-template';
 import { useGetVendorDetailsQuery } from '@/redux/services/settings/settings.api-slice';
 import Loader from '@/components/Loader';
-import Toast from '@/components/ToastComponent/toast';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 const Dashboard: React.FC = () => {
   const [currentNav, setCurrentNav] = useState('Shop details');
   const { data: vendorData, isLoading: isLoadingVendor } =

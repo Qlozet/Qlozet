@@ -1,14 +1,21 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
-@theme {
-  --foreground-rgb: white;
-  --background-start-rgb: white;
-  --background-end-rgb: white;
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --foreground-hsl: 0 0% 100%;
+  --background-start-hsl: 0 0% 100%;
+  --background-end-hsl: 0 0% 100%;
 
   /* Default Tailwind font stacks */
-  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-sans:
+    ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
 
   /* Next.js Google Fonts integration with Tailwind utilities */
   --font-dm-sans: var(--font-dmsans), var(--font-sans);
@@ -17,31 +24,31 @@
   --font-inter: var(--font-inter), var(--font-sans);
 
   /* shadcn/ui CSS variables - Light theme with custom brown primary */
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-  --primary: 28 96% 12%; /* Custom brown primary (#3E1C01) */
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222.2 84% 4.9%;
-  --muted: 210 40% 96%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96%;
-  --accent-foreground: 222.2 84% 4.9%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 28 96% 12%; /* Match primary */
-  --radius: 0.75rem;
-  --chart-1: 12 76% 61%;
-  --chart-2: 173 58% 39%;
-  --chart-3: 197 37% 24%;
-  --chart-4: 43 74% 66%;
-  --chart-5: 27 87% 67%;
+  --color-background: hsla(0, 0%, 100%);
+  --color-foreground: hsla(222.2, 84%, 4.9%);
+  --color-card: hsla(0, 0%, 100%);
+  --color-card-foreground: hsla(222.2, 84%, 4.9%);
+  --color-popover: hsla(0, 0%, 100%);
+  --color-popover-foreground: hsla(222.2, 84%, 4.9%);
+  --color-primary: hsla(27, 97%, 12%, 1); /* Custom brown primary (#3E1C01) */
+  --color-primary-foreground: hsla(210, 40%, 98%);
+  --color-secondary: hsla(210, 40%, 96%);
+  --color-secondary-foreground: hsla(222.2, 84%, 4.9%);
+  --color-muted: hsla(210, 40%, 96%);
+  --color-muted-foreground: hsla(215.4, 16.3%, 46.9%);
+  --color-accent: hsla(210, 17%, 98%, 1);
+  --color-accent-foreground: hsla(222.2, 84%, 4.9%);
+  --color-destructive: hsla(0, 84.2%, 60.2%);
+  --color-destructive-foreground: hsla(210, 40%, 98%);
+  --color-border: hsla(214.3, 31.8%, 91.4%);
+  --color-input: hsla(214.3, 31.8%, 91.4%);
+  --color-ring: hsla(28, 96%, 12%); /* Match primary */
+  --color-radius: 0.75rem;
+  --color-chart-1: hsla(12, 76%, 61%);
+  --color-chart-2: hsla(173, 58%, 39%);
+  --color-chart-3: hsla(197, 37%, 24%);
+  --color-chart-4: hsla(43, 74%, 66%);
+  --color-chart-5: hsla(27, 87%, 67%);
 }
 
 .dark {
@@ -51,7 +58,7 @@
   --card-foreground: 210 40% 98%;
   --popover: 222.2 84% 4.9%;
   --popover-foreground: 210 40% 98%;
-  --primary: 28 96% 12%;
+  --primary: hsla(27, 97%, 12%, 1);
   --primary-foreground: 210 40% 98%;
   --secondary: 217.2 32.6% 17.5%;
   --secondary-foreground: 210 40% 98%;
@@ -99,19 +106,19 @@
 
 @utility custom-scrollbar {
   scrollbar-width: thin; /* Firefox */
-  scrollbar-color: #3b82f6 #d1d5db; /* thumb track */
+  scrollbar-color: hsl(217 91% 60%) hsl(220 13% 82%); /* thumb track */
 
   &::-webkit-scrollbar {
     width: 8px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: #3b82f6;
+    background-color: hsl(217 91% 60%);
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-track {
-    background-color: #d1d5db;
+    background-color: hsl(220 13% 82%);
   }
 }
 
@@ -152,9 +159,9 @@ input[type='number'] {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --foreground-hsl: 0 0% 100%;
+    --background-start-hsl: 0 0% 0%;
+    --background-end-hsl: 0 0% 0%;
   }
 }
 
@@ -162,7 +169,6 @@ body {
   max-width: 3024px;
   margin: 0 auto;
 }
-
 
 @utility custom-product-scrollbar {
   &::-webkit-scrollbar {
@@ -177,13 +183,13 @@ body {
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(62, 28, 1, 1);
+    background: hsl(28 96% 12%);
     height: 3px;
     border-radius: 6px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: hsl(0 0% 33%);
   }
 }
 
@@ -194,7 +200,7 @@ body {
   }
 
   &::-webkit-scrollbar-track {
-    background: #f4f4f4;
+    background: hsl(0 0% 96%);
     border-radius: 2px;
     height: 3px;
   }
@@ -221,7 +227,7 @@ body {
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: rgba(62, 28, 1, 1);
+    background-color: hsl(28 96% 12%);
     border-radius: 6px;
   }
 }
@@ -245,7 +251,7 @@ body {
 
 .rcp-body {
   padding: 10px 0 !important;
-  background-color: rgb(44, 44, 44) !important;
+  background-color: hsl(0 0% 17%) !important;
 }
 
 .rcp-root {

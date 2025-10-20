@@ -5,8 +5,7 @@ import Typography from '@/components/Typography';
 import { useLazyVerifyVendorAccountQuery } from '@/redux/services/settings/settings.api-slice';
 import { useRouter } from 'next/navigation';
 import Loader from '@/components/Loader';
-import Toast from '@/components/ToastComponent/toast';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 interface VerificationParams {
   userid: string;
@@ -26,14 +25,14 @@ const Verication: React.FC<VerificationProps> = ({ params }) => {
       const response = await verifyVendorAccount(params.userid).unwrap();
       setLoading(false);
       if (response?.success) {
-        toast(<Toast text={response?.message} type='success' />);
+        toast.success(response?.message);
       } else {
-        toast(<Toast text='An error occurred' type='danger' />);
+        toast.error('An error occurred');
       }
     } catch (error) {
       console.error('Error verifying account:', error);
       setLoading(false);
-      toast(<Toast text='An error occurred' type='danger' />);
+      toast.error('An error occurred');
     }
   };
 

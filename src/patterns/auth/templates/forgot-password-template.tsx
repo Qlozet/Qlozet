@@ -8,8 +8,7 @@ import {
   ForgotPasswordFormData,
 } from '../molecules/forgot-password-form';
 import { useForgotPasswordMutation } from '@/redux/services/auth/auth.api-slice';
-import toast from 'react-hot-toast';
-import Toast from '@/components/ToastComponent/toast';
+import { toast } from 'sonner';
 
 interface ForgotPasswordTemplateProps {
   className?: string;
@@ -27,12 +26,12 @@ export const ForgotPasswordTemplate: React.FC<ForgotPasswordTemplateProps> = ({
         businessEmail: data.businessEmail,
       }).unwrap();
 
-      toast(<Toast text={response.message} type='success' />);
+      toast.success(response.message);
       router.push('/auth/create-new-password');
     } catch (error: any) {
       const errorMessage =
         error?.data?.message || 'Failed to send reset link. Please try again.';
-      toast(<Toast text={errorMessage} type='danger' />);
+      toast.error(errorMessage);
     }
   };
 

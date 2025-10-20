@@ -8,8 +8,7 @@ import {
   ResetPasswordFormData,
 } from '../molecules/reset-password-form';
 import { useResetPasswordMutation } from '@/redux/services/auth/auth.api-slice';
-import toast from 'react-hot-toast';
-import Toast from '@/components/ToastComponent/toast';
+import { toast } from 'sonner';
 
 interface ResetPasswordTemplateProps {
   className?: string;
@@ -25,12 +24,7 @@ export const ResetPasswordTemplate: React.FC<ResetPasswordTemplateProps> = ({
 
   const handleResetPassword = async (data: ResetPasswordFormData) => {
     if (!token) {
-      toast(
-        <Toast
-          text='Invalid reset token. Please request a new password reset.'
-          type='danger'
-        />
-      );
+      toast.error('Invalid reset token. Please request a new password reset.');
       return;
     }
 
@@ -41,17 +35,12 @@ export const ResetPasswordTemplate: React.FC<ResetPasswordTemplateProps> = ({
         confirmPassword: data.confirmPassword,
       }).unwrap();
 
-      toast(
-        <Toast
-          text={response.message || 'Password reset successfully!'}
-          type='success'
-        />
-      );
+      toast.success(response.message || 'Password reset successfully!');
       router.push('/auth/sign-in');
     } catch (error: any) {
       const errorMessage =
         error?.data?.message || 'Failed to reset password. Please try again.';
-      toast(<Toast text={errorMessage} type='danger' />);
+      toast.error(errorMessage);
     }
   };
 

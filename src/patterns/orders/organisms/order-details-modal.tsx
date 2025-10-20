@@ -17,7 +17,7 @@ import {
   useUpdateOrderMutation,
 } from '@/redux/services/orders/orders.api-slice';
 import { Loader2, X, Edit, Truck, CheckCircle, XCircle } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 interface OrderDetailsModalProps {
   orderId: string;

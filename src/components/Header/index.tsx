@@ -27,7 +27,7 @@ const HomePageHeader: React.FC = () => {
           variant='outline'
           className='bg-white w-[144px] text-xs font-extrabold'
           clickHandler={() => {
-            router.push(AUTH_ROUTES.signin);
+            router.push(AUTH_ROUTES.signIn);
           }}
         />
       </div>

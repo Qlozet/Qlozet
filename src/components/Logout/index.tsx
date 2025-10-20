@@ -20,7 +20,7 @@ const Logout: React.FC<LogoutProps> = ({ logoutFunction }) => {
   };
 
   const handleContinueClick = (): void => {
-    router.push(AUTH_ROUTES.signin);
+    router.push(AUTH_ROUTES.signIn);
     clearToken() && logoutFunction();
   };
 

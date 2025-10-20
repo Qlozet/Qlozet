@@ -2,7 +2,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import AddProductTemplate from '@/patterns/add/templates/add-product-template';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 
 const AddProduct: React.FC = () => {
   const router = useRouter();

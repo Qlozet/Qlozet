@@ -106,7 +106,7 @@ export const deleteData = (): void => {
 
 // From src/utils/helper.ts
 import exportFromJSON from 'export-from-json';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { ValidationResult } from '@/types';
 import { store } from '@/redux/store';
 import { productsApiSlice } from '@/redux/services/products/products.api-slice';

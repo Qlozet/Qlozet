@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { AuthButton } from '../atoms/auth-button';
-import Image from 'next/image';
-import previousIcon from '@/public/assets/svg/previousicon.svg';
+import { SubmitButton } from '@/patterns/common/molecules/submit-button';
+import { ChevronLeft } from 'lucide-react';
+import Button from '@/components/Button';
 
 interface StepNavigationProps {
   currentStep: number;
@@ -34,23 +34,23 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
   const isLastStep = currentStep === totalSteps;
 
   return (
-    <div className={`flex items-center justify-between mt-8 ${className}`}>
+    <div className={`flex items-center justify-between ${canGoPrevious ? "gap-x-3.5" : ""} ${className}`}>
       {/* Previous Button */}
       {!isFirstStep && canGoPrevious ? (
-        <AuthButton
-          variant='ghost'
+        <Button
+          variant='outline'
           onClick={onPrevious}
           className='flex items-center gap-2'
         >
-          <Image src={previousIcon} alt='Previous' width={16} height={16} />
+          <ChevronLeft />
           {previousLabel}
-        </AuthButton>
+        </Button>
       ) : (
         <div></div>
       )}
 
       {/* Step Indicator */}
-      <div className='flex items-center space-x-2'>
+      {/* <div className='flex items-center space-x-2'>
         {Array.from({ length: totalSteps }, (_, index) => (
           <div
             key={index}
@@ -60,17 +60,18 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
             `}
           />
         ))}
-      </div>
+      </div> */}
 
       {/* Next Button */}
-      <AuthButton
+      <SubmitButton
         variant='default'
         onClick={onNext}
         loading={loading}
-        disabled={!canGoNext}
+        disabled={!canGoNext || loading}
+        className='w-full flex-1'
       >
         {isLastStep ? 'Complete' : nextLabel}
-      </AuthButton>
+      </SubmitButton>
     </div>
   );
 };

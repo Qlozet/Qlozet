@@ -18,7 +18,7 @@ import {
   useDeleteProductMutation,
 } from '@/redux/services/products/products.api-slice';
 import { Loader2, X, Edit, Copy, Trash2, Eye, BarChart3 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 interface ProductDetailsModalProps {
   productId: string;

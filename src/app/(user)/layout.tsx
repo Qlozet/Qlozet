@@ -71,6 +71,7 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
 
   const [showMobileNav, setShowMobileNav] = useState<boolean>(false);
   const [showKycPopUp, setShowKycPopUp] = useState<boolean>(true);
+  
   const {
     data: vendorProfileData,
     error: vendorProfileError,

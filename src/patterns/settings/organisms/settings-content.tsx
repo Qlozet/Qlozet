@@ -5,8 +5,7 @@ import React from 'react';
 import { CompanyDetailsForm } from '../molecules/company-details-form';
 import { useUpdateVendorDetailsMutation } from '@/redux/services/settings/settings.api-slice';
 import { type CompanyDetailsData } from '@/lib/validations/settings';
-import toast from 'react-hot-toast';
-import Toast from '@/components/ToastComponent/toast';
+import { toast } from 'sonner';
 
 // Import existing components for other sections
 import BillingAndInvoice from '@/components/Settings/BillingAndInvioceInfo';
@@ -45,17 +44,12 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
     try {
       const response = await updateVendorDetails(data).unwrap();
       if (response.success) {
-        toast(<Toast text={response.message} type='success' />);
+        toast.success(response.message);
       } else {
-        toast(<Toast text={response.message} type='danger' />);
+        toast.error(response.message);
       }
     } catch (error: any) {
-      toast(
-        <Toast
-          text={error?.data?.message || 'An error occurred'}
-          type='danger'
-        />
-      );
+      toast.error(error?.data?.message || 'An error occurred');
     }
   };
 

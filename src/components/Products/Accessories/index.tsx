@@ -9,8 +9,7 @@ import validator from '@/lib/utils';
 import { uploadSingleImage } from '@/lib/utils';
 import { useCreateAccessoryMutation } from '@/redux/services/products/products.api-slice';
 import NumberInput from '@/components/NumberInput';
-import Toast from '@/components/ToastComponent/toast';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { Oval } from 'react-loader-spinner';
 const AddAcessories = ({ closeModal, submitAcessories }) => {
   const [accessories, setAcesssories] = useState({
@@ -50,11 +49,11 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
           id: response.data,
         });
 
-        toast(<Toast text='Accessories added' type='success' />);
+        toast.success('Accessories added');
         closeModal();
       } catch (error) {
         console.error('Error creating accessory:', error);
-        toast(<Toast text='Failed to add accessory' type='danger' />);
+        toast.error('Failed to add accessory');
       }
     } else {
       setAcesssoriesRequired((prevData) => {
@@ -73,12 +72,7 @@ const AddAcessories = ({ closeModal, submitAcessories }) => {
         });
         imageUrl && setloadingImageUpload(false);
       } else {
-        toast(
-          <Toast
-            text={'Error occured while uploading accessory image.'}
-            type='danger'
-          />
-        );
+        toast.error('Error occured while uploading accessory image.');
         setloadingImageUpload(false);
       }
     } catch (error) {

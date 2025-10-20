@@ -3,8 +3,7 @@ import Image from 'next/image';
 import Typography from '@/components/Typography';
 import moment from 'moment';
 import { useReviewItemMutation } from '@/redux/services/products/products.api-slice';
-import toast from 'react-hot-toast';
-import Toast from '@/components/ToastComponent/toast';
+import { toast } from 'sonner';
 import userIcon from '@/public/assets/image/user.png';
 const ReviewItem = ({ review }) => {
   const [description, setDescription] = useState('');
@@ -21,12 +20,12 @@ const ReviewItem = ({ review }) => {
         itemId: review._id,
         review: { description },
       }).unwrap();
-      toast(<Toast text='Reply successful' type='success' />);
+      toast.success('Reply successful');
       setAddReview(false);
       setDescription('');
     } catch (error) {
       console.error('Error replying to comment:', error);
-      toast(<Toast text='An error occurred' type='danger' />);
+      toast.error('An error occurred');
     }
   };
   return (

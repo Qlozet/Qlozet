@@ -3,8 +3,7 @@ import React from 'react';
 import { SupportTemplate } from '@/patterns/support/templates/support-template';
 import { useSubmitSupportTicketMutation } from '@/redux/services/support/support.api-slice';
 import { type SupportData } from '@/lib/validations/support';
-import Toast from '@/components/ToastComponent/toast';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 const Support: React.FC = () => {
   const [submitSupportTicket, { isLoading }] = useSubmitSupportTicketMutation();
 
@@ -12,17 +11,12 @@ const Support: React.FC = () => {
     try {
       const response = await submitSupportTicket(data).unwrap();
       if (response.success) {
-        toast(<Toast text={response.message} type='success' />);
+        toast.success(response.message);
       } else {
-        toast(<Toast text={response.message} type='danger' />);
+        toast.error(response.message);
       }
     } catch (error: any) {
-      toast(
-        <Toast
-          text={error?.data?.message || 'An error occurred'}
-          type='danger'
-        />
-      );
+      toast.error(error?.data?.message || 'An error occurred');
     }
   };
   return <SupportTemplate onSubmit={handleSubmit} isLoading={isLoading} />;

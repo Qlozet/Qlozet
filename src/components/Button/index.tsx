@@ -2,7 +2,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 // Define the props interface for the Button component
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'onDrag' | 'onDragStart' | 'onDragEnd' | 'onAnimationStart'
+> {
   variant: 'primary' | 'outline' | 'danger';
   children: React.ReactNode;
   btnSize?: 'large' | 'small';

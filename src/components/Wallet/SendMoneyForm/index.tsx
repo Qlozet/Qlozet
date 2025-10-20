@@ -11,8 +11,7 @@ import {
   useCreateBeneficiaryMutation,
   useLazyVerifyAccountNumberQuery,
 } from '@/redux/services/wallet/wallet.api-slice';
-import Toast from '@/components/ToastComponent/toast';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 const SendMoneyForm = ({ closeModal, banks }) => {
   const [createBeneficiary, { isLoading }] = useCreateBeneficiaryMutation();
   const [verifyAccountNumber, { isLoading: fetchingAccountName }] =
@@ -46,10 +45,10 @@ const SendMoneyForm = ({ closeModal, banks }) => {
       }).unwrap();
 
       closeModal('');
-      toast(<Toast text='Beneficiary added successfully' type='success' />);
+      toast.success('Beneficiary added successfully');
     } catch (error) {
       console.error('Error adding beneficiary:', error);
-      toast(<Toast text='An error occurred' type='danger' />);
+      toast.error('An error occurred');
     }
   };
 
@@ -71,7 +70,7 @@ const SendMoneyForm = ({ closeModal, banks }) => {
         }
       } catch (error) {
         console.error('Error verifying account:', error);
-        toast(<Toast text='Could not verify account' type='danger' />);
+        toast.error('Could not verify account');
       }
     }
   };

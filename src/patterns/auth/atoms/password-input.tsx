@@ -72,9 +72,9 @@ export const PasswordInput = <
                 disabled={disabled}
               >
                 {showPassword ? (
-                  <EyeOff className='h-4 w-4 text-muted-foreground' />
+                  <EyeOff className='h-6 w-6 text-muted-foreground' />
                 ) : (
-                  <Eye className='h-4 w-4 text-muted-foreground' />
+                  <Eye className='h-6 w-6 text-muted-foreground' />
                 )}
                 <span className='sr-only'>
                   {showPassword ? 'Hide password' : 'Show password'}
@@ -83,7 +83,7 @@ export const PasswordInput = <
             </div>
           </FormControl>
           {description && (
-            <p className='text-sm text-muted-foreground'>{description}</p>
+            <p className='text-xs text-muted-foreground'>{description}</p>
           )}
           {showStrengthIndicator && (
             <div className='mt-2'>

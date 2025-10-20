@@ -31,7 +31,9 @@
       "Bash(printf '\\n')",
       "Bash(pnpm remove:*)",
       "Bash(pnpm run format:check:*)",
-      "Bash(pnpm run:*)"
+      "Bash(pnpm run:*)",
+      "Bash(pnpm list:*)",
+      "Bash(do sed -i \"s/import toast from ''''react-hot-toast'''';/import { toast } from ''''sonner'''';/g\" \"$file\")"
     ],
     "deny": [],
     "ask": []

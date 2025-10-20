@@ -5,14 +5,12 @@ import { useRouter } from 'next/navigation';
 import { AUTH_ROUTES } from '@/lib/routes';
 import { AuthLayout } from '../organisms/auth-layout';
 import { AuthInput } from '../atoms/auth-input';
-import { AuthButton } from '../atoms/auth-button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form } from '@/components/ui/form';
-import { cn } from '@/lib/utils';
-import toast from 'react-hot-toast';
-import Toast from '@/components/ToastComponent/toast';
+import { toast } from 'sonner';
+import { SubmitButton } from '@/patterns/common/molecules/submit-button';
 
 const verificationSchema = z.object({
   verificationCode: z
@@ -47,15 +45,10 @@ export const VerificationTemplate: React.FC<VerificationTemplateProps> = ({
       // For now, simulate success
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      toast(<Toast text='Email verified successfully!' type='success' />);
+      toast.success('Email verified successfully!');
       router.push(AUTH_ROUTES.signIn);
     } catch (error) {
-      toast(
-        <Toast
-          text='Invalid verification code. Please try again.'
-          type='danger'
-        />
-      );
+      toast.error('Invalid verification code. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -64,13 +57,9 @@ export const VerificationTemplate: React.FC<VerificationTemplateProps> = ({
   const handleResendCode = async () => {
     try {
       // TODO: Implement resend verification code API call
-      toast(
-        <Toast text='Verification code sent to your email!' type='success' />
-      );
+      toast.success('Verification code sent to your email!');
     } catch (error) {
-      toast(
-        <Toast text='Failed to resend code. Please try again.' type='danger' />
-      );
+      toast.error('Failed to resend code. Please try again.');
     }
   };
 
@@ -94,22 +83,22 @@ export const VerificationTemplate: React.FC<VerificationTemplateProps> = ({
             description='Check your email for the verification code'
           />
 
-          <AuthButton type='submit' fullWidth loading={isLoading}>
+          <SubmitButton disabled={isLoading} loading={isLoading}>
             Verify Email
-          </AuthButton>
+          </SubmitButton>
 
           <div className='text-center'>
             <p className='text-sm text-muted-foreground mb-2'>
               Didn't receive the code?
             </p>
-            <AuthButton
+           <SubmitButton
               type='button'
               variant='ghost'
               onClick={handleResendCode}
               className='text-primary hover:text-primary/80'
             >
               Resend Code
-            </AuthButton>
+            </SubmitButton>
           </div>
         </form>
       </Form>

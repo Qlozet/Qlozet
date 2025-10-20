@@ -7,9 +7,8 @@ import { useRouter } from 'next/navigation';
 import { clearToken } from '@/lib/utils';
 import { getProductId } from '@/lib/utils';
 import { useDeleteVendorProductMutation } from '@/redux/services/products/products.api-slice';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { useState } from 'react';
-import Toast from '@/components/ToastComponent/toast';
 const DeleteProduct = ({ deleteFunction }) => {
   const [deleteVendorProduct, { isLoading }] = useDeleteVendorProductMutation();
 
@@ -17,11 +16,11 @@ const DeleteProduct = ({ deleteFunction }) => {
     const productId = getProductId();
     try {
       await deleteVendorProduct(productId).unwrap();
-      toast(<Toast text='Product deleted successfully' type='success' />);
+      toast.success('Product deleted successfully');
       deleteFunction(productId);
     } catch (error) {
       console.error('Error deleting product:', error);
-      toast(<Toast text='Failed to delete product' type='danger' />);
+      toast.error('Failed to delete product');
     }
   };
   const router = useRouter();

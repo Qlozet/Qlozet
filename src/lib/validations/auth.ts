@@ -15,9 +15,8 @@ const passwordSchema = z
 
 // Email Schema (reusable)
 const emailSchema = z
-  .string()
-  .min(1, 'Email is required')
-  .email('Invalid email format')
+  .email('Oops ! where is your email?')
+  .min(2, 'Email is required')
   .max(255, 'Email is too long')
   .toLowerCase();
 
@@ -39,12 +38,25 @@ const phoneSchema = z
   .optional()
   .or(z.literal(''));
 
+/**
+* Phone number with extension schema
+* Supports phone numbers with optional extensions
+* Example: +1234567890 ext. 123 or +1234567890x123
+*/
+export const phoneWithExtensionSchema = z
+  .string()
+  .min(1, "Phone number is required")
+  .regex(/^\+?[1-9]\d{1,14}(\s?(ext|x|extension)\.?\s?\d{1,6})?$/i, "Invalid phone number format with extension")
+  .describe("Phone number with optional extension")
+
 // Login Schema
-export const loginSchema = z.object({
+export const signInSchema = z.object({
   email: emailSchema,
-  password: z.string().min(1, 'Password is required'),
-  rememberMe: z.boolean().default(false),
+  password: passwordSchema,
+  // rememberMe: z.boolean().default(false),
 });
+
+export type SignInFormData = z.infer<typeof signInSchema>;
 
 // Register Schema
 export const registerSchema = z
@@ -220,7 +232,7 @@ export const accountRecoverySchema = z
   });
 
 // Type exports
-export type LoginData = z.infer<typeof loginSchema>;
+export type LoginData = z.infer<typeof signInSchema>;
 export type RegisterData = z.infer<typeof registerSchema>;
 export type ForgotPasswordData = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
@@ -238,12 +250,13 @@ export type PushSubscriptionData = z.infer<typeof pushSubscriptionSchema>;
 export type LoginTwoFactorData = z.infer<typeof loginTwoFactorSchema>;
 export type ChangeEmailData = z.infer<typeof changeEmailSchema>;
 export type AccountRecoveryData = z.infer<typeof accountRecoverySchema>;
+export type PhoneWithExtension = z.infer<typeof phoneWithExtensionSchema>
 
 // Default values
 export const createDefaultLoginData = (): LoginData => ({
   email: '',
   password: '',
-  rememberMe: false,
+  // rememberMe: false,
 });
 
 export const createDefaultRegisterData = (): RegisterData => ({

@@ -1,13 +1,13 @@
-import { AUTH_ROUTES } from "@/lib/routes";
+import { APP_ROUTES, AUTH_ROUTES } from "@/lib/routes";
 import { NextRequest, NextResponse } from "next/server";
 
 // List of public routes that don't require authentication
 const publicRoutes: string[] = [
-  AUTH_ROUTES.login,
   AUTH_ROUTES.verifyAccountMessage,
   AUTH_ROUTES.resetPassword,
   AUTH_ROUTES.accountVerification,
   AUTH_ROUTES.forgotPassword,
+  AUTH_ROUTES.signIn,
   AUTH_ROUTES.signup,
 ];
 
@@ -18,13 +18,13 @@ export function middleware(request: NextRequest) {
     request.nextUrl.searchParams.get("onboarding") === "true";
 
   if (!token && isOnboarding && !publicRoutes.includes(pathname)) {
-    const redirectUrl = new URL("/login", request.url);
+    const redirectUrl = new URL("/auth/sign-in", request.url);
     redirectUrl.searchParams.delete("onboarding", "true");
     return NextResponse.redirect(redirectUrl);
   }
 
   if (!token && !isOnboarding && !publicRoutes.includes(pathname)) {
-    const redirectUrl = new URL("/login", request.url);
+    const redirectUrl = new URL("/auth/sign-in", request.url);
     return NextResponse.redirect(redirectUrl);
   }
 

@@ -10,8 +10,7 @@ import SearchInput from '@/components/SearchInput';
 import ArrowRightIcon from '@/public/assets/svg/forward.svg';
 import { useEffect, useState } from 'react';
 import { useGetBeneficiariesQuery } from '@/redux/services/wallet/wallet.api-slice';
-import Toast from '@/components/ToastComponent/toast';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 const Beneficiary = ({ closeModal }) => {
   const { data: beneficiariesData, isLoading } = useGetBeneficiariesQuery();
   const [beneficairy, setBeneficairy] = useState([]);

@@ -6,8 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form } from '@/components/ui/form';
 import { PasswordInput } from '../atoms/password-input';
-import { AuthButton } from '../atoms/auth-button';
 import { cn } from '@/lib/utils';
+import { SubmitButton } from '@/patterns/common/molecules/submit-button';
 
 const resetPasswordSchema = z
   .object({
@@ -69,9 +69,9 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
           placeholder='Confirm your new password'
         />
 
-        <AuthButton type='submit' fullWidth loading={loading}>
+        <SubmitButton disabled={loading} loading={loading}>
           Reset Password
-        </AuthButton>
+        </SubmitButton>
       </form>
     </Form>
   );

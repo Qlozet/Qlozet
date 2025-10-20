@@ -27,7 +27,7 @@ import {
 } from '@/redux/services/products/products.api-slice';
 import { Plus, Download, Upload, FileText, Package } from 'lucide-react';
 import Typography from '@/components/compat/Typography';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 interface ProductsPageTemplateProps {
   title?: string;

@@ -6,8 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form } from '@/components/ui/form';
 import { AuthInput } from '../atoms/auth-input';
-import { AuthButton } from '../atoms/auth-button';
 import { cn } from '@/lib/utils';
+import { SubmitButton } from '@/patterns/common/molecules/submit-button';
 
 const forgotPasswordSchema = z.object({
   businessEmail: z
@@ -51,9 +51,9 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
           description="We'll send a password reset link to this email address"
         />
 
-        <AuthButton type='submit' fullWidth loading={loading}>
+        <SubmitButton disabled={loading} loading={loading}>
           Send Reset Link
-        </AuthButton>
+        </SubmitButton>
       </form>
     </Form>
   );

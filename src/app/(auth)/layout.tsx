@@ -11,7 +11,7 @@ const AuthLayout: FC<IProps> = ({ children }) => {
     return (
         <>
             <Suspense fallback={<Loader />}>
-                <div className='bg-white flex min-h-screen items-center justify-center'>
+                <div className='bg-accent flex w-full min-h-screen items-center justify-center'>
                     {children}
                 </div>
             </Suspense>

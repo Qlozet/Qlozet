@@ -8,8 +8,7 @@ import Button from '@/components/Button';
 import { useEffect, useState } from 'react';
 import validator from '@/lib/utils';
 import { useAddWarehouseMutation } from '@/redux/services/settings/settings.api-slice';
-import toast, { ToastBar } from 'react-hot-toast';
-import Toast from '@/components/ToastComponent/toast';
+import { toast } from 'sonner';
 const AddNewWarehouseForm = ({ closeModal }) => {
   const [addWarehouse, { isLoading }] = useAddWarehouseMutation();
   const [formData, setFormData] = useState({
@@ -56,7 +55,7 @@ const AddNewWarehouseForm = ({ closeModal }) => {
         }).unwrap();
 
         closeModal();
-        toast(<Toast text='Warehouse added successfully' type='success' />);
+        toast.success('Warehouse added successfully');
       } else {
         setRequiredFormData((prevData) => {
           return { prevData, ...data };
@@ -64,7 +63,7 @@ const AddNewWarehouseForm = ({ closeModal }) => {
       }
     } catch (error) {
       console.error('Error adding warehouse:', error);
-      toast(<Toast text='Failed to add warehouse' type='danger' />);
+      toast.error('Failed to add warehouse');
     }
   };
   useEffect(() => {}, []);
