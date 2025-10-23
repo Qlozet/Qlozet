@@ -66,7 +66,7 @@ export const custom401Middleware: Middleware =
     ) {
       console.log('Received 401 Unauthorized response');
       removeCookie(SESSION_COOKIE_KEY);
-      window.location.replace('/auth/sign-in');
+      // window.location.replace('/auth/sign-in');
     }
     return next(action);
   };

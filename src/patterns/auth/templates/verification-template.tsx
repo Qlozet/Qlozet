@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AUTH_ROUTES } from '@/lib/routes';
 import { AuthLayout } from '../organisms/auth-layout';
@@ -11,6 +11,10 @@ import { z } from 'zod';
 import { Form } from '@/components/ui/form';
 import { toast } from 'sonner';
 import { SubmitButton } from '@/patterns/common/molecules/submit-button';
+import { useCountdown } from '@/lib/hooks/useCountdown';
+import { Button } from '@/components/ui/button';
+import { If } from '@/patterns/common/atoms/If';
+import { AuthFormCard } from '../molecules/auth-form-card';
 
 const verificationSchema = z.object({
   verificationCode: z
@@ -21,15 +25,38 @@ const verificationSchema = z.object({
 
 type VerificationFormData = z.infer<typeof verificationSchema>;
 
-interface VerificationTemplateProps {
-  className?: string;
-}
-
-export const VerificationTemplate: React.FC<VerificationTemplateProps> = ({
-  className = '',
-}) => {
+export const VerificationTemplate = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [canResend, setCanResend] = useState(false);
+
+  // Countdown starting from 90 seconds (1:30)
+  const [count, { start, reset }] = useCountdown({
+    countStart: 90,
+    intervalMs: 1000,
+    isIncrement: false,
+    countStop: 0,
+  });
+
+  // Format the countdown as MM:SS
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Enable resend when countdown reaches 0
+  useEffect(() => {
+    if (count === 0) {
+      setCanResend(true);
+    }
+  }, [count]);
+
+  // Start countdown on component mount
+  useEffect(() => {
+    start();
+  }, [start]);
+
 
   const form = useForm<VerificationFormData>({
     resolver: zodResolver(verificationSchema),
@@ -64,11 +91,10 @@ export const VerificationTemplate: React.FC<VerificationTemplateProps> = ({
   };
 
   return (
-    <AuthLayout
+    <AuthFormCard
       title='Verify Your Email'
       subtitle='Please enter the verification code sent to your email'
-      className={className}
-      showImage={false}
+      showLogo={true}
     >
       <Form {...form}>
         <form
@@ -80,7 +106,6 @@ export const VerificationTemplate: React.FC<VerificationTemplateProps> = ({
             name='verificationCode'
             label='Verification Code'
             placeholder='Enter 6-digit code'
-            description='Check your email for the verification code'
           />
 
           <SubmitButton disabled={isLoading} loading={isLoading}>
@@ -91,17 +116,25 @@ export const VerificationTemplate: React.FC<VerificationTemplateProps> = ({
             <p className='text-sm text-muted-foreground mb-2'>
               Didn't receive the code?
             </p>
-           <SubmitButton
-              type='button'
-              variant='ghost'
-              onClick={handleResendCode}
-              className='text-primary hover:text-primary/80'
-            >
-              Resend Code
-            </SubmitButton>
+
+            <If isTrue={canResend ? true : false}>
+              <Button
+                variant='ghost'
+                onClick={handleResendCode}
+                className='text-primary hover:text-primary/80'
+              >
+                {isLoading ? 'Resending...' : 'Resend Code'}
+              </Button>
+            </If>
+
+            <If isTrue={!canResend && count > 0 ? true : false}>
+              <p className='text-sm text-muted-foreground'>
+                Resend available in {formatTime(count)}
+              </p>
+            </If>
           </div>
         </form>
       </Form>
-    </AuthLayout>
+    </AuthFormCard>
   );
 };

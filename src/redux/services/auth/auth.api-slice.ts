@@ -137,10 +137,10 @@ export const authApiSlice = baseAPI.injectEndpoints({
       ForgotPasswordRequest
     >({
       query: (data) => ({
-        url: '/vendor/forgot-password',
+        url: '/auth/forgot-password',
         method: 'POST',
         body: {
-          businessEmail: data.businessEmail || data.email,
+          email: data.businessEmail || data.email,
         },
       }),
     }),

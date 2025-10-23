@@ -40,7 +40,7 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
         <Button
           variant='outline'
           onClick={onPrevious}
-          className='flex items-center gap-2'
+          className='h-10 lg:[50px] flex items-center gap-2'
         >
           <ChevronLeft />
           {previousLabel}
@@ -68,7 +68,7 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
         onClick={onNext}
         loading={loading}
         disabled={!canGoNext || loading}
-        className='w-full flex-1'
+        className='w-full h-10 lg:[50px] flex-1'
       >
         {isLastStep ? 'Complete' : nextLabel}
       </SubmitButton>

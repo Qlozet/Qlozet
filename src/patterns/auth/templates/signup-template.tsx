@@ -177,7 +177,7 @@ export const SignupTemplate = () => {
         // dispatch(setEmail(data.businessEmail));
 
         toast.success('Account created successfully! Please check your email for verification.');
-        push(AUTH_ROUTES.verification);
+        push(AUTH_ROUTES.awaitingVerification);
       }
     } catch (error: any) {
       const errorMessage =

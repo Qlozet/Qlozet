@@ -51,6 +51,7 @@ export const AuthInput = <
               type={type}
               placeholder={placeholder}
               disabled={disabled}
+              className={cn('h-10 lg:h-[50px]')}
               {...field}
             />
           </FormControl>

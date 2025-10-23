@@ -25,7 +25,6 @@ interface PasswordInputProps<
   disabled?: boolean;
   className?: string;
   description?: string;
-  showStrengthIndicator?: boolean;
 }
 
 export const PasswordInput = <
@@ -38,8 +37,7 @@ export const PasswordInput = <
   placeholder = '************',
   disabled = false,
   className = '',
-  description,
-  showStrengthIndicator = false,
+  description
 }: PasswordInputProps<TFieldValues, TName>) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -61,20 +59,20 @@ export const PasswordInput = <
                 placeholder={placeholder}
                 disabled={disabled}
                 {...field}
-                className='pr-12'
+                className='pr-12 h-10 lg:h-[50px]'
               />
               <Button
                 type='button'
                 variant='ghost'
-                size='sm'
+                size='icon'
                 className='absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent'
                 onClick={togglePasswordVisibility}
                 disabled={disabled}
               >
                 {showPassword ? (
-                  <EyeOff className='h-6 w-6 text-muted-foreground' />
+                  <EyeOff className='size-4 text-muted-foreground' />
                 ) : (
-                  <Eye className='h-6 w-6 text-muted-foreground' />
+                  <Eye className='size-4 text-muted-foreground' />
                 )}
                 <span className='sr-only'>
                   {showPassword ? 'Hide password' : 'Show password'}
@@ -84,16 +82,6 @@ export const PasswordInput = <
           </FormControl>
           {description && (
             <p className='text-xs text-muted-foreground'>{description}</p>
-          )}
-          {showStrengthIndicator && (
-            <div className='mt-2'>
-              <div className='text-xs text-muted-foreground mb-1'>
-                Password strength:
-              </div>
-              <div className='w-full bg-secondary rounded-full h-1'>
-                <div className='bg-destructive h-1 rounded-full w-1/4 transition-all' />
-              </div>
-            </div>
           )}
           <FormMessage />
         </FormItem>

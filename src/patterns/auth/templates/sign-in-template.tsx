@@ -1,6 +1,6 @@
 'use client';
 
-import React, { FC } from 'react';
+import React from 'react';
 import { AuthLayout } from '../organisms/auth-layout';
 import { useSignInMutation } from '@/redux/services/auth/auth.api-slice';
 import { useRouter } from 'next/navigation';
@@ -18,8 +18,6 @@ import { PasswordInput } from '../atoms/password-input';
 import { AuthLink } from '../atoms/auth-link';
 import arrowRight from '@/public/assets/svg/arrow-right.svg';
 import { SubmitButton } from '@/patterns/common/molecules/submit-button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertTriangleIcon } from 'lucide-react';
 
 
 export const SignInTemplate = () => {
@@ -97,6 +95,7 @@ export const SignInTemplate = () => {
                   href={AUTH_ROUTES.forgotPassword}
                   icon={arrowRight}
                   iconAlt='Arrow right'
+                  className='text-xs lg:text-sm'
                 >
                   Forgot password
                 </AuthLink>

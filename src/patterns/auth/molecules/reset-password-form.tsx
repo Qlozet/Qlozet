@@ -8,6 +8,7 @@ import { Form } from '@/components/ui/form';
 import { PasswordInput } from '../atoms/password-input';
 import { cn } from '@/lib/utils';
 import { SubmitButton } from '@/patterns/common/molecules/submit-button';
+import { PasswordStrength } from '../organisms/password-strength';
 
 const resetPasswordSchema = z
   .object({
@@ -47,6 +48,8 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
     },
   });
 
+  const password = form.watch("password")
+
   return (
     <Form {...form}>
       <form
@@ -58,16 +61,17 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
           name='password'
           label='New Password'
           placeholder='Enter your new password'
-          description='Password must be at least 8 characters with uppercase, lowercase, and number'
-          showStrengthIndicator
         />
 
+        {/* Confirm Password */}
         <PasswordInput
           control={form.control}
           name='confirmPassword'
           label='Confirm Password'
           placeholder='Confirm your new password'
         />
+
+        <PasswordStrength password={password} />
 
         <SubmitButton disabled={loading} loading={loading}>
           Reset Password

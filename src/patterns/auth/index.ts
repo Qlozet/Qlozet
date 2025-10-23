@@ -8,6 +8,10 @@ export { AuthLink } from './atoms/auth-link';
 export { PasswordInput } from './atoms/password-input';
 
 // Molecules
+export { AuthMessageCard } from './molecules/auth-message-card';
+export type { AuthMessageCardProps } from './molecules/auth-message-card';
+export { AuthFormCard } from './molecules/auth-form-card';
+export type { AuthFormCardProps } from './molecules/auth-form-card';
 export { SignInForm } from './molecules/sign-in-form';
 export { ForgotPasswordForm } from './molecules/forgot-password-form';
 export { ResetPasswordForm } from './molecules/reset-password-form';
@@ -27,6 +31,7 @@ export { SignInSection } from './organisms/sign-in-section';
 // Templates
 export { SignInTemplate } from './templates/sign-in-template';
 export { ForgotPasswordTemplate } from './templates/forgot-password-template';
+export { PasswordResetCodeSentTemplate } from './templates/password-reset-code-sent-template';
 export { ResetPasswordTemplate } from './templates/reset-password-template';
 export { SignupTemplate } from './templates/signup-template';
 export { VerificationTemplate } from './templates/verification-template';
