@@ -15,6 +15,8 @@ import { useCountdown } from '@/lib/hooks/useCountdown';
 import { Button } from '@/components/ui/button';
 import { If } from '@/patterns/common/atoms/If';
 import { AuthFormCard } from '../molecules/auth-form-card';
+import { useResendVerificationEmailMutation, useVerifyEmailMutation } from '@/redux/services/auth/auth.api-slice';
+import useCreateSearchQuery from '@/lib/hooks/useCreateSearchQuery';
 
 const verificationSchema = z.object({
   verificationCode: z
@@ -26,8 +28,17 @@ const verificationSchema = z.object({
 type VerificationFormData = z.infer<typeof verificationSchema>;
 
 export const VerificationTemplate = () => {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const { push } = useRouter();
+
+  const { searchParams } = useCreateSearchQuery();
+  const email = searchParams.get("email");
+
+  // Verify API mutation
+  const [verifyEmail, { isLoading: isVerifyingEmail }] = useVerifyEmailMutation()
+
+  // Resend Verification Email API mutation
+  const [resendVerificationEmail, { isLoading }] = useResendVerificationEmailMutation()
+
   const [canResend, setCanResend] = useState(false);
 
   // Countdown starting from 90 seconds (1:30)
@@ -65,29 +76,39 @@ export const VerificationTemplate = () => {
     },
   });
 
-  const handleVerification = async (data: VerificationFormData) => {
-    setIsLoading(true);
-    try {
-      // TODO: Implement verification API call
-      // For now, simulate success
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      toast.success('Email verified successfully!');
-      router.push(AUTH_ROUTES.signIn);
-    } catch (error) {
-      toast.error('Invalid verification code. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+  const handleVerification = (data: VerificationFormData) => {
+    verifyEmail({ token: data?.verificationCode })
+      .unwrap()
+      .then(() => {
+        toast.success('Email verified successfully!');
+        push(AUTH_ROUTES.signIn);
+      })
+      .catch((error) => {
+        toast.error(error?.message ?? 'Error verifying email. Please try again.');
+      })
   };
 
-  const handleResendCode = async () => {
-    try {
-      // TODO: Implement resend verification code API call
-      toast.success('Verification code sent to your email!');
-    } catch (error) {
-      toast.error('Failed to resend code. Please try again.');
-    }
+  const handleResend = async () => {
+    if (!canResend || isLoading) return;
+
+    resendVerificationEmail({
+      email: email ?? '',
+    })
+      .unwrap()
+      .then(() => {
+        toast.success('Email has been resent!');
+
+        // Reset countdown and disable resend button
+        setCanResend(false);
+        reset();
+        start();
+      })
+      .catch((error: any) => {
+        const errorMessage =
+          error?.data?.message || 'Failed to resend code. Please try again.';
+
+        toast.error(errorMessage);
+      })
   };
 
   return (
@@ -108,7 +129,7 @@ export const VerificationTemplate = () => {
             placeholder='Enter 6-digit code'
           />
 
-          <SubmitButton disabled={isLoading} loading={isLoading}>
+          <SubmitButton disabled={isVerifyingEmail} loading={isVerifyingEmail}>
             Verify Email
           </SubmitButton>
 
@@ -120,7 +141,7 @@ export const VerificationTemplate = () => {
             <If isTrue={canResend ? true : false}>
               <Button
                 variant='ghost'
-                onClick={handleResendCode}
+                onClick={handleResend}
                 className='text-primary hover:text-primary/80'
               >
                 {isLoading ? 'Resending...' : 'Resend Code'}

@@ -151,7 +151,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
       ResetPasswordRequest
     >({
       query: (data) => ({
-        url: '/vendor/reset-password',
+        url: '/auth/reset-password',
         method: 'POST',
         body: data,
       }),
@@ -172,7 +172,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
       ForgotPasswordRequest
     >({
       query: (data) => ({
-        url: '/forgot-password',
+        url: '/auth/forgot-password',
         method: 'POST',
         body: {
           email: data.email || data.businessEmail,
@@ -186,7 +186,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
       ResetPasswordRequest
     >({
       query: (data) => ({
-        url: '/reset-password',
+        url: '/auth/reset-password',
         method: 'POST',
         body: data,
       }),
@@ -198,7 +198,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
       ChangePasswordRequest
     >({
       query: (data) => ({
-        url: '/change-password',
+        url: '/auth/change-password',
         method: 'POST',
         body: data,
       }),
@@ -208,7 +208,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
     // Verify Email
     verifyEmail: builder.mutation<{ message: string }, VerifyEmailRequest>({
       query: ({ token }) => ({
-        url: `/verify-email?token=${token}`,
+        url: `/auth/verify-email?token=${token}`,
         method: 'POST',
       }),
       invalidatesTags: ['Auth', 'Profile'],
@@ -220,7 +220,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
       { email: string }
     >({
       query: (data) => ({
-        url: '/resend-verification',
+        url: '/auth/resend-verification',
         method: 'POST',
         body: data,
       }),
@@ -229,7 +229,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
     // Refresh Token
     refreshToken: builder.mutation<LoginResponse, RefreshTokenRequest>({
       query: (data) => ({
-        url: '/refresh-token',
+        url: '/auth/refresh',
         method: 'POST',
         body: data,
       }),
@@ -263,7 +263,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
       FormData
     >({
       query: (formData) => ({
-        url: '/profile/upload-image',
+        url: '/uploads/profile',
         method: 'POST',
         body: formData,
       }),
@@ -273,7 +273,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
     // Delete Account
     deleteAccount: builder.mutation<{ message: string }, { password: string }>({
       query: (data) => ({
-        url: '/delete-account',
+        url: '/auth/delete-account',
         method: 'DELETE',
         body: data,
       }),
@@ -282,7 +282,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
 
     // Check Email Availability
     checkEmailAvailability: builder.query<{ available: boolean }, string>({
-      query: (email) => `/check-email?email=${encodeURIComponent(email)}`,
+      query: (email) => `/auth/check-email?email=${encodeURIComponent(email)}`,
     }),
 
     // Get Two-Factor Authentication Settings
@@ -296,7 +296,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
       void
     >({
       query: () => ({
-        url: '/2fa/settings',
+        url: '/auth/2fa/settings',
       }),
       providesTags: ['Profile'],
     }),
@@ -313,7 +313,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
       void
     >({
       query: () => ({
-        url: '/2fa/enable',
+        url: '/auth/2fa/enable',
         method: 'POST',
       }),
       invalidatesTags: ['Profile'],
@@ -325,7 +325,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
       { code: string }
     >({
       query: (data) => ({
-        url: '/2fa/verify-setup',
+        url: '/auth/2fa/verify-setup',
         method: 'POST',
         body: data,
       }),
@@ -338,7 +338,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
       { password: string }
     >({
       query: (data) => ({
-        url: '/2fa/disable',
+        url: '/auth/2fa/disable',
         method: 'POST',
         body: data,
       }),

@@ -154,37 +154,36 @@ export const SignupTemplate = () => {
   // Signup mutation hook
   const [register, { isLoading }] = useRegisterMutation();
 
-  const onSubmit = async (data: SignupFormData) => {
-    try {
-      // Transform data to match API expectations
-      const requestData = {
-        business_name: data.businessName,
-        business_email: data.businessEmail,
-        business_phone_number: data.businessPhoneNumber,
-        business_address: data.businessAddress,
-        personal_name: data.personalName,
-        personal_email: data.personalEmail,
-        personal_phone_number: data.phoneName,
-        national_identity_number: data.nationalIdentityNumber,
-        // bankVerificationNumber: data.bankVerificationNumber,
-        password: data.password
-      };
+  const onSubmit = (data: SignupFormData) => {
+    // Transform data to match API expectations
+    const requestData = {
+      business_name: data.businessName,
+      business_email: data.businessEmail,
+      business_phone_number: data.businessPhoneNumber,
+      business_address: data.businessAddress,
+      personal_name: data.personalName,
+      personal_email: data.personalEmail,
+      personal_phone_number: data.phoneName,
+      national_identity_number: data.nationalIdentityNumber,
+      // bankVerificationNumber: data.bankVerificationNumber,
+      password: data.password
+    };
 
-      const response = await register(requestData).unwrap();
-
-      if (response) {
+    register(requestData)
+      .unwrap()
+      .then(() => {
         // Store email for verification step if needed
         // dispatch(setEmail(data.businessEmail));
 
         toast.success('Account created successfully! Please check your email for verification.');
         push(AUTH_ROUTES.awaitingVerification);
-      }
-    } catch (error: any) {
-      const errorMessage =
-        error?.data?.message || 'Failed to create account. Please try again.';
-      toast.error(errorMessage);
-    }
-  };
+      })
+      .catch((error: any) => {
+        const errorMessage =
+          error?.data?.message || 'Failed to create account. Please try again.';
+        toast.error(errorMessage);
+      })
+  }
 
   const renderStep = () => {
     switch (currentStep) {
