@@ -17,7 +17,7 @@ import { AuthInput } from '../atoms/auth-input';
 import { PasswordInput } from '../atoms/password-input';
 import { AuthLink } from '../atoms/auth-link';
 import arrowRight from '@/public/assets/svg/arrow-right.svg';
-import { SubmitButton } from '@/patterns/common/molecules/submit-button';
+import { SubmitButton } from '@/pattern/common/molecules/submit-button';
 
 
 export const SignInTemplate = () => {

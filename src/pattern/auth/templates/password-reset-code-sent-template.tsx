@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useCountdown } from '@/lib/hooks/useCountdown';
 import { useForgotPasswordMutation } from '@/redux/services/auth/auth.api-slice';
 import { toast } from 'sonner';
-import { If } from '@/patterns/common/atoms/If';
+import { If } from '@/pattern/common/atoms/If';
 import useCreateSearchQuery from '@/lib/hooks/useCreateSearchQuery';
 
 export const PasswordResetCodeSentTemplate = () => {

@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertTriangleIcon } from 'lucide-react'
-import { If } from '@/patterns/common/atoms/If';
+import { If } from '@/pattern/common/atoms/If';
 import { cn } from '@/lib/utils';
 
 export interface AuthAlertWidgetProps {

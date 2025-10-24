@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { SubmitButton } from '@/patterns/common/molecules/submit-button';
+import { SubmitButton } from '@/pattern/common/molecules/submit-button';
 import { ChevronLeft } from 'lucide-react';
 import Button from '@/components/Button';
 

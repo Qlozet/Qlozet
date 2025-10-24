@@ -14,10 +14,16 @@ export const AUTH_ROUTES = {
 
 export const APP_ROUTES = {
   home: '/',
+  customers: '/customers',
   dashboard: '/dashboard',
+  orders: '/orders',
   products: '/products',
   productsCloth: '/products/cloths',
   productsFabrics: '/products/fabrics',
+  wallet: '/wallet',
+  users: '/users',
+  settings: '/settings',
+  support: '/support',
   add: '/add',
   details: '/details',
   cookiePolicy: '/cookie-policy',

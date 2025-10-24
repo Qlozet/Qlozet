@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { CustomersPageTemplate } from '@/patterns/customers/templates/customers-page-template';
+import { CustomersPageTemplate } from '@/pattern/customers/templates/customers-page-template';
 
 const Customer: React.FC = () => {
   const handleCreateCustomer = () => {

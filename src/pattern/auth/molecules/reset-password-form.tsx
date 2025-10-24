@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { Form } from '@/components/ui/form';
 import { PasswordInput } from '../atoms/password-input';
 import { cn } from '@/lib/utils';
-import { SubmitButton } from '@/patterns/common/molecules/submit-button';
+import { SubmitButton } from '@/pattern/common/molecules/submit-button';
 import { PasswordStrength } from '../organisms/password-strength';
 
 const resetPasswordSchema = z

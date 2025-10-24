@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { Form } from '@/components/ui/form';
 import { AuthInput } from '../atoms/auth-input';
 import { cn } from '@/lib/utils';
-import { SubmitButton } from '@/patterns/common/molecules/submit-button';
+import { SubmitButton } from '@/pattern/common/molecules/submit-button';
 import { useForgotPasswordMutation } from '@/redux/services/auth/auth.api-slice';
 import { toast } from 'sonner';
 import { AUTH_ROUTES } from '@/lib/routes';
@@ -45,7 +45,7 @@ export const ForgotPasswordForm = () => {
       .then((response) => {
 
         toast.success(response.message);
-        
+
         createSearchParams({
           url: AUTH_ROUTES.passwordResetCodeSent,
           param: [

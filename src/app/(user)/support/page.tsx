@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { SupportTemplate } from '@/patterns/support/templates/support-template';
+import { SupportTemplate } from '@/pattern/support/templates/support-template';
 import { useSubmitSupportTicketMutation } from '@/redux/services/support/support.api-slice';
 import { type SupportData } from '@/lib/validations/support';
 import { toast } from 'sonner';

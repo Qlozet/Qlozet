@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import AwaitingVerificationTemplate from '@/patterns/auth/templates/awaiting-verification-template';
+import AwaitingVerificationTemplate from '@/pattern/auth/templates/awaiting-verification-template';
 
 const Verification: React.FC = () => {
     return (

@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { FormSectionHeader } from '@/patterns/settings/atoms/form-section-header';
+import { FormSectionHeader } from '@/pattern/settings/atoms/form-section-header';
 
 interface SupportFormProps {
   onSubmit: (data: SupportData) => void;

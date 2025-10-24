@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { Button, ButtonProps } from "@/components/ui/button";
-import { If } from "@/patterns/common/atoms/If";
+import { If } from "@/pattern/common/atoms/If";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 

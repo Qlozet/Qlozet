@@ -6,7 +6,7 @@ import Logo from '@/components/Logo';
 import signupImage from '@/public/assets/image/Auth-image.png';
 import AuthMobileOverlayImg from '@/public/assets/image/auth-mobile-overlay-img.png';
 import { AuthAlertWidget, AuthAlertWidgetProps } from '../molecules/auth-alert-widget';
-import { If } from '@/patterns/common/atoms/If';
+import { If } from '@/pattern/common/atoms/If';
 
 interface AuthLayoutProps extends AuthAlertWidgetProps {
   children: React.ReactNode;

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { SettingsTemplate } from '@/patterns/settings/templates/settings-template';
+import { SettingsTemplate } from '@/pattern/settings/templates/settings-template';
 import { useGetVendorDetailsQuery } from '@/redux/services/settings/settings.api-slice';
 import Loader from '@/components/Loader';
 import { toast } from 'sonner';

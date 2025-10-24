@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { ProductsPageTemplate } from '@/patterns/products/templates/products-page-template';
+import { ProductsPageTemplate } from '@/pattern/products/templates/products-page-template';
 import { useRouter } from 'next/navigation';
 import { clearProductId } from '@/lib/utils';
 

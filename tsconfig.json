@@ -26,12 +26,18 @@
       "@/types/*": ["./src/types/*"],
       "@/api/*": ["./src/api/*"],
       "@/redux/*": ["./src/redux/*"],
-      "@/patterns/*": ["./src/patterns/*"],
+      "@/patterns/*": ["src/pattern/*"],
       "@/app/*": ["./src/app/*"],
       "@/lib/*": ["./src/lib/*"],
       "@/hooks/*": ["./src/lib/hooks/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "next.config.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "next.config.ts"
+  ],
   "exclude": ["node_modules"]
 }

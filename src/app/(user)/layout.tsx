@@ -18,7 +18,7 @@ import Modal from '@/components/Modal';
 import Logout from '@/components/Logout';
 
 import { useGetVendorProfileQuery } from '@/redux/services/vendor/vendor.api-slice';
-import { clearToken, setUserData } from '@/lib/utils';
+import { setUserData } from '@/lib/utils';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import {
   handlelogout,
@@ -26,7 +26,9 @@ import {
   reduxData,
 } from '@/redux/slices/filter-slice';
 
-import handIcon from '@/public/assets/svg/hand-tone.svg';
+import CompleteKycPopover from '@/pattern/common/organisms/complete-kyc-popover';
+import { If } from '@/pattern/common/atoms/If';
+import { Sidebar } from '@/pattern/common/templates/sidebar';
 
 interface UserDetails {
   businessName: string;
@@ -49,7 +51,6 @@ interface UserLayoutProps {
 }
 
 const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
-  const router = useRouter();
   const stateData = useAppSelector(reduxData);
   const dispatch = useAppDispatch();
   const pathname = usePathname();
@@ -71,7 +72,8 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
 
   const [showMobileNav, setShowMobileNav] = useState<boolean>(false);
   const [showKycPopUp, setShowKycPopUp] = useState<boolean>(true);
-  
+
+  // Get Vendor Profile Data
   const {
     data: vendorProfileData,
     error: vendorProfileError,
@@ -80,16 +82,16 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
 
   useEffect(() => {
     if (vendorProfileData?.data) {
-      const apiData = vendorProfileData.data;
+      const apiData = vendorProfileData?.data;
       const details: UserDetails = {
-        businessName: apiData.businessName || '',
-        personalName: apiData.personalName || '',
-        profileImage: apiData.profileImage || '',
-        profilePic: apiData.profilePic || '',
-        averageRating: apiData.averageRating || '',
-        profit: apiData.profit || '',
-        items: apiData.items || '',
-        ratings: apiData.ratings || '',
+        businessName: apiData?.businessName ?? '',
+        personalName: apiData?.personalName ?? '',
+        profileImage: apiData?.profileImage ?? '',
+        profilePic: apiData?.profilePic ?? '',
+        averageRating: apiData?.averageRating ?? '',
+        profit: apiData?.profit ?? '',
+        items: apiData?.items ?? '',
+        ratings: apiData?.ratings ?? '',
       };
 
       setUserDetails(details);
@@ -98,17 +100,17 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
     }
   }, [vendorProfileData]);
 
-  useEffect(() => {
-    if (vendorProfileError) {
-      console.error('Error getting vendor details:', vendorProfileError);
-      setLoadingState({
-        isLoading: false,
-        error: 'Failed to load vendor details',
-      });
-      clearToken();
-      router.push('/auth/sign-in');
-    }
-  }, [vendorProfileError, router]);
+  // useEffect(() => {
+  //   if (vendorProfileError) {
+  //     console.error('Error getting vendor details:', vendorProfileError);
+  //     setLoadingState({
+  //       isLoading: false,
+  //       error: 'Failed to load vendor details',
+  //     });
+  //     clearToken();
+  //     router.push('/auth/sign-in');
+  //   }
+  // }, [vendorProfileError, router]);
 
   useEffect(() => {
     setLoadingState((prev) => ({ ...prev, isLoading: vendorProfileLoading }));
@@ -179,17 +181,18 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className='min-h-screen bg-gray-100'>
+    <div className='relative bg-accent w-full flex h-screen'>
       {/* Sidebar Components */}
-      <SideBar active={currentPage} />
-      <MobileSideBar
+      <Sidebar />
+
+      {/* <MobileSideBar
         showMobileNav={showMobileNav}
         active={currentPage}
         closeSideBar={closeMobileSidebar}
-      />
+      /> */}
 
       {/* Main Content Area */}
-      <div className='lg:ml-[280px]'>
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Sticky Navigation Header */}
         <header className='sticky top-0 z-[950] p-4 bg-white lg:bg-gray-100 border-b border-gray-200 lg:border-none'>
           <DasboardNavWithOutSearch
@@ -203,7 +206,7 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
         </header>
 
         {/* Page Content */}
-        <main className='max-w-[1200px] p-4 lg:p-6'>{children}</main>
+        <main className="w-full flex-1 overflow-auto p-6">{children}</main>
       </div>
 
       {/* Logout Modal */}
@@ -218,46 +221,9 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
       />
 
       {/* KYC Completion Popup */}
-      {showKycPopUp && (
-        <div
-          className='fixed bottom-4 left-4 z-[10000] bg-orange-50 border border-orange-200 rounded-xl p-4 shadow-lg max-w-sm'
-          role='alert'
-          aria-live='polite'
-        >
-          <div className='flex items-start gap-3'>
-            <button
-              className='flex-shrink-0 w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center'
-              aria-label='KYC notification icon'
-            >
-              <Image
-                src={handIcon}
-                alt='Hand wave'
-                width={16}
-                height={16}
-                className='object-contain'
-              />
-            </button>
-
-            <div className='flex-1 min-w-0'>
-              <h4 className='font-medium text-gray-900 text-sm mb-1'>
-                Almost done!
-              </h4>
-              <p className='text-xs text-gray-600 leading-relaxed'>
-                Complete KYC registration of your business profile to start
-                work.
-              </p>
-            </div>
-
-            <button
-              className='flex-shrink-0 w-6 h-6 bg-orange-100 rounded-md flex items-center justify-center hover:bg-orange-200 transition-colors'
-              onClick={() => setShowKycPopUp(false)}
-              aria-label='Close KYC notification'
-            >
-              <X size={12} className='text-gray-500' />
-            </button>
-          </div>
-        </div>
-      )}
+      <If isTrue={showKycPopUp}>
+        <CompleteKycPopover setShowKycPopUp={setShowKycPopUp} />
+      </If>
     </div>
   );
 };
