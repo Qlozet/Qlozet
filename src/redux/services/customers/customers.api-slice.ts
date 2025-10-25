@@ -138,6 +138,7 @@ export const customersApiSlice = baseAPI.injectEndpoints({
       query: () => ({
         url: '/vendor/customers/stats',
         method: 'GET',
+        overrideExisting: true,
       }),
       providesTags: ['CustomerStats'],
     }),
@@ -147,6 +148,7 @@ export const customersApiSlice = baseAPI.injectEndpoints({
       query: () => ({
         url: '/vendor/customers/total-customers-sold-to',
         method: 'GET',
+        overrideExisting: true,
       }),
       providesTags: ['CustomerStats'],
     }),

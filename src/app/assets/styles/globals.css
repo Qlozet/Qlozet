@@ -40,7 +40,7 @@
   --chart-3: hsla(197, 37%, 24%);
   --chart-4: hsla(43, 74%, 66%);
   --chart-5: hsla(27, 87%, 67%);
-  --sidebar: hsl(0, 0%, 100%);
+  --sidebar: hsla(0, 0%, 100%, 1);
   --sidebar-foreground: hsla(210, 9%, 31%, 1);
   --sidebar-primary: hsl(0, 0%, 9%);
   --sidebar-primary-foreground: hsl(0, 0%, 98%);

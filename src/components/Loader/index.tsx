@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import { BallTriangle } from 'react-loader-spinner';
 
 interface LoaderProps {
@@ -7,12 +7,11 @@ interface LoaderProps {
   width?: number;
 }
 
-const Loader: React.FC<LoaderProps> = ({ small, height, width }) => {
+const Loader: FC<LoaderProps> = ({ small = false, height, width }) => {
   return (
     <div
-      className={`${
-        small ? 'bg-[#DDE2E5]' : 'h-screen w-full bg-[#F8F9FA]'
-      }  flex items-center justify-center max-w-[1324px] m-auto h-screen`}
+      className={`${small ? 'bg-[#DDE2E5]' : 'h-screen w-full bg-[#F8F9FA]'
+        }  flex items-center justify-center max-w-[1324px] m-auto h-screen`}
     >
       <BallTriangle
         height={height ? height : 100}

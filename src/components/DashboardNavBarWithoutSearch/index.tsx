@@ -123,7 +123,8 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
             </div>
           )}
         </div>
-        <div className='hidden lg:flex items-center justify-between bg-white py-2 px-6 rounded-[12px]'>
+        
+        <div className='hidden lg:w-full lg:flex items-center justify-between bg-white py-2 px-6 rounded-[12px]'>
           <div className='hidden md:block'>
             <Typography
               textColor='text-dark'

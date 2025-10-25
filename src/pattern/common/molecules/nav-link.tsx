@@ -42,19 +42,21 @@ const NavLink = ({
     }, [exact, href, pathname])
 
     return (
-        <Link
-            href={href}
-            className={cn(
-                "flex items-center gap-3 px-4 py-3 text-sidebar-foreground hover:bg-gray-100 rounded-lg transition-colors text-sm font-medium",
-                (isActiveState() || isActive) && activeStyle,
-                className,
-            )}
-            onClick={handleToggle}
-            ref={innerRef}
-            {...props}
-        >
-            {children}
-        </Link>
+        <>
+            <Link
+                href={href}
+                className={cn(
+                    "flex items-center gap-3 px-4 py-3 text-sidebar-foreground hover:bg-gray-100 rounded-lg transition-colors text-sm font-medium",
+                    (isActiveState() || isActive) && activeStyle,
+                    className,
+                )}
+                onClick={handleToggle}
+                ref={innerRef}
+                {...props}
+            >
+                {children}
+            </Link>
+        </>
     )
 }
 

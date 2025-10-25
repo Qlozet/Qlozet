@@ -149,16 +149,16 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
     };
   }, [pathname]);
 
-  if (loadingState.isLoading) {
-    return (
-      <div className='min-h-screen bg-gray-100 flex items-center justify-center'>
-        <div className='text-center'>
-          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4'></div>
-          <p className='text-gray-600'>Loading your dashboard...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (loadingState.isLoading) {
+  //   return (
+  //     <div className='min-h-screen bg-gray-100 flex items-center justify-center'>
+  //       <div className='text-center'>
+  //         <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4'></div>
+  //         <p className='text-gray-600'>Loading your dashboard...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   if (loadingState.error) {
     return (
@@ -194,7 +194,7 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Sticky Navigation Header */}
-        <header className='sticky top-0 z-[950] p-4 bg-white lg:bg-gray-100 border-b border-gray-200 lg:border-none'>
+        <header className='sticky top-0 bg-sidebar w-full z-[950] p-4 border-b border-gray-200 lg:border-none'>
           <DasboardNavWithOutSearch
             userDetails={userDetails}
             value={stateData.state}
