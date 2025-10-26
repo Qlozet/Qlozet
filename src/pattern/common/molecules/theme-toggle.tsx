@@ -37,7 +37,7 @@ export const ThemeToggle = () => {
                 className="w-full flex items-center gap-3 px-4 py-3 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-lg cursor-pointer transition-colors"
             >
                 {isDarkMode ? <Sun className="w-5 h-5" /> : <DarkModeIcon className="w-5 h-5" />}
-                <span className="text-sm font-medium">{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
+                <span className="text-sm font-normal">{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
             </button>
         </>
     )

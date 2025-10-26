@@ -8,7 +8,7 @@ const LogoutBtn = () => {
         <>
             <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors">
                 <LogoutIcon className="w-5 h-5" />
-                <span className="text-sm font-medium">Logout</span>
+                <span className="text-sm font-normal">Logout</span>
             </button>
         </>
     )

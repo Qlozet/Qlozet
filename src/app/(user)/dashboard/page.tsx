@@ -10,7 +10,7 @@ const DashboardPage = () => {
   return (
     <>
       <Suspense fallback={<LoadingWidget />}>
-        <div className="w-full h-fit space-y-6">
+        <div className="w-full min-h-screen h-fit space-y-6">
           <StatsCards />
           <ChartsSection />
         </div>

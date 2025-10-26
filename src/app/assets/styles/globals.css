@@ -195,6 +195,9 @@
 @utility text-balance {
   text-wrap: balance;
 }
+/* @utility side-bar-shadow {
+  hsla(240, 13%, 72%, 0.15)
+} */
 
 /* Hide number input spin buttons */
 input[type='number']::-webkit-inner-spin-button,

@@ -54,7 +54,7 @@ export const Sidebar = () => {
                                 (
                                     <Accordion key={idx} type="single" collapsible>
                                         <AccordionItem value="item-1" className="border-none">
-                                            <AccordionTrigger className="flex items-center justify-start gap-3 px-4 py-3 text-sidebar-foreground hover:bg-gray-100 rounded-lg transition-colors text-sm font-medium data-[state=open]:text-primary hover:no-underline cursor-pointer border-none outline-none shadow-none">
+                                            <AccordionTrigger className="flex items-center justify-start gap-3 px-4 py-3 text-sidebar-foreground hover:bg-gray-100 rounded-lg transition-colors text-sm font-normal data-[state=open]:text-primary hover:no-underline cursor-pointer border-none outline-none shadow-none">
                                                <span> <item.icon className="w-5 h-5" /></span>
                                                 <span>{item.label}</span>
                                             </AccordionTrigger>

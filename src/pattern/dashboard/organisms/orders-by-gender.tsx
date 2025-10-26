@@ -1,16 +1,42 @@
 "use client"
 
+import { JSX } from "react";
 import { useGetTotalCustomersQuery } from "@/redux/services/customers/customers.api-slice"
 import { useGetGenderByOrderQuery } from "@/redux/services/dashboard/dashboard.api-slice"
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer, Tooltip } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CustomChartTooltip } from "../molecules/custom-chart-tooltip";
 import { ChartSkeleton } from "../molecules/chart-skeleton"
+import ChartLegendIcon from "../atoms/chart-legend-icon";
 
 const data = [
     { name: "Male", value: 65 },
     { name: "Female", value: 35 },
 ]
+
+const renderLegend = (props: any): JSX.Element => {
+    const payload = props?.payload ?? [];
+
+    return (
+        <ul className="w-full h-fit flex items-center justify-center gap-8 p-0 pt-[20px] pb-[1px] m-0 text-center text-xs capitalize">
+            {
+                payload.map((entry: any, index: number) => {
+                    const { color } = entry;
+                    return (
+                        <li key={`item-${index}`} className="flex items-center gap-x-2">
+                            <span>
+                                <ChartLegendIcon color={color ?? "#000"} />
+                            </span>
+                            <span className="text-black dark:text-white">
+                                {entry.value}
+                            </span>
+                        </li>
+                    )
+                })
+            }
+        </ul>
+    );
+}
 
 const COLORS = ["#3d2817", "#d4c5b9"]
 
@@ -43,10 +69,10 @@ export const OrdersByGender = () => {
                         </Pie>
                         <Tooltip content={<CustomChartTooltip />} cursor={false} />
                         <Legend
-                            wrapperStyle={{ paddingTop: "20px", textTransform: "capitalize", fontSize: 12, color: '#000' }}
                             align='center'
                             iconType="circle"
                             iconSize={9}
+                            content={renderLegend}
                         />
                     </PieChart>
                 </ResponsiveContainer>

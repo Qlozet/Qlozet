@@ -34,12 +34,12 @@ export const OrderCountChart = () => {
             <CardHeader>
                 <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">Order Count</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className='w-full'>
                 <ResponsiveContainer width="100%" height={350}>
-                    <BarChart 
-                    data={chartData}
-                    barGap={23}
-                    margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                    <BarChart
+                        data={chartData}
+                        barGap={2}
+                        margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="0" vertical={false} stroke="#e5e7eb" />
                         <XAxis
                             dataKey="day"

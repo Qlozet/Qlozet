@@ -33,7 +33,7 @@ export const EarningsChart = () => {
             <CardHeader>
                 <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">Earnings</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className='w-full'>
                 <ResponsiveContainer width="100%" height={350}>
                     <BarChart 
                     data={chartData}

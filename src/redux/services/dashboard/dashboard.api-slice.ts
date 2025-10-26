@@ -56,17 +56,6 @@ interface EarningsResponse {
 // API Slice
 export const dashboardApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
-    // Get total customers count
-    getTotalCustomers: builder.query<ApiResponse<{ totalCount: number }>, void>(
-      {
-        query: () => ({
-          url: '/vendor/customers/total-customers-sold-to',
-          method: 'GET',
-        }),
-        providesTags: ['DashboardMetrics'],
-      }
-    ),
-
     // Get all orders
     getOrders: builder.query<
       ApiResponse<{
@@ -151,7 +140,6 @@ export const dashboardApiSlice = baseAPI.injectEndpoints({
 
 // Export hooks
 export const {
-  useGetTotalCustomersQuery,
   useGetOrdersQuery,
   useGetTotalEarningsQuery,
   useGetGenderByOrderQuery,
