@@ -54,7 +54,7 @@ export const StatsCards = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map((stat, idx) => (
-        <Card key={stat.title} className="h-[120px] p-3 2xl:p-5">
+        <Card key={stat.title} className="h-[120px] p-3 2xl:p-5 rounded-[12px] custom-card-shadow">
           <CardContent className="h-full p-0">
             <div className="flex items-start justify-start gap-x-4">
               {/* Icon */}

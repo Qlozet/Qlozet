@@ -46,7 +46,7 @@ const NavLink = ({
             <Link
                 href={href}
                 className={cn(
-                    "flex items-center gap-3 px-4 py-3 text-sidebar-foreground hover:bg-gray-100 rounded-lg transition-colors text-sm font-normal",
+                    "w-fit 2xl:w-full flex items-center gap-3 px-2 2xl:px-4 py-2 2xl:py-3 text-sidebar-foreground hover:bg-gray-100 rounded-lg transition-colors text-sm font-normal transition-all duration-300",
                     (isActiveState() || isActive) && activeStyle,
                     className,
                 )}

@@ -34,7 +34,7 @@ const orders = [
 
 export const RecentOrders = () => {
     return (
-        <Card className="w-full h-[443px] overflow-y-auto">
+        <Card className="w-full h-[443px] overflow-y-auto rounded-[12px] custom-card-shadow">
             <CardHeader className="flex flex-row items-center justify-between pb-4">
                 <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] m-0">
                     Recent orders

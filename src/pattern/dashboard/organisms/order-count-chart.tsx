@@ -30,7 +30,7 @@ export const OrderCountChart = () => {
     }
 
     return (
-        <Card className="w-full max-h-[450px]">
+        <Card className="w-full max-h-[450px] rounded-[12px] custom-card-shadow">
             <CardHeader>
                 <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">Order Count</CardTitle>
             </CardHeader>

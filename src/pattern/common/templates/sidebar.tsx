@@ -18,6 +18,10 @@ import { ProductsFabricsNavIcon } from "../atoms/nav-icons/products-fabrics-nav-
 import { ProductsCollectionsNavIcon } from "../atoms/nav-icons/products-collections-nav-icon"
 import { ProductsVideosNavIcon } from "../atoms/nav-icons/products-videos-nav-icon"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { useScreenSize } from "@/lib/hooks/useScreenSize"
+import { If } from "../atoms/If"
+import { ThemeToggleSwitch } from "../molecules/theme-toggle-switch"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 export const Sidebar = () => {
     const menuItems = [
@@ -38,55 +42,66 @@ export const Sidebar = () => {
         { icon: SupportNavIcon, label: "Support", href: APP_ROUTES.support },
     ]
 
+    const screenSize = useScreenSize();
+    console.log("SCREEN SIZE: ", screenSize.toString() ?? "");
+
     return (
-        <div className="invisible hidden lg:block lg:visible lg:w-[260px] lg:h-screen lg:pl-6 lg:py-6 lg:pr-1 lg:overflow-y-auto">
-            <div className="bg-sidebar flex flex-col gap-y-10 py-6 pl-[14px] pr-3 rounded-xl">
-                {/* Logo */}
-                <div className="pl-4">
-                    <BrandLogo />
-                </div>
+        <div className="invisible hidden lg:block lg:visible lg:w-fit 2xl:w-[260px] lg:h-screen lg:pl-6 lg:py-6 lg:pr-1 transition-all duration-300">
+            <ScrollArea className="flex-1 w-full h-full flex justify-center [&>div>div]:w-full">
+                <div className="lg:w-[78px] xl:w-full bg-sidebar flex flex-col gap-y-10 py-6 pl-[14px] pr-3 rounded-xl transition-all duration-300">
+                    {/* Logo */}
+                    <div className="2xl:pl-4">
+                        <BrandLogo />
+                    </div>
 
-                <div className="h-full flex flex-col justify-between gap-y-9">
-                    {/* Menu Items */}
-                    <nav className="flex-1 space-y-2">
-                        {menuItems.map((item, idx) => {
-                            return item.subItems ?
-                                (
-                                    <Accordion key={idx} type="single" collapsible>
-                                        <AccordionItem value="item-1" className="border-none">
-                                            <AccordionTrigger className="flex items-center justify-start gap-3 px-4 py-3 text-sidebar-foreground hover:bg-gray-100 rounded-lg transition-colors text-sm font-normal data-[state=open]:text-primary hover:no-underline cursor-pointer border-none outline-none shadow-none">
-                                               <span> <item.icon className="w-5 h-5" /></span>
-                                                <span>{item.label}</span>
-                                            </AccordionTrigger>
-                                            <AccordionContent className="pl-[30px] pb-0">
-                                                {item.subItems?.map((subItem) => (
-                                                    <NavLink key={subItem.label} href={subItem.href}>
-                                                        <subItem.icon className="w-5 h-5" />
-                                                        <span>{subItem.label}</span>
-                                                    </NavLink>
-                                                ))}
-                                            </AccordionContent>
-                                        </AccordionItem>
-                                    </Accordion>
-                                )
-                                : (
-                                    <NavLink key={item.label} href={item.href}>
-                                        <item.icon className="w-5 h-5" />
-                                        <span>{item.label}</span>
-                                    </NavLink>
-                                )
-                        })}
-                    </nav>
+                    <div className="h-full flex flex-col justify-between items-center gap-y-9">
+                        {/* Menu Items */}
+                        <nav className="w-[47px] 2xl:w-full flex-1 space-y-2">
+                            {menuItems.map((item, idx) => {
+                                return item.subItems ?
+                                    (
+                                        <Accordion key={idx} type="single" collapsible>
+                                            <AccordionItem value="item-1" className="border-none">
+                                                <AccordionTrigger className="flex items-center justify-center 2xl:justify-start gap-x-0 2xl:gap-x-3 px-2 2xl:px-4 py-2 2xl:py-3 text-sidebar-foreground hover:bg-gray-100 rounded-lg transition-colors text-sm font-normal data-[state=open]:text-primary hover:no-underline cursor-pointer border-none outline-none shadow-none transition-all duration-300">
+                                                    <span> <item.icon className="w-5 h-5" /></span>
+                                                    <span className="invisible hidden 2xl:visible 2xl:inline-block">{item.label}</span>
+                                                </AccordionTrigger>
+                                                <AccordionContent className="pl-2 2xl:pl-[30px] pb-0">
+                                                    {item.subItems?.map((subItem) => (
+                                                        <NavLink key={subItem.label} href={subItem.href}>
+                                                            <subItem.icon className="w-5 h-5 " />
+                                                            <span className="invisible hidden 2xl:visible 2xl:inline-block">{subItem.label}</span>
+                                                        </NavLink>
+                                                    ))}
+                                                </AccordionContent>
+                                            </AccordionItem>
+                                        </Accordion>
+                                    )
+                                    : (
+                                        <NavLink key={item.label} href={item.href}>
+                                            <item.icon className="w-5 h-5" />
+                                            <span className="invisible hidden 2xl:visible 2xl:inline-block">{item.label}</span>
+                                        </NavLink>
+                                    )
+                            })}
+                        </nav>
 
-                    {/* Bottom Section */}
-                    <div className="space-y-2">
-                        <ThemeToggle />
+                        {/* Bottom Section */}
+                        <div className="w-[47px] 2xl:w-full flex flex-col items-center gap-y-2">
+                            <If isTrue={screenSize.gt("xl")}>
+                                <ThemeToggle />
+                            </If>
+                            <If isTrue={screenSize.lt("2xl") && screenSize.gte("xl")}>
+                                <ThemeToggleSwitch />
+                            </If>
 
-                        {/* Log out */}
-                        <LogoutBtn />
+                            {/* Log out */}
+                            <LogoutBtn />
+                        </div>
                     </div>
                 </div>
-            </div>
+                <ScrollBar orientation="vertical" />
+            </ScrollArea>
         </div>
     )
 }
