@@ -61,11 +61,17 @@ export interface UpdateProductRequest extends Partial<CreateProductRequest> {
 }
 
 export interface ProductsResponse {
-  products: Product[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
+  products?: Product[];
+  data?: Product[]; // Some APIs return data instead of products
+  total?: number;
+  totalCount?: number; // Some APIs use totalCount
+  page?: number;
+  currentPage?: number; // Some APIs use currentPage
+  limit?: number;
+  pageSize?: number; // Some APIs use pageSize
+  totalPages?: number;
+  success?: boolean;
+  message?: string;
 }
 
 export interface ProductsFilters {

@@ -290,6 +290,19 @@ export const getRandomHexColor = (): string => {
   return `#${randomColor.padStart(6, '0')}`;
 };
 
+// Currency formatting utility
+export const formatCurrency = (
+  amount: number,
+  currency: string = 'NGN'
+): string => {
+  return new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(amount);
+};
+
 // From src/utils/filteringExistingItem.ts
 export function filterExcludedItems<T>(
   items: T[],
