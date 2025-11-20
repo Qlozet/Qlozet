@@ -181,20 +181,20 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className='relative bg-accent w-full flex h-screen'>
+    <div className='relative bg-background w-full flex h-screen'>
       {/* Sidebar Components */}
       <Sidebar />
 
-      {/* <MobileSideBar
+      <MobileSideBar
         showMobileNav={showMobileNav}
         active={currentPage}
         closeSideBar={closeMobileSidebar}
-      /> */}
+      />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Sticky Navigation Header */}
-        <header className='sticky top-0 bg-sidebar w-full z-[950] p-4 border-b border-gray-200 lg:border-none'>
+        <header className='sticky top-0 bg-background w-full px-8 pt-6'>
           <DasboardNavWithOutSearch
             userDetails={userDetails}
             value={stateData.state}
@@ -206,19 +206,8 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
         </header>
 
         {/* Page Content */}
-        <main className="w-full flex-1 overflow-auto p-6">{children}</main>
+        <main className="w-full overflow-auto pt-6 pl-8 pr-4 2xl:pr-8">{children}</main>
       </div>
-
-      {/* Logout Modal */}
-      <Modal
-        show={stateData.logout}
-        closeModal={handleLogoutAction}
-        content={
-          <div className='flex items-center justify-center h-full p-4'>
-            <Logout logoutFunction={handleLogoutAction} />
-          </div>
-        }
-      />
 
       {/* KYC Completion Popup */}
       <If isTrue={showKycPopUp}>

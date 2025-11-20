@@ -55,7 +55,7 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
     defaultValues: {
       search: '',
       status: 'all',
-      category: '',
+      category: 'all',
       tag: 'all',
       sortBy: 'createdAt',
       sortOrder: 'desc',
@@ -73,7 +73,7 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
     form.reset({
       search: '',
       status: 'all',
-      category: '',
+      category: 'all',
       tag: 'all',
       sortBy: 'createdAt',
       sortOrder: 'desc',
@@ -86,7 +86,7 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
   const hasActiveFilters =
     form.watch('search') ||
     form.watch('status') !== 'all' ||
-    form.watch('category') ||
+    (form.watch('category') && form.watch('category') !== 'all') ||
     form.watch('tag') !== 'all';
 
   return (
@@ -159,7 +159,7 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value=''>All Categories</SelectItem>
+                    <SelectItem value='all'>All Categories</SelectItem>
                     {categories.map((category) => (
                       <SelectItem key={category._id} value={category._id}>
                         {category.name}

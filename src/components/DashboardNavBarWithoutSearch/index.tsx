@@ -13,6 +13,7 @@ import clockwise from '@/public/assets/svg/arrow.clockwise.svg';
 import userIcon from '@/public/assets/svg/user-octagon.svg';
 import menuIcon from '@/public/assets/svg/menu-icon.svg';
 import mobileProfile from '@/public/assets/svg/mobile-oct-icon.svg';
+import { cn } from '@/lib/utils';
 
 interface UserDetails {
   personalName?: string;
@@ -22,8 +23,6 @@ interface UserDetails {
 interface DashboardNavWithOutSearchProps {
   name?: string;
   addSearch?: boolean;
-  setValue?: (value: string) => void;
-  value?: string;
   showSideBar: () => void;
   hideNav?: boolean;
   userDetails?: UserDetails;
@@ -65,16 +64,18 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
   return (
     <div className=''>
       <div
-        className={`${
-          !hideNav ? ' ' : 'pt-2'
-        } rounded-[15px] max-w-[1200px] lg:m-0 shadow-[0px_4px_10px_#AEAEC026]`}
+        className={cn(
+          !hideNav ? ' ' : 'pt-2', "rounded-2xl lg:m-0 shadow-[0px_4px_10px_#AEAEC026]"
+        )}
       >
+        {/* Mobile navigation */}
         <div className='block lg:hidden'>
           <div className='items-center justify-between px-3 py-3 bg-gray-400 rounded-[12px] hidden'>
             <Image src={transformText} alt='Text format' />
             <Image src={altireicon} alt='Altire icon' />
             <Image src={clockwise} alt='Clockwise icon' />
           </div>
+          {/* Mobile Navigation End */}
           {!hideNav && (
             <div className='flex items-center justify-between mt-0 lg:mt-0'>
               <div className='flex items-center gap-4'>
@@ -123,7 +124,7 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
             </div>
           )}
         </div>
-        
+
         <div className='hidden lg:w-full lg:flex items-center justify-between bg-white py-2 px-6 rounded-[12px]'>
           <div className='hidden md:block'>
             <Typography

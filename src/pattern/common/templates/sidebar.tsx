@@ -22,6 +22,7 @@ import { useScreenSize } from "@/lib/hooks/useScreenSize"
 import { If } from "../atoms/If"
 import { ThemeToggleSwitch } from "../molecules/theme-toggle-switch"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 export const Sidebar = () => {
     const menuItems = [
@@ -62,26 +63,40 @@ export const Sidebar = () => {
                                     (
                                         <Accordion key={idx} type="single" collapsible>
                                             <AccordionItem value="item-1" className="border-none">
-                                                <AccordionTrigger className="flex items-center justify-center 2xl:justify-start gap-x-0 2xl:gap-x-3 px-2 2xl:px-4 py-2 2xl:py-3 text-sidebar-foreground hover:bg-gray-100 rounded-lg transition-colors text-sm font-normal data-[state=open]:text-primary hover:no-underline cursor-pointer border-none outline-none shadow-none transition-all duration-300">
-                                                    <span> <item.icon className="w-5 h-5" /></span>
+                                                <AccordionTrigger className="flex items-center justify-center 2xl:justify-start gap-x-0 2xl:gap-x-3 px-2 2xl:px-4 py-2 2xl:py-3 text-sidebar-foreground hover:text-secondary transition-colors text-sm font-normal data-[state=open]:text-primary hover:no-underline cursor-pointer border-none outline-none shadow-none duration-300">
+                                                    <span> <item.icon className="w-5 h-5 transition-colors duration-75" /></span>
                                                     <span className="invisible hidden 2xl:visible 2xl:inline-block">{item.label}</span>
                                                 </AccordionTrigger>
                                                 <AccordionContent className="pl-2 2xl:pl-[30px] pb-0">
                                                     {item.subItems?.map((subItem) => (
-                                                        <NavLink key={subItem.label} href={subItem.href}>
-                                                            <subItem.icon className="w-5 h-5 " />
-                                                            <span className="invisible hidden 2xl:visible 2xl:inline-block">{subItem.label}</span>
-                                                        </NavLink>
+                                                        <Tooltip key={subItem.label}>
+                                                            <TooltipTrigger asChild>
+                                                                <NavLink href={subItem.href}>
+                                                                    <subItem.icon className="w-5 h-5 transition-colors duration-75 " />
+                                                                    <span className="invisible hidden 2xl:visible 2xl:inline-block">{subItem.label}</span>
+                                                                </NavLink>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent className="2xl:hidden 2xl:invisible">
+                                                                {subItem.label}
+                                                            </TooltipContent>
+                                                        </Tooltip>
                                                     ))}
                                                 </AccordionContent>
                                             </AccordionItem>
                                         </Accordion>
                                     )
                                     : (
-                                        <NavLink key={item.label} href={item.href}>
-                                            <item.icon className="w-5 h-5" />
-                                            <span className="invisible hidden 2xl:visible 2xl:inline-block">{item.label}</span>
-                                        </NavLink>
+                                        <Tooltip key={item.label}>
+                                            <TooltipTrigger asChild>
+                                                <NavLink href={item.href}>
+                                                    <item.icon className="w-5 h-5" />
+                                                    <span className="invisible hidden 2xl:visible 2xl:inline-block">{item.label}</span>
+                                                </NavLink>
+                                            </TooltipTrigger>
+                                            <TooltipContent className="2xl:hidden 2xl:invisible">
+                                                {item.label}
+                                            </TooltipContent>
+                                        </Tooltip>
                                     )
                             })}
                         </nav>
