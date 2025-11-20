@@ -36,7 +36,7 @@ export const SignInTemplate = () => {
         // Store token and redirect
         saveCookie({
           key: SESSION_COOKIE_KEY,
-          value: response?.data?.token,
+          value: response?.data?.token?.access_token || '',
           isObject: false,
         });
 

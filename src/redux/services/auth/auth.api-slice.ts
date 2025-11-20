@@ -31,9 +31,10 @@ export interface LoginResponse {
       lastLogin?: string;
       createdAt: string;
     };
-    token: string;
-    refreshToken: string;
-    expiresIn: number;
+    token: {
+      access_token: string;
+      refresh_token: string;
+    }
   };
 }
 

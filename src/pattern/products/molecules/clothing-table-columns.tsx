@@ -15,18 +15,19 @@ import { MoreHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { formatCurrency } from '@/lib/utils'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 // Helper function to get status variant
-const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
+const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "error" | "blue" => {
   switch (status) {
     case 'active':
-      return 'default'
+      return 'success'
     case 'inactive':
-      return 'destructive'
+      return 'error'
     case 'draft':
-      return 'secondary'
+      return 'warning'
     case 'scheduled':
-      return 'outline'
+      return 'blue'
     default:
       return 'secondary'
   }
@@ -59,6 +60,7 @@ interface ClothingTableColumnsProps {
   onEdit: (productId: string) => void
   onDuplicate?: (productId: string) => void
   onDelete?: (productId: string) => void
+  showSelect?: boolean
 }
 
 export const createClothingTableColumns = ({
@@ -66,29 +68,8 @@ export const createClothingTableColumns = ({
   onEdit,
   onDuplicate,
   onDelete,
+  showSelect = false,
 }: ClothingTableColumnsProps): ColumnDef<Product>[] => [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
-        aria-label='Select all'
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={value => row.toggleSelected(!!value)}
-        aria-label='Select row'
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: 'images',
     header: 'Picture',
@@ -96,7 +77,7 @@ export const createClothingTableColumns = ({
       const images = row.getValue('images') as string[]
       const productName = row.original.name
       return (
-        <div className='w-12 h-12 relative rounded-md overflow-hidden bg-gray-100'>
+        <div className='relative bg-white w-[51px] h-[31px] border-[0.5px] rounded-[8px] overflow-hidden'>
           {images && images.length > 0 ? (
             <Image
               src={images[0]}
@@ -119,7 +100,7 @@ export const createClothingTableColumns = ({
     accessorKey: 'name',
     header: 'Product name',
     cell: ({ row }) => {
-      return <div className='font-medium'>{row.getValue('name')}</div>
+      return <div className='font-normal'>{row.getValue('name')}</div>
     },
   },
   {
@@ -128,7 +109,7 @@ export const createClothingTableColumns = ({
     cell: ({ row }) => {
       const price = parseFloat(row.getValue('price'))
       return (
-        <div className='font-medium'>
+        <div className='font-normal'>
           {formatCurrency(price, 'NGN')}
         </div>
       )
@@ -165,19 +146,19 @@ export const createClothingTableColumns = ({
       const variants = row.original.variants
       const variantCount = variants ? variants.length : 1
 
-      const stockBadgeVariant = stock <= 0 ? 'destructive' : stock <= 5 ? 'secondary' : 'default'
-      const stockBadgeColor = stock <= 0 ? 'bg-red-500' : stock <= 5 ? 'bg-yellow-500' : 'bg-green-500'
+      const stockBadgeVariant = stock <= 0 ? 'destructive' : stock <= 5 ? 'warning' : 'success'
 
       return (
         <div className='flex items-center gap-2'>
           <Badge
             variant={stockBadgeVariant}
-            className={`${stockBadgeColor} text-white rounded-full w-6 h-6 flex items-center justify-center p-0 text-xs`}
+            shape='square'
+            className='w-fit min-w-[19px] h-[16px] flex items-center justify-center p-0 text-xs rounded-[4px]!'
           >
             {stock}
           </Badge>
           <span className='text-sm'>in</span>
-          <Badge variant='outline' className='rounded-md'>
+          <Badge variant='outline' shape='square' className='bg-accent w-fit min-w-[19px] h-[16px] flex items-center justify-center p-0 rounded-[4px]!'>
             {variantCount}
           </Badge>
           <span className='text-sm'>Variants</span>
@@ -192,7 +173,7 @@ export const createClothingTableColumns = ({
     cell: ({ row }) => {
       const status: string = row.getValue('status')
       return (
-        <Badge variant={getStatusVariant(status)} className='capitalize'>
+        <Badge variant={getStatusVariant(status)} shape="square" className='capitalize h-[26px] w-[93px] flex items-center justify-center px-2 text-xs font-normal'>
           {getStatusLabel(status)}
         </Badge>
       )
@@ -200,8 +181,76 @@ export const createClothingTableColumns = ({
   },
   {
     id: 'actions',
-    cell: ({ row }) => {
+    header: ({ table }) => {
+      // Show actions dropdown in header when in select mode
+      if (showSelect) {
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant='ghost' className='h-8 w-8 p-0'>
+                <span className='sr-only'>Open menu</span>
+                <MoreHorizontal className='h-4 w-4' />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align='end' className='w-56 p-0'>
+              <ScrollArea className='max-h-[300px]'>
+                <div className='px-2 py-1.5 text-sm font-semibold text-muted-foreground'>
+                  Product menu
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  View product
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  Edit product
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  Select Product
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled
+                  className='text-muted-foreground'
+                >
+                  Feature product
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  Activate product
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  Schedule activation
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className='text-red-600'>
+                  Archive product
+                </DropdownMenuItem>
+                <DropdownMenuItem className='text-red-600'>
+                  Deactivate product
+                </DropdownMenuItem>
+                <DropdownMenuItem className='text-red-600'>
+                  Delete product
+                </DropdownMenuItem>
+              </ScrollArea>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      }
+      return null
+    },
+    cell: ({ row, table }) => {
       const product = row.original
+
+      // Show checkbox when in select mode
+      if (showSelect) {
+        return (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={value => row.toggleSelected(!!value)}
+            aria-label='Select row'
+          />
+        )
+      }
+
+      // Show actions dropdown by default
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -210,31 +259,55 @@ export const createClothingTableColumns = ({
               <MoreHorizontal className='h-4 w-4' />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuItem
-              onClick={() => onViewDetails(product._id as string)}
-            >
-              View Details
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onEdit(product._id as string)}>
-              Edit Product
-            </DropdownMenuItem>
-            {onDuplicate && (
+          <DropdownMenuContent align='end' className='w-56 p-0'>
+            <ScrollArea className='max-h-[300px]'>
+              <div className='px-2 py-1.5 text-sm font-semibold text-muted-foreground'>
+                Product menu
+              </div>
+              <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => onDuplicate(product._id as string)}
+                onClick={() => onViewDetails(product._id as string)}
               >
-                Duplicate
+                View product
               </DropdownMenuItem>
-            )}
-            <DropdownMenuSeparator />
-            {onDelete && (
+              <DropdownMenuItem onClick={() => onEdit(product._id as string)}>
+                Edit product
+              </DropdownMenuItem>
+              {onDuplicate && (
+                <DropdownMenuItem
+                  onClick={() => onDuplicate(product._id as string)}
+                >
+                  Select Product
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
-                onClick={() => onDelete(product._id as string)}
-                className='text-red-600'
+                disabled
+                className='text-muted-foreground'
               >
-                Delete
+                Feature product
               </DropdownMenuItem>
-            )}
+              <DropdownMenuItem>
+                Activate product
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                Schedule activation
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className='text-red-600'>
+                Archive product
+              </DropdownMenuItem>
+              <DropdownMenuItem className='text-red-600'>
+                Deactivate product
+              </DropdownMenuItem>
+              {onDelete && (
+                <DropdownMenuItem
+                  onClick={() => onDelete(product._id as string)}
+                  className='text-red-600'
+                >
+                  Delete product
+                </DropdownMenuItem>
+              )}
+            </ScrollArea>
           </DropdownMenuContent>
         </DropdownMenu>
       )

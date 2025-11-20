@@ -31,6 +31,7 @@
   --grey1: hsla(203, 13%, 88%, 1);
   --grey2: hsla(208, 11%, 71%, 1);
   --grey3: hsla(210, 9%, 31%, 1);
+  --grey-black: hsla(0, 0%, 7%, 1);
   --border: hsla(214.3, 31.8%, 91.4%);
   --border-input: hsla(208, 11%, 71%, 1);
   --input: hsla(214.3, 31.8%, 91.4%);
@@ -130,6 +131,7 @@
   --color-grey1: var(--grey1);
   --color-grey2: var(--grey2);
   --color-grey3: var(--grey3);
+  --color-grey-black: var(--grey-black);
   --color-border: var(--border);
   --color-border-input: var(--border-input);
   --color-input: var(--input);
@@ -311,6 +313,19 @@ input[type='number'] {
   }
 }
 
+/* ScrollArea component custom styling */
+[data-slot="scroll-area-scrollbar"] {
+  width: 6px !important;
+  padding: 0 !important;
+}
+
+[data-slot="scroll-area-thumb"] {
+  background-color: hsla(0, 0%, 85%, 0.6) !important;
+  width: 3px !important;
+  margin: 0 auto !important;
+  border-radius: 100px !important;
+}
+
 @utility hero-container {
   background-position: 0 -650px;
   background-size: contain;
@@ -374,4 +389,15 @@ input[type='number'] {
 
 .rcp-fields {
   display: block !important;
+}
+
+.bds-scrollbar::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+	background-color: #ffffff;
+}
+
+.bds-scrollbar::-webkit-scrollbar-thumb {
+	background: var(--color-bg-disabled);
+	border-radius: var(--radius-inf);
 }

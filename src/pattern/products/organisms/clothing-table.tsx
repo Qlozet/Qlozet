@@ -21,6 +21,7 @@ import { createClothingTableColumns } from '../molecules/clothing-table-columns'
 import { Product } from '@/redux/services/products/products.api-slice'
 import { Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { BoldBoxRemoveIcon } from '@/pattern/common/atoms/bold-box-remove-icon'
 
 interface IClothingTableProps {
   data: Product[]
@@ -36,6 +37,7 @@ interface IClothingTableProps {
   onEdit: (productId: string) => void
   onDuplicate?: (productId: string) => void
   onDelete?: (productId: string) => void
+  showSelect?: boolean
 }
 
 export const ClothingTable = ({
@@ -52,6 +54,7 @@ export const ClothingTable = ({
   onEdit,
   onDuplicate,
   onDelete,
+  showSelect = false,
 }: IClothingTableProps) => {
   const [rowSelection, setRowSelection] = useState({})
 
@@ -68,8 +71,9 @@ export const ClothingTable = ({
         onEdit,
         onDuplicate,
         onDelete,
+        showSelect,
       }),
-    [onViewDetails, onEdit, onDuplicate, onDelete]
+    [onViewDetails, onEdit, onDuplicate, onDelete, showSelect]
   )
 
   const clothingTable = useReactTable({
@@ -117,7 +121,7 @@ export const ClothingTable = ({
                         <TableHead
                           key={header.id}
                           className={cn(
-                            'h-[52px] pt-7 pb-4 whitespace-nowrap',
+                            'h-[52px] pt-7 pb-4 whitespace-nowrap text-grey-black text-sm font-medium',
                             isFirst && 'pl-6',
                             isLast && 'pr-6'
                           )}
@@ -125,9 +129,9 @@ export const ClothingTable = ({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                         </TableHead>
                       )
                     })}
@@ -142,31 +146,32 @@ export const ClothingTable = ({
                   <>
                     {clothingTable.getRowModel().rows?.length
                       ? clothingTable.getRowModel().rows.map(row => (
-                          <TableRow
-                            key={row.id}
-                            data-state={row.getIsSelected() && 'selected'}
-                          >
-                            {row.getVisibleCells().map((cell, cellIndex) => {
-                              const isFirst = cellIndex === 0
-                              const isLast = cellIndex === row.getVisibleCells().length - 1
-                              return (
-                                <TableCell
-                                  key={cell.id}
-                                  className={cn(
-                                    'whitespace-nowrap',
-                                    isFirst && 'pl-6',
-                                    isLast && 'pr-6'
-                                  )}
-                                >
-                                  {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext()
-                                  )}
-                                </TableCell>
-                              )
-                            })}
-                          </TableRow>
-                        ))
+                        <TableRow
+                          key={row.id}
+                          data-state={row.getIsSelected() && 'selected'}
+                          className='border-b'
+                        >
+                          {row.getVisibleCells().map((cell, cellIndex) => {
+                            const isFirst = cellIndex === 0
+                            const isLast = cellIndex === row.getVisibleCells().length - 1
+                            return (
+                              <TableCell
+                                key={cell.id}
+                                className={cn(
+                                  'whitespace-nowrap',
+                                  isFirst && 'pl-6',
+                                  isLast && 'pr-6'
+                                )}
+                              >
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext()
+                                )}
+                              </TableCell>
+                            )
+                          })}
+                        </TableRow>
+                      ))
                       : null}
                   </>
                 )}
@@ -178,13 +183,16 @@ export const ClothingTable = ({
                       colSpan={columns.length}
                       className='h-64 text-center'
                     >
-                      <div className='flex flex-col items-center gap-2'>
-                        <p className='text-lg font-medium text-muted-foreground'>
-                          No products found
-                        </p>
-                        <p className='text-sm text-muted-foreground'>
-                          Try adjusting your filters or add a new product
-                        </p>
+                      <div className='flex flex-col items-center gap-4'>
+                        <BoldBoxRemoveIcon />
+                        <div className='flex flex-col items-center gap-2'>
+                          <p className='text-lg font-medium text-muted-foreground'>
+                            Nothing in here yet.
+                          </p>
+                          <p className='text-sm text-muted-foreground'>
+                            Products will show up here once you add a product.
+                          </p>
+                        </div>
                       </div>
                     </TableCell>
                   </TableRow>

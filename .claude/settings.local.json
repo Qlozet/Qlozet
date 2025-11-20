@@ -34,7 +34,9 @@
       "Bash(pnpm run:*)",
       "Bash(pnpm list:*)",
       "Bash(do sed -i \"s/import toast from ''''react-hot-toast'''';/import { toast } from ''''sonner'''';/g\" \"$file\")",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(curl:*)",
+      "Bash(git mv:*)"
     ],
     "deny": [],
     "ask": []

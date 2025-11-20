@@ -16,6 +16,7 @@ import { ClothingStylesIcon } from '@/pattern/common/atoms/clothing-styles-icon'
 import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-icon'
 import { SearchInputWithParams } from '@/pattern/common/molecules/search-input-with-params'
 import { ExcelIcon } from '@/pattern/common/atoms/excel-icon'
+import { mockClothingProducts } from '@/lib/mocks'
 
 interface ClothingTableTemplateProps {
   onExport?: () => void
@@ -31,6 +32,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
 
   const [pageCount, setPageCount] = useState<number>(1)
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [showSelect, setShowSelect] = useState<boolean>(false)
 
   // Get search query from URL params
   useEffect(() => {
@@ -63,10 +65,32 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     category: 'clothing', // Filter by clothing category
   })
 
-  // Handle different API response formats
-  const products = productsResponse?.products || productsResponse?.data || []
-  const totalProducts = productsResponse?.total || productsResponse?.totalCount || 0
-  const totalPagesFromAPI = productsResponse?.totalPages || Math.ceil(totalProducts / pagination.pageSize) || 1
+  // Transform API products to match expected format
+  const transformProduct = (apiProduct: any): Product => {
+    const itemData = apiProduct.clothing || apiProduct.accessory || apiProduct.fabric
+
+    return {
+      _id: apiProduct._id,
+      name: itemData?.name || 'Unnamed Product',
+      description: itemData?.description || '',
+      category: apiProduct.kind || 'clothing',
+      price: apiProduct.base_price || itemData?.price || 0,
+      stock: itemData?.stock || 0,
+      status: itemData?.status || 'active',
+      images: itemData?.images?.map((img: any) => img.url) || [],
+      variants: itemData?.variants || [],
+      customizations: itemData?.styles || [],
+      tags: itemData?.taxonomy?.attributes || [],
+      createdAt: apiProduct.createdAt,
+      updatedAt: apiProduct.updatedAt,
+    }
+  }
+
+  // Handle different API response formats - Extract from nested data structure
+  const rawProducts = (productsResponse?.data?.data || productsResponse?.products || []) as any[]
+  const products = rawProducts.length > 0 ? rawProducts.map(transformProduct) : mockClothingProducts
+  const totalProducts = productsResponse?.data?.total_items || productsResponse?.totalCount || productsResponse?.total || mockClothingProducts.length
+  const totalPagesFromAPI = productsResponse?.data?.total_pages || productsResponse?.totalPages || Math.ceil(totalProducts / pagination.pageSize) || 1
 
   useEffect(() => {
     if (productsResponse) {
@@ -74,17 +98,8 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     }
   }, [productsResponse, totalPagesFromAPI])
 
-  // Debug: Log the API response to understand the structure
-  useEffect(() => {
-    if (productsResponse) {
-      console.log('API Response:', productsResponse)
-      console.log('Products:', products)
-      console.log('Total Products:', totalProducts)
-    }
-  }, [productsResponse, products, totalProducts])
-
   const handleAddProduct = () => {
-    router.push('/add')
+    router.push('/products/add-product')
     clearProductId()
   }
 
@@ -175,6 +190,16 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
             <span className='hidden sm:inline'>Manage Styles</span>
           </Button>
 
+          {/* Toggle Select Mode */}
+          <Button
+            variant='outline'
+            size='default'
+            onClick={() => setShowSelect(!showSelect)}
+            className='gap-[10px] text-xs! font-medium'
+          >
+            <span>{showSelect ? 'Cancel Selection' : 'Select Products'}</span>
+          </Button>
+
           {/* Add new product */}
           <Button
             variant="default"
@@ -189,7 +214,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
       </div>
 
       {/* Filter and Search Section */}
-      <div className='bg-card w-full h-[72px] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 py-4 rounded-t-[10px]'>
+      <div className='bg-card w-full h-[72px] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 py-4 rounded-t-[10px] sadow-md'>
         <h3 className='text-base font-medium'>Clothing</h3>
 
         <div className='flex items-center gap-3'>
@@ -238,6 +263,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
           onEdit={handleEditProduct}
           onDuplicate={handleDuplicateProduct}
           onDelete={handleDeleteProduct}
+          showSelect={showSelect}
         />
 
         {/* Pagination Info */}

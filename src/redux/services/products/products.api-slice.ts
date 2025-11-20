@@ -49,7 +49,7 @@ export interface CreateProductRequest {
   category: string;
   price: number;
   stock: number;
-  status: 'active' | 'draft' | 'inactive';
+  status: 'active' | 'draft' | 'inactive' | 'scheduled';
   images: string[];
   variants?: Omit<ProductVariant, 'id'>[];
   customizations?: Omit<ProductCustomization, 'id'>[];
@@ -61,17 +61,31 @@ export interface UpdateProductRequest extends Partial<CreateProductRequest> {
 }
 
 export interface ProductsResponse {
+  statusCode?: number;
+  message?: string;
+  error?: any;
+  timestamp?: number;
+  version?: string;
+  path?: string;
+  data?: {
+    total_items?: number;
+    data?: Product[];
+    total_pages?: number;
+    current_page?: number;
+    has_next_page?: boolean;
+    has_previous_page?: boolean;
+    page_size?: number;
+  };
+  // Legacy support for other API response formats
   products?: Product[];
-  data?: Product[]; // Some APIs return data instead of products
   total?: number;
-  totalCount?: number; // Some APIs use totalCount
+  totalCount?: number;
   page?: number;
-  currentPage?: number; // Some APIs use currentPage
+  currentPage?: number;
   limit?: number;
-  pageSize?: number; // Some APIs use pageSize
+  pageSize?: number;
   totalPages?: number;
   success?: boolean;
-  message?: string;
 }
 
 export interface ProductsFilters {
