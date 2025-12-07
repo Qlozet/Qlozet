@@ -33,6 +33,114 @@ export interface ProductCustomization {
   additionalPrice: number;
 }
 
+// Clothing-specific types
+export interface TaxonomyDto {
+  product_type: string;
+  categories: string[];
+  attributes: string[];
+  audience: string;
+}
+
+export interface StyleHotspotDto {
+  field_key: string;
+  label?: string;
+  x: number;
+  y: number;
+  anchor?: 'center' | 'top-left';
+  radius?: number;
+  zIndex?: number;
+}
+
+export interface ProductImageDto {
+  public_id: string;
+  url: string;
+  width?: number;
+  height?: number;
+  hotspots?: StyleHotspotDto[];
+}
+
+export interface CreateStyleDto {
+  name: string;
+  style_code: string;
+  categories: string[];
+  images: ProductImageDto[];
+  attributes: string[];
+  price: number;
+  min_width_cm: number;
+  notes?: string;
+  type: string;
+}
+
+export interface VariantDto {
+  size?: string;
+  stock: number;
+  price: number;
+  sku?: string;
+  yard_per_order?: number;
+  color?: {
+    name: string;
+    hex: string;
+  };
+}
+
+export interface ColorVariantDto {
+  name: string;
+  hex: string;
+  images: ProductImageDto[];
+  variants: VariantDto[];
+}
+
+export interface AccessoryDto {
+  name: string;
+  description?: string;
+  price: number;
+  taxonomy: TaxonomyDto;
+  variants: VariantDto[];
+  images: ProductImageDto[];
+}
+
+export interface FabricDto {
+  name: string;
+  description?: string;
+  product_type: string;
+  pattern?: string;
+  yard_length: number;
+  width: number;
+  min_cut: number;
+  price_per_yard: number;
+  images?: ProductImageDto[];
+  variants?: VariantDto[];
+}
+
+export interface ClothingDto {
+  name: string;
+  type: 'customize' | 'non_customize';
+  description?: string;
+  turnaround_days: number;
+  taxonomy: TaxonomyDto;
+  status: 'active' | 'draft' | 'archived';
+  images?: ProductImageDto[];
+  styles?: CreateStyleDto[];
+  accessories?: AccessoryDto[];
+  color_variants: ColorVariantDto[];
+  fabrics?: FabricDto[];
+}
+
+export interface CreateClothingDto {
+  seo?: {
+    title?: string;
+    keywords?: string[];
+  };
+  metafields?: Record<string, any>;
+  clothing: ClothingDto;
+}
+
+export interface CreateClothingResponse {
+  statusCode: number;
+  message: string;
+  data?: any;
+}
+
 export interface Category {
   _id: string;
   name: string;
@@ -276,6 +384,16 @@ export const productsApiSlice = baseAPI.injectEndpoints({
       }),
       invalidatesTags: ['Products', 'Product'],
     }),
+
+    // Create clothing product
+    createClothing: builder.mutation<CreateClothingResponse, CreateClothingDto>({
+      query: (clothingData) => ({
+        url: '/products/clothing',
+        method: 'POST',
+        body: clothingData,
+      }),
+      invalidatesTags: ['Products'],
+    }),
   }),
 });
 
@@ -299,4 +417,5 @@ export const {
   useUploadSingleImageMutation,
   useScheduleProductMutation,
   useReviewItemMutation,
+  useCreateClothingMutation,
 } = productsApiSlice;

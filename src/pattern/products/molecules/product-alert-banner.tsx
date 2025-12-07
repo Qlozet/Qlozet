@@ -3,17 +3,19 @@
 
 import React from "react"
 import { Info, X } from "lucide-react"
+import { cn } from "@/lib/utils"
 
-interface ProductUploadAlertProps {
+interface ProductAlertBannerProps {
+    className?: string
     message: string
     onDismiss?: () => void
 }
 
-export const ProductUploadAlert: React.FC<ProductUploadAlertProps> = ({ message, onDismiss }) => {
+export const ProductAlertBanner: React.FC<ProductAlertBannerProps> = ({ className, message, onDismiss }) => {
     return (
-        <div className="bg-accent rounded-lg p-4 flex items-start justify-between">
-            <div className="flex items-start gap-3">
-                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground flex-shrink-0 mt-0.5">
+        <div className={cn(className, "bg-[#3E1C0114] w-full flex items-start justify-between p-4 rounded-lg")}>
+            <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-8 h-8 rounded-[12px] bg-primary text-primary-foreground flex-shrink-0">
                     <Info className="w-4 h-4" />
                 </div>
                 <p className="text-sm text-foreground">{message}</p>

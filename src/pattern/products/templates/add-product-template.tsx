@@ -1,21 +1,21 @@
 "use client"
 
 import { useState } from "react"
-import { Plus } from "lucide-react"
+import { ArrowLeft, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { FileUploadWidget } from "@/pattern/common/organisms/file-upload-widget"
 import { RichTextEditor } from "@/pattern/common/organisms/rich-text-editor"
-import { ProductFormBackButton } from "../atoms/product-form-back-button"
-import { ProductFormSection } from "../atoms/product-form-section"
 import { StatusIndicator } from "../atoms/status-indicator"
-import { ProductUploadAlert } from "../molecules/product-upload-alert"
+import { ProductAlertBanner } from "../molecules/product-alert-banner"
 import { ProductFieldGroup } from "../molecules/product-field-group"
 import { ProductVariantPlaceholder } from "../molecules/product-variant-placeholder"
 import { ProductOrganizationSection } from "../organisms/product-organization-section"
 import { ProductPricingSection } from "../organisms/product-pricing-section"
+import { ProductVariantManager } from "../organisms/product-variant-manager"
+import { useRouter } from "next/navigation"
 
 export default function AddProductTemplate() {
     const [title, setTitle] = useState("https://www.garnisland.com")
@@ -23,12 +23,17 @@ export default function AddProductTemplate() {
     const [wordCount, setWordCount] = useState(0)
     const [status, setStatus] = useState("active")
     const [customization, setCustomization] = useState(true)
+    const [measurementRequired, setMeasurementRequired] = useState(false)
+    const [turnaroundDays, setTurnaroundDays] = useState("2")
     const [audience, setAudience] = useState<string[]>(["men"])
     const [category, setCategory] = useState<string[]>(["tops"])
     const [productType, setProductType] = useState<string[]>(["hoodies"])
     const [attributes, setAttributes] = useState<string[]>(["regular"])
     const [price, setPrice] = useState("100000")
     const [showAlert, setShowAlert] = useState(true)
+    const [showVariantManager, setShowVariantManager] = useState(false)
+
+    const { back } = useRouter()
 
     const handleDescriptionChange = (content: string) => {
         setDescription(content)
@@ -120,13 +125,22 @@ export default function AddProductTemplate() {
             <div className="mx-auto max-w-7xl p-6">
                 {/* Header */}
                 <div className="mb-6">
-                    <ProductFormBackButton />
+                    <button
+                        onClick={back}
+                        className="flex items-center gap-2 text-foreground hover:opacity-70 transition-opacity"
+                    >
+                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-brown1">
+                            <ArrowLeft className="w-4 h-4" />
+                        </div>
+                        <span className="text-sm font-medium">Go Back</span>
+                    </button>
                 </div>
 
                 {/* Alert */}
                 {showAlert && (
                     <div className="mb-6">
-                        <ProductUploadAlert
+                        <ProductAlertBanner
+                            // className="max-w-[622px]"
                             message="Upload picture products with close to white background in high resolution and quality"
                             onDismiss={() => setShowAlert(false)}
                         />
@@ -138,42 +152,58 @@ export default function AddProductTemplate() {
                     {/* Left Column */}
                     <div className="lg:col-span-2 space-y-6">
                         {/* Title */}
-                        <ProductFormSection>
-                            <ProductFieldGroup label="Title">
-                                <Input value={title} onChange={(e) => setTitle(e.target.value)} className="bg-accent border-border-input" />
+                        <div className="bg-card rounded-lg p-6">
+                            <ProductFieldGroup>
+                                <ProductFieldGroup.Label>Title</ProductFieldGroup.Label>
+                                <ProductFieldGroup.Content>
+                                    <Input value={title} onChange={(e) => setTitle(e.target.value)} className="bg-accent border-border-input" />
+                                </ProductFieldGroup.Content>
                             </ProductFieldGroup>
-                        </ProductFormSection>
+                        </div>
 
                         {/* Description */}
-                        <ProductFormSection>
-                            <ProductFieldGroup label="Description" showInfo wordCount={wordCount}>
-                                <RichTextEditor value={description} onChange={handleDescriptionChange} />
+                        <div className="bg-card rounded-lg p-6">
+                            <ProductFieldGroup>
+                                <ProductFieldGroup.Label tooltip="Enter product description">
+                                    Description
+                                </ProductFieldGroup.Label>
+                                <ProductFieldGroup.Content>
+                                    <RichTextEditor value={description} onChange={handleDescriptionChange} />
+                                </ProductFieldGroup.Content>
+                                <ProductFieldGroup.Footer>{wordCount} words</ProductFieldGroup.Footer>
                             </ProductFieldGroup>
-                        </ProductFormSection>
+                        </div>
 
                         {/* Upload Media */}
-                        <ProductFormSection>
-                            <ProductFieldGroup label="Upload Media">
-                                <FileUploadWidget />
+                        <div className="bg-card rounded-lg p-6">
+                            <ProductFieldGroup>
+                                <ProductFieldGroup.Label>Upload Media</ProductFieldGroup.Label>
+                                <ProductFieldGroup.Content>
+                                    <FileUploadWidget />
+                                </ProductFieldGroup.Content>
                             </ProductFieldGroup>
-                        </ProductFormSection>
+                        </div>
 
                         {/* Add Variants */}
-                        <ProductFormSection>
-                            <ProductVariantPlaceholder
-                                title="Add Colour/Fabric Variants"
-                                description="Orders will show up here once you add a customer orders from you."
-                                actionLabel="Add Variants"
-                                onAction={() => console.log("Add variants")}
-                                icon={Plus}
-                            />
-                        </ProductFormSection>
+                        {!showVariantManager ? (
+                            <div className="bg-card rounded-lg p-6">
+                                <ProductVariantPlaceholder
+                                    title="Add Colour/Fabric Variants"
+                                    description="Orders will show up here once you add a customer orders from you."
+                                    actionLabel="Add Variants"
+                                    onAction={() => setShowVariantManager(true)}
+                                    icon={Plus}
+                                />
+                            </div>
+                        ) : (
+                            <ProductVariantManager />
+                        )}
                     </div>
 
                     {/* Right Column */}
                     <div className="space-y-6">
                         {/* Status */}
-                        <ProductFormSection>
+                        <div className="bg-card rounded-lg p-6">
                             <div className="flex items-center justify-between mb-3">
                                 <label className="text-sm font-medium text-foreground">Status</label>
                                 <StatusIndicator status="active" />
@@ -188,15 +218,45 @@ export default function AddProductTemplate() {
                                     <SelectItem value="archived">Archived</SelectItem>
                                 </SelectContent>
                             </Select>
-                        </ProductFormSection>
+                        </div>
 
                         {/* Customization */}
-                        <ProductFormSection>
-                            <div className="flex items-center justify-between">
+                        <div className="bg-card rounded-lg p-6">
+                            <div className="flex items-center justify-between mb-4">
                                 <label className="text-sm font-medium text-foreground">Customization</label>
                                 <Switch checked={customization} onCheckedChange={setCustomization} />
                             </div>
-                        </ProductFormSection>
+
+                            {customization && (
+                                <div className="space-y-4 pt-4 border-t border-border">
+                                    {/* Measurement Required */}
+                                    <ProductFieldGroup>
+                                        <ProductFieldGroup.Label tooltip="Indicate if measurements are required for this product" className="text-sm font-normal">
+                                            Measurement Required
+                                        </ProductFieldGroup.Label>
+                                        <ProductFieldGroup.Content>
+                                            <Switch checked={measurementRequired} onCheckedChange={setMeasurementRequired} />
+                                        </ProductFieldGroup.Content>
+                                    </ProductFieldGroup>
+
+                                    {/* Turnaround Days */}
+                                    <ProductFieldGroup>
+                                        <ProductFieldGroup.Label tooltip="Number of days required to complete customization" className="text-sm font-normal">
+                                            Turnaround Days
+                                        </ProductFieldGroup.Label>
+                                        <ProductFieldGroup.Content>
+                                            <Input
+                                                type="number"
+                                                value={turnaroundDays}
+                                                onChange={(e) => setTurnaroundDays(e.target.value)}
+                                                className="bg-accent border-border-input"
+                                                min="1"
+                                            />
+                                        </ProductFieldGroup.Content>
+                                    </ProductFieldGroup>
+                                </div>
+                            )}
+                        </div>
 
                         {/* Product Organization */}
                         <ProductOrganizationSection
@@ -217,10 +277,12 @@ export default function AddProductTemplate() {
                         {/* Pricing */}
                         <ProductPricingSection price={price} onPriceChange={setPrice} />
 
-                        {/* Save Button */}
-                        <Button onClick={handleSave} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                            Save
-                        </Button>
+                        <div className="w-full flex items-center justify-end">
+                            {/* Save Button */}
+                            <Button onClick={handleSave} className="w-[121px] bg-primary hover:bg-primary/90 text-primary-foreground">
+                                Save
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>

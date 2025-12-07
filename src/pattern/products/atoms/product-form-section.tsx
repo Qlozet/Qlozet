@@ -9,6 +9,3 @@ interface ProductFormSectionProps {
     className?: string
 }
 
-export const ProductFormSection: React.FC<ProductFormSectionProps> = ({ children, className }) => {
-    return <div className={cn("bg-card rounded-lg p-6", className)}>{children}</div>
-}

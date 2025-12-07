@@ -2,7 +2,6 @@
 // Section containing all product categorization fields
 
 import React from "react"
-import { ProductFormSection } from "../atoms/product-form-section"
 import { ProductFieldGroup } from "../molecules/product-field-group"
 import { MultiSelectTagsDropdown } from "@/pattern/common/organisms/multi-select-tag-dropdown"
 
@@ -41,36 +40,56 @@ export const ProductOrganizationSection: React.FC<ProductOrganizationSectionProp
     attributesGroups,
 }) => {
     return (
-        <ProductFormSection>
+        <div className="bg-card rounded-lg p-6">
             <h3 className="text-sm font-medium text-foreground mb-4">Product Organization</h3>
 
             <div className="space-y-4">
-                <ProductFieldGroup label="Audience" showInfo>
-                    <MultiSelectTagsDropdown placeholder="Men" groups={audienceGroups} value={audience} onChange={onAudienceChange} />
+                <ProductFieldGroup>
+                    <ProductFieldGroup.Label tooltip="Select target audience">
+                        Audience
+                    </ProductFieldGroup.Label>
+                    <ProductFieldGroup.Content>
+                        <MultiSelectTagsDropdown placeholder="Men" groups={audienceGroups} value={audience} onChange={onAudienceChange} />
+                    </ProductFieldGroup.Content>
                 </ProductFieldGroup>
 
-                <ProductFieldGroup label="Category" showInfo>
-                    <MultiSelectTagsDropdown placeholder="Tops" groups={categoryGroups} value={category} onChange={onCategoryChange} />
+                <ProductFieldGroup>
+                    <ProductFieldGroup.Label tooltip="Select product category">
+                        Category
+                    </ProductFieldGroup.Label>
+                    <ProductFieldGroup.Content>
+                        <MultiSelectTagsDropdown placeholder="Tops" groups={categoryGroups} value={category} onChange={onCategoryChange} />
+                    </ProductFieldGroup.Content>
                 </ProductFieldGroup>
 
-                <ProductFieldGroup label="Product type" showInfo>
-                    <MultiSelectTagsDropdown
-                        placeholder="Hoodies"
-                        groups={productTypeGroups}
-                        value={productType}
-                        onChange={onProductTypeChange}
-                    />
+                <ProductFieldGroup>
+                    <ProductFieldGroup.Label tooltip="Select product type">
+                        Product type
+                    </ProductFieldGroup.Label>
+                    <ProductFieldGroup.Content>
+                        <MultiSelectTagsDropdown
+                            placeholder="Hoodies"
+                            groups={productTypeGroups}
+                            value={productType}
+                            onChange={onProductTypeChange}
+                        />
+                    </ProductFieldGroup.Content>
                 </ProductFieldGroup>
 
-                <ProductFieldGroup label="Attributes" showInfo>
-                    <MultiSelectTagsDropdown
-                        placeholder="Regular fit"
-                        groups={attributesGroups}
-                        value={attributes}
-                        onChange={onAttributesChange}
-                    />
+                <ProductFieldGroup>
+                    <ProductFieldGroup.Label tooltip="Select product attributes">
+                        Attributes
+                    </ProductFieldGroup.Label>
+                    <ProductFieldGroup.Content>
+                        <MultiSelectTagsDropdown
+                            placeholder="Regular fit"
+                            groups={attributesGroups}
+                            value={attributes}
+                            onChange={onAttributesChange}
+                        />
+                    </ProductFieldGroup.Content>
                 </ProductFieldGroup>
             </div>
-        </ProductFormSection>
+        </div>
     )
 }
