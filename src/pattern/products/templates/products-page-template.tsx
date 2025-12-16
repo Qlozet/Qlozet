@@ -25,7 +25,7 @@ import {
   useGetCategoriesQuery,
   useUpdateProductMutation,
 } from '@/redux/services/products/products.api-slice';
-import { Plus, Download, Upload, FileText, Package } from 'lucide-react';
+import { Plus, Download, Upload, FileText } from 'lucide-react';
 import Typography from '@/components/compat/Typography';
 import { toast } from 'sonner';
 
@@ -52,12 +52,12 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
   const [filters, setFilters] = useState<ProductFilterData>({
     search: '',
     status: 'all',
-    category: '',
+    category: 'all',
     tag: 'all',
     sortBy: 'createdAt',
-    sortOrder: 'desc',
+    order: 'desc', // API uses 'order' instead of 'sortOrder'
     page: 1,
-    limit: 20,
+    size: 20, // API uses 'size' instead of 'limit'
   });
 
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
@@ -88,12 +88,12 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
     setFilters({
       search: '',
       status: 'all',
-      category: '',
+      category: 'all',
       tag: 'all',
       sortBy: 'createdAt',
-      sortOrder: 'desc',
+      order: 'desc', // API uses 'order' instead of 'sortOrder'
       page: 1,
-      limit: 20,
+      size: 20, // API uses 'size' instead of 'limit'
     });
     setSelectedProducts([]);
   };
@@ -108,12 +108,26 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
     field: keyof (typeof products)[0],
     direction: 'asc' | 'desc'
   ) => {
-    setFilters((prev) => ({
-      ...prev,
-      sortBy: field as any,
-      sortOrder: direction,
-      page: 1,
-    }));
+    const validSortFields = [
+      'name',
+      'price',
+      'stock',
+      'createdAt',
+      'category',
+    ];
+    if (validSortFields.includes(field as string)) {
+      setFilters((prev) => ({
+        ...prev,
+        sortBy: field as
+          | 'name'
+          | 'price'
+          | 'stock'
+          | 'createdAt'
+          | 'category',
+        order: direction, // API uses 'order' instead of 'sortOrder'
+        page: 1,
+      }));
+    }
   };
 
   // Handle product selection
@@ -227,9 +241,9 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
       .length,
     draftProducts: products.filter((p) => p.status === 'draft').length,
     categoryBreakdown: {
-      male: products.filter((p) => p.tags.includes('male')).length,
-      female: products.filter((p) => p.tags.includes('female')).length,
-      unisex: products.filter((p) => p.tags.includes('unisex')).length,
+      male: products.filter((p) => p.tags?.includes('male')).length,
+      female: products.filter((p) => p.tags?.includes('female')).length,
+      unisex: products.filter((p) => p.tags?.includes('unisex')).length,
     },
   };
 
@@ -371,7 +385,7 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
               onStatusChange={handleStatusChange}
               onSort={handleSort}
               sortField={filters.sortBy}
-              sortDirection={filters.sortOrder}
+              sortDirection={filters.order}
               isLoading={loadingProducts}
               showSelection={showBulkActions}
               selectedProducts={selectedProducts}
@@ -385,8 +399,8 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
         {totalPages > 1 && (
           <div className='flex items-center justify-between'>
             <div className='text-sm text-gray-600'>
-              Showing {(filters.page - 1) * filters.limit + 1} to{' '}
-              {Math.min(filters.page * filters.limit, totalCount)} of{' '}
+              Showing {(filters.page - 1) * filters.size + 1} to{' '}
+              {Math.min(filters.page * filters.size, totalCount)} of{' '}
               {totalCount} products
             </div>
 

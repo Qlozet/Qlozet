@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { ReactNode, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Trash2, Palette, X } from "lucide-react"
 import { useModal } from "@ebay/nice-modal-react"
@@ -8,6 +8,9 @@ import { AVAILABLE_COLORS, AVAILABLE_SIZES, ColorOption, SizeOption } from "../t
 import { ColorMenuPopover } from "../molecules/color-menu-popover"
 import { PredefinedColor } from "../constants/predefined-colors"
 import AdvancedColorPickerModal from "./advanced-color-picker-modal"
+import { cn } from "@/lib/utils"
+import { ProductFieldGroup } from "../molecules/product-field-group"
+import { MultiSelectTagsDropdown } from "@/pattern/common/organisms/multi-select-tag-dropdown"
 
 interface VariantSelectOptionsProps {
     selectedColors: string[]
@@ -17,6 +20,8 @@ interface VariantSelectOptionsProps {
     onAddVariants: () => void
     onAddCustomColor: (color: ColorOption) => void
     availableColors?: ColorOption[]
+    children?: ReactNode
+    className?: string
 }
 
 export function VariantSelectOptions({
@@ -26,10 +31,21 @@ export function VariantSelectOptions({
     onSizeToggle,
     onAddVariants,
     onAddCustomColor,
+    children,
     availableColors = AVAILABLE_COLORS,
+    className
 }: VariantSelectOptionsProps) {
     const colorPickerModal = useModal(AdvancedColorPickerModal)
     const displayColors = [...AVAILABLE_COLORS, ...availableColors.filter((c) => !AVAILABLE_COLORS.find((ac) => ac.value === c.value))]
+
+    const [size, setSize] = useState<string[]>([""])
+
+    const sizes = [
+        {
+            label: "Gender",
+            tags: AVAILABLE_SIZES,
+        },
+    ]
 
     const handlePredefinedColorSelect = (color: PredefinedColor) => {
         const colorOption: ColorOption = {
@@ -59,7 +75,7 @@ export function VariantSelectOptions({
     }
 
     return (
-        <div className="bg-card rounded-lg p-6 border border-border">
+        <div className={cn("bg-card rounded-lg p-6 border border-border", className)}>
             <h3 className="text-sm font-medium text-foreground mb-4">Select Options (Variants)</h3>
 
             {/* Color Picker */}
@@ -102,49 +118,46 @@ export function VariantSelectOptions({
                 </ColorMenuPopover>
             </div>
 
-            {/* Size Selector */}
-            <div className="mb-6">
-                <label className="text-sm font-medium text-foreground mb-3 block">Size</label>
-                <div className="flex items-center gap-2 flex-wrap">
-                    {AVAILABLE_SIZES.map((size) => {
-                        const isSelected = selectedSizes.includes(size.value)
-                        return (
-                            <Button
-                                key={size.value}
-                                variant={isSelected ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => onSizeToggle(size.value)}
-                                className={
-                                    isSelected
-                                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                                        : "bg-accent border-border-input hover:bg-accent/80"
-                                }
-                            >
-                                {size.label}
-                            </Button>
-                        )
-                    })}
-                    {/* <button className="px-3 py-1.5 rounded-md border-2 border-dashed border-border hover:border-border-input flex items-center justify-center">
-                        <Trash2 className="w-4 h-4 text-muted-foreground" />
-                    </button>
-                    <button className="px-4 py-1.5 rounded-md border-2 border-dashed border-border hover:border-border-input text-sm">
-                        ▼
-                    </button> */}
-                </div>
+            <div className="w-full space-y-[20px]">
+                {/* Size Selector */}
+                <ProductFieldGroup>
+                    <ProductFieldGroup.Label tooltip="Select sizes">
+                        Size
+                    </ProductFieldGroup.Label>
+                    <ProductFieldGroup.Content>
+                        <MultiSelectTagsDropdown placeholder="Size" groups={sizes} value={size} onChange={setSize} />
+                    </ProductFieldGroup.Content>
+                </ProductFieldGroup>
+
+                {/* Add Variants Button */}
+                <Button
+                    onClick={onAddVariants}
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                    disabled={selectedColors.length === 0 || selectedSizes.length === 0}
+                >
+                    Add Variants
+                </Button>
+
+                {children}
             </div>
-
-            {/* Add Variants Button */}
-            <Button
-                onClick={onAddVariants}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                disabled={selectedColors.length === 0 || selectedSizes.length === 0}
-            >
-                Add Variants
-            </Button>
-
-            {selectedColors.length === 0 || selectedSizes.length === 0 ? (
-                <p className="text-sm text-muted-foreground mt-2 text-right">No color variant</p>
-            ) : null}
         </div>
+    )
+}
+
+interface IVariantSelectFallbackProps {
+    fallbackText?: string
+    selectedColors: string[]
+    selectedSizes: string[]
+}
+
+export const VariantSelectFallback = ({ fallbackText, selectedColors, selectedSizes }: IVariantSelectFallbackProps) => {
+    return (
+        <>
+            {
+                !selectedColors || !selectedSizes ? (
+                    <p className="text-sm text-muted-foreground mt-2 text-right">{fallbackText ?? "No color variant"}</p>
+                ) : null
+            }
+        </>
     )
 }

@@ -251,46 +251,24 @@ input[type='number'] {
   }
 }
 
-@utility custom-product-scrollbar {
-  &::-webkit-scrollbar {
+
+::-webkit-scrollbar {
+    width: 4px;
     height: 3px;
-    width: 95%;
+    margin-top: 4px;
+    margin-bottom: 4px;
   }
 
-  &::-webkit-scrollbar-track {
-    background: transparent;
-    border-radius: 50px;
-    max-width: 90%;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: hsl(28 96% 12%);
-    height: 3px;
-    border-radius: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: hsl(0 0% 33%);
-  }
-}
-
-@utility modal-scrollbar {
-  &::-webkit-scrollbar {
-    width: 2px;
-    height: 3px;
-  }
-
-  &::-webkit-scrollbar-track {
+  ::-webkit-scrollbar-track {
     background: hsl(0 0% 96%);
-    border-radius: 2px;
+    border-radius: 8px;
     height: 3px;
   }
 
-  &::-webkit-scrollbar-thumb {
-    background: var(--primary);
+  ::-webkit-scrollbar-thumb {
+    background: var(--secondary);
     border-radius: 6px;
   }
-}
 
 @utility sidebar-scrollbar {
   height: 100vh;
@@ -314,12 +292,12 @@ input[type='number'] {
 }
 
 /* ScrollArea component custom styling */
-[data-slot="scroll-area-scrollbar"] {
+[data-slot='scroll-area-scrollbar'] {
   width: 6px !important;
   padding: 0 !important;
 }
 
-[data-slot="scroll-area-thumb"] {
+[data-slot='scroll-area-thumb'] {
   background-color: hsla(0, 0%, 85%, 0.6) !important;
   width: 3px !important;
   margin: 0 auto !important;
@@ -392,12 +370,12 @@ input[type='number'] {
 }
 
 .bds-scrollbar::-webkit-scrollbar {
-	width: 6px;
-	height: 6px;
-	background-color: #ffffff;
+  width: 6px;
+  height: 6px;
+  background-color: #ffffff;
 }
 
 .bds-scrollbar::-webkit-scrollbar-thumb {
-	background: var(--color-bg-disabled);
-	border-radius: var(--radius-inf);
+  background: var(--color-bg-disabled);
+  border-radius: var(--radius-inf);
 }

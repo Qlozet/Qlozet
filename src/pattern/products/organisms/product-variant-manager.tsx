@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { VariantSelectOptions } from "./variant-select-options"
+import { VariantSelectFallback, VariantSelectOptions } from "./variant-select-options"
 import { VariantSetVariants } from "./variant-set-variants"
 import { VariantRow, VariantSizeDetail, ColorOption, AVAILABLE_COLORS, AVAILABLE_SIZES } from "../types/variant.types"
 
@@ -96,7 +96,9 @@ export function ProductVariantManager() {
                 onAddVariants={handleAddVariants}
                 onAddCustomColor={handleAddCustomColor}
                 availableColors={customColors}
-            />
+            >
+                <VariantSelectFallback selectedColors={selectedColors} selectedSizes={selectedSizes} />
+            </VariantSelectOptions>
 
             <VariantSetVariants
                 variants={variants}

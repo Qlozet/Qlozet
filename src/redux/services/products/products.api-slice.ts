@@ -198,14 +198,14 @@ export interface ProductsResponse {
 
 export interface ProductsFilters {
   page?: number;
-  limit?: number;
+  size?: number; // API uses 'size' instead of 'limit'
   search?: string;
-  category?: string;
+  kind?: 'clothing' | 'accessory' | 'fabric'; // API uses 'kind' instead of 'category'
   status?: string;
   minPrice?: number;
   maxPrice?: number;
   sortBy?: 'name' | 'price' | 'createdAt' | 'stock';
-  sortOrder?: 'asc' | 'desc';
+  order?: 'asc' | 'desc'; // API uses 'order' instead of 'sortOrder'
 }
 
 // API slice

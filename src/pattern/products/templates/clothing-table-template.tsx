@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ClothingTable } from '@/pattern/products/organisms/clothing-table'
 import { PaginationState } from '@tanstack/react-table'
-import { Product, useGetProductsQuery } from '@/redux/services/products/products.api-slice'
+import { Product, useGetProductsQuery, useDeleteProductMutation } from '@/redux/services/products/products.api-slice'
 import { Button } from '@/components/ui/button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { clearProductId } from '@/lib/utils'
@@ -17,6 +17,12 @@ import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-ic
 import { SearchInputWithParams } from '@/pattern/common/molecules/search-input-with-params'
 import { ExcelIcon } from '@/pattern/common/atoms/excel-icon'
 import { mockClothingProducts } from '@/lib/mocks'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Filter, ChevronDown, X } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Label } from '@/components/ui/label'
+import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
 
 interface ClothingTableTemplateProps {
   onExport?: () => void
@@ -33,6 +39,10 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   const [pageCount, setPageCount] = useState<number>(1)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [showSelect, setShowSelect] = useState<boolean>(false)
+  const [sortBy, setSortBy] = useState<'name' | 'price' | 'createdAt' | 'stock' | undefined>(undefined)
+  const [order, setOrder] = useState<'asc' | 'desc'>('desc')
+  const [filterOpen, setFilterOpen] = useState<boolean>(false)
+  const [activeFilter, setActiveFilter] = useState<string>('relevance')
 
   // Get search query from URL params
   useEffect(() => {
@@ -49,6 +59,57 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     setPagination(prev => ({ ...prev, pageIndex: 0 }))
   }
 
+  // Handle filter change
+  const handleFilterChange = (filterType: string) => {
+    setActiveFilter(filterType)
+
+    // Map filter types to sortBy and order
+    switch (filterType) {
+      case 'date-newest':
+        setSortBy('createdAt')
+        setOrder('desc')
+        break
+      case 'date-oldest':
+        setSortBy('createdAt')
+        setOrder('asc')
+        break
+      case 'rating-high':
+        setSortBy('price') // You can change this to rating when available in API
+        setOrder('desc')
+        break
+      case 'rating-low':
+        setSortBy('price') // You can change this to rating when available in API
+        setOrder('asc')
+        break
+      case 'price-high':
+        setSortBy('price')
+        setOrder('desc')
+        break
+      case 'price-low':
+        setSortBy('price')
+        setOrder('asc')
+        break
+      case 'relevance':
+      default:
+        setSortBy(undefined)
+        setOrder('desc')
+        break
+    }
+
+    // Reset to first page when filtering
+    setPagination(prev => ({ ...prev, pageIndex: 0 }))
+    setFilterOpen(false)
+  }
+
+  // Clear all filters
+  const handleClearFilters = () => {
+    setActiveFilter('relevance')
+    setSortBy(undefined)
+    setOrder('desc')
+    setPagination(prev => ({ ...prev, pageIndex: 0 }))
+    setFilterOpen(false)
+  }
+
   // Get Products API query for clothing category
   const {
     data: productsResponse,
@@ -60,10 +121,15 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     refetch,
   } = useGetProductsQuery({
     page: pagination.pageIndex + 1,
-    limit: pagination.pageSize,
-    search: searchQuery,
-    category: 'clothing', // Filter by clothing category
+    size: pagination.pageSize, // API uses 'size' instead of 'limit'
+    search: searchQuery || undefined, // Only send if not empty
+    kind: 'clothing', // API uses 'kind' instead of 'category'
+    sortBy: sortBy, // Add sortBy parameter
+    order: order, // Add order parameter (asc/desc)
   })
+
+  // Delete product mutation
+  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation()
 
   // Transform API products to match expected format
   const transformProduct = (apiProduct: any): Product => {
@@ -146,9 +212,18 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   }
 
   const handleDeleteProduct = (productId: string) => {
-    if (confirm('Are you sure you want to delete this product?')) {
-      toast.success('Product deletion will be implemented')
-    }
+    show(DeleteProductConfirmationModal, { title: "Are you sure you want to delete this product?", description: "Removing this product will erase all stored information about it from your dashboard.", actionText: "Delete Product" })
+      .then(() => {
+        deleteProduct(productId)
+          .unwrap()
+          .then(() => {
+            toast.success('Product deleted successfully')
+            refetch()
+          }).catch((error) => {
+            toast.error(error?.data?.message || 'Failed to delete product')
+            console.error('Error deleting product:', error)
+          })
+      })
   }
 
   return (
@@ -218,12 +293,124 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
         <h3 className='text-base font-medium'>Clothing</h3>
 
         <div className='flex items-center gap-3'>
-          {/* Filter Buttons */}
-          <div className='flex items-center gap-2'>
-            <Button variant='outline' size='default' className='bg-transparent gap-2 text-sm! font-medium py-3 rounded-[12px]'>
-              <span>Filter By :</span>
-            </Button>
-          </div>
+          {/* Filter Popover */}
+          <Popover open={filterOpen} onOpenChange={setFilterOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant='outline'
+                size='default'
+                className='bg-transparent gap-2 text-sm! font-medium py-3 rounded-[12px] relative'
+              >
+                <Filter className='w-4 h-4' />
+                <span>Filter By:</span>
+                {activeFilter !== 'relevance' && (
+                  <span className='ml-1 font-semibold capitalize'>
+                    {activeFilter.replace('-', ' ')}
+                  </span>
+                )}
+                <ChevronDown className='w-4 h-4 ml-1' />
+                {activeFilter !== 'relevance' && (
+                  <div className='absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full' />
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className='w-80 p-0' align='start'>
+              <div className='p-4 space-y-4'>
+                {/* Header */}
+                <div className='flex items-center justify-between'>
+                  <h4 className='font-semibold text-sm'>Filter Products</h4>
+                  {activeFilter !== 'relevance' && (
+                    <Button
+                      variant='ghost'
+                      size='sm'
+                      onClick={handleClearFilters}
+                      className='h-auto p-1 text-xs text-muted-foreground hover:text-foreground'
+                    >
+                      Clear All
+                    </Button>
+                  )}
+                </div>
+
+                <Separator />
+
+                {/* Relevance */}
+                <div className='space-y-3'>
+                  <h5 className='text-xs font-medium text-muted-foreground uppercase'>Relevance</h5>
+                  <RadioGroup value={activeFilter} onValueChange={handleFilterChange}>
+                    <div className='flex items-center space-x-2'>
+                      <RadioGroupItem value='relevance' id='relevance' />
+                      <Label htmlFor='relevance' className='text-sm font-normal cursor-pointer'>
+                        Most Relevant
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <Separator />
+
+                {/* Date */}
+                <div className='space-y-3'>
+                  <h5 className='text-xs font-medium text-muted-foreground uppercase'>Date Added</h5>
+                  <RadioGroup value={activeFilter} onValueChange={handleFilterChange}>
+                    <div className='flex items-center space-x-2'>
+                      <RadioGroupItem value='date-newest' id='date-newest' />
+                      <Label htmlFor='date-newest' className='text-sm font-normal cursor-pointer'>
+                        Newest First
+                      </Label>
+                    </div>
+                    <div className='flex items-center space-x-2'>
+                      <RadioGroupItem value='date-oldest' id='date-oldest' />
+                      <Label htmlFor='date-oldest' className='text-sm font-normal cursor-pointer'>
+                        Oldest First
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <Separator />
+
+                {/* Price */}
+                <div className='space-y-3'>
+                  <h5 className='text-xs font-medium text-muted-foreground uppercase'>Price</h5>
+                  <RadioGroup value={activeFilter} onValueChange={handleFilterChange}>
+                    <div className='flex items-center space-x-2'>
+                      <RadioGroupItem value='price-high' id='price-high' />
+                      <Label htmlFor='price-high' className='text-sm font-normal cursor-pointer'>
+                        Highest to Lowest
+                      </Label>
+                    </div>
+                    <div className='flex items-center space-x-2'>
+                      <RadioGroupItem value='price-low' id='price-low' />
+                      <Label htmlFor='price-low' className='text-sm font-normal cursor-pointer'>
+                        Lowest to Highest
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <Separator />
+
+                {/* Rating (placeholder for future) */}
+                <div className='space-y-3'>
+                  <h5 className='text-xs font-medium text-muted-foreground uppercase'>Rating</h5>
+                  <RadioGroup value={activeFilter} onValueChange={handleFilterChange}>
+                    <div className='flex items-center space-x-2'>
+                      <RadioGroupItem value='rating-high' id='rating-high' />
+                      <Label htmlFor='rating-high' className='text-sm font-normal cursor-pointer'>
+                        Highest Rated
+                      </Label>
+                    </div>
+                    <div className='flex items-center space-x-2'>
+                      <RadioGroupItem value='rating-low' id='rating-low' />
+                      <Label htmlFor='rating-low' className='text-sm font-normal cursor-pointer'>
+                        Lowest Rated
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
 
           {/* Search Input */}
           <SearchInputWithParams
@@ -236,7 +423,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
 
           {/* Export */}
           <Button
-          variant="default"
+            variant="default"
             size='default'
             onClick={handleExportProducts}
             className='gap-[10px] text-sm font-semibold'
@@ -265,13 +452,6 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
           onDelete={handleDeleteProduct}
           showSelect={showSelect}
         />
-
-        {/* Pagination Info */}
-        {products.length > 0 && (
-          <div className='mt-4 text-sm text-muted-foreground text-center'>
-            Showing {pagination.pageIndex * pagination.pageSize + 1} - 5 of {totalProducts}
-          </div>
-        )}
       </div>
     </div>
   )

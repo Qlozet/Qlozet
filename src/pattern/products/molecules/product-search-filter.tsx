@@ -23,14 +23,14 @@ const productFilterSchema = z.object({
   status: z
     .enum(['all', 'draft', 'active', 'inactive', 'out_of_stock'])
     .default('all'),
-  category: z.string().optional(),
+  category: z.string().optional().default('all'),
   tag: z.enum(['all', 'male', 'female', 'unisex']).default('all'),
   sortBy: z
     .enum(['name', 'price', 'stock', 'createdAt', 'category'])
     .default('createdAt'),
-  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+  order: z.enum(['asc', 'desc']).default('desc'), // API uses 'order' instead of 'sortOrder'
   page: z.number().min(1).default(1),
-  limit: z.number().min(1).max(100).default(20),
+  size: z.number().min(1).max(100).default(20), // API uses 'size' instead of 'limit'
 });
 
 export type ProductFilterData = z.infer<typeof productFilterSchema>;
@@ -58,9 +58,9 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
       category: 'all',
       tag: 'all',
       sortBy: 'createdAt',
-      sortOrder: 'desc',
+      order: 'desc', // API uses 'order' instead of 'sortOrder'
       page: 1,
-      limit: 20,
+      size: 20, // API uses 'size' instead of 'limit'
       ...initialFilters,
     },
   });
@@ -76,9 +76,9 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
       category: 'all',
       tag: 'all',
       sortBy: 'createdAt',
-      sortOrder: 'desc',
+      order: 'desc', // API uses 'order' instead of 'sortOrder'
       page: 1,
-      limit: 20,
+      size: 20, // API uses 'size' instead of 'limit'
     });
     onReset();
   };
@@ -231,7 +231,7 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
           {/* Sort Order */}
           <FormField
             control={form.control}
-            name='sortOrder'
+            name='order'
             render={({ field }) => (
               <FormItem className='w-full sm:w-32'>
                 <Select

@@ -39,5 +39,5 @@ export const AVAILABLE_SIZES: SizeOption[] = [
     { value: "m", label: "Medium" },
     { value: "l", label: "Large" },
 ]
-
+5
 export const ALL_SIZES = ["S", "M", "L", "XL", "XXL"]
