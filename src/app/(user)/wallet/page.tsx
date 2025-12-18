@@ -66,7 +66,8 @@ const Wallet: React.FC = () => {
     );
   };
 
-  const handleFilterWithDate = (startDate: number, endDate: number) => {
+  const handleFilterWithDate = (startDate?: number, endDate?: number) => {
+    if (!startDate || !endDate) return;
     setFilteredTransactionData(
       transactionData.filter(
         (item) =>
@@ -79,7 +80,7 @@ const Wallet: React.FC = () => {
   useEffect(() => {
     if (transactionsData?.data) {
       const transactionDataArray: any[] = [];
-      transactionsData.data.data.map((item: any) => {
+      (transactionsData.data as any)?.data?.map((item: any) => {
         const status = walletStatusCheck(item.status);
         const transactionItem = {
           transactionId: item?.transactionId,
@@ -197,14 +198,16 @@ const Wallet: React.FC = () => {
                       maxWidth={'max-w-[8rem]'}
                       placeholder='Time Range'
                       setValue={(startDate, endDate) => {
-                        handleFilterWithDate(startDate, endDate);
+                        const start = typeof startDate === 'number' ? startDate : undefined;
+                        const end = typeof endDate === 'number' ? endDate : undefined;
+                        handleFilterWithDate(start, end);
                       }}
                     />
                   </div>
                 </div>
                 <WalletTable
                   data={filteredTransactionData}
-                  viewDetails={(id) => {
+                  viewDetails={(id: string) => {
                     setransactionId(id);
                     handleShowViewDetailModal();
                   }}
@@ -218,6 +221,9 @@ const Wallet: React.FC = () => {
 
         <Modal
           show={setUpWalletWallet}
+          closeModal={() => {
+            setSetUpWalletWallet(false);
+          }}
           content={
             <>
               {setUpWalletWallet && (

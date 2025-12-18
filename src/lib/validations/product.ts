@@ -226,6 +226,7 @@ export const validateProductFilters = (data: unknown) => {
 export const transformFormDataToApiData = (formData: CompleteProductData) => {
   return {
     ...formData,
+    images: formData.images || [],
     variants:
       formData.variants?.filter((v) => v.size || v.color || v.material) || [],
     customizations:

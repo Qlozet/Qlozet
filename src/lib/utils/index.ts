@@ -50,30 +50,40 @@ export const clearToken = (): boolean => {
 };
 
 export const setUserData = (data: UserDetails): void => {
-  localStorage.setItem(USER_DETAILS_KEY, JSON.stringify(data));
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(USER_DETAILS_KEY, JSON.stringify(data));
+  }
 };
 
 export const getGetUserDetails = (): UserDetails | null => {
+  if (typeof window === 'undefined') return null;
   const data = localStorage.getItem(USER_DETAILS_KEY);
   return data ? JSON.parse(data) : null;
 };
 
 export const clearUserDetails = (): boolean => {
-  localStorage.removeItem(USER_DETAILS_KEY);
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(USER_DETAILS_KEY);
+  }
   return true;
 };
 
 export const setProductId = (data: string): void => {
-  localStorage.setItem(PRODUCT_ID_KEY, JSON.stringify(data));
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(PRODUCT_ID_KEY, JSON.stringify(data));
+  }
 };
 
 export const getProductId = (): string | null => {
+  if (typeof window === 'undefined') return null;
   const data = localStorage.getItem(PRODUCT_ID_KEY);
   return data ? JSON.parse(data) : null;
 };
 
 export const clearProductId = (): boolean => {
-  localStorage.removeItem(PRODUCT_ID_KEY);
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(PRODUCT_ID_KEY);
+  }
   return true;
 };
 
@@ -83,16 +93,21 @@ interface LocalStorageHandlers {
 }
 
 export const getCustomerId = (): string | null => {
+  if (typeof window === 'undefined') return null;
   const data = localStorage.getItem(CUSTOMER_KEY);
   return data ? JSON.parse(data) : null;
 };
 
 export const setCustomerId = (id: string): void => {
-  localStorage.setItem(CUSTOMER_KEY, JSON.stringify(id));
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(CUSTOMER_KEY, JSON.stringify(id));
+  }
 };
 
 export const clearCustomerId = (): boolean => {
-  localStorage.removeItem(CUSTOMER_KEY);
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(CUSTOMER_KEY);
+  }
   return true;
 };
 

@@ -3,11 +3,11 @@
 import Loader from '@/components/Loader';
 import React, { FC, ReactNode, Suspense } from 'react'
 
-interface IProps {
+interface AuthLayoutProps {
     children: ReactNode;
 }
 
-const AuthLayout: FC<IProps> = ({ children }) => {
+const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
     return (
         <>
             <Suspense fallback={<Loader />}>

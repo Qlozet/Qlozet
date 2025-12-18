@@ -69,7 +69,7 @@ const Dashboard: React.FC = () => {
     {
       item: 'Categories',
       navWidth: 'min-w-[8rem] lg:min-w-w-[0]',
-      handleFunction: (data) => {
+      handleFunction: (data: string) => {
         setCurrentNav(data);
       },
     },

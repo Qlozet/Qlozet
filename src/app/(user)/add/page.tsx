@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 import AddProductTemplate from '@/pattern/add/templates/add-product-template';
 import { toast } from 'sonner';
 
+export const dynamic = 'force-dynamic';
+
 const AddProduct: React.FC = () => {
   const router = useRouter();
 

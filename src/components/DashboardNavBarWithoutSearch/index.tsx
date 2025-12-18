@@ -26,6 +26,8 @@ interface DashboardNavWithOutSearchProps {
   showSideBar: () => void;
   hideNav?: boolean;
   userDetails?: UserDetails;
+  setValue?: (data: string) => void;
+  value?: string;
 }
 
 const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({

@@ -16,6 +16,8 @@ import arrowRight from '@/public/assets/svg/arrowRightt.svg';
 import Modal from '@/components/Modal';
 import ProductReview from '@/components/Products/ReviewComponent';
 
+export const dynamic = 'force-dynamic';
+
 const ProductDetails: React.FC = () => {
   const router = useRouter();
   const [showReview, setShowReview] = useState(false);

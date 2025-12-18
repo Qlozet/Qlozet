@@ -37,7 +37,8 @@
       "Bash(cat:*)",
       "Bash(curl:*)",
       "Bash(git mv:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(pnpm build:*)"
     ],
     "deny": [],
     "ask": []

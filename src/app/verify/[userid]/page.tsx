@@ -12,7 +12,7 @@ interface VerificationParams {
 }
 
 interface VerificationProps {
-  params: VerificationParams;
+  params: Promise<VerificationParams>;
 }
 
 const Verication: React.FC<VerificationProps> = ({ params }) => {
@@ -22,7 +22,8 @@ const Verication: React.FC<VerificationProps> = ({ params }) => {
 
   const verifyAccount = async (): Promise<void> => {
     try {
-      const response = await verifyVendorAccount(params.userid).unwrap();
+      const resolvedParams = await params;
+      const response = await verifyVendorAccount(resolvedParams.userid).unwrap();
       setLoading(false);
       if (response?.success) {
         toast.success(response?.message);

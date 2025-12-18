@@ -91,6 +91,7 @@ export const AddProductForm: React.FC<AddProductFormProps> = ({
         !transformedData.name ||
         !transformedData.category ||
         !transformedData.price ||
+        !transformedData.images ||
         transformedData.images.length === 0
       ) {
         toast.error(

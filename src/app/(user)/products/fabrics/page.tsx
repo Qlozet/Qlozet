@@ -5,6 +5,8 @@ import addIcon from '@/public/assets/svg/add-square.svg';
 import importIcon from '@/public/assets/svg/import.svg';
 import shoppingBag from '@/public/assets/svg/shipping_bag.svg';
 
+export const dynamic = 'force-dynamic';
+
 // Components import start
 import DashboardTopCard from '@/components/DashboardTopCard';
 import Typography from '@/components/Typography';
@@ -133,7 +135,8 @@ const Products: React.FC = () => {
     );
   };
 
-  const handleFilterWithDate = (startDate: number, endDate: number) => {
+  const handleFilterWithDate = (startDate?: number, endDate?: number) => {
+    if (!startDate || !endDate) return;
     setFilterdProduct(
       products.filter(
         (item) =>
@@ -218,7 +221,7 @@ const Products: React.FC = () => {
                 <div
                   className={`px-6 py-4 flex bg-white rounded-[12px] mt-4 max-w-[300px] w-full min-w-[300px]`}
                 >
-                  <DonutChart data={tagData} width={'90'} height={'90'} />
+                  <DonutChart data={tagData} width={90} height={90} />
                   <div>
                     <Typography
                       textColor='text-black'
@@ -278,7 +281,9 @@ const Products: React.FC = () => {
                         maxWidth={'max-w-[8rem]'}
                         placeholder='Time Range'
                         setValue={(startDate, endDate) => {
-                          handleFilterWithDate(startDate, endDate);
+                          const start = typeof startDate === 'number' ? startDate : undefined;
+                          const end = typeof endDate === 'number' ? endDate : undefined;
+                          handleFilterWithDate(start, end);
                         }}
                         // zIndex={100}
                       />
