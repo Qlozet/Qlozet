@@ -1,0 +1,56 @@
+'use client';
+
+import { FC } from 'react';
+import Logo from '@/components/Logo';
+import Typography from '@/components/Typography';
+import { useAppSelector } from '@/redux/store';
+
+const ConfirmAccount: FC = () => {
+  const email = useAppSelector((state) => state.filter.email);
+
+  return (
+    <section
+      className={` w-full h-screen p-4 flex justify-center bg-[#F8F9FA]`}
+    >
+      <div className='max-w-[735px]'>
+        <div className='py-16 flex justify-center'>
+          <Logo brown={true} />
+        </div>
+        <div
+          className='py-6 rounded-[16px] shadow-sm bg-contain bg-no-repeat'
+          style={{
+            backgroundImage: "url('/assets/image/verificationbg.jpg')"
+          }}
+        >
+          <div className='pb-2'>
+            <Typography
+              textColor='text-dark'
+              textWeight='font-bold'
+              textSize='text-[24px]'
+              align='text-center'
+            >
+              Confirm Your Email
+            </Typography>
+          </div>
+          <div className='pt-6 pb-4 px-6 border-t-[1px] border-solid border-gray-200'>
+            <Typography
+              textColor='text-dark'
+              textWeight='font-normal'
+              textSize=''
+              align='text-center'
+            >
+              We&apos;ve sent a verification email to{' '}
+              <span className='font-medium'>{email}</span>. Please check your
+              inbox for the email and click the verification link inside to
+              activate your account. If you haven&apos;t received the email, please
+              check your spam or junk folder.{' '}
+            </Typography>
+            <div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default ConfirmAccount;
