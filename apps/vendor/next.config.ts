@@ -21,11 +21,7 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Skip static page generation completely
-  experimental: {
-    // @ts-ignore - Disable all static optimization
-    isrMemoryCacheSize: 0,
-  },
+
   // @ts-ignore
   skipTrailingSlashRedirect: true,
   // @ts-ignore
