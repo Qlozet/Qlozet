@@ -1,10 +1,16 @@
-export default function DashboardPage() {
+'use client';
+
+import React from 'react';
+import { StatsCards } from '@/pattern/dashboard/templates/stats-cards';
+import { ChartsSection } from '@/pattern/dashboard/templates/charts-section';
+
+const DashboardPage = () => {
   return (
-    <section className="p-6">
-      <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-      <p className="mt-1 text-sm text-gray-500">
-        Admin mirror of vendor /dashboard. Replace with admin overview metrics.
-      </p>
-    </section>
+    <div className="w-full min-h-screen h-fit space-y-6">
+      <StatsCards />
+      <ChartsSection />
+    </div>
   );
-}
+};
+
+export default DashboardPage;

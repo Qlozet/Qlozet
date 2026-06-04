@@ -61,13 +61,34 @@ interface TransferRequest {
 // API Slice
 export const walletApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
-    // Get wallet balance
+    // Get wallet balance (backend: GET /wallets/balance)
     getWalletBalance: builder.query<ApiResponse<WalletBalance>, void>({
       query: () => ({
-        url: '/vendor/wallet/balance',
+        url: '/wallets/balance',
         method: 'GET',
       }),
       providesTags: ['WalletBalance'],
+    }),
+
+    // Fund wallet via Paystack (backend: POST /wallets/fund)
+    fundWallet: builder.mutation<ApiResponse<unknown>, { amount: number }>({
+      query: (body) => ({
+        url: '/wallets/fund',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['WalletBalance', 'Transaction'],
+    }),
+
+    // Get token price quote (backend: GET /wallets/price)
+    getWalletPrice: builder.query<
+      ApiResponse<{ price: number; currency: string; tokens: number }>,
+      { tokens: number; currency: string }
+    >({
+      query: ({ tokens, currency }) => ({
+        url: `/wallets/price?tokens=${tokens}&currency=${currency}`,
+        method: 'GET',
+      }),
     }),
 
     // Get wallet transactions
@@ -136,6 +157,8 @@ export const walletApiSlice = baseAPI.injectEndpoints({
 // Export hooks
 export const {
   useGetWalletBalanceQuery,
+  useFundWalletMutation,
+  useGetWalletPriceQuery,
   useGetWalletTransactionsQuery,
   useGetBanksQuery,
   useLazyVerifyAccountNumberQuery,

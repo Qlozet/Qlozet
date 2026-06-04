@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { saveCookie } from '@/lib/helpers/cookies-manager';
 import { SESSION_COOKIE_KEY } from '@/lib/constants';
 import { APP_ROUTES, AUTH_ROUTES } from '@/lib/routes';
+import { PAGES_IN_PROGRESS } from '@/lib/feature-flags';
 import { Form } from '@/components/ui/form';
 import { cn } from '@/lib/utils';
 import { useForm } from 'react-hook-form';
@@ -33,19 +34,25 @@ export const SignInTemplate = () => {
     })
       .unwrap()
       .then((response) => {
-        // Store token and redirect
+        // Always persist the session token
         saveCookie({
           key: SESSION_COOKIE_KEY,
           value: response?.data?.token?.access_token || '',
           isObject: false,
         });
 
-        push(APP_ROUTES.dashboard);
-        toast.success('Sign in successful!');
-      }).catch((error) => {
-        const errorMessage = error?.data?.message || 'Sign in failed. Please try again.';
-        toast.error(errorMessage);
+        // While pages are in progress, stay put instead of entering the app
+        if (!PAGES_IN_PROGRESS) {
+          push(APP_ROUTES.dashboard);
+          toast.success('Sign in successful!');
+        }
       })
+      .catch((error) => {
+        const errorMessage = PAGES_IN_PROGRESS
+          ? 'Something went wrong'
+          : error?.data?.message || 'Sign in failed. Please try again.';
+        toast.error(errorMessage);
+      });
   }
 
   const form = useForm<SignInFormData>({

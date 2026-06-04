@@ -1,1 +1,212 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: hsla(210, 17%, 98%, 1);
+  --foreground: hsla(0, 0%, 7%, 1);
+  --card: hsla(0, 0%, 100%);
+  --card-foreground: hsla(222.2, 84%, 4.9%);
+  --popover: hsla(0, 0%, 100%);
+  --popover-foreground: hsla(222.2, 84%, 4.9%);
+  --primary: hsla(27, 97%, 12%, 1);
+  --primary-foreground: hsla(210, 40%, 98%);
+  --secondary: hsla(22, 15%, 54%, 0.44);
+  --secondary-foreground: hsla(222.2, 84%, 4.9%);
+  --muted: hsla(210, 40%, 96%);
+  --muted-foreground: hsla(215.4, 16.3%, 46.9%);
+  --accent: hsla(210, 17%, 98%, 1);
+  --accent-foreground: hsla(222.2, 84%, 4.9%);
+  --destructive: hsla(0, 84.2%, 60.2%);
+  --destructive-foreground: hsla(210, 40%, 98%);
+  --success: hsla(120, 60%, 50%, 1);
+  --success-foreground: hsla(210, 40%, 98%);
+  --warning: hsla(39, 100%, 56%, 1);
+  --error: hsla(0, 100%, 61%, 1);
+  --error-foreground: hsla(210, 17%, 98%, 1);
+  --brown1: hsla(30, 10%, 81%, 1);
+  --brown2: hsla(22, 15%, 54%, 1);
+  --brown3: hsla(26, 32%, 29%, 1);
+  --grey1: hsla(203, 13%, 88%, 1);
+  --grey2: hsla(208, 11%, 71%, 1);
+  --grey3: hsla(210, 9%, 31%, 1);
+  --grey-black: hsla(0, 0%, 7%, 1);
+  --border: hsla(214.3, 31.8%, 91.4%);
+  --border-input: hsla(208, 11%, 71%, 1);
+  --input: hsla(214.3, 31.8%, 91.4%);
+  --ring: hsla(28, 96%, 12%);
+  --radius: 0.75rem;
+  --sidebar: hsla(0, 0%, 100%, 1);
+  --sidebar-foreground: hsla(210, 9%, 31%, 1);
+  --sidebar-primary: hsl(0, 0%, 9%);
+  --sidebar-primary-foreground: hsl(0, 0%, 98%);
+  --sidebar-accent: hsl(0, 0%, 96%);
+  --sidebar-accent-foreground: hsl(0, 0%, 9%);
+  --sidebar-border: hsl(0, 0%, 90%);
+  --sidebar-ring: hsl(0, 0%, 63%);
+}
+
+.dark {
+  --background: hsla(0, 0%, 7%, 1);
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: hsla(27, 97%, 12%, 1);
+  --primary-foreground: 210 40% 98%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 28 96% 12%;
+  --sidebar: hsla(0, 0%, 7%, 1);
+  --sidebar-foreground: hsl(0, 0%, 98%);
+  --sidebar-primary: hsl(225, 84%, 49%);
+  --sidebar-primary-foreground: hsl(0, 0%, 98%);
+  --sidebar-accent: hsl(0, 0%, 15%);
+  --sidebar-accent-foreground: hsl(0, 0%, 98%);
+  --sidebar-border: hsl(0, 0%, 15%);
+  --sidebar-ring: hsl(0, 0%, 32%);
+}
+
+@theme inline {
+  --font-sans:
+    ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-error-foreground: var(--error-foreground);
+  --color-brown1: var(--brown1);
+  --color-brown2: var(--brown2);
+  --color-brown3: var(--brown3);
+  --color-grey1: var(--grey1);
+  --color-grey2: var(--grey2);
+  --color-grey3: var(--grey3);
+  --color-grey-black: var(--grey-black);
+  --color-border: var(--border);
+  --color-border-input: var(--border-input);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-radius: var(--radius);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background max-w-[3024px] text-foreground my-0 mx-auto;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 3px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(0 0% 96%);
+  border-radius: 8px;
+  height: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary);
+  border-radius: 6px;
+}
+
+@utility sidebar-scrollbar {
+  height: 100vh;
+  overflow-y: scroll;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--background);
+    margin-top: 3px;
+    margin-bottom: 3px;
+    border-radius: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: hsl(28 96% 12%);
+    border-radius: 6px;
+  }
+}
+
+@utility custom-card-shadow {
+  box-shadow: 0px 4px 25px 0px hsla(240, 13%, 72%, 0.15);
+}
+
+/* ScrollArea component custom styling */
+[data-slot='scroll-area-scrollbar'] {
+  width: 6px !important;
+  padding: 0 !important;
+}
+
+[data-slot='scroll-area-thumb'] {
+  background-color: hsla(0, 0%, 85%, 0.6) !important;
+  width: 3px !important;
+  margin: 0 auto !important;
+  border-radius: 100px !important;
+}
