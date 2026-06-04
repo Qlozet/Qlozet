@@ -1,41 +1,27 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
-
-const NAV = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/products", label: "Products" },
-  { href: "/orders", label: "Orders" },
-  { href: "/customers", label: "Customers" },
-  { href: "/wallet", label: "Wallet" },
-  { href: "/notification", label: "Notification" },
-  { href: "/support", label: "Support" },
-  { href: "/settings", label: "Settings" },
-];
+import { Sidebar } from "@/pattern/common/templates/sidebar";
+import { DashboardTopBar } from "@/pattern/common/organisms/dashboard-top-bar";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen w-full bg-gray-50">
-      <aside className="hidden w-60 shrink-0 border-r border-gray-200 bg-white p-4 md:block">
-        <div className="mb-6 px-2 text-lg font-semibold">Qlozet Admin</div>
-        <nav className="flex flex-col gap-1 text-sm">
-          {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-md px-3 py-2 text-gray-700 hover:bg-gray-100"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-      </aside>
+    <TooltipProvider delayDuration={0}>
+      <div className="relative bg-background w-full flex h-screen">
+        {/* Sidebar */}
+        <Sidebar />
 
-      <div className="flex flex-1 flex-col">
-        <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-gray-200 bg-white px-6">
-          <div className="text-sm text-gray-500">Admin Panel</div>
-        </header>
-        <main className="flex-1 overflow-auto">{children}</main>
+        {/* Main Content Area */}
+        <div className="w-full flex-1 flex flex-col overflow-hidden">
+          {/* Top bar */}
+          <header className="sticky top-0 z-10 bg-background w-full px-4 lg:px-8 pt-6">
+            <DashboardTopBar />
+          </header>
+
+          <main className="w-full flex-1 overflow-auto pt-6 pl-4 pr-4 lg:pl-8 2xl:pr-8">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
