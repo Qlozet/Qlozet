@@ -30,8 +30,10 @@ export default function SignInPage() {
           isObject: false,
         });
         toast.success('Sign in successful!');
-        // Hard redirect to break out of the (auth) layout
-        window.location.href = APP_ROUTES.dashboard;
+        // Small delay to ensure cookie is persisted before redirect
+        setTimeout(() => {
+          window.location.replace('/dashboard');
+        }, 500);
       })
       .catch((error) => {
         toast.error(error?.data?.message || 'Sign in failed. Please try again.');
