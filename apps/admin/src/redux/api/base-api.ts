@@ -65,9 +65,11 @@ export const custom401Middleware: Middleware =
         (payload as { status: unknown }).status === 401
       ) {
         console.log('Received 401 Unauthorized response');
-        removeCookie(SESSION_COOKIE_KEY);
-        window.location.replace('/auth/sign-in');
+        // Temporarily disabled to debug the redirect loop!
+        // removeCookie(SESSION_COOKIE_KEY);
+        // window.location.replace('/auth/sign-in');
       }
     }
     return next(action);
   };
+
