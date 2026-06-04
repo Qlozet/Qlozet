@@ -15,11 +15,21 @@ const chartData = [
     { day: "Sat", earnings: 12000 },
 ];
 
-export const EarningsChart = () => {
+interface EarningsChartProps {
+    /** Optional gross-sales figure shown on the right of the header. */
+    grossSales?: string;
+}
+
+export const EarningsChart = ({ grossSales }: EarningsChartProps) => {
     return (
         <Card className="w-full max-h-[450px] rounded-[12px] custom-card-shadow">
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">Earnings</CardTitle>
+                {grossSales ? (
+                    <span className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
+                        Gross Sales: {grossSales}
+                    </span>
+                ) : null}
             </CardHeader>
             <CardContent className='w-full'>
                 <ResponsiveContainer width="100%" height={350}>

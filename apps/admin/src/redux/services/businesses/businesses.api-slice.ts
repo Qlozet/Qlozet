@@ -1,50 +1,75 @@
 // Businesses API Slice
-// RTK Query service for admin business/vendor management
+// RTK Query service for admin business/vendor management.
+// In the admin app a "vendor" is a registered business, so this slice backs
+// both the Vendors list page and the per-vendor detail view.
 
 import { baseAPI } from '@/redux/api/base-api';
-import { ApiResponse, PaginatedData, PaginationParams } from '../types';
+import {
+  ApiResponse,
+  PaginatedData,
+  buildQueryString,
+} from '../types';
 
 export type BusinessStatus =
   | 'pending'
   | 'in-review'
   | 'approved'
   | 'verified'
-  | 'rejected';
+  | 'rejected'
+  | 'active'
+  | 'inactive'
+  | 'suspended';
 
 export interface Business {
   _id: string;
+  // Business identity (the backend uses a few different field names depending
+  // on whether the record is a business profile or the owning vendor user).
   name?: string;
+  business_name?: string;
+  business_email?: string;
   email?: string;
   phone?: string;
+  phone_number?: string;
+  business_phone_number?: string;
+  personal_name?: string;
+  full_name?: string;
+  logo?: string;
+  profile_picture?: string;
   status?: BusinessStatus;
   isVerified?: boolean;
+  // Aggregate metrics surfaced in the Vendors table (optional — present only
+  // when the backend joins them in).
+  productsCount?: number;
+  ordersCount?: number;
+  revenue?: number;
   createdAt?: string;
   updatedAt?: string;
   [key: string]: unknown;
 }
 
+export interface GetBusinessesParams {
+  page?: number;
+  size?: number;
+  search?: string;
+  status?: string;
+}
+
 // API Slice
 export const businessesApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
-    // Get all registered businesses (paginated)
+    // Get all registered businesses/vendors (paginated, optionally filtered)
     getBusinesses: builder.query<
       ApiResponse<PaginatedData<Business>>,
-      PaginationParams | void
+      GetBusinessesParams | void
     >({
-      query: (args) => {
-        const params = new URLSearchParams();
-        if (args?.page !== undefined) params.append('page', `${args.page}`);
-        if (args?.size !== undefined) params.append('size', `${args.size}`);
-        const qs = params.toString();
-        return {
-          url: qs ? `/admin/businesses?${qs}` : '/admin/businesses',
-          method: 'GET',
-        };
-      },
+      query: (params) => ({
+        url: `/admin/businesses${buildQueryString({ ...(params ?? {}) })}`,
+        method: 'GET',
+      }),
       providesTags: ['Businesses'],
     }),
 
-    // Get a single business by ID
+    // Get a single business/vendor by ID
     getBusiness: builder.query<ApiResponse<Business>, string>({
       query: (id) => ({
         url: `/admin/businesses/${id}`,

@@ -8,6 +8,8 @@ import { ApiResponse } from '../types';
 export interface AdminDashboardMetrics {
   totalVendors?: number;
   verifiedVendors?: number;
+  activeVendors?: number;
+  inactiveVendors?: number;
   totalCustomers?: number;
   totalOrders?: number;
   grossSales?: number;

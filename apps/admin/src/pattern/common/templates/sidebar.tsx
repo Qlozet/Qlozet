@@ -32,8 +32,11 @@ import { WorkInProgressModal } from "../organisms/work-in-progress-modal"
 const navItemClass =
     "w-fit 2xl:w-full flex items-center gap-3 px-2 2xl:px-4 py-2 2xl:py-3 text-sidebar-foreground hover:text-secondary transition-colors text-sm font-normal duration-300 cursor-pointer text-left outline-none"
 
+// Routes whose pages are built and should navigate normally; everything else
+// still opens the "Work in Progress" modal.
+const ENABLED_ROUTES: string[] = [APP_ROUTES.dashboard, APP_ROUTES.vendors]
+
 export const Sidebar = () => {
-    // Only the Dashboard page is built; every other nav target shows a modal
     const showWorkInProgress = () => {
         NiceModal.show(WorkInProgressModal)
     }
@@ -122,8 +125,8 @@ export const Sidebar = () => {
                                     : (
                                         <Tooltip key={item.label}>
                                             <TooltipTrigger asChild>
-                                                {item.href === APP_ROUTES.dashboard ? (
-                                                    <NavLink href={item.href}>
+                                                {ENABLED_ROUTES.includes(item.href) ? (
+                                                    <NavLink href={item.href} exact={item.href === APP_ROUTES.dashboard}>
                                                         <item.icon className="w-5 h-5" />
                                                         <span className="invisible hidden 2xl:visible 2xl:inline-block">{item.label}</span>
                                                     </NavLink>

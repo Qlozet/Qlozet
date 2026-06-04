@@ -159,7 +159,7 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
             }
           }
         });
-        return `/vendor/orders?${searchParams.toString()}`;
+        return `/orders/vendor?${searchParams.toString()}`;
       },
       providesTags: ['Order'],
     }),
@@ -347,6 +347,62 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
         responseHandler: (response) => response.blob(),
       }),
     }),
+
+    // ---- Reconciled Qlozet "Orders" endpoints ----
+
+    // GET /orders/vendor — vendor orders, optionally filtered by status
+    getVendorOrders: builder.query<
+      { data: Order[]; [key: string]: unknown },
+      { status?: string } | void
+    >({
+      query: (params) => {
+        const status = params && 'status' in params ? params.status : undefined;
+        return {
+          url: status ? `/orders/vendor?status=${status}` : '/orders/vendor',
+          method: 'GET',
+        };
+      },
+      providesTags: ['Orders'],
+    }),
+
+    // GET /orders/customer — customer orders, optionally filtered by status
+    getCustomerOrders: builder.query<
+      { data: Order[]; [key: string]: unknown },
+      { status?: string } | void
+    >({
+      query: (params) => {
+        const status = params && 'status' in params ? params.status : undefined;
+        return {
+          url: status ? `/orders/customer?status=${status}` : '/orders/customer',
+          method: 'GET',
+        };
+      },
+      providesTags: ['Orders'],
+    }),
+
+    // GET /orders/chart — order chart data
+    getOrdersChart: builder.query<{ data: unknown }, void>({
+      query: () => ({ url: '/orders/chart', method: 'GET' }),
+      providesTags: ['OrderStats'],
+    }),
+
+    // POST /orders — create a new order (direct or from cart). CreateOrderDto.
+    placeOrder: builder.mutation<
+      { data: Order },
+      { items: { product_id: string; note?: string; selections: unknown }[] }
+    >({
+      query: (body) => ({ url: '/orders', method: 'POST', body }),
+      invalidatesTags: ['Order', 'Orders', 'OrderStats'],
+    }),
+
+    // PATCH /orders/cancel/{reference} — cancel an order and refund the customer
+    cancelOrderByReference: builder.mutation<{ data: Order }, string>({
+      query: (reference) => ({
+        url: `/orders/cancel/${reference}`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Order', 'Orders', 'OrderStats'],
+    }),
   }),
 });
 
@@ -365,4 +421,10 @@ export const {
   useGenerateOrderReportMutation,
   useBulkUpdateOrdersMutation,
   useGetOrderInvoiceQuery,
+  // Reconciled Qlozet endpoints
+  useGetVendorOrdersQuery,
+  useGetCustomerOrdersQuery,
+  useGetOrdersChartQuery,
+  usePlaceOrderMutation,
+  useCancelOrderByReferenceMutation,
 } = ordersApiSlice;

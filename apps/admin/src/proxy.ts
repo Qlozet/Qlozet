@@ -5,13 +5,14 @@ import { AUTH_ROUTES } from '@/lib/routes';
 import { PAGES_IN_PROGRESS } from '@/lib/feature-flags';
 
 /**
- * Temporary auth guard, gated behind the PAGES_IN_PROGRESS feature flag.
+ * Temporary auth guard — Next.js 16 Proxy (formerly Middleware), gated behind
+ * the PAGES_IN_PROGRESS feature flag.
  *
  * While the in-app pages are still being built, the app is locked behind the
  * auth screens: any non-auth route is redirected to the sign-in page. Flip the
- * flag off (or remove this guard) once the pending pages are ready.
+ * flag off (or remove this proxy) once the pending pages are ready.
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // App not locked — let every route through as normal
   if (!PAGES_IN_PROGRESS) {
     return NextResponse.next();

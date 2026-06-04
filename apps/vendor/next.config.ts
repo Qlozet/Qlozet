@@ -29,7 +29,7 @@ const nextConfig: NextConfig = {
   // @ts-ignore
   skipTrailingSlashRedirect: true,
   // @ts-ignore
-  skipMiddlewareUrlNormalize: true,
+  skipProxyUrlNormalize: true,
   // Force all routes to be dynamic
   // @ts-ignore
   reactStrictMode: false,

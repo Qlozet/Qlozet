@@ -141,6 +141,28 @@ export interface CreateClothingResponse {
   data?: any;
 }
 
+// CreateFabricDto — wrapper around FabricDto for POST /products/fabric
+export interface CreateFabricRequest {
+  product_id?: string;
+  seo?: {
+    title?: string;
+    keywords?: string[];
+  };
+  metafields?: Record<string, any>;
+  fabric: FabricDto;
+}
+
+// CreateAccessoryDto — wrapper around AccessoryDto for POST /products/accessory
+export interface CreateAccessoryRequest {
+  product_id?: string;
+  seo?: {
+    title?: string;
+    keywords?: string[];
+  };
+  metafields?: Record<string, any>;
+  accessory: AccessoryDto;
+}
+
 export interface Category {
   _id: string;
   name: string;
@@ -326,10 +348,10 @@ export const productsApiSlice = baseAPI.injectEndpoints({
       providesTags: ['Products'],
     }),
 
-    // Create accessory product (for axios migration)
+    // Create accessory product (backend: POST /products/accessory)
     createAccessory: builder.mutation<any, any>({
       query: (data) => ({
-        url: '/vendor/products/accessory',
+        url: '/products/accessory',
         method: 'POST',
         body: data,
       }),
@@ -394,6 +416,119 @@ export const productsApiSlice = baseAPI.injectEndpoints({
       }),
       invalidatesTags: ['Products'],
     }),
+
+    // ---- Reconciled Qlozet "Products" endpoints ----
+
+    // POST /products/fabric — create a fabric product
+    createFabric: builder.mutation<CreateClothingResponse, CreateFabricRequest>({
+      query: (fabricData) => ({
+        url: '/products/fabric',
+        method: 'POST',
+        body: fabricData,
+      }),
+      invalidatesTags: ['Products'],
+    }),
+
+    // GET /products/by-vendor — products owned by the current vendor
+    getProductsByVendor: builder.query<
+      ProductsResponse,
+      { kind?: string; size?: number; page?: number } | void
+    >({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        Object.entries(params ?? {}).forEach(([key, value]) => {
+          if (value !== undefined && value !== '') {
+            searchParams.append(key, String(value));
+          }
+        });
+        const qs = searchParams.toString();
+        return { url: `/products/by-vendor${qs ? `?${qs}` : ''}`, method: 'GET' };
+      },
+      providesTags: ['Products'],
+    }),
+
+    // GET /products/trending/week
+    getTrendingProductsThisWeek: builder.query<any, void>({
+      query: () => ({ url: '/products/trending/week', method: 'GET' }),
+      providesTags: ['Products'],
+    }),
+
+    // PATCH /products/{product_id}/status — update product status
+    updateProductStatus: builder.mutation<
+      any,
+      { productId: string; status: 'active' | 'draft' | 'archived' }
+    >({
+      query: ({ productId, status }) => ({
+        url: `/products/${productId}/status`,
+        method: 'PATCH',
+        body: { status },
+      }),
+      invalidatesTags: ['Product', 'Products'],
+    }),
+
+    // PATCH /products/{product_id}/schedule-activation
+    scheduleProductActivation: builder.mutation<
+      any,
+      { productId: string; activation_date: string }
+    >({
+      query: ({ productId, activation_date }) => ({
+        url: `/products/${productId}/schedule-activation`,
+        method: 'PATCH',
+        body: { activation_date },
+      }),
+      invalidatesTags: ['Product', 'Products'],
+    }),
+
+    // PATCH /products/{product_id}/fabrics/{fabric_id}/stock
+    updateFabricStock: builder.mutation<
+      any,
+      { productId: string; fabricId: string; new_yard_length: number }
+    >({
+      query: ({ productId, fabricId, new_yard_length }) => ({
+        url: `/products/${productId}/fabrics/${fabricId}/stock`,
+        method: 'PATCH',
+        body: { new_yard_length },
+      }),
+      invalidatesTags: ['Product', 'Products'],
+    }),
+
+    // PATCH /products/{product_id}/accessories/{accessoryId}/variants
+    updateAccessoryVariantStock: builder.mutation<
+      any,
+      { productId: string; accessoryId: string; variant_id: string; new_stock: number }
+    >({
+      query: ({ productId, accessoryId, variant_id, new_stock }) => ({
+        url: `/products/${productId}/accessories/${accessoryId}/variants`,
+        method: 'PATCH',
+        body: { variant_id, new_stock },
+      }),
+      invalidatesTags: ['Product', 'Products'],
+    }),
+
+    // POST /products/{id}/rate — rate a product (1–5 stars)
+    rateProduct: builder.mutation<
+      any,
+      { id: string; value: number; comment?: string }
+    >({
+      query: ({ id, value, comment }) => ({
+        url: `/products/${id}/rate`,
+        method: 'POST',
+        body: { value, comment },
+      }),
+      invalidatesTags: ['ProductReviews', 'Product'],
+    }),
+
+    // GET /products/{id}/ratings — rating summary and reviews
+    getProductRatings: builder.query<any, string>({
+      query: (id) => ({ url: `/products/${id}/ratings`, method: 'GET' }),
+      providesTags: ['ProductReviews'],
+    }),
+
+    // POST /products/{id}/wishlist — toggle product in wishlist
+    toggleProductWishlist: builder.mutation<any, string>({
+      query: (id) => ({ url: `/products/${id}/wishlist`, method: 'POST' }),
+      invalidatesTags: ['ProductLikes'],
+    }),
   }),
 });
 
@@ -418,4 +553,16 @@ export const {
   useScheduleProductMutation,
   useReviewItemMutation,
   useCreateClothingMutation,
+  // Reconciled Qlozet endpoints
+  useCreateFabricMutation,
+  useGetProductsByVendorQuery,
+  useLazyGetProductsByVendorQuery,
+  useGetTrendingProductsThisWeekQuery,
+  useUpdateProductStatusMutation,
+  useScheduleProductActivationMutation,
+  useUpdateFabricStockMutation,
+  useUpdateAccessoryVariantStockMutation,
+  useRateProductMutation,
+  useGetProductRatingsQuery,
+  useToggleProductWishlistMutation,
 } = productsApiSlice;

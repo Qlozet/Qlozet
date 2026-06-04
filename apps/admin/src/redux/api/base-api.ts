@@ -31,6 +31,17 @@ export const baseAPI = createApi({
     'TokenPrice',
     'Auth',
     'Profile',
+    // Reconciled read surfaces (Qlozet backend)
+    'Product',
+    'Products',
+    'Transaction',
+    'Transactions',
+    'Vendors',
+    'Vendor',
+    'Role',
+    'Roles',
+    'TeamMember',
+    'TeamMembers',
   ],
   endpoints: () => ({}),
 });

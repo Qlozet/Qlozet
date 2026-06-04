@@ -1,14 +1,10 @@
 "use client"
 
-import { ArrowUp, ArrowDown, Eye } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
-import Link from "next/link"
 import { APP_ROUTES } from "@/lib/routes"
-import { If } from "@/pattern/common/atoms/If"
 import { StatCartIcon } from "../atoms/stat-cart-icon"
 import { StatTruckIcon } from "../atoms/stat-truck-icon"
 import { StatsCardsSkeleton } from "../molecules/stats-card-skeleton"
+import { MetricCard } from "@/pattern/common/molecules/metric-card"
 import { useGetAdminDashboardQuery } from "@/redux/services/dashboard/dashboard.api-slice"
 
 // Format a numeric metric, falling back to a placeholder when absent
@@ -82,48 +78,16 @@ export const StatsCards = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {stats?.map((stat) => {
-        const isPositive = !stat?.change.startsWith("-")
-        return (
-          <Card key={stat?.id} className="h-[120px] p-3 2xl:p-5 rounded-[12px] custom-card-shadow">
-            <CardContent className="h-full p-0">
-              <div className="flex items-start justify-start gap-x-4">
-                {/* Icon */}
-                <div>{stat?.icon}</div>
-
-                <div className="flex-1 space-y-2">
-                  <div className="space-y-2">
-                    <p className="text-[hsla(210,9%,31%,1)] dark:text-white text-xs font-normal">{stat?.title}</p>
-                    <p className="text-2xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white">{stat?.value}</p>
-                  </div>
-
-                  <div className="w-full flex items-center justify-between">
-                    <p
-                      className={cn(
-                        "flex items-center gap-x-1 text-sm",
-                        isPositive ? "text-green-600 dark:text-green-400" : "text-destructive dark:text-red-400"
-                      )}
-                    >
-                      <span>{stat?.change}</span>
-                      {isPositive ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />}
-                    </p>
-
-                    <If isTrue={Boolean(stat?.viewAllLink)}>
-                      <Link
-                        href={stat?.viewAllLink ?? "#"}
-                        className="flex items-center gap-x-1 text-success dark:text-gray-400 text-xs whitespace-nowrap"
-                      >
-                        <Eye className="size-3.5" />
-                        <span>View All</span>
-                      </Link>
-                    </If>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )
-      })}
+      {stats.map((stat) => (
+        <MetricCard
+          key={stat.id}
+          title={stat.title}
+          value={stat.value}
+          change={stat.change}
+          icon={stat.icon}
+          viewAllLink={stat.viewAllLink}
+        />
+      ))}
     </div>
   )
 }

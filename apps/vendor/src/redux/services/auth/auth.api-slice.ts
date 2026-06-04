@@ -206,11 +206,12 @@ export const authApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Profile'],
     }),
 
-    // Verify Email
+    // Verify Email (backend expects the token in the request body)
     verifyEmail: builder.mutation<{ message: string }, VerifyEmailRequest>({
       query: ({ token }) => ({
-        url: `/auth/verify-email?token=${token}`,
+        url: '/auth/verify-email',
         method: 'POST',
+        body: { token },
       }),
       invalidatesTags: ['Auth', 'Profile'],
     }),
@@ -237,21 +238,21 @@ export const authApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Auth'],
     }),
 
-    // Get Current User Profile
+    // Get Current User Profile (backend: GET /users/me)
     getProfile: builder.query<{ data: LoginResponse['data']['user'] }, void>({
       query: () => ({
-        url: '/profile',
+        url: '/users/me',
       }),
       providesTags: ['Profile'],
     }),
 
-    // Update Profile
+    // Update Profile (backend: PATCH /users/me/profile)
     updateProfile: builder.mutation<
       { data: LoginResponse['data']['user'] },
       UpdateProfileRequest
     >({
       query: (data) => ({
-        url: '/profile',
+        url: '/users/me/profile',
         method: 'PATCH',
         body: data,
       }),
@@ -271,10 +272,10 @@ export const authApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Profile'],
     }),
 
-    // Delete Account
+    // Delete Account (backend: DELETE /users/delete)
     deleteAccount: builder.mutation<{ message: string }, { password: string }>({
       query: (data) => ({
-        url: '/auth/delete-account',
+        url: '/users/delete',
         method: 'DELETE',
         body: data,
       }),
