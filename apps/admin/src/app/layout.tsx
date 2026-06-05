@@ -1,3 +1,4 @@
+// Qlozet Admin Layout — last deployed 2026-06-04
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/redux/provider";
@@ -20,3 +21,4 @@ export default function RootLayout({
     </html>
   );
 }
+
