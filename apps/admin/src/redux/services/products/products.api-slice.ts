@@ -57,6 +57,38 @@ export interface CreateFabricRequest {
   fabric: FabricDto;
 }
 
+// Mirrors the vendor app's accessory shape (POST /products/accessory).
+export interface TaxonomyDto {
+  product_type: string;
+  categories: string[];
+  attributes: string[];
+  audience: string;
+}
+
+export interface VariantDto {
+  size?: string;
+  stock: number;
+  price: number;
+  sku?: string;
+  color?: { name: string; hex: string };
+  images?: ProductImageDto[];
+}
+
+export interface AccessoryDto {
+  name: string;
+  description?: string;
+  price: number;
+  sub_category?: string;
+  taxonomy: TaxonomyDto;
+  variants: VariantDto[];
+  images?: ProductImageDto[];
+}
+
+export interface CreateAccessoryRequest {
+  product_id?: string;
+  accessory: AccessoryDto;
+}
+
 // API Slice
 export const productsApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
@@ -99,6 +131,19 @@ export const productsApiSlice = baseAPI.injectEndpoints({
       }),
       invalidatesTags: ['Products'],
     }),
+
+    // POST /products/accessory — create an accessory product from the admin panel
+    createAccessory: builder.mutation<
+      ApiResponse<unknown>,
+      CreateAccessoryRequest
+    >({
+      query: (body) => ({
+        url: `/products/accessory`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Products'],
+    }),
   }),
 });
 
@@ -109,4 +154,5 @@ export const {
   useGetProductRatingsQuery,
   useDeleteProductMutation,
   useCreateFabricMutation,
+  useCreateAccessoryMutation,
 } = productsApiSlice;

@@ -7,7 +7,7 @@ import type { PaginationState } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { APP_ROUTES } from '@/lib/routes';
 import { ProductsStats } from '@/pattern/products/templates/products-stats';
-import { ClothingProductsTemplate } from '@/pattern/products/templates/clothing-products-template';
+import { VariantProductsTemplate } from '@/pattern/products/templates/variant-products-template';
 import type { DonutDatum } from '@/pattern/dashboard/molecules/donut-chart';
 import { useGetProductsQuery } from '@/redux/services/products/products.api-slice';
 
@@ -75,7 +75,9 @@ export default function ClothingPage() {
       />
 
       {/* Clothing products table */}
-      <ClothingProductsTemplate
+      <VariantProductsTemplate
+        title="Clothing"
+        emptyMessage="No clothing products found."
         products={products}
         isLoading={isLoading}
         isFetching={isFetching}
