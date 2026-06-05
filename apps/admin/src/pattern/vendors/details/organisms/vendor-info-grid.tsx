@@ -69,9 +69,9 @@ export const VendorInfoGrid = ({
             </span>
           </div>
           <div className="flex items-center gap-1 text-sm text-gray-700">
-            <span className="font-semibold">{rating ?? '4.4'}</span>
+            <span className="font-semibold">{rating ?? '—'}</span>
             <Star className="size-4 fill-[#FFB020] text-[#FFB020]" />
-            <span className="text-gray-500">({formatCount(reviews) === '—' ? '500' : formatCount(reviews)})</span>
+            <span className="text-gray-500">({formatCount(reviews)})</span>
           </div>
         </div>
 

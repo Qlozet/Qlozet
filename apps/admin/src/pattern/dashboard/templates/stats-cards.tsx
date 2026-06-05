@@ -32,46 +32,40 @@ export const StatsCards = () => {
     {
       id: 1,
       title: "Total Vendors",
-      value: formatValue(metrics?.totalVendors, "1000"),
-      change: "2.5%",
+      value: formatValue(metrics?.totalVendors, "—"),
       icon: <StatCartIcon fill="#57CAEB" />,
       viewAllLink: APP_ROUTES.vendors,
     },
     {
       id: 2,
       title: "Verified Vendors",
-      value: formatValue(metrics?.verifiedVendors, "1000"),
-      change: "2.5%",
+      value: formatValue(metrics?.verifiedVendors, "—"),
       icon: <StatCartIcon fill="#57CAEB" />,
       viewAllLink: APP_ROUTES.vendors,
     },
     {
       id: 3,
       title: "Total Customers",
-      value: formatValue(metrics?.totalCustomers, "N 50,000", { currency: true }),
-      change: "2.5%",
+      value: formatValue(metrics?.totalCustomers, "—", { currency: true }),
       icon: <StatTruckIcon fill="#5DDAB4" />,
     },
     {
       id: 4,
       title: "Total Orders",
-      value: formatValue(metrics?.totalOrders, "1000"),
-      change: "2.5%",
+      value: formatValue(metrics?.totalOrders, "—"),
       icon: <StatCartIcon fill="#57CAEB" />,
       viewAllLink: APP_ROUTES.orders,
     },
     {
       id: 5,
       title: "Gross Sales",
-      value: formatValue(metrics?.grossSales, "N 50,000", { currency: true }),
-      change: "2.5%",
+      value: formatValue(metrics?.grossSales, "—", { currency: true }),
       icon: <StatTruckIcon fill="#5DDAB4" />,
     },
     {
       id: 6,
       title: "Measurement Accuracy",
-      value: formatValue(metrics?.measurementAccuracy, "95%", { percent: true }),
-      change: "2.5%",
+      value: formatValue(metrics?.measurementAccuracy, "—", { percent: true }),
       icon: <StatCartIcon fill="#FF7976" />,
     },
   ]
@@ -83,7 +77,6 @@ export const StatsCards = () => {
           key={stat.id}
           title={stat.title}
           value={stat.value}
-          change={stat.change}
           icon={stat.icon}
           viewAllLink={stat.viewAllLink}
         />

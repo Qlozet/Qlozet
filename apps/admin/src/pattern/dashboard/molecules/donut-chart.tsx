@@ -48,6 +48,12 @@ interface DonutChartProps {
   data: DonutDatum[];
   colors: string[];
   className?: string;
+  /**
+   * Where the legend sits relative to the donut. "bottom" (default) keeps the
+   * centered legend used by the dashboard charts; "right" renders the title and
+   * a two-column legend grid beside the donut (used by the products stats card).
+   */
+  legendPosition?: 'bottom' | 'right';
 }
 
 // Reusable donut chart (Card + Pie + legend). Backs "Orders by gender",
@@ -58,7 +64,60 @@ export const DonutChart = ({
   data,
   colors,
   className,
+  legendPosition = 'bottom',
 }: DonutChartProps) => {
+  if (legendPosition === 'right') {
+    return (
+      <Card
+        className={`h-[120px] w-full rounded-[12px] custom-card-shadow ${className ?? ''}`}
+      >
+        <CardContent className="flex h-full items-center gap-4 p-3 2xl:p-5">
+          <div className="size-[88px] shrink-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                <Pie
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={23}
+                  outerRadius={40}
+                  paddingAngle={2}
+                  dataKey="value"
+                >
+                  {data.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={colors[index % colors.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomChartTooltip />} cursor={false} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="flex-1 space-y-3">
+            <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
+              {title}
+            </CardTitle>
+            <ul className="grid w-fit grid-cols-2 gap-x-10 gap-y-2 p-0 m-0 text-xs capitalize">
+              {data.map((entry, index) => (
+                <li key={`legend-${index}`} className="flex items-center gap-x-2">
+                  <span className="shrink-0">
+                    <ChartLegendIcon color={colors[index % colors.length]} />
+                  </span>
+                  <span className="truncate text-black dark:text-white">
+                    {entry.name}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className={`w-full rounded-[12px] custom-card-shadow ${className ?? ''}`}>
       <CardHeader className="px-6 pb-4">

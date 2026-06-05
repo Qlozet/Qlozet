@@ -42,15 +42,15 @@ export const WalletDetailsSection = ({
   const bankRows: BankDetailRow[] = [
     {
       label: 'Account name',
-      value: str(bank.account_name ?? vendor?.account_name, 'Garm Island'),
+      value: str(bank.account_name ?? vendor?.account_name, '—'),
     },
     {
       label: 'Account number',
-      value: str(bank.account_number ?? vendor?.account_number, 'xxxxxxxx890'),
+      value: str(bank.account_number ?? vendor?.account_number, '—'),
     },
     {
       label: 'Bank Name',
-      value: str(bank.bank_name ?? vendor?.bank_name, 'Zenith Bank'),
+      value: str(bank.bank_name ?? vendor?.bank_name, '—'),
     },
     {
       label: 'Kyc verified',
@@ -70,8 +70,7 @@ export const WalletDetailsSection = ({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <MetricCard
             title="Wallet Balance"
-            value={money(m.walletBalance, 'N 50,000')}
-            change="2.5%"
+            value={money(m.walletBalance, '—')}
             icon={
               <Icon bg="bg-[#5DDAB4]">
                 <Wallet className="size-6" />
@@ -80,8 +79,7 @@ export const WalletDetailsSection = ({
           />
           <MetricCard
             title="Pending Payment"
-            value={money(m.pendingPayment, 'N 50,000')}
-            change="2.5%"
+            value={money(m.pendingPayment, '—')}
             icon={
               <Icon bg="bg-[#E8A87C]">
                 <Coins className="size-6" />
@@ -90,9 +88,8 @@ export const WalletDetailsSection = ({
           />
           <MetricCard
             title="Total Payout"
-            value={money(m.totalPayout, 'N 1,000,000')}
-            change="2.5%"
-            subLabel={str(m.lastPayoutDate, 'March 1, 2025')}
+            value={money(m.totalPayout, '—')}
+            subLabel={str(m.lastPayoutDate, '')}
             icon={
               <Icon bg="bg-[#FF7976]">
                 <Banknote className="size-6" />
@@ -101,8 +98,7 @@ export const WalletDetailsSection = ({
           />
           <MetricCard
             title="Lifetime Earnings"
-            value={money(m.lifetimeEarnings, '100,000,000')}
-            change="2.5%"
+            value={money(m.lifetimeEarnings, '—')}
             icon={
               <Icon bg="bg-[#8B5CF6]">
                 <ShoppingCart className="size-6" />

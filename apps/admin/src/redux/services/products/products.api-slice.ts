@@ -30,6 +30,33 @@ export interface GetProductsParams {
   order?: string;
 }
 
+export interface ProductImageDto {
+  url: string;
+  public_id?: string;
+}
+
+// Mirrors the vendor app's FabricDto so the admin "Add Fabric" form posts the
+// same shape the backend already accepts (POST /products/fabric).
+export interface FabricDto {
+  name: string;
+  description?: string;
+  material?: string;
+  colour?: string;
+  pattern?: string;
+  sub_category?: string;
+  category?: string;
+  yard_length: number;
+  width: number;
+  min_cut: number;
+  price_per_yard: number;
+  images?: ProductImageDto[];
+}
+
+export interface CreateFabricRequest {
+  product_id?: string;
+  fabric: FabricDto;
+}
+
 // API Slice
 export const productsApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
@@ -62,6 +89,16 @@ export const productsApiSlice = baseAPI.injectEndpoints({
       query: (id) => ({ url: `/products/${id}`, method: 'DELETE' }),
       invalidatesTags: ['Product', 'Products'],
     }),
+
+    // POST /products/fabric — create a fabric product from the admin panel
+    createFabric: builder.mutation<ApiResponse<unknown>, CreateFabricRequest>({
+      query: (body) => ({
+        url: `/products/fabric`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Products'],
+    }),
   }),
 });
 
@@ -71,4 +108,5 @@ export const {
   useGetProductQuery,
   useGetProductRatingsQuery,
   useDeleteProductMutation,
+  useCreateFabricMutation,
 } = productsApiSlice;

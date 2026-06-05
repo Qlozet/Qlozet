@@ -6,9 +6,16 @@ import { ApiResponse, PaginatedData, buildQueryString } from '../types';
 
 export interface Ticket {
   _id: string;
+  reference?: string;
+  ticket_id?: string;
   subject?: string;
+  title?: string;
+  description?: string;
+  message?: string;
   status?: string;
   assigned_to?: string;
+  customer_id?: string;
+  date?: string;
   createdAt?: string;
   updatedAt?: string;
   [key: string]: unknown;
@@ -29,6 +36,7 @@ export interface GetTicketsParams {
   search?: string;
   status?: string;
   assigned_to?: string;
+  customer_id?: string;
   start_date?: string;
   end_date?: string;
   page?: number;
