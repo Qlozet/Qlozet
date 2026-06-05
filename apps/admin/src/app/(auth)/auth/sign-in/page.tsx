@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+
 import { toast } from 'sonner';
 import { useAdminLoginMutation } from '@/redux/services/auth/auth.api-slice';
 import { saveCookie } from '@/lib/helpers/cookies-manager';
@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 export default function SignInPage() {
-  const { push } = useRouter();
+
   const [adminLogin, { isLoading, isError }] = useAdminLoginMutation();
 
   const [email, setEmail] = useState('');
@@ -29,8 +29,11 @@ export default function SignInPage() {
           value: response?.data?.token?.access_token || '',
           isObject: false,
         });
-        push(APP_ROUTES.dashboard);
         toast.success('Sign in successful!');
+        // Small delay to ensure cookie is persisted before redirect
+        setTimeout(() => {
+          window.location.replace('/dashboard');
+        }, 500);
       })
       .catch((error) => {
         toast.error(error?.data?.message || 'Sign in failed. Please try again.');
