@@ -30,6 +30,65 @@ export interface GetProductsParams {
   order?: string;
 }
 
+export interface ProductImageDto {
+  url: string;
+  public_id?: string;
+}
+
+// Mirrors the vendor app's FabricDto so the admin "Add Fabric" form posts the
+// same shape the backend already accepts (POST /products/fabric).
+export interface FabricDto {
+  name: string;
+  description?: string;
+  material?: string;
+  colour?: string;
+  pattern?: string;
+  sub_category?: string;
+  category?: string;
+  yard_length: number;
+  width: number;
+  min_cut: number;
+  price_per_yard: number;
+  images?: ProductImageDto[];
+}
+
+export interface CreateFabricRequest {
+  product_id?: string;
+  fabric: FabricDto;
+}
+
+// Mirrors the vendor app's accessory shape (POST /products/accessory).
+export interface TaxonomyDto {
+  product_type: string;
+  categories: string[];
+  attributes: string[];
+  audience: string;
+}
+
+export interface VariantDto {
+  size?: string;
+  stock: number;
+  price: number;
+  sku?: string;
+  color?: { name: string; hex: string };
+  images?: ProductImageDto[];
+}
+
+export interface AccessoryDto {
+  name: string;
+  description?: string;
+  price: number;
+  sub_category?: string;
+  taxonomy: TaxonomyDto;
+  variants: VariantDto[];
+  images?: ProductImageDto[];
+}
+
+export interface CreateAccessoryRequest {
+  product_id?: string;
+  accessory: AccessoryDto;
+}
+
 // API Slice
 export const productsApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
@@ -62,6 +121,29 @@ export const productsApiSlice = baseAPI.injectEndpoints({
       query: (id) => ({ url: `/products/${id}`, method: 'DELETE' }),
       invalidatesTags: ['Product', 'Products'],
     }),
+
+    // POST /products/fabric — create a fabric product from the admin panel
+    createFabric: builder.mutation<ApiResponse<unknown>, CreateFabricRequest>({
+      query: (body) => ({
+        url: `/products/fabric`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Products'],
+    }),
+
+    // POST /products/accessory — create an accessory product from the admin panel
+    createAccessory: builder.mutation<
+      ApiResponse<unknown>,
+      CreateAccessoryRequest
+    >({
+      query: (body) => ({
+        url: `/products/accessory`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Products'],
+    }),
   }),
 });
 
@@ -71,4 +153,6 @@ export const {
   useGetProductQuery,
   useGetProductRatingsQuery,
   useDeleteProductMutation,
+  useCreateFabricMutation,
+  useCreateAccessoryMutation,
 } = productsApiSlice;

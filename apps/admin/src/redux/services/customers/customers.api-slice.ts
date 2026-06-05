@@ -7,12 +7,31 @@ import { ApiResponse, PaginatedData, buildQueryString } from '../types';
 export interface Customer {
   _id: string;
   name?: string;
+  username?: string;
   email?: string;
   phone?: string;
+  phone_number?: string;
   gender?: string;
   state?: string;
   city?: string;
   status?: string;
+  // Avatar (the backend uses a few different field names).
+  avatar?: string;
+  image?: string;
+  profile_picture?: string;
+  address?: string;
+  location?: string;
+  // Aggregate metrics surfaced in the Customers table / detail view (optional —
+  // present only when the backend joins them in).
+  totalOrders?: number;
+  ordersCount?: number;
+  lastOrderDate?: string;
+  lastOrderAt?: string;
+  lastLoggedIn?: string;
+  lastLoginAt?: string;
+  reviewsCount?: number;
+  followedVendorsCount?: number;
+  reservedFabricCount?: number;
   createdAt?: string;
   updatedAt?: string;
   [key: string]: unknown;

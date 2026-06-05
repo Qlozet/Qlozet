@@ -2,6 +2,7 @@ import { getCookies, removeCookie } from '@/lib/helpers/cookies-manager';
 import { Middleware } from '@reduxjs/toolkit';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { SESSION_COOKIE_KEY } from '@/lib/constants';
+import { PAGES_IN_PROGRESS } from '@/lib/feature-flags';
 import { env } from '@/env';
 
 const BASE_URL = env.NEXT_PUBLIC_BASE_URL;
@@ -65,9 +66,13 @@ export const custom401Middleware: Middleware =
         (payload as { status: unknown }).status === 401
       ) {
         console.log('Received 401 Unauthorized response');
-        // Temporarily disabled to debug the redirect loop!
-        // removeCookie(SESSION_COOKIE_KEY);
-        // window.location.replace('/auth/sign-in');
+        // Only bounce to sign-in while the app is locked behind the auth guard.
+        // When the guard is off (PAGES_IN_PROGRESS = false) we let in-progress
+        // pages render so the app can be worked on without a real session.
+        if (PAGES_IN_PROGRESS) {
+          removeCookie(SESSION_COOKIE_KEY);
+          window.location.replace('/auth/sign-in');
+        }
       }
     }
     return next(action);

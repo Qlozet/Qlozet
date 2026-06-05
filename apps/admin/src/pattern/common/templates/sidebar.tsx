@@ -34,7 +34,7 @@ const navItemClass =
 
 // Routes whose pages are built and should navigate normally; everything else
 // still opens the "Work in Progress" modal.
-const ENABLED_ROUTES: string[] = [APP_ROUTES.dashboard, APP_ROUTES.vendors]
+const ENABLED_ROUTES: string[] = [APP_ROUTES.dashboard, APP_ROUTES.vendors, APP_ROUTES.customers, APP_ROUTES.admin, APP_ROUTES.productsCloth, APP_ROUTES.productsFabrics]
 
 export const Sidebar = () => {
     const showWorkInProgress = () => {
@@ -108,10 +108,17 @@ export const Sidebar = () => {
                                                     {item.subItems?.map((subItem) => (
                                                         <Tooltip key={subItem.label}>
                                                             <TooltipTrigger asChild>
-                                                                <button type="button" onClick={showWorkInProgress} className={navItemClass}>
-                                                                    <subItem.icon className="w-5 h-5 transition-colors duration-75 " />
-                                                                    <span className="invisible hidden 2xl:visible 2xl:inline-block">{subItem.label}</span>
-                                                                </button>
+                                                                {ENABLED_ROUTES.includes(subItem.href) ? (
+                                                                    <NavLink href={subItem.href}>
+                                                                        <subItem.icon className="w-5 h-5 transition-colors duration-75 " />
+                                                                        <span className="invisible hidden 2xl:visible 2xl:inline-block">{subItem.label}</span>
+                                                                    </NavLink>
+                                                                ) : (
+                                                                    <button type="button" onClick={showWorkInProgress} className={navItemClass}>
+                                                                        <subItem.icon className="w-5 h-5 transition-colors duration-75 " />
+                                                                        <span className="invisible hidden 2xl:visible 2xl:inline-block">{subItem.label}</span>
+                                                                    </button>
+                                                                )}
                                                             </TooltipTrigger>
                                                             <TooltipContent className="2xl:hidden 2xl:invisible">
                                                                 {subItem.label}

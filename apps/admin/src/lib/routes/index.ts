@@ -21,6 +21,7 @@ export const APP_ROUTES = {
   staticPage: '/static-page',
   marketing: '/marketing',
   admin: '/admin',
+  adminManageRoles: '/admin/manage-roles',
   payment: '/payment',
   notifications: '/notifications',
   performance: '/performance',
