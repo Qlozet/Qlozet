@@ -155,7 +155,8 @@ export const AddNotificationModal = NiceModal.create(() => {
                 <SelectTrigger>
                   <SelectValue placeholder="Select audience" />
                 </SelectTrigger>
-                <SelectContent>
+                {/* Above the z-[100] modal — the portal renders to <body>. */}
+                <SelectContent className="z-[200]">
                   {AUDIENCE_OPTIONS.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
@@ -175,7 +176,8 @@ export const AddNotificationModal = NiceModal.create(() => {
                 <SelectTrigger>
                   <SelectValue placeholder="Select trigger" />
                 </SelectTrigger>
-                <SelectContent>
+                {/* Above the z-[100] modal — the portal renders to <body>. */}
+                <SelectContent className="z-[200]">
                   {TRIGGER_OPTIONS.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
