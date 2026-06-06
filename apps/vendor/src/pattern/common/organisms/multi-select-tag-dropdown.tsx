@@ -4,12 +4,12 @@ import { useState, useRef, useEffect } from "react"
 import { ChevronDown, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-interface Tag {
+export interface Tag {
     value: string
     label: string
 }
 
-interface TagGroup {
+export interface TagGroup {
     label: string
     tags: Tag[]
 }
