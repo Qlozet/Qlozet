@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { StepperField } from '../molecules/stepper-field';
 import { LabeledSelect } from '../molecules/labeled-select';
+import { ColourSelect } from '../molecules/colour-select';
 import { useCreateFabricMutation } from '@/redux/services/products/products.api-slice';
 
 const MATERIAL_OPTIONS = [
@@ -24,13 +25,33 @@ const MATERIAL_OPTIONS = [
 ];
 
 const PATTERN_OPTIONS = [
-  'Floral',
-  'Polka dots',
   'Solid',
-  'Stripes',
-  'Plain',
-  'Checked',
+  'Striped',
+  'Graphic',
+  'Dotted',
+  'Animal',
+  'Tropical',
+  'Paisley',
+  'Argyle',
+  'Floral',
+  'Camou',
+  'Colour-Block',
+  'Repeated',
+  'Checkerboard',
+  'Plaid',
+  'Gingham',
+  'Houndstooth',
+  'Chevron',
+  'Tweed',
+  'Abstract',
+  'Tie Dye',
+  'Ankara',
   'Geometric',
+  'Lace',
+  'Kente',
+  'Aso Oke',
+  'Kuba',
+  'Shweshwe',
 ];
 
 export const AddFabricModal = NiceModal.create(() => {
@@ -117,7 +138,7 @@ export const AddFabricModal = NiceModal.create(() => {
         role="dialog"
         aria-modal="true"
         aria-labelledby="add-fabric-title"
-        className="relative z-10 flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-card shadow-2xl md:flex-row"
+        className="relative z-10 flex max-h-[90vh] w-full max-w-250 flex-col overflow-hidden rounded-2xl bg-card shadow-2xl md:flex-row"
       >
         <button
           type="button"
@@ -169,29 +190,17 @@ export const AddFabricModal = NiceModal.create(() => {
             onChange={setMaterial}
           />
 
-          {/* Colour with a swatch picker on the right */}
+          {/* Colour: named-colour menu + custom hex */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-gray-700">Colour</label>
-            <div className="relative">
-              <Input
-                value={colour}
-                onChange={(e) => setColour(e.target.value)}
-                placeholder="Any fabric type"
-                className="pr-12"
-              />
-              <label
-                className="absolute right-2 top-1/2 size-7 -translate-y-1/2 cursor-pointer overflow-hidden rounded-md border border-input"
-                style={{ backgroundColor: swatch }}
-                aria-label="Pick colour"
-              >
-                <input
-                  type="color"
-                  value={swatch}
-                  onChange={(e) => setSwatch(e.target.value)}
-                  className="size-full cursor-pointer opacity-0"
-                />
-              </label>
-            </div>
+            <ColourSelect
+              value={colour}
+              hex={swatch}
+              onChange={(name, hex) => {
+                setColour(name);
+                setSwatch(hex);
+              }}
+            />
           </div>
 
           <LabeledSelect

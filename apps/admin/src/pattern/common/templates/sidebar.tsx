@@ -34,7 +34,7 @@ const navItemClass =
 
 // Routes whose pages are built and should navigate normally; everything else
 // still opens the "Work in Progress" modal.
-const ENABLED_ROUTES: string[] = [APP_ROUTES.dashboard, APP_ROUTES.vendors, APP_ROUTES.customers, APP_ROUTES.admin, APP_ROUTES.productsCloth, APP_ROUTES.productsFabrics]
+const ENABLED_ROUTES: string[] = [APP_ROUTES.dashboard, APP_ROUTES.vendors, APP_ROUTES.customers, APP_ROUTES.admin, APP_ROUTES.productsCloth, APP_ROUTES.productsFabrics, APP_ROUTES.productsAccessories, APP_ROUTES.productsAdd]
 
 export const Sidebar = () => {
     const showWorkInProgress = () => {

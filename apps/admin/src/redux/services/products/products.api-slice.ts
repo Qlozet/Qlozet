@@ -70,8 +70,35 @@ export interface VariantDto {
   stock: number;
   price: number;
   sku?: string;
+  yard_per_order?: number;
   color?: { name: string; hex: string };
   images?: ProductImageDto[];
+}
+
+// A colour (or fabric) grouping with its own images and per-size variants.
+// Mirrors the vendor ClothingDto contract (POST /products/clothing).
+export interface ColorVariantDto {
+  name: string;
+  hex: string;
+  images: ProductImageDto[];
+  variants: VariantDto[];
+}
+
+export interface ClothingDto {
+  name: string;
+  type: 'customize' | 'non_customize';
+  description?: string;
+  turnaround_days: number;
+  taxonomy: TaxonomyDto;
+  status: 'active' | 'draft' | 'archived';
+  images?: ProductImageDto[];
+  color_variants: ColorVariantDto[];
+}
+
+export interface CreateClothingRequest {
+  seo?: { title?: string; keywords?: string[] };
+  metafields?: Record<string, unknown>;
+  clothing: ClothingDto;
 }
 
 export interface AccessoryDto {
@@ -144,6 +171,16 @@ export const productsApiSlice = baseAPI.injectEndpoints({
       }),
       invalidatesTags: ['Products'],
     }),
+
+    // POST /products/clothing — create a clothing product from the admin panel
+    createClothing: builder.mutation<ApiResponse<unknown>, CreateClothingRequest>({
+      query: (body) => ({
+        url: `/products/clothing`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Products'],
+    }),
   }),
 });
 
@@ -155,4 +192,5 @@ export const {
   useDeleteProductMutation,
   useCreateFabricMutation,
   useCreateAccessoryMutation,
+  useCreateClothingMutation,
 } = productsApiSlice;
