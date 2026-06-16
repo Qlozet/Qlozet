@@ -34,7 +34,7 @@ const navItemClass =
 
 // Routes whose pages are built and should navigate normally; everything else
 // still opens the "Work in Progress" modal.
-const ENABLED_ROUTES: string[] = [APP_ROUTES.dashboard, APP_ROUTES.vendors]
+const ENABLED_ROUTES: string[] = [APP_ROUTES.dashboard, APP_ROUTES.vendors, APP_ROUTES.customers, APP_ROUTES.admin, APP_ROUTES.productsCloth, APP_ROUTES.productsFabrics, APP_ROUTES.productsAccessories, APP_ROUTES.productsAdd, APP_ROUTES.notifications, APP_ROUTES.support]
 
 export const Sidebar = () => {
     const showWorkInProgress = () => {
@@ -63,13 +63,7 @@ export const Sidebar = () => {
         },
         { icon: AdminNavIcon, label: "Admin", href: APP_ROUTES.admin },
         { icon: PaymentNavIcon, label: "Payment", href: APP_ROUTES.payment },
-        {
-            // TODO: replace placeholder sub-pages with the real Notifications sections
-            icon: NotificationsNavIcon, label: "Notifications", href: APP_ROUTES.notifications, subItems: [
-                { icon: NotificationsNavIcon, label: "All", href: APP_ROUTES.notifications },
-                { icon: NotificationsNavIcon, label: "Preferences", href: `${APP_ROUTES.notifications}/preferences` },
-            ]
-        },
+        { icon: NotificationsNavIcon, label: "Notifications", href: APP_ROUTES.notifications },
         {
             // TODO: replace placeholder sub-pages with the real Performance sections
             icon: PerformanceNavIcon, label: "Performance", href: APP_ROUTES.performance, subItems: [
@@ -108,10 +102,17 @@ export const Sidebar = () => {
                                                     {item.subItems?.map((subItem) => (
                                                         <Tooltip key={subItem.label}>
                                                             <TooltipTrigger asChild>
-                                                                <button type="button" onClick={showWorkInProgress} className={navItemClass}>
-                                                                    <subItem.icon className="w-5 h-5 transition-colors duration-75 " />
-                                                                    <span className="invisible hidden 2xl:visible 2xl:inline-block">{subItem.label}</span>
-                                                                </button>
+                                                                {ENABLED_ROUTES.includes(subItem.href) ? (
+                                                                    <NavLink href={subItem.href}>
+                                                                        <subItem.icon className="w-5 h-5 transition-colors duration-75 " />
+                                                                        <span className="invisible hidden 2xl:visible 2xl:inline-block">{subItem.label}</span>
+                                                                    </NavLink>
+                                                                ) : (
+                                                                    <button type="button" onClick={showWorkInProgress} className={navItemClass}>
+                                                                        <subItem.icon className="w-5 h-5 transition-colors duration-75 " />
+                                                                        <span className="invisible hidden 2xl:visible 2xl:inline-block">{subItem.label}</span>
+                                                                    </button>
+                                                                )}
                                                             </TooltipTrigger>
                                                             <TooltipContent className="2xl:hidden 2xl:invisible">
                                                                 {subItem.label}

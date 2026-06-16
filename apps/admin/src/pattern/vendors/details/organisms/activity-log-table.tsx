@@ -6,7 +6,6 @@ import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
 import { useGetVendorActivityLogQuery } from '@/redux/services/vendor-details/vendor-details.api-slice';
 import { createActivityLogColumns } from '../molecules/activity-log-columns';
-import { FALLBACK_ACTIVITY } from '../mock-data';
 
 const PAGE_SIZE = 5;
 
@@ -26,8 +25,7 @@ export const ActivityLogTable = ({ businessId }: { businessId: string }) => {
 
   const columns = useMemo(() => createActivityLogColumns(), []);
 
-  const apiRows = data?.data?.data ?? [];
-  const rows = apiRows.length ? apiRows : FALLBACK_ACTIVITY;
+  const rows = data?.data?.data ?? [];
   const totalCount =
     data?.data?.totalCount ?? data?.data?.total ?? rows.length;
   const pageCount = Math.max(Math.ceil(totalCount / pagination.pageSize), 1);
@@ -38,8 +36,8 @@ export const ActivityLogTable = ({ businessId }: { businessId: string }) => {
       data={rows}
       isLoading={isLoading}
       isFetching={isFetching}
-      isSuccess={isSuccess || apiRows.length === 0}
-      isError={isError && apiRows.length === 0 ? false : isError}
+      isSuccess={isSuccess}
+      isError={isError}
       error={error}
       pagination={pagination}
       setPagination={setPagination}

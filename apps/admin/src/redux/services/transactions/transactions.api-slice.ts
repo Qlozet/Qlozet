@@ -7,9 +7,12 @@ import { ApiResponse, PaginatedData, buildQueryString } from '../types';
 export interface Transaction {
   _id: string;
   reference?: string;
+  transactionId?: string;
   amount?: number;
   currency?: string;
   type?: string;
+  narration?: string;
+  description?: string;
   status?: string;
   business_id?: string;
   customer_id?: string;
@@ -19,9 +22,10 @@ export interface Transaction {
 }
 
 export interface GetTransactionsParams {
-  status: string;
+  status?: string;
   size?: number;
   page?: number;
+  search?: string;
 }
 
 // API Slice

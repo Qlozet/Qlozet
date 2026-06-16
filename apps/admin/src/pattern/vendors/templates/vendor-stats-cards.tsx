@@ -52,21 +52,18 @@ export const VendorStatsCards = ({ totalFromList }: VendorStatsCardsProps) => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <MetricCard
         title="Total Vendors"
-        value={formatValue(total, '1000')}
-        change="2.5%"
+        value={formatValue(total, '—')}
         icon={<CardIcon bg="bg-[#57CAEB]" />}
         viewAllLink={APP_ROUTES.vendors}
       />
       <MetricCard
         title="Active Vendors"
-        value={formatValue(active, '900')}
-        change="2.5%"
+        value={formatValue(active, '—')}
         icon={<CardIcon bg="bg-[#5DDAB4]" />}
       />
       <MetricCard
         title="Inactive Vendors"
-        value={formatValue(inactive, '23')}
-        change="2.5%"
+        value={formatValue(inactive, '—')}
         icon={<CardIcon bg="bg-[#5DDAB4]" />}
       />
     </div>
