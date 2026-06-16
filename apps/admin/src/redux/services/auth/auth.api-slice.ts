@@ -29,7 +29,7 @@ const authAPI = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     adminLogin: builder.mutation<LoginResponse, LoginPayload>({
       query: (credentials) => ({
-        url: '/auth/login/vendor',
+        url: '/auth/login/platform',
         method: 'POST',
         body: credentials,
       }),
