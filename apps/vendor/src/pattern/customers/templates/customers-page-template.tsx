@@ -1,361 +1,150 @@
-// Customers Page Template - Template
-// Complete page layout for customers management with all components
+'use client';
 
-import React, { useState, useEffect } from 'react';
-import { show } from '@ebay/nice-modal-react';
-import { CustomerStatsSection } from '../molecules/customer-stats-section';
-import { CustomerSearchFilter } from '../molecules/customer-search-filter';
-import { CustomersTable } from '../organisms/customers-table';
-import { CustomerDetailsModal } from '../organisms/customer-details-modal';
+// Customers Page Template
+// Customer metrics + table + demographics for the vendor, backed by
+// GET /business/customers. Customer details open in a modal (no detail route).
+
+import React, { useEffect, useMemo, useState } from 'react';
+import NiceModal from '@ebay/nice-modal-react';
+import { PaginationState } from '@tanstack/react-table';
+import { toast } from 'sonner';
+import { Search, Sheet, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
-import {
-  useGetCustomersQuery,
-  useGetCustomerStatsQuery,
+  useGetVendorCustomersQuery,
+  type VendorCustomer,
 } from '@/redux/services/customers/customers.api-slice';
-import { CustomerFilterData } from '@/lib/validations/customer';
-import { Plus, Download, Upload } from 'lucide-react';
-import Typography from '@/components/compat/Typography';
+import {
+  exportCustomersToCsv,
+  getCustomerIdentifier,
+  getCustomerName,
+} from '@/lib/customers';
+import { CustomerStatsSection } from '../molecules/customer-stats-section';
+import { CustomersTable } from '../organisms/customers-table';
+import { CustomerDemographicsChart } from '../organisms/customer-demographics-chart';
+import { CustomerDetailsModal } from '../organisms/customer-details-modal';
+
+const PAGE_SIZE = 5;
+// The endpoint has no search param, so we load a generous page and search /
+// paginate client-side. Revisit if a vendor can exceed this many customers.
+const FETCH_LIMIT = 200;
 
 interface CustomersPageTemplateProps {
   title?: string;
-  showCreateButton?: boolean;
-  showBulkActions?: boolean;
-  onCreateCustomer?: () => void;
-  onImportCustomers?: () => void;
-  onExportCustomers?: () => void;
 }
 
 export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
   title = 'Customers',
-  showCreateButton = true,
-  showBulkActions = true,
-  onCreateCustomer,
-  onImportCustomers,
-  onExportCustomers,
 }) => {
-  // State for filters and pagination
-  const [filters, setFilters] = useState<CustomerFilterData>({
-    search: '',
-    status: 'all',
-    sortBy: 'createdAt',
-    sortOrder: 'desc',
-    page: 1,
-    limit: 20,
+  const [search, setSearch] = useState('');
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: PAGE_SIZE,
   });
 
-  const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
+  const { data, isLoading, isFetching, isSuccess, isError, error } =
+    useGetVendorCustomersQuery({ page: 1, limit: FETCH_LIMIT, orders_limit: 5 });
 
-  // API queries
-  const {
-    data: customersResponse,
-    isLoading: loadingCustomers,
-    error: customersError,
-    refetch: refetchCustomers,
-  } = useGetCustomersQuery(filters);
+  const allCustomers = useMemo(() => data?.data ?? [], [data]);
+  const total = data?.total ?? allCustomers.length;
 
-  const { data: statsResponse, isLoading: loadingStats } =
-    useGetCustomerStatsQuery();
-
-  const customers = customersResponse?.data || [];
-  const totalPages = customersResponse?.totalPages || 1;
-  const totalCount = customersResponse?.totalCount || 0;
-  const stats = statsResponse?.data;
-
-  // Handle filter changes
-  const handleFilter = (newFilters: CustomerFilterData) => {
-    setFilters({ ...newFilters, page: 1 });
-    setSelectedCustomers([]);
-  };
-
-  const handleResetFilters = () => {
-    setFilters({
-      search: '',
-      status: 'all',
-      sortBy: 'createdAt',
-      sortOrder: 'desc',
-      page: 1,
-      limit: 20,
-    });
-    setSelectedCustomers([]);
-  };
-
-  // Handle pagination
-  const handlePageChange = (page: number) => {
-    setFilters((prev) => ({ ...prev, page }));
-  };
-
-  // Handle sorting
-  const handleSort = (
-    field: keyof (typeof customers)[0],
-    direction: 'asc' | 'desc'
-  ) => {
-    setFilters((prev) => ({
-      ...prev,
-      sortBy: field as any,
-      sortOrder: direction,
-      page: 1,
-    }));
-  };
-
-  // Handle customer selection
-  const handleSelectCustomer = (customerId: string, selected: boolean) => {
-    setSelectedCustomers((prev) =>
-      selected ? [...prev, customerId] : prev.filter((id) => id !== customerId)
+  // Client-side search across the identifier and full name.
+  const customers = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return allCustomers;
+    return allCustomers.filter((c) =>
+      [getCustomerIdentifier(c), getCustomerName(c)]
+        .filter(Boolean)
+        .some((field) => field.toLowerCase().includes(query))
     );
+  }, [allCustomers, search]);
+
+  // Reset to the first page whenever the search narrows the result set.
+  useEffect(() => {
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  }, [search]);
+
+  const openDetails = (customer: VendorCustomer) => {
+    NiceModal.show(CustomerDetailsModal, { customerId: customer._id });
   };
 
-  const handleSelectAll = (selected: boolean) => {
-    setSelectedCustomers(selected ? customers?.map((c) => c._id) : []);
+  const notReady = (label: string) => () =>
+    toast.info(`${label} is coming soon.`);
+
+  const handleExport = () => {
+    if (customers.length === 0) {
+      toast.info('No customers to export yet.');
+      return;
+    }
+    exportCustomersToCsv(customers);
   };
-
-  // Handle customer details modal
-  const handleViewDetails = (customerId: string) => {
-    show(CustomerDetailsModal, { customerId });
-  };
-
-  // Handle bulk actions
-  const handleBulkAction = (
-    action: 'activate' | 'deactivate' | 'delete' | 'export'
-  ) => {
-    if (selectedCustomers?.length === 0) return;
-
-    // Implement bulk actions here
-    console.log(`Bulk ${action} for customers:`, selectedCustomers);
-
-    // Clear selection after action
-    setSelectedCustomers([]);
-  };
-
-  // Prepare stats data
-  const statsData = stats
-    ? {
-        totalCustomers: stats.totalCustomers || totalCount,
-        activeCustomers: stats.activeCustomers || 0,
-        topLocation: 'Lagos State', // This would come from stats API
-        growth: 12.5, // This would come from stats API
-      }
-    : {
-        totalCustomers: totalCount,
-        activeCustomers: 0,
-        topLocation: 'Loading...',
-      };
 
   return (
-    <div className='min-h-screen bg-gray-50'>
-      <div className='max-w-7xl mx-auto p-6 space-y-6'>
-        {/* Header */}
-        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-          <div>
-            <Typography
-              variant='h1'
-              className='text-2xl font-bold text-gray-900'
-            >
+    <div className='w-full min-h-screen h-fit space-y-6 p-4 pb-10'>
+      {/* Customer metrics */}
+      <CustomerStatsSection total={total} isLoading={isLoading} />
+
+      {/* Table + demographics */}
+      <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
+        {/* Customers table */}
+        <div className='overflow-hidden rounded-xl border bg-card custom-card-shadow'>
+          {/* Toolbar */}
+          <div className='flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between'>
+            <h2 className='text-lg font-semibold text-[hsla(210,9%,31%,1)] dark:text-white'>
               {title}
-            </Typography>
-            <Typography variant='h2' className='text-gray-600 mt-1'>
-              Manage your customers and view their details
-            </Typography>
-          </div>
+            </h2>
 
-          <div className='flex items-center space-x-2'>
-            {showBulkActions && (
-              <>
-                <Button
-                  variant='outline'
-                  onClick={onImportCustomers}
-                  className='flex items-center space-x-2'
-                >
-                  <Upload className='h-4 w-4' />
-                  <span>Import</span>
-                </Button>
-
-                <Button
-                  variant='outline'
-                  onClick={onExportCustomers}
-                  className='flex items-center space-x-2'
-                >
-                  <Download className='h-4 w-4' />
-                  <span>Export</span>
-                </Button>
-              </>
-            )}
-
-            {showCreateButton && (
+            <div className='flex items-center gap-3'>
               <Button
-                onClick={onCreateCustomer}
-                className='flex items-center space-x-2'
+                type='button'
+                variant='outline'
+                size='icon'
+                onClick={notReady('Filter')}
+                aria-label='Filter'
+                className='h-10 w-10 shrink-0 text-gray-600'
               >
-                <Plus className='h-4 w-4' />
-                <span>Add Customer</span>
+                <SlidersHorizontal className='size-4' />
               </Button>
-            )}
+
+              <div className='relative flex-1'>
+                <Search className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400' />
+                <Input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder='Search'
+                  className='h-10 w-full rounded-lg pl-9 sm:w-[200px]'
+                />
+              </div>
+
+              <Button
+                type='button'
+                size='icon'
+                onClick={handleExport}
+                aria-label='Export'
+                className='h-10 w-10 shrink-0'
+              >
+                <Sheet className='size-4' />
+              </Button>
+            </div>
           </div>
+
+          <CustomersTable
+            data={customers}
+            isLoading={isLoading}
+            isFetching={isFetching}
+            isSuccess={isSuccess}
+            isError={isError}
+            error={error}
+            pagination={pagination}
+            setPagination={setPagination}
+            onRowClick={openDetails}
+            actions={{ onViewDetails: openDetails }}
+          />
         </div>
 
-        {/* Stats Section */}
-        <CustomerStatsSection stats={statsData} isLoading={loadingStats} />
-
-        {/* Filters and Search */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Filter Customers</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CustomerSearchFilter
-              onFilter={handleFilter}
-              onReset={handleResetFilters}
-              isLoading={loadingCustomers}
-              initialFilters={filters}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Bulk Actions Bar */}
-        {showBulkActions && selectedCustomers?.length > 0 && (
-          <Card>
-            <CardContent className='py-4'>
-              <div className='flex items-center justify-between'>
-                <span className='text-sm text-gray-600'>
-                  {selectedCustomers?.length} customer
-                  {selectedCustomers?.length !== 1 ? 's' : ''} selected
-                </span>
-
-                <div className='flex items-center space-x-2'>
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    onClick={() => handleBulkAction('activate')}
-                  >
-                    Activate
-                  </Button>
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    onClick={() => handleBulkAction('deactivate')}
-                  >
-                    Deactivate
-                  </Button>
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    onClick={() => handleBulkAction('export')}
-                  >
-                    Export Selected
-                  </Button>
-                  <Button
-                    variant='destructive'
-                    size='sm'
-                    onClick={() => handleBulkAction('delete')}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Customer Table */}
-        <Card>
-          <CardContent className='p-0'>
-            <CustomersTable
-              customers={customers}
-              onViewDetails={handleViewDetails}
-              onSort={handleSort}
-              sortField={filters.sortBy}
-              sortDirection={filters.sortOrder}
-              isLoading={loadingCustomers}
-              showSelection={showBulkActions}
-              selectedCustomers={selectedCustomers}
-              onSelectCustomer={handleSelectCustomer}
-              onSelectAll={handleSelectAll}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className='flex items-center justify-between'>
-            <div className='text-sm text-gray-600'>
-              Showing {(filters.page - 1) * filters.limit + 1} to{' '}
-              {Math.min(filters.page * filters.limit, totalCount)} of{' '}
-              {totalCount} customers
-            </div>
-
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() =>
-                      handlePageChange(Math.max(1, filters.page - 1))
-                    }
-                    className={
-                      filters.page === 1
-                        ? 'pointer-events-none opacity-50'
-                        : 'cursor-pointer'
-                    }
-                  />
-                </PaginationItem>
-
-                {[...Array(totalPages)]?.map((_, index) => {
-                  const page = index + 1;
-                  if (
-                    page === 1 ||
-                    page === totalPages ||
-                    (page >= filters.page - 1 && page <= filters.page + 1)
-                  ) {
-                    return (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          onClick={() => handlePageChange(page)}
-                          isActive={filters.page === page}
-                          className='cursor-pointer'
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  }
-                  return null;
-                })}
-
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() =>
-                      handlePageChange(Math.min(totalPages, filters.page + 1))
-                    }
-                    className={
-                      filters.page === totalPages
-                        ? 'pointer-events-none opacity-50'
-                        : 'cursor-pointer'
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
-        )}
-
-        {/* Error handling */}
-        {customersError && (
-          <Card>
-            <CardContent className='p-6 text-center'>
-              <p className='text-red-600 mb-4'>Failed to load customers</p>
-              <Button onClick={() => refetchCustomers()} variant='outline'>
-                Try Again
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+        {/* Demographics */}
+        <CustomerDemographicsChart />
       </div>
     </div>
   );

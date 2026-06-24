@@ -1,391 +1,117 @@
-// Orders Page Template - Template
-// Complete page layout for orders management with all components
+'use client';
 
-import React, { useState } from 'react';
-import { show } from '@ebay/nice-modal-react';
-import { OrderStatsSection } from '../molecules/order-stats-section';
-import { OrderSearchFilter } from '../molecules/order-search-filter';
-import { OrdersTable } from '../organisms/orders-table';
-import { OrderDetailsModal } from '../organisms/order-details-modal';
-import { CustomerDetailsModal } from '../../customers/organisms/customer-details-modal';
+// Orders Page Template
+// Vendor orders: headline metrics + orders table. Standard orders open a
+// details drawer; custom (bespoke) orders open the quote-builder drawer.
+
+import React, { useMemo, useState } from 'react';
+import NiceModal from '@ebay/nice-modal-react';
+import type { PaginationState } from '@tanstack/react-table';
+import { toast } from 'sonner';
+import { CalendarRange } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DataTable } from '@/pattern/common/organisms/table/data-table';
+import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
+import { useGetVendorOrdersQuery } from '@/redux/services/orders/orders.api-slice';
+import { OrderStatsSection } from '../molecules/order-stats-section';
+import { createOrdersColumns } from '../molecules/orders-table-columns';
+import { OrderDetailsDrawer } from '../organisms/order-details-drawer';
+import { OrderQuoteDrawer } from '../organisms/order-quote-drawer';
+import { SetOrdersPerDayModal } from '../organisms/set-orders-per-day-modal';
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
-import {
-  useGetOrdersQuery,
-  useGetOrderStatsQuery,
-} from '@/redux/services/orders/orders.api-slice';
-import { OrderFilterData } from '@/lib/validations/order';
-import { Plus, Download, Upload, FileText, Truck } from 'lucide-react';
-import Typography from '@/components/compat/Typography';
+  isCustomOrder,
+  readCustomerName,
+  readOrderId,
+  type OrderRow,
+} from '../lib/order-fields';
+import { SAMPLE_ORDERS } from '../lib/orders-sample';
 
-interface OrdersPageTemplateProps {
-  title?: string;
-  showCreateButton?: boolean;
-  showBulkActions?: boolean;
-  onCreateOrder?: () => void;
-  onImportOrders?: () => void;
-  onExportOrders?: () => void;
-  onGenerateReport?: () => void;
-}
+const PAGE_SIZE = 7;
 
-export const OrdersPageTemplate: React.FC<OrdersPageTemplateProps> = ({
-  title = 'Orders',
-  showCreateButton = true,
-  showBulkActions = true,
-  onCreateOrder,
-  onImportOrders,
-  onExportOrders,
-  onGenerateReport,
-}) => {
-  // State for filters and pagination
-  const [filters, setFilters] = useState<OrderFilterData>({
-    search: '',
-    status: 'all',
-    paymentStatus: 'all',
-    sortBy: 'createdAt',
-    sortOrder: 'desc',
-    page: 1,
-    limit: 20,
+export const OrdersPageTemplate: React.FC = () => {
+  const [search, setSearch] = useState('');
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: PAGE_SIZE,
   });
 
-  const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
+  const { data, isLoading, isFetching, isSuccess, isError, error } =
+    useGetVendorOrdersQuery();
 
-  // API queries
-  const {
-    data: ordersResponse,
-    isLoading: loadingOrders,
-    error: ordersError,
-    refetch: refetchOrders,
-  } = useGetOrdersQuery(filters);
+  // Real list when present; otherwise fall back to mockup rows so the table
+  // matches the design (the /orders/vendor shape is undocumented).
+  const orders = useMemo<OrderRow[]>(() => {
+    const real = (data?.data as OrderRow[] | undefined) ?? [];
+    return real.length ? real : SAMPLE_ORDERS;
+  }, [data]);
 
-  const { data: statsResponse, isLoading: loadingStats } =
-    useGetOrderStatsQuery();
-
-  const orders = ordersResponse?.data || [];
-  const totalPages = ordersResponse?.totalPages || 1;
-  const totalCount = ordersResponse?.totalCount || 0;
-  const stats = statsResponse?.data;
-
-  // Handle filter changes
-  const handleFilter = (newFilters: OrderFilterData) => {
-    setFilters({ ...newFilters, page: 1 });
-    setSelectedOrders([]);
-  };
-
-  const handleResetFilters = () => {
-    setFilters({
-      search: '',
-      status: 'all',
-      paymentStatus: 'all',
-      sortBy: 'createdAt',
-      sortOrder: 'desc',
-      page: 1,
-      limit: 20,
-    });
-    setSelectedOrders([]);
-  };
-
-  // Handle pagination
-  const handlePageChange = (page: number) => {
-    setFilters((prev) => ({ ...prev, page }));
-  };
-
-  // Handle sorting
-  const handleSort = (
-    field: keyof (typeof orders)[0],
-    direction: 'asc' | 'desc'
-  ) => {
-    setFilters((prev) => ({
-      ...prev,
-      sortBy: field as any,
-      sortOrder: direction,
-      page: 1,
-    }));
-  };
-
-  // Handle order selection
-  const handleSelectOrder = (orderId: string, selected: boolean) => {
-    setSelectedOrders((prev) =>
-      selected ? [...prev, orderId] : prev.filter((id) => id !== orderId)
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return orders;
+    return orders.filter((o) =>
+      [readCustomerName(o), readOrderId(o)]
+        .filter(Boolean)
+        .some((f) => f.toLowerCase().includes(q))
     );
+  }, [orders, search]);
+
+  const openDetails = (order: OrderRow) => {
+    if (isCustomOrder(order)) {
+      NiceModal.show(OrderQuoteDrawer, { order });
+    } else {
+      NiceModal.show(OrderDetailsDrawer, { order });
+    }
   };
 
-  const handleSelectAll = (selected: boolean) => {
-    setSelectedOrders(selected ? orders?.map((o) => o._id) : []);
-  };
+  const columns = useMemo(() => createOrdersColumns(openDetails), []);
 
-  // Handle order details modal
-  const handleViewDetails = (orderId: string) => {
-    show(OrderDetailsModal, {
-      orderId,
-      onOrderUpdated: () => refetchOrders(),
-    });
-  };
-
-  // Handle customer details modal
-  const handleViewCustomer = (customerId: string) => {
-    show(CustomerDetailsModal, { customerId });
-  };
-
-  // Handle bulk actions
-  const handleBulkAction = (
-    action: 'confirm' | 'ship' | 'cancel' | 'export'
-  ) => {
-    if (selectedOrders?.length === 0) return;
-
-    // Implement bulk actions here
-    console.log(`Bulk ${action} for orders:`, selectedOrders);
-
-    // Clear selection after action
-    setSelectedOrders([]);
-  };
-
-  // Prepare stats data
-  const statsData = stats
-    ? {
-        totalOrders: stats.totalOrders || totalCount,
-        deliveredOrders: stats.completedOrders || 0,
-        inTransitOrders: stats.pendingOrders || 0,
-        pendingOrders: stats.pendingOrders || 0,
-        cancelledOrders: stats.cancelledOrders || 0,
-        totalRevenue: stats.totalRevenue || 0,
-      }
-    : {
-        totalOrders: totalCount,
-        deliveredOrders: 0,
-        inTransitOrders: 0,
-        pendingOrders: 0,
-      };
+  const showSetPerDay = () => NiceModal.show(SetOrdersPerDayModal);
+  const notReady = (label: string) => () =>
+    toast.info(`${label} is coming soon.`);
 
   return (
-    <div className='min-h-screen bg-gray-50'>
-      <div className='max-w-7xl mx-auto p-6 space-y-6'>
-        {/* Header */}
-        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-          <div>
-            <Typography
-              variant='h1'
-              className='text-2xl font-bold text-gray-900'
-            >
-              {title}
-            </Typography>
-            <Typography variant='body' className='text-gray-600 mt-1'>
-              Manage orders and track their fulfillment status
-            </Typography>
-          </div>
-
-          <div className='flex items-center space-x-2'>
-            {showBulkActions && (
-              <>
-                <Button
-                  variant='outline'
-                  onClick={onGenerateReport}
-                  className='flex items-center space-x-2'
-                >
-                  <FileText className='h-4 w-4' />
-                  <span>Report</span>
-                </Button>
-
-                <Button
-                  variant='outline'
-                  onClick={onImportOrders}
-                  className='flex items-center space-x-2'
-                >
-                  <Upload className='h-4 w-4' />
-                  <span>Import</span>
-                </Button>
-
-                <Button
-                  variant='outline'
-                  onClick={onExportOrders}
-                  className='flex items-center space-x-2'
-                >
-                  <Download className='h-4 w-4' />
-                  <span>Export</span>
-                </Button>
-              </>
-            )}
-
-            {showCreateButton && (
-              <Button
-                onClick={onCreateOrder}
-                className='flex items-center space-x-2'
-              >
-                <Plus className='h-4 w-4' />
-                <span>New Order</span>
-              </Button>
-            )}
-          </div>
-        </div>
-
-        {/* Stats Section */}
-        <OrderStatsSection stats={statsData} isLoading={loadingStats} />
-
-        {/* Filters and Search */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Filter Orders</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <OrderSearchFilter
-              onFilter={handleFilter}
-              onReset={handleResetFilters}
-              isLoading={loadingOrders}
-              initialFilters={filters}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Bulk Actions Bar */}
-        {showBulkActions && selectedOrders?.length > 0 && (
-          <Card>
-            <CardContent className='py-4'>
-              <div className='flex items-center justify-between'>
-                <span className='text-sm text-gray-600'>
-                  {selectedOrders?.length} order
-                  {selectedOrders?.length !== 1 ? 's' : ''} selected
-                </span>
-
-                <div className='flex items-center space-x-2'>
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    onClick={() => handleBulkAction('confirm')}
-                    className='flex items-center space-x-1'
-                  >
-                    <span>Confirm</span>
-                  </Button>
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    onClick={() => handleBulkAction('ship')}
-                    className='flex items-center space-x-1'
-                  >
-                    <Truck className='h-3 w-3' />
-                    <span>Ship</span>
-                  </Button>
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    onClick={() => handleBulkAction('export')}
-                  >
-                    Export Selected
-                  </Button>
-                  <Button
-                    variant='destructive'
-                    size='sm'
-                    onClick={() => handleBulkAction('cancel')}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Orders Table */}
-        <Card>
-          <CardContent className='p-0'>
-            <OrdersTable
-              orders={orders}
-              onViewDetails={handleViewDetails}
-              onViewCustomer={handleViewCustomer}
-              onSort={handleSort}
-              sortField={filters.sortBy}
-              sortDirection={filters.sortOrder}
-              isLoading={loadingOrders}
-              showSelection={showBulkActions}
-              selectedOrders={selectedOrders}
-              onSelectOrder={handleSelectOrder}
-              onSelectAll={handleSelectAll}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className='flex items-center justify-between'>
-            <div className='text-sm text-gray-600'>
-              Showing {(filters.page - 1) * filters.limit + 1} to{' '}
-              {Math.min(filters.page * filters.limit, totalCount)} of{' '}
-              {totalCount} orders
-            </div>
-
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() =>
-                      handlePageChange(Math.max(1, filters.page - 1))
-                    }
-                    className={
-                      filters.page === 1
-                        ? 'pointer-events-none opacity-50'
-                        : 'cursor-pointer'
-                    }
-                  />
-                </PaginationItem>
-
-                {[...Array(totalPages)]?.map((_, index) => {
-                  const page = index + 1;
-                  if (
-                    page === 1 ||
-                    page === totalPages ||
-                    (page >= filters?.page - 1 && page <= filters?.page + 1)
-                  ) {
-                    return (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          onClick={() => handlePageChange(page)}
-                          isActive={filters?.page === page}
-                          className='cursor-pointer'
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  }
-                  return null;
-                })}
-
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() =>
-                      handlePageChange(Math.min(totalPages, filters.page + 1))
-                    }
-                    className={
-                      filters.page === totalPages
-                        ? 'pointer-events-none opacity-50'
-                        : 'cursor-pointer'
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
-        )}
-
-        {/* Error handling */}
-        {ordersError && (
-          <Card>
-            <CardContent className='p-6 text-center'>
-              <p className='text-red-600 mb-4'>Failed to load orders</p>
-              <Button onClick={() => refetchOrders()} variant='outline'>
-                Try Again
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+    <div className='w-full min-h-screen h-fit space-y-6 p-4 pb-10'>
+      {/* Set custom orders per day */}
+      <div className='flex justify-end'>
+        <Button type='button' onClick={showSetPerDay} className='h-10'>
+          Set Total Custom Orders per day
+        </Button>
       </div>
+
+      {/* Metrics */}
+      <OrderStatsSection isLoading={isLoading} />
+
+      {/* Orders table */}
+      <DataTable
+        columns={columns}
+        data={filtered}
+        isLoading={isLoading}
+        isFetching={isFetching}
+        isSuccess={isSuccess}
+        isError={isError}
+        error={error}
+        pagination={pagination}
+        setPagination={setPagination}
+        onRowClick={openDetails}
+        emptyMessage='No orders yet.'
+        minWidth='980px'
+        toolbar={
+          <TableToolbar
+            title='Orders'
+            search={search}
+            onSearchChange={(value) => {
+              setSearch(value);
+              setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+            }}
+            filterLabel='Filter By :'
+            filterIcon={<CalendarRange className='size-4' />}
+            onFilterDate={notReady('Filter')}
+            onExport={notReady('Export')}
+          />
+        }
+      />
     </div>
   );
 };
+
+export default OrdersPageTemplate;

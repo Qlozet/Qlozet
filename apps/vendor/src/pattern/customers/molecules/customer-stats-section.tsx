@@ -1,70 +1,130 @@
+'use client';
+
 // Customer Stats Section - Molecule
-// Dashboard cards showing customer statistics
+// The four headline metric cards above the customers table. Total Customers is
+// the real count from GET /business/customers; the location / unique-customers /
+// favourite metrics aren't provided by that endpoint, so they show a neutral
+// dash rather than a fabricated value (see [[no-stubbed-data]]).
 
-import React from 'react';
-import { CustomerStatCard } from '../atoms/customer-stat-card';
-import { Users, MapPin, TrendingUp, UserCheck } from 'lucide-react';
+import React, { ReactNode } from 'react';
+import Link from 'next/link';
+import { Users, MapPin, UserCheck, Heart, Eye } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import { APP_ROUTES } from '@/lib/routes';
+import { If } from '@/pattern/common/atoms/If';
+import { StatsCardSkeleton } from '@/pattern/dashboard/molecules/stats-card-skeleton';
 
-interface CustomerStatsData {
-  totalCustomers: number;
-  activeCustomers: number;
-  topLocation: string;
-  growth?: number;
+const showNum = (value: unknown): string =>
+  typeof value === 'number' && !Number.isNaN(value)
+    ? value.toLocaleString()
+    : '—';
+
+const CardIcon = ({ bg, children }: { bg: string; children: ReactNode }) => (
+  <div
+    className={cn(
+      'flex size-12 items-center justify-center rounded-[10px] text-white',
+      bg
+    )}
+  >
+    {children}
+  </div>
+);
+
+interface MetricCardProps {
+  title: string;
+  value: string;
+  icon: ReactNode;
+  viewAllLink?: string;
 }
 
+const MetricCard = ({ title, value, icon, viewAllLink }: MetricCardProps) => (
+  <Card className='h-[120px] p-3 2xl:p-5 rounded-[12px] custom-card-shadow'>
+    <CardContent className='h-full p-0'>
+      <div className='flex items-start justify-start gap-x-4'>
+        <div className='shrink-0'>{icon}</div>
+        <div className='flex-1 space-y-2'>
+          <p className='text-[hsla(210,9%,31%,1)] dark:text-white text-xs font-normal'>
+            {title}
+          </p>
+          <p className='text-2xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white truncate'>
+            {value}
+          </p>
+          <If isTrue={Boolean(viewAllLink)}>
+            <Link
+              href={viewAllLink ?? '#'}
+              className='flex items-center gap-x-1 text-success dark:text-gray-400 text-xs whitespace-nowrap'
+            >
+              <Eye className='size-3.5' />
+              <span>View All</span>
+            </Link>
+          </If>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
+
 interface CustomerStatsSectionProps {
-  stats: CustomerStatsData;
+  /** Total customer count from the paginated response. */
+  total?: number;
   isLoading?: boolean;
 }
 
 export const CustomerStatsSection: React.FC<CustomerStatsSectionProps> = ({
-  stats,
+  total,
   isLoading = false,
 }) => {
   if (isLoading) {
     return (
-      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
-        {[...Array(4)]?.map((_, index) => (
-          <div
-            key={index}
-            className='h-32 bg-gray-100 rounded-lg animate-pulse'
-          />
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <StatsCardSkeleton key={i} />
         ))}
       </div>
     );
   }
 
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
-      <CustomerStatCard
+    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+      <MetricCard
         title='Total Customers'
-        value={stats.totalCustomers}
-        bgColor='bg-blue-500'
-        icon={<Users className='h-6 w-6' />}
+        value={showNum(total)}
+        icon={
+          <CardIcon bg='bg-[#57CAEB]'>
+            <Users className='size-6' />
+          </CardIcon>
+        }
+        viewAllLink={APP_ROUTES.customers}
       />
-
-      <CustomerStatCard
-        title='Active Customers'
-        value={stats.activeCustomers}
-        bgColor='bg-green-500'
-        icon={<UserCheck className='h-6 w-6' />}
+      <MetricCard
+        title='Highest customer by location'
+        value='—'
+        icon={
+          <CardIcon bg='bg-[#5DDAB4]'>
+            <MapPin className='size-6' />
+          </CardIcon>
+        }
       />
-
-      <CustomerStatCard
-        title='Top Location'
-        value={stats.topLocation}
-        bgColor='bg-purple-500'
-        icon={<MapPin className='h-6 w-6' />}
+      <MetricCard
+        title='Unique Customers'
+        value='—'
+        icon={
+          <CardIcon bg='bg-[#FF8F6B]'>
+            <UserCheck className='size-6' />
+          </CardIcon>
+        }
+        viewAllLink={APP_ROUTES.customers}
       />
-
-      {stats.growth !== undefined && (
-        <CustomerStatCard
-          title='Growth Rate'
-          value={`${stats.growth > 0 ? '+' : ''}${stats.growth}%`}
-          bgColor={stats.growth >= 0 ? 'bg-green-500' : 'bg-red-500'}
-          icon={<TrendingUp className='h-6 w-6' />}
-        />
-      )}
+      <MetricCard
+        title='Customer favorite'
+        value='—'
+        icon={
+          <CardIcon bg='bg-[#FFB200]'>
+            <Heart className='size-6' />
+          </CardIcon>
+        }
+      />
     </div>
   );
 };
