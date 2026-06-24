@@ -61,9 +61,77 @@ export interface UpdateCustomerRequest extends Partial<CreateCustomerRequest> {
   status?: 'active' | 'inactive';
 }
 
+// ---- Real Qlozet "Vendor Customers" endpoint (GET /business/customers) ----
+
+// Active measurement set attached to a customer.
+export interface CustomerMeasurement {
+  unit: 'cm' | 'inch';
+  measurements: Record<string, number>;
+  name: string;
+  active: boolean;
+  createdAt: string;
+}
+
+// Slim order returned in a customer's recent-orders array.
+export interface CustomerOrderPreview {
+  _id: string;
+  reference: string;
+  total: number;
+  status:
+    | 'pending'
+    | 'processing'
+    | 'shipped'
+    | 'delivered'
+    | 'cancelled'
+    | 'refunded';
+  createdAt: string;
+}
+
+// A single customer row from GET /business/customers.
+export interface VendorCustomer {
+  _id: string;
+  username: string | null;
+  full_name: string;
+  profile_picture: string;
+  status: 'active' | 'inactive' | 'suspended';
+  total_orders: number;
+  orders: CustomerOrderPreview[];
+  default_measurement: CustomerMeasurement | null;
+}
+
+export interface VendorCustomersResponse {
+  data: VendorCustomer[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 // API Slice
 export const customersApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
+    // GET /business/customers — the vendor's customers (people who ordered
+    // from them), paginated, each with recent orders + active measurements.
+    getVendorCustomers: builder.query<
+      VendorCustomersResponse,
+      { page?: number; limit?: number; orders_limit?: number } | void
+    >({
+      query: (params) => {
+        const searchParams = new URLSearchParams();
+        Object.entries(params ?? {}).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            searchParams.append(key, value.toString());
+          }
+        });
+        const qs = searchParams.toString();
+        return {
+          url: qs ? `/business/customers?${qs}` : '/business/customers',
+          method: 'GET',
+        };
+      },
+      providesTags: ['Customer'],
+    }),
+
     // Get all customers with pagination
     getCustomers: builder.query<
       CustomersResponse,
@@ -227,6 +295,7 @@ export const customersApiSlice = baseAPI.injectEndpoints({
 
 // Export hooks
 export const {
+  useGetVendorCustomersQuery,
   useGetCustomersQuery,
   useGetCustomerQuery,
   useCreateCustomerMutation,

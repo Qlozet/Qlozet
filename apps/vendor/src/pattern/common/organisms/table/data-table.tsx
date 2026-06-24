@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import type { ReactNode } from 'react';
+import { useMemo } from 'react';
 import {
-  PaginationState,
-  OnChangeFn,
+  type ColumnDef,
+  type PaginationState,
+  type OnChangeFn,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
@@ -21,47 +23,54 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { BoldBoxRemoveIcon } from '@/pattern/common/atoms/bold-box-remove-icon';
-import type { VendorCustomer } from '@/redux/services/customers/customers.api-slice';
-import {
-  createCustomersTableColumns,
-  type CustomersTableActions,
-} from '../molecules/customers-table-columns';
 
-interface CustomersTableProps {
-  data: VendorCustomer[];
-  isLoading: boolean;
-  isFetching: boolean;
-  isSuccess: boolean;
-  isError: boolean;
+export interface DataTableProps<TData> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  columns: ColumnDef<TData, any>[];
+  data: TData[];
+  isLoading?: boolean;
+  isFetching?: boolean;
+  isSuccess?: boolean;
+  isError?: boolean;
   error?: unknown;
   pagination: PaginationState;
   setPagination: OnChangeFn<PaginationState>;
-  actions: CustomersTableActions;
-  onRowClick: (customer: VendorCustomer) => void;
+  /** Total page count — required when manualPagination is true. */
+  pageCount?: number;
+  /** Total row count, shown in the "Showing X - Y of N" footer. */
+  totalCount?: number;
+  /** True when the parent paginates server-side; false paginates client-side. */
+  manualPagination?: boolean;
+  /** Rendered inside the card, above the table (e.g. a TableToolbar). */
+  toolbar?: ReactNode;
+  onRowClick?: (row: TData) => void;
+  emptyMessage?: string;
+  minWidth?: string;
 }
 
-export const CustomersTable = ({
+// Generic TanStack-backed table used by the detail-page tables. Encapsulates
+// the loading / empty / error states and a design-matching footer so each table
+// only supplies its column definitions and data.
+export function DataTable<TData>({
+  columns,
   data,
-  isLoading,
-  isFetching,
-  isSuccess,
-  isError,
+  isLoading = false,
+  isFetching = false,
+  isSuccess = true,
+  isError = false,
   error,
   pagination,
   setPagination,
-  actions,
+  pageCount,
+  totalCount,
+  manualPagination = false,
+  toolbar,
   onRowClick,
-}: CustomersTableProps) => {
-  const defaultData = useMemo<VendorCustomer[]>(() => [], []);
+  emptyMessage = 'Nothing here yet.',
+  minWidth = '900px',
+}: DataTableProps<TData>) {
+  const defaultData = useMemo<TData[]>(() => [], []);
 
-  const columns = useMemo(
-    () => createCustomersTableColumns(actions),
-    [actions]
-  );
-
-  // Data is the full (filtered) set; let the table paginate client-side since
-  // the customer list is derived in-memory from the vendor's orders.
   const table = useReactTable({
     data: data ?? defaultData,
     columns,
@@ -69,20 +78,26 @@ export const CustomersTable = ({
     getPaginationRowModel: getPaginationRowModel(),
     state: { pagination },
     onPaginationChange: setPagination,
+    manualPagination,
+    ...(manualPagination ? { pageCount } : {}),
   });
 
-  const showLoader = isLoading || isFetching;
-  const { pageIndex, pageSize } = pagination;
-  const totalRows = data?.length ?? 0;
-  const rows = table.getRowModel().rows;
   const errorMessage =
     (error as { data?: { message?: string } })?.data?.message ??
     'Something went wrong';
 
+  const rows = table.getRowModel().rows;
+  const showLoader = isLoading || isFetching;
+  const { pageIndex, pageSize } = pagination;
+  const total = manualPagination ? (totalCount ?? data.length) : data.length;
+  const skeletonRowCount = pageSize || 5;
+
   return (
-    <div>
-      <Table>
-        <TableHeader className='bg-[hsla(0,0%,96%,1)]'>
+    <div className='overflow-hidden rounded-xl border bg-white custom-card-shadow'>
+      {toolbar}
+
+      <Table style={{ minWidth }}>
+        <TableHeader className='bg-[#F9FAFB]'>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className='hover:bg-transparent'>
               {headerGroup.headers.map((header, index) => {
@@ -92,7 +107,7 @@ export const CustomersTable = ({
                   <TableHead
                     key={header.id}
                     className={cn(
-                      'h-[52px] whitespace-nowrap text-sm font-medium text-grey-black',
+                      'h-[52px] whitespace-nowrap text-xs font-medium text-gray-500',
                       isFirst && 'pl-6',
                       isLast && 'pr-6'
                     )}
@@ -113,10 +128,10 @@ export const CustomersTable = ({
         <TableBody>
           {/* Loading: skeleton rows that mirror the real table layout */}
           {showLoader &&
-            Array.from({ length: pageSize || 5 }).map((_, rowIndex) => (
+            Array.from({ length: skeletonRowCount }).map((_, rowIndex) => (
               <TableRow
                 key={`skeleton-${rowIndex}`}
-                className='border-b hover:bg-transparent'
+                className='border-t hover:bg-transparent'
               >
                 {columns.map((_, cellIndex) => {
                   const isFirst = cellIndex === 0;
@@ -124,16 +139,12 @@ export const CustomersTable = ({
                   return (
                     <TableCell
                       key={cellIndex}
-                      className={cn(
-                        'py-4',
-                        isFirst && 'pl-6',
-                        isLast && 'pr-6'
-                      )}
+                      className={cn('py-4', isFirst && 'pl-6', isLast && 'pr-6')}
                     >
                       <Skeleton
                         className={cn(
                           'h-4 rounded-md',
-                          isFirst ? 'size-9 rounded-full' : 'w-24'
+                          isFirst ? 'w-32' : isLast ? 'w-20' : 'w-24'
                         )}
                       />
                     </TableCell>
@@ -148,8 +159,8 @@ export const CustomersTable = ({
             rows.map((row) => (
               <TableRow
                 key={row.id}
-                onClick={() => onRowClick(row.original)}
-                className='border-b cursor-pointer'
+                onClick={onRowClick ? () => onRowClick(row.original) : undefined}
+                className={cn('border-t', onRowClick && 'cursor-pointer')}
               >
                 {row.getVisibleCells().map((cell, cellIndex) => {
                   const isFirst = cellIndex === 0;
@@ -163,65 +174,49 @@ export const CustomersTable = ({
                           : undefined
                       }
                       className={cn(
-                        'py-4 whitespace-nowrap',
+                        'py-4 align-middle text-sm',
                         isFirst && 'pl-6',
                         isLast && 'pr-6'
                       )}
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   );
                 })}
               </TableRow>
             ))}
 
-          {/* Empty state */}
-          {!showLoader && isSuccess && totalRows === 0 && (
+          {!showLoader && isSuccess && data.length === 0 && (
             <TableRow>
-              <TableCell colSpan={columns.length} className='h-64 text-center'>
-                <div className='flex flex-col items-center gap-4'>
-                  <BoldBoxRemoveIcon />
-                  <div className='flex flex-col items-center gap-2'>
-                    <p className='text-lg font-medium text-muted-foreground'>
-                      No customers yet.
-                    </p>
-                    <p className='text-sm text-muted-foreground'>
-                      Customers will show up here once you receive orders.
-                    </p>
-                  </div>
-                </div>
+              <TableCell
+                colSpan={columns.length}
+                className='h-48 text-center text-sm text-muted-foreground'
+              >
+                {emptyMessage}
               </TableCell>
             </TableRow>
           )}
 
-          {/* Error state */}
           {!showLoader && isError && (
             <TableRow>
-              <TableCell colSpan={columns.length} className='h-64 text-center'>
-                <div className='flex flex-col items-center gap-2'>
-                  <p className='text-lg font-medium text-destructive'>
-                    Error loading customers
-                  </p>
-                  <p className='text-sm text-muted-foreground'>{errorMessage}</p>
-                </div>
+              <TableCell colSpan={columns.length} className='h-48 text-center'>
+                <p className='text-base font-medium text-destructive'>
+                  Error loading data
+                </p>
+                <p className='text-sm text-muted-foreground'>{errorMessage}</p>
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
 
-      {/* Pagination — "Showing X - Y of {total}" to match the design */}
-      {!showLoader && isSuccess && totalRows > 0 && (
+      {!showLoader && isSuccess && rows.length > 0 && (
         <div className='w-full flex items-center justify-end py-4 pr-6'>
           <div className='h-fit flex items-center gap-x-4'>
             <div className='text-sm text-muted-foreground text-center'>
               Showing {pageIndex * pageSize + 1} -{' '}
-              {Math.min((pageIndex + 1) * pageSize, totalRows)} of {totalRows}
+              {Math.min((pageIndex + 1) * pageSize, total)} of {total}
             </div>
-
             <Button
               className='w-6 h-6 text-sm rounded-full'
               variant='outline'
@@ -231,7 +226,6 @@ export const CustomersTable = ({
             >
               <ChevronLeft className='w-4 h-4' />
             </Button>
-
             <Button
               className='w-6 h-6 text-sm rounded-full'
               variant='outline'
@@ -246,4 +240,4 @@ export const CustomersTable = ({
       )}
     </div>
   );
-};
+}
