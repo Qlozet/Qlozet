@@ -1,35 +1,76 @@
 // Support Template
-// Vendor Support → Tickets: an "Add Ticket" action over the tickets table.
+// Vendor Support flow: a "Get support" form → success confirmation → the
+// vendor's ticket list ("My Tickets"). Ticket details open at /support/[id].
 
 'use client';
 
-import React from 'react';
-import NiceModal from '@ebay/nice-modal-react';
-import { CirclePlus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { SupportTicketsTable } from '../organisms/support-tickets-table';
-import { AddTicketModal } from '../organisms/add-ticket-modal';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { APP_ROUTES } from '@/lib/routes';
+import { type SupportData } from '@/lib/validations/support';
+import { useCreateTicketMutation } from '@/redux/services/tickets/tickets.api-slice';
+import { SupportForm } from '../molecules/support-form';
+import { SupportSuccess } from '../organisms/support-success';
+import { SupportTicketsList } from '../organisms/support-tickets-list';
 
-interface SupportTemplateProps {
-  className?: string;
-}
+type SupportView = 'form' | 'success' | 'tickets';
 
-export const SupportTemplate: React.FC<SupportTemplateProps> = ({
-  className,
-}) => {
-  const showAddTicket = () => NiceModal.show(AddTicketModal);
+const withHash = (value: string): string =>
+  value.startsWith('#') ? value : `#${value}`;
+
+export const SupportTemplate: React.FC = () => {
+  const router = useRouter();
+  const [view, setView] = useState<SupportView>('form');
+  const [ticketId, setTicketId] = useState('');
+
+  const [createTicket, { isLoading }] = useCreateTicketMutation();
+
+  const handleSubmit = async (data: SupportData) => {
+    try {
+      const response = await createTicket({
+        issue_type: data.issueType,
+        description: data.message,
+      }).unwrap();
+
+      const created = response?.data;
+      const ref =
+        (typeof created?.reference === 'string' && created.reference) ||
+        created?._id ||
+        '';
+      setTicketId(ref ? withHash(ref) : 'your ticket');
+      setView('success');
+    } catch (error) {
+      const message =
+        (error as { data?: { message?: string } })?.data?.message ??
+        'Could not submit your request. Please try again.';
+      toast.error(message);
+    }
+  };
+
+  const openDetails = (id: string) =>
+    router.push(`${APP_ROUTES.support}/${encodeURIComponent(id)}`);
 
   return (
-    <section className={cn('w-full min-h-[80vh] space-y-6 p-4', className)}>
-      <div className='flex justify-end'>
-        <Button onClick={showAddTicket} className='gap-2'>
-          <CirclePlus className='size-4' />
-          Add Ticket
-        </Button>
-      </div>
+    <section className='w-full min-h-[80vh] bg-[#F8F9FA] p-4'>
+      {view === 'form' && (
+        <SupportForm onSubmit={handleSubmit} isLoading={isLoading} />
+      )}
 
-      <SupportTicketsTable />
+      {view === 'success' && (
+        <SupportSuccess
+          ticketId={ticketId}
+          onSubmitAnother={() => setView('form')}
+          onViewTickets={() => setView('tickets')}
+        />
+      )}
+
+      {view === 'tickets' && (
+        <SupportTicketsList
+          onAddTicket={() => setView('form')}
+          onViewDetails={openDetails}
+        />
+      )}
     </section>
   );
 };

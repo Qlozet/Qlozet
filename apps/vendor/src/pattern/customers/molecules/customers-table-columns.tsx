@@ -2,24 +2,14 @@
 
 import Image from 'next/image';
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import type { VendorCustomer } from '@/redux/services/customers/customers.api-slice';
 import {
   getCustomerStatus,
   getCustomerIdentifier,
   getCustomerInitial,
-  getLastOrderDate,
   formatCount,
-  formatDate,
   type CustomerStatusVariant,
 } from '@/lib/customers';
 
@@ -56,18 +46,10 @@ const CustomerAvatar = ({ customer }: { customer: VendorCustomer }) => {
 
 export interface CustomersTableActions {
   onViewDetails: (customer: VendorCustomer) => void;
-  onBlockUnblock: (customer: VendorCustomer) => void;
-  onSendMessage: (customer: VendorCustomer) => void;
-  onViewComplaints: (customer: VendorCustomer) => void;
-  onDelete: (customer: VendorCustomer) => void;
 }
 
 export const createCustomersTableColumns = ({
   onViewDetails,
-  onBlockUnblock,
-  onSendMessage,
-  onViewComplaints,
-  onDelete,
 }: CustomersTableActions): ColumnDef<VendorCustomer>[] => [
   {
     id: 'picture',
@@ -76,8 +58,8 @@ export const createCustomersTableColumns = ({
     enableSorting: false,
   },
   {
-    id: 'name',
-    header: 'Customer name',
+    id: 'username',
+    header: 'Username',
     cell: ({ row }) => (
       <span className='text-sm font-medium text-gray-900'>
         {getCustomerIdentifier(row.original)}
@@ -86,34 +68,11 @@ export const createCustomersTableColumns = ({
     enableSorting: false,
   },
   {
-    // The endpoint doesn't return email/phone; kept for design parity as dashes.
-    id: 'email',
-    header: 'Email address',
-    cell: () => <div className='text-sm text-gray-600'>—</div>,
-    enableSorting: false,
-  },
-  {
-    id: 'phone',
-    header: 'Phone number',
-    cell: () => <div className='text-sm text-gray-600'>—</div>,
-    enableSorting: false,
-  },
-  {
     id: 'totalOrders',
     header: 'Total orders',
     cell: ({ row }) => (
       <div className='text-sm text-gray-600'>
         {formatCount(row.original.total_orders)}
-      </div>
-    ),
-    enableSorting: false,
-  },
-  {
-    id: 'lastOrderDate',
-    header: 'Last Order date',
-    cell: ({ row }) => (
-      <div className='text-sm text-gray-600'>
-        {formatDate(getLastOrderDate(row.original))}
       </div>
     ),
     enableSorting: false,
@@ -138,40 +97,17 @@ export const createCustomersTableColumns = ({
   {
     id: 'actions',
     header: '',
-    cell: ({ row }) => {
-      const customer = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='h-8 w-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <MoreHorizontal className='h-4 w-4' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end' className='w-48'>
-            <DropdownMenuItem onClick={() => onViewDetails(customer)}>
-              View details
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onBlockUnblock(customer)}>
-              Block/Unblock
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onSendMessage(customer)}>
-              Send Message
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onViewComplaints(customer)}>
-              View Complaints
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => onDelete(customer)}
-              className='text-red-600 focus:text-red-600'
-            >
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ({ row }) => (
+      <Button
+        type='button'
+        variant='outline'
+        size='sm'
+        onClick={() => onViewDetails(row.original)}
+        className='h-9 text-sm'
+      >
+        View
+      </Button>
+    ),
     enableSorting: false,
   },
 ];

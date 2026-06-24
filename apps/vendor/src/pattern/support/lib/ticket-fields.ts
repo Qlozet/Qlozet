@@ -59,6 +59,28 @@ export const formatDate = (value: unknown): string => {
   return s.includes('T') ? s.slice(0, 10) : s;
 };
 
+// "May 25, 2023 . 12:25pm" — matches the tickets list / detail header design.
+export const formatDateTime = (value: unknown): string => {
+  const s = str(value);
+  if (!s) return '—';
+  const date = new Date(s);
+  if (Number.isNaN(date.getTime())) return s;
+  const datePart = date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+  const timePart = date
+    .toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    })
+    .replace(/\s/g, '')
+    .toLowerCase();
+  return `${datePart} . ${timePart}`;
+};
+
 export const statusVariant = (status?: string): BadgeProps['variant'] => {
   const s = (status ?? '').toLowerCase();
   if (['resolved', 'closed', 'completed'].includes(s)) return 'success';
