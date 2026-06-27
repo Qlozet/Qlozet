@@ -16,6 +16,9 @@ export interface ProductOrganizationValue {
 interface ProductOrganizationSectionProps {
   value: ProductOrganizationValue;
   onChange: (next: ProductOrganizationValue) => void;
+  // Hide the Product type field — e.g. when customization is enabled, the
+  // product type is implied and the dropdown is not shown.
+  hideProductType?: boolean;
 }
 
 // Option sources for the organization chips. Static until the backend exposes
@@ -64,7 +67,6 @@ const PRODUCT_TYPE_GROUPS: TagGroup[] = [
     tags: [
       { value: 'customisable', label: 'Customisable' },
       { value: 'ready-made', label: 'Ready Made' },
-      { value: 'made-to-order', label: 'Made to Order' },
     ],
   },
 ];
@@ -72,6 +74,7 @@ const PRODUCT_TYPE_GROUPS: TagGroup[] = [
 export const ProductOrganizationSection = ({
   value,
   onChange,
+  hideProductType = false,
 }: ProductOrganizationSectionProps) => {
   const set = (key: keyof ProductOrganizationValue) => (next: string[]) =>
     onChange({ ...value, [key]: next });
@@ -113,15 +116,17 @@ export const ProductOrganizationSection = ({
           />
         </div>
 
-        <div>
-          <FieldLabel tooltip="Select product type">Product type</FieldLabel>
-          <MultiSelectTagsDropdown
-            placeholder="Customisable"
-            groups={PRODUCT_TYPE_GROUPS}
-            value={value.productType}
-            onChange={set('productType')}
-          />
-        </div>
+        {!hideProductType && (
+          <div>
+            <FieldLabel tooltip="Select product type">Product type</FieldLabel>
+            <MultiSelectTagsDropdown
+              placeholder="Customisable"
+              groups={PRODUCT_TYPE_GROUPS}
+              value={value.productType}
+              onChange={set('productType')}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

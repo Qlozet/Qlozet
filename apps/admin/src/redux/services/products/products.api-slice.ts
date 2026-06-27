@@ -50,6 +50,7 @@ export interface FabricDto {
   min_cut: number;
   price_per_yard: number;
   images?: ProductImageDto[];
+  variants?: VariantDto[];
 }
 
 export interface CreateFabricRequest {

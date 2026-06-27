@@ -116,6 +116,9 @@ export const AddFabricModal = NiceModal.create(() => {
           min_cut: minCut,
           price_per_yard: pricePerYard,
           images: hostedUrl ? [{ url: hostedUrl }] : undefined,
+          // Backend validates variants as an array even though Swagger marks it
+          // optional; this form has no variant UI, so send an empty array.
+          variants: [],
         },
       }).unwrap();
       toast.success('Fabric uploaded successfully');

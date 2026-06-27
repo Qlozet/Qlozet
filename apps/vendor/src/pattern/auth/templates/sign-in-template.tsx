@@ -3,7 +3,7 @@
 import React from 'react';
 import { AuthLayout } from '../organisms/auth-layout';
 import { useSignInMutation } from '@/redux/services/auth/auth.api-slice';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { saveCookie } from '@/lib/helpers/cookies-manager';
 import { SESSION_COOKIE_KEY } from '@/lib/constants';
@@ -23,6 +23,7 @@ import { SubmitButton } from '@/pattern/common/molecules/submit-button';
 
 export const SignInTemplate = () => {
   const { push } = useRouter();
+  const searchParams = useSearchParams();
 
   // Sign In mutation hook
   const [signIn, { isLoading, isError, error }] = useSignInMutation();
@@ -43,7 +44,9 @@ export const SignInTemplate = () => {
 
         // While pages are in progress, stay put instead of entering the app
         if (!PAGES_IN_PROGRESS) {
-          push(APP_ROUTES.dashboard);
+          // Return the user to wherever the auth guard intercepted them.
+          const redirectTo = searchParams.get('redirect');
+          push(redirectTo && redirectTo.startsWith('/') ? redirectTo : APP_ROUTES.dashboard);
           toast.success('Sign in successful!');
         }
       })

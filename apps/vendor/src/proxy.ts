@@ -1,37 +1,55 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-import { AUTH_ROUTES } from '@/lib/routes';
-import { PAGES_IN_PROGRESS } from '@/lib/feature-flags';
+import { SESSION_COOKIE_KEY } from '@/lib/constants';
+import { APP_ROUTES, AUTH_ROUTES } from '@/lib/routes';
 
 /**
- * Temporary auth guard — Next.js 16 Proxy (formerly Middleware), gated behind
- * the PAGES_IN_PROGRESS feature flag.
+ * Auth guard — Next.js 16 Proxy (formerly Middleware).
  *
- * While the in-app pages are still being built, the app is locked behind the
- * auth screens: any non-auth route is redirected to the sign-in page. Flip the
- * flag off (or remove this proxy) once the pending pages are ready.
+ * Anything that is not explicitly public requires a session. Unauthenticated
+ * visitors are redirected to the sign-in page (preserving where they were
+ * headed), and already-authenticated visitors are bounced away from the
+ * sign-in / sign-up screens.
  */
+
+// Routes (and their sub-paths) reachable without a session.
+const PUBLIC_PREFIXES = [
+  '/auth', // sign-in, sign-up, forgot/reset password, verification, etc.
+  '/verify', // email verification links: /verify/[userid]
+];
+
+const isPublicRoute = (pathname: string): boolean =>
+  PUBLIC_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+
 export function proxy(request: NextRequest) {
-  // App not locked — let every route through as normal
-  if (!PAGES_IN_PROGRESS) {
-    return NextResponse.next();
+  const token = request.cookies.get(SESSION_COOKIE_KEY)?.value;
+  const { pathname, search } = request.nextUrl;
+  const isPublic = isPublicRoute(pathname);
+
+  // Signed-in users have no business on the sign-in / sign-up screens.
+  if (token && (pathname === AUTH_ROUTES.signIn || pathname === AUTH_ROUTES.signup)) {
+    const url = request.nextUrl.clone();
+    url.pathname = APP_ROUTES.dashboard;
+    url.search = '';
+    return NextResponse.redirect(url);
   }
 
-  const { pathname } = request.nextUrl;
-
-  // Allow the auth screens through
-  if (pathname.startsWith('/auth')) {
-    return NextResponse.next();
+  // Signed-out users may only reach public routes.
+  if (!token && !isPublic) {
+    const url = request.nextUrl.clone();
+    url.pathname = AUTH_ROUTES.signIn;
+    // Remember the intended destination so we can return after login.
+    url.search = `?redirect=${encodeURIComponent(`${pathname}${search}`)}`;
+    return NextResponse.redirect(url);
   }
 
-  // Everything else goes back to sign-in
-  const url = request.nextUrl.clone();
-  url.pathname = AUTH_ROUTES.signIn;
-  return NextResponse.redirect(url);
+  return NextResponse.next();
 }
 
 export const config = {
-  // Skip Next internals and static files (anything with a file extension)
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)'],
+  // Skip Next internals and static files (anything with a file extension).
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)'],
 };

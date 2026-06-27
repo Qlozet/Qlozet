@@ -27,70 +27,66 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
   className = '',
 }) => {
   return (
-    <section className={`h-screen overflow-hidden ${className}`}>
-      <div className='lg:bg-accent block lg:flex items-center justify-center bg-cover bg-center relative'>
-        {/* Mobile Background Overlay */}
-        <div className='relative bg-[rgba(0,0,0,.7)] lg:bg-accent h-screen w-screen 2xl:flex justify-center items-center overflow-y-scroll z-20'>
+    <section
+      className={`relative h-dvh w-full min-w-0 overflow-y-auto bg-[rgba(0,0,0,.7)] lg:bg-accent ${className}`}
+    >
+      {/* Mobile Background Overlay — fixed to the viewport so it stays in place while the content scrolls */}
+      <div className='fixed inset-0 -z-10 lg:hidden'>
+        <Image
+          src={AuthMobileOverlayImg}
+          alt='overlay image'
+          fill
+          priority
+          className='object-cover opacity-60'
+        />
+        <div className='absolute inset-0 bg-[rgba(0,0,0,.7)]' />
+      </div>
 
-          {/* Mobile Overlay Image */}
-          <Image
-            src={AuthMobileOverlayImg}
-            alt='overlay image'
-            fill
-            className='object-fill lg:hidden w-full min-h-[824px] h-full absolute inset-0 opacity-60 -z-10'
-          />
-          {/* Mobile Logo */}
-          <div className='block lg:hidden'>
-            <div className='block mt-5 mb-4'>
-              <Logo />
-            </div>
+      {/* Centering wrapper: centers content when it fits, scrolls from the top when it doesn't */}
+      <div className='flex min-h-full w-full flex-col items-center justify-start px-4 py-8 lg:flex-row lg:items-center lg:justify-center lg:gap-10 lg:px-[42px] lg:py-[75px]'>
+        {/* Mobile Logo */}
+        <div className='mb-6 lg:hidden'>
+          <Logo />
+        </div>
+
+        {/* Form Container */}
+        <div className='w-full max-w-[424px] rounded-[12px] bg-accent px-5 py-12 lg:bg-transparent lg:p-0'>
+          {/* Desktop Logo */}
+          <div className='mb-8 hidden lg:block'>
+            <Logo brown={true} />
           </div>
 
-          <div className='flex max-lg:justify-center lg:gap-10 max-w-7xl py-4 lg:py-[75px] lg:px-[42px]'>
-            {/* Form Container */}
-            <div className='bg-accent w-full lg:w-fit max-w-[424px] max-lg:py-[51px] max-lg:px-[20px] lg:p-0 rounded-[12px] mx-4 mb-10'>
-              {/* Desktop Logo */}
-              <div className='hidden lg:block lg:mb-8'>
-                <Logo brown={true} />
-              </div>
+          <If isTrue={isError ?? false}>
+            <AuthAlertWidget isError={isError} alertTitle={alertTitle} alertDescription={alertDescription} />
+          </If>
 
-              {/* <div className='flex h-full items-center translate-y-[-20%]'> */}
-              <div className='w-full lg:pt-16'>
-                <If isTrue={isError ?? false}>
-                  <AuthAlertWidget isError={isError} alertTitle={alertTitle} alertDescription={alertDescription} />
-                </If>
-
-                {/* Title Section */}
-                <div className='mb-8'>
-                  <h1 className='text-[2rem] font-medium font-poppins text-primary mb-2'>
-                    {title}
-                  </h1>
-                  {subtitle && (
-                    <p className='text-sm font-normal text-gray-600'>
-                      {subtitle}
-                    </p>
-                  )}
-                </div>
-
-                {/* Form Content */}
-                {children}
-              </div>
-              {/* </div> */}
-            </div>
-
-            {/* Image Container */}
-            {showImage && (
-              <div className='hidden lg:relative w-full max-w-[878px] h-[810px] flex-1 lg:flex items-start justify-center'>
-                <Image
-                  src={signupImage}
-                  alt='Authentication'
-                  fill
-                  className='object-cover'
-                />
-              </div>
+          {/* Title Section */}
+          <div className='mb-8'>
+            <h1 className='text-[2rem] font-medium font-poppins text-primary mb-2'>
+              {title}
+            </h1>
+            {subtitle && (
+              <p className='text-sm font-normal text-gray-600'>
+                {subtitle}
+              </p>
             )}
           </div>
+
+          {/* Form Content */}
+          {children}
         </div>
+
+        {/* Image Container */}
+        {showImage && (
+          <div className='relative hidden h-[810px] w-full max-w-[878px] flex-1 lg:block'>
+            <Image
+              src={signupImage}
+              alt='Authentication'
+              fill
+              className='object-cover'
+            />
+          </div>
+        )}
       </div>
     </section>
   );
