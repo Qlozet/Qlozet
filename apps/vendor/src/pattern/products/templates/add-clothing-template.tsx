@@ -82,6 +82,7 @@ export default function AddClothingTemplate() {
     category: [],
     subCategory: [],
     productType: [],
+    audience: '',
   });
   const [price, setPrice] = useState('');
   const [discount, setDiscount] = useState('');
@@ -128,6 +129,11 @@ export default function AddClothingTemplate() {
       return;
     }
 
+    if (!organization.audience) {
+      toast.error('Please select a target audience.');
+      return;
+    }
+
     const colorVariants: ColorVariantDto[] = variants.map((v) => {
       const name = v.label || v.colorHex;
       return {
@@ -168,7 +174,7 @@ export default function AddClothingTemplate() {
             product_type: productType,
             categories: organization.category,
             attributes: [...organization.subCategory, ...organization.tag],
-            audience: '',
+            audience: organization.audience,
           },
           images: defaultImages
             .filter((img) => !img.isLocal)

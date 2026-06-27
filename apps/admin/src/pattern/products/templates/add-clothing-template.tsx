@@ -80,6 +80,7 @@ export const AddClothingTemplate = () => {
     category: [],
     subCategory: [],
     productType: [],
+    audience: '',
   });
   const [price, setPrice] = useState('');
   const [discount, setDiscount] = useState('');
@@ -117,6 +118,11 @@ export const AddClothingTemplate = () => {
   const handleSave = async () => {
     if (!title.trim()) {
       toast.error('Please enter a product title.');
+      return;
+    }
+
+    if (!organization.audience) {
+      toast.error('Please select a target audience.');
       return;
     }
 
@@ -165,7 +171,7 @@ export const AddClothingTemplate = () => {
             product_type: organization.productType[0] ?? '',
             categories: organization.category,
             attributes: [...organization.subCategory, ...organization.tag],
-            audience: '',
+            audience: organization.audience,
           },
           // Only hosted ("Add from URL") images can be submitted — local file
           // previews have no upload endpoint yet.
