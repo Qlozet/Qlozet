@@ -4,13 +4,32 @@ import {
   MultiSelectTagsDropdown,
   type TagGroup,
 } from '@/pattern/common/organisms/multi-select-tag-dropdown';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { FieldLabel } from '../atoms/field-label';
+
+// Backend (POST /products/clothing) requires taxonomy.audience to be one of
+// these exact values.
+export const AUDIENCE_OPTIONS = [
+  { value: 'men', label: 'Men' },
+  { value: 'women', label: 'Women' },
+  { value: 'unisex', label: 'Unisex' },
+  { value: 'kids', label: 'Kids' },
+] as const;
+
+export type Audience = (typeof AUDIENCE_OPTIONS)[number]['value'];
 
 export interface ProductOrganizationValue {
   tag: string[];
   category: string[];
   subCategory: string[];
   productType: string[];
+  audience: Audience | '';
 }
 
 interface ProductOrganizationSectionProps {
@@ -127,6 +146,27 @@ export const ProductOrganizationSection = ({
             />
           </div>
         )}
+
+        <div>
+          <FieldLabel tooltip="Select target audience">Audience</FieldLabel>
+          <Select
+            value={value.audience || undefined}
+            onValueChange={(next) =>
+              onChange({ ...value, audience: next as Audience })
+            }
+          >
+            <SelectTrigger className="w-full bg-background">
+              <SelectValue placeholder="Select audience" />
+            </SelectTrigger>
+            <SelectContent>
+              {AUDIENCE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
     </div>
   );
