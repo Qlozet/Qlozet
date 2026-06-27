@@ -11,7 +11,7 @@ const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
     return (
         <>
             <Suspense fallback={<Loader />}>
-                <div className='bg-accent flex w-full min-h-screen items-center justify-center'>
+                <div className='bg-accent w-full min-w-0'>
                     {children}
                 </div>
             </Suspense>

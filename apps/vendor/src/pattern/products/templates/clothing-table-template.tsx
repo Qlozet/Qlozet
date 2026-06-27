@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ClothingTable } from '@/pattern/products/organisms/clothing-table'
 import { PaginationState } from '@tanstack/react-table'
-import { Product, useGetProductsQuery, useDeleteProductMutation } from '@/redux/services/products/products.api-slice'
+import { Product, useGetProductsByVendorQuery, useDeleteProductMutation } from '@/redux/services/products/products.api-slice'
 import { Button } from '@/components/ui/button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { clearProductId } from '@/lib/utils'
@@ -16,7 +16,6 @@ import { ClothingStylesIcon } from '@/pattern/common/atoms/clothing-styles-icon'
 import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-icon'
 import { SearchInputWithParams } from '@/pattern/common/molecules/search-input-with-params'
 import { ExcelIcon } from '@/pattern/common/atoms/excel-icon'
-import { mockClothingProducts } from '@/lib/mocks'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Filter, ChevronDown, X } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
@@ -110,7 +109,10 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     setFilterOpen(false)
   }
 
-  // Get Products API query for clothing category
+  // Get Products API query for clothing category.
+  // GET /products/by-vendor is scoped to the authenticated vendor and only
+  // accepts kind + pagination — search/sortBy/order are applied client-side
+  // (see filtering/sorting below).
   const {
     data: productsResponse,
     isLoading,
@@ -119,13 +121,10 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     isSuccess,
     isFetching,
     refetch,
-  } = useGetProductsQuery({
+  } = useGetProductsByVendorQuery({
     page: pagination.pageIndex + 1,
     size: pagination.pageSize, // API uses 'size' instead of 'limit'
-    search: searchQuery || undefined, // Only send if not empty
     kind: 'clothing', // API uses 'kind' instead of 'category'
-    sortBy: sortBy, // Add sortBy parameter
-    order: order, // Add order parameter (asc/desc)
   })
 
   // Delete product mutation
@@ -154,8 +153,29 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
 
   // Handle different API response formats - Extract from nested data structure
   const rawProducts = (productsResponse?.data?.data || productsResponse?.products || []) as any[]
-  const products = rawProducts?.length > 0 ? rawProducts?.map(transformProduct) : mockClothingProducts
-  const totalProducts = productsResponse?.data?.total_items || productsResponse?.totalCount || productsResponse?.total || mockClothingProducts?.length
+  const mappedProducts = rawProducts.map(transformProduct)
+
+  // /products/by-vendor has no server-side search/sort, so apply both to the
+  // current page client-side to keep the search box and Filter menu working.
+  const products = (() => {
+    const term = searchQuery.trim().toLowerCase()
+    let list = term
+      ? mappedProducts.filter((p) => (p.name ?? '').toLowerCase().includes(term))
+      : mappedProducts
+
+    if (sortBy) {
+      const dir = order === 'asc' ? 1 : -1
+      list = [...list].sort((a, b) => {
+        const av = a[sortBy as keyof Product]
+        const bv = b[sortBy as keyof Product]
+        if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * dir
+        return String(av ?? '').localeCompare(String(bv ?? '')) * dir
+      })
+    }
+
+    return list
+  })()
+  const totalProducts = productsResponse?.data?.total_items || productsResponse?.totalCount || productsResponse?.total || 0
   const totalPagesFromAPI = productsResponse?.data?.total_pages || productsResponse?.totalPages || Math.ceil(totalProducts / pagination.pageSize) || 1
 
   useEffect(() => {

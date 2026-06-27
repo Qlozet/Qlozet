@@ -117,6 +117,17 @@ export default function AddClothingTemplate() {
       return;
     }
 
+    // Backend requires a non-empty taxonomy.product_type. When customization is
+    // on the product type is implicitly "customisable" (the dropdown is hidden);
+    // otherwise the vendor must pick one.
+    const productType = customizationEnabled
+      ? 'customisable'
+      : organization.productType[0];
+    if (!productType) {
+      toast.error('Please select a product type.');
+      return;
+    }
+
     const colorVariants: ColorVariantDto[] = variants.map((v) => {
       const name = v.label || v.colorHex;
       return {
@@ -154,7 +165,7 @@ export default function AddClothingTemplate() {
           turnaround_days: Number(turnaroundDays) || 0,
           status,
           taxonomy: {
-            product_type: organization.productType[0] ?? '',
+            product_type: productType,
             categories: organization.category,
             attributes: [...organization.subCategory, ...organization.tag],
             audience: '',
@@ -320,6 +331,7 @@ export default function AddClothingTemplate() {
             <ProductOrganizationSection
               value={organization}
               onChange={setOrganization}
+              hideProductType={customizationEnabled}
             />
 
             <ProductPricingSection
