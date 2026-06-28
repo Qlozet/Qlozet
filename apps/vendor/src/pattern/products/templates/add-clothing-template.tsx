@@ -141,19 +141,19 @@ export default function AddClothingTemplate() {
     const colorVariants: ColorVariantDto[] = await Promise.all(variants.map(async (v) => {
       const name = v.label || v.colorHex;
       
-      let uploadedVariantImages: string[] = [];
+      let uploadedVariantImages: { url: string; public_id: string }[] = [];
       if (v.imageFiles && v.imageFiles.length > 0) {
         const res = await Promise.all(v.imageFiles.map(file => uploadImage(file).unwrap()));
-        uploadedVariantImages = res.map(r => r.data?.url).filter(Boolean) as string[];
+        uploadedVariantImages = res.map(r => ({ url: r.data?.url || '', public_id: r.data?.public_id || 'unknown' })).filter(img => Boolean(img.url));
       }
 
       return {
         name,
         hex: v.colorHex,
         images: [
-          ...(v.imageUrl ? [{ url: v.imageUrl, public_id: '' }] : []),
-          ...v.images.filter(url => !url.startsWith('blob:')).map((url) => ({ url, public_id: '' })),
-          ...uploadedVariantImages.map((url) => ({ url, public_id: '' })),
+          ...(v.imageUrl ? [{ url: v.imageUrl, public_id: 'unknown' }] : []),
+          ...v.images.filter(url => !url.startsWith('blob:')).map((url) => ({ url, public_id: 'unknown' })),
+          ...uploadedVariantImages,
         ],
         variants: v.availableSizes.map((size) => {
           const detail = v.details[size] ?? makeSizeDetail();
@@ -174,23 +174,23 @@ export default function AddClothingTemplate() {
       const uploadedDefaults = await Promise.all(
         localDefaultImages.map(async (img) => {
           const res = await uploadImage(img.file!).unwrap();
-          return res.data?.url;
+          return { url: res.data?.url || '', public_id: res.data?.public_id || 'unknown' };
         })
       );
       
       const defaultImageUrls = [
-        ...defaultImages.filter(img => !img.isLocal).map(img => ({ url: img.url, public_id: '' })),
-        ...uploadedDefaults.filter(url => !!url).map(url => ({ url: url!, public_id: '' }))
+        ...defaultImages.filter(img => !img.isLocal).map(img => ({ url: img.url, public_id: 'unknown' })),
+        ...uploadedDefaults.filter(img => !!img.url)
       ];
 
       const uploadedExtras = await Promise.all(
         extraFiles.map(async (file) => {
           const res = await uploadImage(file).unwrap();
-          return res.data?.url;
+          return { url: res.data?.url || '', public_id: res.data?.public_id || 'unknown' };
         })
       );
       
-      const extraImageUrls = uploadedExtras.filter(url => !!url).map(url => ({ url: url!, public_id: '' }));
+      const extraImageUrls = uploadedExtras.filter(img => !!img.url);
       
       const finalImages = [...defaultImageUrls, ...extraImageUrls];
       await createClothing({

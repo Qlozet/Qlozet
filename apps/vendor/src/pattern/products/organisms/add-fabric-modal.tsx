@@ -113,10 +113,12 @@ export const AddFabricModal = NiceModal.create(() => {
     }
     try {
       let finalImageUrl = hostedUrl;
+      let finalPublicId = 'unknown';
       if (imageFile && !hostedUrl) {
         const res = await uploadImage(imageFile).unwrap();
         if (res.data?.url) {
           finalImageUrl = res.data.url;
+          finalPublicId = res.data.public_id || 'unknown';
         }
       }
 
@@ -131,7 +133,7 @@ export const AddFabricModal = NiceModal.create(() => {
           width,
           min_cut: minCut,
           price_per_yard: pricePerYard,
-          images: finalImageUrl ? [{ url: finalImageUrl, public_id: '' }] : undefined,
+          images: finalImageUrl ? [{ url: finalImageUrl, public_id: finalPublicId }] : undefined,
           // Backend validates variants as an array even though Swagger marks it
           // optional; the modal has no variant UI, so send an empty array.
           variants: [],
