@@ -24,6 +24,15 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
         form.append('file', file);
         return { url: '/uploads/product', method: 'POST', body: form };
       },
+      transformResponse: (response: any) => {
+        if (response?.data?.imageUrl) {
+          response.data = {
+            url: response.data.imageUrl,
+            public_id: response.data.publicId
+          };
+        }
+        return response;
+      }
     }),
 
     uploadProfileImage: builder.mutation<ApiResponse<UploadedImage>, File>({
@@ -32,6 +41,15 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
         form.append('file', file);
         return { url: '/uploads/profile', method: 'POST', body: form };
       },
+      transformResponse: (response: any) => {
+        if (response?.data?.imageUrl) {
+          response.data = {
+            url: response.data.imageUrl,
+            public_id: response.data.publicId
+          };
+        }
+        return response;
+      }
     }),
 
     uploadOutfitImages: builder.mutation<ApiResponse<UploadedImage[]>, File[]>({
@@ -40,6 +58,15 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
         files.forEach((file) => form.append('files', file));
         return { url: '/uploads/outfits', method: 'POST', body: form };
       },
+      transformResponse: (response: any) => {
+        if (Array.isArray(response?.data)) {
+          response.data = response.data.map((item: any) => ({
+            url: item.imageUrl || item.url,
+            public_id: item.publicId || item.public_id
+          }));
+        }
+        return response;
+      }
     }),
   }),
 });
