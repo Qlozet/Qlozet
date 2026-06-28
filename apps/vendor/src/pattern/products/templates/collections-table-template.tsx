@@ -155,8 +155,8 @@ const CollectionsTableTemplate = ({ onExport }: CollectionsTableTemplateProps) =
 
     // Handle different API response formats - Extract from nested data structure
     const rawProducts = (productsResponse?.data?.data || productsResponse?.products || []) as any[]
-    const products = rawProducts?.length > 0 ? rawProducts?.map(transformProduct) : mockClothingProducts
-    const totalProducts = productsResponse?.data?.total_items || productsResponse?.totalCount || productsResponse?.total || mockClothingProducts?.length
+    const products = rawProducts?.map(transformProduct) || []
+    const totalProducts = productsResponse?.data?.total_items || productsResponse?.totalCount || productsResponse?.total || 0
     const totalPagesFromAPI = productsResponse?.data?.total_pages || productsResponse?.totalPages || Math.ceil(totalProducts / pagination.pageSize) || 1
 
     useEffect(() => {
