@@ -481,7 +481,10 @@ export const productsApiSlice = baseAPI.injectEndpoints({
                 status: item.status,
                 category: inner.taxonomy?.categories?.[0] || '',
                 tags: inner.taxonomy?.attributes || [],
-                images: inner.images?.map((img: any) => typeof img === 'string' ? img : img.url) || [],
+                images: inner.images?.map((img: any) => {
+                  const url = typeof img === 'string' ? img : img.url;
+                  return url ? url.replace(/^http:\/\//i, 'https://') : url;
+                }) || [],
                 variants
               };
             }

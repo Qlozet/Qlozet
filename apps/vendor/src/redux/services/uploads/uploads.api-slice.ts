@@ -27,7 +27,7 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
       transformResponse: (response: any) => {
         if (response?.data?.imageUrl) {
           response.data = {
-            url: response.data.imageUrl,
+            url: response.data.imageUrl.replace(/^http:\/\//i, 'https://'),
             public_id: response.data.publicId
           };
         }
@@ -44,7 +44,7 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
       transformResponse: (response: any) => {
         if (response?.data?.imageUrl) {
           response.data = {
-            url: response.data.imageUrl,
+            url: response.data.imageUrl.replace(/^http:\/\//i, 'https://'),
             public_id: response.data.publicId
           };
         }
@@ -61,7 +61,7 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
       transformResponse: (response: any) => {
         if (Array.isArray(response?.data)) {
           response.data = response.data.map((item: any) => ({
-            url: item.imageUrl || item.url,
+            url: (item.imageUrl || item.url || '').replace(/^http:\/\//i, 'https://'),
             public_id: item.publicId || item.public_id
           }));
         }
