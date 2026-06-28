@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { Check, Info, Layers, Plus, Search, X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useGetProductsQuery } from '@/redux/services/products/products.api-slice';
+import { useGetProductsByVendorQuery } from '@/redux/services/products/products.api-slice';
 import { AddFabricModal } from './add-fabric-modal';
 import { cn } from '@/lib/utils';
 
@@ -57,7 +57,7 @@ export const SelectFabricModal = NiceModal.create(() => {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Record<string, SelectedFabric>>({});
 
-  const { data, isLoading, isFetching } = useGetProductsQuery({
+  const { data, isLoading, isFetching } = useGetProductsByVendorQuery({
     kind: 'fabric',
     page: 1,
     size: 100,

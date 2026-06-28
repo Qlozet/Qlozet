@@ -21,7 +21,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import {
-  useGetProductsQuery,
+  useGetProductsByVendorQuery,
   useGetCategoriesQuery,
   useUpdateProductMutation,
 } from '@/redux/services/products/products.api-slice';
@@ -68,7 +68,7 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
     isLoading: loadingProducts,
     error: productsError,
     refetch: refetchProducts,
-  } = useGetProductsQuery(filters);
+  } = useGetProductsByVendorQuery(filters);
 
   const { data: categoriesResponse } = useGetCategoriesQuery();
   const [updateProduct] = useUpdateProductMutation();
