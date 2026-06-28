@@ -11,6 +11,9 @@ import { InfoIcon, Trash2Icon, UploadIcon, PlusIcon, FlagIcon } from "lucide-rea
 import { create, useModal } from "@ebay/nice-modal-react"
 import { VariantSelectOptions } from "./variant-select-options"
 import { AVAILABLE_COLORS, ColorOption, VariantRow, VariantSizeDetail } from "../types/variant.types"
+import { useCreateAccessoryMutation } from "@/redux/services/products/products.api-slice"
+import { useUploadProductImageMutation } from "@/redux/services/uploads/uploads.api-slice"
+import { toast } from "sonner"
 
 export const AddAccessoryModal = create(() => {
     const { resolve, remove, visible } = useModal();
@@ -28,6 +31,13 @@ export const AddAccessoryModal = create(() => {
     const [subCategory, setSubCategory] = useState("Leather belt")
     const [tags, setTags] = useState("Men")
     const [price, setPrice] = useState("100000")
+    
+    const [imageFile, setImageFile] = useState<File | null>(null)
+    const [previewUrl, setPreviewUrl] = useState("")
+
+    const [createAccessory, { isLoading: isCreating }] = useCreateAccessoryMutation()
+    const [uploadImage, { isLoading: isUploading }] = useUploadProductImageMutation()
+    const isSaving = isCreating || isUploading
 
     const availableSizes = ["Extra small", "Small", "Medium", "Large", "Extra large"]
 
@@ -104,6 +114,51 @@ export const AddAccessoryModal = create(() => {
 
     const handleVariantToggle = (variantId: string) => {
         setVariants((prev) => prev?.map((v) => (v.id === variantId ? { ...v, isExpanded: !v.isExpanded } : v)))
+    }
+
+    const handleSubmit = async () => {
+        if (!accessoryName.trim() || !price) {
+            toast.error("Please enter a name and price.")
+            return
+        }
+
+        try {
+            let finalImageUrl = ""
+            if (imageFile) {
+                const res = await uploadImage(imageFile).unwrap()
+                if (res.data?.url) finalImageUrl = res.data.url
+            }
+
+            const variantsToSubmit = variants.flatMap(v => 
+                v.sizes.map(sizeDetail => ({
+                    color: { name: v.color.label, hex: v.color.value },
+                    size: sizeDetail.size,
+                    stock: sizeDetail.stock,
+                    price: sizeDetail.price,
+                    sku: sizeDetail.sku || undefined,
+                    images: []
+                }))
+            )
+
+            await createAccessory({
+                name: accessoryName.trim(),
+                description: description.trim() || undefined,
+                price: Number(price),
+                taxonomy: {
+                    product_type: 'accessory',
+                    categories: [category],
+                    attributes: [subCategory, tags],
+                    audience: 'unisex'
+                },
+                variants: variantsToSubmit,
+                images: finalImageUrl ? [{ url: finalImageUrl, public_id: '' }] : []
+            }).unwrap()
+
+            toast.success("Accessory created successfully!")
+            handleCloseModal()
+        } catch (error) {
+            toast.error("Failed to create accessory.")
+        }
     }
 
     return (
@@ -247,8 +302,8 @@ export const AddAccessoryModal = create(() => {
                                         </Tabs>
                                     </div>
 
-                                    <Button variant="secondary" className="w-fit">
-                                        Upload Fabric
+                                    <Button onClick={handleSubmit} disabled={isSaving} className="px-8">
+                                        {isSaving ? "Uploading..." : "Upload Accessory"}
                                     </Button>
                                 </div>
                             </div>
@@ -278,14 +333,35 @@ export const AddAccessoryModal = create(() => {
                             </p>
                         </div>
 
-                        <div className="border-2 border-dashed border-border rounded-lg p-12 flex flex-col items-center justify-center gap-4 min-h-[300px]">
-                            <div className="bg-muted rounded-full size-12 flex items-center justify-center">
-                                <UploadIcon className="size-6 text-muted-foreground" />
-                            </div>
-                            <div className="text-center space-y-1">
-                                <p className="text-sm text-foreground">Add or drop image or sketch</p>
-                                <button className="text-sm text-blue-600 hover:underline">Add from URL</button>
-                            </div>
+                        <div 
+                            onClick={() => document.getElementById('accessory-image')?.click()}
+                            className="border-2 border-dashed border-border rounded-lg p-12 flex flex-col items-center justify-center gap-4 min-h-[300px] cursor-pointer"
+                        >
+                            <input 
+                                type="file" 
+                                id="accessory-image" 
+                                className="hidden" 
+                                accept="image/*"
+                                onChange={(e) => {
+                                    if (e.target.files && e.target.files[0]) {
+                                        setImageFile(e.target.files[0])
+                                        setPreviewUrl(URL.createObjectURL(e.target.files[0]))
+                                    }
+                                }}
+                            />
+                            {previewUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={previewUrl} alt="Preview" className="w-full h-full object-contain" />
+                            ) : (
+                                <>
+                                    <div className="bg-muted rounded-full size-12 flex items-center justify-center">
+                                        <UploadIcon className="size-6 text-muted-foreground" />
+                                    </div>
+                                    <div className="text-center space-y-1">
+                                        <p className="text-sm text-foreground">Add or drop image or sketch</p>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

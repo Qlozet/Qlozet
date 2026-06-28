@@ -432,7 +432,7 @@ export const productsApiSlice = baseAPI.injectEndpoints({
     // GET /products/by-vendor — products owned by the current vendor
     getProductsByVendor: builder.query<
       ProductsResponse,
-      { kind?: string; size?: number; page?: number } | void
+      ProductsFilters | void
     >({
       query: (params = {}) => {
         const searchParams = new URLSearchParams();

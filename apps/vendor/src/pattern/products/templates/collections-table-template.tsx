@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { PaginationState } from '@tanstack/react-table'
-import { Product, useGetProductsQuery, useDeleteProductMutation } from '@/redux/services/products/products.api-slice'
+import { Product, useGetProductsByVendorQuery, useDeleteProductMutation } from '@/redux/services/products/products.api-slice'
 import { Button } from '@/components/ui/button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { clearProductId } from '@/lib/utils'
@@ -120,7 +120,7 @@ const CollectionsTableTemplate = ({ onExport }: CollectionsTableTemplateProps) =
         isSuccess,
         isFetching,
         refetch,
-    } = useGetProductsQuery({
+    } = useGetProductsByVendorQuery({
         page: pagination.pageIndex + 1,
         size: pagination.pageSize, // API uses 'size' instead of 'limit'
         search: searchQuery || undefined, // Only send if not empty
