@@ -124,9 +124,13 @@ export const AddAccessoryModal = create(() => {
 
         try {
             let finalImageUrl = ""
+            let finalPublicId = "unknown"
             if (imageFile) {
                 const res = await uploadImage(imageFile).unwrap()
-                if (res.data?.url) finalImageUrl = res.data.url
+                if (res.data?.url) {
+                    finalImageUrl = res.data.url
+                    finalPublicId = res.data.public_id || "unknown"
+                }
             }
 
             const variantsToSubmit = variants.flatMap(v => 
@@ -151,7 +155,7 @@ export const AddAccessoryModal = create(() => {
                     audience: 'unisex'
                 },
                 variants: variantsToSubmit,
-                images: finalImageUrl ? [{ url: finalImageUrl, public_id: '' }] : []
+                images: finalImageUrl ? [{ url: finalImageUrl, public_id: finalPublicId }] : []
             }).unwrap()
 
             toast.success("Accessory created successfully!")
