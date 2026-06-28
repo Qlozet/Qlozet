@@ -12,6 +12,7 @@ import { StepperField } from '../molecules/stepper-field';
 import { LabeledSelect } from '../molecules/labeled-select';
 import { ColourSelect } from '../molecules/colour-select';
 import { useCreateFabricMutation } from '@/redux/services/products/products.api-slice';
+import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
 
 const MATERIAL_OPTIONS = [
   'Cotton',
@@ -76,7 +77,11 @@ export const AddFabricModal = NiceModal.create(() => {
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [urlDraft, setUrlDraft] = useState('');
 
-  const [createFabric, { isLoading }] = useCreateFabricMutation();
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
+  const [createFabric, { isLoading: isCreating }] = useCreateFabricMutation();
+  const [uploadImage, { isLoading: isUploading }] = useUploadProductImageMutation();
+  const isLoading = isCreating || isUploading;
 
   if (!modal.visible) return null;
 
@@ -86,6 +91,7 @@ export const AddFabricModal = NiceModal.create(() => {
   const handleFile = (file?: File) => {
     if (!file) return;
     setPreviewUrl(URL.createObjectURL(file));
+    setImageFile(file);
     setHostedUrl('');
   };
 
@@ -94,6 +100,7 @@ export const AddFabricModal = NiceModal.create(() => {
     if (!url) return;
     setPreviewUrl(url);
     setHostedUrl(url);
+    setImageFile(null);
     setShowUrlInput(false);
     setUrlDraft('');
   };
@@ -105,6 +112,14 @@ export const AddFabricModal = NiceModal.create(() => {
       return;
     }
     try {
+      let finalImageUrl = hostedUrl;
+      if (imageFile && !hostedUrl) {
+        const res = await uploadImage(imageFile).unwrap();
+        if (res.data?.url) {
+          finalImageUrl = res.data.url;
+        }
+      }
+
       await createFabric({
         metafields: { colour: colour || undefined, swatch },
         fabric: {
@@ -116,7 +131,7 @@ export const AddFabricModal = NiceModal.create(() => {
           width,
           min_cut: minCut,
           price_per_yard: pricePerYard,
-          images: hostedUrl ? [{ url: hostedUrl, public_id: '' }] : undefined,
+          images: finalImageUrl ? [{ url: finalImageUrl, public_id: '' }] : undefined,
           // Backend validates variants as an array even though Swagger marks it
           // optional; the modal has no variant UI, so send an empty array.
           variants: [],
@@ -331,6 +346,7 @@ export const AddFabricModal = NiceModal.create(() => {
               onClick={() => {
                 setPreviewUrl('');
                 setHostedUrl('');
+                setImageFile(null);
               }}
               className="text-sm text-destructive hover:underline"
             >

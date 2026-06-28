@@ -28,6 +28,7 @@ export interface VariantRow {
   details: Record<string, SizeDetail>;
   /** Per-colour product image URLs (max 5 shown). */
   images: string[];
+  imageFiles?: File[];
   expanded: boolean;
   selected: boolean;
 }
@@ -184,11 +185,30 @@ export const SetVariantsTable = ({
                 )}
               </div>
 
-              <div className="flex w-[260px] items-center gap-1.5">
+              <div className="flex w-[260px] items-center gap-1.5 relative">
+                <input 
+                  type="file" 
+                  accept="image/jpeg,image/png" 
+                  multiple 
+                  className="hidden" 
+                  id={`file-${variant.id}`} 
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      const files = Array.from(e.target.files).slice(0, 5 - variant.images.length);
+                      if (files.length > 0) {
+                        const newImages = [...variant.images, ...files.map(f => URL.createObjectURL(f))];
+                        const newFiles = [...(variant.imageFiles || []), ...files];
+                        patchVariant(variant.id, { images: newImages, imageFiles: newFiles });
+                      }
+                    }
+                  }}
+                />
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <div
+                  <button
                     key={i}
-                    className="flex size-9 items-center justify-center overflow-hidden rounded-md border border-input bg-accent"
+                    type="button"
+                    onClick={() => document.getElementById(`file-${variant.id}`)?.click()}
+                    className="flex size-9 items-center justify-center overflow-hidden rounded-md border border-input bg-accent hover:border-primary transition"
                   >
                     {variant.images[i] ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -200,7 +220,7 @@ export const SetVariantsTable = ({
                     ) : (
                       <ImageIcon className="size-4 text-muted-foreground" />
                     )}
-                  </div>
+                  </button>
                 ))}
               </div>
 

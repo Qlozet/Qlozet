@@ -8,6 +8,7 @@ interface DefaultImage {
   url: string;
   /** Local object-URL previews can't be submitted (no upload endpoint yet). */
   isLocal: boolean;
+  file?: File;
 }
 
 interface DefaultImagesUploaderProps {
@@ -31,6 +32,7 @@ export const DefaultImagesUploader = ({
     const next = Array.from(e.target.files).map((file) => ({
       url: URL.createObjectURL(file),
       isLocal: true,
+      file,
     }));
     onChange([...images, ...next]);
   };

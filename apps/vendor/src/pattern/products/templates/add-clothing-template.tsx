@@ -48,6 +48,7 @@ import {
   useCreateClothingMutation,
   type ColorVariantDto,
 } from '@/redux/services/products/products.api-slice';
+import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
 
 const countWords = (html: string) =>
   html
@@ -62,13 +63,16 @@ type ProductStatus = 'active' | 'draft' | 'archived';
 // the vendor's own create-clothing endpoint.
 export default function AddClothingTemplate() {
   const router = useRouter();
-  const [createClothing, { isLoading: isSaving }] = useCreateClothingMutation();
+  const [createClothing, { isLoading: isCreating }] = useCreateClothingMutation();
+  const [uploadImage, { isLoading: isUploading }] = useUploadProductImageMutation();
+  const isSaving = isCreating || isUploading;
 
   const [showAlert, setShowAlert] = useState(true);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<ProductStatus>('active');
   const [defaultImages, setDefaultImages] = useState<DefaultImage[]>([]);
+  const [extraFiles, setExtraFiles] = useState<File[]>([]);
 
   const [customizationEnabled, setCustomizationEnabled] = useState(false);
   const [measurementRequired, setMeasurementRequired] = useState(false);
@@ -134,14 +138,22 @@ export default function AddClothingTemplate() {
       return;
     }
 
-    const colorVariants: ColorVariantDto[] = variants.map((v) => {
+    const colorVariants: ColorVariantDto[] = await Promise.all(variants.map(async (v) => {
       const name = v.label || v.colorHex;
+      
+      let uploadedVariantImages: string[] = [];
+      if (v.imageFiles && v.imageFiles.length > 0) {
+        const res = await Promise.all(v.imageFiles.map(file => uploadImage(file).unwrap()));
+        uploadedVariantImages = res.map(r => r.data?.url).filter(Boolean) as string[];
+      }
+
       return {
         name,
         hex: v.colorHex,
         images: [
           ...(v.imageUrl ? [{ url: v.imageUrl, public_id: '' }] : []),
-          ...v.images.map((url) => ({ url, public_id: '' })),
+          ...v.images.filter(url => !url.startsWith('blob:')).map((url) => ({ url, public_id: '' })),
+          ...uploadedVariantImages.map((url) => ({ url, public_id: '' })),
         ],
         variants: v.availableSizes.map((size) => {
           const detail = v.details[size] ?? makeSizeDetail();
@@ -155,9 +167,32 @@ export default function AddClothingTemplate() {
           };
         }),
       };
-    });
+    }));
 
     try {
+      const localDefaultImages = defaultImages.filter((img) => img.isLocal && img.file);
+      const uploadedDefaults = await Promise.all(
+        localDefaultImages.map(async (img) => {
+          const res = await uploadImage(img.file!).unwrap();
+          return res.data?.url;
+        })
+      );
+      
+      const defaultImageUrls = [
+        ...defaultImages.filter(img => !img.isLocal).map(img => ({ url: img.url, public_id: '' })),
+        ...uploadedDefaults.filter(url => !!url).map(url => ({ url: url!, public_id: '' }))
+      ];
+
+      const uploadedExtras = await Promise.all(
+        extraFiles.map(async (file) => {
+          const res = await uploadImage(file).unwrap();
+          return res.data?.url;
+        })
+      );
+      
+      const extraImageUrls = uploadedExtras.filter(url => !!url).map(url => ({ url: url!, public_id: '' }));
+      
+      const finalImages = [...defaultImageUrls, ...extraImageUrls];
       await createClothing({
         seo: { title: title.trim() },
         metafields: {
@@ -176,9 +211,7 @@ export default function AddClothingTemplate() {
             attributes: [...organization.subCategory, ...organization.tag],
             audience: organization.audience,
           },
-          images: defaultImages
-            .filter((img) => !img.isLocal)
-            .map((img) => ({ url: img.url, public_id: '' })),
+          images: finalImages,
           color_variants: colorVariants,
         },
       }).unwrap();
@@ -238,7 +271,7 @@ export default function AddClothingTemplate() {
 
             <div className="rounded-lg bg-card p-6 custom-card-shadow">
               <FieldLabel>Upload Media</FieldLabel>
-              <FileUploadWidget />
+              <FileUploadWidget value={extraFiles} onChange={setExtraFiles} />
             </div>
 
             <div className="rounded-lg bg-card p-6 custom-card-shadow">

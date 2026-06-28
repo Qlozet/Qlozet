@@ -6,8 +6,16 @@ import { useState, useRef } from "react"
 import { ImageIcon, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-export const FileUploadWidget = ()=> {
-    const [files, setFiles] = useState<File[]>([])
+interface FileUploadWidgetProps {
+    value?: File[];
+    onChange?: (files: File[]) => void;
+}
+
+export const FileUploadWidget = ({ value, onChange }: FileUploadWidgetProps = {})=> {
+    const [internalFiles, setInternalFiles] = useState<File[]>([])
+    const files = value !== undefined ? value : internalFiles;
+    const setFiles = onChange || setInternalFiles;
+
     const [isDragging, setIsDragging] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -31,18 +39,21 @@ export const FileUploadWidget = ()=> {
             return isImage || isVideo
         })
 
-        setFiles((prev) => [...prev, ...droppedFiles])
+        const newFiles = [...files, ...droppedFiles];
+        setFiles(newFiles)
     }
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const selectedFiles = Array.from(e.target.files)
-            setFiles((prev) => [...prev, ...selectedFiles])
+            const newFiles = [...files, ...selectedFiles];
+            setFiles(newFiles)
         }
     }
 
     const removeFile = (index: number) => {
-        setFiles((prev) => prev.filter((_, i) => i !== index))
+        const newFiles = files.filter((_, i) => i !== index);
+        setFiles(newFiles)
     }
 
     const handleClick = () => {
