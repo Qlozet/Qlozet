@@ -444,6 +444,52 @@ export const productsApiSlice = baseAPI.injectEndpoints({
         const qs = searchParams.toString();
         return { url: `/products/by-vendor${qs ? `?${qs}` : ''}`, method: 'GET' };
       },
+      transformResponse: (response: any) => {
+        if (response?.data?.data) {
+          response.data.data = response.data.data.map((item: any) => {
+            const inner = item[item.kind];
+            if (inner) {
+              let variants: any[] = [];
+              if (item.kind === 'clothing' && inner.color_variants) {
+                variants = inner.color_variants.flatMap((cv: any) => 
+                  (cv.variants || []).map((v: any) => ({
+                    _id: v._id,
+                    size: v.size,
+                    color: cv.name,
+                    additionalPrice: v.price || 0,
+                    stock: v.stock || 0
+                  }))
+                );
+              } else if (inner.variants) {
+                variants = inner.variants.map((v: any) => ({
+                  _id: v._id,
+                  size: v.size,
+                  color: v.color?.name,
+                  additionalPrice: v.price || 0,
+                  stock: v.stock || 0
+                }));
+              }
+
+              const stock = variants.reduce((acc, v) => acc + (v.stock || 0), 0);
+
+              return {
+                ...item,
+                name: inner.name || '',
+                description: inner.description || '',
+                price: item.base_price || item.metafields?.base_price || 0,
+                stock: stock,
+                status: item.status,
+                category: inner.taxonomy?.categories?.[0] || '',
+                tags: inner.taxonomy?.attributes || [],
+                images: inner.images?.map((img: any) => typeof img === 'string' ? img : img.url) || [],
+                variants
+              };
+            }
+            return item;
+          });
+        }
+        return response;
+      },
       providesTags: ['Products'],
     }),
 
