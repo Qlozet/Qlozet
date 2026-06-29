@@ -116,9 +116,18 @@ export default function AddClothingTemplate() {
     ]);
   };
 
-  const handleSave = async () => {
+  const handleSave = async (isDraft = false) => {
     if (!title.trim()) {
       toast.error('Please enter a product title.');
+      return;
+    }
+
+    const hasCustomItems = customizationSections.some(
+      (sec) => (sec.items && sec.items.length > 0) || sec.subGroups?.some((sg) => sg.items && sg.items.length > 0)
+    );
+
+    if (!isDraft && customizationEnabled && !hasCustomItems) {
+      toast.error('You must add at least one style or customization option to publish a customisable product. Save as a draft instead.');
       return;
     }
 
@@ -204,7 +213,7 @@ export default function AddClothingTemplate() {
           type: customizationEnabled ? 'customize' : 'non_customize',
           description: description || undefined,
           turnaround_days: Number(turnaroundDays) || 0,
-          status,
+          status: isDraft ? 'draft' : 'active',
           taxonomy: {
             product_type: productType,
             categories: organization.category,
@@ -383,9 +392,23 @@ export default function AddClothingTemplate() {
               onDiscountChange={setDiscount}
             />
 
-            <div className="flex justify-end">
-              <Button onClick={handleSave} disabled={isSaving} className="px-8">
-                {isSaving ? 'Saving…' : 'Save'}
+            <div className="flex justify-end gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleSave(true)}
+                disabled={isSaving}
+                className="px-8 bg-transparent"
+              >
+                {isSaving ? 'Saving…' : 'Save as Draft'}
+              </Button>
+              <Button 
+                type="button" 
+                onClick={() => handleSave(false)} 
+                disabled={isSaving} 
+                className="px-8"
+              >
+                {isSaving ? 'Publishing…' : 'Publish Now'}
               </Button>
             </div>
           </div>
