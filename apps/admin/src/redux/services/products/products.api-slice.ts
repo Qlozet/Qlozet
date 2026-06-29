@@ -93,6 +93,9 @@ export interface ClothingDto {
   taxonomy: TaxonomyDto;
   status: 'active' | 'draft' | 'archived';
   images?: ProductImageDto[];
+  styles?: unknown[];
+  accessories?: unknown[];
+  fabrics?: unknown[];
   color_variants: ColorVariantDto[];
 }
 
