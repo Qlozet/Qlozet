@@ -180,6 +180,8 @@ export const AddClothingTemplate = () => {
             .map((img) => ({ url: img.url })),
           color_variants: colorVariants,
           styles: [],
+          accessories: [],
+          fabrics: [],
         },
       }).unwrap();
 
