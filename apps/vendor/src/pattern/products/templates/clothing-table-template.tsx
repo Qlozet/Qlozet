@@ -132,7 +132,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
 
   // Transform API products to match expected format
   const transformProduct = (apiProduct: any): Product => {
-    const itemData = apiProduct.clothing || apiProduct.accessory || apiProduct.fabric
+    const itemData = apiProduct.clothing || apiProduct.accessory || apiProduct.fabric || apiProduct
 
     let totalStock = 0;
     let totalVariants = 0;

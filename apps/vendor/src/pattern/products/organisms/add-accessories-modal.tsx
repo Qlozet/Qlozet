@@ -116,7 +116,7 @@ export const AddAccessoryModal = create(() => {
         setVariants((prev) => prev?.map((v) => (v.id === variantId ? { ...v, isExpanded: !v.isExpanded } : v)))
     }
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (isDraft = false) => {
         if (!accessoryName.trim() || !price) {
             toast.error("Please enter a name and price.")
             return
@@ -145,17 +145,22 @@ export const AddAccessoryModal = create(() => {
             )
 
             await createAccessory({
-                name: accessoryName.trim(),
-                description: description.trim() || undefined,
-                price: Number(price),
-                taxonomy: {
-                    product_type: 'accessory',
-                    categories: [category],
-                    attributes: [subCategory, tags],
-                    audience: 'unisex'
-                },
-                variants: variantsToSubmit,
-                images: finalImageUrl ? [{ url: finalImageUrl, public_id: finalPublicId }] : []
+                seo: { title: accessoryName.trim() },
+                metafields: { base_price: price ? Number(price) : undefined },
+                status: isDraft ? 'draft' : 'active',
+                accessory: {
+                    name: accessoryName.trim(),
+                    description: description.trim() || undefined,
+                    price: Number(price),
+                    taxonomy: {
+                        product_type: 'accessory',
+                        categories: [category],
+                        attributes: [subCategory, tags],
+                        audience: 'unisex'
+                    },
+                    variants: variantsToSubmit,
+                    images: finalImageUrl ? [{ url: finalImageUrl, public_id: finalPublicId }] : []
+                }
             }).unwrap()
 
             toast.success("Accessory created successfully!")
@@ -306,9 +311,14 @@ export const AddAccessoryModal = create(() => {
                                         </Tabs>
                                     </div>
 
-                                    <Button onClick={handleSubmit} disabled={isSaving} className="px-8">
-                                        {isSaving ? "Uploading..." : "Upload Accessory"}
-                                    </Button>
+                                    <div className="flex items-center gap-4">
+                                        <Button variant="outline" onClick={() => handleSubmit(true)} disabled={isSaving} className="px-8 bg-transparent">
+                                            {isSaving ? "Saving..." : "Save as Draft"}
+                                        </Button>
+                                        <Button onClick={() => handleSubmit(false)} disabled={isSaving} className="px-8">
+                                            {isSaving ? "Publishing..." : "Publish Now"}
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                             <VariantSelectOptions
