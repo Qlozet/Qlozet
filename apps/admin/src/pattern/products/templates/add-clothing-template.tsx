@@ -179,6 +179,7 @@ export const AddClothingTemplate = () => {
             .filter((img) => !img.isLocal)
             .map((img) => ({ url: img.url })),
           color_variants: colorVariants,
+          styles: [],
         },
       }).unwrap();
 
