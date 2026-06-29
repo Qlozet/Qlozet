@@ -134,18 +134,40 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   const transformProduct = (apiProduct: any): Product => {
     const itemData = apiProduct.clothing || apiProduct.accessory || apiProduct.fabric
 
+    let totalStock = 0;
+    let totalVariants = 0;
+
+    if (apiProduct.kind === 'clothing' && itemData?.color_variants) {
+      itemData.color_variants.forEach((cv: any) => {
+        if (cv.variants) {
+          totalVariants += cv.variants.length;
+          cv.variants.forEach((v: any) => {
+             totalStock += (v.stock || 0);
+          });
+        }
+      });
+    } else if (apiProduct.kind === 'accessory' && itemData?.variants) {
+      totalVariants = itemData.variants.length;
+      itemData.variants.forEach((v: any) => {
+        totalStock += (v.stock || 0);
+      });
+    }
+
+    const tags = [...(itemData?.taxonomy?.attributes || [])];
+    if (itemData?.taxonomy?.audience) tags.push(itemData.taxonomy.audience);
+
     return {
       _id: apiProduct._id,
       name: itemData?.name || 'Unnamed Product',
       description: itemData?.description || '',
       category: apiProduct.kind || 'clothing',
       price: apiProduct.base_price || itemData?.price || 0,
-      stock: itemData?.stock || 0,
-      status: itemData?.status || 'active',
+      stock: totalStock,
+      status: apiProduct.status || 'draft',
       images: itemData?.images?.map((img: any) => img.url) || [],
-      variants: itemData?.variants || [],
+      variants: Array.from({ length: totalVariants || 1 }),
       customizations: itemData?.styles || [],
-      tags: itemData?.taxonomy?.attributes || [],
+      tags,
       createdAt: apiProduct.createdAt,
       updatedAt: apiProduct.updatedAt,
     }
