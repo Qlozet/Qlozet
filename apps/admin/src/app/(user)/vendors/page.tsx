@@ -9,7 +9,7 @@ import { VendorStatsCards } from '@/pattern/vendors/templates/vendor-stats-cards
 import { VendorsTableTemplate } from '@/pattern/vendors/templates/vendors-table-template';
 import { useGetBusinessesQuery } from '@/redux/services/businesses/businesses.api-slice';
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 8;
 
 const VendorsPage = () => {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -25,11 +25,12 @@ const VendorsPage = () => {
       status: status || undefined,
     });
 
-  const paginated = data?.data;
+  const paginated = data?.data as any;
   const vendors = useMemo(() => paginated?.data ?? [], [paginated]);
   const totalCount =
-    paginated?.totalCount ?? paginated?.total ?? vendors.length;
-  const pageCount = Math.max(Math.ceil(totalCount / pagination.pageSize), 1);
+    paginated?.total_items ?? paginated?.totalCount ?? paginated?.total ?? vendors.length;
+  const pageCountFromApi = paginated?.total_pages ?? paginated?.totalPages;
+  const pageCount = pageCountFromApi || Math.max(Math.ceil(totalCount / pagination.pageSize), 1);
 
   const handleStatusChange = (next: string) => {
     setStatus(next);
