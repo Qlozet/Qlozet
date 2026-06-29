@@ -40,7 +40,7 @@ const getStatusLabel = (status: string): string => {
 
 // Helper to get customization label
 const getCustomizationLabel = (product: Product): string => {
-  if (product.customizations && product.customizations?.length > 0) {
+  if (product.type === 'customize' || (product.customizations && product.customizations.length > 0)) {
     return 'Customisable'
   }
   return 'Non Customisable'
