@@ -102,36 +102,49 @@ export default function AddClothingTemplate() {
 
   useEffect(() => {
     if (productData) {
-      setTitle(productData.name || '');
-      setDescription(productData.description || '');
-      setStatus((productData.status as ProductStatus) || 'active');
-      setPrice(productData.price ? String(productData.price) : '');
-      // We don't have discount mapping directly in product response currently, assuming metafields not mapped
+      // The API might return { data: { kind: 'clothing', clothing: { name: ... } } }
+      // or it might already be flattened.
+      const rawProduct = (productData as any)?.data || productData;
+      const inner = rawProduct?.kind ? rawProduct[rawProduct.kind] : rawProduct;
+
+      const pName = inner?.name || rawProduct?.name || '';
+      const pDesc = inner?.description || rawProduct?.description || '';
+      const pStatus = rawProduct?.status || 'active';
+      const pPrice = rawProduct?.base_price || rawProduct?.metafields?.base_price || rawProduct?.price || '';
+      const pType = inner?.type || rawProduct?.type || '';
+      const pTags = inner?.taxonomy?.attributes || rawProduct?.tags || [];
+      const pCategory = inner?.taxonomy?.categories?.[0] || rawProduct?.category || '';
+      const pImages = inner?.images || rawProduct?.images || [];
+
+      setTitle(pName);
+      setDescription(pDesc);
+      setStatus(pStatus as ProductStatus);
+      setPrice(pPrice ? String(pPrice) : '');
       
-      const type = (productData as any).type;
-      if (type === 'customize') {
+      if (pType === 'customize') {
         setCustomizationEnabled(true);
       }
 
       setOrganization({
-        tag: productData.tags || [],
-        category: productData.category ? [productData.category] : [],
-        subCategory: [], // Need to parse from tags if needed
-        productType: [], // Needs backend support
-        audience: '',    // Needs backend support
+        tag: pTags,
+        category: pCategory ? [pCategory] : [],
+        subCategory: [], 
+        productType: [], 
+        audience: '',    
       });
 
-      if (productData.images && productData.images.length > 0) {
+      if (pImages && pImages.length > 0) {
         setDefaultImages(
-          productData.images.map((img) => ({
-            id: Math.random().toString(36).substr(2, 9),
-            url: img,
-            isLocal: false,
-          }))
+          pImages.map((img: any) => {
+            const url = typeof img === 'string' ? img : img?.url;
+            return {
+              id: Math.random().toString(36).substr(2, 9),
+              url: url ? url.replace(/^http:\/\//i, 'https://') : '',
+              isLocal: false,
+            };
+          })
         );
       }
-      
-      // We are leaving variants mapping simple for now, as the DTO shapes differ significantly
     }
   }, [productData]);
 
