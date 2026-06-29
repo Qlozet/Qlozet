@@ -155,8 +155,8 @@ export const AddAccessoryModal = create(() => {
                     taxonomy: {
                         product_type: 'accessory',
                         categories: [category],
-                        attributes: [subCategory, tags],
-                        audience: 'unisex'
+                        attributes: [subCategory],
+                        audience: tags.toLowerCase()
                     },
                     variants: variantsToSubmit,
                     images: finalImageUrl ? [{ url: finalImageUrl, public_id: finalPublicId }] : []
