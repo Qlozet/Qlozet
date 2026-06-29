@@ -84,7 +84,8 @@ export const createClothingTableColumns = ({
               alt={productName}
               fill
               className='object-cover'
-              sizes='48px'
+              sizes='150px'
+              quality={100}
             />
           ) : (
             <div className='w-full h-full flex items-center justify-center text-gray-400'>
