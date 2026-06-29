@@ -214,6 +214,8 @@ export default function AddClothingTemplate() {
           images: finalImages,
           color_variants: colorVariants,
           styles: [],
+          accessories: [],
+          fabrics: [],
         },
       }).unwrap();
 
