@@ -145,17 +145,19 @@ export const AddAccessoryModal = create(() => {
             )
 
             await createAccessory({
-                name: accessoryName.trim(),
-                description: description.trim() || undefined,
-                price: Number(price),
-                taxonomy: {
-                    product_type: 'accessory',
-                    categories: [category],
-                    attributes: [subCategory, tags],
-                    audience: 'unisex'
-                },
-                variants: variantsToSubmit,
-                images: finalImageUrl ? [{ url: finalImageUrl, public_id: finalPublicId }] : []
+                accessory: {
+                    name: accessoryName.trim(),
+                    description: description.trim() || undefined,
+                    price: Number(price),
+                    taxonomy: {
+                        product_type: 'accessory',
+                        categories: [category],
+                        attributes: [subCategory, tags],
+                        audience: 'unisex'
+                    },
+                    variants: variantsToSubmit,
+                    images: finalImageUrl ? [{ url: finalImageUrl, public_id: finalPublicId }] : []
+                }
             }).unwrap()
 
             toast.success("Accessory created successfully!")
