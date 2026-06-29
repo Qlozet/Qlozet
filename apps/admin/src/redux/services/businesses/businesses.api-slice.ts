@@ -39,9 +39,9 @@ export interface Business {
   isVerified?: boolean;
   // Aggregate metrics surfaced in the Vendors table (optional — present only
   // when the backend joins them in).
-  productsCount?: number;
-  ordersCount?: number;
-  revenue?: number;
+  total_products?: number;
+  total_orders?: number;
+  total_revenue?: number;
   createdAt?: string;
   updatedAt?: string;
   [key: string]: unknown;

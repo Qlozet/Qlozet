@@ -89,7 +89,7 @@ export const createVendorsTableColumns = ({
     header: 'Products',
     cell: ({ row }) => (
       <div className='text-sm text-gray-600'>
-        {formatCount(row.original.productsCount)}
+        {formatCount(row.original.total_products)}
       </div>
     ),
     enableSorting: false,
@@ -99,7 +99,7 @@ export const createVendorsTableColumns = ({
     header: 'Orders',
     cell: ({ row }) => (
       <div className='text-sm text-gray-600'>
-        {formatCount(row.original.ordersCount)}
+        {formatCount(row.original.total_orders)}
       </div>
     ),
     enableSorting: false,
@@ -109,7 +109,7 @@ export const createVendorsTableColumns = ({
     header: 'Revenue',
     cell: ({ row }) => (
       <div className='text-sm text-gray-600'>
-        {formatNaira(row.original.revenue)}
+        {formatNaira(row.original.total_revenue)}
       </div>
     ),
     enableSorting: false,
