@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -46,6 +46,7 @@ import {
 import { APP_ROUTES } from '@/lib/routes';
 import {
   useCreateClothingMutation,
+  useGetProductQuery,
   type ColorVariantDto,
 } from '@/redux/services/products/products.api-slice';
 import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
@@ -63,6 +64,13 @@ type ProductStatus = 'active' | 'draft' | 'archived';
 // the vendor's own create-clothing endpoint.
 export default function AddClothingTemplate() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('edit');
+  
+  const { data: productData, isLoading: isLoadingProduct } = useGetProductQuery(editId as string, {
+    skip: !editId,
+  });
+  
   const [createClothing, { isLoading: isCreating }] = useCreateClothingMutation();
   const [uploadImage, { isLoading: isUploading }] = useUploadProductImageMutation();
   const isSaving = isCreating || isUploading;
@@ -91,6 +99,41 @@ export default function AddClothingTemplate() {
   const [price, setPrice] = useState('');
   const [discount, setDiscount] = useState('');
   const [variants, setVariants] = useState<VariantRow[]>([]);
+
+  useEffect(() => {
+    if (productData) {
+      setTitle(productData.name || '');
+      setDescription(productData.description || '');
+      setStatus((productData.status as ProductStatus) || 'active');
+      setPrice(productData.price ? String(productData.price) : '');
+      // We don't have discount mapping directly in product response currently, assuming metafields not mapped
+      
+      const type = (productData as any).type;
+      if (type === 'customize') {
+        setCustomizationEnabled(true);
+      }
+
+      setOrganization({
+        tag: productData.tags || [],
+        category: productData.category ? [productData.category] : [],
+        subCategory: [], // Need to parse from tags if needed
+        productType: [], // Needs backend support
+        audience: '',    // Needs backend support
+      });
+
+      if (productData.images && productData.images.length > 0) {
+        setDefaultImages(
+          productData.images.map((img) => ({
+            id: Math.random().toString(36).substr(2, 9),
+            url: img,
+            isLocal: false,
+          }))
+        );
+      }
+      
+      // We are leaving variants mapping simple for now, as the DTO shapes differ significantly
+    }
+  }, [productData]);
 
   const wordCount = countWords(description);
 
@@ -203,6 +246,7 @@ export default function AddClothingTemplate() {
       
       const finalImages = [...defaultImageUrls, ...extraImageUrls];
       await createClothing({
+        ...(editId ? { _id: editId } : {}),
         seo: { title: title.trim() },
         metafields: {
           base_price: price ? Number(price) : undefined,
@@ -238,17 +282,23 @@ export default function AddClothingTemplate() {
   return (
     <div className="w-full min-h-screen h-fit pb-10">
       <div className="mx-auto max-w-7xl space-y-6">
-        {/* Back */}
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="inline-flex items-center gap-2 text-sm font-medium text-grey-black transition-opacity hover:opacity-80"
-        >
-          <span className="flex size-7 items-center justify-center rounded-full border border-border bg-white">
-            <ArrowLeft className="size-4" />
-          </span>
-          Go Back
-        </button>
+        {isLoadingProduct ? (
+          <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
+            Loading product data...
+          </div>
+        ) : (
+          <>
+            {/* Back */}
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="inline-flex items-center gap-2 text-sm font-medium text-grey-black transition-opacity hover:opacity-80"
+            >
+              <span className="flex size-7 items-center justify-center rounded-full border border-border bg-white">
+                <ArrowLeft className="size-4" />
+              </span>
+              Go Back
+            </button>
 
         {showAlert && (
           <ProductAlertBanner
@@ -414,7 +464,9 @@ export default function AddClothingTemplate() {
           </div>
         </div>
 
-        <SetVariantsTable variants={variants} onChange={setVariants} />
+            <SetVariantsTable variants={variants} onChange={setVariants} />
+          </>
+        )}
       </div>
     </div>
   );

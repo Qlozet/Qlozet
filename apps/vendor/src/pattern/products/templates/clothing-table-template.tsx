@@ -238,7 +238,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
       onProductUpdated: () => refetch(),
       onProductDeleted: () => refetch(),
       onEdit: (id: string) => {
-        router.push(`/add?edit=${id}`)
+        router.push(`/products/clothing/add-product?edit=${id}`)
       },
       onDuplicate: async (id: string) => {
         toast.success('Product duplication will be implemented')
@@ -247,7 +247,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   }
 
   const handleEditProduct = (productId: string) => {
-    router.push(`/add?edit=${productId}`)
+    router.push(`/products/clothing/add-product?edit=${productId}`)
   }
 
   const handleDuplicateProduct = (productId: string) => {
