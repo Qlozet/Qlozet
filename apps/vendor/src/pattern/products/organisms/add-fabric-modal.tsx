@@ -105,8 +105,7 @@ export const AddFabricModal = NiceModal.create(() => {
     setUrlDraft('');
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (isDraft = false) => {
     if (!isValid) {
       toast.error('Please enter a fabric name and price per yard.');
       return;
@@ -125,7 +124,7 @@ export const AddFabricModal = NiceModal.create(() => {
       await createFabric({
         seo: { title: name.trim() },
         metafields: { colour: colour || undefined, swatch, base_price: pricePerYard ? Number(pricePerYard) : undefined },
-        status: 'active',
+        status: isDraft ? 'draft' : 'active',
         fabric: {
           name: name.trim(),
           description: description.trim() || undefined,
@@ -172,7 +171,7 @@ export const AddFabricModal = NiceModal.create(() => {
 
         {/* Left: form */}
         <form
-          onSubmit={handleSubmit}
+          onSubmit={(e) => e.preventDefault()}
           className="flex-1 space-y-4 overflow-y-auto p-6"
         >
           <h2
@@ -267,13 +266,25 @@ export const AddFabricModal = NiceModal.create(() => {
             </div>
           </div>
 
-          <Button
-            type="submit"
-            disabled={!isValid || isLoading}
-            className="h-11 w-full text-sm"
-          >
-            {isLoading ? 'Uploading...' : 'Upload Fabric'}
-          </Button>
+          <div className="flex items-center gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => handleSubmit(true)}
+              disabled={!isValid || isLoading}
+              className="h-11 flex-1 text-sm bg-transparent"
+            >
+              {isLoading ? 'Saving...' : 'Save as Draft'}
+            </Button>
+            <Button
+              type="button"
+              onClick={() => handleSubmit(false)}
+              disabled={!isValid || isLoading}
+              className="h-11 flex-1 text-sm"
+            >
+              {isLoading ? 'Publishing...' : 'Publish Now'}
+            </Button>
+          </div>
         </form>
 
         {/* Right: preview / upload */}
