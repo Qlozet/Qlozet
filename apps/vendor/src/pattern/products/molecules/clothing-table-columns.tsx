@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Product } from '@/redux/services/products/products.api-slice'
-import { MoreHorizontal } from 'lucide-react'
+import { MoreHorizontal, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import { formatCurrency } from '@/lib/utils'
@@ -39,11 +39,19 @@ const getStatusLabel = (status: string): string => {
 }
 
 // Helper to get customization label
-const getCustomizationLabel = (product: Product): string => {
-  if (product.customizations && product.customizations?.length > 0) {
-    return 'Customisable'
+const getCustomizationLabel = (product: Product): React.ReactNode => {
+  const hasStyles = product.customizations && product.customizations.length > 0;
+  if (product.type === 'customize') {
+    if (!hasStyles && product.status === 'draft') {
+      return (
+        <span className="inline-flex items-center gap-1 text-amber-600 font-medium">
+          Customisable <AlertTriangle className="size-3" />
+        </span>
+      );
+    }
+    return 'Customisable';
   }
-  return 'Non Customisable'
+  return 'Non Customisable';
 }
 
 // Helper to get audience from tags

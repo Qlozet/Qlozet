@@ -13,6 +13,7 @@ export interface Product {
   variants?: ProductVariant[];
   customizations?: ProductCustomization[];
   tags?: string[];
+  type?: string;
   createdAt?: string;
   updatedAt?: string;
 }

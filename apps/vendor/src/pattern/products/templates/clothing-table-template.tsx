@@ -168,6 +168,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
       variants: Array.from({ length: totalVariants || 1 }),
       customizations: itemData?.styles || [],
       tags,
+      type: itemData?.type,
       createdAt: apiProduct.createdAt,
       updatedAt: apiProduct.updatedAt,
     }
