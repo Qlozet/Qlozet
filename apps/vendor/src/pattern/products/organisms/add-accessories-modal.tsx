@@ -145,6 +145,9 @@ export const AddAccessoryModal = create(() => {
             )
 
             await createAccessory({
+                seo: { title: accessoryName.trim() },
+                metafields: { base_price: price ? Number(price) : undefined },
+                status: 'active',
                 accessory: {
                     name: accessoryName.trim(),
                     description: description.trim() || undefined,

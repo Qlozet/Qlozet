@@ -123,7 +123,9 @@ export const AddFabricModal = NiceModal.create(() => {
       }
 
       await createFabric({
-        metafields: { colour: colour || undefined, swatch },
+        seo: { title: name.trim() },
+        metafields: { colour: colour || undefined, swatch, base_price: pricePerYard ? Number(pricePerYard) : undefined },
+        status: 'active',
         fabric: {
           name: name.trim(),
           description: description.trim() || undefined,
