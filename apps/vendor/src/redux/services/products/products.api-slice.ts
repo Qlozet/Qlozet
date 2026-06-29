@@ -132,6 +132,7 @@ export interface CreateClothingDto {
     keywords?: string[];
   };
   metafields?: Record<string, any>;
+  status?: 'active' | 'draft' | 'archived';
   clothing: ClothingDto;
 }
 
@@ -149,6 +150,7 @@ export interface CreateFabricRequest {
     keywords?: string[];
   };
   metafields?: Record<string, any>;
+  status?: 'active' | 'draft' | 'archived';
   fabric: FabricDto;
 }
 
@@ -160,6 +162,7 @@ export interface CreateAccessoryRequest {
     keywords?: string[];
   };
   metafields?: Record<string, any>;
+  status?: 'active' | 'draft' | 'archived';
   accessory: AccessoryDto;
 }
 
