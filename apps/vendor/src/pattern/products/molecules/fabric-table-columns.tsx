@@ -133,10 +133,10 @@ export const createFabricTableColumns = ({
     enableSorting: false,
   },
   {
-    id: 'subCategory',
-    header: 'Sub-category',
+    id: 'material',
+    header: 'Material',
     cell: ({ row }) => {
-      return <div className='capitalize text-sm'>{(row.original as any).subCategory || '-'}</div>
+      return <div className='capitalize text-sm'>{(row.original as any).material || '-'}</div>
     },
     enableSorting: false,
   },
