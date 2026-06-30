@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ClothingTable } from '@/pattern/products/organisms/clothing-table'
+import { FabricsTable } from '@/pattern/products/organisms/fabrics-table'
 import { PaginationState } from '@tanstack/react-table'
 import { Product, useGetProductsByVendorQuery, useDeleteProductMutation } from '@/redux/services/products/products.api-slice'
 import { Button } from '@/components/ui/button'
@@ -16,12 +16,13 @@ import { ClothingStylesIcon } from '@/pattern/common/atoms/clothing-styles-icon'
 import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-icon'
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
 import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
+import { AddFabricModal } from '../organisms/add-fabric-modal'
 
 interface ClothingTableTemplateProps {
   onExport?: () => void
 }
 
-const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
+const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [pagination, setPagination] = useState<PaginationState>({
@@ -67,7 +68,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   } = useGetProductsByVendorQuery({
     page: pagination.pageIndex + 1,
     size: pagination.pageSize, // API uses 'size' instead of 'limit'
-    kind: 'clothing', // API uses 'kind' instead of 'category'
+    kind: 'fabric', // API uses 'kind' instead of 'category'
   })
 
   // Delete product mutation
@@ -151,8 +152,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   }, [productsResponse, totalPagesFromAPI])
 
   const handleAddProduct = () => {
-    router.push('/products/add-product')
-    clearProductId()
+    show(AddFabricModal)
   }
 
   const handleImportProducts = () => {
@@ -269,7 +269,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
             className='gap-[10px] text-xs! font-medium'
           >
             <LinearAddSquareIcon className='size-[18px]' />
-            <span>Add new product</span>
+            <span>Add new fabric</span>
           </Button>
         </div>
       </div>
@@ -278,7 +278,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
       {/* Table Section */}
       <div className='bg-card'>
         <TableToolbar
-          title="Clothing"
+          title="Fabrics"
           search={searchQuery}
           onSearchChange={handleSearchChange}
           onFilterDate={() => toast.info('Filter coming soon')}
@@ -286,7 +286,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
           filterLabel="Filter By :"
           filterIcon={null}
         />
-        <ClothingTable
+        <FabricsTable
           data={products as Product[]}
           isLoading={isLoading}
           error={error}
@@ -307,4 +307,4 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   )
 }
 
-export default ClothingTableTemplate
+export default FabricsTableTemplate

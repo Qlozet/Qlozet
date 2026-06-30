@@ -13,14 +13,7 @@ import { OutlinRulerIcon } from '@/pattern/common/atoms/outline-ruler-icon'
 import { LinearImportIcon } from '@/pattern/common/atoms/linear-import-icon'
 import { ClothingStylesIcon } from '@/pattern/common/atoms/clothing-styles-icon'
 import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-icon'
-import { SearchInputWithParams } from '@/pattern/common/molecules/search-input-with-params'
-import { ExcelIcon } from '@/pattern/common/atoms/excel-icon'
-import { mockClothingProducts } from '@/lib/mocks'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Filter, ChevronDown, X } from 'lucide-react'
-import { Separator } from '@/components/ui/separator'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Label } from '@/components/ui/label'
+import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
 import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
 import { AccessoriesTable } from '../organisms/accessories-table'
 import { AddAccessoryModal } from '../organisms/add-accessories-modal'
@@ -42,8 +35,6 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     const [showSelect, setShowSelect] = useState<boolean>(false)
     const [sortBy, setSortBy] = useState<'name' | 'price' | 'createdAt' | 'stock' | undefined>(undefined)
     const [order, setOrder] = useState<'asc' | 'desc'>('desc')
-    const [filterOpen, setFilterOpen] = useState<boolean>(false)
-    const [activeFilter, setActiveFilter] = useState<string>('relevance')
 
     // Get search query from URL params
     useEffect(() => {
@@ -60,56 +51,7 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
         setPagination(prev => ({ ...prev, pageIndex: 0 }))
     }
 
-    // Handle filter change
-    const handleFilterChange = (filterType: string) => {
-        setActiveFilter(filterType)
 
-        // Map filter types to sortBy and order
-        switch (filterType) {
-            case 'date-newest':
-                setSortBy('createdAt')
-                setOrder('desc')
-                break
-            case 'date-oldest':
-                setSortBy('createdAt')
-                setOrder('asc')
-                break
-            case 'rating-high':
-                setSortBy('price') // You can change this to rating when available in API
-                setOrder('desc')
-                break
-            case 'rating-low':
-                setSortBy('price') // You can change this to rating when available in API
-                setOrder('asc')
-                break
-            case 'price-high':
-                setSortBy('price')
-                setOrder('desc')
-                break
-            case 'price-low':
-                setSortBy('price')
-                setOrder('asc')
-                break
-            case 'relevance':
-            default:
-                setSortBy(undefined)
-                setOrder('desc')
-                break
-        }
-
-        // Reset to first page when filtering
-        setPagination(prev => ({ ...prev, pageIndex: 0 }))
-        setFilterOpen(false)
-    }
-
-    // Clear all filters
-    const handleClearFilters = () => {
-        setActiveFilter('relevance')
-        setSortBy(undefined)
-        setOrder('desc')
-        setPagination(prev => ({ ...prev, pageIndex: 0 }))
-        setFilterOpen(false)
-    }
 
     // Get Products API query for clothing category
     const {
@@ -256,6 +198,15 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
                         <LinearImportIcon className='w-[18px] h-[18px]' />
                         <span className='hidden sm:inline'>Import Products</span>
                     </Button>
+                    {/* Toggle Select Mode */}
+                    <Button
+                        variant='outline'
+                        size='default'
+                        onClick={() => setShowSelect(!showSelect)}
+                        className='gap-[10px] text-xs! font-medium'
+                    >
+                        <span>{showSelect ? 'Cancel Selection' : 'Select Products'}</span>
+                    </Button>
 
                     {/* Add new product */}
                     <Button
@@ -271,149 +222,16 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
             </div>
 
             {/* Filter and Search Section */}
-            <div className='bg-card w-full h-[72px] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 py-4 rounded-t-[10px] sadow-md'>
-                <h3 className='text-base font-medium'>Accessories Table</h3>
-
-                <div className='flex items-center gap-3'>
-                    {/* Filter Popover */}
-                    <Popover open={filterOpen} onOpenChange={setFilterOpen}>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant='outline'
-                                size='default'
-                                className='bg-transparent gap-2 text-sm! font-medium py-3 rounded-[12px] relative'
-                            >
-                                <Filter className='w-3 h-3' />
-                                <span>Filter By:</span>
-                                {activeFilter !== 'relevance' && (
-                                    <span className='ml-1 font-semibold capitalize'>
-                                        {activeFilter.replace('-', ' ')}
-                                    </span>
-                                )}
-                                <ChevronDown className='w-4 h-4 ml-1' />
-                                {activeFilter !== 'relevance' && (
-                                    <div className='absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full' />
-                                )}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className='w-80 p-0' align='start'>
-                            <div className='p-4 space-y-4'>
-                                {/* Header */}
-                                <div className='flex items-center justify-between'>
-                                    <h4 className='font-semibold text-sm'>Filter Products</h4>
-                                    {activeFilter !== 'relevance' && (
-                                        <Button
-                                            variant='ghost'
-                                            size='sm'
-                                            onClick={handleClearFilters}
-                                            className='h-auto p-1 text-xs text-muted-foreground hover:text-foreground'
-                                        >
-                                            Clear All
-                                        </Button>
-                                    )}
-                                </div>
-
-                                <Separator />
-
-                                {/* Relevance */}
-                                <div className='space-y-3'>
-                                    <h5 className='text-xs font-medium text-muted-foreground uppercase'>Relevance</h5>
-                                    <RadioGroup value={activeFilter} onValueChange={handleFilterChange}>
-                                        <div className='flex items-center space-x-2'>
-                                            <RadioGroupItem value='relevance' id='relevance' />
-                                            <Label htmlFor='relevance' className='text-sm font-normal cursor-pointer'>
-                                                Most Relevant
-                                            </Label>
-                                        </div>
-                                    </RadioGroup>
-                                </div>
-
-                                <Separator />
-
-                                {/* Date */}
-                                <div className='space-y-3'>
-                                    <h5 className='text-xs font-medium text-muted-foreground uppercase'>Date Added</h5>
-                                    <RadioGroup value={activeFilter} onValueChange={handleFilterChange}>
-                                        <div className='flex items-center space-x-2'>
-                                            <RadioGroupItem value='date-newest' id='date-newest' />
-                                            <Label htmlFor='date-newest' className='text-sm font-normal cursor-pointer'>
-                                                Newest First
-                                            </Label>
-                                        </div>
-                                        <div className='flex items-center space-x-2'>
-                                            <RadioGroupItem value='date-oldest' id='date-oldest' />
-                                            <Label htmlFor='date-oldest' className='text-sm font-normal cursor-pointer'>
-                                                Oldest First
-                                            </Label>
-                                        </div>
-                                    </RadioGroup>
-                                </div>
-
-                                <Separator />
-
-                                {/* Price */}
-                                <div className='space-y-3'>
-                                    <h5 className='text-xs font-medium text-muted-foreground uppercase'>Price</h5>
-                                    <RadioGroup value={activeFilter} onValueChange={handleFilterChange}>
-                                        <div className='flex items-center space-x-2'>
-                                            <RadioGroupItem value='price-high' id='price-high' />
-                                            <Label htmlFor='price-high' className='text-sm font-normal cursor-pointer'>
-                                                Highest to Lowest
-                                            </Label>
-                                        </div>
-                                        <div className='flex items-center space-x-2'>
-                                            <RadioGroupItem value='price-low' id='price-low' />
-                                            <Label htmlFor='price-low' className='text-sm font-normal cursor-pointer'>
-                                                Lowest to Highest
-                                            </Label>
-                                        </div>
-                                    </RadioGroup>
-                                </div>
-
-                                <Separator />
-
-                                {/* Rating (placeholder for future) */}
-                                <div className='space-y-3'>
-                                    <h5 className='text-xs font-medium text-muted-foreground uppercase'>Rating</h5>
-                                    <RadioGroup value={activeFilter} onValueChange={handleFilterChange}>
-                                        <div className='flex items-center space-x-2'>
-                                            <RadioGroupItem value='rating-high' id='rating-high' />
-                                            <Label htmlFor='rating-high' className='text-sm font-normal cursor-pointer'>
-                                                Highest Rated
-                                            </Label>
-                                        </div>
-                                        <div className='flex items-center space-x-2'>
-                                            <RadioGroupItem value='rating-low' id='rating-low' />
-                                            <Label htmlFor='rating-low' className='text-sm font-normal cursor-pointer'>
-                                                Lowest Rated
-                                            </Label>
-                                        </div>
-                                    </RadioGroup>
-                                </div>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
-
-                    {/* Search Input */}
-                    <SearchInputWithParams
-                        placeholder='Search'
-                        className='w-full sm:w-80'
-                        inputClassName='h-10 rounded-[12px]'
-                        paramName='search'
-                        onSearchChange={handleSearchChange}
-                    />
-
-                    {/* Export */}
-                    <Button
-                        variant="default"
-                        size='default'
-                        onClick={handleExportProducts}
-                        className='gap-[10px] text-sm font-semibold'
-                    >
-                        <ExcelIcon />
-                        <span>Export</span>
-                    </Button>
-                </div>
+            <div className='bg-card w-full rounded-t-[10px] shadow-md'>
+                <TableToolbar
+                  title="Accessories"
+                  search={searchQuery}
+                  onSearchChange={handleSearchChange}
+                  onFilterDate={() => toast.info('Filter coming soon')}
+                  onExport={handleExportProducts}
+                  filterLabel="Filter By :"
+                  filterIcon={null}
+                />
             </div>
 
             {/* Table Section */}
