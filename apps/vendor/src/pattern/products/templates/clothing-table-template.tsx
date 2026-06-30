@@ -296,7 +296,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
       </div>
 
       {/* Table Section */}
-      <div className='bg-card'>
+      <div className='bg-card w-full rounded-[10px] shadow-md'>
         <TableToolbar
           title="Clothing"
           search={searchQuery}

@@ -242,8 +242,8 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
               />
             </div>
 
-            {/* Filter and Search Section */}
-            <div className='bg-card w-full rounded-t-[10px] shadow-md'>
+            {/* Filter, Search, and Table Section */}
+            <div className='bg-card w-full rounded-[10px] shadow-md'>
                 <TableToolbar
                   title="Accessories"
                   search={searchQuery}
@@ -253,10 +253,6 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
                   filterLabel="Filter By :"
                   filterIcon={null}
                 />
-            </div>
-
-            {/* Table Section */}
-            <div className='bg-card'>
                 <AccessoriesTable
                     data={products as Product[]}
                     isLoading={isLoading}
