@@ -1,5 +1,11 @@
 import { baseAPI } from '@/redux/api/base-api';
 
+export interface BaseApiResponse<T> {
+  statusCode: number;
+  message: string;
+  data: T;
+}
+
 export interface StyleLibraryItem {
   _id: string;
   name: string;
@@ -54,6 +60,7 @@ export const styleLibraryApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     getStyleLibrary: builder.query<GetStyleLibraryResponse, void>({
       query: () => '/style-library',
+      transformResponse: (response: BaseApiResponse<GetStyleLibraryResponse>) => response.data,
       providesTags: ['StyleLibrary'],
     }),
 
@@ -63,6 +70,7 @@ export const styleLibraryApiSlice = baseAPI.injectEndpoints({
         method: 'POST',
         body,
       }),
+      transformResponse: (response: BaseApiResponse<StyleLibraryItem>) => response.data,
       invalidatesTags: ['StyleLibrary'],
     }),
 
@@ -80,6 +88,7 @@ export const styleLibraryApiSlice = baseAPI.injectEndpoints({
         method: 'POST',
         body,
       }),
+      transformResponse: (response: BaseApiResponse<GenerateStyleImageResponse>) => response.data,
     }),
   }),
 });
