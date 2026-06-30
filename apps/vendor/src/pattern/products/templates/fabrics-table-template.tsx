@@ -84,7 +84,7 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation()
 
   // Transform API products to match expected format
-  const transformProduct = (apiProduct: any): Product => {
+  const transformProduct = (apiProduct: any): any => {
     const itemData = apiProduct.clothing || apiProduct.accessory || apiProduct.fabric || apiProduct
 
     let totalStock = 0;
