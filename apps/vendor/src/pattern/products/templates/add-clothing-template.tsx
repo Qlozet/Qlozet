@@ -52,6 +52,7 @@ import {
   type ColorVariantDto,
 } from '@/redux/services/products/products.api-slice';
 import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
+import { useLazyGetStyleLibraryQuery } from '@/redux/services/style-library/style-library.api-slice';
 
 const countWords = (html: string) =>
   html
@@ -75,6 +76,7 @@ export default function AddClothingTemplate() {
   
   const [createClothing, { isLoading: isCreating }] = useCreateClothingMutation();
   const [getProduct] = useLazyGetProductQuery();
+  const [getStyleLibrary] = useLazyGetStyleLibraryQuery();
   const [uploadImage, { isLoading: isUploading }] = useUploadProductImageMutation();
   const isSaving = isCreating || isUploading;
 
@@ -341,6 +343,30 @@ export default function AddClothingTemplate() {
         const allItems = [...(sec.items || []), ...(sec.subGroups?.flatMap(sg => sg.items) || [])];
         const fullObjects = await Promise.all(allItems.map(async (it) => {
           if (!it.productId) return null; // If no backend ID, we skip for now
+          
+          if (sec.key === 'style') {
+            try {
+              const res = await getStyleLibrary().unwrap();
+              const styleItem = res.styles.find(s => s._id === it.productId);
+              if (styleItem) {
+                return {
+                  name: styleItem.name,
+                  style_code: styleItem.style_code || '',
+                  categories: styleItem.category ? [styleItem.category] : [],
+                  images: styleItem.image_url ? [{ url: styleItem.image_url, public_id: 'unknown' }] : [],
+                  attributes: styleItem.attributes || [],
+                  price: styleItem.price_suggestion || 0,
+                  min_width_cm: 0,
+                  type: styleItem.type || 'style',
+                };
+              }
+              return null;
+            } catch (e) {
+              console.error("Failed to fetch style for custom section", e);
+              return null;
+            }
+          }
+
           try {
             const res = await getProduct(it.productId).unwrap();
             const prodData = (res as any)?.data || res;

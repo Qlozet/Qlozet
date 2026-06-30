@@ -95,6 +95,7 @@ export const styleLibraryApiSlice = baseAPI.injectEndpoints({
 
 export const {
   useGetStyleLibraryQuery,
+  useLazyGetStyleLibraryQuery,
   useCreateVendorStyleMutation,
   useDeleteVendorStyleMutation,
   useGenerateStyleImageMutation,
