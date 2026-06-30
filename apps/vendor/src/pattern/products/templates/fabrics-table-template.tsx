@@ -104,6 +104,8 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
       itemData.variants.forEach((v: any) => {
         totalStock += (v.stock || 0);
       });
+    } else if (apiProduct.kind === 'fabric') {
+      totalStock = itemData?.yard_length ?? itemData?.yardLength ?? itemData?.stock ?? itemData?.quantity ?? apiProduct.stock ?? apiProduct.quantity ?? 0;
     }
 
     const tags = [...(itemData?.taxonomy?.attributes || [])];
@@ -123,8 +125,8 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
       tags,
       type: itemData?.type,
       pattern: itemData?.pattern || itemData?.fabric_details?.pattern || '',
-      subCategory: itemData?.sub_category || itemData?.fabric_details?.sub_category || '',
-      colour: itemData?.color || itemData?.colour || itemData?.fabric_details?.color || '',
+      material: itemData?.sub_category || itemData?.subCategory || itemData?.subcategory || itemData?.fabric_details?.sub_category || '',
+      colour: itemData?.colour || itemData?.color || itemData?.fabric_details?.color || (itemData?.colors && itemData.colors[0]) || '',
       pricePerYard: itemData?.price_per_yard || itemData?.fabric_details?.price_per_yard || apiProduct.base_price || 0,
       createdAt: apiProduct.createdAt,
       updatedAt: apiProduct.updatedAt,
