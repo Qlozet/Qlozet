@@ -172,11 +172,21 @@ export default function AddClothingTemplate() {
               selected: false,
             };
           });
+          
           const matchingFabric = inner?.fabrics?.find((f: any) => f.name === cv.name);
+          
           let imgUrl = undefined;
           if (matchingFabric && matchingFabric.images && matchingFabric.images.length > 0) {
             imgUrl = typeof matchingFabric.images[0] === 'string' ? matchingFabric.images[0] : matchingFabric.images[0].url;
           }
+
+          const fallbackImages = cv.variants?.[0]?.images || [];
+          const sourceImages = (cv.images && cv.images.length > 0) ? cv.images : fallbackImages;
+          
+          if (!imgUrl && sourceImages && sourceImages.length > 0) {
+            imgUrl = typeof sourceImages[0] === 'string' ? sourceImages[0] : sourceImages[0].url;
+          }
+          
           return {
             id: `loaded-var-${idx}`,
             colorHex: cv.hex || '',
@@ -184,7 +194,7 @@ export default function AddClothingTemplate() {
             imageUrl: imgUrl,
             availableSizes: sizes,
             details,
-            images: cv.images?.map((i: any) => typeof i === 'string' ? i : i.url) || [],
+            images: sourceImages?.map((i: any) => typeof i === 'string' ? i : i.url) || [],
             expanded: false,
             selected: false,
           };
@@ -295,24 +305,24 @@ export default function AddClothingTemplate() {
         const finalVariantImages = [
           ...v.images.filter(url => !url.startsWith('blob:')).map((url) => ({ url, public_id: 'unknown' })),
           ...uploadedVariantImages,
-          { url: 'https://example.com/test-variant-image.jpg', public_id: 'test_dummy_image' }
         ];
 
         return {
           name,
           hex: v.colorHex || '#000000',
           images: finalVariantImages,
-        variants: v.availableSizes.map((size) => {
-          const detail = v.details[size] ?? makeSizeDetail();
-          return {
-            size,
-            stock: detail.stock,
-            price: detail.price,
-            sku: detail.sku || undefined,
-            yard_per_order: detail.yardsPerOrder,
-            color: { name, hex: v.colorHex || '#000000' },
-          };
-        }),
+          variants: v.availableSizes.map((size) => {
+            const detail = v.details[size] ?? makeSizeDetail();
+            return {
+              size,
+              stock: detail.stock || 0,
+              price: detail.price || 0,
+              sku: detail.sku || '',
+              yard_per_order: detail.yardsPerOrder || 0,
+              color: { name, hex: v.colorHex || '#000000' },
+              images: finalVariantImages,
+            };
+          }),
       };
     }));
 
