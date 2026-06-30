@@ -72,6 +72,7 @@ export const baseAPI = createApi({
     'FollowingBusinesses',
     'ShippingAddress',
     'PlatformSettings',
+    'StyleLibrary',
   ],
   endpoints: () => ({}),
 });

@@ -17,6 +17,8 @@ import {
   type TagGroup,
 } from '@/pattern/common/organisms/multi-select-tag-dropdown';
 import { FieldLabel } from '../atoms/field-label';
+import { useCreateVendorStyleMutation, useGenerateStyleImageMutation } from '@/redux/services/style-library/style-library.api-slice';
+import { Loader2, Sparkles } from 'lucide-react';
 
 export interface CreatedStyle {
   name: string;
@@ -89,6 +91,9 @@ export const AddStylesModal = NiceModal.create(() => {
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [urlValue, setUrlValue] = useState('');
 
+  const [createVendorStyle, { isLoading: isCreating }] = useCreateVendorStyleMutation();
+  const [generateStyleImage, { isLoading: isGenerating }] = useGenerateStyleImageMutation();
+
   if (!modal.visible) return null;
 
   const cancel = () => {
@@ -108,21 +113,56 @@ export const AddStylesModal = NiceModal.create(() => {
     setShowUrlInput(false);
   };
 
-  const upload = () => {
+  const handleGenerateAI = async () => {
+    if (!name.trim()) {
+      toast.error('Please enter a style name first to guide the AI.');
+      return;
+    }
+    try {
+      const res = await generateStyleImage({
+        name: name.trim(),
+        category: styleType.toLowerCase(),
+      }).unwrap();
+      setImageUrl(res.url);
+      toast.success(res.message);
+    } catch (err: any) {
+      toast.error(err?.data?.message || 'Failed to generate AI image');
+    }
+  };
+
+  const upload = async () => {
     if (!name.trim()) {
       toast.error('Please enter a style name.');
       return;
     }
-    modal.resolve({
-      name: name.trim(),
-      styleCode: styleCode.trim() || undefined,
-      audience,
-      categories,
-      styleType,
-      tags,
-      imageUrl: imageUrl ?? undefined,
-    } satisfies CreatedStyle);
-    modal.remove();
+    
+    try {
+      // Save it to the vendor's library first
+      const res = await createVendorStyle({
+        name: name.trim(),
+        style_code: styleCode.trim() || `STY-${Date.now()}`,
+        category: styleType.toLowerCase(),
+        type: categories[0] || 'top',
+        gender: audience === 'men' ? 'male' : 'female',
+        image_url: imageUrl ?? undefined,
+        attributes: tags,
+      }).unwrap();
+
+      modal.resolve({
+        id: res._id,
+        name: res.name,
+        styleCode: res.style_code,
+        audience,
+        categories,
+        styleType: res.category,
+        tags: res.attributes || [],
+        imageUrl: res.image_url,
+      } satisfies CreatedStyle);
+      modal.remove();
+      toast.success('Style successfully added to your library!');
+    } catch (err: any) {
+      toast.error(err?.data?.message || 'Failed to upload style.');
+    }
   };
 
   return (
@@ -221,8 +261,10 @@ export const AddStylesModal = NiceModal.create(() => {
           <button
             type="button"
             onClick={upload}
-            className="mt-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            disabled={isCreating}
+            className="mt-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 flex items-center justify-center gap-2"
           >
+            {isCreating && <Loader2 className="size-4 animate-spin" />}
             Upload Style
           </button>
         </div>
@@ -270,28 +312,30 @@ export const AddStylesModal = NiceModal.create(() => {
                   className="max-h-72 w-full object-contain"
                 />
               </div>
-              <div className="flex w-[160px] flex-col items-center gap-1.5 rounded-lg border border-dashed border-input p-4">
+              <div className="flex w-[240px] flex-col items-center gap-2 rounded-lg border border-dashed border-input p-4 mx-auto">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex flex-col items-center gap-1.5 text-muted-foreground hover:text-foreground"
+                  className="text-sm font-medium text-foreground hover:underline"
                 >
-                  <Upload className="size-5" />
-                  <span className="text-sm font-medium text-foreground">
-                    Add image
-                  </span>
+                  Change image
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setShowUrlInput((s) => !s)}
-                  className="text-sm font-medium text-[#2F80ED] hover:underline"
-                >
-                  Add from URL
-                </button>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">or</span>
+                  <button
+                    type="button"
+                    onClick={handleGenerateAI}
+                    disabled={isGenerating}
+                    className="flex items-center gap-1.5 text-sm font-medium text-[#2F80ED] hover:underline"
+                  >
+                    {isGenerating ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
+                    Regenerate with AI
+                  </button>
+                </div>
               </div>
             </div>
           ) : (
-            <div className="flex min-h-[280px] flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-input p-6 text-center">
+            <div className="flex min-h-[280px] flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-input p-6 text-center">
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
@@ -299,13 +343,30 @@ export const AddStylesModal = NiceModal.create(() => {
               >
                 <Upload className="size-6" />
                 <span className="text-sm font-medium text-foreground">
-                  Add image or sketch
+                  Upload image or sketch
                 </span>
               </button>
+
+              <div className="flex w-full items-center gap-4 py-2 opacity-50">
+                <div className="h-px flex-1 bg-border" />
+                <span className="text-xs font-medium uppercase text-muted-foreground">Or</span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+
+              <button
+                type="button"
+                onClick={handleGenerateAI}
+                disabled={isGenerating}
+                className="flex items-center justify-center gap-2 w-full max-w-[200px] h-10 rounded-md bg-accent text-sm font-medium hover:bg-accent/80 transition-colors border border-border"
+              >
+                {isGenerating ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4 text-[#2F80ED]" />}
+                Generate with AI
+              </button>
+
               <button
                 type="button"
                 onClick={() => setShowUrlInput((s) => !s)}
-                className="text-sm font-medium text-[#2F80ED] hover:underline"
+                className="mt-2 text-sm font-medium text-[#2F80ED] hover:underline"
               >
                 Add from URL
               </button>
