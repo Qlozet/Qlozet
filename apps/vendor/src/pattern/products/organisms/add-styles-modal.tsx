@@ -21,6 +21,7 @@ import { useCreateVendorStyleMutation, useGenerateStyleImageMutation } from '@/r
 import { Loader2, Sparkles } from 'lucide-react';
 
 export interface CreatedStyle {
+  id?: string;
   name: string;
   styleCode?: string;
   audience: 'men' | 'women';
@@ -137,12 +138,17 @@ export const AddStylesModal = NiceModal.create(() => {
     }
     
     try {
+      let mappedType = 'top';
+      const cat = categories[0]?.toLowerCase();
+      if (['bottoms', 'skirt'].includes(cat)) mappedType = 'bottom';
+      else if (['dresses', 'outwear', 'traditional', 'kaftan'].includes(cat)) mappedType = 'full_body';
+
       // Save it to the vendor's library first
       const res = await createVendorStyle({
         name: name.trim(),
         style_code: styleCode.trim() || `STY-${Date.now()}`,
         category: styleType.toLowerCase().replace(' ', '_'),
-        type: categories[0] || 'top',
+        type: mappedType,
         gender: audience === 'men' ? 'male' : 'female',
         image_url: imageUrl ?? undefined,
         attributes: tags,
