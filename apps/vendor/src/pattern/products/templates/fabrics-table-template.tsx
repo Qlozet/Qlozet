@@ -122,6 +122,10 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
       customizations: itemData?.styles || [],
       tags,
       type: itemData?.type,
+      pattern: itemData?.pattern || itemData?.fabric_details?.pattern || '',
+      subCategory: itemData?.sub_category || itemData?.fabric_details?.sub_category || '',
+      colour: itemData?.color || itemData?.colour || itemData?.fabric_details?.color || '',
+      pricePerYard: itemData?.price_per_yard || itemData?.fabric_details?.price_per_yard || apiProduct.base_price || 0,
       createdAt: apiProduct.createdAt,
       updatedAt: apiProduct.updatedAt,
     }
