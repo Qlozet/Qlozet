@@ -216,6 +216,7 @@ export default function AddClothingTemplate() {
              label: bItem.name,
              imageUrl: imgUrl,
              price: Number(bItem.price || bItem.base_price || 0),
+             originalData: bItem,
            };
         });
       };
@@ -359,6 +360,13 @@ export default function AddClothingTemplate() {
       await Promise.all(customizationSections.map(async (sec) => {
         const allItems = [...(sec.items || []), ...(sec.subGroups?.flatMap(sg => sg.items) || [])];
         const fullObjects = await Promise.all(allItems.map(async (it) => {
+          if (it.originalData) {
+            return {
+              ...it.originalData,
+              price: Math.max(1, Number(it.price) || 1),
+            };
+          }
+          
           if (!it.productId) return null; // If no backend ID, we skip for now
           
           if (sec.key === 'style') {

@@ -25,6 +25,7 @@ export interface CustomComponentItem {
   /** Display label for image-less tiles (e.g. a style name). */
   label?: string;
   price: number;
+  originalData?: any;
 }
 
 export interface CustomSubGroup {
