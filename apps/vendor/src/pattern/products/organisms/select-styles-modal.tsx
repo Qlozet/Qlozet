@@ -2,9 +2,10 @@
 
 import { useMemo, useState } from 'react';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import { Check, Info, Plus, Search, Shirt, X } from 'lucide-react';
+import { Check, Info, Plus, Search, Shirt, X, Trash2 } from 'lucide-react';
 import { AddStylesModal, type CreatedStyle } from './add-styles-modal';
 import { cn } from '@/lib/utils';
+import { useGetStyleLibraryQuery, useDeleteVendorStyleMutation } from '@/redux/services/style-library/style-library.api-slice';
 
 export interface SelectedStyle {
   id: string;
@@ -27,29 +28,7 @@ const SUBTABS: Record<string, string[]> = {
   Neck: ['Round', 'V-shaped', 'High', 'Low', 'Collared', 'Strapped'],
 };
 
-// Representative style taxonomy. Replace with the catalogue endpoint when ready.
-const NECK_V_SHAPED = [
-  'Queen anna',
-  'Off shoulder',
-  'Halter neck',
-  'Illusion',
-  'Plunging',
-  'Scalloped',
-  'Spaghetti',
-  'Split neck',
-  'Round neck',
-  'One shoulder',
-  'Scoop',
-  'Keyhole',
-];
 
-const STYLES: StyleDef[] = NECK_V_SHAPED.map((name, i) => ({
-  id: `neck-vshaped-${i}`,
-  name,
-  audience: 'women',
-  category: 'Neck',
-  subTab: 'V-shaped',
-}));
 
 // "Select Styles" picker. Resolves with the chosen styles (or null if cancelled).
 export const SelectStylesModal = NiceModal.create(() => {
@@ -59,8 +38,23 @@ export const SelectStylesModal = NiceModal.create(() => {
   const [category, setCategory] = useState('Neck');
   const [subTab, setSubTab] = useState('V-shaped');
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<Record<string, StyleDef>>({});
-  const [styles, setStyles] = useState<StyleDef[]>(STYLES);
+  const [selected, setSelected] = useState<Record<string, any>>({});
+  
+  const { data: libraryData, isLoading } = useGetStyleLibraryQuery();
+  const [deleteCustomStyle] = useDeleteVendorStyleMutation();
+  
+  const styles = useMemo(() => {
+    if (!libraryData?.styles) return [];
+    return libraryData.styles.map(s => ({
+      id: s._id,
+      name: s.name,
+      audience: s.gender === 'unisex' ? audience : s.gender, // Fallback for mapping
+      category: s.category, // e.g. 'Neck', 'Sleeves'
+      subTab: s.type, // We can map type to subTab for now
+      imageUrl: s.image_url,
+      business: s.business,
+    }));
+  }, [libraryData, audience]);
 
   const subTabs = SUBTABS[category] ?? [];
 
@@ -70,7 +64,7 @@ export const SelectStylesModal = NiceModal.create(() => {
       (s) =>
         s.audience === audience &&
         s.category === category &&
-        (subTabs.length === 0 || s.subTab === subTab) &&
+        (subTabs.length === 0 || true) && // Simplified subTab logic for live data
         (!query || s.name.toLowerCase().includes(query))
     );
   }, [styles, audience, category, subTab, subTabs.length, search]);
@@ -82,23 +76,21 @@ export const SelectStylesModal = NiceModal.create(() => {
       | CreatedStyle
       | null;
     if (!created) return;
-    const id = `custom-${styles.length}-${created.name}`;
-    const def: StyleDef = {
-      id,
+    const def: any = {
+      id: (created as any).id || `custom-${Date.now()}`,
       name: created.name,
       audience: created.audience,
       category,
       subTab: subTabs.length ? subTab : undefined,
       imageUrl: created.imageUrl,
     };
-    setStyles((prev) => [def, ...prev]);
-    setSelected((prev) => ({ ...prev, [id]: def }));
+    setSelected((prev) => ({ ...prev, [def.id]: def }));
     setAudience(created.audience);
   };
 
   if (!modal.visible) return null;
 
-  const toggle = (style: StyleDef) =>
+  const toggle = (style: any) =>
     setSelected((prev) => {
       const next = { ...prev };
       if (next[style.id]) delete next[style.id];
@@ -248,13 +240,14 @@ export const SelectStylesModal = NiceModal.create(() => {
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {visibleStyles.map((style) => {
                 const isSelected = Boolean(selected[style.id]);
+                const isCustom = Boolean(style.business);
                 return (
-                  <button
-                    key={style.id}
-                    type="button"
-                    onClick={() => toggle(style)}
-                    className={cn(
-                      'relative flex flex-col items-center gap-2 rounded-lg border bg-card p-3 transition-colors',
+                  <div key={style.id} className="group relative">
+                    <button
+                      type="button"
+                      onClick={() => toggle(style)}
+                      className={cn(
+                        'relative flex w-full flex-col items-center gap-2 rounded-lg border bg-card p-3 transition-colors',
                       isSelected
                         ? 'border-primary ring-1 ring-primary'
                         : 'border-input hover:border-primary/50'
@@ -277,8 +270,25 @@ export const SelectStylesModal = NiceModal.create(() => {
                         <Shirt className="size-8" />
                       )}
                     </div>
-                    <span className="text-xs text-foreground">{style.name}</span>
-                  </button>
+                    <span className="text-xs text-foreground font-medium">{style.name}</span>
+                    <span className="text-[10px] text-muted-foreground uppercase">{isCustom ? 'Custom' : 'Global'}</span>
+                    </button>
+
+                    {isCustom && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (confirm('Are you sure you want to delete this custom style?')) {
+                            deleteCustomStyle(style.id);
+                          }
+                        }}
+                        className="absolute -right-2 -top-2 flex size-6 items-center justify-center rounded-full bg-destructive text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100 shadow-sm z-10 hover:bg-destructive/90"
+                      >
+                        <Trash2 className="size-3" />
+                      </button>
+                    )}
+                  </div>
                 );
               })}
             </div>
