@@ -42,6 +42,7 @@ import {
   CustomizationBuilder,
   DEFAULT_CUSTOMIZATION_SECTIONS,
   type CustomSection,
+  type CustomComponentItem,
 } from '../organisms/customization-builder';
 import { APP_ROUTES } from '@/lib/routes';
 import {
@@ -186,16 +187,17 @@ export default function AddClothingTemplate() {
       // Restore customizations (styles, fabrics, accessories)
       const newSections = DEFAULT_CUSTOMIZATION_SECTIONS.map(s => ({ ...s, items: s.items ? [...s.items] : [] }));
       
-      const mapCustomItems = (backendItems: any[] | undefined) => {
+      const mapCustomItems = (backendItems: any[] | undefined): CustomComponentItem[] => {
         return (backendItems || []).map((bItem: any, idx: number) => {
            const img = bItem.images?.[0];
            const imgUrl = typeof img === 'string' ? img : img?.url;
            return {
              id: `loaded-item-${Math.random()}`,
+             // eslint-disable-next-line no-underscore-dangle
              productId: bItem._id || bItem.id, // Store original ID if needed later
              label: bItem.name,
              imageUrl: imgUrl,
-             price: bItem.price || bItem.base_price || 0,
+             price: Number(bItem.price || bItem.base_price || 0),
            };
         });
       };
