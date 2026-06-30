@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { Info, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import { StepperField } from '../molecules/stepper-field';
 import { LabeledSelect } from '../molecules/labeled-select';
 import { ColourSelect } from '../molecules/colour-select';
-import { useCreateFabricMutation } from '@/redux/services/products/products.api-slice';
+import { useCreateFabricMutation, useGetProductQuery } from '@/redux/services/products/products.api-slice';
 import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
 
 const MATERIAL_OPTIONS = [
@@ -58,8 +58,12 @@ const PATTERN_OPTIONS = [
 // Vendor "Add Fabric" — two-panel modal wired to the vendor createFabric
 // endpoint (POST /products/fabric). Material maps to the fabric product_type;
 // colour is preserved in metafields since the vendor FabricDto has no colour.
-export const AddFabricModal = NiceModal.create(() => {
+export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string }) => {
   const modal = useModal();
+
+  const { data: productData, isLoading: isLoadingProduct } = useGetProductQuery(editId as string, {
+    skip: !editId,
+  });
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -81,7 +85,32 @@ export const AddFabricModal = NiceModal.create(() => {
 
   const [createFabric, { isLoading: isCreating }] = useCreateFabricMutation();
   const [uploadImage, { isLoading: isUploading }] = useUploadProductImageMutation();
-  const isLoading = isCreating || isUploading;
+  const isLoading = isCreating || isUploading || isLoadingProduct;
+
+  useEffect(() => {
+    if (productData) {
+      const rawProduct = (productData as any)?.data || productData;
+      const inner = rawProduct?.kind ? rawProduct[rawProduct.kind] : rawProduct;
+      
+      setName(inner?.name || rawProduct?.name || '');
+      setDescription(inner?.description || rawProduct?.description || '');
+      setMaterial(inner?.product_type || inner?.taxonomy?.product_type || rawProduct?.product_type || '');
+      setColour(rawProduct?.metafields?.colour || rawProduct?.metafields?.color || inner?.colour || '');
+      if (rawProduct?.metafields?.swatch) setSwatch(rawProduct.metafields.swatch);
+      setPattern(inner?.pattern || '');
+      setYardsLength(inner?.yard_length || 0);
+      setWidth(inner?.width || 0);
+      setMinCut(inner?.min_cut || 4);
+      setPricePerYard(inner?.price_per_yard || rawProduct?.base_price || 0);
+      
+      const pImages = inner?.images || rawProduct?.images || [];
+      if (pImages && pImages.length > 0) {
+        const url = typeof pImages[0] === 'string' ? pImages[0] : pImages[0].url;
+        setHostedUrl(url);
+        setPreviewUrl(url);
+      }
+    }
+  }, [productData]);
 
   if (!modal.visible) return null;
 
@@ -122,6 +151,7 @@ export const AddFabricModal = NiceModal.create(() => {
       }
 
       await createFabric({
+        ...(editId ? { product_id: editId } : {}),
         seo: { title: name.trim() },
         metafields: { colour: colour || undefined, swatch, base_price: pricePerYard ? Number(pricePerYard) : undefined },
         status: isDraft ? 'draft' : 'active',

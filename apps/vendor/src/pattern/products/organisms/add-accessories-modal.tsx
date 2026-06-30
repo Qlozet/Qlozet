@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -8,15 +8,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { InfoIcon, Trash2Icon, UploadIcon, PlusIcon, FlagIcon } from "lucide-react"
-import { create, useModal } from "@ebay/nice-modal-react"
+import NiceModal, { create, useModal } from "@ebay/nice-modal-react"
 import { VariantSelectOptions } from "./variant-select-options"
 import { AVAILABLE_COLORS, ColorOption, VariantRow, VariantSizeDetail } from "../types/variant.types"
-import { useCreateAccessoryMutation } from "@/redux/services/products/products.api-slice"
+import { useCreateAccessoryMutation, useGetProductQuery } from "@/redux/services/products/products.api-slice"
 import { useUploadProductImageMutation } from "@/redux/services/uploads/uploads.api-slice"
 import { toast } from "sonner"
 
-export const AddAccessoryModal = create(() => {
+export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
     const { resolve, remove, visible } = useModal();
+    const { data: productData, isLoading: isLoadingProduct } = useGetProductQuery(editId as string, {
+        skip: !editId,
+    })
 
     const handleCloseModal = () => {
         remove();
@@ -37,6 +40,35 @@ export const AddAccessoryModal = create(() => {
 
     const [createAccessory, { isLoading: isCreating }] = useCreateAccessoryMutation()
     const [uploadImage, { isLoading: isUploading }] = useUploadProductImageMutation()
+    const isLoading = isCreating || isUploading || isLoadingProduct
+
+    useEffect(() => {
+        if (productData) {
+            const rawProduct = (productData as any)?.data || productData
+            const inner = rawProduct?.kind ? rawProduct[rawProduct.kind] : rawProduct
+            
+            setAccessoryName(inner?.name || rawProduct?.name || "")
+            setDescription(inner?.description || rawProduct?.description || "")
+            setCategory(inner?.taxonomy?.categories?.[0] || rawProduct?.category || "Belts")
+            // The attributes might hold tags and subcategories
+            const attributes = inner?.taxonomy?.attributes || rawProduct?.tags || []
+            if (attributes.length > 0) {
+                setSubCategory(attributes[0])
+                if (attributes.length > 1) {
+                    setTags(attributes[1])
+                }
+            }
+            setPrice(String(inner?.price || rawProduct?.base_price || ""))
+            
+            const pImages = inner?.images || rawProduct?.images || []
+            if (pImages && pImages.length > 0) {
+                const url = typeof pImages[0] === "string" ? pImages[0] : pImages[0].url
+                setPreviewUrl(url)
+            }
+            // For now, variants aren't deeply synced on edit, as they're complex to map back.
+        }
+    }, [productData])
+
     const isSaving = isCreating || isUploading
 
     const availableSizes = ["Extra small", "Small", "Medium", "Large", "Extra large"]
@@ -145,6 +177,7 @@ export const AddAccessoryModal = create(() => {
             )
 
             await createAccessory({
+                ...(editId ? { product_id: editId } : {}),
                 seo: { title: accessoryName.trim() },
                 metafields: { base_price: price ? Number(price) : undefined },
                 status: isDraft ? 'draft' : 'active',
