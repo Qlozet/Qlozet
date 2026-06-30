@@ -112,9 +112,15 @@ export default function AddClothingTemplate() {
       const pStatus = rawProduct?.status || 'active';
       const pPrice = rawProduct?.base_price || rawProduct?.metafields?.base_price || rawProduct?.price || '';
       const pType = inner?.type || rawProduct?.type || '';
-      const pTags = inner?.taxonomy?.attributes || rawProduct?.tags || [];
+      const pAttributes = inner?.taxonomy?.attributes || rawProduct?.tags || [];
       const pCategory = inner?.taxonomy?.categories?.[0] || rawProduct?.category || '';
       const pImages = inner?.images || rawProduct?.images || [];
+      const pProductType = inner?.taxonomy?.product_type || rawProduct?.taxonomy?.product_type || '';
+      const pAudience = inner?.taxonomy?.audience || rawProduct?.taxonomy?.audience || '';
+
+      const knownSubcategories = ['ankara', 'plain', 'embroidered', 'two-piece'];
+      const loadedSubCategories = pAttributes.filter((a: string) => knownSubcategories.includes(a));
+      const loadedTags = pAttributes.filter((a: string) => !knownSubcategories.includes(a));
 
       setTitle(pName);
       setDescription(pDesc);
@@ -126,11 +132,11 @@ export default function AddClothingTemplate() {
       }
 
       setOrganization({
-        tag: pTags,
+        tag: loadedTags,
         category: pCategory ? [pCategory] : [],
-        subCategory: [], 
-        productType: [], 
-        audience: '',    
+        subCategory: loadedSubCategories, 
+        productType: pProductType ? [pProductType] : [], 
+        audience: pAudience as any,    
       });
 
       if (pImages && pImages.length > 0) {
@@ -259,7 +265,7 @@ export default function AddClothingTemplate() {
       
       const finalImages = [...defaultImageUrls, ...extraImageUrls];
       await createClothing({
-        ...(editId ? { _id: editId } : {}),
+        ...(editId ? { product_id: editId } : {}),
         seo: { title: title.trim() },
         metafields: {
           base_price: price ? Number(price) : undefined,
