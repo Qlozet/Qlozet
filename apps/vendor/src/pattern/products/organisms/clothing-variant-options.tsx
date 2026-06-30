@@ -181,7 +181,7 @@ export const VariantSelectOptions = ({
     const sizeKeys = selectedSizes.map((s) => SIZE_KEY[s] ?? s.toUpperCase());
     if (variantType === 'fabric' && activeFabric) {
       onAddVariant(
-        { imageUrl: activeFabric.imageUrl, label: activeFabric.name },
+        { imageUrl: activeFabric.imageUrl, label: activeFabric.name, colorHex: activeFabric.colorHex },
         sizeKeys
       );
     } else {
