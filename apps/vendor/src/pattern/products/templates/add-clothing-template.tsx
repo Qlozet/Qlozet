@@ -358,7 +358,7 @@ export default function AddClothingTemplate() {
                   categories: styleItem.category ? [styleItem.category] : [],
                   images: styleItem.image_url ? [{ url: styleItem.image_url, public_id: 'unknown' }] : [],
                   attributes: styleItem.attributes || [],
-                  price: styleItem.price_suggestion || 0,
+                  price: Math.max(1, Number(it.price) || 1),
                   min_width_cm: 0,
                   type: styleItem.type || 'style',
                 };
@@ -373,7 +373,11 @@ export default function AddClothingTemplate() {
           try {
             const res = await getProduct(it.productId).unwrap();
             const prodData = (res as any)?.data || res;
-            return prodData?.kind ? prodData[prodData.kind] : prodData;
+            const finalData = prodData?.kind ? prodData[prodData.kind] : prodData;
+            return {
+              ...finalData,
+              price: Math.max(1, Number(it.price) || 1),
+            };
           } catch (e) {
             console.error("Failed to fetch product for custom section", e);
             return null;
