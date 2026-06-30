@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 
 export interface CustomComponentItem {
   id: string;
+  productId?: string;
   imageUrl?: string;
   /** Display label for image-less tiles (e.g. a style name). */
   label?: string;
@@ -214,6 +215,7 @@ export const CustomizationBuilder = ({
         ...items,
         ...picked.map((p) => ({
           id: newId(),
+          productId: p.id,
           imageUrl: p.imageUrl,
           label: p.name,
           price: 0,
