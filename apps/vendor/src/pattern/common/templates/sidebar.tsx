@@ -48,16 +48,16 @@ export const Sidebar = () => {
 
     return (
         <div className="invisible hidden lg:block lg:visible lg:w-fit 2xl:w-[260px] lg:h-screen lg:pl-6 lg:py-6 lg:pr-1 transition-all duration-300">
-            <ScrollArea className="flex-1 w-full h-full flex justify-center [&>div>div]:w-full">
-                <div className="lg:w-[78px] xl:w-full bg-sidebar flex flex-col gap-y-10 py-6 pl-[14px] pr-3 rounded-xl transition-all duration-300">
+            <ScrollArea className="flex-1 w-full h-full flex justify-center [&>div>div]:w-full [&>div>div]:min-h-full">
+                <div className="lg:w-[78px] xl:w-full min-h-full bg-sidebar flex flex-col gap-y-10 py-6 pl-[14px] pr-3 rounded-xl custom-card-shadow transition-all duration-300">
                     {/* Logo */}
                     <div className="2xl:pl-4">
                         <BrandLogo />
                     </div>
 
-                    <div className="h-full flex flex-col justify-between items-center gap-y-9">
+                    <div className="flex-1 w-full flex flex-col items-center gap-y-9">
                         {/* Menu Items */}
-                        <nav className="w-[47px] 2xl:w-full flex-1 space-y-2">
+                        <nav className="w-[47px] 2xl:w-full space-y-2">
                             {menuItems?.map((item, idx) => {
                                 return item.subItems ?
                                     (
@@ -102,7 +102,7 @@ export const Sidebar = () => {
                         </nav>
 
                         {/* Bottom Section */}
-                        <div className="w-[47px] 2xl:w-full flex flex-col items-center gap-y-2">
+                        <div className="w-[47px] 2xl:w-full flex flex-col items-center gap-y-2 mt-auto">
                             <If isTrue={screenSize.gt("xl")}>
                                 <ThemeToggle />
                             </If>
