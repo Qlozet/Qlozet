@@ -13,6 +13,7 @@ export interface SelectedFabric {
   name: string;
   imageUrl?: string;
   yards?: number;
+  colorHex?: string;
 }
 
 // Loose shape over the vendor Product — fabrics may carry extra fields
@@ -25,12 +26,20 @@ interface FabricLike {
   material?: string;
   yard_length?: number;
   images?: (string | { url?: string })[];
+  metafields?: any;
+  fabric?: any;
+  colour?: string;
+  color?: string;
 }
 
 const fabricId = (f: FabricLike): string => f._id ?? f.id ?? '';
 const fabricImage = (f: FabricLike): string | undefined => {
   const first = f.images?.[0];
   return typeof first === 'string' ? first : first?.url;
+};
+
+const fabricColor = (f: FabricLike): string | undefined => {
+  return f.metafields?.swatch || f.metafields?.color || f.metafields?.colour || f.color || f.colour || f.fabric?.color || f.fabric?.colour;
 };
 
 // Fabric material families → their materials (sub-tabs). Used purely to filter
@@ -221,6 +230,7 @@ export const SelectFabricModal = NiceModal.create(() => {
                 const id = fabricId(fabric);
                 const yards = num(fabric.yard_length);
                 const imageUrl = fabricImage(fabric);
+                const colorHex = fabricColor(fabric);
                 const isSelected = Boolean(selected[id]);
                 return (
                   <button
@@ -232,6 +242,7 @@ export const SelectFabricModal = NiceModal.create(() => {
                         name: fabric.name ?? 'Fabric',
                         imageUrl,
                         yards,
+                        colorHex,
                       })
                     }
                     className={cn(
