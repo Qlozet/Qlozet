@@ -21,6 +21,7 @@ import { useCreateVendorStyleMutation, useGenerateStyleImageMutation } from '@/r
 import { Loader2, Sparkles } from 'lucide-react';
 
 export interface CreatedStyle {
+  id?: string;
   name: string;
   styleCode?: string;
   audience: 'men' | 'women';
@@ -82,6 +83,7 @@ export const AddStylesModal = NiceModal.create(() => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [styleCode, setStyleCode] = useState('');
   const [audience, setAudience] = useState<'men' | 'women'>('men');
   const [categories, setCategories] = useState<string[]>([]);
@@ -121,7 +123,8 @@ export const AddStylesModal = NiceModal.create(() => {
     try {
       const res = await generateStyleImage({
         name: name.trim(),
-        category: styleType.toLowerCase(),
+        category: styleType.toLowerCase().replace(' ', '_'),
+        description: description.trim() || undefined,
       }).unwrap();
       setImageUrl(res.url);
       toast.success(res.message);
@@ -137,12 +140,18 @@ export const AddStylesModal = NiceModal.create(() => {
     }
     
     try {
+      let mappedType = 'top';
+      const cat = categories[0]?.toLowerCase();
+      if (['bottoms', 'skirt'].includes(cat)) mappedType = 'bottom';
+      else if (['dresses', 'outwear', 'traditional', 'kaftan'].includes(cat)) mappedType = 'full_body';
+
       // Save it to the vendor's library first
       const res = await createVendorStyle({
         name: name.trim(),
         style_code: styleCode.trim() || `STY-${Date.now()}`,
-        category: styleType.toLowerCase(),
-        type: categories[0] || 'top',
+        category: styleType.toLowerCase().replace(' ', '_'),
+        type: mappedType,
+        description: description.trim() || undefined,
         gender: audience === 'men' ? 'male' : 'female',
         image_url: imageUrl ?? undefined,
         attributes: tags,
@@ -192,7 +201,20 @@ export const AddStylesModal = NiceModal.create(() => {
           </div>
 
           <div>
-            <FieldLabel htmlFor="style-code">Style-code</FieldLabel>
+            <FieldLabel htmlFor="style-description">Style description</FieldLabel>
+            <textarea
+              id="style-description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="A brief description of this style... (helps AI generate a better image!)"
+              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            />
+          </div>
+
+          <div>
+            <FieldLabel htmlFor="style-code">
+              Style Code (Optional)
+            </FieldLabel>
             <Input
               id="style-code"
               value={styleCode}
