@@ -210,7 +210,7 @@ export default function AddClothingTemplate() {
     }
 
     const colorVariants: ColorVariantDto[] = await Promise.all(variants.map(async (v) => {
-      const name = v.label || v.colorHex;
+      const name = v.label || v.colorHex || 'Unknown';
       
       let uploadedVariantImages: { url: string; public_id: string }[] = [];
       if (v.imageFiles && v.imageFiles.length > 0) {
@@ -220,7 +220,7 @@ export default function AddClothingTemplate() {
 
       return {
         name,
-        hex: v.colorHex,
+        hex: v.colorHex || '#000000',
         images: [
           ...(v.imageUrl ? [{ url: v.imageUrl, public_id: 'unknown' }] : []),
           ...v.images.filter(url => !url.startsWith('blob:')).map((url) => ({ url, public_id: 'unknown' })),
@@ -234,7 +234,7 @@ export default function AddClothingTemplate() {
             price: detail.price,
             sku: detail.sku || undefined,
             yard_per_order: detail.yardsPerOrder,
-            color: { name, hex: v.colorHex },
+            color: { name, hex: v.colorHex || '#000000' },
           };
         }),
       };
