@@ -203,15 +203,15 @@ export default function AddClothingTemplate() {
       };
 
       if (inner?.styles && inner.styles.length > 0) {
-        const styleSec = newSections.find(s => s.type === 'style');
+        const styleSec = newSections.find(s => s.key === 'style');
         if (styleSec) styleSec.items = mapCustomItems(inner.styles);
       }
       if (inner?.accessories && inner.accessories.length > 0) {
-        const accSec = newSections.find(s => s.type === 'accessory');
+        const accSec = newSections.find(s => s.key === 'accessory');
         if (accSec) accSec.items = mapCustomItems(inner.accessories);
       }
       if (inner?.fabrics && inner.fabrics.length > 0) {
-        const fabSec = newSections.find(s => s.type === 'fabric');
+        const fabSec = newSections.find(s => s.key === 'fabric');
         if (fabSec) fabSec.items = mapCustomItems(inner.fabrics);
       }
 
@@ -351,9 +351,9 @@ export default function AddClothingTemplate() {
         }));
 
         const validObjects = fullObjects.filter(Boolean);
-        if (sec.type === 'style') validObjects.forEach(o => styles.push(o));
-        if (sec.type === 'accessory') validObjects.forEach(o => accessories.push(o));
-        if (sec.type === 'fabric') validObjects.forEach(o => fabrics.push(o));
+        if (sec.key === 'style') validObjects.forEach(o => styles.push(o));
+        if (sec.key === 'accessory') validObjects.forEach(o => accessories.push(o));
+        if (sec.key === 'fabric') validObjects.forEach(o => fabrics.push(o));
       }));
 
       await createClothing({
