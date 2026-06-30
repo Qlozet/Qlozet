@@ -121,7 +121,7 @@ export const AddStylesModal = NiceModal.create(() => {
     try {
       const res = await generateStyleImage({
         name: name.trim(),
-        category: styleType.toLowerCase(),
+        category: styleType.toLowerCase().replace(' ', '_'),
       }).unwrap();
       setImageUrl(res.url);
       toast.success(res.message);
@@ -141,7 +141,7 @@ export const AddStylesModal = NiceModal.create(() => {
       const res = await createVendorStyle({
         name: name.trim(),
         style_code: styleCode.trim() || `STY-${Date.now()}`,
-        category: styleType.toLowerCase(),
+        category: styleType.toLowerCase().replace(' ', '_'),
         type: categories[0] || 'top',
         gender: audience === 'men' ? 'male' : 'female',
         image_url: imageUrl ?? undefined,

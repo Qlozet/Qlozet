@@ -22,10 +22,20 @@ interface StyleDef {
   imageUrl?: string;
 }
 
-const CATEGORIES = ['Tops', 'Dresses', 'Bottoms', 'Neck', 'Sleeves', 'Full fit'];
+const CATEGORIES = [
+  'Neckline',
+  'Sleeve',
+  'Collar',
+  'Skirt',
+  'Trouser',
+  'Full Body',
+  'Bodice',
+  'Hemline',
+  'Back'
+];
 
 const SUBTABS: Record<string, string[]> = {
-  Neck: ['Round', 'V-shaped', 'High', 'Low', 'Collared', 'Strapped'],
+  Neckline: ['Round', 'V-shaped', 'High', 'Low', 'Collared', 'Strapped'],
 };
 
 
@@ -35,8 +45,8 @@ export const SelectStylesModal = NiceModal.create(() => {
   const modal = useModal();
 
   const [audience, setAudience] = useState<'men' | 'women'>('women');
-  const [category, setCategory] = useState('Neck');
-  const [subTab, setSubTab] = useState('V-shaped');
+  const [category, setCategory] = useState('Neckline');
+  const [subTab, setSubTab] = useState('');
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Record<string, any>>({});
   
@@ -48,9 +58,9 @@ export const SelectStylesModal = NiceModal.create(() => {
     return libraryData.styles.map(s => ({
       id: s._id,
       name: s.name,
-      audience: s.gender === 'unisex' ? audience : s.gender, // Fallback for mapping
-      category: s.category, // e.g. 'Neck', 'Sleeves'
-      subTab: s.type, // We can map type to subTab for now
+      gender: s.gender,
+      category: s.category, // e.g. 'neckline'
+      subTab: s.type, 
       imageUrl: s.image_url,
       business: s.business,
     }));
@@ -60,10 +70,13 @@ export const SelectStylesModal = NiceModal.create(() => {
 
   const visibleStyles = useMemo(() => {
     const query = search.trim().toLowerCase();
+    const targetGender = audience === 'men' ? 'male' : 'female';
+    const targetCategory = category.toLowerCase().replace(' ', '_');
+
     return styles.filter(
       (s) =>
-        s.audience === audience &&
-        s.category === category &&
+        (s.gender === targetGender || s.gender === 'unisex') &&
+        s.category === targetCategory &&
         (subTabs.length === 0 || true) && // Simplified subTab logic for live data
         (!query || s.name.toLowerCase().includes(query))
     );
