@@ -50,6 +50,7 @@ import {
   useGetProductQuery,
   useLazyGetProductQuery,
   type ColorVariantDto,
+  type CreateClothingDto,
 } from '@/redux/services/products/products.api-slice';
 import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
 import { useLazyGetStyleLibraryQuery } from '@/redux/services/style-library/style-library.api-slice';
