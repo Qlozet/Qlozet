@@ -50,6 +50,7 @@ import {
   useGetProductQuery,
   useLazyGetProductQuery,
   type ColorVariantDto,
+  type CreateClothingDto,
 } from '@/redux/services/products/products.api-slice';
 import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
 import { useLazyGetStyleLibraryQuery } from '@/redux/services/style-library/style-library.api-slice';
@@ -291,13 +292,16 @@ export default function AddClothingTemplate() {
         uploadedVariantImages = res.map(r => ({ url: r.data?.url || '', public_id: r.data?.public_id || 'unknown' })).filter(img => Boolean(img.url));
       }
 
-      return {
-        name,
-        hex: v.colorHex || '#000000',
-        images: [
+        const finalVariantImages = [
           ...v.images.filter(url => !url.startsWith('blob:')).map((url) => ({ url, public_id: 'unknown' })),
           ...uploadedVariantImages,
-        ],
+          { url: 'https://example.com/test-variant-image.jpg', public_id: 'test_dummy_image' }
+        ];
+
+        return {
+          name,
+          hex: v.colorHex || '#000000',
+          images: finalVariantImages,
         variants: v.availableSizes.map((size) => {
           const detail = v.details[size] ?? makeSizeDetail();
           return {
@@ -390,7 +394,7 @@ export default function AddClothingTemplate() {
         if (sec.key === 'fabric') validObjects.forEach(o => fabrics.push(o));
       }));
 
-      await createClothing({
+      const payload: CreateClothingDto = {
         ...(editId ? { product_id: editId } : {}),
         seo: { title: title.trim() },
         metafields: {
@@ -415,7 +419,11 @@ export default function AddClothingTemplate() {
           accessories,
           fabrics,
         },
-      }).unwrap();
+      };
+
+      console.log("SENDING PAYLOAD TO BACKEND:", JSON.stringify(payload.clothing.color_variants, null, 2));
+
+      await createClothing(payload).unwrap();
 
       toast.success('Clothing product created successfully.');
       router.push(APP_ROUTES.productsCloth);
