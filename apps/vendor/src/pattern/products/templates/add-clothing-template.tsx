@@ -166,6 +166,7 @@ export default function AddClothingTemplate() {
               price: v.price || 0,
               sku: v.sku || '',
               yardsPerOrder: v.yard_per_order || 0,
+              selected: false,
             };
           });
           const imgUrl = cv.images && cv.images.length > 0 ? (typeof cv.images[0] === 'string' ? cv.images[0] : cv.images[0].url) : undefined;
