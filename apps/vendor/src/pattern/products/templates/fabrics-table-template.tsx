@@ -17,6 +17,15 @@ import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-ic
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
 import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
 import { AddFabricModal } from '../organisms/add-fabric-modal'
+import { ProductsStats } from './products-stats'
+import { DonutDatum } from '@/pattern/dashboard/molecules/donut-chart'
+
+const SALES_BY_CATEGORY_FALLBACK: DonutDatum[] = [
+  { name: 'Cotton', value: 30 },
+  { name: 'Silk', value: 28 },
+  { name: 'Linen', value: 22 },
+  { name: 'Wool', value: 20 },
+];
 
 interface ClothingTableTemplateProps {
   onExport?: () => void
@@ -121,6 +130,7 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   // Handle different API response formats - Extract from nested data structure
   const rawProducts = (productsResponse?.data?.data || productsResponse?.products || []) as any[]
   const mappedProducts = rawProducts.map(transformProduct)
+  const totalProducts = productsResponse?.data?.total_items || productsResponse?.totalCount || productsResponse?.total || 0
 
   // /products/by-vendor has no server-side search/sort, so apply both to the
   // current page client-side to keep the search box and Filter menu working.
@@ -274,6 +284,17 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
         </div>
       </div>
 
+      {/* Summary metrics + sales donut */}
+      <div className='mb-[21px]'>
+        <ProductsStats
+          totalProducts={totalProducts}
+          achievedProducts={0}
+          isLoading={isLoading}
+          salesTitle="Sales By Product Category"
+          salesFallback={SALES_BY_CATEGORY_FALLBACK}
+          viewAllLink={'/products'}
+        />
+      </div>
 
       {/* Table Section */}
       <div className='bg-card'>
