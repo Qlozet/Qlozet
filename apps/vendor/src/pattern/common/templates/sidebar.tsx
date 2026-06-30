@@ -49,7 +49,7 @@ export const Sidebar = () => {
     return (
         <div className="invisible hidden lg:block lg:visible lg:w-fit 2xl:w-[260px] lg:h-screen lg:pl-6 lg:py-6 lg:pr-1 transition-all duration-300">
             <ScrollArea className="flex-1 w-full h-full bg-sidebar rounded-xl custom-card-shadow transition-all duration-300 [&>div>div]:w-full [&>div>div]:min-h-full">
-                <div className="lg:w-[78px] xl:w-full min-h-full flex flex-col gap-y-10 py-6 pl-[14px] pr-3 transition-all duration-300">
+                <div className="lg:w-[78px] xl:w-full min-h-[calc(100vh-3rem)] flex flex-col gap-y-10 py-6 pl-[14px] pr-3 transition-all duration-300">
                     {/* Logo */}
                     <div className="2xl:pl-4">
                         <BrandLogo />
