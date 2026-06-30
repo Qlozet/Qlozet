@@ -128,6 +128,7 @@ export interface ClothingDto {
 }
 
 export interface CreateClothingDto {
+  product_id?: string;
   _id?: string;
   seo?: {
     title?: string;
