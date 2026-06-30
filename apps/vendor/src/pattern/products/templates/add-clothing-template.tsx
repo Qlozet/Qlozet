@@ -42,11 +42,13 @@ import {
   CustomizationBuilder,
   DEFAULT_CUSTOMIZATION_SECTIONS,
   type CustomSection,
+  type CustomComponentItem,
 } from '../organisms/customization-builder';
 import { APP_ROUTES } from '@/lib/routes';
 import {
   useCreateClothingMutation,
   useGetProductQuery,
+  useLazyGetProductQuery,
   type ColorVariantDto,
 } from '@/redux/services/products/products.api-slice';
 import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
@@ -72,6 +74,7 @@ export default function AddClothingTemplate() {
   });
   
   const [createClothing, { isLoading: isCreating }] = useCreateClothingMutation();
+  const [getProduct] = useLazyGetProductQuery();
   const [uploadImage, { isLoading: isUploading }] = useUploadProductImageMutation();
   const isSaving = isCreating || isUploading;
 
@@ -151,6 +154,70 @@ export default function AddClothingTemplate() {
           })
         );
       }
+
+      // Restore variants
+      if (inner?.color_variants && inner.color_variants.length > 0) {
+        const loadedVariants = inner.color_variants.map((cv: any, idx: number) => {
+          const sizes = cv.variants?.map((v: any) => v.size || 'M') || [];
+          const details: Record<string, SizeDetail> = {};
+          cv.variants?.forEach((v: any) => {
+            details[v.size || 'M'] = {
+              stock: v.stock || 0,
+              price: v.price || 0,
+              sku: v.sku || '',
+              yardsPerOrder: v.yard_per_order || 0,
+              selected: false,
+            };
+          });
+          const imgUrl = cv.images && cv.images.length > 0 ? (typeof cv.images[0] === 'string' ? cv.images[0] : cv.images[0].url) : undefined;
+          return {
+            id: `loaded-var-${idx}`,
+            colorHex: cv.hex || '',
+            label: cv.name || '',
+            imageUrl: imgUrl,
+            availableSizes: sizes,
+            details,
+            images: cv.images?.map((i: any) => typeof i === 'string' ? i : i.url) || [],
+            expanded: false,
+            selected: false,
+          };
+        });
+        setVariants(loadedVariants);
+      }
+
+      // Restore customizations (styles, fabrics, accessories)
+      const newSections = DEFAULT_CUSTOMIZATION_SECTIONS.map(s => ({ ...s, items: s.items ? [...s.items] : [] }));
+      
+      const mapCustomItems = (backendItems: any[] | undefined): CustomComponentItem[] => {
+        return (backendItems || []).map((bItem: any, idx: number) => {
+           const img = bItem.images?.[0];
+           const imgUrl = typeof img === 'string' ? img : img?.url;
+           return {
+             id: `loaded-item-${Math.random()}`,
+             // eslint-disable-next-line no-underscore-dangle
+             productId: bItem._id || bItem.id, // Store original ID if needed later
+             label: bItem.name,
+             imageUrl: imgUrl,
+             price: Number(bItem.price || bItem.base_price || 0),
+           };
+        });
+      };
+
+      if (inner?.styles && inner.styles.length > 0) {
+        const styleSec = newSections.find(s => s.key === 'style');
+        if (styleSec) styleSec.items = mapCustomItems(inner.styles);
+      }
+      if (inner?.accessories && inner.accessories.length > 0) {
+        const accSec = newSections.find(s => s.key === 'accessory');
+        if (accSec) accSec.items = mapCustomItems(inner.accessories);
+      }
+      if (inner?.fabrics && inner.fabrics.length > 0) {
+        const fabSec = newSections.find(s => s.key === 'fabric');
+        if (fabSec) fabSec.items = mapCustomItems(inner.fabrics);
+      }
+
+      setCustomizationSections(newSections);
+
     }
   }, [productData]);
 
@@ -264,6 +331,32 @@ export default function AddClothingTemplate() {
       const extraImageUrls = uploadedExtras.filter(img => !!img.url);
       
       const finalImages = [...defaultImageUrls, ...extraImageUrls];
+
+      // Prepare customization objects
+      const styles: any[] = [];
+      const accessories: any[] = [];
+      const fabrics: any[] = [];
+
+      await Promise.all(customizationSections.map(async (sec) => {
+        const allItems = [...(sec.items || []), ...(sec.subGroups?.flatMap(sg => sg.items) || [])];
+        const fullObjects = await Promise.all(allItems.map(async (it) => {
+          if (!it.productId) return null; // If no backend ID, we skip for now
+          try {
+            const res = await getProduct(it.productId).unwrap();
+            const prodData = (res as any)?.data || res;
+            return prodData?.kind ? prodData[prodData.kind] : prodData;
+          } catch (e) {
+            console.error("Failed to fetch product for custom section", e);
+            return null;
+          }
+        }));
+
+        const validObjects = fullObjects.filter(Boolean);
+        if (sec.key === 'style') validObjects.forEach(o => styles.push(o));
+        if (sec.key === 'accessory') validObjects.forEach(o => accessories.push(o));
+        if (sec.key === 'fabric') validObjects.forEach(o => fabrics.push(o));
+      }));
+
       await createClothing({
         ...(editId ? { product_id: editId } : {}),
         seo: { title: title.trim() },
@@ -285,9 +378,9 @@ export default function AddClothingTemplate() {
           },
           images: finalImages,
           color_variants: colorVariants,
-          styles: [],
-          accessories: [],
-          fabrics: [],
+          styles,
+          accessories,
+          fabrics,
         },
       }).unwrap();
 
