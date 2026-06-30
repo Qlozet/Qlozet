@@ -112,7 +112,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(({ order }) =>
     <Sheet open={visible} onOpenChange={handleClose}>
       <SheetContent
         side='right'
-        className='w-full overflow-y-auto p-0 sm:max-w-md'
+        className='w-full overflow-y-auto p-0 sm:max-w-md !top-4 !bottom-4 !right-4 !h-[calc(100vh-2rem)] rounded-2xl custom-card-shadow'
       >
         <SheetHeader className='border-b border-border px-6 py-4'>
           <SheetTitle className='text-xl font-bold text-grey-black'>
