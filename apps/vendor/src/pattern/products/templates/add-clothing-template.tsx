@@ -184,7 +184,7 @@ export default function AddClothingTemplate() {
       }
 
       // Restore customizations (styles, fabrics, accessories)
-      const newSections = [...DEFAULT_CUSTOMIZATION_SECTIONS];
+      const newSections = DEFAULT_CUSTOMIZATION_SECTIONS.map(s => ({ ...s, items: s.items ? [...s.items] : [] }));
       
       const mapCustomItems = (backendItems: any[] | undefined) => {
         return (backendItems || []).map((bItem: any, idx: number) => {
@@ -200,15 +200,15 @@ export default function AddClothingTemplate() {
         });
       };
 
-      if (inner?.styles?.length > 0) {
+      if (inner?.styles && inner.styles.length > 0) {
         const styleSec = newSections.find(s => s.type === 'style');
         if (styleSec) styleSec.items = mapCustomItems(inner.styles);
       }
-      if (inner?.accessories?.length > 0) {
+      if (inner?.accessories && inner.accessories.length > 0) {
         const accSec = newSections.find(s => s.type === 'accessory');
         if (accSec) accSec.items = mapCustomItems(inner.accessories);
       }
-      if (inner?.fabrics?.length > 0) {
+      if (inner?.fabrics && inner.fabrics.length > 0) {
         const fabSec = newSections.find(s => s.type === 'fabric');
         if (fabSec) fabSec.items = mapCustomItems(inner.fabrics);
       }
