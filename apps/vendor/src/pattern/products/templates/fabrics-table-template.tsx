@@ -17,6 +17,15 @@ import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-ic
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
 import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
 import { AddFabricModal } from '../organisms/add-fabric-modal'
+import { ProductsStats } from './products-stats'
+import { DonutDatum } from '@/pattern/dashboard/molecules/donut-chart'
+
+const SALES_BY_CATEGORY_FALLBACK: DonutDatum[] = [
+  { name: 'Cotton', value: 30 },
+  { name: 'Silk', value: 28 },
+  { name: 'Linen', value: 22 },
+  { name: 'Wool', value: 20 },
+];
 
 interface ClothingTableTemplateProps {
   onExport?: () => void
@@ -75,7 +84,7 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation()
 
   // Transform API products to match expected format
-  const transformProduct = (apiProduct: any): Product => {
+  const transformProduct = (apiProduct: any): any => {
     const itemData = apiProduct.clothing || apiProduct.accessory || apiProduct.fabric || apiProduct
 
     let totalStock = 0;
@@ -113,6 +122,10 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
       customizations: itemData?.styles || [],
       tags,
       type: itemData?.type,
+      pattern: itemData?.pattern || itemData?.fabric_details?.pattern || '',
+      subCategory: itemData?.sub_category || itemData?.fabric_details?.sub_category || '',
+      colour: itemData?.color || itemData?.colour || itemData?.fabric_details?.color || '',
+      pricePerYard: itemData?.price_per_yard || itemData?.fabric_details?.price_per_yard || apiProduct.base_price || 0,
       createdAt: apiProduct.createdAt,
       updatedAt: apiProduct.updatedAt,
     }
@@ -121,6 +134,7 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   // Handle different API response formats - Extract from nested data structure
   const rawProducts = (productsResponse?.data?.data || productsResponse?.products || []) as any[]
   const mappedProducts = rawProducts.map(transformProduct)
+  const totalProducts = productsResponse?.data?.total_items || productsResponse?.totalCount || productsResponse?.total || 0
 
   // /products/by-vendor has no server-side search/sort, so apply both to the
   // current page client-side to keep the search box and Filter menu working.
@@ -142,7 +156,6 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
 
     return list
   })()
-  const totalProducts = productsResponse?.data?.total_items || productsResponse?.totalCount || productsResponse?.total || 0
   const totalPagesFromAPI = productsResponse?.data?.total_pages || productsResponse?.totalPages || Math.ceil(totalProducts / pagination.pageSize) || 1
 
   useEffect(() => {
@@ -274,6 +287,17 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
         </div>
       </div>
 
+      {/* Summary metrics + sales donut */}
+      <div className='mb-[21px]'>
+        <ProductsStats
+          totalProducts={totalProducts}
+          achievedProducts={0}
+          isLoading={isLoading}
+          salesTitle="Sales By Product Category"
+          salesFallback={SALES_BY_CATEGORY_FALLBACK}
+          viewAllLink={'/products'}
+        />
+      </div>
 
       {/* Table Section */}
       <div className='bg-card'>

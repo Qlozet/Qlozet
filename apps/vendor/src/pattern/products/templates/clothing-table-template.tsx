@@ -16,6 +16,15 @@ import { ClothingStylesIcon } from '@/pattern/common/atoms/clothing-styles-icon'
 import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-icon'
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
 import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
+import { ProductsStats } from './products-stats'
+import { DonutDatum } from '@/pattern/dashboard/molecules/donut-chart'
+
+const SALES_BY_CATEGORY_FALLBACK: DonutDatum[] = [
+  { name: 'Suite', value: 30 },
+  { name: 'Kaftan', value: 28 },
+  { name: 'Cargo', value: 22 },
+  { name: 'Abgada', value: 20 },
+];
 
 interface ClothingTableTemplateProps {
   onExport?: () => void
@@ -274,6 +283,17 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
         </div>
       </div>
 
+      {/* Summary metrics + sales donut */}
+      <div className='mb-[21px]'>
+        <ProductsStats
+          totalProducts={totalProducts}
+          achievedProducts={0}
+          isLoading={isLoading}
+          salesTitle="Sales By Product Category"
+          salesFallback={SALES_BY_CATEGORY_FALLBACK}
+          viewAllLink={'/products'}
+        />
+      </div>
 
       {/* Table Section */}
       <div className='bg-card'>

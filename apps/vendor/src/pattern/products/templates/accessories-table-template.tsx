@@ -17,6 +17,15 @@ import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
 import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
 import { AccessoriesTable } from '../organisms/accessories-table'
 import { AddAccessoryModal } from '../organisms/add-accessories-modal'
+import { ProductsStats } from './products-stats'
+import { DonutDatum } from '@/pattern/dashboard/molecules/donut-chart'
+
+const SALES_BY_CATEGORY_FALLBACK: DonutDatum[] = [
+  { name: 'Watches', value: 30 },
+  { name: 'Bags', value: 28 },
+  { name: 'Shoes', value: 22 },
+  { name: 'Jewelry', value: 20 },
+];
 
 interface ClothingTableTemplateProps {
     onExport?: () => void
@@ -219,6 +228,18 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
                         <span>Add new accessories</span>
                     </Button>
                 </div>
+            </div>
+
+            {/* Summary metrics + sales donut */}
+            <div className='mb-[21px]'>
+              <ProductsStats
+                totalProducts={totalProducts}
+                achievedProducts={0}
+                isLoading={isLoading}
+                salesTitle="Sales By Product Category"
+                salesFallback={SALES_BY_CATEGORY_FALLBACK}
+                viewAllLink={'/products'}
+              />
             </div>
 
             {/* Filter and Search Section */}

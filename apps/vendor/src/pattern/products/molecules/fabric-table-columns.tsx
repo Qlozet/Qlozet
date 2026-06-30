@@ -113,10 +113,10 @@ export const createFabricTableColumns = ({
     },
   },
   {
-    accessorKey: 'price',
-    header: 'Product price',
+    id: 'pricePerYard',
+    header: 'Price per yard',
     cell: ({ row }) => {
-      const price = parseFloat(row.getValue('price'))
+      const price = parseFloat((row.original as any).pricePerYard || row.original.price || 0)
       return (
         <div className='font-normal'>
           {formatCurrency(price, 'NGN')}
@@ -125,25 +125,33 @@ export const createFabricTableColumns = ({
     },
   },
   {
-    accessorKey: 'category',
-    header: 'Product Type',
+    id: 'pattern',
+    header: 'Pattern',
     cell: ({ row }) => {
-      return <div className='capitalize'>{row.getValue('category') || '-'}</div>
-    },
-  },
-  {
-    id: 'customization',
-    header: 'Customization',
-    cell: ({ row }) => {
-      return <div>{getCustomizationLabel(row.original)}</div>
+      return <div className='capitalize text-sm'>{(row.original as any).pattern || '-'}</div>
     },
     enableSorting: false,
   },
   {
-    id: 'audience',
-    header: 'Audience',
+    id: 'subCategory',
+    header: 'Sub-category',
     cell: ({ row }) => {
-      return <div>{getAudience(row.original.tags)}</div>
+      return <div className='capitalize text-sm'>{(row.original as any).subCategory || '-'}</div>
+    },
+    enableSorting: false,
+  },
+  {
+    accessorKey: 'category',
+    header: 'Category',
+    cell: ({ row }) => {
+      return <div className='capitalize text-sm'>{row.getValue('category') || '-'}</div>
+    },
+  },
+  {
+    id: 'colour',
+    header: 'Colour',
+    cell: ({ row }) => {
+      return <div className='capitalize text-sm'>{(row.original as any).colour || '-'}</div>
     },
     enableSorting: false,
   },
@@ -151,34 +159,18 @@ export const createFabricTableColumns = ({
     id: 'quantity',
     header: 'Quantity',
     cell: ({ row }) => {
-      const stock = row.original.stock
-      const variants = row.original.variants
-      const variantCount = variants ? variants?.length : 1
-
-      const stockBadgeVariant = stock <= 0 ? 'destructive' : stock <= 5 ? 'warning' : 'success'
-
+      const stock = row.original.stock || 0
       return (
-        <div className='flex items-center gap-2'>
-          <Badge
-            variant={stockBadgeVariant}
-            shape='square'
-            className='w-fit min-w-[19px] h-[16px] flex items-center justify-center p-0 text-xs rounded-[4px]!'
-          >
-            {stock}
-          </Badge>
-          <span className='text-sm'>in</span>
-          <Badge variant='outline' shape='square' className='bg-accent w-fit min-w-[19px] h-[16px] flex items-center justify-center p-0 rounded-[4px]!'>
-            {variantCount}
-          </Badge>
-          <span className='text-sm'>Variants</span>
-        </div>
+        <span className="text-sm">
+          {stock.toLocaleString()} Yards
+        </span>
       )
     },
     enableSorting: false,
   },
   {
     accessorKey: 'status',
-    header: 'Product Status',
+    header: 'Status',
     cell: ({ row }) => {
       const status: string = row.getValue('status')
       return (
