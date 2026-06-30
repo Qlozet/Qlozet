@@ -171,7 +171,11 @@ export default function AddClothingTemplate() {
               selected: false,
             };
           });
-          const imgUrl = cv.images && cv.images.length > 0 ? (typeof cv.images[0] === 'string' ? cv.images[0] : cv.images[0].url) : undefined;
+          const matchingFabric = inner?.fabrics?.find((f: any) => f.name === cv.name);
+          let imgUrl = undefined;
+          if (matchingFabric && matchingFabric.images && matchingFabric.images.length > 0) {
+            imgUrl = typeof matchingFabric.images[0] === 'string' ? matchingFabric.images[0] : matchingFabric.images[0].url;
+          }
           return {
             id: `loaded-var-${idx}`,
             colorHex: cv.hex || '',
@@ -291,7 +295,6 @@ export default function AddClothingTemplate() {
         name,
         hex: v.colorHex || '#000000',
         images: [
-          ...(v.imageUrl ? [{ url: v.imageUrl, public_id: 'unknown' }] : []),
           ...v.images.filter(url => !url.startsWith('blob:')).map((url) => ({ url, public_id: 'unknown' })),
           ...uploadedVariantImages,
         ],
