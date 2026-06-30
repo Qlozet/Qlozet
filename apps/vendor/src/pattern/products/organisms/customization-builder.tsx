@@ -17,6 +17,8 @@ import {
   type SelectedStyle,
 } from './select-styles-modal';
 import { cn } from '@/lib/utils';
+import type { StyleHotspotDto } from '@/redux/services/products/products.api-slice';
+import { HotspotEditorModal } from './hotspot-editor-modal';
 
 export interface CustomComponentItem {
   id: string;
@@ -26,6 +28,7 @@ export interface CustomComponentItem {
   label?: string;
   price: number;
   originalData?: any;
+  hotspots?: StyleHotspotDto[];
 }
 
 export interface CustomSubGroup {
@@ -245,8 +248,20 @@ export const CustomizationBuilder = ({
       items.map((it) => (it.id === itemId ? { ...it, price } : it))
     );
 
-  const editHotspots = () =>
-    toast.info('Hotspot editor is coming soon.');
+  const editHotspots = async () => {
+    if (!item.imageUrl) return;
+    const result = await NiceModal.show(HotspotEditorModal, {
+      imageUrl: item.imageUrl,
+      hotspots: item.hotspots || [],
+      sections,
+    });
+    
+    if (result !== undefined) {
+      updateItems(sectionKey, subKey, (items) =>
+        items.map((it) => (it.id === item.id ? { ...it, hotspots: result as StyleHotspotDto[] } : it))
+      );
+    }
+  };
 
   const addComponentSection = () =>
     onChange([

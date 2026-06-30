@@ -217,6 +217,7 @@ export default function AddClothingTemplate() {
              imageUrl: imgUrl,
              price: Number(bItem.price || bItem.base_price || 0),
              originalData: bItem,
+             hotspots: typeof img === 'object' && img?.hotspots ? img.hotspots : [],
            };
         });
       };
@@ -361,9 +362,17 @@ export default function AddClothingTemplate() {
         const allItems = [...(sec.items || []), ...(sec.subGroups?.flatMap(sg => sg.items) || [])];
         const fullObjects = await Promise.all(allItems.map(async (it) => {
           if (it.originalData) {
+            let updatedImages = it.originalData.images || [];
+            if (updatedImages.length > 0 && typeof updatedImages[0] !== 'string') {
+              updatedImages = [
+                { ...updatedImages[0], hotspots: it.hotspots || [] },
+                ...updatedImages.slice(1)
+              ];
+            }
             return {
               ...it.originalData,
               price: Math.max(1, Number(it.price) || 1),
+              images: updatedImages,
             };
           }
           
@@ -378,7 +387,7 @@ export default function AddClothingTemplate() {
                   name: styleItem.name,
                   style_code: styleItem.style_code || '',
                   categories: styleItem.category ? [styleItem.category] : [],
-                  images: styleItem.image_url ? [{ url: styleItem.image_url, public_id: 'unknown' }] : [],
+                  images: styleItem.image_url ? [{ url: styleItem.image_url, public_id: 'unknown', hotspots: it.hotspots || [] }] : [],
                   attributes: styleItem.attributes || [],
                   price: Math.max(1, Number(it.price) || 1),
                   min_width_cm: 1,
