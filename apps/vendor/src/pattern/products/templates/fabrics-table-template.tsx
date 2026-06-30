@@ -152,7 +152,6 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
 
     return list
   })()
-  const totalProducts = productsResponse?.data?.total_items || productsResponse?.totalCount || productsResponse?.total || 0
   const totalPagesFromAPI = productsResponse?.data?.total_pages || productsResponse?.totalPages || Math.ceil(totalProducts / pagination.pageSize) || 1
 
   useEffect(() => {
