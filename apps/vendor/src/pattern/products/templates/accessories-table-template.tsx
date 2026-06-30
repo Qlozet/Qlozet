@@ -169,7 +169,7 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     }
 
     const handleEditProduct = (productId: string) => {
-        router.push(`/add?edit=${productId}`)
+        show(AddAccessoryModal, { editId: productId })
     }
 
     const handleDuplicateProduct = (productId: string) => {

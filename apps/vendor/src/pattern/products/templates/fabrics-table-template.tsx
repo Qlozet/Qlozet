@@ -205,7 +205,7 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   }
 
   const handleEditProduct = (productId: string) => {
-    router.push(`/products/add-product?edit=${productId}`)
+    show(AddFabricModal, { editId: productId })
   }
 
   const handleDuplicateProduct = (productId: string) => {
