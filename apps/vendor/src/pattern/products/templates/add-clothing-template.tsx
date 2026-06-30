@@ -359,7 +359,7 @@ export default function AddClothingTemplate() {
                   images: styleItem.image_url ? [{ url: styleItem.image_url, public_id: 'unknown' }] : [],
                   attributes: styleItem.attributes || [],
                   price: Math.max(1, Number(it.price) || 1),
-                  min_width_cm: 0,
+                  min_width_cm: 1,
                   type: styleItem.type || 'style',
                 };
               }
