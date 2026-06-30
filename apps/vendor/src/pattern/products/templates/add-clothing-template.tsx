@@ -343,7 +343,7 @@ export default function AddClothingTemplate() {
           if (!it.productId) return null; // If no backend ID, we skip for now
           try {
             const res = await getProduct(it.productId).unwrap();
-            const prodData = res?.data || res;
+            const prodData = (res as any)?.data || res;
             return prodData?.kind ? prodData[prodData.kind] : prodData;
           } catch (e) {
             console.error("Failed to fetch product for custom section", e);
