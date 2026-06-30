@@ -109,7 +109,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
     <Sheet open={visible} onOpenChange={handleClose}>
       <SheetContent
         side='right'
-        className='flex w-full flex-col gap-0 overflow-y-auto p-0 sm:max-w-md'
+        className='flex w-full flex-col gap-0 overflow-y-auto p-0 sm:max-w-md !top-4 !bottom-4 !right-4 !h-[calc(100vh-2rem)] rounded-2xl custom-card-shadow'
       >
         {/* Header */}
         <div className='flex items-start justify-between px-6 pb-3 pt-6'>
