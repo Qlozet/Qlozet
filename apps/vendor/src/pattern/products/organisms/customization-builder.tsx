@@ -17,8 +17,6 @@ import {
   type SelectedStyle,
 } from './select-styles-modal';
 import { cn } from '@/lib/utils';
-import type { StyleHotspotDto } from '@/redux/services/products/products.api-slice';
-import { HotspotEditorModal } from './hotspot-editor-modal';
 
 export interface CustomComponentItem {
   id: string;
@@ -28,7 +26,6 @@ export interface CustomComponentItem {
   label?: string;
   price: number;
   originalData?: any;
-  hotspots?: StyleHotspotDto[];
 }
 
 export interface CustomSubGroup {
@@ -63,7 +60,6 @@ const ComponentTile = ({
   hasHotspots?: boolean;
   onPriceChange: (price: number) => void;
   onRemove: () => void;
-  onEditHotspots: () => void;
 }) => (
   <div className="w-24 shrink-0">
     <div className="group relative aspect-square overflow-hidden rounded-md border border-input bg-accent">
@@ -74,18 +70,6 @@ const ComponentTile = ({
         <div className="flex size-full items-center justify-center p-1 text-center text-[11px] text-muted-foreground">
           {item.label ?? 'Image'}
         </div>
-      )}
-
-      {/* Edit Hotspots overlay (Style Options image tiles) */}
-      {hasHotspots && item.imageUrl && (
-        <button
-          type="button"
-          onClick={onEditHotspots}
-          className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-black/40 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100"
-        >
-          <Pencil className="size-4" />
-          Edit Hotspots
-        </button>
       )}
 
       {/* Per-tile menu (remove etc.) */}
@@ -100,12 +84,6 @@ const ComponentTile = ({
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {hasHotspots && (
-            <DropdownMenuItem onClick={onEditHotspots}>
-              <Pencil className="size-4" />
-              Edit Hotspots
-            </DropdownMenuItem>
-          )}
           <DropdownMenuItem
             onClick={onRemove}
             className="text-destructive focus:text-destructive"
@@ -159,7 +137,6 @@ const ItemRow = ({
   onAddItem: () => void;
   onRemoveItem: (itemId: string) => void;
   onPriceChange: (itemId: string, price: number) => void;
-  onEditHotspots: (item: CustomComponentItem) => void;
 }) => (
   <div className="flex items-start gap-3 overflow-x-auto pb-2">
     <AddTile onClick={onAddItem} />
@@ -170,7 +147,6 @@ const ItemRow = ({
         hasHotspots={hasHotspots}
         onPriceChange={(price) => onPriceChange(item.id, price)}
         onRemove={() => onRemoveItem(item.id)}
-        onEditHotspots={() => onEditHotspots(item)}
       />
     ))}
   </div>
@@ -248,21 +224,6 @@ export const CustomizationBuilder = ({
       items.map((it) => (it.id === itemId ? { ...it, price } : it))
     );
 
-  const editHotspots = async (sectionKey: string, subKey: string | undefined, item: CustomComponentItem) => {
-    if (!item.imageUrl) return;
-    const result = await NiceModal.show(HotspotEditorModal, {
-      imageUrl: item.imageUrl,
-      hotspots: item.hotspots || [],
-      sections,
-    });
-    
-    if (result !== undefined) {
-      updateItems(sectionKey, subKey, (items) =>
-        items.map((it) => (it.id === item.id ? { ...it, hotspots: result as StyleHotspotDto[] } : it))
-      );
-    }
-  };
-
   const addComponentSection = () =>
     onChange([
       ...sections,
@@ -282,7 +243,6 @@ export const CustomizationBuilder = ({
           onAddItem={addItem}
           onRemoveItem={(subKey, itemId) => removeItem(section.key, subKey, itemId)}
           onPriceChange={(subKey, itemId, price) => setPrice(section.key, subKey, itemId, price)}
-          onEditHotspots={(subKey, item) => editHotspots(section.key, subKey, item)}
         />
       ))}
 
@@ -309,7 +269,6 @@ const Section = ({
   onAddItem: (sectionKey: string, subKey?: string) => void;
   onRemoveItem: (subKey: string | undefined, itemId: string) => void;
   onPriceChange: (subKey: string | undefined, itemId: string, price: number) => void;
-  onEditHotspots: (subKey: string | undefined, item: CustomComponentItem) => void;
 }) => {
   const [open, setOpen] = useState(true);
 
@@ -347,7 +306,6 @@ const Section = ({
               onPriceChange={(itemId, price) =>
                 onPriceChange(undefined, itemId, price)
               }
-              onEditHotspots={(item) => onEditHotspots(undefined, item)}
             />
           )}
 
@@ -365,7 +323,6 @@ const Section = ({
                 onPriceChange={(itemId, price) =>
                   onPriceChange(sg.key, itemId, price)
                 }
-                onEditHotspots={(item) => onEditHotspots(sg.key, item)}
               />
             </div>
           ))}
