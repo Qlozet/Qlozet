@@ -227,6 +227,7 @@ export default function AddClothingTemplate() {
              label: bItem.name,
              imageUrl: imgUrl,
              price: Number(bItem.price || bItem.base_price || 0),
+             category: bItem.categories?.[0] || bItem.category || '',
              originalData: bItem,
            };
         });
