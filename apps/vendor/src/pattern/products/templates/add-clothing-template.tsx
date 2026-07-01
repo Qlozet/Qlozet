@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { GoBackButton } from '@/pattern/common/atoms/go-back-button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -477,16 +477,7 @@ export default function AddClothingTemplate() {
         ) : (
           <>
             {/* Back */}
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="inline-flex items-center gap-2 text-sm font-medium text-grey-black transition-opacity hover:opacity-80"
-            >
-              <span className="flex size-7 items-center justify-center rounded-full border border-border bg-white">
-                <ArrowLeft className="size-4" />
-              </span>
-              Go Back
-            </button>
+            <GoBackButton />
 
         {showAlert && (
           <ProductAlertBanner

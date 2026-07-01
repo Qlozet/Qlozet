@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import {
-  ArrowLeft,
   ChevronLeft,
   ChevronRight,
   Clipboard,
@@ -16,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { GoBackButton } from '@/pattern/common/atoms/go-back-button';
 import { APP_ROUTES } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import {
@@ -88,22 +88,6 @@ const NGN = (value?: number) =>
 const compImage = (c: ComponentView) => {
   const first = c.images?.[0];
   return (typeof first === 'string' ? first : first?.url) ?? c.image;
-};
-
-const BackButton = () => {
-  const router = useRouter();
-  return (
-    <button
-      type="button"
-      onClick={() => router.back()}
-      className="inline-flex items-center gap-2 text-sm font-medium text-grey-black transition-opacity hover:opacity-80"
-    >
-      <span className="flex size-7 items-center justify-center rounded-full border border-border bg-white">
-        <ArrowLeft className="size-4" />
-      </span>
-      Go Back
-    </button>
-  );
 };
 
 const DetailRow = ({
@@ -235,7 +219,7 @@ export const ProductDetailsTemplate = ({
   if (isError || !data) {
     return (
       <div className="mx-auto max-w-6xl space-y-6">
-        <BackButton />
+        <GoBackButton />
         <div className="rounded-lg border border-dashed border-border bg-card p-12 text-center text-sm text-muted-foreground">
           This product could not be loaded.
         </div>
@@ -248,7 +232,7 @@ export const ProductDetailsTemplate = ({
       <div className="mx-auto max-w-6xl space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <BackButton />
+          <GoBackButton />
           <Button
             variant="outline"
             onClick={wip}

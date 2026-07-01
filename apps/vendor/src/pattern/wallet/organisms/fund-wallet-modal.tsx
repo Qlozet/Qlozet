@@ -3,8 +3,8 @@
 // Fund Wallet Modal - Organism
 // "Fund your account" — lets the vendor pick a funding method (Paystack, Kora,
 // or Bank transfer). Opened from the Fund wallet button on the wallet page.
-// TODO(api): each method's next step (amount entry / Paystack checkout via
-// POST /wallets/fund) isn't designed yet, so selecting a method is a stub.
+// Paystack opens the amount-entry step (POST /wallets/fund → hosted checkout);
+// Kora has no backend endpoint yet, so it stays a stub.
 
 import React from 'react';
 import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
@@ -17,6 +17,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { FundWithBankModal } from './fund-with-bank-modal';
+import { FundWithPaystackModal } from './fund-with-paystack-modal';
 import paystackLogo from '@/public/assets/image/paystack-logo.png';
 import koraLogo from '@/public/assets/image/kora-logo.png';
 import bankIcon from '@/public/assets/image/fund-with-bank-icon.png';
@@ -65,8 +66,12 @@ export const FundWalletModal = create(() => {
       NiceModal.show(FundWithBankModal);
       return;
     }
-    // TODO(api): launch the card funding flow for `option.id`
-    // (Paystack → POST /wallets/fund, then GET /wallets/verify/{reference}).
+    if (option.id === 'paystack') {
+      handleClose();
+      NiceModal.show(FundWithPaystackModal);
+      return;
+    }
+    // TODO(api): Kora funding has no backend endpoint yet.
     toast.info(`${option.title} is coming soon.`);
   };
 

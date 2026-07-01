@@ -2,7 +2,7 @@
 // RTK Query service for the Qlozet "Collections" tag (product collections).
 
 import { baseAPI } from '@/redux/api/base-api';
-import { ApiResponse, buildQueryString } from '../types';
+import { ApiResponse, PaginatedData, buildQueryString } from '../types';
 
 // ConditionDto
 export type CollectionConditionOperator =
@@ -60,9 +60,10 @@ export const collectionsApiSlice = baseAPI.injectEndpoints({
       providesTags: ['Collections'],
     }),
 
-    // GET /collections/vendor/with-products — vendor collections incl. products
+    // GET /collections/vendor/with-products — vendor collections incl. products.
+    // The array is nested under a paginated envelope: response.data.data.
     getVendorCollectionsWithProducts: builder.query<
-      ApiResponse<Collection[]>,
+      ApiResponse<PaginatedData<Collection>>,
       GetVendorCollectionsParams | void
     >({
       query: (params) => ({
