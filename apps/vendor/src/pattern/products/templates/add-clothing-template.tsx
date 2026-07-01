@@ -58,6 +58,7 @@ import NiceModal from '@ebay/nice-modal-react';
 import { HotspotEditorModal } from '../organisms/hotspot-editor-modal';
 import { Layers } from 'lucide-react';
 import { useLazyGetStyleLibraryQuery } from '@/redux/services/style-library/style-library.api-slice';
+import { useGetCategoriesForTypeQuery } from '@/redux/services/taxonomy/taxonomy.api-slice';
 
 const countWords = (html: string) =>
   html
@@ -110,6 +111,12 @@ export default function AddClothingTemplate() {
   const [discount, setDiscount] = useState('');
   const [variants, setVariants] = useState<VariantRow[]>([]);
 
+  // Fetch attributes for the selected product type (needed for submission)
+  const { data: categoryData } = useGetCategoriesForTypeQuery(
+    { kind: 'clothing', product_type: organization.productType },
+    { skip: !organization.productType }
+  );
+
   useEffect(() => {
     if (productData) {
       // The API might return { data: { kind: 'clothing', clothing: { name: ... } } }
@@ -151,8 +158,15 @@ export default function AddClothingTemplate() {
         type: (t.type as 'system' | 'custom') || 'system',
       }));
 
+      // Legacy products may have product_type='customisable' or 'ready-made'
+      // which don't exist in the taxonomy. Clear them so the vendor re-selects.
+      const legacyTypes = ['customisable', 'ready-made', 'ready_made', 'customize', 'non_customize'];
+      const validProductType = pProductType && !legacyTypes.includes(pProductType.toLowerCase())
+        ? pProductType
+        : '';
+
       setOrganization({
-        productType: pProductType || '',
+        productType: validProductType,
         category: pCategory ? [pCategory] : [],
         tags: loadedTags,
         audience: pAudience as any,
@@ -445,7 +459,7 @@ export default function AddClothingTemplate() {
           taxonomy: {
             product_type: productType,
             categories: organization.category,
-            attributes: [],
+            attributes: categoryData?.attributes || organization.category,
             audience: organization.audience,
           },
           images: finalImages,
