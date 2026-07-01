@@ -53,6 +53,10 @@ import {
   type CreateClothingDto,
 } from '@/redux/services/products/products.api-slice';
 import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
+import type { StyleHotspotDto } from '@/redux/services/products/products.api-slice';
+import NiceModal from '@ebay/nice-modal-react';
+import { HotspotEditorModal } from '../organisms/hotspot-editor-modal';
+import { Layers } from 'lucide-react';
 import { useLazyGetStyleLibraryQuery } from '@/redux/services/style-library/style-library.api-slice';
 
 const countWords = (html: string) =>
@@ -87,6 +91,7 @@ export default function AddClothingTemplate() {
   const [status, setStatus] = useState<ProductStatus>('active');
   const [defaultImages, setDefaultImages] = useState<DefaultImage[]>([]);
   const [extraFiles, setExtraFiles] = useState<File[]>([]);
+  const [hotspots, setHotspots] = useState<StyleHotspotDto[]>([]);
 
   const [customizationEnabled, setCustomizationEnabled] = useState(false);
   const [measurementRequired, setMeasurementRequired] = useState(false);
@@ -121,6 +126,12 @@ export default function AddClothingTemplate() {
       const pAttributes = inner?.taxonomy?.attributes || rawProduct?.tags || [];
       const pCategory = inner?.taxonomy?.categories?.[0] || rawProduct?.category || '';
       const pImages = inner?.images || rawProduct?.images || [];
+      if (pImages && pImages.length > 0) {
+        const firstImage = typeof pImages[0] === 'object' ? pImages[0] : null;
+        if (firstImage && firstImage.hotspots) {
+          setHotspots(firstImage.hotspots);
+        }
+      }
       const pProductType = inner?.taxonomy?.product_type || rawProduct?.taxonomy?.product_type || '';
       const pAudience = inner?.taxonomy?.audience || rawProduct?.taxonomy?.audience || '';
 
@@ -217,7 +228,6 @@ export default function AddClothingTemplate() {
              imageUrl: imgUrl,
              price: Number(bItem.price || bItem.base_price || 0),
              originalData: bItem,
-             hotspots: typeof img === 'object' && img?.hotspots ? img.hotspots : [],
            };
         });
       };
@@ -352,6 +362,9 @@ export default function AddClothingTemplate() {
       const extraImageUrls = uploadedExtras.filter(img => !!img.url);
       
       const finalImages = [...defaultImageUrls, ...extraImageUrls];
+      if (finalImages.length > 0 && hotspots.length > 0) {
+        finalImages[0] = { ...finalImages[0], hotspots };
+      }
 
       // Prepare customization objects
       const styles: any[] = [];
@@ -363,12 +376,6 @@ export default function AddClothingTemplate() {
         const fullObjects = await Promise.all(allItems.map(async (it) => {
           if (it.originalData) {
             let updatedImages = it.originalData.images || [];
-            if (updatedImages.length > 0 && typeof updatedImages[0] !== 'string') {
-              updatedImages = [
-                { ...updatedImages[0], hotspots: it.hotspots || [] },
-                ...updatedImages.slice(1)
-              ];
-            }
             return {
               ...it.originalData,
               price: Math.max(1, Number(it.price) || 1),
@@ -387,7 +394,7 @@ export default function AddClothingTemplate() {
                   name: styleItem.name,
                   style_code: styleItem.style_code || '',
                   categories: styleItem.category ? [styleItem.category] : [],
-                  images: styleItem.image_url ? [{ url: styleItem.image_url, public_id: 'unknown', hotspots: it.hotspots || [] }] : [],
+                  images: styleItem.image_url ? [{ url: styleItem.image_url, public_id: 'unknown' }] : [],
                   attributes: styleItem.attributes || [],
                   price: Math.max(1, Number(it.price) || 1),
                   min_width_cm: 1,
@@ -524,6 +531,32 @@ export default function AddClothingTemplate() {
                 images={defaultImages}
                 onChange={setDefaultImages}
               />
+              <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
+                <div className="text-sm">
+                  <p className="font-medium text-foreground">Interactive Hotspots</p>
+                  <p className="text-muted-foreground text-xs">Link style options to your primary product image.</p>
+                </div>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  disabled={defaultImages.length === 0}
+                  onClick={async () => {
+                    const primary = defaultImages[0];
+                    if (!primary) return;
+                    const result = await NiceModal.show(HotspotEditorModal, {
+                      imageUrl: primary.url,
+                      hotspots,
+                      sections: customizationSections,
+                    });
+                    if (result !== undefined) {
+                      setHotspots(result as StyleHotspotDto[]);
+                    }
+                  }}
+                >
+                  <Layers className="size-4 mr-2" />
+                  Configure Hotspots
+                </Button>
+              </div>
             </div>
 
             <div className="rounded-lg bg-card p-6 custom-card-shadow">
