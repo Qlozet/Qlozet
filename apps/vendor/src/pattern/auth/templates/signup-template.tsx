@@ -188,13 +188,13 @@ export const SignupTemplate = () => {
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <SignupStepBusiness control={form.control} />;
+        return <SignupStepBusiness control={form.control as any} />;
       case 2:
-        return <SignupStepPersonal control={form.control} />;
+        return <SignupStepPersonal control={form.control as any} />;
       case 3:
-        return <SignupStepPassword control={form.control} />;
+        return <SignupStepPassword control={form.control as any} />;
       case 4:
-        return <SignupStepDocuments control={form.control} />;
+        return <SignupStepDocuments control={form.control as any} />;
       default:
         return null;
     }

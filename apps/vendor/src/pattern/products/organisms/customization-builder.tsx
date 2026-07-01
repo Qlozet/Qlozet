@@ -61,6 +61,7 @@ const ComponentTile = ({
   hasHotspots?: boolean;
   onPriceChange: (price: number) => void;
   onRemove: () => void;
+  onEditHotspots?: (item: CustomComponentItem) => void;
 }) => (
   <div className="w-24 shrink-0">
     <div className="group relative aspect-square overflow-hidden rounded-md border border-input bg-accent">
@@ -138,6 +139,7 @@ const ItemRow = ({
   onAddItem: () => void;
   onRemoveItem: (itemId: string) => void;
   onPriceChange: (itemId: string, price: number) => void;
+  onEditHotspots?: (item: CustomComponentItem) => void;
 }) => (
   <div className="flex items-start gap-3 overflow-x-auto pb-2">
     <AddTile onClick={onAddItem} />
@@ -271,6 +273,7 @@ const Section = ({
   onAddItem: (sectionKey: string, subKey?: string) => void;
   onRemoveItem: (subKey: string | undefined, itemId: string) => void;
   onPriceChange: (subKey: string | undefined, itemId: string, price: number) => void;
+  onEditHotspots?: (item: CustomComponentItem) => void;
 }) => {
   const [open, setOpen] = useState(true);
 

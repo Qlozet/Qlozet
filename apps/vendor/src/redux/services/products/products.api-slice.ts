@@ -232,7 +232,7 @@ export interface ProductsFilters {
   status?: string;
   minPrice?: number;
   maxPrice?: number;
-  sortBy?: 'name' | 'price' | 'createdAt' | 'stock';
+  sortBy?: 'name' | 'price' | 'createdAt' | 'stock' | 'category';
   order?: 'asc' | 'desc'; // API uses 'order' instead of 'sortOrder'
 }
 
