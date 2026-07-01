@@ -15,6 +15,14 @@ import { AVAILABLE_COLORS, ColorOption, VariantRow, VariantSizeDetail } from "..
 import { useCreateAccessoryMutation, useGetProductQuery } from "@/redux/services/products/products.api-slice"
 import { useUploadProductImageMutation } from "@/redux/services/uploads/uploads.api-slice"
 import { toast } from "sonner"
+import { AUDIENCE_OPTIONS, type Audience } from "./clothing-organization-section"
+import { TagComboInput } from "../molecules/tag-combo-input"
+import {
+    useGetProductTypesQuery,
+    useGetCategoriesForTypeQuery,
+    useGetVendorTagsQuery,
+    type ProductTag,
+} from "@/redux/services/taxonomy/taxonomy.api-slice"
 
 export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
     const { resolve, remove, visible } = useModal();
@@ -29,11 +37,12 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
     const [selectedSizes, setSelectedSizes] = useState<string[]>([])
     const [variants, setVariants] = useState<VariantRow[]>([])
     const [customColors, setCustomColors] = useState<ColorOption[]>([])
-    const [accessoryName, setAccessoryName] = useState("Wide-leg pants")
+    const [accessoryName, setAccessoryName] = useState("")
     const [description, setDescription] = useState("")
-    const [category, setCategory] = useState("Belts")
-    const [subCategory, setSubCategory] = useState("Leather belt")
-    const [tags, setTags] = useState("Men")
+    const [productType, setProductType] = useState("")
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+    const [audience, setAudience] = useState<Audience | ''>('')
+    const [productTags, setProductTags] = useState<ProductTag[]>([])
     const [price, setPrice] = useState("100000")
     
     const [imageFile, setImageFile] = useState<File | null>(null)
@@ -51,15 +60,21 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
             
             setAccessoryName(inner?.name || rawProduct?.name || "")
             setDescription(inner?.description || rawProduct?.description || "")
-            setCategory(inner?.taxonomy?.categories?.[0] || rawProduct?.category || "Belts")
-            // The attributes might hold tags and subcategories
-            const attributes = inner?.taxonomy?.attributes || rawProduct?.tags || []
-            if (attributes.length > 0) {
-                setSubCategory(attributes[0])
-                if (attributes.length > 1) {
-                    setTags(attributes[1])
-                }
-            }
+            
+            // Map taxonomy fields
+            const taxonomy = inner?.taxonomy || rawProduct?.taxonomy || {}
+            setProductType(taxonomy.product_type || '')
+            setSelectedCategories(taxonomy.categories || [])
+            setAudience((taxonomy.audience || '') as Audience)
+            
+            // Map tags
+            const rawTags = rawProduct?.tags || []
+            setProductTags(rawTags.map((t: any) => ({
+                name: t.name || t,
+                slug: t.slug || (typeof t === 'string' ? t.toLowerCase().replace(/\s+/g, '-') : ''),
+                type: (t.type as 'system' | 'custom') || 'system',
+            })))
+            
             setPrice(String(inner?.price || rawProduct?.base_price || ""))
             
             const pImages = inner?.images || rawProduct?.images || []
@@ -68,11 +83,18 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                 setPreviewUrl(imgObj.url)
                 setExistingImage(imgObj)
             }
-            // For now, variants aren't deeply synced on edit, as they're complex to map back.
         }
     }, [productData])
 
     const isSaving = isCreating || isUploading
+
+    // Taxonomy hooks
+    const { data: accessoryTypes, isLoading: isLoadingTypes } = useGetProductTypesQuery('accessory')
+    const { data: categoryData, isLoading: isLoadingCategories } = useGetCategoriesForTypeQuery(
+        { kind: 'accessory', product_type: productType },
+        { skip: !productType }
+    )
+    const { data: vendorTags, isLoading: isLoadingTags } = useGetVendorTagsQuery()
 
     const availableSizes = ["Extra small", "Small", "Medium", "Large", "Extra large"]
 
@@ -184,15 +206,16 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                 seo: { title: accessoryName.trim() },
                 metafields: { base_price: price ? Number(price) : undefined },
                 status: isDraft ? 'draft' : 'active',
+                tags: productTags,
                 accessory: {
                     name: accessoryName.trim(),
                     description: description.trim() || undefined,
                     price: Number(price),
                     taxonomy: {
-                        product_type: 'accessory',
-                        categories: [category],
-                        attributes: [subCategory],
-                        audience: tags.toLowerCase()
+                        product_type: productType || 'accessory',
+                        categories: selectedCategories,
+                        attributes: [],
+                        audience: audience || 'unisex'
                     },
                     variants: variantsToSubmit,
                     images: finalImageUrl ? [{ url: finalImageUrl, public_id: finalPublicId }] : []
@@ -247,58 +270,90 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                                     />
                                 </div>
 
-                                {/* Categories */}
+                                {/* Product Type (from API) */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium flex items-center gap-1">
-                                        Categories
+                                        Product Type
                                         <InfoIcon className="size-3.5 text-muted-foreground" />
                                     </label>
-                                    <Select value={category} onValueChange={setCategory}>
+                                    {isLoadingTypes ? (
+                                        <Skeleton className="h-10 w-full" />
+                                    ) : (
+                                        <Select value={productType} onValueChange={(v) => { setProductType(v); setSelectedCategories([]); }}>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Select product type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {accessoryTypes?.map((pt) => (
+                                                    <SelectItem key={pt.name} value={pt.name}>
+                                                        {pt.icon ? `${pt.icon} ${pt.name}` : pt.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                </div>
+
+                                {/* Category (cascading from product type) */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium flex items-center gap-1">
+                                        Category
+                                        <InfoIcon className="size-3.5 text-muted-foreground" />
+                                    </label>
+                                    {isLoadingCategories && productType ? (
+                                        <Skeleton className="h-10 w-full" />
+                                    ) : categoryData?.categories && categoryData.categories.length > 0 ? (
+                                        <Select
+                                            value={selectedCategories[0] || undefined}
+                                            onValueChange={(v) => setSelectedCategories([v])}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Select category" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {categoryData.categories.map((cat) => (
+                                                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    ) : (
+                                        <div className="flex h-10 w-full items-center rounded-md border border-input bg-accent px-3 text-sm text-muted-foreground">
+                                            {productType ? 'No categories available' : 'Select a product type first'}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Audience */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium flex items-center gap-1">
+                                        Audience
+                                        <InfoIcon className="size-3.5 text-muted-foreground" />
+                                    </label>
+                                    <Select value={audience || undefined} onValueChange={(v) => setAudience(v as Audience)}>
                                         <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select category" />
+                                            <SelectValue placeholder="Select audience" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="Belts">Belts</SelectItem>
-                                            <SelectItem value="Hats">Hats</SelectItem>
-                                            <SelectItem value="Bags">Bags</SelectItem>
+                                            {AUDIENCE_OPTIONS.map((opt) => (
+                                                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
 
-                                {/* Sub-categories */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium flex items-center gap-1">
-                                        Sub-categories
-                                        <InfoIcon className="size-3.5 text-muted-foreground" />
-                                    </label>
-                                    <Select value={subCategory} onValueChange={setSubCategory}>
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select sub-category" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Leather belt">Leather belt</SelectItem>
-                                            <SelectItem value="Fabric belt">Fabric belt</SelectItem>
-                                            <SelectItem value="Chain belt">Chain belt</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                {/* Tags */}
+                                {/* Tags (combo input) */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium flex items-center gap-1">
                                         Tags
                                         <InfoIcon className="size-3.5 text-muted-foreground" />
                                     </label>
-                                    <Select value={tags} onValueChange={setTags}>
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select tags" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Men">Men</SelectItem>
-                                            <SelectItem value="Women">Women</SelectItem>
-                                            <SelectItem value="Unisex">Unisex</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                    <TagComboInput
+                                        value={productTags}
+                                        onChange={setProductTags}
+                                        systemTags={vendorTags}
+                                        isLoading={isLoadingTags}
+                                        placeholder="Add tags..."
+                                    />
                                 </div>
 
                                 {/* Price */}

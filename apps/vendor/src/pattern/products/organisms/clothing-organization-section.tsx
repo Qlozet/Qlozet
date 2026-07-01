@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  MultiSelectTagsDropdown,
-  type TagGroup,
-} from '@/pattern/common/organisms/multi-select-tag-dropdown';
+import { useEffect } from 'react';
 import {
   Select,
   SelectContent,
@@ -11,7 +8,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  MultiSelectTagsDropdown,
+  type TagGroup,
+} from '@/pattern/common/organisms/multi-select-tag-dropdown';
 import { FieldLabel } from '../atoms/field-label';
+import { TagComboInput } from '../molecules/tag-combo-input';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  useGetProductTypesQuery,
+  useGetCategoriesForTypeQuery,
+  useGetVendorTagsQuery,
+  type ProductTag,
+} from '@/redux/services/taxonomy/taxonomy.api-slice';
 
 // Backend (POST /products/clothing) requires taxonomy.audience to be one of
 // these exact values.
@@ -25,78 +34,75 @@ export const AUDIENCE_OPTIONS = [
 export type Audience = (typeof AUDIENCE_OPTIONS)[number]['value'];
 
 export interface ProductOrganizationValue {
-  tag: string[];
-  category: string[];
-  subCategory: string[];
-  productType: string[];
+  productType: string;       // Single value (e.g. 'Dress')
+  category: string[];        // Categories from cascading API
+  tags: ProductTag[];         // System + custom tags
   audience: Audience | '';
 }
 
 interface ProductOrganizationSectionProps {
   value: ProductOrganizationValue;
   onChange: (next: ProductOrganizationValue) => void;
-  // Hide the Product type field — e.g. when customization is enabled, the
-  // product type is implied and the dropdown is not shown.
+  /** The taxonomy kind — determines which product types/categories load */
+  kind?: 'clothing' | 'accessory' | 'fabric';
+  /** Hide the Product type field — e.g. when customization is enabled */
   hideProductType?: boolean;
 }
-
-// Option sources for the organization chips. Static until the backend exposes
-// taxonomy endpoints.
-const TAG_GROUPS: TagGroup[] = [
-  {
-    label: 'Tags',
-    tags: [
-      { value: 'ankara', label: 'Ankara' },
-      { value: 'kente', label: 'Kente' },
-      { value: 'adire', label: 'Adire' },
-      { value: 'lace', label: 'Lace' },
-    ],
-  },
-];
-
-const CATEGORY_GROUPS: TagGroup[] = [
-  {
-    label: 'Categories',
-    tags: [
-      { value: 'suit', label: 'Suit' },
-      { value: 'kaftan', label: 'Kaftan' },
-      { value: 'cargo', label: 'Cargo' },
-      { value: 'abgada', label: 'Abgada' },
-      { value: 'tops', label: 'Tops' },
-      { value: 'dresses', label: 'Dresses' },
-    ],
-  },
-];
-
-const SUB_CATEGORY_GROUPS: TagGroup[] = [
-  {
-    label: 'Sub-categories',
-    tags: [
-      { value: 'ankara', label: 'Ankara' },
-      { value: 'plain', label: 'Plain' },
-      { value: 'embroidered', label: 'Embroidered' },
-      { value: 'two-piece', label: 'Two Piece' },
-    ],
-  },
-];
-
-const PRODUCT_TYPE_GROUPS: TagGroup[] = [
-  {
-    label: 'Product Types',
-    tags: [
-      { value: 'customisable', label: 'Customisable' },
-      { value: 'ready-made', label: 'Ready Made' },
-    ],
-  },
-];
 
 export const ProductOrganizationSection = ({
   value,
   onChange,
+  kind = 'clothing',
   hideProductType = false,
 }: ProductOrganizationSectionProps) => {
-  const set = (key: keyof ProductOrganizationValue) => (next: string[]) =>
-    onChange({ ...value, [key]: next });
+  // 1. Fetch product types for the given kind
+  const {
+    data: productTypes,
+    isLoading: isLoadingTypes,
+  } = useGetProductTypesQuery(kind);
+
+  // 2. Fetch categories cascading from the selected product type
+  const {
+    data: categoryData,
+    isLoading: isLoadingCategories,
+  } = useGetCategoriesForTypeQuery(
+    { kind, product_type: value.productType },
+    { skip: !value.productType }
+  );
+
+  // 3. Fetch vendor-selectable tags
+  const {
+    data: vendorTags,
+    isLoading: isLoadingTags,
+  } = useGetVendorTagsQuery();
+
+  // Build category options for the multi-select
+  const categoryGroups: TagGroup[] = categoryData?.categories
+    ? [
+        {
+          label: 'Categories',
+          tags: categoryData.categories.map((cat) => ({
+            value: cat,
+            label: cat,
+          })),
+        },
+      ]
+    : [];
+
+  // When product type changes, clear the selected categories
+  // (they belong to the old product type)
+  useEffect(() => {
+    // Only reset if categories are set and the product type has changed
+    if (value.category.length > 0 && categoryData?.categories) {
+      const validCategories = value.category.filter((c) =>
+        categoryData.categories.includes(c)
+      );
+      if (validCategories.length !== value.category.length) {
+        onChange({ ...value, category: validCategories });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryData?.categories]);
 
   return (
     <div className="rounded-lg bg-card p-6 custom-card-shadow">
@@ -105,48 +111,68 @@ export const ProductOrganizationSection = ({
       </h3>
 
       <div className="space-y-4">
-        <div>
-          <FieldLabel tooltip="Add searchable tags">Tag</FieldLabel>
-          <MultiSelectTagsDropdown
-            placeholder="Select tags"
-            groups={TAG_GROUPS}
-            value={value.tag}
-            onChange={set('tag')}
-          />
-        </div>
-
-        <div>
-          <FieldLabel tooltip="Select product category">Category</FieldLabel>
-          <MultiSelectTagsDropdown
-            placeholder="Select category"
-            groups={CATEGORY_GROUPS}
-            value={value.category}
-            onChange={set('category')}
-          />
-        </div>
-
-        <div>
-          <FieldLabel tooltip="Select sub-category">Sub-category</FieldLabel>
-          <MultiSelectTagsDropdown
-            placeholder="Select sub-category"
-            groups={SUB_CATEGORY_GROUPS}
-            value={value.subCategory}
-            onChange={set('subCategory')}
-          />
-        </div>
-
+        {/* Product Type — single select */}
         {!hideProductType && (
           <div>
-            <FieldLabel tooltip="Select product type">Product type</FieldLabel>
-            <MultiSelectTagsDropdown
-              placeholder="Customisable"
-              groups={PRODUCT_TYPE_GROUPS}
-              value={value.productType}
-              onChange={set('productType')}
-            />
+            <FieldLabel tooltip="Select the product type">Product type</FieldLabel>
+            {isLoadingTypes ? (
+              <Skeleton className="h-10 w-full" />
+            ) : (
+              <Select
+                value={value.productType || undefined}
+                onValueChange={(next) =>
+                  onChange({ ...value, productType: next, category: [] })
+                }
+              >
+                <SelectTrigger className="w-full bg-background">
+                  <SelectValue placeholder="Select product type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {productTypes?.map((pt) => (
+                    <SelectItem key={pt.name} value={pt.name}>
+                      {pt.icon ? `${pt.icon} ${pt.name}` : pt.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
         )}
 
+        {/* Category — multi-select, cascading from product type */}
+        <div>
+          <FieldLabel tooltip="Select product categories">Category</FieldLabel>
+          {isLoadingCategories && value.productType ? (
+            <Skeleton className="h-10 w-full" />
+          ) : categoryGroups.length > 0 ? (
+            <MultiSelectTagsDropdown
+              placeholder="Select categories"
+              groups={categoryGroups}
+              value={value.category}
+              onChange={(next) => onChange({ ...value, category: next })}
+            />
+          ) : (
+            <div className="flex h-10 w-full items-center rounded-md border border-border-input bg-accent px-3 text-sm text-muted-foreground">
+              {value.productType
+                ? 'No categories available'
+                : 'Select a product type first'}
+            </div>
+          )}
+        </div>
+
+        {/* Tags — combo input (system + custom) */}
+        <div>
+          <FieldLabel tooltip="Add searchable tags">Tags</FieldLabel>
+          <TagComboInput
+            value={value.tags}
+            onChange={(next) => onChange({ ...value, tags: next })}
+            systemTags={vendorTags}
+            isLoading={isLoadingTags}
+            placeholder="Add tags..."
+          />
+        </div>
+
+        {/* Audience — static enum, unchanged */}
         <div>
           <FieldLabel tooltip="Select target audience">Audience</FieldLabel>
           <Select

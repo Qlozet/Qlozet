@@ -101,10 +101,9 @@ export default function AddClothingTemplate() {
   >(DEFAULT_CUSTOMIZATION_SECTIONS);
 
   const [organization, setOrganization] = useState<ProductOrganizationValue>({
-    tag: [],
+    productType: '',
     category: [],
-    subCategory: [],
-    productType: [],
+    tags: [],
     audience: '',
   });
   const [price, setPrice] = useState('');
@@ -135,10 +134,6 @@ export default function AddClothingTemplate() {
       const pProductType = inner?.taxonomy?.product_type || rawProduct?.taxonomy?.product_type || '';
       const pAudience = inner?.taxonomy?.audience || rawProduct?.taxonomy?.audience || '';
 
-      const knownSubcategories = ['ankara', 'plain', 'embroidered', 'two-piece'];
-      const loadedSubCategories = pAttributes.filter((a: string) => knownSubcategories.includes(a));
-      const loadedTags = pAttributes.filter((a: string) => !knownSubcategories.includes(a));
-
       setTitle(pName);
       setDescription(pDesc);
       setStatus(pStatus as ProductStatus);
@@ -148,12 +143,19 @@ export default function AddClothingTemplate() {
         setCustomizationEnabled(true);
       }
 
+      // Map backend tags to the new ProductTag shape
+      const rawTags = rawProduct?.tags || [];
+      const loadedTags = rawTags.map((t: any) => ({
+        name: t.name || t,
+        slug: t.slug || (typeof t === 'string' ? t.toLowerCase().replace(/\s+/g, '-') : ''),
+        type: (t.type as 'system' | 'custom') || 'system',
+      }));
+
       setOrganization({
-        tag: loadedTags,
+        productType: pProductType || '',
         category: pCategory ? [pCategory] : [],
-        subCategory: loadedSubCategories, 
-        productType: pProductType ? [pProductType] : [], 
-        audience: pAudience as any,    
+        tags: loadedTags,
+        audience: pAudience as any,
       });
 
       if (pImages && pImages.length > 0) {
@@ -295,7 +297,7 @@ export default function AddClothingTemplate() {
     // otherwise the vendor must pick one.
     const productType = customizationEnabled
       ? 'customisable'
-      : organization.productType[0];
+      : organization.productType;
     if (!productType) {
       toast.error('Please select a product type.');
       return;
@@ -436,6 +438,7 @@ export default function AddClothingTemplate() {
           base_price: price ? Number(price) : undefined,
           discount: discount || undefined,
         },
+        tags: organization.tags,
         clothing: {
           name: title.trim(),
           type: customizationEnabled ? 'customize' : 'non_customize',
@@ -445,7 +448,7 @@ export default function AddClothingTemplate() {
           taxonomy: {
             product_type: productType,
             categories: organization.category,
-            attributes: [...organization.subCategory, ...organization.tag],
+            attributes: [],
             audience: organization.audience,
           },
           images: finalImages,

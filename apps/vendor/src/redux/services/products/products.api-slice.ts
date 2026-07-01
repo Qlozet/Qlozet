@@ -136,6 +136,7 @@ export interface CreateClothingDto {
   };
   metafields?: Record<string, any>;
   status?: 'active' | 'draft' | 'archived';
+  tags?: { name: string; slug: string; type: 'system' | 'custom' }[];
   clothing: ClothingDto;
 }
 
@@ -166,6 +167,7 @@ export interface CreateAccessoryRequest {
   };
   metafields?: Record<string, any>;
   status?: 'active' | 'draft' | 'archived';
+  tags?: { name: string; slug: string; type: 'system' | 'custom' }[];
   accessory: AccessoryDto;
 }
 
