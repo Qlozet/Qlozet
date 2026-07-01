@@ -3,9 +3,12 @@
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { PaginationState } from '@tanstack/react-table'
+import { show } from '@ebay/nice-modal-react'
 import {
     Collection,
     useGetVendorCollectionsWithProductsQuery,
+    useDeleteCollectionMutation,
+    useUpdateCollectionMutation,
 } from '@/redux/services/collections/collections.api-slice'
 import { APP_ROUTES } from '@/lib/routes'
 import { Button } from '@/components/ui/button'
@@ -13,6 +16,7 @@ import { toast } from 'sonner'
 import { LinearImportIcon } from '@/pattern/common/atoms/linear-import-icon'
 import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-icon'
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
+import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
 import { CollectionsTable } from '../organisms/collections-table'
 import { formatCondition } from '../molecules/collections-table-column'
 
@@ -39,6 +43,9 @@ const CollectionsTableTemplate = ({ onExport }: CollectionsTableTemplateProps) =
         isSuccess,
         isFetching,
     } = useGetVendorCollectionsWithProductsQuery()
+
+    const [deleteCollection] = useDeleteCollectionMutation()
+    const [updateCollection] = useUpdateCollectionMutation()
 
     // The endpoint returns a paginated envelope, so the collections array lives
     // at response.data.data (not response.data).
@@ -81,19 +88,52 @@ const CollectionsTableTemplate = ({ onExport }: CollectionsTableTemplateProps) =
         }
     }
 
-    // The backend exposes no collection update/status/delete endpoints yet
-    // (only GET + POST /collections), so the row actions are honest stubs until
-    // those endpoints exist.
     const handleEditCollection = (collectionId: string) => {
-        toast.info('Edit collection feature coming soon')
+        router.push(`${APP_ROUTES.productsCollectionsCreate}?edit=${collectionId}`)
     }
 
+    // Toggle a collection's active state via PATCH /collections/{id}.
+    const setActive = async (collectionId: string, is_active: boolean) => {
+        try {
+            await updateCollection({ collectionId, is_active }).unwrap()
+            toast.success(
+                is_active ? 'Collection activated.' : 'Collection deactivated.'
+            )
+        } catch (err) {
+            const message =
+                (err as { data?: { message?: string } })?.data?.message ||
+                'Could not update the collection. Please try again.'
+            toast.error(message)
+        }
+    }
+
+    const handleActivateCollection = (collectionId: string) =>
+        setActive(collectionId, true)
+
+    const handleDeactivateCollection = (collectionId: string) =>
+        setActive(collectionId, false)
+
+    const handleDeleteCollection = (collectionId: string) => {
+        show(DeleteProductConfirmationModal, {
+            title: 'Are you sure you want to delete this collection?',
+            description:
+                'Removing this collection will erase all stored information about it from your dashboard.',
+            actionText: 'Delete Collection',
+        }).then(() => {
+            deleteCollection(collectionId)
+                .unwrap()
+                .then(() => toast.success('Collection deleted successfully.'))
+                .catch((err) => {
+                    toast.error(
+                        err?.data?.message || 'Failed to delete collection.'
+                    )
+                })
+        })
+    }
+
+    // No backend endpoint for these yet — honest stubs.
     const handleSelectCollection = (collectionId: string) => {
         toast.info('Select collection feature coming soon')
-    }
-
-    const handleActivateCollection = (collectionId: string) => {
-        toast.info('Activate collection feature coming soon')
     }
 
     const handleScheduleActivation = (collectionId: string) => {
@@ -102,14 +142,6 @@ const CollectionsTableTemplate = ({ onExport }: CollectionsTableTemplateProps) =
 
     const handleArchiveCollection = (collectionId: string) => {
         toast.info('Archive collection feature coming soon')
-    }
-
-    const handleDeactivateCollection = (collectionId: string) => {
-        toast.info('Deactivate collection feature coming soon')
-    }
-
-    const handleDeleteCollection = (collectionId: string) => {
-        toast.info('Delete collection feature coming soon')
     }
 
     return (

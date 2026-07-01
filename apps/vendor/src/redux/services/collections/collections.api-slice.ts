@@ -26,6 +26,21 @@ export interface CreateCollectionRequest {
   is_active?: boolean;
 }
 
+// UpdateCollectionDto — all fields optional; adds cover_image + sort_order.
+export interface UpdateCollectionDto {
+  title?: string;
+  description?: string;
+  condition_match?: 'all' | 'any';
+  conditions?: CollectionCondition[];
+  is_active?: boolean;
+  cover_image?: string;
+  sort_order?: number;
+}
+
+export type UpdateCollectionRequest = UpdateCollectionDto & {
+  collectionId: string;
+};
+
 export interface Collection {
   _id: string;
   title?: string;
@@ -93,12 +108,34 @@ export const collectionsApiSlice = baseAPI.injectEndpoints({
       providesTags: ['Collection'],
     }),
 
-    // POST /collections — create a collection
+    // POST /collections — create a vendor collection
     createCollection: builder.mutation<
       ApiResponse<Collection>,
       CreateCollectionRequest
     >({
       query: (body) => ({ url: '/collections', method: 'POST', body }),
+      invalidatesTags: ['Collections'],
+    }),
+
+    // PATCH /collections/{collectionId} — update a vendor collection
+    updateCollection: builder.mutation<
+      ApiResponse<Collection>,
+      UpdateCollectionRequest
+    >({
+      query: ({ collectionId, ...body }) => ({
+        url: `/collections/${collectionId}`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: ['Collections', 'Collection'],
+    }),
+
+    // DELETE /collections/{collectionId} — delete a vendor collection
+    deleteCollection: builder.mutation<ApiResponse<unknown>, string>({
+      query: (collectionId) => ({
+        url: `/collections/${collectionId}`,
+        method: 'DELETE',
+      }),
       invalidatesTags: ['Collections'],
     }),
   }),
@@ -112,4 +149,6 @@ export const {
   useGetCollectionQuery,
   useGetCollectionProductsQuery,
   useCreateCollectionMutation,
+  useUpdateCollectionMutation,
+  useDeleteCollectionMutation,
 } = collectionsApiSlice;

@@ -7,8 +7,8 @@
 // has no image field, and the backend exposes no "preview matching products"
 // endpoint, so those are marked TODO(api).
 
-import { useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -25,6 +25,8 @@ import {
 import { GoBackButton } from '@/pattern/common/atoms/go-back-button'
 import {
     useCreateCollectionMutation,
+    useUpdateCollectionMutation,
+    useGetCollectionQuery,
     type CollectionConditionOperator,
 } from '@/redux/services/collections/collections.api-slice'
 import { APP_ROUTES } from '@/lib/routes'
@@ -90,7 +92,18 @@ const PREVIEW_PRODUCTS: PreviewProduct[] = [
 
 export const CollectionsCreateTemplate = () => {
     const router = useRouter()
-    const [createCollection, { isLoading }] = useCreateCollectionMutation()
+    const searchParams = useSearchParams()
+    const editId = searchParams.get('edit')
+    const isEditing = Boolean(editId)
+
+    const [createCollection, { isLoading: isCreating }] =
+        useCreateCollectionMutation()
+    const [updateCollection, { isLoading: isUpdating }] =
+        useUpdateCollectionMutation()
+    const { data: collectionResponse, isLoading: isLoadingCollection } =
+        useGetCollectionQuery(editId as string, { skip: !editId })
+
+    const isLoading = isCreating || isUpdating
 
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [productSearch, setProductSearch] = useState('')
@@ -114,6 +127,28 @@ export const CollectionsCreateTemplate = () => {
         name: 'conditions',
     })
 
+    // Prefill the form when editing an existing collection.
+    useEffect(() => {
+        const collection = collectionResponse?.data
+        if (!collection) return
+        form.reset({
+            title: collection.title ?? '',
+            description: collection.description ?? '',
+            condition_match: collection.condition_match ?? 'all',
+            is_active: collection.is_active ?? true,
+            conditions:
+                collection.conditions && collection.conditions.length > 0
+                    ? collection.conditions.map((c) => ({
+                          field: c.field,
+                          operator: c.operator,
+                          value: c.value,
+                      }))
+                    : [{ field: 'product_category', operator: 'is_equal_to', value: '' }],
+        })
+        const cover = collection.cover_image as string | undefined
+        if (cover) setImagePreview(cover)
+    }, [collectionResponse, form])
+
     const handleGoBack = () => router.push(APP_ROUTES.productsCollections)
 
     const handleImageEdit = () => fileInputRef.current?.click()
@@ -128,29 +163,48 @@ export const CollectionsCreateTemplate = () => {
     )
 
     const onSubmit = async (values: CreateCollectionForm) => {
+        const payload = {
+            title: values.title,
+            description: values.description || undefined,
+            condition_match: values.condition_match,
+            is_active: values.is_active,
+            conditions: values.conditions.map((c) => ({
+                field: c.field,
+                operator: c.operator as CollectionConditionOperator,
+                value: c.value,
+            })),
+        }
         try {
-            await createCollection({
-                title: values.title,
-                description: values.description || undefined,
-                condition_match: values.condition_match,
-                is_active: values.is_active,
-                conditions: values.conditions.map((c) => ({
-                    field: c.field,
-                    operator: c.operator as CollectionConditionOperator,
-                    value: c.value,
-                })),
-            }).unwrap()
-            toast.success('Collection created successfully.')
+            if (isEditing && editId) {
+                await updateCollection({ collectionId: editId, ...payload }).unwrap()
+                toast.success('Collection updated successfully.')
+            } else {
+                await createCollection(payload).unwrap()
+                toast.success('Collection created successfully.')
+            }
             router.push(APP_ROUTES.productsCollections)
         } catch (err) {
             const message =
                 (err as { data?: { message?: string } })?.data?.message ||
-                'Could not create the collection. Please try again.'
+                `Could not ${isEditing ? 'update' : 'create'} the collection. Please try again.`
             toast.error(message)
         }
     }
 
     const isActive = form.watch('is_active')
+
+    if (isEditing && isLoadingCollection) {
+        return (
+            <div className='w-full bg-background pb-10'>
+                <div className='mb-6'>
+                    <GoBackButton href={APP_ROUTES.productsCollections} />
+                </div>
+                <div className='flex h-64 items-center justify-center text-sm text-muted-foreground'>
+                    Loading collection…
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className='w-full bg-background pb-10'>
@@ -575,8 +629,10 @@ export const CollectionsCreateTemplate = () => {
                                 {isLoading ? (
                                     <>
                                         <Loader2 className='size-4 animate-spin' />
-                                        Creating…
+                                        {isEditing ? 'Saving…' : 'Creating…'}
                                     </>
+                                ) : isEditing ? (
+                                    'Save Changes'
                                 ) : (
                                     'Create Collection'
                                 )}
