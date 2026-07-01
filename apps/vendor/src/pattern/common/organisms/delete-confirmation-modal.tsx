@@ -12,7 +12,7 @@ interface IDeleteConfirmationModalprops {
     actionText?: string
 }
 
-export const DeleteProductConfirmationModal = create(({ title, description }: IDeleteConfirmationModalprops) => {
+export const DeleteProductConfirmationModal = create(({ title, description, actionText = 'Delete' }: IDeleteConfirmationModalprops) => {
     const { resolve, remove, visible } = useModal();
 
     const handleCloseModal = () => {
@@ -34,7 +34,7 @@ export const DeleteProductConfirmationModal = create(({ title, description }: ID
                         </h1>
                         {description ? <p className='text-foreground text-xs font-normal'>{description}</p> : ""}
                     </div>
-                    <Button variant="destructive" size="lg" onClick={handleDelete} className='w-full max-w-[327px]'>Logout</Button>
+                    <Button variant="destructive" size="lg" onClick={handleDelete} className='w-full max-w-[327px]'>{actionText}</Button>
                 </div>
             </DialogContent>
         </Dialog>
