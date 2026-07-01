@@ -437,8 +437,8 @@ export default function AddClothingTemplate() {
         metafields: {
           base_price: price ? Number(price) : undefined,
           discount: discount || undefined,
+          tags: organization.tags,
         },
-        tags: organization.tags,
         clothing: {
           name: title.trim(),
           type: customizationEnabled ? 'customize' : 'non_customize',
