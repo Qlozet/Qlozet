@@ -24,6 +24,7 @@ export interface CustomComponentItem {
   imageUrl?: string;
   /** Display label for image-less tiles (e.g. a style name). */
   label?: string;
+  category?: string;
   price: number;
   originalData?: any;
 }
@@ -198,6 +199,7 @@ export const CustomizationBuilder = ({
           productId: p.id,
           imageUrl: p.imageUrl,
           label: p.name,
+          category: p.category,
           price: 0,
         })),
       ]);
