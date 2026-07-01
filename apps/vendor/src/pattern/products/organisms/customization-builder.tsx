@@ -159,7 +159,7 @@ const ItemRow = ({
   onAddItem: () => void;
   onRemoveItem: (itemId: string) => void;
   onPriceChange: (itemId: string, price: number) => void;
-  onEditHotspots: () => void;
+  onEditHotspots: (item: CustomComponentItem) => void;
 }) => (
   <div className="flex items-start gap-3 overflow-x-auto pb-2">
     <AddTile onClick={onAddItem} />
@@ -170,7 +170,7 @@ const ItemRow = ({
         hasHotspots={hasHotspots}
         onPriceChange={(price) => onPriceChange(item.id, price)}
         onRemove={() => onRemoveItem(item.id)}
-        onEditHotspots={onEditHotspots}
+        onEditHotspots={() => onEditHotspots(item)}
       />
     ))}
   </div>
@@ -248,7 +248,7 @@ export const CustomizationBuilder = ({
       items.map((it) => (it.id === itemId ? { ...it, price } : it))
     );
 
-  const editHotspots = async () => {
+  const editHotspots = async (sectionKey: string, subKey: string | undefined, item: CustomComponentItem) => {
     if (!item.imageUrl) return;
     const result = await NiceModal.show(HotspotEditorModal, {
       imageUrl: item.imageUrl,
@@ -280,9 +280,9 @@ export const CustomizationBuilder = ({
           key={section.key}
           section={section}
           onAddItem={addItem}
-          onRemoveItem={removeItem}
-          onPriceChange={setPrice}
-          onEditHotspots={editHotspots}
+          onRemoveItem={(subKey, itemId) => removeItem(section.key, subKey, itemId)}
+          onPriceChange={(subKey, itemId, price) => setPrice(section.key, subKey, itemId, price)}
+          onEditHotspots={(subKey, item) => editHotspots(section.key, subKey, item)}
         />
       ))}
 
@@ -307,14 +307,9 @@ const Section = ({
 }: {
   section: CustomSection;
   onAddItem: (sectionKey: string, subKey?: string) => void;
-  onRemoveItem: (sectionKey: string, subKey: string | undefined, itemId: string) => void;
-  onPriceChange: (
-    sectionKey: string,
-    subKey: string | undefined,
-    itemId: string,
-    price: number
-  ) => void;
-  onEditHotspots: () => void;
+  onRemoveItem: (subKey: string | undefined, itemId: string) => void;
+  onPriceChange: (subKey: string | undefined, itemId: string, price: number) => void;
+  onEditHotspots: (subKey: string | undefined, item: CustomComponentItem) => void;
 }) => {
   const [open, setOpen] = useState(true);
 
@@ -347,12 +342,12 @@ const Section = ({
               hasHotspots={section.hasHotspots}
               onAddItem={() => onAddItem(section.key)}
               onRemoveItem={(itemId) =>
-                onRemoveItem(section.key, undefined, itemId)
+                onRemoveItem(undefined, itemId)
               }
               onPriceChange={(itemId, price) =>
-                onPriceChange(section.key, undefined, itemId, price)
+                onPriceChange(undefined, itemId, price)
               }
-              onEditHotspots={onEditHotspots}
+              onEditHotspots={(item) => onEditHotspots(undefined, item)}
             />
           )}
 
@@ -365,12 +360,12 @@ const Section = ({
                 items={sg.items}
                 onAddItem={() => onAddItem(section.key, sg.key)}
                 onRemoveItem={(itemId) =>
-                  onRemoveItem(section.key, sg.key, itemId)
+                  onRemoveItem(sg.key, itemId)
                 }
                 onPriceChange={(itemId, price) =>
-                  onPriceChange(section.key, sg.key, itemId, price)
+                  onPriceChange(sg.key, itemId, price)
                 }
-                onEditHotspots={onEditHotspots}
+                onEditHotspots={(item) => onEditHotspots(sg.key, item)}
               />
             </div>
           ))}
