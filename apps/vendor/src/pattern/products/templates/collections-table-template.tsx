@@ -15,7 +15,6 @@ import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-ic
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
 import { CollectionsTable } from '../organisms/collections-table'
 import { formatCondition } from '../molecules/collections-table-column'
-import { SAMPLE_COLLECTIONS } from '../lib/collections-sample'
 
 interface CollectionsTableTemplateProps {
     onExport?: () => void
@@ -42,12 +41,11 @@ const CollectionsTableTemplate = ({ onExport }: CollectionsTableTemplateProps) =
     } = useGetVendorCollectionsWithProductsQuery()
 
     // The endpoint returns a paginated envelope, so the collections array lives
-    // at response.data.data (not response.data). Fall back to sample data so the
-    // populated design is visible while the real endpoint is unavailable here.
-    const allCollections = useMemo<Collection[]>(() => {
-        const real = collectionsResponse?.data?.data ?? []
-        return real.length ? real : SAMPLE_COLLECTIONS
-    }, [collectionsResponse])
+    // at response.data.data (not response.data).
+    const allCollections = useMemo<Collection[]>(
+        () => collectionsResponse?.data?.data ?? [],
+        [collectionsResponse]
+    )
 
     // Client-side search across the collection title and its condition text.
     const collections = useMemo(() => {
