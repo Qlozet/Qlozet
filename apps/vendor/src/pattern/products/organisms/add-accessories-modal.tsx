@@ -204,9 +204,8 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
             await createAccessory({
                 ...(editId ? { product_id: editId } : {}),
                 seo: { title: accessoryName.trim() },
-                metafields: { base_price: price ? Number(price) : undefined },
+                metafields: { base_price: price ? Number(price) : undefined, tags: productTags },
                 status: isDraft ? 'draft' : 'active',
-                tags: productTags,
                 accessory: {
                     name: accessoryName.trim(),
                     description: description.trim() || undefined,
