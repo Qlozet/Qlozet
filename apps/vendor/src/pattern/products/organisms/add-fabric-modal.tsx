@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import { Info, Upload, X } from 'lucide-react';
+import { Check, Info, Upload, X } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -208,9 +209,20 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
             id="add-fabric-title"
             className="text-xl font-semibold text-foreground"
           >
-            Add Fabric
+            {editId ? 'Edit' : 'Add'} Fabric
           </h2>
 
+          {isLoadingProduct ? (
+            <div className="flex flex-col gap-6 pt-4">
+              <div className="space-y-2"><Skeleton className="h-4 w-24" /><Skeleton className="h-10 w-full" /></div>
+              <div className="space-y-2"><Skeleton className="h-4 w-32" /><Skeleton className="h-10 w-full" /></div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2"><Skeleton className="h-4 w-20" /><Skeleton className="h-10 w-full" /></div>
+                <div className="space-y-2"><Skeleton className="h-4 w-24" /><Skeleton className="h-10 w-full" /></div>
+              </div>
+            </div>
+          ) : (
+          <>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-gray-700">
               Fabric name
@@ -315,12 +327,17 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
               {isLoading ? 'Publishing...' : 'Publish Now'}
             </Button>
           </div>
+          </>
+          )}
         </form>
 
         {/* Right: preview / upload */}
         <div className="flex-1 space-y-4 bg-[#F4F4F4] p-6">
           <h2 className="text-xl font-semibold text-foreground">Preview</h2>
-
+          {isLoadingProduct ? (
+            <Skeleton className="aspect-square w-full rounded-xl" />
+          ) : (
+          <>
           <div className="flex items-start gap-3 rounded-lg bg-white p-3">
             <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Info className="size-3.5" />
@@ -397,6 +414,8 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
             >
               Remove image
             </button>
+          )}
+          </>
           )}
         </div>
       </div>

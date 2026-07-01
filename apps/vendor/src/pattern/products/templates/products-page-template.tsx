@@ -73,9 +73,9 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
   const { data: categoriesResponse } = useGetCategoriesQuery();
   const [updateProduct] = useUpdateProductMutation();
 
-  const products = productsResponse?.data || [];
-  const totalPages = productsResponse?.totalPages || 1;
-  const totalCount = productsResponse?.totalCount || 0;
+  const products = ((Array.isArray(productsResponse?.data) ? productsResponse.data : productsResponse?.data?.data) || productsResponse?.products || []) as any[];
+  const totalPages = productsResponse?.data?.total_pages || (productsResponse as any)?.totalPages || 1;
+  const totalCount = productsResponse?.data?.total_items || (productsResponse as any)?.totalCount || 0;
   const categories = categoriesResponse || [];
 
   // Handle filter changes

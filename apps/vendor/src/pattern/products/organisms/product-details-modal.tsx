@@ -46,7 +46,7 @@ export const ProductDetailsModal = create<ProductDetailsModalProps>(
     const [deleteProduct, { isLoading: isDeleting }] =
       useDeleteProductMutation();
 
-    const product = productResponse?.data;
+    const product = (productResponse as any)?.data || productResponse;
 
     const handleCloseModal = () => {
       resolve({ resolved: true });

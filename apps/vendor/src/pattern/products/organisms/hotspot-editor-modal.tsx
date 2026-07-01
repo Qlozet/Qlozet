@@ -53,8 +53,8 @@ export const HotspotEditorModal = NiceModal.create(({ imageUrl, hotspots: initia
 
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
 
     const newHotspot: StyleHotspotDto = {
       x,
@@ -78,8 +78,8 @@ export const HotspotEditorModal = NiceModal.create(({ imageUrl, hotspots: initia
     const onPointerMove = (moveEvent: PointerEvent) => {
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      const x = Math.max(0, Math.min(100, ((moveEvent.clientX - rect.left) / rect.width) * 100));
-      const y = Math.max(0, Math.min(100, ((moveEvent.clientY - rect.top) / rect.height) * 100));
+      const x = Math.max(0, Math.min(1, (moveEvent.clientX - rect.left) / rect.width));
+      const y = Math.max(0, Math.min(1, (moveEvent.clientY - rect.top) / rect.height));
 
       setHotspots((prev) => {
         const next = [...prev];
@@ -166,7 +166,7 @@ export const HotspotEditorModal = NiceModal.create(({ imageUrl, hotspots: initia
                       ? "bg-primary text-primary-foreground shadow-[0_0_0_4px_rgba(var(--primary),0.3)] z-20" 
                       : "bg-white text-black border-2 border-primary shadow-sm z-10"
                   )}
-                  style={{ left: `${h.x}%`, top: `${h.y}%` }}
+                  style={{ left: `${h.x * 100}%`, top: `${h.y * 100}%` }}
                   onPointerDown={(e) => handlePointerDown(e, i)}
                 >
                   <span className="text-xs font-bold">{i + 1}</span>

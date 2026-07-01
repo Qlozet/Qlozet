@@ -31,7 +31,7 @@ interface ProductDetailsData {
   _id: string;
   name: string;
   description?: string;
-  images: string[];
+  images: (string | { url: string })[];
   price: number;
   stock: number;
   status: 'draft' | 'active' | 'inactive' | 'out_of_stock';
@@ -86,7 +86,7 @@ export const ProductDetailsCard: React.FC<ProductDetailsCardProps> = ({
               {product?.images.slice(0, 4)?.map((image, index) => (
                 <ProductImage
                   key={index}
-                  src={image}
+                  src={typeof image === 'object' ? image.url : image}
                   alt={`${product.name} ${index + 1}`}
                   size='lg'
                   className='flex-shrink-0'

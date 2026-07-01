@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { InfoIcon, Trash2Icon, UploadIcon, PlusIcon, FlagIcon } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 import NiceModal, { create, useModal } from "@ebay/nice-modal-react"
 import { VariantSelectOptions } from "./variant-select-options"
 import { AVAILABLE_COLORS, ColorOption, VariantRow, VariantSizeDetail } from "../types/variant.types"
@@ -210,7 +211,17 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                 <div className="h-full w-full max-h-[85vh] grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 pr-1 overflow-y-auto">
                     {/* Left Column - Form */}
                     <div className="w-full gap-y-[26px] pl-[38px] mt-8">
-                        <DialogTitle className="text-2xl font-semibold">Add Accessory</DialogTitle>
+                        <DialogTitle className="text-2xl font-semibold">{editId ? 'Edit' : 'Add'} Accessory</DialogTitle>
+                        {isLoadingProduct ? (
+                            <div className="flex flex-col gap-8 pt-7 w-full max-w-lg">
+                                <div className="space-y-2"><Skeleton className="h-4 w-24" /><Skeleton className="h-10 w-full" /></div>
+                                <div className="space-y-2"><Skeleton className="h-4 w-32" /><Skeleton className="h-24 w-full" /></div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2"><Skeleton className="h-4 w-20" /><Skeleton className="h-10 w-full" /></div>
+                                    <div className="space-y-2"><Skeleton className="h-4 w-24" /><Skeleton className="h-10 w-full" /></div>
+                                </div>
+                            </div>
+                        ) : (
                         <div className="flex items-start justify-between gap-6 pt-7">
                             <div className="space-y-6">
                                 {/* Accessory Name */}
@@ -365,12 +376,17 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                                 className="w-full! bg-transparent p-0.5! border-none!"
                             />
                         </div>
+                        )}
                     </div>
 
                     {/* Preview section */}
                     <div className="bg-[#f1f1f1] space-y-3 p-7">
                         <h3 className="text-xl font-semibold">Preview</h3>
 
+                        {isLoadingProduct ? (
+                            <Skeleton className="w-full min-h-[300px] rounded-lg mt-12" />
+                        ) : (
+                        <>
                         <div className="bg-muted/30 rounded-lg p-3 flex items-start gap-2">
                             <div className="bg-amber-900 rounded-full size-8 flex items-center justify-center shrink-0">
                                 <InfoIcon className="size-4 text-white" />
@@ -410,6 +426,8 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                                 </>
                             )}
                         </div>
+                        </>
+                        )}
                     </div>
                 </div>
             </DialogContent>

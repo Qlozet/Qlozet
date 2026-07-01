@@ -9,7 +9,7 @@ export interface Product {
   price: number;
   stock: number;
   status: 'active' | 'draft' | 'inactive';
-  images: string[];
+  images: ProductImageDto[];
   variants?: ProductVariant[];
   customizations?: ProductCustomization[];
   tags?: string[];
@@ -186,7 +186,7 @@ export interface CreateProductRequest {
   price: number;
   stock: number;
   status: 'active' | 'draft' | 'inactive' | 'scheduled';
-  images: string[];
+  images: ProductImageDto[];
   variants?: Omit<ProductVariant, 'id'>[];
   customizations?: Omit<ProductCustomization, 'id'>[];
   tags?: string[];
@@ -232,7 +232,7 @@ export interface ProductsFilters {
   status?: string;
   minPrice?: number;
   maxPrice?: number;
-  sortBy?: 'name' | 'price' | 'createdAt' | 'stock';
+  sortBy?: 'name' | 'price' | 'createdAt' | 'stock' | 'category';
   order?: 'asc' | 'desc'; // API uses 'order' instead of 'sortOrder'
 }
 

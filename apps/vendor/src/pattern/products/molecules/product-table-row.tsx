@@ -101,7 +101,7 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
 
       <td className='px-6 py-4 whitespace-nowrap'>
         <div className='flex items-center space-x-3'>
-          <ProductImage src={product.images[0]} alt={product.name} size='md' />
+          <ProductImage src={typeof product.images[0] === 'object' ? (product.images[0] as any).url : product.images[0]} alt={product.name} size='md' />
           <div>
             <p className='font-medium text-gray-900 truncate max-w-48'>
               {product.name}

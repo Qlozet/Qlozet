@@ -51,7 +51,7 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
   categories = [],
 }) => {
   const form = useForm<ProductFilterData>({
-    resolver: zodResolver(productFilterSchema),
+    resolver: zodResolver(productFilterSchema) as any,
     defaultValues: {
       search: '',
       status: 'all',
