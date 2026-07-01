@@ -28,8 +28,22 @@ export const HotspotEditorModal = NiceModal.create(({ imageUrl, hotspots: initia
   const [activeHotspotIndex, setActiveHotspotIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Filter sections that are actually targetable (skip the 'style' section itself if needed, but usually we want all other sections)
-  const availableSections = sections.filter(s => s.key !== 'style');
+  // Extract targetable sections: non-style sections + unique categories from style items
+  const availableSections = sections.flatMap(sec => {
+    if (sec.key === 'style') {
+      const uniqueCategories = new Set<string>();
+      sec.items?.forEach(item => {
+        // If it's loaded from backend, we might have category inside originalData or top level
+        const cat = item.category || (item.originalData?.category);
+        if (cat) uniqueCategories.add(cat);
+      });
+      return Array.from(uniqueCategories).map(cat => ({
+        key: cat,
+        title: `Style - ${cat}`,
+      }));
+    }
+    return [{ key: sec.key, title: sec.title }];
+  });
 
   if (!modal.visible) return null;
 
@@ -218,9 +232,7 @@ export const HotspotEditorModal = NiceModal.create(({ imageUrl, hotspots: initia
                       </SelectTrigger>
                       <SelectContent>
                         {availableSections.map(sec => (
-                          <SelectItem key={sec.key} value={sec.key}>
-                            {sec.title}
-                          </SelectItem>
+                          <SelectItem key={sec.key} value={sec.key}>{sec.title}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>

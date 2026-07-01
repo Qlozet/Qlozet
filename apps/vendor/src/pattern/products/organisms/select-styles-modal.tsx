@@ -10,6 +10,7 @@ import { useGetStyleLibraryQuery, useDeleteVendorStyleMutation } from '@/redux/s
 export interface SelectedStyle {
   id: string;
   name: string;
+  category?: string;
   imageUrl?: string;
 }
 
@@ -113,19 +114,20 @@ export const SelectStylesModal = NiceModal.create(() => {
 
   const selectedList = Object.values(selected);
 
-  const cancel = () => {
-    modal.resolve(null);
-    modal.remove();
-  };
-
   const useStyles = () => {
     modal.resolve(
       selectedList.map<SelectedStyle>((s) => ({
         id: s.id,
         name: s.name,
+        category: s.category,
         imageUrl: s.imageUrl,
       }))
     );
+    modal.remove();
+  };
+
+  const cancel = () => {
+    modal.resolve(null);
     modal.remove();
   };
 
