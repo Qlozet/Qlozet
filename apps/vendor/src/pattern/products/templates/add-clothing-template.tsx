@@ -126,10 +126,7 @@ export default function AddClothingTemplate() {
       const pAttributes = inner?.taxonomy?.attributes || rawProduct?.tags || [];
       const pCategory = inner?.taxonomy?.categories?.[0] || rawProduct?.category || '';
       const pImages = inner?.images || rawProduct?.images || [];
-      const pMetaHotspots = inner?.metafields?.hotspots || rawProduct?.metafields?.hotspots;
-      if (pMetaHotspots && Array.isArray(pMetaHotspots)) {
-        setHotspots(pMetaHotspots);
-      } else if (pImages && pImages.length > 0) {
+      if (pImages && pImages.length > 0) {
         const firstImage = typeof pImages[0] === 'object' ? pImages[0] : null;
         if (firstImage && firstImage.hotspots) {
           setHotspots(firstImage.hotspots);
@@ -366,6 +363,9 @@ export default function AddClothingTemplate() {
       const extraImageUrls = uploadedExtras.filter(img => !!img.url);
       
       const finalImages: any[] = [...defaultImageUrls, ...extraImageUrls];
+      if (finalImages.length > 0 && hotspots.length > 0) {
+        finalImages[0] = { ...finalImages[0], hotspots };
+      }
 
       // Prepare customization objects
       const styles: any[] = [];
@@ -435,7 +435,6 @@ export default function AddClothingTemplate() {
         metafields: {
           base_price: price ? Number(price) : undefined,
           discount: discount || undefined,
-          hotspots: hotspots.length > 0 ? hotspots : undefined,
         },
         clothing: {
           name: title.trim(),
