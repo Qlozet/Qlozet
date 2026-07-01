@@ -141,13 +141,6 @@ export const createFabricTableColumns = ({
     enableSorting: false,
   },
   {
-    accessorKey: 'category',
-    header: 'Category',
-    cell: ({ row }) => {
-      return <div className='capitalize text-sm'>{row.getValue('category') || '-'}</div>
-    },
-  },
-  {
     id: 'colour',
     header: 'Colour',
     cell: ({ row }) => {
