@@ -37,6 +37,7 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
     const [price, setPrice] = useState("100000")
     
     const [imageFile, setImageFile] = useState<File | null>(null)
+    const [existingImage, setExistingImage] = useState<{ url: string, public_id: string } | null>(null)
     const [previewUrl, setPreviewUrl] = useState("")
 
     const [createAccessory, { isLoading: isCreating }] = useCreateAccessoryMutation()
@@ -63,8 +64,9 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
             
             const pImages = inner?.images || rawProduct?.images || []
             if (pImages && pImages.length > 0) {
-                const url = typeof pImages[0] === "string" ? pImages[0] : pImages[0].url
-                setPreviewUrl(url)
+                const imgObj = typeof pImages[0] === "string" ? { url: pImages[0], public_id: "unknown" } : pImages[0]
+                setPreviewUrl(imgObj.url)
+                setExistingImage(imgObj)
             }
             // For now, variants aren't deeply synced on edit, as they're complex to map back.
         }
@@ -156,8 +158,8 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
         }
 
         try {
-            let finalImageUrl = ""
-            let finalPublicId = "unknown"
+            let finalImageUrl = existingImage?.url || ""
+            let finalPublicId = existingImage?.public_id || "unknown"
             if (imageFile) {
                 const res = await uploadImage(imageFile).unwrap()
                 if (res.data?.url) {
