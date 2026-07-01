@@ -5,13 +5,15 @@
 // Fund wallet actions, and a "Recent Transactions" table. Balance comes from
 // GET /wallets/balance and transactions from GET /transactions/vendor.
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import NiceModal from '@ebay/nice-modal-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { PaginationState } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import {
   useGetWalletBalanceQuery,
   useGetWalletTransactionsQuery,
+  useLazyVerifyWalletPaymentQuery,
 } from '@/redux/services/wallet/wallet.api-slice';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
@@ -36,10 +38,6 @@ import {
   transactionBadge,
   type TransactionRow,
 } from '../lib/transaction-fields';
-import {
-  SAMPLE_TRANSACTIONS,
-  SAMPLE_WALLET_BALANCE,
-} from '../lib/transactions-sample';
 
 const PAGE_SIZE = 6;
 
@@ -109,8 +107,15 @@ export const WalletPageTemplate: React.FC = () => {
     pageSize: PAGE_SIZE,
   });
 
-  const { data: balanceData, isLoading: isBalanceLoading } =
-    useGetWalletBalanceQuery();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const {
+    data: balanceData,
+    isLoading: isBalanceLoading,
+    refetch: refetchBalance,
+  } = useGetWalletBalanceQuery();
 
   const {
     data: transactionsData,
@@ -119,16 +124,52 @@ export const WalletPageTemplate: React.FC = () => {
     isSuccess,
     isError,
     error,
+    refetch: refetchTransactions,
   } = useGetWalletTransactionsQuery({ status: 'all' });
 
-  // Fall back to the mockup values when the real endpoints return nothing in
-  // this environment (mirrors the Orders page's sample-data fallback).
-  const balance = readBalance(balanceData?.data) ?? SAMPLE_WALLET_BALANCE;
+  const [verifyPayment] = useLazyVerifyWalletPaymentQuery();
 
-  const transactions = useMemo(() => {
-    const real = readTransactionList(transactionsData?.data);
-    return real.length ? real : SAMPLE_TRANSACTIONS;
-  }, [transactionsData]);
+  // On return from Paystack checkout the URL carries `?reference=…&trxref=…`.
+  // Verify it once, credit the wallet, refresh the data, then strip the params.
+  const verifiedRef = useRef(false);
+  useEffect(() => {
+    const reference =
+      searchParams.get('reference') ?? searchParams.get('trxref');
+    if (!reference || verifiedRef.current) return;
+    verifiedRef.current = true;
+
+    (async () => {
+      try {
+        const res = await verifyPayment(reference).unwrap();
+        toast.success(res?.message || 'Wallet funded successfully.');
+        refetchBalance();
+        refetchTransactions();
+      } catch (err) {
+        const message =
+          (err as { data?: { message?: string } })?.data?.message ||
+          'We could not verify your payment. Please contact support if you were charged.';
+        toast.error(message);
+      } finally {
+        router.replace(pathname);
+      }
+    })();
+  }, [
+    searchParams,
+    verifyPayment,
+    refetchBalance,
+    refetchTransactions,
+    router,
+    pathname,
+  ]);
+
+  // Real wallet balance (GET /wallets/balance). Undefined until it resolves, so
+  // the card shows an honest "—" rather than a fabricated figure.
+  const balance = readBalance(balanceData?.data);
+
+  const transactions = useMemo(
+    () => readTransactionList(transactionsData?.data),
+    [transactionsData]
+  );
 
   // The endpoint has no search param, so filter client-side across the fields
   // the design lets you scan, plus the status chosen in the Filter menu.

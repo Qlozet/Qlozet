@@ -1,29 +1,20 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { PaginationState } from '@tanstack/react-table'
-import { Product, useGetProductsByVendorQuery, useDeleteProductMutation } from '@/redux/services/products/products.api-slice'
+import {
+    Collection,
+    useGetVendorCollectionsWithProductsQuery,
+} from '@/redux/services/collections/collections.api-slice'
+import { APP_ROUTES } from '@/lib/routes'
 import { Button } from '@/components/ui/button'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { clearProductId } from '@/lib/utils'
-import { show } from '@ebay/nice-modal-react'
-import { ProductDetailsModal } from '../organisms/product-details-modal'
 import { toast } from 'sonner'
-import { OutlinRulerIcon } from '@/pattern/common/atoms/outline-ruler-icon'
 import { LinearImportIcon } from '@/pattern/common/atoms/linear-import-icon'
-import { ClothingStylesIcon } from '@/pattern/common/atoms/clothing-styles-icon'
 import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-icon'
-import { SearchInputWithParams } from '@/pattern/common/molecules/search-input-with-params'
-import { ExcelExportButton } from '@/pattern/common/molecules/excel-export-button'
-import { mockClothingProducts } from '@/lib/mocks'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Filter, ChevronDown, X } from 'lucide-react'
-import { Separator } from '@/components/ui/separator'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Label } from '@/components/ui/label'
-import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
-import { AccessoriesTable } from '../organisms/accessories-table'
-import { AddAccessoryModal } from '../organisms/add-accessories-modal'
+import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
+import { CollectionsTable } from '../organisms/collections-table'
+import { formatCondition } from '../molecules/collections-table-column'
 
 interface CollectionsTableTemplateProps {
     onExport?: () => void
@@ -31,403 +22,152 @@ interface CollectionsTableTemplateProps {
 
 const CollectionsTableTemplate = ({ onExport }: CollectionsTableTemplateProps) => {
     const router = useRouter()
-    const searchParams = useSearchParams()
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10,
     })
-
-    const [pageCount, setPageCount] = useState<number>(1)
     const [searchQuery, setSearchQuery] = useState<string>('')
-    const [showSelect, setShowSelect] = useState<boolean>(false)
-    const [sortBy, setSortBy] = useState<'name' | 'price' | 'createdAt' | 'stock' | undefined>(undefined)
-    const [order, setOrder] = useState<'asc' | 'desc'>('desc')
-    const [filterOpen, setFilterOpen] = useState<boolean>(false)
-    const [activeFilter, setActiveFilter] = useState<string>('relevance')
 
-    // Get search query from URL params
-    useEffect(() => {
-        const urlSearch = searchParams.get('search')
-        if (urlSearch) {
-            setSearchQuery(urlSearch)
-        }
-    }, [searchParams])
-
-    // Handle search change from the search component
-    const handleSearchChange = (value: string) => {
-        setSearchQuery(value)
-        // Reset to first page when searching
-        setPagination(prev => ({ ...prev, pageIndex: 0 }))
-    }
-
-    // Handle filter change
-    const handleFilterChange = (filterType: string) => {
-        setActiveFilter(filterType)
-
-        // Map filter types to sortBy and order
-        switch (filterType) {
-            case 'date-newest':
-                setSortBy('createdAt')
-                setOrder('desc')
-                break
-            case 'date-oldest':
-                setSortBy('createdAt')
-                setOrder('asc')
-                break
-            case 'rating-high':
-                setSortBy('price') // You can change this to rating when available in API
-                setOrder('desc')
-                break
-            case 'rating-low':
-                setSortBy('price') // You can change this to rating when available in API
-                setOrder('asc')
-                break
-            case 'price-high':
-                setSortBy('price')
-                setOrder('desc')
-                break
-            case 'price-low':
-                setSortBy('price')
-                setOrder('asc')
-                break
-            case 'relevance':
-            default:
-                setSortBy(undefined)
-                setOrder('desc')
-                break
-        }
-
-        // Reset to first page when filtering
-        setPagination(prev => ({ ...prev, pageIndex: 0 }))
-        setFilterOpen(false)
-    }
-
-    // Clear all filters
-    const handleClearFilters = () => {
-        setActiveFilter('relevance')
-        setSortBy(undefined)
-        setOrder('desc')
-        setPagination(prev => ({ ...prev, pageIndex: 0 }))
-        setFilterOpen(false)
-    }
-
-    // Get Products API query for clothing category
+    // Vendor-scoped collections including their matched products (used for the
+    // product count and cover image). The endpoint returns the full list, so
+    // search + pagination are applied client-side below.
     const {
-        data: productsResponse,
+        data: collectionsResponse,
         isLoading,
         error,
         isError,
         isSuccess,
         isFetching,
-        refetch,
-    } = useGetProductsByVendorQuery({
-        page: pagination.pageIndex + 1,
-        size: pagination.pageSize, // API uses 'size' instead of 'limit'
-        search: searchQuery || undefined, // Only send if not empty
-        kind: 'accessory', // API uses 'kind' instead of 'category'
-        sortBy: sortBy, // Add sortBy parameter
-        order: order, // Add order parameter (asc/desc)
-    })
+    } = useGetVendorCollectionsWithProductsQuery()
 
-    // Delete product mutation
-    const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation()
+    // The endpoint returns a paginated envelope, so the collections array lives
+    // at response.data.data (not response.data).
+    const allCollections = useMemo<Collection[]>(
+        () => collectionsResponse?.data?.data ?? [],
+        [collectionsResponse]
+    )
 
-    // Transform API products to match expected format
-    const transformProduct = (apiProduct: any): Product => {
-        const itemData = apiProduct.clothing || apiProduct.accessory || apiProduct.fabric || apiProduct
-  
-      let totalStock = 0;
-      let totalVariants = 0;
-  
-      if (apiProduct.kind === 'clothing' && itemData?.color_variants) {
-        itemData.color_variants.forEach((cv: any) => {
-          if (cv.variants) {
-            totalVariants += cv.variants.length;
-            cv.variants.forEach((v: any) => {
-               totalStock += (v.stock || 0);
-            });
-          }
-        });
-      } else if (apiProduct.kind === 'accessory' && itemData?.variants) {
-        totalVariants = itemData.variants.length;
-        itemData.variants.forEach((v: any) => {
-          totalStock += (v.stock || 0);
-        });
-      }
-  
-      const tags = [...(itemData?.taxonomy?.attributes || [])];
-      if (itemData?.taxonomy?.audience) tags.push(itemData.taxonomy.audience);
-  
-      return {
-        _id: apiProduct._id,
-        name: itemData?.name || 'Unnamed Product',
-        description: itemData?.description || '',
-        category: apiProduct.kind || 'clothing',
-        price: apiProduct.base_price || itemData?.price || 0,
-        stock: totalStock,
-        status: apiProduct.status || 'draft',
-        images: itemData?.images?.map((img: any) => img.url) || [],
-        variants: Array.from({ length: totalVariants || 1 }),
-        customizations: itemData?.styles || [],
-        tags,
-        createdAt: apiProduct.createdAt,
-        updatedAt: apiProduct.updatedAt,
-      }
+    // Client-side search across the collection title and its condition text.
+    const collections = useMemo(() => {
+        const term = searchQuery.trim().toLowerCase()
+        if (!term) return allCollections
+        return allCollections.filter((collection) => {
+            const inTitle = (collection.title ?? '').toLowerCase().includes(term)
+            const inConditions = (collection.conditions ?? []).some((condition) =>
+                formatCondition(condition).toLowerCase().includes(term)
+            )
+            return inTitle || inConditions
+        })
+    }, [allCollections, searchQuery])
+
+    const handleSearchChange = (value: string) => {
+        setSearchQuery(value)
+        setPagination((prev) => ({ ...prev, pageIndex: 0 }))
     }
 
-    // Handle different API response formats - Extract from nested data structure
-    const rawProducts = (productsResponse?.data?.data || productsResponse?.products || []) as any[]
-    const products = rawProducts?.map(transformProduct) || []
-    const totalProducts = productsResponse?.data?.total_items || productsResponse?.totalCount || productsResponse?.total || 0
-    const totalPagesFromAPI = productsResponse?.data?.total_pages || productsResponse?.totalPages || Math.ceil(totalProducts / pagination.pageSize) || 1
-
-    useEffect(() => {
-        if (productsResponse) {
-            setPageCount(totalPagesFromAPI)
-        }
-    }, [productsResponse, totalPagesFromAPI])
-
-    const handleAddAccessories = () => {
-        show(AddAccessoryModal)
+    const handleImportCollections = () => {
+        toast.info('Import collections feature coming soon')
     }
 
-    const handleImportProducts = () => {
-        toast.info('Import products feature coming soon')
+    const handleCreateCollection = () => {
+        router.push(APP_ROUTES.productsCollectionsCreate)
     }
 
-    const handleExportProducts = () => {
+    const handleExport = () => {
         if (onExport) {
             onExport()
         } else {
-            toast.info('Export products feature coming soon')
+            toast.info('Export collections feature coming soon')
         }
     }
 
-    const handleViewDetails = (productId: string) => {
-        show(ProductDetailsModal, {
-            productId,
-            onProductUpdated: () => refetch(),
-            onProductDeleted: () => refetch(),
-            onEdit: (id: string) => {
-                router.push(`/add?edit=${id}`)
-            },
-            onDuplicate: async (id: string) => {
-                toast.success('Product duplication will be implemented')
-            },
-        })
+    // The backend exposes no collection update/status/delete endpoints yet
+    // (only GET + POST /collections), so the row actions are honest stubs until
+    // those endpoints exist.
+    const handleEditCollection = (collectionId: string) => {
+        toast.info('Edit collection feature coming soon')
     }
 
-    const handleEditProduct = (productId: string) => {
-        router.push(`/add?edit=${productId}`)
+    const handleSelectCollection = (collectionId: string) => {
+        toast.info('Select collection feature coming soon')
     }
 
-    const handleDuplicateProduct = (productId: string) => {
-        toast.success('Product duplication will be implemented')
+    const handleActivateCollection = (collectionId: string) => {
+        toast.info('Activate collection feature coming soon')
     }
 
-    const handleDeleteProduct = (productId: string) => {
-        show(DeleteProductConfirmationModal, { title: "Are you sure you want to delete this product?", description: "Removing this product will erase all stored information about it from your dashboard.", actionText: "Delete Product" })
-            .then(() => {
-                deleteProduct(productId)
-                    .unwrap()
-                    .then(() => {
-                        toast.success('Product deleted successfully')
-                        refetch()
-                    }).catch((error) => {
-                        toast.error(error?.data?.message || 'Failed to delete product')
-                        console.error('Error deleting product:', error)
-                    })
-            })
+    const handleScheduleActivation = (collectionId: string) => {
+        toast.info('Schedule activation feature coming soon')
+    }
+
+    const handleArchiveCollection = (collectionId: string) => {
+        toast.info('Archive collection feature coming soon')
+    }
+
+    const handleDeactivateCollection = (collectionId: string) => {
+        toast.info('Deactivate collection feature coming soon')
+    }
+
+    const handleDeleteCollection = (collectionId: string) => {
+        toast.info('Delete collection feature coming soon')
     }
 
     return (
         <div className='w-full bg-background'>
             {/* Header Section */}
             <div className='w-full h-[44px] flex flex-col sm:flex-row sm:items-end sm:justify-end gap-4 mb-[21px]'>
-                {/* Action Buttons */}
                 <div className='flex items-center gap-2 flex-wrap'>
-                    {/* Import Product */}
+                    {/* Import Collections */}
                     <Button
                         variant='outline'
                         size='default'
-                        onClick={handleImportProducts}
+                        onClick={handleImportCollections}
                         className='gap-[10px] text-xs! font-medium'
                     >
+                        <span>Import Collections</span>
                         <LinearImportIcon className='w-[18px] h-[18px]' />
-                        <span className='hidden sm:inline'>Import Products</span>
                     </Button>
 
-                    {/* Add new product */}
+                    {/* Create Collection */}
                     <Button
-                        variant="default"
+                        variant='default'
                         size='default'
-                        onClick={handleAddAccessories}
+                        onClick={handleCreateCollection}
                         className='gap-[10px] text-xs! font-medium'
                     >
+                        <span>Create Collection</span>
                         <LinearAddSquareIcon className='size-[18px]' />
-                        <span>Add new accessories</span>
                     </Button>
-                </div>
-            </div>
-
-            {/* Filter and Search Section */}
-            <div className='bg-card w-full h-[72px] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 py-4 rounded-t-[10px] sadow-md'>
-                <h3 className='text-base font-medium'>Accessories Table</h3>
-
-                <div className='flex items-center gap-3'>
-                    {/* Filter Popover */}
-                    <Popover open={filterOpen} onOpenChange={setFilterOpen}>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant='outline'
-                                size='default'
-                                className='bg-transparent gap-2 text-sm! font-medium py-3 rounded-[12px] relative'
-                            >
-                                <Filter className='w-3 h-3' />
-                                <span>Filter By:</span>
-                                {activeFilter !== 'relevance' && (
-                                    <span className='ml-1 font-semibold capitalize'>
-                                        {activeFilter.replace('-', ' ')}
-                                    </span>
-                                )}
-                                <ChevronDown className='w-4 h-4 ml-1' />
-                                {activeFilter !== 'relevance' && (
-                                    <div className='absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full' />
-                                )}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className='w-80 p-0' align='start'>
-                            <div className='p-4 space-y-4'>
-                                {/* Header */}
-                                <div className='flex items-center justify-between'>
-                                    <h4 className='font-semibold text-sm'>Filter Products</h4>
-                                    {activeFilter !== 'relevance' && (
-                                        <Button
-                                            variant='ghost'
-                                            size='sm'
-                                            onClick={handleClearFilters}
-                                            className='h-auto p-1 text-xs text-muted-foreground hover:text-foreground'
-                                        >
-                                            Clear All
-                                        </Button>
-                                    )}
-                                </div>
-
-                                <Separator />
-
-                                {/* Relevance */}
-                                <div className='space-y-3'>
-                                    <h5 className='text-xs font-medium text-muted-foreground uppercase'>Relevance</h5>
-                                    <RadioGroup value={activeFilter} onValueChange={handleFilterChange}>
-                                        <div className='flex items-center space-x-2'>
-                                            <RadioGroupItem value='relevance' id='relevance' />
-                                            <Label htmlFor='relevance' className='text-sm font-normal cursor-pointer'>
-                                                Most Relevant
-                                            </Label>
-                                        </div>
-                                    </RadioGroup>
-                                </div>
-
-                                <Separator />
-
-                                {/* Date */}
-                                <div className='space-y-3'>
-                                    <h5 className='text-xs font-medium text-muted-foreground uppercase'>Date Added</h5>
-                                    <RadioGroup value={activeFilter} onValueChange={handleFilterChange}>
-                                        <div className='flex items-center space-x-2'>
-                                            <RadioGroupItem value='date-newest' id='date-newest' />
-                                            <Label htmlFor='date-newest' className='text-sm font-normal cursor-pointer'>
-                                                Newest First
-                                            </Label>
-                                        </div>
-                                        <div className='flex items-center space-x-2'>
-                                            <RadioGroupItem value='date-oldest' id='date-oldest' />
-                                            <Label htmlFor='date-oldest' className='text-sm font-normal cursor-pointer'>
-                                                Oldest First
-                                            </Label>
-                                        </div>
-                                    </RadioGroup>
-                                </div>
-
-                                <Separator />
-
-                                {/* Price */}
-                                <div className='space-y-3'>
-                                    <h5 className='text-xs font-medium text-muted-foreground uppercase'>Price</h5>
-                                    <RadioGroup value={activeFilter} onValueChange={handleFilterChange}>
-                                        <div className='flex items-center space-x-2'>
-                                            <RadioGroupItem value='price-high' id='price-high' />
-                                            <Label htmlFor='price-high' className='text-sm font-normal cursor-pointer'>
-                                                Highest to Lowest
-                                            </Label>
-                                        </div>
-                                        <div className='flex items-center space-x-2'>
-                                            <RadioGroupItem value='price-low' id='price-low' />
-                                            <Label htmlFor='price-low' className='text-sm font-normal cursor-pointer'>
-                                                Lowest to Highest
-                                            </Label>
-                                        </div>
-                                    </RadioGroup>
-                                </div>
-
-                                <Separator />
-
-                                {/* Rating (placeholder for future) */}
-                                <div className='space-y-3'>
-                                    <h5 className='text-xs font-medium text-muted-foreground uppercase'>Rating</h5>
-                                    <RadioGroup value={activeFilter} onValueChange={handleFilterChange}>
-                                        <div className='flex items-center space-x-2'>
-                                            <RadioGroupItem value='rating-high' id='rating-high' />
-                                            <Label htmlFor='rating-high' className='text-sm font-normal cursor-pointer'>
-                                                Highest Rated
-                                            </Label>
-                                        </div>
-                                        <div className='flex items-center space-x-2'>
-                                            <RadioGroupItem value='rating-low' id='rating-low' />
-                                            <Label htmlFor='rating-low' className='text-sm font-normal cursor-pointer'>
-                                                Lowest Rated
-                                            </Label>
-                                        </div>
-                                    </RadioGroup>
-                                </div>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
-
-                    {/* Search Input */}
-                    <SearchInputWithParams
-                        placeholder='Search'
-                        className='w-full sm:w-80'
-                        inputClassName='h-10 rounded-[12px]'
-                        paramName='search'
-                        onSearchChange={handleSearchChange}
-                    />
-
-                    {/* Export */}
-                    <ExcelExportButton
-                        onClick={handleExportProducts}
-                        className='gap-[10px]'
-                    />
                 </div>
             </div>
 
             {/* Table Section */}
-            <div className='bg-card'>
-                <AccessoriesTable
-                    data={products as Product[]}
+            <div className='bg-card w-full rounded-[10px] shadow-md'>
+                <TableToolbar
+                    title='Collection'
+                    search={searchQuery}
+                    onSearchChange={handleSearchChange}
+                    onFilterDate={() => toast.info('Filter coming soon')}
+                    onExport={handleExport}
+                    filterLabel='Filter By :'
+                    filterIcon={null}
+                />
+                <CollectionsTable
+                    data={collections}
                     isLoading={isLoading}
                     error={error}
                     isError={isError}
                     isSuccess={isSuccess}
                     isFetching={isFetching}
-                    pageCount={pageCount}
                     pagination={pagination}
                     setPagination={setPagination}
-                    onViewDetails={handleViewDetails}
-                    onEdit={handleEditProduct}
-                    onDuplicate={handleDuplicateProduct}
-                    onDelete={handleDeleteProduct}
-                    showSelect={showSelect}
+                    onEdit={handleEditCollection}
+                    onSelect={handleSelectCollection}
+                    onActivate={handleActivateCollection}
+                    onScheduleActivation={handleScheduleActivation}
+                    onArchive={handleArchiveCollection}
+                    onDeactivate={handleDeactivateCollection}
+                    onDelete={handleDeleteCollection}
                 />
             </div>
         </div>

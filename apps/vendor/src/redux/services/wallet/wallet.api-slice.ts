@@ -15,6 +15,17 @@ interface ApiResponse<T> {
 // and tighten these once the backend provides the shapes.
 type PendingData = unknown;
 
+// POST /wallets/fund initializes a Paystack transaction and returns the hosted
+// checkout URL to redirect the user to (plus the reference used later by
+// GET /wallets/verify/{reference}). Field names follow Paystack's initialize
+// response; kept permissive since the envelope isn't documented in Swagger.
+export interface FundWalletResponseData {
+  authorization_url?: string;
+  access_code?: string;
+  reference?: string;
+  [key: string]: unknown;
+}
+
 // Vendor transactions arrive loosely typed (the /transactions/vendor response
 // shape is undocumented in Swagger), so keep this permissive and read fields
 // tolerantly in the UI layer (see pattern/wallet/lib/transaction-fields.ts).
@@ -85,7 +96,10 @@ export const walletApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Fund wallet via Paystack (POST /wallets/fund)
-    fundWallet: builder.mutation<ApiResponse<PendingData>, { amount: number }>({
+    fundWallet: builder.mutation<
+      ApiResponse<FundWalletResponseData>,
+      { amount: number }
+    >({
       query: (body) => ({
         url: '/wallets/fund',
         method: 'POST',
