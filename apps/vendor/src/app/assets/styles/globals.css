@@ -379,3 +379,18 @@ input[type='number'] {
   background: var(--color-bg-disabled);
   border-radius: var(--radius-inf);
 }
+
+/* Custom toast close button — override sonner's injected styles (matches design system) */
+[data-sonner-toast] [data-close-button] {
+  left: auto !important;
+  right: 16px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  height: 20px !important;
+  width: 20px !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: #737373 !important;
+}

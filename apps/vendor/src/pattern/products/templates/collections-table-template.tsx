@@ -14,7 +14,7 @@ import { LinearImportIcon } from '@/pattern/common/atoms/linear-import-icon'
 import { ClothingStylesIcon } from '@/pattern/common/atoms/clothing-styles-icon'
 import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-icon'
 import { SearchInputWithParams } from '@/pattern/common/molecules/search-input-with-params'
-import { ExcelIcon } from '@/pattern/common/atoms/excel-icon'
+import { ExcelExportButton } from '@/pattern/common/molecules/excel-export-button'
 import { mockClothingProducts } from '@/lib/mocks'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Filter, ChevronDown, X } from 'lucide-react'
@@ -404,15 +404,10 @@ const CollectionsTableTemplate = ({ onExport }: CollectionsTableTemplateProps) =
                     />
 
                     {/* Export */}
-                    <Button
-                        variant="default"
-                        size='default'
+                    <ExcelExportButton
                         onClick={handleExportProducts}
-                        className='gap-[10px] text-sm font-semibold'
-                    >
-                        <ExcelIcon />
-                        <span>Export</span>
-                    </Button>
+                        className='gap-[10px]'
+                    />
                 </div>
             </div>
 

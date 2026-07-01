@@ -11,7 +11,7 @@ export const Providers = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <Provider store={store}>
-        <Toaster position='top-center' richColors duration={5000} />
+        <Toaster position='top-center' duration={5000} />
         <NiceModal.Provider>
           {/* <PersistGate persistor={persistor}> */}
           <TooltipProvider>{children}</TooltipProvider>
