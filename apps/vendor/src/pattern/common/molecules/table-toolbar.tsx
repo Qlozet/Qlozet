@@ -1,9 +1,10 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Calendar, Search, Sheet } from 'lucide-react';
+import { Calendar, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ExcelExportButton } from './excel-export-button';
 import { cn } from '@/lib/utils';
 
 interface TableToolbarProps {
@@ -16,6 +17,12 @@ interface TableToolbarProps {
   filterLabel?: string;
   /** Icon for the filter button; pass null to hide it (defaults to a Calendar). */
   filterIcon?: ReactNode;
+  /**
+   * Custom control rendered in place of the default filter button — e.g. a
+   * Popover-wrapped trigger. When provided, `filterLabel`/`filterIcon`/
+   * `onFilterDate` are ignored.
+   */
+  filterControl?: ReactNode;
   /** Optional extra control rendered at the far right (e.g. a status filter). */
   rightExtra?: ReactNode;
   className?: string;
@@ -31,6 +38,7 @@ export const TableToolbar = ({
   onExport,
   filterLabel = 'Filter By Date',
   filterIcon = <Calendar className='size-4' />,
+  filterControl,
   rightExtra,
   className,
 }: TableToolbarProps) => {
@@ -46,15 +54,17 @@ export const TableToolbar = ({
       </h2>
 
       <div className='flex flex-wrap items-center gap-3'>
-        <Button
-          type='button'
-          variant='outline'
-          onClick={onFilterDate}
-          className='h-10 gap-2 text-sm text-gray-600'
-        >
-          {filterIcon}
-          {filterLabel}
-        </Button>
+        {filterControl ?? (
+          <Button
+            type='button'
+            variant='outline'
+            onClick={onFilterDate}
+            className='h-10 gap-2 text-sm text-gray-600'
+          >
+            {filterIcon}
+            {filterLabel}
+          </Button>
+        )}
 
         <div className='relative'>
           <Search className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400' />
@@ -66,10 +76,7 @@ export const TableToolbar = ({
           />
         </div>
 
-        <Button type='button' onClick={onExport} className='h-10 gap-2 text-sm'>
-          <Sheet className='size-4' />
-          Export
-        </Button>
+        <ExcelExportButton onClick={onExport} />
 
         {rightExtra}
       </div>

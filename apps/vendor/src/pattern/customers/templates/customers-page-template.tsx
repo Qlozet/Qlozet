@@ -81,7 +81,7 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
   };
 
   return (
-    <div className='w-full min-h-screen h-fit space-y-6 p-4 pb-10'>
+    <div className='w-full min-h-screen h-fit space-y-6 pb-10'>
       {/* Customer metrics */}
       <CustomerStatsSection total={total} isLoading={isLoading} />
 

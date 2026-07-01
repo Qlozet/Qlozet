@@ -107,7 +107,7 @@ export function DataTable<TData>({
                   <TableHead
                     key={header.id}
                     className={cn(
-                      'h-[52px] whitespace-nowrap text-xs font-medium text-gray-500',
+                      'h-13 whitespace-nowrap text-sm font-medium text-grey-black',
                       isFirst && 'pl-6',
                       isLast && 'pr-6'
                     )}

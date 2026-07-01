@@ -70,7 +70,7 @@ export const OrdersPageTemplate: React.FC = () => {
     toast.info(`${label} is coming soon.`);
 
   return (
-    <div className='w-full min-h-screen h-fit space-y-6 p-4 pb-10'>
+    <div className='w-full min-h-screen h-fit space-y-6 pb-10'>
       {/* Set custom orders per day */}
       <div className='flex justify-end'>
         <Button type='button' onClick={showSetPerDay} className='h-10'>

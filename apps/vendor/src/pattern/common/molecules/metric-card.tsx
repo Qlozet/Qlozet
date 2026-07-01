@@ -15,8 +15,10 @@ export interface MetricCardProps {
   icon: ReactNode;
   /** Small muted label shown to the right of the title (e.g. a date). */
   subLabel?: string;
-  /** When set, renders a "View All" link in the footer. */
+  /** When set, renders a link in the footer (label defaults to "View All"). */
   viewAllLink?: string;
+  /** Label for the footer link (defaults to "View All"). */
+  viewAllLabel?: string;
   className?: string;
 }
 
@@ -29,6 +31,7 @@ export const MetricCard = ({
   icon,
   subLabel,
   viewAllLink,
+  viewAllLabel = 'View All',
   className,
 }: MetricCardProps) => {
   const isPositive = !change?.startsWith('-');
@@ -86,7 +89,7 @@ export const MetricCard = ({
                   className='flex items-center gap-x-1 text-success dark:text-gray-400 text-xs whitespace-nowrap'
                 >
                   <Eye className='size-3.5' />
-                  <span>View All</span>
+                  <span>{viewAllLabel}</span>
                 </Link>
               </If>
             </div>
