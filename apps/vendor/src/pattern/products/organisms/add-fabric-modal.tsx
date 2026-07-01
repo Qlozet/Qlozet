@@ -14,47 +14,10 @@ import { LabeledSelect } from '../molecules/labeled-select';
 import { ColourSelect } from '../molecules/colour-select';
 import { useCreateFabricMutation, useGetProductQuery } from '@/redux/services/products/products.api-slice';
 import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
-
-const MATERIAL_OPTIONS = [
-  'Cotton',
-  'Linen',
-  'Silk',
-  'Wool',
-  'Polyester',
-  'Chiffon',
-  'Velvet',
-  'Lace',
-];
-
-const PATTERN_OPTIONS = [
-  'Solid',
-  'Striped',
-  'Graphic',
-  'Dotted',
-  'Animal',
-  'Tropical',
-  'Paisley',
-  'Argyle',
-  'Floral',
-  'Camou',
-  'Colour-Block',
-  'Repeated',
-  'Checkerboard',
-  'Plaid',
-  'Gingham',
-  'Houndstooth',
-  'Chevron',
-  'Tweed',
-  'Abstract',
-  'Tie Dye',
-  'Ankara',
-  'Geometric',
-  'Lace',
-  'Kente',
-  'Aso Oke',
-  'Kuba',
-  'Shweshwe',
-];
+import {
+  useGetProductTypesQuery,
+  useGetCategoriesForTypeQuery,
+} from '@/redux/services/taxonomy/taxonomy.api-slice';
 
 // Vendor "Add Fabric" — two-panel modal wired to the vendor createFabric
 // endpoint (POST /products/fabric). Material maps to the fabric product_type;
@@ -87,6 +50,16 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
   const [createFabric, { isLoading: isCreating }] = useCreateFabricMutation();
   const [uploadImage, { isLoading: isUploading }] = useUploadProductImageMutation();
   const isLoading = isCreating || isUploading || isLoadingProduct;
+
+  // Taxonomy hooks — Material → product_type, Pattern → categories
+  const { data: fabricTypes, isLoading: isLoadingTypes } = useGetProductTypesQuery('fabric');
+  const { data: categoryData, isLoading: isLoadingCategories } = useGetCategoriesForTypeQuery(
+    { kind: 'fabric', product_type: material },
+    { skip: !material }
+  );
+
+  const materialOptions = fabricTypes?.map((pt) => pt.name) || [];
+  const patternOptions = categoryData?.categories || [];
 
   useEffect(() => {
     if (productData) {
@@ -245,12 +218,16 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
             />
           </div>
 
-          <LabeledSelect
-            label="Material"
-            value={material}
-            options={MATERIAL_OPTIONS}
-            onChange={setMaterial}
-          />
+          {isLoadingTypes ? (
+            <Skeleton className="h-10 w-full" />
+          ) : (
+            <LabeledSelect
+              label="Material"
+              value={material}
+              options={materialOptions}
+              onChange={(v) => { setMaterial(v); setPattern(''); }}
+            />
+          )}
 
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-gray-700">Colour</label>
@@ -264,12 +241,23 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
             />
           </div>
 
-          <LabeledSelect
-            label="Pattern"
-            value={pattern}
-            options={PATTERN_OPTIONS}
-            onChange={setPattern}
-          />
+          {isLoadingCategories && material ? (
+            <Skeleton className="h-10 w-full" />
+          ) : patternOptions.length > 0 ? (
+            <LabeledSelect
+              label="Pattern"
+              value={pattern}
+              options={patternOptions}
+              onChange={setPattern}
+            />
+          ) : material ? (
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Pattern</label>
+              <div className="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 text-sm text-muted-foreground">
+                No patterns available for this material
+              </div>
+            </div>
+          ) : null}
 
           <div className="grid grid-cols-3 gap-3">
             <StepperField

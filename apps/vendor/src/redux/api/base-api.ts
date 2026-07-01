@@ -73,6 +73,7 @@ export const baseAPI = createApi({
     'ShippingAddress',
     'PlatformSettings',
     'StyleLibrary',
+    'Taxonomy',
   ],
   endpoints: () => ({}),
 });
