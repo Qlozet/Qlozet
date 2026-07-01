@@ -34,7 +34,7 @@ export const HotspotEditorModal = NiceModal.create(({ imageUrl, hotspots: initia
       const uniqueCategories = new Set<string>();
       sec.items?.forEach(item => {
         // If it's loaded from backend, we might have category inside originalData or top level
-        const cat = item.category || (item.originalData?.category);
+        const cat = item.category || item.originalData?.categories?.[0] || item.originalData?.category;
         if (cat) uniqueCategories.add(cat);
       });
       return Array.from(uniqueCategories).map(cat => ({
