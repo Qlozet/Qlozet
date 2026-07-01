@@ -112,7 +112,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
       _id: apiProduct._id,
       name: itemData?.name || 'Unnamed Product',
       description: itemData?.description || '',
-      category: apiProduct.kind || 'clothing',
+      category: itemData?.taxonomy?.product_type || apiProduct.kind || 'clothing',
       price: apiProduct.base_price || itemData?.price || 0,
       stock: totalStock,
       status: apiProduct.status || 'draft',
