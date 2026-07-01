@@ -361,7 +361,7 @@ export default function AddClothingTemplate() {
       
       const extraImageUrls = uploadedExtras.filter(img => !!img.url);
       
-      const finalImages = [...defaultImageUrls, ...extraImageUrls];
+      const finalImages: any[] = [...defaultImageUrls, ...extraImageUrls];
       if (finalImages.length > 0 && hotspots.length > 0) {
         finalImages[0] = { ...finalImages[0], hotspots };
       }
