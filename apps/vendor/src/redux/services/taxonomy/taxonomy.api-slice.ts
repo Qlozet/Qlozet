@@ -47,7 +47,7 @@ export const taxonomyApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // Product types for a kind (first dropdown)
     getProductTypes: builder.query<ProductTypeItem[], string>({
-      query: (kind) => `/api/taxonomy/product-types?kind=${kind}`,
+      query: (kind) => `/taxonomy/product-types?kind=${kind}`,
       providesTags: ['Taxonomy'],
     }),
 
@@ -57,19 +57,19 @@ export const taxonomyApiSlice = baseAPI.injectEndpoints({
       { kind: string; product_type: string }
     >({
       query: ({ kind, product_type }) =>
-        `/api/taxonomy/categories?kind=${kind}&product_type=${encodeURIComponent(product_type)}`,
+        `/taxonomy/categories?kind=${kind}&product_type=${encodeURIComponent(product_type)}`,
       providesTags: ['Taxonomy'],
     }),
 
     // Vendor-selectable tags
     getVendorTags: builder.query<SystemTagItem[], void>({
-      query: () => `/api/taxonomy/tags?assignable_by=vendor`,
+      query: () => `/taxonomy/tags?assignable_by=vendor`,
       providesTags: ['Taxonomy'],
     }),
 
     // Full tree (for bulk loading)
     getTaxonomyTree: builder.query<TaxonomyTree, string | void>({
-      query: (kind) => `/api/taxonomy/tree${kind ? `?kind=${kind}` : ''}`,
+      query: (kind) => `/taxonomy/tree${kind ? `?kind=${kind}` : ''}`,
       providesTags: ['Taxonomy'],
     }),
   }),
