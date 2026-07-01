@@ -292,12 +292,9 @@ export default function AddClothingTemplate() {
       return;
     }
 
-    // Backend requires a non-empty taxonomy.product_type. When customization is
-    // on the product type is implicitly "customisable" (the dropdown is hidden);
-    // otherwise the vendor must pick one.
-    const productType = customizationEnabled
-      ? 'customisable'
-      : organization.productType;
+    // Backend requires a non-empty taxonomy.product_type. The vendor must
+    // always pick one from the API-driven dropdown.
+    const productType = organization.productType;
     if (!productType) {
       toast.error('Please select a product type.');
       return;
@@ -649,7 +646,7 @@ export default function AddClothingTemplate() {
             <ProductOrganizationSection
               value={organization}
               onChange={setOrganization}
-              hideProductType={customizationEnabled}
+              
             />
 
             <ProductPricingSection
