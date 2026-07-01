@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { Check, Info, Plus, Search, Shirt, X, Trash2 } from 'lucide-react';
 import { AddStylesModal, type CreatedStyle } from './add-styles-modal';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { useGetStyleLibraryQuery, useDeleteVendorStyleMutation } from '@/redux/services/style-library/style-library.api-slice';
 
@@ -251,7 +252,17 @@ export const SelectStylesModal = NiceModal.create(() => {
           )}
 
           {/* Style grid */}
-          {visibleStyles.length > 0 ? (
+          {isLoading ? (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="space-y-2 rounded-lg border bg-card p-3">
+                  <Skeleton className="aspect-square w-full rounded-md" />
+                  <Skeleton className="mx-auto h-3 w-16" />
+                  <Skeleton className="mx-auto h-2 w-10" />
+                </div>
+              ))}
+            </div>
+          ) : visibleStyles.length > 0 ? (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {visibleStyles.map((style) => {
                 const isSelected = Boolean(selected[style.id]);
