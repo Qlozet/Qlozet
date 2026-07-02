@@ -46,7 +46,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   ) => {
     try {
       const result = await uploadImage(file).unwrap();
-      const imageUrl = result?.data?.url || result?.url;
+      const imageUrl = result?.data?.url || (result as any)?.url;
 
       if (!imageUrl) {
         toast.error('Upload failed — no URL returned');
