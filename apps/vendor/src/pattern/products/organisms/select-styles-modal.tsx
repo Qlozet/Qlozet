@@ -91,16 +91,26 @@ export const SelectStylesModal = NiceModal.create(() => {
       | CreatedStyle
       | null;
     if (!created) return;
+    
+    // Find the exact UI category name that matches the created style's backend category
+    const matchedCategory = CATEGORIES.find(
+      (c) => c.toLowerCase().replace(' ', '_') === created.styleType
+    ) || CATEGORIES[0];
+
     const def: any = {
       id: (created as any).id || `custom-${Date.now()}`,
       name: created.name,
       audience: created.audience,
-      category,
-      subTab: subTabs.length ? subTab : undefined,
+      category: matchedCategory,
+      subTab: undefined,
       imageUrl: created.imageUrl,
     };
     setSelected((prev) => ({ ...prev, [def.id]: def }));
+    
+    // Auto-switch to the newly created style's category so it becomes visible
     setAudience(created.audience);
+    setCategory(matchedCategory);
+    setSubTab(SUBTABS[matchedCategory]?.[0] ?? '');
   };
 
   if (!modal.visible) return null;
