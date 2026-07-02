@@ -11,6 +11,7 @@ interface UserProfileCardProps {
   registrationId: string;
   email: string;
   avatarUrl?: string;
+  profilePicture?: string;
   className?: string;
 }
 
@@ -19,17 +20,19 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
   registrationId,
   email,
   avatarUrl,
+  profilePicture,
   className,
 }) => {
+  const imageUrl = avatarUrl || profilePicture;
   return (
     <div className={cn('bg-white rounded-lg p-6 shadow-sm', className)}>
       {/* Avatar Section */}
       <div className='flex flex-col items-center'>
         <div className='relative'>
           <div className='w-32 h-32 bg-white rounded-full border-4 border-gray-100 shadow-lg flex items-center justify-center overflow-hidden'>
-            {avatarUrl ? (
+            {imageUrl ? (
               <Image
-                src={avatarUrl}
+                src={imageUrl}
                 alt={fullName}
                 width={128}
                 height={128}

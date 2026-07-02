@@ -59,11 +59,7 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
     switch (activeTab) {
       case 'Profile':
         return (
-          <ProfileContent
-            shopDetails={shopDetails}
-            onOrganizationProfileSubmit={handleCompanyDetailsSubmit}
-            isLoading={isUpdating}
-          />
+          <ProfileContent />
         );
 
       case 'Shop details':

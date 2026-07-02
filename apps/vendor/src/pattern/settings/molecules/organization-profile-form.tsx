@@ -1,7 +1,7 @@
 // Organization Profile Form - Molecule
-// Form for organization profile with all fields
+// Form for organization profile with all fields mapped to backend Business schema
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -25,15 +25,20 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 
 const organizationProfileSchema = z.object({
+  businessName: z.string().min(1, 'Business name is required'),
   country: z.string().min(1, 'Country is required'),
   state: z.string().min(1, 'State is required'),
+  city: z.string().optional(),
   address: z.string().min(1, 'Address is required'),
   yearFounded: z.string().optional(),
   email: z.string().email('Invalid email address'),
   phoneNumber: z.string().min(1, 'Phone number is required'),
-  website: z.string().url('Invalid URL').optional().or(z.literal('')),
+  website: z.string().optional(),
+  timeZone: z.string().optional(),
   registrationId: z.string().optional(),
   about: z.string().optional(),
+  nin: z.string().optional(),
+  bvn: z.string().optional(),
 });
 
 type OrganizationProfileData = z.infer<typeof organizationProfileSchema>;
@@ -50,23 +55,71 @@ export const OrganizationProfileForm: React.FC<
   const form = useForm<OrganizationProfileData>({
     resolver: zodResolver(organizationProfileSchema),
     defaultValues: {
+      businessName: initialData?.businessName || '',
       country: initialData?.country || '',
       state: initialData?.state || '',
+      city: initialData?.city || '',
       address: initialData?.address || '',
       yearFounded: initialData?.yearFounded || '',
       email: initialData?.email || '',
       phoneNumber: initialData?.phoneNumber || '',
       website: initialData?.website || '',
+      timeZone: initialData?.timeZone || '',
       registrationId: initialData?.registrationId || '',
       about: initialData?.about || '',
+      nin: initialData?.nin || '',
+      bvn: initialData?.bvn || '',
     },
   });
+
+  // Reset form when API data loads
+  useEffect(() => {
+    if (initialData) {
+      form.reset({
+        businessName: initialData.businessName || '',
+        country: initialData.country || '',
+        state: initialData.state || '',
+        city: initialData.city || '',
+        address: initialData.address || '',
+        yearFounded: initialData.yearFounded || '',
+        email: initialData.email || '',
+        phoneNumber: initialData.phoneNumber || '',
+        website: initialData.website || '',
+        timeZone: initialData.timeZone || '',
+        registrationId: initialData.registrationId || '',
+        about: initialData.about || '',
+        nin: initialData.nin || '',
+        bvn: initialData.bvn || '',
+      });
+    }
+  }, [initialData?.businessName, initialData?.email, initialData?.country]);
 
   return (
     <div className='bg-white rounded-lg p-6'>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            {/* Business Name */}
+            <FormField
+              control={form.control}
+              name='businessName'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className='text-sm font-medium text-gray-700'>
+                    Business Name
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder='Garm Island'
+                      className='bg-gray-50 border-gray-200'
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* Country */}
             <FormField
               control={form.control}
@@ -79,7 +132,7 @@ export const OrganizationProfileForm: React.FC<
                   </FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger className='bg-gray-50 border-gray-200'>
@@ -87,14 +140,16 @@ export const OrganizationProfileForm: React.FC<
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
+                      <SelectItem value='Nigeria'>Nigeria</SelectItem>
                       <SelectItem value='United States'>
                         United States
                       </SelectItem>
-                      <SelectItem value='Nigeria'>Nigeria</SelectItem>
                       <SelectItem value='United Kingdom'>
                         United Kingdom
                       </SelectItem>
                       <SelectItem value='Canada'>Canada</SelectItem>
+                      <SelectItem value='Ghana'>Ghana</SelectItem>
+                      <SelectItem value='South Africa'>South Africa</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -112,22 +167,34 @@ export const OrganizationProfileForm: React.FC<
                     State
                     <span className='text-gray-400'>ⓘ</span>
                   </FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className='bg-gray-50 border-gray-200'>
-                        <SelectValue placeholder='Select state' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value='Texas'>Texas</SelectItem>
-                      <SelectItem value='California'>California</SelectItem>
-                      <SelectItem value='New York'>New York</SelectItem>
-                      <SelectItem value='Florida'>Florida</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <Input
+                      placeholder='Lagos'
+                      className='bg-gray-50 border-gray-200'
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* City */}
+            <FormField
+              control={form.control}
+              name='city'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className='text-sm font-medium text-gray-700'>
+                    City
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder='Ikeja'
+                      className='bg-gray-50 border-gray-200'
+                      {...field}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -165,7 +232,7 @@ export const OrganizationProfileForm: React.FC<
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='1997'
+                      placeholder='2020'
                       className='bg-gray-50 border-gray-200'
                       {...field}
                     />
@@ -251,7 +318,51 @@ export const OrganizationProfileForm: React.FC<
               )}
             />
 
-            {/* Registration ID */}
+            {/* NIN */}
+            <FormField
+              control={form.control}
+              name='nin'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className='text-sm font-medium text-gray-700 flex items-center gap-1'>
+                    National Identity Number (NIN)
+                    <span className='text-orange-500'>ⓘ</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder='1234567890'
+                      className='bg-gray-50 border-gray-200'
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* BVN */}
+            <FormField
+              control={form.control}
+              name='bvn'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className='text-sm font-medium text-gray-700 flex items-center gap-1'>
+                    Bank Verification Number (BVN)
+                    <span className='text-orange-500'>ⓘ</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder='22123456789'
+                      className='bg-gray-50 border-gray-200'
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Registration ID (read-only) */}
             <FormField
               control={form.control}
               name='registrationId'
@@ -262,8 +373,9 @@ export const OrganizationProfileForm: React.FC<
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='QLOZETII1501'
-                      className='bg-gray-50 border-gray-200'
+                      className='bg-gray-100 border-gray-200 text-gray-500'
+                      readOnly
+                      disabled
                       {...field}
                     />
                   </FormControl>
@@ -284,7 +396,7 @@ export const OrganizationProfileForm: React.FC<
                 </FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder='Short bio here'
+                    placeholder='Tell customers about your business...'
                     className='bg-gray-50 border-gray-200 min-h-[100px] resize-none'
                     {...field}
                   />
