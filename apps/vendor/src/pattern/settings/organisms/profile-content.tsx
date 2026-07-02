@@ -54,20 +54,14 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
 
   const handleOrganizationSubmit = async (formData: any) => {
     try {
+      // PATCH /business/address only accepts address fields
+      // (it validates the address via the logistics/shipping service)
       const payload: UpdateBusinessProfilePayload = {
-        business_name: formData.businessName,
-        business_email: formData.email,
-        business_phone_number: formData.phoneNumber,
-        business_address: formData.address,
+        address: formData.address,
         country: formData.country,
         state: formData.state,
         city: formData.city,
-        time_zone: formData.timeZone,
-        website: formData.website,
-        description: formData.about,
-        year_founded: formData.yearFounded,
-        nin: formData.nin,
-        bvn: formData.bvn,
+        zip_code: formData.zipCode || '',
       };
       await updateBusiness(payload).unwrap();
       toast.success('Organization profile updated successfully');
