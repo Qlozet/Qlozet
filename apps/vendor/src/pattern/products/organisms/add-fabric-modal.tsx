@@ -35,8 +35,8 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
   const [colour, setColour] = useState('');
   const [swatch, setSwatch] = useState('#E8A33D');
   const [pattern, setPattern] = useState('');
-  const [yardsLength, setYardsLength] = useState(0);
-  const [width, setWidth] = useState(0);
+  const [yardsLength, setYardsLength] = useState(1);
+  const [width, setWidth] = useState(10);
   const [minCut, setMinCut] = useState(4);
   const [pricePerYard, setPricePerYard] = useState(0);
 
@@ -89,7 +89,7 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
   if (!modal.visible) return null;
 
   const handleClose = () => modal.remove();
-  const isValid = name.trim().length > 0 && pricePerYard > 0;
+  const isValid = name.trim().length > 0 && pricePerYard > 0 && yardsLength > 0 && width >= 10;
 
   const handleFile = (file?: File) => {
     if (!file) return;
@@ -110,7 +110,7 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
 
   const handleSubmit = async (isDraft = false) => {
     if (!isValid) {
-      toast.error('Please enter a fabric name and price per yard.');
+      toast.error('Please enter fabric name, price > 0, yards > 0, and width >= 10.');
       return;
     }
     try {
