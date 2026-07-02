@@ -1,5 +1,6 @@
 // Profile Content - Organism
 // Profile section with Organization/User profile tabs and vendor card
+// Now fetches data directly from backend API
 
 import React, { useState } from 'react';
 import { ProfileTabButton } from '../atoms/profile-tab-button';
@@ -7,50 +8,90 @@ import { OrganizationProfileForm } from '../molecules/organization-profile-form'
 import { UserProfileForm } from '../molecules/user-profile-form';
 import { VendorProfileCard } from '../molecules/vendor-profile-card';
 import { UserProfileCard } from '../molecules/user-profile-card';
+import {
+  useGetBusinessProfileQuery,
+  useUpdateBusinessProfileMutation,
+  useGetUserProfileQuery,
+  useUpdateUserProfileMutation,
+} from '@/redux/services/settings/settings.api-slice';
+import type {
+  UpdateBusinessProfilePayload,
+  UpdateUserProfilePayload,
+} from '@/redux/services/settings/settings.api-slice';
+import { toast } from 'sonner';
+import Loader from '@/components/Loader';
 
 interface ProfileContentProps {
-  shopDetails: {
-    companyName: string;
-    addressLine1: string;
-    state: string;
-    Phone: string;
-    email: string;
-    country: string;
-    vendorName?: string;
-    nin?: string;
-  };
+  shopDetails?: any; // kept for backward compat, but no longer used
   onOrganizationProfileSubmit?: (data: any) => void;
   onUserProfileSubmit?: (data: any) => void;
   isLoading?: boolean;
-  userData?: {
-    fullName?: string;
-    username?: string;
-    registrationId?: string;
-  };
+  userData?: any;
 }
 
-export const ProfileContent: React.FC<ProfileContentProps> = ({
-  shopDetails,
-  onOrganizationProfileSubmit,
-  onUserProfileSubmit,
-  isLoading = false,
-  userData,
-}) => {
+export const ProfileContent: React.FC<ProfileContentProps> = () => {
   const [activeProfileTab, setActiveProfileTab] = useState<
     'organization' | 'user'
   >('organization');
 
-  const handleOrganizationSubmit = (data: any) => {
-    if (onOrganizationProfileSubmit) {
-      onOrganizationProfileSubmit(data);
+  // Fetch live data
+  const {
+    data: businessData,
+    isLoading: isLoadingBusiness,
+  } = useGetBusinessProfileQuery();
+
+  const {
+    data: userData,
+    isLoading: isLoadingUser,
+  } = useGetUserProfileQuery();
+
+  // Mutations
+  const [updateBusiness, { isLoading: isUpdatingBusiness }] =
+    useUpdateBusinessProfileMutation();
+
+  const [updateUser, { isLoading: isUpdatingUser }] =
+    useUpdateUserProfileMutation();
+
+  const handleOrganizationSubmit = async (formData: any) => {
+    try {
+      const payload: UpdateBusinessProfilePayload = {
+        business_name: formData.businessName,
+        business_email: formData.email,
+        business_phone_number: formData.phoneNumber,
+        business_address: formData.address,
+        country: formData.country,
+        state: formData.state,
+        city: formData.city,
+        time_zone: formData.timeZone,
+        website: formData.website,
+        description: formData.about,
+        year_founded: formData.yearFounded,
+        nin: formData.nin,
+        bvn: formData.bvn,
+      };
+      await updateBusiness(payload).unwrap();
+      toast.success('Organization profile updated successfully');
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Failed to update organization profile');
     }
   };
 
-  const handleUserProfileSubmit = (data: any) => {
-    if (onUserProfileSubmit) {
-      onUserProfileSubmit(data);
+  const handleUserProfileSubmit = async (formData: any) => {
+    try {
+      const payload: UpdateUserProfilePayload = {
+        phone_number: formData.phoneNumber,
+        username: formData.username,
+      };
+      await updateUser(payload).unwrap();
+      toast.success('User profile updated successfully');
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Failed to update user profile');
     }
   };
+
+  if (isLoadingBusiness || isLoadingUser) {
+    return <Loader />;
+  }
 
   return (
     <div className='space-y-6'>
@@ -77,31 +118,36 @@ export const ProfileContent: React.FC<ProfileContentProps> = ({
           {activeProfileTab === 'organization' ? (
             <OrganizationProfileForm
               initialData={{
-                country: shopDetails.country || '',
-                state: shopDetails.state || '',
-                address: shopDetails.addressLine1 || '',
-                email: shopDetails.email || '',
-                phoneNumber: shopDetails.Phone || '',
-                website: '',
-                registrationId: '',
-                about: '',
+                country: businessData?.country || '',
+                state: businessData?.state || '',
+                address: businessData?.business_address || '',
+                yearFounded: businessData?.year_founded || '',
+                email: businessData?.business_email || '',
+                phoneNumber: businessData?.business_phone_number || '',
+                website: businessData?.website || '',
+                registrationId: businessData?._id || '',
+                about: businessData?.description || '',
+                nin: businessData?.nin || '',
+                bvn: businessData?.bvn || '',
+                businessName: businessData?.business_name || '',
+                city: businessData?.city || '',
+                timeZone: businessData?.time_zone || '',
               }}
               onSubmit={handleOrganizationSubmit}
-              isLoading={isLoading}
+              isLoading={isUpdatingBusiness}
             />
           ) : (
             <UserProfileForm
               initialData={{
-                country: shopDetails.country || '',
-                phoneNumber: shopDetails.Phone || '',
-                email: shopDetails.email || '',
-                address: shopDetails.addressLine1 || '',
-                nin: shopDetails.nin || '',
-                fullName: userData?.fullName || '',
+                fullName: userData?.full_name || '',
                 username: userData?.username || '',
+                email: userData?.email || '',
+                phoneNumber: userData?.phone_number || '',
+                country: businessData?.country || '',
+                address: businessData?.business_address || '',
               }}
               onSubmit={handleUserProfileSubmit}
-              isLoading={isLoading}
+              isLoading={isUpdatingUser}
             />
           )}
         </div>
@@ -110,16 +156,19 @@ export const ProfileContent: React.FC<ProfileContentProps> = ({
         <div className='lg:col-span-1'>
           {activeProfileTab === 'organization' ? (
             <VendorProfileCard
-              vendorName={shopDetails.vendorName || shopDetails.companyName}
-              registrationId='QLOZETII15009'
-              website='www.garmisland.com'
-              status='pending'
+              vendorName={businessData?.business_name || 'Business'}
+              registrationId={businessData?._id || ''}
+              website={businessData?.website || ''}
+              status={(businessData?.status as any) || 'pending'}
+              logoUrl={businessData?.business_logo_url}
+              coverImageUrl={businessData?.cover_image_url}
             />
           ) : (
             <UserProfileCard
-              fullName={userData?.fullName || 'John Doe'}
-              registrationId={userData?.registrationId || 'QLOZETII15009'}
-              email={shopDetails.email || 'john.d@garmisland.com'}
+              fullName={userData?.full_name || ''}
+              registrationId={businessData?._id || ''}
+              email={userData?.email || ''}
+              profilePicture={userData?.profile_picture}
             />
           )}
         </div>

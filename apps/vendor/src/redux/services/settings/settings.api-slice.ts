@@ -32,6 +32,78 @@ interface VendorDetailsResponse {
   nin?: string;
 }
 
+// Business profile as returned by GET /business
+export interface BusinessProfileResponse {
+  _id: string;
+  business_name: string;
+  business_email: string;
+  business_phone_number?: string;
+  business_address?: string;
+  address_line_2?: string;
+  country?: string;
+  state?: string;
+  city?: string;
+  zip_code?: string;
+  time_zone?: string;
+  website?: string;
+  description?: string;
+  year_founded?: string;
+  display_picture_url?: string;
+  business_logo_url?: string;
+  business_logo_svg_url?: string;
+  cover_image_url?: string;
+  cac_document_url?: string[];
+  bvn?: string;
+  nin?: string;
+  status: string;
+  email_verified: boolean;
+  address_completed: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// User profile as returned by GET /users/me
+export interface UserProfileResponse {
+  _id: string;
+  full_name: string;
+  email: string;
+  phone_number: string;
+  username?: string;
+  profile_picture?: string;
+  gender?: string;
+  dob?: string;
+  status: string;
+  type: string;
+  email_verified: boolean;
+}
+
+// Update payloads
+export interface UpdateBusinessProfilePayload {
+  business_name?: string;
+  business_email?: string;
+  business_phone_number?: string;
+  business_address?: string;
+  address_line_2?: string;
+  country?: string;
+  state?: string;
+  city?: string;
+  zip_code?: string;
+  time_zone?: string;
+  website?: string;
+  description?: string;
+  year_founded?: string;
+  bvn?: string;
+  nin?: string;
+}
+
+export interface UpdateUserProfilePayload {
+  phone_number?: string;
+  username?: string;
+  profile_picture?: string;
+  gender?: string;
+  dob?: string;
+}
+
 interface WarehouseResponse {
   id: string;
   name: string;
@@ -64,7 +136,39 @@ interface CategoryResponse {
 // API Slice
 export const settingsApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
-    // Company Details
+    // ─── Business/Organization Profile ───
+    getBusinessProfile: builder.query<BusinessProfileResponse, void>({
+      query: () => '/business',
+      transformResponse: (res: any) => res?.data ?? res,
+      providesTags: ['VendorDetails'],
+    }),
+
+    updateBusinessProfile: builder.mutation<any, UpdateBusinessProfilePayload>({
+      query: (data) => ({
+        url: '/business/address',
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: ['VendorDetails'],
+    }),
+
+    // ─── User Profile ───
+    getUserProfile: builder.query<UserProfileResponse, void>({
+      query: () => '/users/me',
+      transformResponse: (res: any) => res?.data ?? res,
+      providesTags: ['User'],
+    }),
+
+    updateUserProfile: builder.mutation<any, UpdateUserProfilePayload>({
+      query: (data) => ({
+        url: '/users/me/profile',
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    // ─── Legacy: Company Details ───
     getVendorDetails: builder.query<ApiResponse<VendorDetailsResponse>, void>({
       query: () => ({
         url: '/vendor/settings/vendor-details',
@@ -99,101 +203,53 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
 
     // Warehouses
     getWarehouses: builder.query<ApiResponse<WarehouseResponse[]>, void>({
-      query: () => ({
-        url: '/vendor/warehouses',
-        method: 'GET',
-      }),
+      query: () => '/vendor/warehouses',
       providesTags: ['Warehouse'],
     }),
 
-    // Legacy warehouse endpoint for migration
     getWarehouse: builder.query<any, void>({
-      query: () => ({
-        url: '/vendor/warehouse',
-        method: 'GET',
-      }),
+      query: () => '/vendor/warehouse',
       providesTags: ['Warehouse'],
     }),
 
-    createWarehouse: builder.mutation<
-      ApiResponse<WarehouseResponse>,
-      WarehouseData
-    >({
-      query: (data) => ({
-        url: '/vendor/warehouses',
-        method: 'POST',
-        body: data,
-      }),
+    createWarehouse: builder.mutation<ApiResponse<WarehouseResponse>, WarehouseData>({
+      query: (data) => ({ url: '/vendor/warehouses', method: 'POST', body: data }),
       invalidatesTags: ['Warehouse'],
     }),
 
-    // Legacy warehouse add endpoint for migration
     addWarehouse: builder.mutation<any, any>({
-      query: (data) => ({
-        url: '/vendor/warehouse/add',
-        method: 'POST',
-        body: data,
-      }),
+      query: (data) => ({ url: '/vendor/warehouse/add', method: 'POST', body: data }),
       invalidatesTags: ['Warehouse'],
     }),
 
-    updateWarehouse: builder.mutation<
-      ApiResponse<WarehouseResponse>,
-      { id: string; data: WarehouseData }
-    >({
-      query: ({ id, data }) => ({
-        url: `/vendor/warehouses/${id}`,
-        method: 'PUT',
-        body: data,
-      }),
+    updateWarehouse: builder.mutation<ApiResponse<WarehouseResponse>, { id: string; data: WarehouseData }>({
+      query: ({ id, data }) => ({ url: `/vendor/warehouses/${id}`, method: 'PUT', body: data }),
       invalidatesTags: ['Warehouse'],
     }),
 
     deleteWarehouse: builder.mutation<ApiResponse<null>, string>({
-      query: (id) => ({
-        url: `/vendor/warehouses/${id}`,
-        method: 'DELETE',
-      }),
+      query: (id) => ({ url: `/vendor/warehouses/${id}`, method: 'DELETE' }),
       invalidatesTags: ['Warehouse'],
     }),
 
     // Users and Permissions
     getUsers: builder.query<ApiResponse<UserResponse[]>, void>({
-      query: () => ({
-        url: '/vendor/users',
-        method: 'GET',
-      }),
+      query: () => '/vendor/users',
       providesTags: ['User'],
     }),
 
-    createUser: builder.mutation<ApiResponse<UserResponse>, UserPermissionData>(
-      {
-        query: (data) => ({
-          url: '/vendor/users',
-          method: 'POST',
-          body: data,
-        }),
-        invalidatesTags: ['User'],
-      }
-    ),
+    createUser: builder.mutation<ApiResponse<UserResponse>, UserPermissionData>({
+      query: (data) => ({ url: '/vendor/users', method: 'POST', body: data }),
+      invalidatesTags: ['User'],
+    }),
 
-    updateUser: builder.mutation<
-      ApiResponse<UserResponse>,
-      { id: string; data: UserPermissionData }
-    >({
-      query: ({ id, data }) => ({
-        url: `/vendor/users/${id}`,
-        method: 'PUT',
-        body: data,
-      }),
+    updateUser: builder.mutation<ApiResponse<UserResponse>, { id: string; data: UserPermissionData }>({
+      query: ({ id, data }) => ({ url: `/vendor/users/${id}`, method: 'PUT', body: data }),
       invalidatesTags: ['User'],
     }),
 
     deleteUser: builder.mutation<ApiResponse<null>, string>({
-      query: (id) => ({
-        url: `/vendor/users/${id}`,
-        method: 'DELETE',
-      }),
+      query: (id) => ({ url: `/vendor/users/${id}`, method: 'DELETE' }),
       invalidatesTags: ['User'],
     }),
 
@@ -203,71 +259,45 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       providesTags: ['Category'],
     }),
 
-    createCategory: builder.mutation<
-      ApiResponse<CategoryResponse>,
-      CategoryData
-    >({
-      query: (data) => ({
-        url: '/vendor/categories',
-        method: 'POST',
-        body: data,
-      }),
+    createCategory: builder.mutation<ApiResponse<CategoryResponse>, CategoryData>({
+      query: (data) => ({ url: '/vendor/categories', method: 'POST', body: data }),
       invalidatesTags: ['Category'],
     }),
 
-    updateCategory: builder.mutation<
-      ApiResponse<CategoryResponse>,
-      { id: string; data: CategoryData }
-    >({
-      query: ({ id, data }) => ({
-        url: `/vendor/categories/${id}`,
-        method: 'PUT',
-        body: data,
-      }),
+    updateCategory: builder.mutation<ApiResponse<CategoryResponse>, { id: string; data: CategoryData }>({
+      query: ({ id, data }) => ({ url: `/vendor/categories/${id}`, method: 'PUT', body: data }),
       invalidatesTags: ['Category'],
     }),
 
     deleteCategory: builder.mutation<ApiResponse<null>, string>({
-      query: (id) => ({
-        url: `/vendor/categories/${id}`,
-        method: 'DELETE',
-      }),
+      query: (id) => ({ url: `/vendor/categories/${id}`, method: 'DELETE' }),
       invalidatesTags: ['Category'],
     }),
 
     // Order Settings
     getOrderSettings: builder.query<ApiResponse<OrderSettingsData>, void>({
-      query: () => ({
-        url: '/vendor/settings/order-settings',
-        method: 'GET',
-      }),
+      query: () => '/vendor/settings/order-settings',
       providesTags: ['OrderSettings'],
     }),
 
-    updateOrderSettings: builder.mutation<
-      ApiResponse<OrderSettingsData>,
-      OrderSettingsData
-    >({
-      query: (data) => ({
-        url: '/vendor/settings/order-settings',
-        method: 'PUT',
-        body: data,
-      }),
+    updateOrderSettings: builder.mutation<ApiResponse<OrderSettingsData>, OrderSettingsData>({
+      query: (data) => ({ url: '/vendor/settings/order-settings', method: 'PUT', body: data }),
       invalidatesTags: ['OrderSettings'],
     }),
 
     // Verify vendor account
     verifyVendorAccount: builder.query<ApiResponse<any>, string>({
-      query: (userid) => ({
-        url: `/vendor/verify/${userid}`,
-        method: 'GET',
-      }),
+      query: (userid) => `/vendor/verify/${userid}`,
     }),
   }),
 });
 
 // Export hooks
 export const {
+  useGetBusinessProfileQuery,
+  useUpdateBusinessProfileMutation,
+  useGetUserProfileQuery,
+  useUpdateUserProfileMutation,
   useGetVendorDetailsQuery,
   useUpdateVendorDetailsMutation,
   useGetWarehousesQuery,
