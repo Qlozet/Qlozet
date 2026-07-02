@@ -1,8 +1,8 @@
 // User Profile Card - Molecule
 // Card showing user profile information with avatar
-// Profile picture upload is wired to backend
+// Profile picture uploads to Cloudinary, shown via local state
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Camera, Loader2 } from 'lucide-react';
 import Image from 'next/image';
@@ -29,6 +29,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
 }) => {
   const imageUrl = avatarUrl || profilePicture;
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [localPicture, setLocalPicture] = useState<string | null>(null);
 
   const [uploadImage, { isLoading: isUploading }] = useUploadProfileImageMutation();
   const [updateUser] = useUpdateUserProfileMutation();
@@ -46,15 +47,18 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
         return;
       }
 
+      // Save URL to user profile via PATCH /users/me/profile
       await updateUser({ profile_picture: uploadedUrl }).unwrap();
+      setLocalPicture(uploadedUrl);
       toast.success('Profile picture updated!');
     } catch (error: any) {
       toast.error(error?.data?.message || 'Failed to upload profile picture');
     }
 
-    // Reset so same file can be re-selected
     e.target.value = '';
   };
+
+  const displayPicture = localPicture || imageUrl;
 
   return (
     <div className={cn('bg-white rounded-lg p-6 shadow-sm', className)}>
@@ -71,9 +75,9 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
       <div className='flex flex-col items-center'>
         <div className='relative'>
           <div className='w-32 h-32 bg-white rounded-full border-4 border-gray-100 shadow-lg flex items-center justify-center overflow-hidden'>
-            {imageUrl ? (
+            {displayPicture ? (
               <Image
-                src={imageUrl}
+                src={displayPicture}
                 alt={fullName}
                 width={128}
                 height={128}

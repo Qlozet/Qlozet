@@ -1,13 +1,14 @@
 // Vendor Profile Card - Molecule
 // Card showing vendor profile information and document upload options
-// Upload buttons are now wired to the backend upload + business update endpoints
+// Uploads go to Cloudinary via POST /uploads/profile
+// Note: No backend endpoint exists yet for saving logo/cover URLs to Business record
+// The uploaded image shows immediately via local state
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Camera, Upload, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useUploadProfileImageMutation } from '@/redux/services/uploads/uploads.api-slice';
-import { useUpdateBusinessProfileMutation } from '@/redux/services/settings/settings.api-slice';
 import { toast } from 'sonner';
 
 interface VendorProfileCardProps {
@@ -33,12 +34,15 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   const coverInputRef = useRef<HTMLInputElement>(null);
   const cacInputRef = useRef<HTMLInputElement>(null);
 
+  // Local state for uploaded images (shown immediately after upload)
+  const [localLogo, setLocalLogo] = useState<string | null>(null);
+  const [localCover, setLocalCover] = useState<string | null>(null);
+
   const [uploadImage, { isLoading: isUploading }] = useUploadProfileImageMutation();
-  const [updateBusiness] = useUpdateBusinessProfileMutation();
 
   const handleImageUpload = async (
     file: File,
-    field: 'business_logo_url' | 'cover_image_url' | 'cac_document_url'
+    type: 'logo' | 'cover' | 'cac'
   ) => {
     try {
       const result = await uploadImage(file).unwrap();
@@ -49,15 +53,16 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
         return;
       }
 
-      // Update business profile with the new image URL
-      await updateBusiness({ [field]: imageUrl } as any).unwrap();
-      toast.success(
-        field === 'business_logo_url'
-          ? 'Logo updated!'
-          : field === 'cover_image_url'
-          ? 'Cover image updated!'
-          : 'CAC document uploaded!'
-      );
+      // Update local state to show the image immediately
+      if (type === 'logo') {
+        setLocalLogo(imageUrl);
+        toast.success('Logo uploaded successfully!');
+      } else if (type === 'cover') {
+        setLocalCover(imageUrl);
+        toast.success('Cover image uploaded successfully!');
+      } else {
+        toast.success('CAC document uploaded successfully!');
+      }
     } catch (error: any) {
       toast.error(error?.data?.message || 'Failed to upload image');
     }
@@ -65,15 +70,17 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: 'business_logo_url' | 'cover_image_url' | 'cac_document_url'
+    type: 'logo' | 'cover' | 'cac'
   ) => {
     const file = e.target.files?.[0];
     if (file) {
-      handleImageUpload(file, field);
+      handleImageUpload(file, type);
     }
-    // Reset so same file can be re-selected
     e.target.value = '';
   };
+
+  const displayLogo = localLogo || logoUrl;
+  const displayCover = localCover || coverImageUrl;
 
   const getStatusColor = () => {
     switch (status) {
@@ -107,28 +114,28 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
         type='file'
         accept='image/png,image/svg+xml,image/jpeg,image/webp'
         className='hidden'
-        onChange={(e) => handleFileChange(e, 'business_logo_url')}
+        onChange={(e) => handleFileChange(e, 'logo')}
       />
       <input
         ref={coverInputRef}
         type='file'
         accept='image/png,image/jpeg,image/webp'
         className='hidden'
-        onChange={(e) => handleFileChange(e, 'cover_image_url')}
+        onChange={(e) => handleFileChange(e, 'cover')}
       />
       <input
         ref={cacInputRef}
         type='file'
         accept='image/png,image/jpeg,application/pdf'
         className='hidden'
-        onChange={(e) => handleFileChange(e, 'cac_document_url')}
+        onChange={(e) => handleFileChange(e, 'cac')}
       />
 
       {/* Cover Image Section */}
       <div className='relative h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4 overflow-hidden'>
-        {coverImageUrl ? (
+        {displayCover ? (
           <Image
-            src={coverImageUrl}
+            src={displayCover}
             alt='Cover'
             fill
             className='object-cover'
@@ -155,9 +162,9 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
       <div className='flex flex-col items-center -mt-16 mb-4'>
         <div className='relative'>
           <div className='w-24 h-24 bg-white rounded-full border-4 border-white shadow-lg flex items-center justify-center overflow-hidden'>
-            {logoUrl ? (
+            {displayLogo ? (
               <Image
-                src={logoUrl}
+                src={displayLogo}
                 alt={vendorName}
                 width={96}
                 height={96}

@@ -78,22 +78,15 @@ export interface UserProfileResponse {
 }
 
 // Update payloads
+// Matches backend CreateBusinessAddressDto
 export interface UpdateBusinessProfilePayload {
-  business_name?: string;
-  business_email?: string;
-  business_phone_number?: string;
-  business_address?: string;
-  address_line_2?: string;
-  country?: string;
+  address?: string;
   state?: string;
   city?: string;
+  country?: string;
   zip_code?: string;
-  time_zone?: string;
-  website?: string;
-  description?: string;
-  year_founded?: string;
-  bvn?: string;
-  nin?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface UpdateUserProfilePayload {

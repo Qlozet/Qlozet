@@ -34,10 +34,27 @@ export const vendorApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // Get vendor profile details
     getVendorProfile: builder.query<ApiResponse<VendorDetails>, void>({
-      query: () => ({
-        url: '/vendor/profile',
-        method: 'GET',
-      }),
+      query: () => '/business',
+      transformResponse: (res: any) => {
+        const biz = res?.data ?? res;
+        return {
+          success: true,
+          message: 'OK',
+          data: {
+            businessName: biz?.business_name || '',
+            businessAddress: biz?.business_address || '',
+            businessPhoneNumber: biz?.business_phone_number || '',
+            businessEmail: biz?.business_email || '',
+            personalName: biz?.created_by?.name || '',
+            profileImage: biz?.display_picture_url || '',
+            profilePic: biz?.business_logo_url || '',
+            averageRating: '',
+            profit: '',
+            items: '',
+            ratings: '',
+          },
+        };
+      },
       providesTags: ['VendorDetails'],
     }),
 
