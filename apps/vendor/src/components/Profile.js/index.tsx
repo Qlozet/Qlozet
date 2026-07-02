@@ -16,22 +16,24 @@ const Profile = ({
     <Sheet open={showProfile} onOpenChange={(open) => !open && showProfileHandler()}>
       <SheetContent
         side="right"
-        className="w-full overflow-y-auto p-0 sm:max-w-md !top-4 !bottom-4 !right-4 !h-[calc(100vh-2rem)] rounded-2xl custom-card-shadow !bg-white sidebar-scrollbar"
+        className="w-full overflow-y-auto p-0 sm:max-w-md !top-0 !bottom-0 !right-0 !h-full rounded-l-2xl sm:rounded-none !bg-white sidebar-scrollbar border-l border-[#E5E5EA]"
       >
-        <div className="bg-white rounded-2xl pb-8 min-h-full w-full h-full text-grey-black">
+        <div className="bg-white pb-8 min-h-full w-full h-full text-[#1C1C1E]">
           <SheetHeader className="px-6 py-6 pb-2">
-            <SheetTitle className="text-[22px] font-bold text-grey-black text-left flex justify-between items-center">
+            <SheetTitle className="text-[17px] font-semibold text-[#1C1C1E] text-center w-full flex justify-between items-center">
+              <span className="w-5"></span>
               Profile
+              <Image src={closeIcon} alt='close' className='w-5 h-5 cursor-pointer opacity-50 hover:opacity-100' onClick={showProfileHandler} unoptimized />
             </SheetTitle>
           </SheetHeader>
           
-          <div className="flex flex-col items-center mt-4">
+          <div className="flex flex-col items-center mt-6">
             {/* Avatar */}
-            <div className="w-24 h-24 sm:w-[110px] sm:h-[110px] rounded-full overflow-hidden bg-gray-100 mb-4 shadow-sm border border-gray-100">
+            <div className="w-24 h-24 rounded-full overflow-hidden bg-[#F2F2F7] mb-4">
               <Image
                 src={userDetails?.profileImage || ''}
-                width={120}
-                height={120}
+                width={96}
+                height={96}
                 alt="Profile Image"
                 className="w-full h-full object-cover"
                 unoptimized
@@ -39,63 +41,60 @@ const Profile = ({
             </div>
             
             {/* Names */}
-            <Typography textColor="text-grey-black" textWeight="font-semibold" textSize="text-xl">
+            <Typography textColor="text-[#1C1C1E]" textWeight="font-semibold" textSize="text-[22px]" className="tracking-tight">
               {userDetails?.personalName}
             </Typography>
-            <Typography textColor="text-gray-600" textWeight="font-normal" textSize="text-[15px]" className="mt-1">
+            <Typography textColor="text-[#8E8E93]" textWeight="font-medium" textSize="text-[15px]" className="mt-0.5">
               {userDetails?.businessName}
             </Typography>
           </div>
 
           {/* Items & Profit */}
-          <div className="flex justify-center items-center mt-8 mb-6">
+          <div className="flex justify-center items-center mt-8 mb-2 px-8">
             <div className="flex flex-col items-center flex-1">
-              <Typography textColor="text-gray-700" textWeight="font-medium" textSize="text-xs">
-                Items
-              </Typography>
-              <Typography textColor="text-grey-black" textWeight="font-semibold" textSize="text-[22px]">
+              <Typography textColor="text-[#1C1C1E]" textWeight="font-bold" textSize="text-[28px]" className="tracking-tight">
                 {userDetails?.items?.toLocaleString() || '0'}
+              </Typography>
+              <Typography textColor="text-[#8E8E93]" textWeight="font-semibold" textSize="text-[10px]" className="tracking-widest uppercase mt-1">
+                Items
               </Typography>
             </div>
             
-            <div className="h-10 w-px bg-gray-300 mx-2"></div>
-            
             <div className="flex flex-col items-center flex-1">
-              <Typography textColor="text-gray-700" textWeight="font-medium" textSize="text-xs">
-                Profit
-              </Typography>
-              <Typography textColor="text-grey-black" textWeight="font-semibold" textSize="text-[22px]">
+              <Typography textColor="text-[#1C1C1E]" textWeight="font-bold" textSize="text-[28px]" className="tracking-tight">
                 ${userDetails?.profit?.toLocaleString() || '0'}
+              </Typography>
+              <Typography textColor="text-[#8E8E93]" textWeight="font-semibold" textSize="text-[10px]" className="tracking-widest uppercase mt-1">
+                Profit
               </Typography>
             </div>
           </div>
 
-          <div className="border-b border-gray-200 mx-6 mb-6"></div>
+          <div className="border-t-[0.5px] border-[#E5E5EA] w-full mt-8 mb-6"></div>
 
           {/* Customers Reviews */}
-          <div className="px-6 mb-8">
+          <div className="px-6 mb-2">
             <div className="flex items-center justify-between mb-4">
-              <Typography textColor="text-grey-black" textWeight="font-bold" textSize="text-[16px]">
+              <Typography textColor="text-[#1C1C1E]" textWeight="font-semibold" textSize="text-[17px]">
                 Customers Reviews
               </Typography>
-              <Image src={rotate} alt="refresh" className="w-5 h-5 cursor-pointer opacity-70 hover:opacity-100 transition-opacity" unoptimized />
             </div>
 
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center gap-3 mb-1">
               <Rating newRating={Math.round(userDetails?.averageRating || 0)} />
-              <div className="flex items-center gap-1.5">
-                <Typography textColor="text-grey-black" textWeight="font-bold" textSize="text-lg">
+              <div className="flex items-baseline gap-1.5">
+                <Typography textColor="text-[#1C1C1E]" textWeight="font-bold" textSize="text-[22px]">
                   {userDetails?.averageRating || '0'}
                 </Typography>
-                <Typography textColor="text-gray-600" textWeight="font-normal" textSize="text-[11px]" className="mt-0.5">
+                <Typography textColor="text-[#8E8E93]" textWeight="font-medium" textSize="text-[13px]">
                   Out of 5 Stars
                 </Typography>
               </div>
             </div>
 
             <div className="mb-6">
-              <span className="text-[11px] text-gray-700 underline underline-offset-2 hover:text-black cursor-pointer transition-colors">
-                Overall rating of 100 customer's reviews
+              <span className="text-[13px] text-[#A67B5B] font-medium hover:opacity-80 cursor-pointer transition-opacity flex items-center gap-1">
+                Overall rating of 100 customer's reviews <span className="text-[16px] leading-none mb-0.5">›</span>
               </span>
             </div>
 
@@ -104,74 +103,53 @@ const Profile = ({
               <Performance
                 name="Excellent"
                 value={(userDetails?.ratings?.excellent || 35) * 10}
-                color="bg-[#462310]"
+                color="bg-[#1C1C1E]"
               />
               <Performance
                 name="Good"
                 value={(userDetails?.ratings?.good || 25) * 10}
-                color="bg-[#A67B5B]"
+                color="bg-[#1C1C1E]"
               />
               <Performance
                 name="Average"
                 value={(userDetails?.ratings?.average || 20) * 10}
-                color="bg-[#BBA295]"
+                color="bg-[#1C1C1E]"
               />
               <Performance
                 name="Avg. Below"
                 value={(userDetails?.ratings?.belowAverage || 15) * 10}
-                color="bg-[#99847F]"
+                color="bg-[#1C1C1E]"
               />
               <Performance
                 name="Poor"
                 value={(userDetails?.ratings?.poor || 5) * 10}
-                color="bg-[#606261]"
+                color="bg-[#1C1C1E]"
               />
             </div>
           </div>
 
-          <div className="border-b border-gray-200 mx-6 mb-6"></div>
+          <div className="border-t-[0.5px] border-[#E5E5EA] w-full mt-8 mb-6"></div>
 
-          {/* Task Last Month (Static Placeholder based on Mockup) */}
+          {/* Task Last Month (Apple Settings Style) */}
           <div className="px-6 mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <Typography textColor="text-grey-black" textWeight="font-bold" textSize="text-[15px]">
-                Task Last Month
+            <div className="flex items-center justify-between mb-2">
+              <Typography textColor="text-[#1C1C1E]" textWeight="font-semibold" textSize="text-[17px]">
+                Tasks Last Month
               </Typography>
-              <Image src={rotate} alt="refresh" className="w-5 h-5 cursor-pointer opacity-70 hover:opacity-100 transition-opacity" unoptimized />
             </div>
 
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                <span className="text-[11px] text-gray-800 font-medium">All</span>
+            <div className="flex flex-col mt-4">
+              <div className="flex justify-between items-center py-3.5 border-b-[0.5px] border-[#E5E5EA]">
+                <span className="text-[15px] font-medium text-[#1C1C1E]">Restock New kaftan products</span>
+                <span className="text-[15px] text-[#8E8E93]">5d ago</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-gray-300"></div>
-                <span className="text-[11px] text-gray-500">Delivered</span>
+              <div className="flex justify-between items-center py-3.5 border-b-[0.5px] border-[#E5E5EA]">
+                <span className="text-[15px] font-medium text-[#1C1C1E] truncate max-w-[70%]">Purchase report for last month for investor client</span>
+                <span className="text-[15px] text-[#8E8E93]">5d ago</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-gray-300"></div>
-                <span className="text-[11px] text-gray-500">Order</span>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-[12px] font-semibold text-gray-600">#New Category add</span>
-              <span className="text-[11px] text-gray-500">Last Week</span>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-[13px] font-semibold text-grey-black">Restock New kaftan products</span>
-                <span className="text-[11px] text-gray-500">5d ago</span>
-              </div>
-              <div className="flex justify-between items-start">
-                <span className="text-[13px] font-semibold text-grey-black max-w-[70%]">Purchase report for last month for investor client</span>
-                <span className="text-[11px] text-gray-500 mt-1">5d ago</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[13px] font-semibold text-grey-black">New product order from port</span>
-                <span className="text-[11px] text-gray-500">5d ago</span>
+              <div className="flex justify-between items-center py-3.5">
+                <span className="text-[15px] font-medium text-[#1C1C1E]">New product order from port</span>
+                <span className="text-[15px] text-[#8E8E93]">5d ago</span>
               </div>
             </div>
           </div>
