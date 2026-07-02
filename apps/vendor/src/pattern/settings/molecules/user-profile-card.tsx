@@ -82,6 +82,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
                 width={128}
                 height={128}
                 className='object-cover'
+                unoptimized={displayPicture?.includes('/raw/')}
               />
             ) : (
               <div className='w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center'>

@@ -144,6 +144,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
             alt='Cover'
             fill
             className='object-cover'
+            unoptimized={displayCover?.includes('/raw/')}
           />
         ) : (
           <div className='absolute inset-0 flex items-center justify-center'>
@@ -174,6 +175,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
                 width={96}
                 height={96}
                 className='object-cover'
+                unoptimized={displayLogo?.includes('/raw/')}
               />
             ) : (
               <div className='w-full h-full bg-white flex items-center justify-center'>
