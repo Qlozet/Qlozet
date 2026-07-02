@@ -1,63 +1,31 @@
+// Trigger Vercel rebuild
 import Typography from '../Typography';
 import closeIcon from '@/public/assets/svg/close-square-icon.svg';
 import rotate from '@/public/assets/svg/rotate-icon.svg';
 import Image from 'next/image';
 import Performance from '../Performance';
 import Rating from '../Rating';
-import { useRef } from 'react';
 import { ProfileProps } from '../../types';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 const Profile = ({
   userDetails,
   showProfile,
   showProfileHandler,
 }: ProfileProps) => {
-  const outsideRef = useRef<HTMLDivElement>(null);
-  const profileRef = useRef<HTMLDivElement>(null);
-  const clickOutSide = (e: React.MouseEvent) => {
-    if (e.target !== profileRef.current) {
-      showProfileHandler();
-    }
-  };
   return (
-    <div>
-      <div>
-        <div
-          className='fixed bg-[rgba(0,0,0,.3)] h-screen w-screen top-0 right-0 flex justify-end sidebar-scrollbar'
-          style={{ zIndex: 300000 }}
-        >
-          {showProfile && (
-            <div
-              className='w-full h-full '
-              onClick={clickOutSide}
-              ref={outsideRef}
-            ></div>
-          )}
-          <div className='relative'>
-            {showProfile && (
-              <div
-                className='w-screen h-screen bg-white rounded-tl-lg lg:w-[350px] '
-                ref={profileRef}
-              >
-                <div className='bg-white rounded-tl-2xl'>
-                  <div>
-                    <div className='flex px-4 py-6 items-center justify-between'>
-                      <Typography
-                        textColor='text-primary'
-                        textWeight='font-bold'
-                        textSize='text-[18px]'
-                      >
-                        Profile
-                      </Typography>
-                      <Image
-                        src={closeIcon}
-                        alt=''
-                        onClick={showProfileHandler}
-                        className='cursor-pointer'
-                        unoptimized
-                      />
-                    </div>
-                    <div>
-                      <div className='items-center justify-center'>
+    <Sheet open={showProfile} onOpenChange={(open) => !open && showProfileHandler()}>
+      <SheetContent
+        side="right"
+        className="w-full overflow-y-auto p-0 sm:max-w-md !top-6 !bottom-6 !right-6 !h-[calc(100vh-3rem)] rounded-2xl custom-card-shadow !bg-white sidebar-scrollbar"
+      >
+        <div className="bg-white rounded-2xl pb-6 min-h-full w-full h-full">
+          <SheetHeader className="px-6 py-6 pb-2">
+            <SheetTitle className="text-[22px] font-bold text-grey-black text-left">
+              Profile
+            </SheetTitle>
+          </SheetHeader>
+          <div>
+            <div className="items-center justify-center">
                         <Image
                           src={userDetails.profileImage}
                           width={30}
@@ -143,7 +111,7 @@ const Profile = ({
                       <Image src={rotate} alt='' />
                     </div>
                     <div className='flex items-center gap-4 px-4 py-2'>
-                      <Rating newRating={parseInt(userDetails.averageRating)} />
+                      <Rating newRating={Math.round(userDetails?.averageRating || 0)} />
                       <div className='flex items-center'>
                         <div className='mr-2'>
                           <Typography
@@ -200,147 +168,10 @@ const Profile = ({
                         color={'bg-gray-100'}
                       />
                     </div>
-                    {/* <div className="flex items-center justify-between p-4">
-              <Typography
-                textColor="text-primary"
-                textWeight="font-bold"
-                textSize="text-[18px]"
-              >
-                Task Last Month
-              </Typography>
-              <Image src={rotate} alt="" />
-            </div>
-            <div className="px-4 flex gap-4 items-center ">
-              <div className="flex gap-1">
-                <div className="flex items-center justify-center">
-                  <div className="w-[5px] h-[5px] bg-success-100 rounded-[50%]"></div>
-                </div>
-                <Typography
-                  textColor="text-primary"
-                  textWeight="font-normal"
-                  textSize="text-xs"
-                >
-                  All
-                </Typography>
-              </div>
-              <div className="flex gap-1">
-                <div className="flex items-center justify-center">
-                  <div className="w-[5px] h-[5px] bg-gray-200 rounded-[50%]"></div>
-                </div>
-                <Typography
-                  textColor="text-primary"
-                  textWeight="font-normal"
-                  textSize="text-xs"
-                >
-                  Delivered
-                </Typography>
-              </div>
-              <div className="flex gap-1">
-                <div className="flex items-center justify-center">
-                  <div className="w-[5px] h-[5px] bg-gray-200 rounded-[50%]"></div>
-                </div>
-                <Typography
-                  textColor="text-primary"
-                  textWeight="font-normal"
-                  textSize="text-xs"
-                >
-                  Order
-                </Typography>
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center justify-between p-4">
-                <Typography
-                  textColor="text-primary"
-                  textWeight="font-[300]"
-                  textSize="text-sm"
-                >
-                  #New Category add
-                </Typography>
-                <Typography
-                  textColor="text-primary"
-                  textWeight="font-normal"
-                  textSize="text-sm"
-                >
-                  Last Week
-                </Typography>
-              </div>
-              <div className="my-4">
-                {" "}
-                <div className="flex items-center justify-between p-4">
-                  <Typography
-                    textColor="text-primary"
-                    textWeight="font-bold"
-                    textSize=""
-                  >
-                    Restock New kaftan products
-                  </Typography>
-                  <Typography
-                    textColor="text-primary"
-                    textWeight="font-normal"
-                    textSize="text-sm"
-                  >
-                    5d ago
-                  </Typography>
-                </div>{" "}
-                <div className="flex items-center justify-between p-4">
-                  <Typography
-                    textColor="text-primary"
-                    textWeight="font-bold"
-                    textSize=""
-                  >
-                    Restock New kaftan products
-                  </Typography>
-                  <Typography
-                    textColor="text-primary"
-                    textWeight="font-normal"
-                    textSize="text-sm"
-                  >
-                    5d ago
-                  </Typography>
-                </div>{" "}
-                <div className="flex items-center justify-between p-4">
-                  <Typography
-                    textColor="text-primary"
-                    textWeight="font-bold"
-                    textSize=""
-                  >
-                    Restock New kaftan products
-                  </Typography>
-                  <Typography
-                    textColor="text-primary"
-                    textWeight="font-normal"
-                    textSize="text-sm"
-                  >
-                    5d ago
-                  </Typography>
-                </div>{" "}
-                <div className="flex items-center justify-between p-4">
-                  <Typography
-                    textColor="text-primary"
-                    textWeight="font-bold"
-                    textSize=""
-                  >
-                    Restock New kaftan products
-                  </Typography>
-                  <Typography
-                    textColor="text-primary"
-                    textWeight="font-normal"
-                    textSize="text-sm"
-                  >
-                    5d ago
-                  </Typography>
-                </div>
-              </div>
-            </div> */}
-                  </div>
-                </div>
-              </div>
-            )}
+
           </div>
-        </div>
-      </div>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 
