@@ -4,7 +4,6 @@ import rotate from '@/public/assets/svg/rotate-icon.svg';
 import Image from 'next/image';
 import Performance from '../Performance';
 import Rating from '../Rating';
-import { useRef } from 'react';
 import { ProfileProps } from '../../types';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 const Profile = ({
@@ -12,13 +11,6 @@ const Profile = ({
   showProfile,
   showProfileHandler,
 }: ProfileProps) => {
-  const outsideRef = useRef<HTMLDivElement>(null);
-  const profileRef = useRef<HTMLDivElement>(null);
-  const clickOutSide = (e: React.MouseEvent) => {
-    if (e.target !== profileRef.current) {
-      showProfileHandler();
-    }
-  };
   return (
     <Sheet open={showProfile} onOpenChange={(open) => !open && showProfileHandler()}>
       <SheetContent
@@ -118,7 +110,7 @@ const Profile = ({
                       <Image src={rotate} alt='' />
                     </div>
                     <div className='flex items-center gap-4 px-4 py-2'>
-                      <Rating newRating={parseInt(userDetails.averageRating)} />
+                      <Rating newRating={Math.round(userDetails?.averageRating || 0)} />
                       <div className='flex items-center'>
                         <div className='mr-2'>
                           <Typography
@@ -177,7 +169,6 @@ const Profile = ({
                     </div>
 
           </div>
-        </div>
       </SheetContent>
     </Sheet>
   );
