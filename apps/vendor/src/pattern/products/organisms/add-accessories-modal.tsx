@@ -11,7 +11,8 @@ import { InfoIcon, Trash2Icon, UploadIcon, PlusIcon, FlagIcon } from "lucide-rea
 import { Skeleton } from "@/components/ui/skeleton"
 import NiceModal, { create, useModal } from "@ebay/nice-modal-react"
 import { VariantSelectOptions } from "./variant-select-options"
-import { AVAILABLE_COLORS, ColorOption, VariantRow, VariantSizeDetail } from "../types/variant.types"
+import { AVAILABLE_COLORS, ColorOption } from "../types/variant.types"
+import { SetVariantsTable, VariantRow, makeSizeDetail } from "../organisms/set-variants-table"
 import { useCreateAccessoryMutation, useGetProductQuery } from "@/redux/services/products/products.api-slice"
 import { useUploadProductImageMutation } from "@/redux/services/uploads/uploads.api-slice"
 import { toast } from "sonner"
@@ -118,8 +119,14 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
     }
 
     const handleAddVariants = () => {
+        // Combine available colors with custom colors
+        const allColors = [...AVAILABLE_COLORS, ...customColors]
+
         // Get colors that don't already have variants
-        const existingColorValues = variants?.map((v) => v.color.value)
+        const existingColorValues = variants?.map((v) => {
+            const colorOption = allColors.find(c => c.hex === v.colorHex);
+            return colorOption ? colorOption.value : null;
+        }).filter(Boolean)
         const newColorValues = selectedColors.filter((colorValue) => !existingColorValues.includes(colorValue))
 
         // Only create variants for new colors
@@ -127,13 +134,9 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
             return // No new colors to add
         }
 
-        // Combine available colors with custom colors
-        const allColors = [...AVAILABLE_COLORS, ...customColors]
-
         const newVariants: VariantRow[] = newColorValues?.map((colorValue) => {
             const color = allColors.find((c) => c.value === colorValue)!
 
-            // Map selected sizes to ALL_SIZES format
             const sizeMap: Record<string, string> = {
                 xs: "S",
                 s: "M",
@@ -141,36 +144,25 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                 l: "XL",
             }
 
-            const sizes: VariantSizeDetail[] = selectedSizes?.map((sizeValue) => ({
-                size: sizeMap[sizeValue] || sizeValue.toUpperCase(),
-                stock: 0,
-                yardsPerOrder: 0,
-                price: 0,
-                sku: "",
-                images: [],
-            }))
+            const availableSizes = selectedSizes?.map((sizeValue) => sizeMap[sizeValue] || sizeValue.toUpperCase()) || [];
+            const details: Record<string, any> = {};
+            availableSizes.forEach(s => {
+                details[s] = makeSizeDetail();
+            });
 
             return {
                 id: `${colorValue}-${Date.now()}-${Math.random()}`,
-                color,
-                sizes,
-                isExpanded: false,
+                colorHex: color.hex,
+                label: color.label,
+                availableSizes,
+                details,
+                images: [],
+                expanded: false,
+                selected: false,
             }
         })
 
         setVariants((prev) => [...prev, ...newVariants])
-    }
-
-    const handleVariantUpdate = (variantId: string, sizes: VariantSizeDetail[]) => {
-        setVariants((prev) => prev?.map((v) => (v.id === variantId ? { ...v, sizes } : v)))
-    }
-
-    const handleVariantDelete = (variantId: string) => {
-        setVariants((prev) => prev?.filter((v) => v.id !== variantId))
-    }
-
-    const handleVariantToggle = (variantId: string) => {
-        setVariants((prev) => prev?.map((v) => (v.id === variantId ? { ...v, isExpanded: !v.isExpanded } : v)))
     }
 
     const handleSubmit = async (isDraft = false) => {
@@ -191,14 +183,17 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
             }
 
             const variantsToSubmit = variants.flatMap(v => 
-                v.sizes.map(sizeDetail => ({
-                    color: { name: v.color.label, hex: v.color.value },
-                    size: sizeDetail.size,
-                    stock: sizeDetail.stock,
-                    price: sizeDetail.price,
-                    sku: sizeDetail.sku || undefined,
-                    images: []
-                }))
+                v.availableSizes.map(size => {
+                    const sizeDetail = v.details[size] || makeSizeDetail();
+                    return {
+                        color: { name: v.label || v.colorHex, hex: v.colorHex },
+                        size: size,
+                        stock: sizeDetail.stock || 0,
+                        price: sizeDetail.price || 0,
+                        sku: sizeDetail.sku || undefined,
+                        images: []
+                    }
+                })
             )
 
             await createAccessory({
@@ -369,47 +364,7 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
 
                                 {/* Set Variants Section */}
                                 <div className="space-y-4">
-                                    <h3 className="text-base font-semibold">Set variants</h3>
-
-                                    <div className="bg-muted/30 rounded-lg">
-                                        <Tabs defaultValue="colours" className="w-full">
-                                            <div className="flex items-center justify-between border-b px-4">
-                                                <TabsList className="bg-transparent p-0 h-auto">
-                                                    <TabsTrigger
-                                                        value="colours"
-                                                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3"
-                                                    >
-                                                        Colours
-                                                    </TabsTrigger>
-                                                    <TabsTrigger
-                                                        value="sizes"
-                                                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3"
-                                                    >
-                                                        Sizes
-                                                    </TabsTrigger>
-                                                    <TabsTrigger
-                                                        value="images"
-                                                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-3"
-                                                    >
-                                                        Add product images
-                                                    </TabsTrigger>
-                                                </TabsList>
-                                                <Button variant="ghost" size="icon">
-                                                    <Trash2Icon className="size-4" />
-                                                </Button>
-                                            </div>
-
-                                            <TabsContent value="colours" className="p-6">
-                                                <p className="text-sm text-muted-foreground text-center">No variant added yet</p>
-                                            </TabsContent>
-                                            <TabsContent value="sizes" className="p-6">
-                                                <p className="text-sm text-muted-foreground text-center">No variant added yet</p>
-                                            </TabsContent>
-                                            <TabsContent value="images" className="p-6">
-                                                <p className="text-sm text-muted-foreground text-center">No variant added yet</p>
-                                            </TabsContent>
-                                        </Tabs>
-                                    </div>
+                                    <SetVariantsTable variants={variants} onChange={setVariants} />
 
                                     <div className="flex items-center gap-4">
                                         <Button variant="outline" onClick={() => handleSubmit(true)} disabled={isSaving} className="px-8 bg-transparent">

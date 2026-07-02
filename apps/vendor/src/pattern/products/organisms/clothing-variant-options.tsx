@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import NiceModal from '@ebay/nice-modal-react';
-import { ChevronDown, ImagePlus, Plus, Trash2, X } from 'lucide-react';
+import NiceModal, { useModal } from '@ebay/nice-modal-react';
+import { ChevronDown, ImagePlus, Plus, Trash2, X, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FieldLabel } from '../atoms/field-label';
 import {
@@ -10,6 +10,10 @@ import {
   type SelectedFabric,
 } from './select-fabric-modal';
 import { cn } from '@/lib/utils';
+import { ColorMenuPopover } from '../molecules/color-menu-popover';
+import { PredefinedColor } from '../constants/predefined-colors';
+import AdvancedColorPickerModal from './advanced-color-picker-modal';
+import { AVAILABLE_COLORS, ColorOption } from '../types/variant.types';
 
 const SIZE_OPTIONS = [
   { value: 'xs', label: 'Extra small' },
@@ -145,16 +149,49 @@ const SizeField = ({
 export const VariantSelectOptions = ({
   onAddVariant,
 }: VariantSelectOptionsProps) => {
+  const colorPickerModal = useModal(AdvancedColorPickerModal);
   const [variantType, setVariantType] = useState<'colour' | 'fabric'>('colour');
-  const [selectedColor, setSelectedColor] = useState(SWATCHES[0]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [customColors, setCustomColors] = useState<ColorOption[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [fabrics, setFabrics] = useState<SelectedFabric[]>([]);
   const [activeFabricId, setActiveFabricId] = useState<string | null>(null);
 
+  const displayColors = [...AVAILABLE_COLORS, ...customColors];
+
+  const handlePredefinedColorSelect = (color: PredefinedColor) => {
+    const colorOption: ColorOption = {
+      value: color.value,
+      label: color.label,
+      hex: color.hex,
+    };
+    if (!displayColors.find((c) => c.value === color.value)) {
+      setCustomColors((prev) => [...prev, colorOption]);
+    }
+    setSelectedColors((prev) =>
+      prev.includes(color.value) ? prev.filter((c) => c !== color.value) : [...prev, color.value]
+    );
+  };
+
+  const handleOpenCustomPicker = async () => {
+    const result = (await colorPickerModal.show({ initialColor: '#A855F7' })) as { hex: string; label: string } | null;
+    if (result) {
+      const customColor: ColorOption = {
+        value: result.hex.replace('#', '').toLowerCase(),
+        label: result.label,
+        hex: result.hex,
+      };
+      setCustomColors((prev) => [...prev, customColor]);
+      if (!selectedColors.includes(customColor.value)) {
+        setSelectedColors((prev) => [...prev, customColor.value]);
+      }
+    }
+  };
+
   const activeFabric = fabrics.find((f) => f.id === activeFabricId) ?? null;
   const canAdd =
     selectedSizes.length > 0 &&
-    (variantType === 'colour' || Boolean(activeFabric));
+    (variantType === 'colour' ? selectedColors.length > 0 : Boolean(activeFabric));
 
   const pickFabrics = async () => {
     const picked = (await NiceModal.show(SelectFabricModal)) as
@@ -184,8 +221,14 @@ export const VariantSelectOptions = ({
         { imageUrl: activeFabric.imageUrl, label: activeFabric.name, colorHex: activeFabric.colorHex },
         sizeKeys
       );
-    } else {
-      onAddVariant({ colorHex: selectedColor }, sizeKeys);
+    } else if (variantType === 'colour') {
+      selectedColors.forEach((colorValue) => {
+        const colorObj = displayColors.find((c) => c.value === colorValue);
+        if (colorObj) {
+          onAddVariant({ colorHex: colorObj.hex, label: colorObj.label }, sizeKeys);
+        }
+      });
+      setSelectedColors([]);
     }
     setSelectedSizes([]);
   };
@@ -224,23 +267,42 @@ export const VariantSelectOptions = ({
       {variantType === 'colour' ? (
         <div className="mb-4">
           <FieldLabel>Colour</FieldLabel>
-          <div className="flex items-center gap-3 rounded-md border border-input bg-background p-3">
-            {SWATCHES.map((hex) => (
-              <button
-                key={hex}
-                type="button"
-                onClick={() => setSelectedColor(hex)}
-                style={{ backgroundColor: hex }}
-                className={cn(
-                  'size-9 rounded-md border-2 transition',
-                  selectedColor === hex
-                    ? 'border-primary ring-2 ring-ring ring-offset-1'
-                    : 'border-transparent'
-                )}
-                aria-label={`Select ${hex}`}
-              />
-            ))}
-          </div>
+          <ColorMenuPopover
+            onSelectColor={handlePredefinedColorSelect}
+            onOpenCustomPicker={handleOpenCustomPicker}
+            selectedColors={selectedColors}
+          >
+            <div className="min-h-[44px] flex items-center gap-2 flex-wrap px-3 py-2 border-2 border-border rounded-md cursor-pointer hover:border-border-input transition-colors bg-accent">
+              {selectedColors.length === 0 ? (
+                <span className="text-sm text-muted-foreground">Select colors...</span>
+              ) : (
+                selectedColors.map((colorValue) => {
+                  const color = displayColors.find((c) => c.value === colorValue);
+                  if (!color) return null;
+                  return (
+                    <div
+                      key={color.value}
+                      className="flex items-center gap-1 bg-card border border-border rounded-md px-2 py-1"
+                    >
+                      <div className="w-4 h-4 rounded-full border border-border" style={{ backgroundColor: color.hex }} />
+                      <span className="text-xs text-foreground">{color.label}</span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedColors((prev) => prev.filter((c) => c !== color.value));
+                        }}
+                        className="ml-1 hover:bg-accent rounded-full p-0.5"
+                      >
+                        <X className="w-3 h-3 text-muted-foreground hover:text-foreground" />
+                      </button>
+                    </div>
+                  );
+                })
+              )}
+              <Palette className="w-4 h-4 text-muted-foreground ml-auto" />
+            </div>
+          </ColorMenuPopover>
         </div>
       ) : (
         /* Fabric picker: thumbnails left, trash + add-image right */
