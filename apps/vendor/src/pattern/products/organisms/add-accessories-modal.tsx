@@ -24,6 +24,7 @@ import {
     useGetVendorTagsQuery,
     type ProductTag,
 } from "@/redux/services/taxonomy/taxonomy.api-slice"
+import { uploadSequentially } from "@/lib/utils"
 
 export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
     const { resolve, remove, visible } = useModal();
@@ -182,19 +183,32 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                 }
             }
 
-            const variantsToSubmit = variants.flatMap(v => 
-                v.availableSizes.map(size => {
-                    const sizeDetail = v.details[size] || makeSizeDetail();
-                    return {
-                        color: { name: v.label || v.colorHex, hex: v.colorHex },
-                        size: size,
-                        stock: sizeDetail.stock || 0,
-                        price: sizeDetail.price || 0,
-                        sku: sizeDetail.sku || undefined,
-                        images: []
+            const variantsToSubmit = await Promise.all(
+                variants.flatMap(async (v) => {
+                    let uploadedVariantImages: { url: string; public_id: string }[] = [];
+                    if (v.imageFiles && v.imageFiles.length > 0) {
+                        const res = await uploadSequentially(v.imageFiles, file => uploadImage(file).unwrap());
+                        uploadedVariantImages = res.map(r => ({ url: r.data?.url || '', public_id: r.data?.public_id || 'unknown' })).filter(img => Boolean(img.url));
                     }
+                    
+                    const finalVariantImages = [
+                        ...v.images.filter(url => !url.startsWith('blob:')).map((url) => ({ url, public_id: 'unknown' })),
+                        ...uploadedVariantImages,
+                    ];
+
+                    return Promise.all(v.availableSizes.map(async (size) => {
+                        const sizeDetail = v.details[size] || makeSizeDetail();
+                        return {
+                            color: { name: v.label || v.colorHex, hex: v.colorHex },
+                            size: size,
+                            stock: sizeDetail.stock || 0,
+                            price: sizeDetail.price || 0,
+                            sku: sizeDetail.sku || undefined,
+                            images: finalVariantImages
+                        }
+                    }))
                 })
-            )
+            ).then(res => res.flat());
 
             await createAccessory({
                 ...(editId ? { product_id: editId } : {}),

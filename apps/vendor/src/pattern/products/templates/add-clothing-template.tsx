@@ -58,6 +58,7 @@ import NiceModal from '@ebay/nice-modal-react';
 import { HotspotEditorModal } from '../organisms/hotspot-editor-modal';
 import { Layers } from 'lucide-react';
 import { useLazyGetStyleLibraryQuery } from '@/redux/services/style-library/style-library.api-slice';
+import { uploadSequentially } from '@/lib/utils';
 import { useGetCategoriesForTypeQuery } from '@/redux/services/taxonomy/taxonomy.api-slice';
 
 const countWords = (html: string) =>
@@ -324,7 +325,7 @@ export default function AddClothingTemplate() {
       
       let uploadedVariantImages: { url: string; public_id: string }[] = [];
       if (v.imageFiles && v.imageFiles.length > 0) {
-        const res = await Promise.all(v.imageFiles.map(file => uploadImage(file).unwrap()));
+        const res = await uploadSequentially(v.imageFiles, file => uploadImage(file).unwrap());
         uploadedVariantImages = res.map(r => ({ url: r.data?.url || '', public_id: r.data?.public_id || 'unknown' })).filter(img => Boolean(img.url));
       }
 
@@ -354,11 +355,12 @@ export default function AddClothingTemplate() {
 
     try {
       const localDefaultImages = defaultImages.filter((img) => img.isLocal && img.file);
-      const uploadedDefaults = await Promise.all(
-        localDefaultImages.map(async (img) => {
+      const uploadedDefaults = await uploadSequentially(
+        localDefaultImages,
+        async (img) => {
           const res = await uploadImage(img.file!).unwrap();
           return { url: res.data?.url || '', public_id: res.data?.public_id || 'unknown' };
-        })
+        }
       );
       
       const defaultImageUrls = [
@@ -366,11 +368,12 @@ export default function AddClothingTemplate() {
         ...uploadedDefaults.filter(img => !!img.url)
       ];
 
-      const uploadedExtras = await Promise.all(
-        extraFiles.map(async (file) => {
+      const uploadedExtras = await uploadSequentially(
+        extraFiles,
+        async (file) => {
           const res = await uploadImage(file).unwrap();
           return { url: res.data?.url || '', public_id: res.data?.public_id || 'unknown' };
-        })
+        }
       );
       
       const extraImageUrls = uploadedExtras.filter(img => !!img.url);

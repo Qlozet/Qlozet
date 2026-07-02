@@ -222,6 +222,22 @@ export const uploadSingleImage = async (
   }
 };
 
+export const uploadSequentially = async <T, R>(
+  items: T[],
+  uploadFn: (item: T) => Promise<R>
+): Promise<R[]> => {
+  const results: R[] = [];
+  for (const item of items) {
+    try {
+      results.push(await uploadFn(item));
+    } catch (e) {
+      console.error('Sequential upload failed for an item:', e);
+      throw e;
+    }
+  }
+  return results;
+};
+
 type SizeMap = { [key: string]: string };
 
 export const modifySizeHandler = (value: string): string => {
