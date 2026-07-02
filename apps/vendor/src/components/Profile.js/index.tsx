@@ -1,3 +1,4 @@
+// Trigger Vercel rebuild
 import Typography from '../Typography';
 import closeIcon from '@/public/assets/svg/close-square-icon.svg';
 import rotate from '@/public/assets/svg/rotate-icon.svg';
