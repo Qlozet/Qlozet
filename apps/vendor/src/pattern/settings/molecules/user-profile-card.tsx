@@ -1,10 +1,14 @@
 // User Profile Card - Molecule
 // Card showing user profile information with avatar
+// Profile picture upload is wired to backend
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Camera } from 'lucide-react';
+import { Camera, Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import { useUploadProfileImageMutation } from '@/redux/services/uploads/uploads.api-slice';
+import { useUpdateUserProfileMutation } from '@/redux/services/settings/settings.api-slice';
+import { toast } from 'sonner';
 
 interface UserProfileCardProps {
   fullName: string;
@@ -24,8 +28,45 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
   className,
 }) => {
   const imageUrl = avatarUrl || profilePicture;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [uploadImage, { isLoading: isUploading }] = useUploadProfileImageMutation();
+  const [updateUser] = useUpdateUserProfileMutation();
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const result = await uploadImage(file).unwrap();
+      const uploadedUrl = result?.data?.url || result?.url;
+
+      if (!uploadedUrl) {
+        toast.error('Upload failed — no URL returned');
+        return;
+      }
+
+      await updateUser({ profile_picture: uploadedUrl }).unwrap();
+      toast.success('Profile picture updated!');
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Failed to upload profile picture');
+    }
+
+    // Reset so same file can be re-selected
+    e.target.value = '';
+  };
+
   return (
     <div className={cn('bg-white rounded-lg p-6 shadow-sm', className)}>
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type='file'
+        accept='image/png,image/jpeg,image/webp'
+        className='hidden'
+        onChange={handleFileChange}
+      />
+
       {/* Avatar Section */}
       <div className='flex flex-col items-center'>
         <div className='relative'>
@@ -46,14 +87,22 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
               </div>
             )}
           </div>
-          <button className='absolute bottom-0 right-0 bg-white p-2.5 rounded-full shadow-md border-2 border-gray-100 hover:bg-gray-50'>
-            <Camera className='w-5 h-5 text-gray-700' />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            className='absolute bottom-0 right-0 bg-white p-2.5 rounded-full shadow-md border-2 border-gray-100 hover:bg-gray-50 disabled:opacity-50'
+          >
+            {isUploading ? (
+              <Loader2 className='w-5 h-5 text-gray-700 animate-spin' />
+            ) : (
+              <Camera className='w-5 h-5 text-gray-700' />
+            )}
           </button>
         </div>
 
         {/* User Info */}
         <h3 className='text-xl font-semibold text-gray-900 mt-6'>
-          {fullName || 'John Doe'}
+          {fullName || 'User'}
         </h3>
         <p className='text-sm text-gray-600 mt-2'>{registrationId}</p>
         <p className='text-sm text-gray-600 mt-1'>{email}</p>

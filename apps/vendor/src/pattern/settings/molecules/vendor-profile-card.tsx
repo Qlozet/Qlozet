@@ -1,10 +1,14 @@
 // Vendor Profile Card - Molecule
 // Card showing vendor profile information and document upload options
+// Upload buttons are now wired to the backend upload + business update endpoints
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { Camera, Upload } from 'lucide-react';
+import { Camera, Upload, Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import { useUploadProfileImageMutation } from '@/redux/services/uploads/uploads.api-slice';
+import { useUpdateBusinessProfileMutation } from '@/redux/services/settings/settings.api-slice';
+import { toast } from 'sonner';
 
 interface VendorProfileCardProps {
   vendorName: string;
@@ -25,6 +29,52 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   coverImageUrl,
   className,
 }) => {
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const cacInputRef = useRef<HTMLInputElement>(null);
+
+  const [uploadImage, { isLoading: isUploading }] = useUploadProfileImageMutation();
+  const [updateBusiness] = useUpdateBusinessProfileMutation();
+
+  const handleImageUpload = async (
+    file: File,
+    field: 'business_logo_url' | 'cover_image_url' | 'cac_document_url'
+  ) => {
+    try {
+      const result = await uploadImage(file).unwrap();
+      const imageUrl = result?.data?.url || result?.url;
+
+      if (!imageUrl) {
+        toast.error('Upload failed — no URL returned');
+        return;
+      }
+
+      // Update business profile with the new image URL
+      await updateBusiness({ [field]: imageUrl } as any).unwrap();
+      toast.success(
+        field === 'business_logo_url'
+          ? 'Logo updated!'
+          : field === 'cover_image_url'
+          ? 'Cover image updated!'
+          : 'CAC document uploaded!'
+      );
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Failed to upload image');
+    }
+  };
+
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: 'business_logo_url' | 'cover_image_url' | 'cac_document_url'
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleImageUpload(file, field);
+    }
+    // Reset so same file can be re-selected
+    e.target.value = '';
+  };
+
   const getStatusColor = () => {
     switch (status) {
       case 'approved':
@@ -51,6 +101,29 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
 
   return (
     <div className={cn('bg-white rounded-lg p-6 shadow-sm', className)}>
+      {/* Hidden file inputs */}
+      <input
+        ref={logoInputRef}
+        type='file'
+        accept='image/png,image/svg+xml,image/jpeg,image/webp'
+        className='hidden'
+        onChange={(e) => handleFileChange(e, 'business_logo_url')}
+      />
+      <input
+        ref={coverInputRef}
+        type='file'
+        accept='image/png,image/jpeg,image/webp'
+        className='hidden'
+        onChange={(e) => handleFileChange(e, 'cover_image_url')}
+      />
+      <input
+        ref={cacInputRef}
+        type='file'
+        accept='image/png,image/jpeg,application/pdf'
+        className='hidden'
+        onChange={(e) => handleFileChange(e, 'cac_document_url')}
+      />
+
       {/* Cover Image Section */}
       <div className='relative h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4 overflow-hidden'>
         {coverImageUrl ? (
@@ -65,8 +138,16 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
             <div className='w-full h-full bg-gradient-to-br from-orange-100 via-purple-100 to-blue-100' />
           </div>
         )}
-        <button className='absolute top-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-50'>
-          <Camera className='w-4 h-4 text-gray-600' />
+        <button
+          onClick={() => coverInputRef.current?.click()}
+          disabled={isUploading}
+          className='absolute top-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-50'
+        >
+          {isUploading ? (
+            <Loader2 className='w-4 h-4 text-gray-600 animate-spin' />
+          ) : (
+            <Camera className='w-4 h-4 text-gray-600' />
+          )}
         </button>
       </div>
 
@@ -90,8 +171,16 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
               </div>
             )}
           </div>
-          <button className='absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-gray-200 hover:bg-gray-50'>
-            <Camera className='w-4 h-4 text-gray-600' />
+          <button
+            onClick={() => logoInputRef.current?.click()}
+            disabled={isUploading}
+            className='absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-gray-200 hover:bg-gray-50'
+          >
+            {isUploading ? (
+              <Loader2 className='w-4 h-4 text-gray-600 animate-spin' />
+            ) : (
+              <Camera className='w-4 h-4 text-gray-600' />
+            )}
           </button>
         </div>
 
@@ -108,17 +197,29 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
 
       {/* Upload Buttons */}
       <div className='space-y-3 mt-6'>
-        <button className='w-full flex items-center gap-3 px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors'>
+        <button
+          onClick={() => logoInputRef.current?.click()}
+          disabled={isUploading}
+          className='w-full flex items-center gap-3 px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50'
+        >
           <Upload className='w-5 h-5 text-gray-600' />
           <span className='text-sm text-gray-700'>Upload SVG/PNG logo</span>
         </button>
 
-        <button className='w-full flex items-center gap-3 px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors'>
+        <button
+          onClick={() => coverInputRef.current?.click()}
+          disabled={isUploading}
+          className='w-full flex items-center gap-3 px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50'
+        >
           <Upload className='w-5 h-5 text-gray-600' />
           <span className='text-sm text-gray-700'>Upload Cover image</span>
         </button>
 
-        <button className='w-full flex items-center gap-3 px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors'>
+        <button
+          onClick={() => cacInputRef.current?.click()}
+          disabled={isUploading}
+          className='w-full flex items-center gap-3 px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50'
+        >
           <Upload className='w-5 h-5 text-gray-600' />
           <span className='text-sm text-gray-700'>Upload CAC Document</span>
         </button>
