@@ -74,7 +74,17 @@ const TAG_GROUPS: TagGroup[] = [
   },
 ];
 
-const STYLE_TYPES = ['Neckline', 'Sleeve', 'Hemline', 'Collar', 'Fit', 'Waistline'];
+const STYLE_TYPES = [
+  'Neckline',
+  'Sleeve',
+  'Collar',
+  'Skirt',
+  'Trouser',
+  'Full Body',
+  'Bodice',
+  'Hemline',
+  'Back',
+];
 
 // "Add Styles" — two-panel modal (form + image preview). Resolves with the new
 // style, or null if cancelled.
