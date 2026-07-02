@@ -32,7 +32,7 @@ export function ColorMenuPopover({ onSelectColor, onOpenCustomPicker, children, 
             <PopoverContent className="w-56 py-5 px-2.5 bg-white" align="start">
                 <div className="space-y-3">
                     <h4 className="text-xs font-normal text-muted-foreground">Colour menu</h4>
-                    <ScrollArea className="h-96">
+                    <div className="h-[250px] overflow-y-auto pr-2">
                         <div className="w-full flex gap-x-2 gap-y-3 flex-wrap">
                             {/* Custom colour */}
                             <button
@@ -68,7 +68,7 @@ export function ColorMenuPopover({ onSelectColor, onOpenCustomPicker, children, 
                                 )
                             })}
                         </div>
-                    </ScrollArea>
+                    </div>
                 </div>
             </PopoverContent>
         </Popover>
