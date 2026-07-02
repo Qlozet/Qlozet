@@ -16,14 +16,12 @@ const Profile = ({
     <Sheet open={showProfile} onOpenChange={(open) => !open && showProfileHandler()}>
       <SheetContent
         side="right"
-        className="w-full overflow-y-auto p-0 sm:max-w-md !top-0 !bottom-0 !right-0 !h-full rounded-l-2xl sm:rounded-none !bg-white sidebar-scrollbar border-l border-[#E5E5EA]"
+        className="w-full overflow-y-auto p-0 sm:max-w-md !top-4 !bottom-4 !right-4 !h-[calc(100vh-2rem)] rounded-2xl custom-card-shadow !bg-white sidebar-scrollbar border border-gray-100"
       >
-        <div className="bg-white pb-8 min-h-full w-full h-full text-[#1C1C1E]">
+        <div className="bg-white rounded-2xl pb-8 min-h-full w-full h-full text-[#1C1C1E]">
           <SheetHeader className="px-6 py-6 pb-2">
-            <SheetTitle className="text-[17px] font-semibold text-[#1C1C1E] text-center w-full flex justify-between items-center">
-              <span className="w-5"></span>
+            <SheetTitle className="text-[17px] font-semibold text-[#1C1C1E] text-left w-full">
               Profile
-              <Image src={closeIcon} alt='close' className='w-5 h-5 cursor-pointer opacity-50 hover:opacity-100' onClick={showProfileHandler} unoptimized />
             </SheetTitle>
           </SheetHeader>
           
@@ -41,7 +39,7 @@ const Profile = ({
             </div>
             
             {/* Names */}
-            <Typography textColor="text-[#1C1C1E]" textWeight="font-semibold" textSize="text-[22px]" className="tracking-tight">
+            <Typography textColor="text-[#1C1C1E]" textWeight="font-semibold" textSize="text-[20px]" className="tracking-tight">
               {userDetails?.personalName}
             </Typography>
             <Typography textColor="text-[#8E8E93]" textWeight="font-medium" textSize="text-[15px]" className="mt-0.5">
@@ -52,7 +50,7 @@ const Profile = ({
           {/* Items & Profit */}
           <div className="flex justify-center items-center mt-8 mb-2 px-8">
             <div className="flex flex-col items-center flex-1">
-              <Typography textColor="text-[#1C1C1E]" textWeight="font-bold" textSize="text-[28px]" className="tracking-tight">
+              <Typography textColor="text-[#1C1C1E]" textWeight="font-bold" textSize="text-[22px]" className="tracking-tight">
                 {userDetails?.items?.toLocaleString() || '0'}
               </Typography>
               <Typography textColor="text-[#8E8E93]" textWeight="font-semibold" textSize="text-[10px]" className="tracking-widest uppercase mt-1">
@@ -61,7 +59,7 @@ const Profile = ({
             </div>
             
             <div className="flex flex-col items-center flex-1">
-              <Typography textColor="text-[#1C1C1E]" textWeight="font-bold" textSize="text-[28px]" className="tracking-tight">
+              <Typography textColor="text-[#1C1C1E]" textWeight="font-bold" textSize="text-[22px]" className="tracking-tight">
                 ${userDetails?.profit?.toLocaleString() || '0'}
               </Typography>
               <Typography textColor="text-[#8E8E93]" textWeight="font-semibold" textSize="text-[10px]" className="tracking-widest uppercase mt-1">
@@ -83,7 +81,7 @@ const Profile = ({
             <div className="flex items-center gap-3 mb-1">
               <Rating newRating={Math.round(userDetails?.averageRating || 0)} />
               <div className="flex items-baseline gap-1.5">
-                <Typography textColor="text-[#1C1C1E]" textWeight="font-bold" textSize="text-[22px]">
+                <Typography textColor="text-[#1C1C1E]" textWeight="font-bold" textSize="text-[18px]">
                   {userDetails?.averageRating || '0'}
                 </Typography>
                 <Typography textColor="text-[#8E8E93]" textWeight="font-medium" textSize="text-[13px]">
