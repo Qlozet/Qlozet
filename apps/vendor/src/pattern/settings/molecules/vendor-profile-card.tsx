@@ -1,14 +1,13 @@
 // Vendor Profile Card - Molecule
 // Card showing vendor profile information and document upload options
-// Uploads go to Cloudinary via POST /uploads/profile
-// Note: No backend endpoint exists yet for saving logo/cover URLs to Business record
-// The uploaded image shows immediately via local state
+// Uploads go to Cloudinary via POST /uploads/profile, then URL is saved to Business via PATCH /business/profile
 
 import React, { useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Camera, Upload, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useUploadProfileImageMutation } from '@/redux/services/uploads/uploads.api-slice';
+import { useUpdateBusinessProfileDetailsMutation } from '@/redux/services/settings/settings.api-slice';
 import { toast } from 'sonner';
 
 interface VendorProfileCardProps {
@@ -39,6 +38,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   const [localCover, setLocalCover] = useState<string | null>(null);
 
   const [uploadImage, { isLoading: isUploading }] = useUploadProfileImageMutation();
+  const [updateBusinessDetails] = useUpdateBusinessProfileDetailsMutation();
 
   const handleImageUpload = async (
     file: File,
@@ -46,12 +46,17 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   ) => {
     try {
       const result = await uploadImage(file).unwrap();
-      const imageUrl = result?.data?.url || result?.url;
+      const imageUrl = result?.data?.url || (result as any)?.url;
 
       if (!imageUrl) {
         toast.error('Upload failed — no URL returned');
         return;
       }
+
+      const payloadKey = type === 'logo' ? 'business_logo_url' : type === 'cover' ? 'cover_image_url' : 'cac_document_url';
+      
+      // Save URL to business profile
+      await updateBusinessDetails({ [payloadKey]: type === 'cac' ? [imageUrl] : imageUrl } as any).unwrap();
 
       // Update local state to show the image immediately
       if (type === 'logo') {

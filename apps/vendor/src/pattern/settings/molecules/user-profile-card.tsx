@@ -40,7 +40,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
 
     try {
       const result = await uploadImage(file).unwrap();
-      const uploadedUrl = result?.data?.url || result?.url;
+      const uploadedUrl = result?.data?.url || (result as any)?.url;
 
       if (!uploadedUrl) {
         toast.error('Upload failed — no URL returned');

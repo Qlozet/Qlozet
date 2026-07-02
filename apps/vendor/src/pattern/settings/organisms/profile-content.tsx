@@ -11,11 +11,13 @@ import { UserProfileCard } from '../molecules/user-profile-card';
 import {
   useGetBusinessProfileQuery,
   useUpdateBusinessProfileMutation,
+  useUpdateBusinessProfileDetailsMutation,
   useGetUserProfileQuery,
   useUpdateUserProfileMutation,
 } from '@/redux/services/settings/settings.api-slice';
 import type {
   UpdateBusinessProfilePayload,
+  UpdateBusinessProfileDetailsPayload,
   UpdateUserProfilePayload,
 } from '@/redux/services/settings/settings.api-slice';
 import { toast } from 'sonner';
@@ -49,21 +51,39 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
   const [updateBusiness, { isLoading: isUpdatingBusiness }] =
     useUpdateBusinessProfileMutation();
 
+  const [updateBusinessDetails, { isLoading: isUpdatingBusinessDetails }] =
+    useUpdateBusinessProfileDetailsMutation();
+
   const [updateUser, { isLoading: isUpdatingUser }] =
     useUpdateUserProfileMutation();
 
   const handleOrganizationSubmit = async (formData: any) => {
     try {
-      // PATCH /business/address only accepts address fields
-      // (it validates the address via the logistics/shipping service)
-      const payload: UpdateBusinessProfilePayload = {
+      // Address fields go to PATCH /business/address
+      const addressPayload: UpdateBusinessProfilePayload = {
         address: formData.address,
         country: formData.country,
         state: formData.state,
         city: formData.city,
         zip_code: formData.zipCode || '',
       };
-      await updateBusiness(payload).unwrap();
+
+      // Other fields go to PATCH /business/profile
+      const detailsPayload: UpdateBusinessProfileDetailsPayload = {
+        business_name: formData.businessName,
+        business_email: formData.email,
+        business_phone_number: formData.phoneNumber,
+        website: formData.website,
+        description: formData.about,
+        year_founded: formData.yearFounded,
+        nin: formData.nin,
+        bvn: formData.bvn,
+      };
+
+      await Promise.all([
+        updateBusiness(addressPayload).unwrap(),
+        updateBusinessDetails(detailsPayload).unwrap(),
+      ]);
       toast.success('Organization profile updated successfully');
     } catch (error: any) {
       toast.error(error?.data?.message || 'Failed to update organization profile');
@@ -128,7 +148,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
                 timeZone: businessData?.time_zone || '',
               }}
               onSubmit={handleOrganizationSubmit}
-              isLoading={isUpdatingBusiness}
+              isLoading={isUpdatingBusiness || isUpdatingBusinessDetails}
             />
           ) : (
             <UserProfileForm
