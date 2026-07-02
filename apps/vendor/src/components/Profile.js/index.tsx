@@ -6,6 +6,7 @@ import Performance from '../Performance';
 import Rating from '../Rating';
 import { useRef } from 'react';
 import { ProfileProps } from '../../types';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 const Profile = ({
   userDetails,
   showProfile,
@@ -19,45 +20,19 @@ const Profile = ({
     }
   };
   return (
-    <div>
-      <div>
-        <div
-          className='fixed bg-[rgba(0,0,0,.3)] h-screen w-screen top-0 right-0 flex justify-end sidebar-scrollbar'
-          style={{ zIndex: 300000 }}
-        >
-          {showProfile && (
-            <div
-              className='w-full h-full '
-              onClick={clickOutSide}
-              ref={outsideRef}
-            ></div>
-          )}
-          <div className='relative'>
-            {showProfile && (
-              <div
-                className='w-screen h-screen bg-white rounded-tl-lg lg:w-[350px] '
-                ref={profileRef}
-              >
-                <div className='bg-white rounded-tl-2xl'>
-                  <div>
-                    <div className='flex px-4 py-6 items-center justify-between'>
-                      <Typography
-                        textColor='text-primary'
-                        textWeight='font-bold'
-                        textSize='text-[18px]'
-                      >
-                        Profile
-                      </Typography>
-                      <Image
-                        src={closeIcon}
-                        alt=''
-                        onClick={showProfileHandler}
-                        className='cursor-pointer'
-                        unoptimized
-                      />
-                    </div>
-                    <div>
-                      <div className='items-center justify-center'>
+    <Sheet open={showProfile} onOpenChange={(open) => !open && showProfileHandler()}>
+      <SheetContent
+        side="right"
+        className="w-full overflow-y-auto p-0 sm:max-w-md !top-6 !bottom-6 !right-6 !h-[calc(100vh-3rem)] rounded-2xl custom-card-shadow bg-white sidebar-scrollbar"
+      >
+        <div className="bg-white rounded-2xl pb-6">
+          <SheetHeader className="px-6 py-6 pb-2">
+            <SheetTitle className="text-[22px] font-bold text-grey-black text-left">
+              Profile
+            </SheetTitle>
+          </SheetHeader>
+          <div>
+            <div className="items-center justify-center">
                         <Image
                           src={userDetails.profileImage}
                           width={30}
@@ -332,15 +307,10 @@ const Profile = ({
                   </Typography>
                 </div>
               </div>
-            </div> */}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
-      </div>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 
