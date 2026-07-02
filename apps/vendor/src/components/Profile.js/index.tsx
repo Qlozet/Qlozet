@@ -16,9 +16,9 @@ const Profile = ({
     <Sheet open={showProfile} onOpenChange={(open) => !open && showProfileHandler()}>
       <SheetContent
         side="right"
-        className="w-full overflow-y-auto p-0 sm:max-w-md !top-6 !bottom-6 !right-6 !h-[calc(100vh-3rem)] rounded-2xl custom-card-shadow bg-white sidebar-scrollbar"
+        className="w-full overflow-y-auto p-0 sm:max-w-md !top-6 !bottom-6 !right-6 !h-[calc(100vh-3rem)] rounded-2xl custom-card-shadow !bg-white sidebar-scrollbar"
       >
-        <div className="bg-white rounded-2xl pb-6">
+        <div className="bg-white rounded-2xl pb-6 min-h-full w-full h-full">
           <SheetHeader className="px-6 py-6 pb-2">
             <SheetTitle className="text-[22px] font-bold text-grey-black text-left">
               Profile
