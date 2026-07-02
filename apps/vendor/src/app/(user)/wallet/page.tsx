@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, SetStateAction } from 'react'
+import { useState, useEffect, SetStateAction, Suspense } from 'react'
 import DashboardTopCard from '@/components/DashboardTopCard'
 import vendorIcon from '@/public/assets/svg/vendor-total.svg'
 import customerIcon from '@/public/assets/svg/total-customer.svg'
@@ -317,4 +317,10 @@ const Wallet: React.FC = () => {
   )
 }
 
-export default Wallet
+export default function WalletPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center p-8">Loading...</div>}>
+      <Wallet />
+    </Suspense>
+  )
+}
