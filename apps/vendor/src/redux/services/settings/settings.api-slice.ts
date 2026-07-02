@@ -77,7 +77,6 @@ export interface UserProfileResponse {
   email_verified: boolean;
 }
 
-// Update payloads
 // Matches backend CreateBusinessAddressDto
 export interface UpdateBusinessProfilePayload {
   address?: string;
@@ -87,6 +86,21 @@ export interface UpdateBusinessProfilePayload {
   zip_code?: string;
   latitude?: number;
   longitude?: number;
+}
+
+export interface UpdateBusinessProfileDetailsPayload {
+  business_name?: string;
+  business_email?: string;
+  business_phone_number?: string;
+  website?: string;
+  description?: string;
+  year_founded?: string;
+  business_logo_url?: string;
+  business_logo_svg_url?: string;
+  cover_image_url?: string;
+  cac_document_url?: string[];
+  nin?: string;
+  bvn?: string;
 }
 
 export interface UpdateUserProfilePayload {
@@ -139,6 +153,15 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
     updateBusinessProfile: builder.mutation<any, UpdateBusinessProfilePayload>({
       query: (data) => ({
         url: '/business/address',
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: ['VendorDetails'],
+    }),
+
+    updateBusinessProfileDetails: builder.mutation<any, UpdateBusinessProfileDetailsPayload>({
+      query: (data) => ({
+        url: '/business/profile',
         method: 'PATCH',
         body: data,
       }),
@@ -289,6 +312,7 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
 export const {
   useGetBusinessProfileQuery,
   useUpdateBusinessProfileMutation,
+  useUpdateBusinessProfileDetailsMutation,
   useGetUserProfileQuery,
   useUpdateUserProfileMutation,
   useGetVendorDetailsQuery,
