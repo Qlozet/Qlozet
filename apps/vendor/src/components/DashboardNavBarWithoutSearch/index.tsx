@@ -127,7 +127,7 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
           )}
         </div>
 
-        <div className='hidden lg:w-full lg:flex items-center justify-between bg-white py-2 px-6 rounded-[12px]'>
+        <div className='hidden lg:w-full lg:flex items-center gap-6 bg-white py-2 px-6 rounded-[12px]'>
           <div className='hidden md:block'>
             <Typography
               textColor='text-dark'
@@ -137,9 +137,9 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
               {capitalizedName}
             </Typography>
           </div>
-          <div className='flex items-center justify-end gap-6'>
-            {addSearch && (
-              <div className='relative min-w-96'>
+          {addSearch && (
+            <div className='flex flex-1 justify-center'>
+              <div className='relative w-full max-w-xl'>
                 <div className='absolute left-2 top-[10px]'>
                   <Image alt='Search icon' src={searchNormalicon} />
                 </div>
@@ -150,7 +150,9 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
                   className='py-2 pl-12 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark focus:outline-none focus:border-none border-gray-2 rounded-[12px] overflow-hidden text-sm text-font-light placeholder:font-300 bg-[#F8F9FA]'
                 />
               </div>
-            )}
+            </div>
+          )}
+          <div className='flex items-center justify-end gap-6 ml-auto'>
             <div className='flex items-center justify-between gap-4'>
               <div
                 className='rounded-[12px] p-2 bg-[#F8F9FA] cursor-pointer'

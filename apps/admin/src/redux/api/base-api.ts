@@ -43,6 +43,8 @@ export const baseAPI = createApi({
     'Roles',
     'TeamMember',
     'TeamMembers',
+    'Collection',
+    'Collections',
   ],
   endpoints: () => ({}),
 });

@@ -10,20 +10,42 @@ interface ApiResponse<T> {
   data: T;
 }
 
-interface WalletBalance {
-  balance: number;
-  currency: string;
-  pendingBalance?: number;
+// TODO(api): the Wallets endpoints have no documented response schemas yet
+// (Swagger returns `200` with no body). Type their `data` as `unknown` for now
+// and tighten these once the backend provides the shapes.
+type PendingData = unknown;
+
+// POST /wallets/fund initializes a Paystack transaction and returns the hosted
+// checkout URL to redirect the user to (plus the reference used later by
+// GET /wallets/verify/{reference}). Field names follow Paystack's initialize
+// response; kept permissive since the envelope isn't documented in Swagger.
+export interface FundWalletResponseData {
+  authorization_url?: string;
+  access_code?: string;
+  reference?: string;
+  [key: string]: unknown;
 }
 
-interface Transaction {
-  id: string;
-  amount: number;
-  type: 'credit' | 'debit';
-  description: string;
-  status: 'pending' | 'completed' | 'failed';
-  date: string;
-  reference?: string;
+// Vendor transactions arrive loosely typed (the /transactions/vendor response
+// shape is undocumented in Swagger), so keep this permissive and read fields
+// tolerantly in the UI layer (see pattern/wallet/lib/transaction-fields.ts).
+export type VendorTransaction = Record<string, unknown> & { _id?: string };
+
+// GET /transactions/vendor is paginated and requires a `status` filter.
+export interface VendorTransactionsParams {
+  /** Transaction status filter. `all` returns every status. */
+  status?: string;
+  page?: number;
+  size?: number;
+}
+
+// The endpoint returns a paginated envelope; the exact key names aren't
+// documented, so the UI normalizes `data` tolerantly.
+export interface PaginatedTransactions {
+  data?: VendorTransaction[];
+  total?: number;
+  page?: number;
+  size?: number;
 }
 
 interface Bank {
@@ -61,8 +83,11 @@ interface TransferRequest {
 // API Slice
 export const walletApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
-    // Get wallet balance (backend: GET /wallets/balance)
-    getWalletBalance: builder.query<ApiResponse<WalletBalance>, void>({
+    // ─── Wallets ─────────────────────────────────────────────────────────────
+    // https://qlozet-backend.fly.dev/api-docs#/Wallets
+
+    // Get wallet balance (GET /wallets/balance)
+    getWalletBalance: builder.query<ApiResponse<PendingData>, void>({
       query: () => ({
         url: '/wallets/balance',
         method: 'GET',
@@ -70,8 +95,11 @@ export const walletApiSlice = baseAPI.injectEndpoints({
       providesTags: ['WalletBalance'],
     }),
 
-    // Fund wallet via Paystack (backend: POST /wallets/fund)
-    fundWallet: builder.mutation<ApiResponse<unknown>, { amount: number }>({
+    // Fund wallet via Paystack (POST /wallets/fund)
+    fundWallet: builder.mutation<
+      ApiResponse<FundWalletResponseData>,
+      { amount: number }
+    >({
       query: (body) => ({
         url: '/wallets/fund',
         method: 'POST',
@@ -80,25 +108,60 @@ export const walletApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['WalletBalance', 'Transaction'],
     }),
 
-    // Get token price quote (backend: GET /wallets/price)
-    getWalletPrice: builder.query<
-      ApiResponse<{ price: number; currency: string; tokens: number }>,
-      { tokens: number; currency: string }
-    >({
-      query: ({ tokens, currency }) => ({
-        url: `/wallets/price?tokens=${tokens}&currency=${currency}`,
+    // Verify a Paystack payment and credit the wallet
+    // (GET /wallets/verify/{reference})
+    verifyWalletPayment: builder.query<ApiResponse<PendingData>, string>({
+      query: (reference) => ({
+        url: `/wallets/verify/${reference}`,
         method: 'GET',
       }),
+      providesTags: ['WalletBalance', 'Transaction'],
     }),
 
-    // Get wallet transactions
-    getWalletTransactions: builder.query<ApiResponse<Transaction[]>, void>({
-      query: () => ({
-        url: '/vendor/wallet/transactions',
-        method: 'GET',
-      }),
+    // Get token price quote (GET /wallets/price?tokens=&currency=)
+    getWalletPrice: builder.query<
+      ApiResponse<PendingData>,
+      { tokens: number; currency: string }
+    >({
+      query: ({ tokens, currency }) => {
+        const search = new URLSearchParams({
+          tokens: String(tokens),
+          currency,
+        });
+        return {
+          url: `/wallets/price?${search.toString()}`,
+          method: 'GET',
+        };
+      },
+    }),
+
+    // ─── Transactions ────────────────────────────────────────────────────────
+
+    // Get vendor transactions (backend: GET /transactions/vendor).
+    // Paginated; `status` is required by the backend ('all' returns everything).
+    getWalletTransactions: builder.query<
+      ApiResponse<PaginatedTransactions>,
+      VendorTransactionsParams | void
+    >({
+      query: (params) => {
+        const { status = 'all', page = 1, size = 100 } = params ?? {};
+        const search = new URLSearchParams({
+          status,
+          page: String(page),
+          size: String(size),
+        });
+        return {
+          url: `/transactions/vendor?${search.toString()}`,
+          method: 'GET',
+        };
+      },
       providesTags: ['Transaction'],
     }),
+
+    // ─── Transfer / Beneficiaries ────────────────────────────────────────────
+    // ⚠️ NOT in the backend Swagger. These `/vendor/*` URLs are unverified
+    // guesses kept only so the legacy Send-money components still compile.
+    // Reconcile against real endpoints before wiring the Send-money flow.
 
     // Get available banks
     getBanks: builder.query<ApiResponse<Bank[]>, void>({
@@ -160,6 +223,8 @@ export const {
   useFundWalletMutation,
   useGetWalletPriceQuery,
   useGetWalletTransactionsQuery,
+  useVerifyWalletPaymentQuery,
+  useLazyVerifyWalletPaymentQuery,
   useGetBanksQuery,
   useLazyVerifyAccountNumberQuery,
   useGetBeneficiariesQuery,

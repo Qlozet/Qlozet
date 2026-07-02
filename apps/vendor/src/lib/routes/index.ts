@@ -22,6 +22,7 @@ export const APP_ROUTES = {
   productsAccessories: '/products/accessories',
   productsFabrics: '/products/fabrics',
   productsCollections: '/products/collections',
+  productsCollectionsCreate: '/products/collections/create',
   productsVideos: '/products/videos',
   wallet: '/wallet',
   users: '/users',

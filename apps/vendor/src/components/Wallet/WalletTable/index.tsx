@@ -93,7 +93,7 @@ const WalletTable = ({
                   handleExport(data);
                 }}
               >
-                <Image src={exportIcon} />
+                <Image src={exportIcon} alt='Export' />
               </div>
             </div>
           </div>
