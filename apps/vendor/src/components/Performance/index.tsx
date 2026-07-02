@@ -1,18 +1,18 @@
 const Performance = ({ name, value, color }) => {
   return (
-    <div className='flex items-center w-full justify-between gap-4 my-2'>
-      <div className=' w-[30%]'>{name}</div>
-      <div className='w-[65%]'>
-        <div className='h-3 rounded-[15px] bg-gray-300'>
+    <div className='flex items-center w-full justify-between gap-3 my-2 text-[12px]'>
+      <div className='w-[22%] truncate font-medium'>{name}</div>
+      <div className='flex-1'>
+        <div className='h-2 rounded-[6px] bg-[#F2F2F7] w-full'>
           <div
-            className={`${color} h-3 rounded-[15px]`}
+            className={`${color} h-2 rounded-[6px]`}
             style={{
-              width: `${value}%`,
+              width: `${Math.min(value, 100)}%`,
             }}
           ></div>
         </div>
       </div>
-      <div className='w-[10%]'>{value}</div>
+      <div className='w-[12%] text-right font-medium'>{value}</div>
     </div>
   );
 };
