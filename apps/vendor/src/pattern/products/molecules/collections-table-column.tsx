@@ -23,8 +23,25 @@ const MAX_VISIBLE_CONDITIONS = 3
 
 // Humanize the condition `field` (e.g. "product_category" → "Product category").
 const FIELD_LABELS: Record<string, string> = {
-  product_category: 'Product category',
-  category: 'Product category',
+  // Dot-notation paths (current/correct)
+  'clothing.taxonomy.product_type': 'Product Type',
+  'clothing.taxonomy.categories': 'Category',
+  'clothing.taxonomy.audience': 'Audience',
+  'clothing.taxonomy.attributes': 'Attributes',
+  'clothing.name': 'Product Name',
+  'clothing.type': 'Customize Type',
+  'base_price': 'Price',
+  'kind': 'Product Kind',
+  'status': 'Status',
+  'fabric.taxonomy.product_type': 'Fabric Type',
+  'fabric.taxonomy.categories': 'Fabric Category',
+  'fabric.taxonomy.audience': 'Fabric Audience',
+  'accessory.taxonomy.product_type': 'Accessory Type',
+  'accessory.taxonomy.categories': 'Accessory Category',
+  // Legacy field names (for backward compat with old collections)
+  product_category: 'Product Category',
+  category: 'Product Category',
+  product_sub_category: 'Sub-Category',
   product_tags: 'Product Tags',
   tags: 'Product Tags',
   product_type: 'Product Type',
@@ -32,7 +49,7 @@ const FIELD_LABELS: Record<string, string> = {
   price: 'Price',
   brand: 'Brand',
   audience: 'Audience',
-  name: 'Product name',
+  name: 'Product Name',
 }
 
 // Humanize the condition `operator` (e.g. "is_equal_to" → "is equal to").
@@ -41,6 +58,9 @@ const OPERATOR_LABELS: Record<string, string> = {
   not_equal_to: 'is not equal to',
   greater_than: 'is greater than',
   less_than: 'is less than',
+  contains: 'contains',
+  starts_with: 'starts with',
+  ends_with: 'ends with',
 }
 
 const humanizeField = (field: string): string =>
