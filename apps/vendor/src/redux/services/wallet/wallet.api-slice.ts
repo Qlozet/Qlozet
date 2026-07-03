@@ -98,7 +98,7 @@ export const walletApiSlice = baseAPI.injectEndpoints({
     // Fund wallet via Paystack (POST /wallets/fund)
     fundWallet: builder.mutation<
       ApiResponse<FundWalletResponseData>,
-      { amount: number }
+      { amount: number; callback_url?: string }
     >({
       query: (body) => ({
         url: '/wallets/fund',
