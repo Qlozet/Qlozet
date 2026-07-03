@@ -346,19 +346,22 @@ export const CollectionsCreateTemplate = () => {
 
     if (isEditing && isLoadingCollection) {
         return (
-            <div className='w-full bg-background pb-10'>
-                <div className='mb-6'>
-                    <GoBackButton href={APP_ROUTES.productsCollections} />
-                </div>
-                <div className='flex h-64 items-center justify-center text-sm text-muted-foreground'>
-                    Loading collection…
+            <div className='w-full min-h-screen h-fit pb-10'>
+                <div className='mx-auto max-w-7xl space-y-6'>
+                    <div className='mb-6'>
+                        <GoBackButton href={APP_ROUTES.productsCollections} />
+                    </div>
+                    <div className='flex h-64 items-center justify-center text-sm text-muted-foreground'>
+                        Loading collection…
+                    </div>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className='w-full bg-background pb-10'>
+        <div className='w-full min-h-screen h-fit pb-10'>
+            <div className='mx-auto max-w-7xl space-y-6'>
             {/* Go Back */}
             <div className='mb-6'>
                 <GoBackButton href={APP_ROUTES.productsCollections} />
@@ -857,6 +860,7 @@ export const CollectionsCreateTemplate = () => {
                     </div>
                 </form>
             </Form>
+            </div>
         </div>
     )
 }
