@@ -78,7 +78,10 @@ export const FundWithPaystackModal = create(() => {
 
   const onSubmit = async (values: FundFormData) => {
     try {
-      const response = await fundWallet({ amount: Number(values.amount) }).unwrap();
+      const response = await fundWallet({ 
+        amount: Number(values.amount),
+        callback_url: window.location.origin + '/wallet', 
+      }).unwrap();
       const checkoutUrl = readAuthorizationUrl(response?.data);
 
       if (!checkoutUrl) {
