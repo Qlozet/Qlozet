@@ -37,6 +37,24 @@ import {
 } from '@/redux/services/wallet/wallet.api-slice';
 import paystackLogo from '@/public/assets/image/paystack-logo.png';
 
+declare global {
+  interface Window {
+    PaystackPop?: any;
+  }
+}
+
+const loadPaystack = (): Promise<boolean> => {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined') return resolve(false);
+    if (window.PaystackPop) return resolve(true);
+    const script = document.createElement('script');
+    script.src = 'https://js.paystack.co/v2/inline.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 // Read the Paystack checkout URL from the (undocumented) response envelope,
 // tolerating a couple of likely nestings/casings.
 const readAuthorizationUrl = (
@@ -50,6 +68,30 @@ const readAuthorizationUrl = (
     (nested.authorization_url as string | undefined) ??
     (nested.authorizationUrl as string | undefined);
   return typeof url === 'string' && url ? url : undefined;
+};
+
+const readAccessCode = (
+  data: FundWalletResponseData | undefined
+): string | undefined => {
+  if (!data) return undefined;
+  const nested = (data.data ?? {}) as Record<string, unknown>;
+  const code =
+    data.access_code ??
+    (data.accessCode as string | undefined) ??
+    (nested.access_code as string | undefined) ??
+    (nested.accessCode as string | undefined);
+  return typeof code === 'string' && code ? code : undefined;
+};
+
+const readReference = (
+  data: FundWalletResponseData | undefined
+): string | undefined => {
+  if (!data) return undefined;
+  const nested = (data.data ?? {}) as Record<string, unknown>;
+  const ref =
+    data.reference ??
+    (nested.reference as string | undefined);
+  return typeof ref === 'string' && ref ? ref : undefined;
 };
 
 const fundSchema = z.object({
@@ -83,7 +125,34 @@ export const FundWithPaystackModal = create(() => {
         callback_url: window.location.origin + '/wallet', 
       }).unwrap();
       const checkoutUrl = readAuthorizationUrl(response?.data);
+      const accessCode = readAccessCode(response?.data);
+      const reference = readReference(response?.data);
 
+      if (accessCode) {
+        // Use Paystack Popup (Inline)
+        const isLoaded = await loadPaystack();
+        if (isLoaded) {
+          handleClose(); // Close the nice-modal dialog first
+          const paystack = new window.PaystackPop();
+          paystack.resumeTransaction(accessCode, {
+            onSuccess: (transaction: any) => {
+              const ref = transaction?.reference || reference;
+              if (ref) {
+                // Redirect back to wallet page with reference so it verifies
+                window.location.href = `${window.location.origin}/wallet?reference=${ref}`;
+              } else {
+                toast.error('Payment successful, but no reference returned. Please check your balance.');
+              }
+            },
+            onCancel: () => {
+              toast.info('Payment window closed.');
+            },
+          });
+          return;
+        }
+      }
+
+      // Fallback to hosted checkout if no access code or script failed to load
       if (!checkoutUrl) {
         toast.error(
           response?.message ||
@@ -92,8 +161,6 @@ export const FundWithPaystackModal = create(() => {
         return;
       }
 
-      // Hand off to Paystack's hosted checkout. Verification happens when the
-      // user is redirected back to the wallet page.
       window.location.href = checkoutUrl;
     } catch (error) {
       const message =
