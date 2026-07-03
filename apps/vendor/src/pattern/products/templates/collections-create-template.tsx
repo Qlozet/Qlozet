@@ -30,6 +30,7 @@ import {
 } from '@/redux/services/collections/collections.api-slice'
 import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice'
 import { useGetTaxonomyTreeQuery } from '@/redux/services/taxonomy/taxonomy.api-slice'
+import { useGetProductsByVendorQuery } from '@/redux/services/products/products.api-slice'
 import { APP_ROUTES } from '@/lib/routes'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -77,14 +78,63 @@ type CreateCollectionForm = z.infer<typeof createCollectionSchema>
 
 const cardClass = 'rounded-[10px] bg-card p-6 custom-card-shadow'
 
-// Products preview — will show real matched products once the collection is saved.
-interface PreviewProduct {
-    id: string
-    name: string
-    type: string
-    price: number
-    status: string
-    image?: string
+// ─── Client-side condition evaluation (mirrors backend getNestedValue + evaluateOperator) ───
+const getNestedValue = (obj: any, path: string): any => {
+    const keys = path.split('.')
+    let current: any = obj
+    for (const key of keys) {
+        if (Array.isArray(current)) {
+            current = current.map((item) => item?.[key]).filter((v) => v !== undefined)
+            if (current.length === 0) return undefined
+            if (current.length === 1) current = current[0]
+        } else {
+            current = current?.[key]
+            if (current === undefined) return undefined
+        }
+    }
+    return current
+}
+
+const evaluateOperator = (value: any, operator: string, expected: any): boolean => {
+    switch (operator) {
+        case 'is_equal_to':
+            return value == expected
+        case 'not_equal_to':
+            return value != expected
+        case 'greater_than':
+            return Number(value) > Number(expected)
+        case 'less_than':
+            return Number(value) < Number(expected)
+        case 'contains':
+            return String(value).toLowerCase().includes(String(expected).toLowerCase())
+        case 'starts_with':
+            return String(value).toLowerCase().startsWith(String(expected).toLowerCase())
+        case 'ends_with':
+            return String(value).toLowerCase().endsWith(String(expected).toLowerCase())
+        default:
+            return false
+    }
+}
+
+const evaluateProductAgainstConditions = (
+    product: any,
+    conditions: { field: string; operator: string; value: string }[],
+    conditionMatch: 'all' | 'any'
+): boolean => {
+    if (!conditions.length) return false
+    // Only evaluate conditions that are fully filled in
+    const validConditions = conditions.filter((c) => c.field && c.operator && c.value)
+    if (!validConditions.length) return false
+
+    const results = validConditions.map((cond) => {
+        const productValue = getNestedValue(product, cond.field)
+        if (Array.isArray(productValue)) {
+            return productValue.some((v) => evaluateOperator(v, cond.operator, cond.value))
+        }
+        return evaluateOperator(productValue, cond.operator, cond.value)
+    })
+
+    return conditionMatch === 'all' ? results.every((r) => r) : results.some((r) => r)
 }
 
 export const CollectionsCreateTemplate = () => {
@@ -105,12 +155,14 @@ export const CollectionsCreateTemplate = () => {
     // Fetch taxonomy tree for all kinds to populate dynamic dropdowns
     const { data: taxonomyTree } = useGetTaxonomyTreeQuery()
 
+    // Fetch all vendor products for live preview (large page to get all)
+    const { data: vendorProductsResponse } = useGetProductsByVendorQuery({ size: 200 })
+
     const isLoading = isCreating || isUpdating || isUploading
 
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [imageFile, setImageFile] = useState<File | null>(null)
     const [productSearch, setProductSearch] = useState('')
-    const [previewProducts, setPreviewProducts] = useState<PreviewProduct[]>([])
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const form = useForm<CreateCollectionForm>({
@@ -214,9 +266,32 @@ export const CollectionsCreateTemplate = () => {
         }
     }
 
-    const filteredProducts = previewProducts.filter((p) =>
-        p.name.toLowerCase().includes(productSearch.trim().toLowerCase())
-    )
+    // Watch conditions reactively for live product preview
+    const watchedConditions = form.watch('conditions')
+    const watchedConditionMatch = form.watch('condition_match')
+
+    // All raw vendor products from the API (before the transformResponse flattening)
+    const allRawProducts = useMemo(() => {
+        return vendorProductsResponse?.data?.data ?? []
+    }, [vendorProductsResponse])
+
+    // Live-evaluate conditions against all vendor products
+    const matchingProducts = useMemo(() => {
+        if (!allRawProducts.length || !watchedConditions?.length) return []
+        return allRawProducts.filter((product: any) =>
+            evaluateProductAgainstConditions(product, watchedConditions, watchedConditionMatch)
+        )
+    }, [allRawProducts, watchedConditions, watchedConditionMatch])
+
+    // Apply search filter on top of matched products
+    const filteredProducts = useMemo(() => {
+        const term = productSearch.trim().toLowerCase()
+        if (!term) return matchingProducts
+        return matchingProducts.filter((p: any) => {
+            const productName = p.name || p.clothing?.name || p.fabric?.name || p.accessory?.name || ''
+            return productName.toLowerCase().includes(term)
+        })
+    }, [matchingProducts, productSearch])
 
     const onSubmit = async (values: CreateCollectionForm) => {
         try {
@@ -569,81 +644,96 @@ export const CollectionsCreateTemplate = () => {
                             </button>
                         </div>
 
-                        {/* Products preview */}
+                        {/* Products preview — live matching */}
                         <div className={cardClass}>
-                            <h3 className='mb-4 text-base font-medium text-grey-black'>
-                                Products
-                            </h3>
+                            <div className='mb-4 flex items-center justify-between'>
+                                <h3 className='text-base font-medium text-grey-black'>
+                                    Products
+                                </h3>
+                                {matchingProducts.length > 0 && (
+                                    <span className='rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary'>
+                                        {matchingProducts.length} matching
+                                    </span>
+                                )}
+                            </div>
                             <div className='relative mb-4'>
                                 <Search className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400' />
                                 <Input
                                     value={productSearch}
                                     onChange={(e) => setProductSearch(e.target.value)}
-                                    placeholder='Search'
+                                    placeholder='Search matched products'
                                     className='h-12 rounded-lg pl-9'
                                 />
                             </div>
 
-                            <div className='space-y-3'>
+                            <div className='space-y-3 max-h-[400px] overflow-y-auto'>
                                 {filteredProducts.length === 0 ? (
                                     <p className='py-6 text-center text-sm text-muted-foreground'>
-                                        {isEditing
-                                            ? 'No products match your conditions yet.'
-                                            : 'Products matching your conditions will appear here after creating the collection.'}
+                                        {watchedConditions?.some((c: any) => c.field && c.operator && c.value)
+                                            ? 'No products match your conditions.'
+                                            : 'Fill in conditions above to see matching products.'}
                                     </p>
                                 ) : (
-                                    filteredProducts.map((product) => (
-                                        <div
-                                            key={product.id}
-                                            className='flex items-center gap-4 rounded-lg bg-muted/30 p-3'
-                                        >
-                                            <div className='relative size-12 shrink-0 overflow-hidden rounded-lg bg-white'>
-                                                {product.image ? (
-                                                    <Image
-                                                        src={product.image}
-                                                        alt={product.name}
-                                                        fill
-                                                        sizes='48px'
-                                                        className='object-cover'
-                                                    />
-                                                ) : (
-                                                    <div className='flex h-full w-full items-center justify-center text-[10px] text-gray-400'>
-                                                        No img
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className='flex-1'>
-                                                <p className='text-sm font-medium text-grey-black'>
-                                                    {product.name}
-                                                </p>
-                                                <p className='text-sm text-muted-foreground'>
-                                                    {formatCurrency(product.price, 'NGN')}
-                                                </p>
-                                            </div>
-                                            <div className='flex-1'>
-                                                <p className='text-sm text-grey-black'>
-                                                    {product.type}
-                                                </p>
-                                                <span className='mt-1 inline-flex rounded-md bg-green-50 px-2 py-0.5 text-xs text-green-700'>
-                                                    {product.status}
-                                                </span>
-                                            </div>
-                                            <Button
-                                                type='button'
-                                                variant='outline'
-                                                size='icon'
-                                                aria-label='Remove product'
-                                                onClick={() =>
-                                                    setPreviewProducts((prev) =>
-                                                        prev.filter((p) => p.id !== product.id)
-                                                    )
-                                                }
-                                                className='size-10 shrink-0 rounded-lg text-muted-foreground hover:text-red-600'
+                                    filteredProducts.map((product: any) => {
+                                        const kind = product.kind
+                                        const inner = product[kind] || {}
+                                        const productName = product.name || inner.name || 'Untitled'
+                                        const productImages = product.images || inner.images || inner.color_variants?.[0]?.images || []
+                                        const firstImage = productImages[0]
+                                        const imageUrl = typeof firstImage === 'string'
+                                            ? firstImage
+                                            : firstImage?.url
+                                        const safeImageUrl = imageUrl?.replace(/^http:\/\//i, 'https://')
+                                        const productPrice = product.price || product.base_price || 0
+                                        const productType = inner.type === 'customize' ? 'Customizable' : inner.type === 'non_customize' ? 'Non-customizable' : kind || ''
+                                        const productStatus = product.status || 'draft'
+
+                                        return (
+                                            <div
+                                                key={product._id}
+                                                className='flex items-center gap-4 rounded-lg bg-muted/30 p-3'
                                             >
-                                                <Trash2 className='size-4' />
-                                            </Button>
-                                        </div>
-                                    ))
+                                                <div className='relative size-12 shrink-0 overflow-hidden rounded-lg bg-white'>
+                                                    {safeImageUrl ? (
+                                                        <Image
+                                                            src={safeImageUrl}
+                                                            alt={productName}
+                                                            fill
+                                                            sizes='48px'
+                                                            className='object-cover'
+                                                        />
+                                                    ) : (
+                                                        <div className='flex h-full w-full items-center justify-center text-[10px] text-gray-400'>
+                                                            No img
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className='flex-1 min-w-0'>
+                                                    <p className='text-sm font-medium text-grey-black truncate'>
+                                                        {productName}
+                                                    </p>
+                                                    <p className='text-sm text-muted-foreground'>
+                                                        {formatCurrency(productPrice, 'NGN')}
+                                                    </p>
+                                                </div>
+                                                <div className='flex-1 min-w-0'>
+                                                    <p className='text-sm text-grey-black capitalize'>
+                                                        {productType}
+                                                    </p>
+                                                    <span className={cn(
+                                                        'mt-1 inline-flex rounded-md px-2 py-0.5 text-xs',
+                                                        productStatus === 'active'
+                                                            ? 'bg-green-50 text-green-700'
+                                                            : productStatus === 'draft'
+                                                              ? 'bg-yellow-50 text-yellow-700'
+                                                              : 'bg-gray-100 text-gray-600'
+                                                    )}>
+                                                        {productStatus}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        )
+                                    })
                                 )}
                             </div>
                         </div>
