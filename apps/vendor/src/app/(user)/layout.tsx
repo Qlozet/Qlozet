@@ -208,7 +208,7 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
         </header>
 
         {/* Page Content */}
-        <main className="w-full overflow-auto pt-6 pl-8 pr-8">{children}</main>
+        <main className="w-full overflow-auto pt-6 px-8 pb-8">{children}</main>
       </div>
 
       {/* KYC Completion Popup */}

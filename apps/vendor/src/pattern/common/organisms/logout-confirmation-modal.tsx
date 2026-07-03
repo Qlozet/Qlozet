@@ -5,13 +5,24 @@ import { create, useModal } from '@ebay/nice-modal-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { QuestionMarkIcon } from '../atoms/question-mark-icon';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
+import { AUTH_ROUTES } from '@/lib/routes';
+import { clearToken } from '@/lib/utils';
 
 const LogoutConfirmationModal = create(() => {
     const { resolve, remove, visible } = useModal();
 
+    const router = useRouter();
+
     const handleCloseModal = () => {
         resolve({ resolved: true });
         remove();
+    };
+
+    const handleLogoutClick = () => {
+        clearToken();
+        handleCloseModal();
+        router.push(AUTH_ROUTES.signIn);
     };
     return (
         <Dialog open={visible} onOpenChange={handleCloseModal}>
@@ -22,7 +33,7 @@ const LogoutConfirmationModal = create(() => {
                     <h1 className='text-black text-lg text-center font-bold font-poppins'>
                         Are you sure you want to logout?
                     </h1>
-                    <Button variant="destructive" size="lg" className='w-full max-w-[327px]'>Logout</Button>
+                    <Button onClick={handleLogoutClick} variant="destructive" size="lg" className='w-full max-w-[327px]'>Logout</Button>
                 </div>
             </DialogContent>
         </Dialog>
