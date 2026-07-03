@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ClothingTable } from '@/pattern/products/organisms/clothing-table'
 import { PaginationState } from '@tanstack/react-table'
-import { Product, useGetProductsByVendorQuery, useDeleteProductMutation, useUpdateProductMutation } from '@/redux/services/products/products.api-slice'
+import { Product, useGetProductsByVendorQuery, useDeleteProductMutation, useUpdateProductStatusMutation } from '@/redux/services/products/products.api-slice'
 import { Button } from '@/components/ui/button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { clearProductId } from '@/lib/utils'
@@ -81,10 +81,11 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
 
   // Delete product mutation
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation()
-  const [updateProduct] = useUpdateProductMutation()
+  const [updateProductStatus] = useUpdateProductStatusMutation()
 
   const handleStatusChange = (productId: string, newStatus: "active" | "draft" | "inactive" | "scheduled") => {
-    updateProduct({ _id: productId, status: newStatus })
+    const mappedStatus = (newStatus === 'inactive' || newStatus === 'scheduled') ? 'archived' : newStatus as 'active' | 'draft' | 'archived';
+    updateProductStatus({ productId, status: mappedStatus })
       .unwrap()
       .then(() => {
         toast.success(`Product status updated successfully`)
