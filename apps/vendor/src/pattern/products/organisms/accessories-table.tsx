@@ -39,6 +39,7 @@ interface IClothingTableProps {
     onEdit: (productId: string) => void
     onDuplicate?: (productId: string) => void
     onDelete?: (productId: string) => void
+    onStatusChange?: (productId: string, status: string) => void
     showSelect?: boolean
 }
 
@@ -56,6 +57,7 @@ export const AccessoriesTable = ({
     onEdit,
     onDuplicate,
     onDelete,
+    onStatusChange,
     showSelect = false,
 }: IClothingTableProps) => {
     const [rowSelection, setRowSelection] = useState({})
@@ -73,9 +75,10 @@ export const AccessoriesTable = ({
                 onEdit,
                 onDuplicate,
                 onDelete,
+                onStatusChange,
                 showSelect,
             }),
-        [onViewDetails, onEdit, onDuplicate, onDelete, showSelect]
+        [onViewDetails, onEdit, onDuplicate, onDelete, onStatusChange, showSelect]
     )
 
     const clothingTable = useReactTable({

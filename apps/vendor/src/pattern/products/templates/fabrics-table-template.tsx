@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { FabricsTable } from '@/pattern/products/organisms/fabrics-table'
 import { PaginationState } from '@tanstack/react-table'
-import { Product, useGetProductsByVendorQuery, useDeleteProductMutation } from '@/redux/services/products/products.api-slice'
+import { Product, useGetProductsByVendorQuery, useDeleteProductMutation, useUpdateProductMutation } from '@/redux/services/products/products.api-slice'
 import { Button } from '@/components/ui/button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { clearProductId } from '@/lib/utils'
@@ -82,6 +82,19 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
 
   // Delete product mutation
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation()
+  const [updateProduct] = useUpdateProductMutation()
+  
+  const handleStatusChange = (productId: string, newStatus: string) => {
+    updateProduct({ _id: productId, status: newStatus })
+      .unwrap()
+      .then(() => {
+        toast.success(`Product status updated successfully`)
+        refetch()
+      }).catch((error) => {
+        toast.error(error?.data?.message || 'Failed to update product status')
+        console.error('Error updating product status:', error)
+      })
+  }
 
   // Transform API products to match expected format
   const transformProduct = (apiProduct: any): any => {
@@ -326,6 +339,7 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
           onEdit={handleEditProduct}
           onDuplicate={handleDuplicateProduct}
           onDelete={handleDeleteProduct}
+          onStatusChange={handleStatusChange}
           showSelect={showSelect}
         />
       </div>

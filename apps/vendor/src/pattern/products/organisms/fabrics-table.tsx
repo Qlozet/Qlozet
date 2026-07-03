@@ -38,6 +38,7 @@ interface IFabricsTableProps {
   onEdit: (productId: string) => void
   onDuplicate?: (productId: string) => void
   onDelete?: (productId: string) => void
+  onStatusChange?: (productId: string, status: string) => void
   showSelect?: boolean
 }
 
@@ -55,6 +56,7 @@ export const FabricsTable = ({
   onEdit,
   onDuplicate,
   onDelete,
+  onStatusChange,
   showSelect = false,
 }: IFabricsTableProps) => {
   const [rowSelection, setRowSelection] = useState({})
@@ -72,9 +74,10 @@ export const FabricsTable = ({
         onEdit,
         onDuplicate,
         onDelete,
+        onStatusChange,
         showSelect,
       }),
-    [onViewDetails, onEdit, onDuplicate, onDelete, showSelect]
+    [onViewDetails, onEdit, onDuplicate, onDelete, onStatusChange, showSelect]
   )
 
   const fabricTable = useReactTable({
