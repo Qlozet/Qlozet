@@ -150,7 +150,9 @@ export const WalletPageTemplate: React.FC = () => {
           'We could not verify your payment. Please contact support if you were charged.';
         toast.error(message);
       } finally {
-        router.replace(pathname);
+        // Strip query params synchronously from the browser address bar
+        // so a manual refresh doesn't trigger verification again.
+        window.history.replaceState(null, '', pathname);
       }
     })();
   }, [
