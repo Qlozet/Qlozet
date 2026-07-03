@@ -4,10 +4,11 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { StaticImageData } from 'next/image';
 import Logo from '../Logo';
-import Logout from '../Logout';
 import Modal from '../Modal';
 import { handlelogout } from '@/redux/slices/filter-slice';
 import { useAppDispatch } from '@/redux/store';
+import { show } from '@ebay/nice-modal-react';
+import LogoutConfirmationModal from '@/pattern/common/organisms/logout-confirmation-modal';
 
 // Import icons
 import dashboardIcon from '@/public/assets/svg/dashboardIcon.svg';
@@ -107,15 +108,11 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
       defaultIcon: loggoutDefault,
       activeIcon: loggoutDefault,
       function: () => {
-        dispatch(handlelogout({ logout: true }));
+        show(LogoutConfirmationModal);
       },
     },
   ];
 
-  const logoutFunction = (): void => {
-    setShowLogOutModal(false);
-    closeSideBar();
-  };
   const handleBackdropClick = (): void => {
     closeSideBar();
   };
