@@ -68,6 +68,7 @@ interface ClothingTableColumnsProps {
   onEdit: (productId: string) => void
   onDuplicate?: (productId: string) => void
   onDelete?: (productId: string) => void
+  onStatusChange?: (productId: string, status: "active" | "draft" | "inactive" | "scheduled") => void
   showSelect?: boolean
 }
 
@@ -76,6 +77,7 @@ export const createClothingTableColumns = ({
   onEdit,
   onDuplicate,
   onDelete,
+  onStatusChange,
   showSelect = false,
 }: ClothingTableColumnsProps): ColumnDef<Product>[] => [
   {
@@ -295,17 +297,23 @@ export const createClothingTableColumns = ({
               >
                 Feature product
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onStatusChange?.(product._id as string, 'active')}>
                 Activate product
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem disabled>
                 Schedule activation
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className='text-red-600'>
+              <DropdownMenuItem 
+                onClick={() => onStatusChange?.(product._id as string, 'inactive')}
+                className='text-red-600'
+              >
                 Archive product
               </DropdownMenuItem>
-              <DropdownMenuItem className='text-red-600'>
+              <DropdownMenuItem 
+                onClick={() => onStatusChange?.(product._id as string, 'inactive')}
+                className='text-red-600'
+              >
                 Deactivate product
               </DropdownMenuItem>
               {onDelete && (
