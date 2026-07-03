@@ -1,4 +1,12 @@
-const Performance = ({ name, value, color }) => {
+import React from 'react';
+
+interface PerformanceProps {
+  name: string;
+  value: number;
+  color: string;
+}
+
+const Performance = ({ name, value, color }: PerformanceProps) => {
   return (
     <div className='flex items-center w-full justify-between gap-3 my-2 text-[12px]'>
       <div className='w-[22%] truncate font-medium'>{name}</div>
