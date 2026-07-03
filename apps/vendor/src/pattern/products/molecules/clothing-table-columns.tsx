@@ -68,7 +68,7 @@ interface ClothingTableColumnsProps {
   onEdit: (productId: string) => void
   onDuplicate?: (productId: string) => void
   onDelete?: (productId: string) => void
-  onStatusChange?: (productId: string, status: string) => void
+  onStatusChange?: (productId: string, status: "active" | "draft" | "inactive" | "scheduled") => void
   showSelect?: boolean
 }
 

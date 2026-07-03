@@ -84,7 +84,7 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation()
     const [updateProduct] = useUpdateProductMutation()
     
-    const handleStatusChange = (productId: string, newStatus: string) => {
+    const handleStatusChange = (productId: string, newStatus: "active" | "draft" | "inactive" | "scheduled") => {
         updateProduct({ _id: productId, status: newStatus })
             .unwrap()
             .then(() => {
