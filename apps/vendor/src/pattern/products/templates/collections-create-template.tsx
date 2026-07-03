@@ -3,11 +3,9 @@
 // Create Collection page — a rule-based collection builder. Title/About +
 // "Conditions must match" rules (field / operator / value) map to the backend
 // CreateCollectionDto (POST /collections). Status maps to `is_active`.
-// The Image card and Products preview are UI-only for now: CreateCollectionDto
-// has no image field, and the backend exposes no "preview matching products"
-// endpoint, so those are marked TODO(api).
+// Value dropdowns are populated dynamically from the taxonomy API.
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { useForm, useFieldArray } from 'react-hook-form'
@@ -21,6 +19,7 @@ import {
     Search,
     Trash2,
     Loader2,
+    ImageIcon,
 } from 'lucide-react'
 import { GoBackButton } from '@/pattern/common/atoms/go-back-button'
 import {
@@ -29,6 +28,8 @@ import {
     useGetCollectionQuery,
     type CollectionConditionOperator,
 } from '@/redux/services/collections/collections.api-slice'
+import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice'
+import { useGetTaxonomyTreeQuery } from '@/redux/services/taxonomy/taxonomy.api-slice'
 import { APP_ROUTES } from '@/lib/routes'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -53,13 +54,15 @@ import { cn, formatCurrency } from '@/lib/utils'
 import {
     CONDITION_FIELD_OPTIONS,
     CONDITION_OPERATOR_OPTIONS,
-    CONDITION_VALUE_OPTIONS,
+    TAXONOMY_FIELD_CONFIG,
+    STATIC_VALUE_OPTIONS,
+    FREE_TEXT_FIELDS,
 } from '../lib/collection-condition-options'
 
 const conditionSchema = z.object({
     field: z.string().min(1, 'Select a field'),
     operator: z.string().min(1, 'Select an operator'),
-    value: z.string().min(1, 'Select a value'),
+    value: z.string().min(1, 'Enter or select a value'),
 })
 
 const createCollectionSchema = z.object({
@@ -74,8 +77,7 @@ type CreateCollectionForm = z.infer<typeof createCollectionSchema>
 
 const cardClass = 'rounded-[10px] bg-card p-6 custom-card-shadow'
 
-// TODO(api): the backend has no "products matching these conditions" endpoint,
-// so this is a static preview of what the card will show once one exists.
+// Products preview — will show real matched products once the collection is saved.
 interface PreviewProduct {
     id: string
     name: string
@@ -84,11 +86,6 @@ interface PreviewProduct {
     status: string
     image?: string
 }
-const PREVIEW_PRODUCTS: PreviewProduct[] = [
-    { id: 'p1', name: 'Amasi Dress', type: 'Customizable', price: 120000, status: 'Successful' },
-    { id: 'p2', name: 'Amasi Dress', type: 'Customizable', price: 120000, status: 'Successful' },
-    { id: 'p3', name: 'Amasi Dress', type: 'Customizable', price: 120000, status: 'Successful' },
-]
 
 export const CollectionsCreateTemplate = () => {
     const router = useRouter()
@@ -102,13 +99,18 @@ export const CollectionsCreateTemplate = () => {
         useUpdateCollectionMutation()
     const { data: collectionResponse, isLoading: isLoadingCollection } =
         useGetCollectionQuery(editId as string, { skip: !editId })
+    const [uploadImage, { isLoading: isUploading }] =
+        useUploadProductImageMutation()
 
-    const isLoading = isCreating || isUpdating
+    // Fetch taxonomy tree for all kinds to populate dynamic dropdowns
+    const { data: taxonomyTree } = useGetTaxonomyTreeQuery()
+
+    const isLoading = isCreating || isUpdating || isUploading
 
     const [imagePreview, setImagePreview] = useState<string | null>(null)
+    const [imageFile, setImageFile] = useState<File | null>(null)
     const [productSearch, setProductSearch] = useState('')
-    const [previewProducts, setPreviewProducts] =
-        useState<PreviewProduct[]>(PREVIEW_PRODUCTS)
+    const [previewProducts, setPreviewProducts] = useState<PreviewProduct[]>([])
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const form = useForm<CreateCollectionForm>({
@@ -118,7 +120,7 @@ export const CollectionsCreateTemplate = () => {
             description: '',
             condition_match: 'all',
             is_active: true,
-            conditions: [{ field: 'product_category', operator: 'is_equal_to', value: '' }],
+            conditions: [{ field: 'clothing.taxonomy.product_type', operator: 'is_equal_to', value: '' }],
         },
     })
 
@@ -126,6 +128,57 @@ export const CollectionsCreateTemplate = () => {
         control: form.control,
         name: 'conditions',
     })
+
+    // Build dynamic value options from taxonomy tree
+    const getTaxonomyValues = useMemo(() => {
+        if (!taxonomyTree) return () => []
+
+        return (fieldPath: string): { value: string; label: string }[] => {
+            const config = TAXONOMY_FIELD_CONFIG[fieldPath]
+            if (!config) return []
+
+            const kindData = taxonomyTree[config.kind]
+            if (!kindData?.product_types) return []
+
+            switch (config.type) {
+                case 'product_type':
+                    return kindData.product_types.map((pt) => ({
+                        value: pt.name,
+                        label: pt.name,
+                    }))
+                case 'categories': {
+                    // Aggregate all categories across all product types for this kind
+                    const allCategories = new Set<string>()
+                    kindData.product_types.forEach((pt) => {
+                        pt.categories?.forEach((cat) => allCategories.add(cat))
+                    })
+                    return Array.from(allCategories)
+                        .sort()
+                        .map((cat) => ({ value: cat, label: cat }))
+                }
+                case 'audience':
+                    // Standard audience values
+                    return [
+                        { value: 'Men', label: 'Men' },
+                        { value: 'Women', label: 'Women' },
+                        { value: 'Unisex', label: 'Unisex' },
+                        { value: 'Kids', label: 'Kids' },
+                    ]
+                case 'attributes': {
+                    // Aggregate all attributes across all product types for this kind
+                    const allAttributes = new Set<string>()
+                    kindData.product_types.forEach((pt) => {
+                        pt.attributes?.forEach((attr) => allAttributes.add(attr))
+                    })
+                    return Array.from(allAttributes)
+                        .sort()
+                        .map((attr) => ({ value: attr, label: attr }))
+                }
+                default:
+                    return []
+            }
+        }
+    }, [taxonomyTree])
 
     // Prefill the form when editing an existing collection.
     useEffect(() => {
@@ -143,7 +196,7 @@ export const CollectionsCreateTemplate = () => {
                           operator: c.operator,
                           value: c.value,
                       }))
-                    : [{ field: 'product_category', operator: 'is_equal_to', value: '' }],
+                    : [{ field: 'clothing.taxonomy.product_type', operator: 'is_equal_to', value: '' }],
         })
         const cover = collection.cover_image as string | undefined
         if (cover) setImagePreview(cover)
@@ -155,7 +208,10 @@ export const CollectionsCreateTemplate = () => {
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
-        if (file) setImagePreview(URL.createObjectURL(file))
+        if (file) {
+            setImageFile(file)
+            setImagePreview(URL.createObjectURL(file))
+        }
     }
 
     const filteredProducts = previewProducts.filter((p) =>
@@ -163,23 +219,43 @@ export const CollectionsCreateTemplate = () => {
     )
 
     const onSubmit = async (values: CreateCollectionForm) => {
-        const payload = {
-            title: values.title,
-            description: values.description || undefined,
-            condition_match: values.condition_match,
-            is_active: values.is_active,
-            conditions: values.conditions.map((c) => ({
-                field: c.field,
-                operator: c.operator as CollectionConditionOperator,
-                value: c.value,
-            })),
-        }
         try {
+            // 1. Upload image if a new file was selected
+            let coverImageUrl: string | undefined
+            if (imageFile) {
+                const uploadResult = await uploadImage(imageFile).unwrap()
+                coverImageUrl = uploadResult?.data?.url
+            }
+
+            const payload = {
+                title: values.title,
+                description: values.description || undefined,
+                condition_match: values.condition_match,
+                is_active: values.is_active,
+                conditions: values.conditions.map((c) => ({
+                    field: c.field,
+                    operator: c.operator as CollectionConditionOperator,
+                    value: c.value,
+                })),
+            }
+
             if (isEditing && editId) {
-                await updateCollection({ collectionId: editId, ...payload }).unwrap()
+                // For edits, include cover_image in the PATCH payload directly
+                await updateCollection({
+                    collectionId: editId,
+                    ...payload,
+                    ...(coverImageUrl ? { cover_image: coverImageUrl } : {}),
+                }).unwrap()
                 toast.success('Collection updated successfully.')
             } else {
-                await createCollection(payload).unwrap()
+                // Create first, then PATCH the cover image if we have one
+                const created = await createCollection(payload).unwrap()
+                if (coverImageUrl && created?.data?._id) {
+                    await updateCollection({
+                        collectionId: created.data._id,
+                        cover_image: coverImageUrl,
+                    }).unwrap()
+                }
                 toast.success('Collection created successfully.')
             }
             router.push(APP_ROUTES.productsCollections)
@@ -301,8 +377,18 @@ export const CollectionsCreateTemplate = () => {
                             <div className='space-y-3'>
                                 {fields.map((row, index) => {
                                     const selectedField = form.watch(`conditions.${index}.field`)
-                                    const valueOptions =
-                                        CONDITION_VALUE_OPTIONS[selectedField] ?? []
+                                    const isFreeText = FREE_TEXT_FIELDS.has(selectedField)
+                                    const isTaxonomyField = selectedField in TAXONOMY_FIELD_CONFIG
+                                    const isStaticField = selectedField in STATIC_VALUE_OPTIONS
+
+                                    // Determine value options
+                                    let valueOptions: { value: string; label: string }[] = []
+                                    if (isTaxonomyField) {
+                                        valueOptions = getTaxonomyValues(selectedField)
+                                    } else if (isStaticField) {
+                                        valueOptions = STATIC_VALUE_OPTIONS[selectedField]
+                                    }
+
                                     return (
                                         <div
                                             key={row.id}
@@ -372,29 +458,51 @@ export const CollectionsCreateTemplate = () => {
                                                 )}
                                             />
 
-                                            {/* Value */}
+                                            {/* Value — dynamic based on field type */}
                                             <FormField
                                                 control={form.control}
                                                 name={`conditions.${index}.value`}
                                                 render={({ field }) => (
                                                     <FormItem className='flex-1 min-w-[140px]'>
-                                                        <Select
-                                                            value={field.value}
-                                                            onValueChange={field.onChange}
-                                                        >
+                                                        {isFreeText ? (
                                                             <FormControl>
-                                                                <SelectTrigger className='h-12 rounded-lg'>
-                                                                    <SelectValue placeholder='Select value' />
-                                                                </SelectTrigger>
+                                                                <Input
+                                                                    placeholder={
+                                                                        selectedField === 'base_price'
+                                                                            ? 'Enter price (e.g. 5000)'
+                                                                            : 'Enter value'
+                                                                    }
+                                                                    className='h-12 rounded-lg'
+                                                                    {...field}
+                                                                />
                                                             </FormControl>
-                                                            <SelectContent>
-                                                                {valueOptions.map((opt) => (
-                                                                    <SelectItem key={opt.value} value={opt.value}>
-                                                                        {opt.label}
-                                                                    </SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
+                                                        ) : (
+                                                            <Select
+                                                                value={field.value}
+                                                                onValueChange={field.onChange}
+                                                            >
+                                                                <FormControl>
+                                                                    <SelectTrigger className='h-12 rounded-lg'>
+                                                                        <SelectValue placeholder='Select value' />
+                                                                    </SelectTrigger>
+                                                                </FormControl>
+                                                                <SelectContent>
+                                                                    {valueOptions.length > 0 ? (
+                                                                        valueOptions.map((opt) => (
+                                                                            <SelectItem key={opt.value} value={opt.value}>
+                                                                                {opt.label}
+                                                                            </SelectItem>
+                                                                        ))
+                                                                    ) : (
+                                                                        <SelectItem value='__loading' disabled>
+                                                                            {isTaxonomyField
+                                                                                ? 'Loading from taxonomy…'
+                                                                                : 'Select a field first'}
+                                                                        </SelectItem>
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        )}
                                                         <FormMessage />
                                                     </FormItem>
                                                 )}
@@ -449,7 +557,7 @@ export const CollectionsCreateTemplate = () => {
                                 type='button'
                                 onClick={() =>
                                     append({
-                                        field: 'product_category',
+                                        field: 'clothing.taxonomy.product_type',
                                         operator: 'is_equal_to',
                                         value: '',
                                     })
@@ -479,7 +587,9 @@ export const CollectionsCreateTemplate = () => {
                             <div className='space-y-3'>
                                 {filteredProducts.length === 0 ? (
                                     <p className='py-6 text-center text-sm text-muted-foreground'>
-                                        No products match your conditions yet.
+                                        {isEditing
+                                            ? 'No products match your conditions yet.'
+                                            : 'Products matching your conditions will appear here after creating the collection.'}
                                     </p>
                                 ) : (
                                     filteredProducts.map((product) => (
@@ -581,7 +691,7 @@ export const CollectionsCreateTemplate = () => {
                             />
                         </div>
 
-                        {/* Image — UI only (no image field on CreateCollectionDto). */}
+                        {/* Image — uploads via POST /uploads/product, then PATCHes cover_image */}
                         <div className={cardClass}>
                             <div className='mb-4 flex items-center justify-between'>
                                 <h3 className='text-base font-medium text-grey-black'>
@@ -609,9 +719,12 @@ export const CollectionsCreateTemplate = () => {
                                         className='object-contain'
                                     />
                                 ) : (
-                                    <span className='text-sm text-muted-foreground'>
-                                        Click to upload an image
-                                    </span>
+                                    <div className='flex flex-col items-center gap-2 text-muted-foreground'>
+                                        <ImageIcon className='size-8' />
+                                        <span className='text-sm'>
+                                            Click to upload an image
+                                        </span>
+                                    </div>
                                 )}
                             </button>
                             <input
@@ -629,7 +742,11 @@ export const CollectionsCreateTemplate = () => {
                                 {isLoading ? (
                                     <>
                                         <Loader2 className='size-4 animate-spin' />
-                                        {isEditing ? 'Saving…' : 'Creating…'}
+                                        {isUploading
+                                            ? 'Uploading image…'
+                                            : isEditing
+                                              ? 'Saving…'
+                                              : 'Creating…'}
                                     </>
                                 ) : isEditing ? (
                                     'Save Changes'

@@ -4,12 +4,15 @@
 import { baseAPI } from '@/redux/api/base-api';
 import { ApiResponse, PaginatedData, buildQueryString } from '../types';
 
-// ConditionDto
+// ConditionDto — all operators the backend supports
 export type CollectionConditionOperator =
   | 'is_equal_to'
   | 'not_equal_to'
   | 'greater_than'
-  | 'less_than';
+  | 'less_than'
+  | 'contains'
+  | 'starts_with'
+  | 'ends_with';
 
 export interface CollectionCondition {
   field: string;
@@ -24,6 +27,8 @@ export interface CreateCollectionRequest {
   condition_match: 'all' | 'any';
   conditions: CollectionCondition[];
   is_active?: boolean;
+  manual_includes?: string[];
+  manual_excludes?: string[];
 }
 
 // UpdateCollectionDto — all fields optional; adds cover_image + sort_order.
@@ -35,6 +40,8 @@ export interface UpdateCollectionDto {
   is_active?: boolean;
   cover_image?: string;
   sort_order?: number;
+  manual_includes?: string[];
+  manual_excludes?: string[];
 }
 
 export type UpdateCollectionRequest = UpdateCollectionDto & {
@@ -48,7 +55,10 @@ export interface Collection {
   condition_match?: 'all' | 'any';
   conditions?: CollectionCondition[];
   is_active?: boolean;
+  cover_image?: string;
   products?: unknown[];
+  manual_includes?: string[];
+  manual_excludes?: string[];
   createdAt?: string;
   updatedAt?: string;
   [key: string]: unknown;
@@ -138,6 +148,30 @@ export const collectionsApiSlice = baseAPI.injectEndpoints({
       }),
       invalidatesTags: ['Collections'],
     }),
+
+    // POST /collections/{collectionId}/include/{productId} — manual include
+    includeProduct: builder.mutation<
+      ApiResponse<unknown>,
+      { collectionId: string; productId: string }
+    >({
+      query: ({ collectionId, productId }) => ({
+        url: `/collections/${collectionId}/include/${productId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Collections', 'Collection'],
+    }),
+
+    // POST /collections/{collectionId}/exclude/{productId} — manual exclude
+    excludeProduct: builder.mutation<
+      ApiResponse<unknown>,
+      { collectionId: string; productId: string }
+    >({
+      query: ({ collectionId, productId }) => ({
+        url: `/collections/${collectionId}/exclude/${productId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Collections', 'Collection'],
+    }),
   }),
 });
 
@@ -151,4 +185,6 @@ export const {
   useCreateCollectionMutation,
   useUpdateCollectionMutation,
   useDeleteCollectionMutation,
+  useIncludeProductMutation,
+  useExcludeProductMutation,
 } = collectionsApiSlice;
