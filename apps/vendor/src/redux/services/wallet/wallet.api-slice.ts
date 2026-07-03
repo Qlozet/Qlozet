@@ -86,22 +86,22 @@ export const walletApiSlice = baseAPI.injectEndpoints({
     // ─── Wallets ─────────────────────────────────────────────────────────────
     // https://qlozet-backend.fly.dev/api-docs#/Wallets
 
-    // Get wallet balance (GET /wallet/balance)
+    // Get wallet balance (GET /wallets/balance)
     getWalletBalance: builder.query<ApiResponse<PendingData>, void>({
       query: () => ({
-        url: '/wallet/balance',
+        url: '/wallets/balance',
         method: 'GET',
       }),
       providesTags: ['WalletBalance'],
     }),
 
-    // Fund wallet via Paystack (POST /wallet/fund)
+    // Fund wallet via Paystack (POST /wallets/fund)
     fundWallet: builder.mutation<
       ApiResponse<FundWalletResponseData>,
       { amount: number; callback_url?: string }
     >({
       query: (body) => ({
-        url: '/wallet/fund',
+        url: '/wallets/fund',
         method: 'POST',
         body,
       }),
@@ -109,16 +109,16 @@ export const walletApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Verify a Paystack payment and credit the wallet
-    // (GET /wallet/verify/{reference})
+    // (GET /wallets/verify/{reference})
     verifyWalletPayment: builder.query<ApiResponse<PendingData>, string>({
       query: (reference) => ({
-        url: `/wallet/verify/${reference}`,
+        url: `/wallets/verify/${reference}`,
         method: 'GET',
       }),
       providesTags: ['WalletBalance', 'Transaction'],
     }),
 
-    // Get token price quote (GET /wallet/price?tokens=&currency=)
+    // Get token price quote (GET /wallets/price?tokens=&currency=)
     getWalletPrice: builder.query<
       ApiResponse<PendingData>,
       { tokens: number; currency: string }
@@ -129,7 +129,7 @@ export const walletApiSlice = baseAPI.injectEndpoints({
           currency,
         });
         return {
-          url: `/wallet/price?${search.toString()}`,
+          url: `/wallets/price?${search.toString()}`,
           method: 'GET',
         };
       },
