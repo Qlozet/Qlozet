@@ -18,13 +18,13 @@ export function ChartsSection() {
 
             {/* Middle Column */}
             <div className="w-full lg:col-span-1 space-y-6">
-                <OrdersByLocation />
+                <OrdersByProduct />
                 <OrderCountChart />
             </div>
 
             {/* Right Column */}
             <div className="lg:col-span-1 space-y-6">
-                <OrdersByProduct />
+                <OrdersByLocation />
                 <RecentOrders />
             </div>
         </div>
