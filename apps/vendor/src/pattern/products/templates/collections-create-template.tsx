@@ -20,6 +20,9 @@ import {
     Trash2,
     Loader2,
     ImageIcon,
+    X,
+    Undo2,
+    UserPlus,
 } from 'lucide-react'
 import { GoBackButton } from '@/pattern/common/atoms/go-back-button'
 import {
@@ -163,6 +166,10 @@ export const CollectionsCreateTemplate = () => {
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [imageFile, setImageFile] = useState<File | null>(null)
     const [productSearch, setProductSearch] = useState('')
+    const [manualPickerSearch, setManualPickerSearch] = useState('')
+    const [showManualPicker, setShowManualPicker] = useState(false)
+    const [manualIncludes, setManualIncludes] = useState<Set<string>>(new Set())
+    const [manualExcludes, setManualExcludes] = useState<Set<string>>(new Set())
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const form = useForm<CreateCollectionForm>({
@@ -252,6 +259,13 @@ export const CollectionsCreateTemplate = () => {
         })
         const cover = collection.cover_image as string | undefined
         if (cover) setImagePreview(cover)
+        // Load manual overrides
+        if (collection.manual_includes?.length) {
+            setManualIncludes(new Set(collection.manual_includes.map((id: any) => typeof id === 'string' ? id : id.toString())))
+        }
+        if (collection.manual_excludes?.length) {
+            setManualExcludes(new Set(collection.manual_excludes.map((id: any) => typeof id === 'string' ? id : id.toString())))
+        }
     }, [collectionResponse, form])
 
     const handleGoBack = () => router.push(APP_ROUTES.productsCollections)
@@ -282,13 +296,34 @@ export const CollectionsCreateTemplate = () => {
     }, [vendorProductsResponse])
 
     // Live-evaluate conditions against all vendor products
-    const matchingProducts = useMemo(() => {
+    const conditionMatchedProducts = useMemo(() => {
         if (!allRawProducts.length || !watchedConditions?.length) return []
         return allRawProducts.filter((product: any) =>
             evaluateProductAgainstConditions(product, watchedConditions, watchedConditionMatch)
         )
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allRawProducts, conditionsKey])
+
+    // Build the final product list accounting for manual overrides:
+    // 1. Start with condition-matched products
+    // 2. Remove manually excluded ones
+    // 3. Add manually included ones (that aren't already matched)
+    const matchingProducts = useMemo(() => {
+        const afterExcludes = conditionMatchedProducts.filter(
+            (p: any) => !manualExcludes.has(p._id)
+        )
+        // Add manually included products not already in the list
+        const matchedIds = new Set(afterExcludes.map((p: any) => p._id))
+        const manuallyIncludedProducts = allRawProducts.filter(
+            (p: any) => manualIncludes.has(p._id) && !matchedIds.has(p._id)
+        )
+        return [...afterExcludes, ...manuallyIncludedProducts]
+    }, [conditionMatchedProducts, manualIncludes, manualExcludes, allRawProducts])
+
+    // Products that have been manually excluded
+    const excludedProducts = useMemo(() => {
+        return allRawProducts.filter((p: any) => manualExcludes.has(p._id))
+    }, [allRawProducts, manualExcludes])
 
     // Apply search filter on top of matched products
     const filteredProducts = useMemo(() => {
@@ -299,6 +334,54 @@ export const CollectionsCreateTemplate = () => {
             return productName.toLowerCase().includes(term)
         })
     }, [matchingProducts, productSearch])
+
+    // Products available for manual include (not already matched or included)
+    const availableForInclude = useMemo(() => {
+        const matchedIds = new Set(matchingProducts.map((p: any) => p._id))
+        const term = manualPickerSearch.trim().toLowerCase()
+        return allRawProducts.filter((p: any) => {
+            if (matchedIds.has(p._id)) return false
+            if (manualExcludes.has(p._id)) return false
+            if (!term) return true
+            const name = p.name || p.clothing?.name || p.fabric?.name || p.accessory?.name || ''
+            return name.toLowerCase().includes(term)
+        })
+    }, [allRawProducts, matchingProducts, manualExcludes, manualPickerSearch])
+
+    // Handlers for manual overrides
+    const handleExclude = (productId: string) => {
+        setManualExcludes(prev => new Set([...prev, productId]))
+        setManualIncludes(prev => {
+            const next = new Set(prev)
+            next.delete(productId)
+            return next
+        })
+    }
+
+    const handleInclude = (productId: string) => {
+        setManualIncludes(prev => new Set([...prev, productId]))
+        setManualExcludes(prev => {
+            const next = new Set(prev)
+            next.delete(productId)
+            return next
+        })
+    }
+
+    const handleUndoExclude = (productId: string) => {
+        setManualExcludes(prev => {
+            const next = new Set(prev)
+            next.delete(productId)
+            return next
+        })
+    }
+
+    const handleRemoveInclude = (productId: string) => {
+        setManualIncludes(prev => {
+            const next = new Set(prev)
+            next.delete(productId)
+            return next
+        })
+    }
 
     const onSubmit = async (values: CreateCollectionForm) => {
         try {
@@ -319,6 +402,8 @@ export const CollectionsCreateTemplate = () => {
                     operator: c.operator as CollectionConditionOperator,
                     value: c.value,
                 })),
+                manual_includes: [...manualIncludes],
+                manual_excludes: [...manualExcludes],
             }
 
             if (isEditing && editId) {
@@ -654,17 +739,29 @@ export const CollectionsCreateTemplate = () => {
                             </button>
                         </div>
 
-                        {/* Products preview — live matching */}
+                        {/* Products preview — live matching + manual overrides */}
                         <div className={cardClass}>
                             <div className='mb-4 flex items-center justify-between'>
                                 <h3 className='text-base font-medium text-grey-black'>
                                     Products
                                 </h3>
-                                {matchingProducts.length > 0 && (
-                                    <span className='rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary'>
-                                        {matchingProducts.length} matching
-                                    </span>
-                                )}
+                                <div className='flex items-center gap-2'>
+                                    {manualIncludes.size > 0 && (
+                                        <span className='rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700'>
+                                            +{manualIncludes.size} included
+                                        </span>
+                                    )}
+                                    {manualExcludes.size > 0 && (
+                                        <span className='rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700'>
+                                            −{manualExcludes.size} excluded
+                                        </span>
+                                    )}
+                                    {matchingProducts.length > 0 && (
+                                        <span className='rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary'>
+                                            {matchingProducts.length} total
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                             <div className='relative mb-4'>
                                 <Search className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400' />
@@ -676,7 +773,8 @@ export const CollectionsCreateTemplate = () => {
                                 />
                             </div>
 
-                            <div className='space-y-3 max-h-[400px] overflow-y-auto'>
+                            {/* Matched + manually included products */}
+                            <div className='space-y-2 max-h-[350px] overflow-y-auto'>
                                 {filteredProducts.length === 0 ? (
                                     <p className='py-6 text-center text-sm text-muted-foreground'>
                                         {watchedConditions?.some((c: any) => c.field && c.operator && c.value)
@@ -695,55 +793,221 @@ export const CollectionsCreateTemplate = () => {
                                             : firstImage?.url
                                         const safeImageUrl = imageUrl?.replace(/^http:\/\//i, 'https://')
                                         const productPrice = product.price || product.base_price || 0
-                                        const productType = inner.type === 'customize' ? 'Customizable' : inner.type === 'non_customize' ? 'Non-customizable' : kind || ''
-                                        const productStatus = product.status || 'draft'
+                                        const isManuallyIncluded = manualIncludes.has(product._id)
 
                                         return (
                                             <div
                                                 key={product._id}
-                                                className='flex items-center gap-4 rounded-lg bg-muted/30 p-3'
+                                                className='flex items-center gap-3 rounded-lg bg-muted/30 p-2.5'
                                             >
-                                                <div className='relative size-12 shrink-0 overflow-hidden rounded-lg bg-white'>
+                                                <div className='relative size-10 shrink-0 overflow-hidden rounded-md bg-white'>
                                                     {safeImageUrl ? (
                                                         <Image
                                                             src={safeImageUrl}
                                                             alt={productName}
                                                             fill
-                                                            sizes='48px'
+                                                            sizes='40px'
                                                             className='object-cover'
                                                         />
                                                     ) : (
-                                                        <div className='flex h-full w-full items-center justify-center text-[10px] text-gray-400'>
+                                                        <div className='flex h-full w-full items-center justify-center text-[9px] text-gray-400'>
                                                             No img
                                                         </div>
                                                     )}
                                                 </div>
                                                 <div className='flex-1 min-w-0'>
-                                                    <p className='text-sm font-medium text-grey-black truncate'>
-                                                        {productName}
-                                                    </p>
-                                                    <p className='text-sm text-muted-foreground'>
+                                                    <div className='flex items-center gap-1.5'>
+                                                        <p className='text-sm font-medium text-grey-black truncate'>
+                                                            {productName}
+                                                        </p>
+                                                        {isManuallyIncluded && (
+                                                            <span className='shrink-0 rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-medium text-blue-700'>
+                                                                Manual
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className='text-xs text-muted-foreground'>
                                                         {formatCurrency(productPrice, 'NGN')}
                                                     </p>
                                                 </div>
-                                                <div className='flex-1 min-w-0'>
-                                                    <p className='text-sm text-grey-black capitalize'>
-                                                        {productType}
-                                                    </p>
-                                                    <span className={cn(
-                                                        'mt-1 inline-flex rounded-md px-2 py-0.5 text-xs',
-                                                        productStatus === 'active'
-                                                            ? 'bg-green-50 text-green-700'
-                                                            : productStatus === 'draft'
-                                                              ? 'bg-yellow-50 text-yellow-700'
-                                                              : 'bg-gray-100 text-gray-600'
-                                                    )}>
-                                                        {productStatus}
-                                                    </span>
-                                                </div>
+                                                {isManuallyIncluded ? (
+                                                    <button
+                                                        type='button'
+                                                        onClick={() => handleRemoveInclude(product._id)}
+                                                        className='shrink-0 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-red-50 hover:text-red-600'
+                                                        title='Remove manual include'
+                                                    >
+                                                        <X className='size-3.5' />
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        type='button'
+                                                        onClick={() => handleExclude(product._id)}
+                                                        className='shrink-0 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-red-50 hover:text-red-600'
+                                                        title='Exclude from collection'
+                                                    >
+                                                        <X className='size-3.5' />
+                                                    </button>
+                                                )}
                                             </div>
                                         )
                                     })
+                                )}
+                            </div>
+
+                            {/* Excluded products section */}
+                            {excludedProducts.length > 0 && (
+                                <div className='mt-4 border-t pt-4'>
+                                    <h4 className='mb-2 text-sm font-medium text-muted-foreground'>
+                                        Excluded ({excludedProducts.length})
+                                    </h4>
+                                    <div className='space-y-2 max-h-[200px] overflow-y-auto'>
+                                        {excludedProducts.map((product: any) => {
+                                            const kind = product.kind
+                                            const inner = product[kind] || {}
+                                            const productName = product.name || inner.name || 'Untitled'
+                                            const productImages = product.images || inner.images || inner.color_variants?.[0]?.images || []
+                                            const firstImage = productImages[0]
+                                            const imageUrl = typeof firstImage === 'string'
+                                                ? firstImage
+                                                : firstImage?.url
+                                            const safeImageUrl = imageUrl?.replace(/^http:\/\//i, 'https://')
+
+                                            return (
+                                                <div
+                                                    key={product._id}
+                                                    className='flex items-center gap-3 rounded-lg bg-red-50/50 p-2.5 opacity-60'
+                                                >
+                                                    <div className='relative size-10 shrink-0 overflow-hidden rounded-md bg-white'>
+                                                        {safeImageUrl ? (
+                                                            <Image
+                                                                src={safeImageUrl}
+                                                                alt={productName}
+                                                                fill
+                                                                sizes='40px'
+                                                                className='object-cover'
+                                                            />
+                                                        ) : (
+                                                            <div className='flex h-full w-full items-center justify-center text-[9px] text-gray-400'>
+                                                                No img
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className='flex-1 min-w-0'>
+                                                        <p className='text-sm text-grey-black truncate line-through'>
+                                                            {productName}
+                                                        </p>
+                                                    </div>
+                                                    <button
+                                                        type='button'
+                                                        onClick={() => handleUndoExclude(product._id)}
+                                                        className='shrink-0 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-green-50 hover:text-green-600'
+                                                        title='Undo exclude'
+                                                    >
+                                                        <Undo2 className='size-3.5' />
+                                                    </button>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Manual include picker */}
+                            <div className='mt-4 border-t pt-4'>
+                                <button
+                                    type='button'
+                                    onClick={() => setShowManualPicker(!showManualPicker)}
+                                    className='flex items-center gap-2 text-sm font-medium text-grey-black transition-colors hover:text-primary cursor-pointer'
+                                >
+                                    <UserPlus className='size-4' />
+                                    Add Products Manually
+                                    <ChevronDown className={cn(
+                                        'size-3.5 transition-transform',
+                                        showManualPicker && 'rotate-180'
+                                    )} />
+                                </button>
+
+                                {showManualPicker && (
+                                    <div className='mt-3 space-y-2'>
+                                        <div className='relative'>
+                                            <Search className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400' />
+                                            <Input
+                                                value={manualPickerSearch}
+                                                onChange={(e) => setManualPickerSearch(e.target.value)}
+                                                placeholder='Search products to include...'
+                                                className='h-10 rounded-lg pl-9 text-sm'
+                                            />
+                                        </div>
+                                        <div className='space-y-1.5 max-h-[250px] overflow-y-auto'>
+                                            {availableForInclude.length === 0 ? (
+                                                <p className='py-4 text-center text-xs text-muted-foreground'>
+                                                    {manualPickerSearch
+                                                        ? 'No matching products found.'
+                                                        : 'All products are already in this collection.'}
+                                                </p>
+                                            ) : (
+                                                availableForInclude.slice(0, 20).map((product: any) => {
+                                                    const kind = product.kind
+                                                    const inner = product[kind] || {}
+                                                    const productName = product.name || inner.name || 'Untitled'
+                                                    const productImages = product.images || inner.images || inner.color_variants?.[0]?.images || []
+                                                    const firstImage = productImages[0]
+                                                    const imageUrl = typeof firstImage === 'string'
+                                                        ? firstImage
+                                                        : firstImage?.url
+                                                    const safeImageUrl = imageUrl?.replace(/^http:\/\//i, 'https://')
+                                                    const productPrice = product.price || product.base_price || 0
+
+                                                    return (
+                                                        <div
+                                                            key={product._id}
+                                                            className='flex items-center gap-3 rounded-lg border border-dashed p-2.5 transition-colors hover:border-primary/40 hover:bg-primary/5'
+                                                        >
+                                                            <div className='relative size-9 shrink-0 overflow-hidden rounded-md bg-white'>
+                                                                {safeImageUrl ? (
+                                                                    <Image
+                                                                        src={safeImageUrl}
+                                                                        alt={productName}
+                                                                        fill
+                                                                        sizes='36px'
+                                                                        className='object-cover'
+                                                                    />
+                                                                ) : (
+                                                                    <div className='flex h-full w-full items-center justify-center text-[8px] text-gray-400'>
+                                                                        No img
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            <div className='flex-1 min-w-0'>
+                                                                <p className='text-sm text-grey-black truncate'>
+                                                                    {productName}
+                                                                </p>
+                                                                <p className='text-xs text-muted-foreground'>
+                                                                    {formatCurrency(productPrice, 'NGN')}
+                                                                </p>
+                                                            </div>
+                                                            <Button
+                                                                type='button'
+                                                                variant='outline'
+                                                                size='sm'
+                                                                onClick={() => handleInclude(product._id)}
+                                                                className='shrink-0 h-7 px-2.5 text-xs'
+                                                            >
+                                                                <Plus className='size-3 mr-1' />
+                                                                Include
+                                                            </Button>
+                                                        </div>
+                                                    )
+                                                })
+                                            )}
+                                            {availableForInclude.length > 20 && (
+                                                <p className='py-2 text-center text-xs text-muted-foreground'>
+                                                    Showing 20 of {availableForInclude.length} — use search to narrow down.
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         </div>
