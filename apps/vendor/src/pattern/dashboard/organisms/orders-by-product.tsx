@@ -82,7 +82,7 @@ export const OrdersByProduct = () => {
             { name: "Non-Custom Clothing", value: nonCustomClothing },
             { name: "Fabric", value: fabric },
             { name: "Accessory", value: accessory },
-        ].filter(d => d.value > 0)
+        ].filter(d => d.value > 0).sort((a, b) => b.value - a.value);
     }, [ordersResponse])
 
     if (isLoading) {

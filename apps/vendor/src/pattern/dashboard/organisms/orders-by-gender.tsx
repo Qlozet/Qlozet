@@ -52,6 +52,8 @@ export const OrdersByGender = () => {
         return <ChartSkeleton />;
     }
 
+    const sortedData = [...data].sort((a, b) => b.value - a.value);
+
     return (
         <Card className="w-full max-h-[330px] rounded-[12px] custom-card-shadow">
             <CardHeader className="px-6 pb-4">
@@ -62,9 +64,9 @@ export const OrdersByGender = () => {
             <CardContent className='w-full font-poppins px-3 pt-0 pb-6'>
                 <ResponsiveContainer width="100%" height={250}>
                     <PieChart>
-                        <Pie data={data} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value">
-                            {data?.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS?.length]} />
+                        <Pie data={sortedData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value">
+                            {sortedData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                             ))}
                         </Pie>
                         <Tooltip content={<CustomChartTooltip />} cursor={false} />

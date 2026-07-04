@@ -66,6 +66,8 @@ export const DonutChart = ({
   className,
   legendPosition = 'bottom',
 }: DonutChartProps) => {
+  const sortedData = [...data].sort((a, b) => b.value - a.value);
+
   if (legendPosition === 'right') {
     return (
       <Card
@@ -76,7 +78,7 @@ export const DonutChart = ({
             <ResponsiveContainer width="100%" height="100%">
               <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
                 <Pie
-                  data={data}
+                  data={sortedData}
                   cx="50%"
                   cy="50%"
                   innerRadius={23}
@@ -84,7 +86,7 @@ export const DonutChart = ({
                   paddingAngle={2}
                   dataKey="value"
                 >
-                  {data.map((entry, index) => (
+                  {sortedData.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={colors[index % colors.length]}
@@ -101,7 +103,7 @@ export const DonutChart = ({
               {title}
             </CardTitle>
             <ul className="grid w-fit grid-cols-2 gap-x-10 gap-y-2 p-0 m-0 text-xs capitalize">
-              {data.map((entry, index) => (
+              {sortedData.map((entry, index) => (
                 <li key={`legend-${index}`} className="flex items-center gap-x-2">
                   <span className="shrink-0">
                     <ChartLegendIcon color={colors[index % colors.length]} />
@@ -129,7 +131,7 @@ export const DonutChart = ({
         <ResponsiveContainer width="100%" height={250}>
           <PieChart>
             <Pie
-              data={data}
+              data={sortedData}
               cx="50%"
               cy="50%"
               innerRadius={60}
@@ -137,7 +139,7 @@ export const DonutChart = ({
               paddingAngle={2}
               dataKey="value"
             >
-              {data.map((entry, index) => (
+              {sortedData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
               ))}
             </Pie>
