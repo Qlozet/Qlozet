@@ -70,16 +70,16 @@ export const OrdersByProduct = () => {
         const total = customClothing + nonCustomClothing + fabric + accessory
         if (total === 0) {
             return [
-                { name: "Custom Clothing", value: 40 },
-                { name: "Non-Custom Clothing", value: 30 },
+                { name: "Custom", value: 40 },
+                { name: "Non-Custom", value: 30 },
                 { name: "Fabric", value: 20 },
                 { name: "Accessory", value: 10 },
             ]
         }
 
         return [
-            { name: "Custom Clothing", value: customClothing },
-            { name: "Non-Custom Clothing", value: nonCustomClothing },
+            { name: "Custom", value: customClothing },
+            { name: "Non-Custom", value: nonCustomClothing },
             { name: "Fabric", value: fabric },
             { name: "Accessory", value: accessory },
         ].filter(d => d.value > 0).sort((a, b) => b.value - a.value);
