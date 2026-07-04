@@ -224,7 +224,7 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                     taxonomy: {
                         product_type: productType || undefined,
                         categories: selectedCategories,
-                        attributes: categoryData?.attributes?.length ? categoryData.attributes : (selectedCategories.length ? selectedCategories : [productType || 'accessory']),
+                        attributes: categoryData?.attributes?.length ? categoryData.attributes : [],
                         audience: audience || 'unisex'
                     },
                     variants: variantsToSubmit.length > 0 ? variantsToSubmit : [],
