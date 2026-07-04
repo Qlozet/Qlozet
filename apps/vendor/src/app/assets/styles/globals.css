@@ -203,6 +203,74 @@
   box-shadow: 0px 4px 25px 0px hsla(240, 13%, 72%, 0.15);
 }
 
+/* Gentle bounce-in from right for Sheets (Profile, Order Details) */
+@keyframes bounce-slide-in-right {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  60% {
+    transform: translateX(-4%);
+    opacity: 1;
+  }
+  80% {
+    transform: translateX(1.5%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out-right {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Modal center animations: scale-bounce-in + slide-out-down */
+@keyframes modal-bounce-in {
+  0% {
+    transform: scale(0.9) translateY(20px);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.02) translateY(-2px);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(0.995) translateY(1px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modal-slide-out-down {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95) translateY(40px);
+    opacity: 0;
+  }
+}
+
+@keyframes overlay-fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes overlay-fade-out {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 /* Hide number input spin buttons */
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {

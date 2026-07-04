@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { Check, Info, Upload, X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -86,9 +86,15 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
     }
   }, [productData]);
 
+  const [closing, setClosing] = useState(false);
+
+  const handleClose = useCallback(() => {
+    setClosing(true);
+    setTimeout(() => modal.remove(), 280);
+  }, [modal]);
+
   if (!modal.visible) return null;
 
-  const handleClose = () => modal.remove();
   const isValid = name.trim().length > 0 && pricePerYard > 0 && yardsLength > 0 && width >= 10;
 
   const handleFile = (file?: File) => {
@@ -154,7 +160,7 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        className={`absolute inset-0 bg-black/40 backdrop-blur-sm ${closing ? 'animate-[overlay-fade-out_280ms_ease-in_forwards]' : 'animate-[overlay-fade-in_300ms_ease-out_forwards]'}`}
         onClick={handleClose}
       />
 
@@ -162,7 +168,7 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
         role="dialog"
         aria-modal="true"
         aria-labelledby="add-fabric-title"
-        className="relative z-10 flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-card shadow-2xl md:flex-row"
+        className={`relative z-10 flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-card shadow-2xl md:flex-row ${closing ? 'animate-[modal-slide-out-down_280ms_ease-in_forwards]' : 'animate-[modal-bounce-in_400ms_cubic-bezier(0.22,1,0.36,1)_forwards]'}`}
       >
         <button
           type="button"

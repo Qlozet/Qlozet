@@ -33,8 +33,8 @@ import logo from '@/public/assets/image/logobrown.png';
 interface SidebarItem {
   name: string;
   link: string;
-  defaultIcon: StaticImageData;
-  activeIcon: StaticImageData;
+  defaultIcon: StaticImageData | string;
+  activeIcon: StaticImageData | string;
   function: () => void;
 }
 
@@ -153,7 +153,7 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
               )}
               <p
                 className={`font-normal text-sm ${
-                  active === item.name ? 'text-primary' : 'text-gray-100'
+                  active === item.name ? 'text-primary' : 'text-[#6B7280]'
                 }`}
               >
                 {item.name}
