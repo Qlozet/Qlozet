@@ -65,7 +65,7 @@ export const OrdersByLocation = () => {
                             data={chartData}
                             layout="vertical"
                             barGap={2}
-                            margin={{ left: 0, right: 0, top: 0, bottom: 0, }}
+                            margin={{ left: 24, right: 0, top: 0, bottom: 0 }}
                         >
                             <XAxis type="number" hide />
                             <YAxis
