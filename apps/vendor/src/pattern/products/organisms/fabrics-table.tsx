@@ -170,7 +170,8 @@ export const FabricsTable = ({
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      className='border-b'
+                      className='border-b cursor-pointer hover:bg-muted/50'
+                      onClick={() => onViewDetails(row.original._id as string)}
                     >
                       {row.getVisibleCells()?.map((cell, cellIndex) => {
                         const isFirst = cellIndex === 0
