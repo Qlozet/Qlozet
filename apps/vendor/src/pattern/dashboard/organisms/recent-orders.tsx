@@ -8,28 +8,28 @@ import { APP_ROUTES } from '@/lib/routes';
 const orders = [
     {
         id: 1,
-        orderId: "D34554ADF",
-        customerName: "Omowyi Precious",
-        amount: "₦20,000",
-        date: "23/03/2023",
-        image: "👜",
+        product: "Amasi Dress",
+        customerName: "Omoniyi Precious",
+        amount: "N120,000",
+        date: "23/09/2023",
+        bgColor: "bg-[#7c3a3a]",
     },
     {
         id: 2,
-        orderId: "C8D1234DF",
-        customerName: "Omowyi Precious",
-        amount: "₦20,000",
-        date: "23/03/2023",
-        image: "👗",
+        product: "Amasi Dress",
+        customerName: "Omoniyi Precious",
+        amount: "N120,000",
+        date: "23/09/2023",
+        bgColor: "bg-[#2f6e64]",
     },
     {
         id: 3,
-        orderId: "D34554ADF",
-        customerName: "Omowyi Precious",
-        amount: "₦20,000",
-        date: "23/03/2023",
-        image: "👟",
-    }
+        product: "Amasi Dress",
+        customerName: "Omoniyi Precious",
+        amount: "N120,000",
+        date: "23/09/2023",
+        bgColor: "bg-[#3d2817]",
+    },
 ]
 
 export const RecentOrders = () => {
@@ -47,20 +47,22 @@ export const RecentOrders = () => {
                 {orders?.map((order) => (
                     <div
                         key={order.id}
-                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
                     >
-                        <div className="flex items-center gap-4">
-                            {order.image}
-                            <div className="flex flex-col gap-1">
-                                <p className="text-sm font-medium text-gray-900">{order.orderId}</p>
+                        <div className="flex items-center gap-3">
+                            <div className={`size-11 rounded-md shrink-0 ${order.bgColor}`} />
+                            <div className="flex flex-col gap-0.5">
+                                <p className="text-sm font-medium text-gray-900">{order.product}</p>
                                 <p className="text-xs text-gray-600">{order.customerName}</p>
-                                <p className="text-xs text-gray-500">{order.date}</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4">
-                            <p className="text-sm font-semibold text-gray-900">{order.amount}</p>
-                            <button className="p-2 hover:bg-gray-200 rounded-lg transition">
-                                <ChevronRight size={18} className="text-gray-600" />
+                        <div className="flex items-center gap-3">
+                            <div className="flex flex-col items-end gap-0.5">
+                                <p className="text-sm font-semibold text-gray-900">{order.amount}</p>
+                                <p className="text-xs text-gray-500">{order.date}</p>
+                            </div>
+                            <button className="p-1.5 bg-gray-200 hover:bg-gray-300 rounded-full transition">
+                                <ChevronRight size={16} className="text-gray-600" />
                             </button>
                         </div>
                     </div>
