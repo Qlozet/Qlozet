@@ -8,8 +8,8 @@ import { PieChart, Pie, Cell, Legend, ResponsiveContainer, Tooltip } from "recha
 import { CustomChartTooltip } from "../molecules/custom-chart-tooltip";
 import ChartLegendIcon from "../atoms/chart-legend-icon";
 
-// Brown palette: dark brown → warm tan → soft beige → muted cream
-const COLORS = ["#3d2817", "#8B6914", "#C4A265", "#E8D5B5"]
+// Brown shades: deep → medium → warm → light
+const COLORS = ["#3d2817", "#6B4226", "#9C6B3C", "#C49A6C"]
 
 const renderLegend = (props: any): JSX.Element => {
     const payload = props?.payload ?? [];
