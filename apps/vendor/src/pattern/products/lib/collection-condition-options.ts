@@ -19,13 +19,15 @@ export const CONDITION_FIELD_OPTIONS: Option[] = [
   { value: 'base_price', label: 'Price' },
   { value: 'kind', label: 'Product Kind' },
   { value: 'status', label: 'Status' },
-  // Fabric fields
-  { value: 'fabric.taxonomy.product_type', label: 'Fabric Type' },
-  { value: 'fabric.taxonomy.categories', label: 'Fabric Category' },
-  { value: 'fabric.taxonomy.audience', label: 'Fabric Audience' },
+  // Fabric fields — fabrics have product_type & pattern as direct fields, no taxonomy object
+  { value: 'fabric.product_type', label: 'Fabric Material' },
+  { value: 'fabric.pattern', label: 'Fabric Pattern' },
+  { value: 'fabric.name', label: 'Fabric Name' },
+  { value: 'fabric.price_per_yard', label: 'Price per Yard' },
   // Accessory fields
   { value: 'accessory.taxonomy.product_type', label: 'Accessory Type' },
   { value: 'accessory.taxonomy.categories', label: 'Accessory Category' },
+  { value: 'accessory.taxonomy.audience', label: 'Accessory Audience' },
 ]
 
 // condition.operator — mirrors the backend evaluateOperator() cases.
@@ -46,11 +48,13 @@ export const TAXONOMY_FIELD_CONFIG: Record<string, { kind: string; type: 'produc
   'clothing.taxonomy.categories': { kind: 'clothing', type: 'categories' },
   'clothing.taxonomy.audience': { kind: 'clothing', type: 'audience' },
   'clothing.taxonomy.attributes': { kind: 'clothing', type: 'attributes' },
-  'fabric.taxonomy.product_type': { kind: 'fabric', type: 'product_type' },
-  'fabric.taxonomy.categories': { kind: 'fabric', type: 'categories' },
-  'fabric.taxonomy.audience': { kind: 'fabric', type: 'audience' },
+  // Fabric uses taxonomy API for product_type list, and categories (patterns) cascade from it
+  'fabric.product_type': { kind: 'fabric', type: 'product_type' },
+  'fabric.pattern': { kind: 'fabric', type: 'categories' },
+  // Accessory
   'accessory.taxonomy.product_type': { kind: 'accessory', type: 'product_type' },
   'accessory.taxonomy.categories': { kind: 'accessory', type: 'categories' },
+  'accessory.taxonomy.audience': { kind: 'accessory', type: 'audience' },
 }
 
 // Static value options for non-taxonomy fields (free-text fields use an Input
@@ -76,4 +80,6 @@ export const STATIC_VALUE_OPTIONS: Record<string, Option[]> = {
 export const FREE_TEXT_FIELDS = new Set([
   'clothing.name',
   'base_price',
+  'fabric.name',
+  'fabric.price_per_yard',
 ])
