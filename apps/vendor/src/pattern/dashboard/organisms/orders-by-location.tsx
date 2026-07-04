@@ -87,7 +87,6 @@ export const OrdersByLocation = () => {
                                 dataKey="male"
                                 stackId="a"
                                 fill="#3d2817"
-                                label={{ fill: '#fff', fontSize: 10, fontWeight: 700, position: 'center' }}
                                 maxBarSize={24}
                                 radius={[2.26, 0, 0, 2.26]}
                             />
@@ -95,7 +94,6 @@ export const OrdersByLocation = () => {
                                 dataKey="female"
                                 stackId="a"
                                 fill="#9C857870"
-                                label={{ fill: '#3d2817', fontSize: 10, fontWeight: 700, position: 'center' }}
                                 maxBarSize={24}
                                 radius={[0, 2.26, 2.26, 0]}
                             />
