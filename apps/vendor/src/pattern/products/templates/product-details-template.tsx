@@ -163,10 +163,18 @@ export const ProductDetailsTemplate = ({
     .filter((u): u is string => Boolean(u));
 
   const colorImages = selectedColorIndex !== null 
-    ? (product.color_variants?.[selectedColorIndex]?.images ?? []).map(i => i?.url).filter(Boolean) as string[]
+    ? (product.color_variants?.[selectedColorIndex]?.images ?? []).map((i: any) => typeof i === 'string' ? i : i?.url).filter(Boolean) as string[]
     : [];
 
   const images = colorImages.length > 0 ? colorImages : baseImages;
+  
+  console.log('Product Details Debug:', {
+    selectedColorIndex,
+    colorVariants: product.color_variants,
+    colorImages,
+    baseImages,
+    images
+  });
 
   const businessName = product.business?.name ?? product.business_name;
   const customisation = product.type
