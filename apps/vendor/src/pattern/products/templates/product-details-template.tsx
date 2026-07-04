@@ -146,8 +146,17 @@ export const ProductDetailsTemplate = ({
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
   const [activeImage, setActiveImage] = useState(0);
 
-  // Vendor getProduct returns the Product directly (not wrapped in ApiResponse).
-  const product = (data ?? {}) as unknown as ClothingView;
+  // Handle nested API response structures based on product kind
+  const apiProduct = (data as any)?.data || data || {};
+  const itemData = apiProduct.clothing || apiProduct.accessory || apiProduct.fabric || apiProduct;
+  
+  const product: ClothingView = {
+    ...apiProduct,
+    ...itemData,
+    price: apiProduct.base_price ?? itemData.price ?? 0,
+    status: apiProduct.status ?? 'draft',
+  };
+  
   const images = (product.images ?? [])
     .map((i) => (typeof i === 'string' ? i : i?.url))
     .filter((u): u is string => Boolean(u));
