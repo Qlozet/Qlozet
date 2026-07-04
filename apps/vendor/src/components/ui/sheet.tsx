@@ -54,42 +54,50 @@ interface SheetContentProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
     VariantProps<typeof sheetVariants> {}
 
+import { gsap } from 'gsap';
+
 const SheetContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentProps
->(({ side = 'right', className, children, ...props }, ref) => (
-  <SheetPortal>
-    <SheetOverlay />
-    <SheetPrimitive.Content
-      ref={ref}
-      className={cn(sheetVariants({ side }), className)}
-      {...props}
-    >
-      {side === 'right' ? (
-        <AnimatedContent
-          distance={80}
-          direction="horizontal"
-          reverse={false}
-          duration={2}
-          ease="elastic.out(1, 0.3)"
-          initialOpacity={0}
-          animateOpacity
-          scale={1}
-          threshold={0.1}
-          delay={0.3}
-        >
-          {children}
-        </AnimatedContent>
-      ) : (
-        children
-      )}
-      <SheetPrimitive.Close className='absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary'>
-        <X className='h-4 w-4' />
-        <span className='sr-only'>Close</span>
-      </SheetPrimitive.Close>
-    </SheetPrimitive.Content>
-  </SheetPortal>
-));
+>(({ side = 'right', className, children, ...props }, forwardedRef) => {
+  const localRef = React.useRef<React.ElementRef<typeof SheetPrimitive.Content>>(null);
+
+  React.useEffect(() => {
+    if (localRef.current && side === 'right') {
+      gsap.fromTo(
+        localRef.current,
+        { x: '100%', opacity: 0 },
+        { x: '0%', opacity: 1, duration: 1.5, ease: 'elastic.out(1, 0.4)', delay: 0.1 }
+      );
+    }
+  }, [side]);
+
+  return (
+    <SheetPortal>
+      <SheetOverlay />
+      <SheetPrimitive.Content
+        ref={(node) => {
+          // Assign to local ref
+          localRef.current = node as any;
+          // Assign to forwarded ref
+          if (typeof forwardedRef === 'function') {
+            forwardedRef(node);
+          } else if (forwardedRef) {
+            forwardedRef.current = node;
+          }
+        }}
+        className={cn(sheetVariants({ side }), className, side === 'right' ? '!animate-none' : '')}
+        {...props}
+      >
+        {children}
+        <SheetPrimitive.Close className='absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary'>
+          <X className='h-4 w-4' />
+          <span className='sr-only'>Close</span>
+        </SheetPrimitive.Close>
+      </SheetPrimitive.Content>
+    </SheetPortal>
+  );
+});
 SheetContent.displayName = SheetPrimitive.Content.displayName;
 
 const SheetHeader = ({
