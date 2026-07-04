@@ -5,7 +5,7 @@
 // CreateCollectionDto (POST /collections). Status maps to `is_active`.
 // Value dropdowns are populated dynamically from the taxonomy API.
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { useForm, useFieldArray, useWatch } from 'react-hook-form'
@@ -13,8 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { toast } from 'sonner'
 import {
-    ChevronDown,
-    ChevronUp,
+    GripVertical,
     Plus,
     Search,
     Trash2,
@@ -183,11 +182,38 @@ export const CollectionsCreateTemplate = () => {
         },
     })
 
-    const { fields, append, remove, swap } = useFieldArray({
+    const { fields, append, remove, swap, move } = useFieldArray({
         control: form.control,
         name: 'conditions',
     })
 
+    // ─── Native drag-and-drop state for condition reordering ───
+    const [dragIndex, setDragIndex] = useState<number | null>(null)
+    const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
+
+    const handleDragStart = useCallback((index: number) => {
+        setDragIndex(index)
+    }, [])
+
+    const handleDragOver = useCallback((e: React.DragEvent, index: number) => {
+        e.preventDefault()
+        e.dataTransfer.dropEffect = 'move'
+        setDragOverIndex(index)
+    }, [])
+
+    const handleDrop = useCallback((e: React.DragEvent, targetIndex: number) => {
+        e.preventDefault()
+        if (dragIndex !== null && dragIndex !== targetIndex) {
+            move(dragIndex, targetIndex)
+        }
+        setDragIndex(null)
+        setDragOverIndex(null)
+    }, [dragIndex, move])
+
+    const handleDragEnd = useCallback(() => {
+        setDragIndex(null)
+        setDragOverIndex(null)
+    }, [])
     // Build dynamic value options from taxonomy tree
     const getTaxonomyValues = useMemo(() => {
         if (!taxonomyTree) return () => []
@@ -562,8 +588,31 @@ export const CollectionsCreateTemplate = () => {
                                     return (
                                         <div
                                             key={row.id}
-                                            className='flex flex-wrap items-start gap-2 sm:flex-nowrap'
+                                            draggable
+                                            onDragStart={() => handleDragStart(index)}
+                                            onDragOver={(e) => handleDragOver(e, index)}
+                                            onDrop={(e) => handleDrop(e, index)}
+                                            onDragEnd={handleDragEnd}
+                                            className={cn(
+                                                'flex flex-wrap items-start gap-2 sm:flex-nowrap rounded-xl p-2 -mx-2 transition-all duration-200',
+                                                dragIndex === index && 'opacity-40 scale-[0.98]',
+                                                dragOverIndex === index && dragIndex !== index && 'border-2 border-primary/40 bg-primary/5',
+                                                dragIndex !== null && dragOverIndex !== index && dragIndex !== index && 'opacity-80',
+                                            )}
                                         >
+                                            {/* Drag Handle */}
+                                            <div
+                                                className={cn(
+                                                    'flex h-12 w-10 shrink-0 cursor-grab items-center justify-center rounded-lg border transition-all duration-200 active:cursor-grabbing',
+                                                    dragIndex === index
+                                                        ? 'bg-primary border-primary text-white shadow-md'
+                                                        : 'border-border text-muted-foreground hover:bg-primary/10 hover:border-primary/30 hover:text-primary'
+                                                )}
+                                                title="Drag to reorder"
+                                            >
+                                                <GripVertical className='size-4' />
+                                            </div>
+
                                             {/* Field */}
                                             <FormField
                                                 control={form.control}
@@ -574,8 +623,6 @@ export const CollectionsCreateTemplate = () => {
                                                             value={field.value}
                                                             onValueChange={(next) => {
                                                                 field.onChange(next)
-                                                                // Reset the value when the field changes so a
-                                                                // stale value from another field isn't kept.
                                                                 form.setValue(
                                                                     `conditions.${index}.value`,
                                                                     ''
@@ -677,28 +724,6 @@ export const CollectionsCreateTemplate = () => {
                                                     </FormItem>
                                                 )}
                                             />
-
-                                            {/* Reorder */}
-                                            <div className='flex h-12 flex-col items-center justify-center rounded-lg border'>
-                                                <button
-                                                    type='button'
-                                                    aria-label='Move condition up'
-                                                    disabled={index === 0}
-                                                    onClick={() => swap(index, index - 1)}
-                                                    className='px-2 text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30'
-                                                >
-                                                    <ChevronUp className='size-3.5' />
-                                                </button>
-                                                <button
-                                                    type='button'
-                                                    aria-label='Move condition down'
-                                                    disabled={index === fields.length - 1}
-                                                    onClick={() => swap(index, index + 1)}
-                                                    className='px-2 text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30'
-                                                >
-                                                    <ChevronDown className='size-3.5' />
-                                                </button>
-                                            </div>
 
                                             {/* Delete */}
                                             <Button
