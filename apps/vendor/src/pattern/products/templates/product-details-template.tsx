@@ -39,6 +39,7 @@ interface ComponentView {
 interface ClothingView {
   _id?: string;
   name?: string;
+  sku?: string;
   status?: string;
   price?: number;
   type?: string;
@@ -106,7 +107,7 @@ const DetailRow = ({
 );
 
 const Chip = ({ children }: { children: React.ReactNode }) => (
-  <span className="rounded-md bg-accent px-2.5 py-1 text-xs capitalize text-foreground">
+  <span className="rounded bg-accent px-2.5 py-1 text-xs text-grey-black dark:text-white capitalize">
     {children}
   </span>
 );
@@ -245,42 +246,66 @@ export const ProductDetailsTemplate = ({
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Image gallery */}
-          <div className="relative overflow-hidden rounded-2xl bg-accent">
-            <div className="relative aspect-[4/5] w-full">
-              {images[activeImage] ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={images[activeImage]}
-                  alt={product.name ?? 'Product'}
-                  className="size-full object-cover"
-                />
-              ) : (
-                <div className="flex size-full items-center justify-center text-sm text-muted-foreground">
-                  No image
-                </div>
+          <div className="flex flex-col gap-4">
+            <div className="relative overflow-hidden rounded-2xl bg-accent w-full">
+              <div className="relative aspect-[4/5] w-full">
+                {images[activeImage] ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={images[activeImage]}
+                    alt={product.name ?? 'Product'}
+                    className="size-full object-cover"
+                  />
+                ) : (
+                  <div className="flex size-full items-center justify-center text-sm text-muted-foreground">
+                    No image
+                  </div>
+                )}
+              </div>
+              {images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setActiveImage((i) => (i - 1 + images.length) % images.length)
+                    }
+                    className="absolute left-4 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-grey-black shadow-md hover:bg-gray-50 transition-colors"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft className="size-6" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveImage((i) => (i + 1) % images.length)}
+                    className="absolute right-4 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-grey-black shadow-md hover:bg-gray-50 transition-colors"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight className="size-6" />
+                  </button>
+                </>
               )}
             </div>
+
             {images.length > 1 && (
-              <>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setActiveImage((i) => (i - 1 + images.length) % images.length)
-                  }
-                  className="absolute left-3 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-grey-black shadow hover:bg-white"
-                  aria-label="Previous image"
-                >
-                  <ChevronLeft className="size-5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveImage((i) => (i + 1) % images.length)}
-                  className="absolute right-3 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-grey-black shadow hover:bg-white"
-                  aria-label="Next image"
-                >
-                  <ChevronRight className="size-5" />
-                </button>
-              </>
+              <div className="grid grid-cols-5 gap-4">
+                {images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveImage(idx)}
+                    className={cn(
+                      "relative aspect-[4/5] w-full overflow-hidden rounded-xl border-2 transition-all",
+                      activeImage === idx ? "border-primary" : "border-transparent opacity-70 hover:opacity-100"
+                    )}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={img}
+                      alt={`Thumbnail ${idx + 1}`}
+                      className="size-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
             )}
           </div>
 
@@ -288,48 +313,44 @@ export const ProductDetailsTemplate = ({
           <div className="space-y-6">
             {/* Info card */}
             <div className="rounded-2xl bg-card p-6 custom-card-shadow">
-              <div className="flex items-start justify-between gap-4">
-                {businessName ? (
-                  <p className="text-sm font-medium uppercase text-[#2F80ED]">
-                    {businessName}
-                  </p>
-                ) : (
-                  <span />
-                )}
+              <div className="flex items-center justify-between gap-4">
+                <p className="text-sm font-medium uppercase text-grey-black/60 dark:text-white/60">
+                  SKU: <span className="opacity-70">{product.sku ?? product._id?.slice(-6).toUpperCase()}</span>
+                </p>
                 {product.status && (
                   <span className="flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-xs font-medium capitalize text-grey-black dark:text-white">
-                    <span className="size-2 rounded-full bg-success" />
+                    <span className={cn("size-2 rounded-full", product.status === 'active' ? 'bg-success' : 'bg-destructive')} />
                     {product.status}
                   </span>
                 )}
               </div>
 
-              <h1 className="mt-2 text-3xl font-bold text-primary">
+              <h1 className="mt-4 text-[28px] font-bold text-[#3d2817] dark:text-white">
                 {product.name ?? 'Untitled product'}
               </h1>
 
               {hasMetrics && (
-                <div className="mt-3 flex flex-wrap items-center gap-6 text-sm font-semibold text-grey-black dark:text-white">
+                <div className="mt-3 flex flex-wrap items-center gap-4 text-sm font-bold text-grey-black dark:text-white">
                   {product.rating !== undefined && (
                     <span className="flex items-center gap-1.5">
-                      <Star className="size-4 fill-yellow-400 text-yellow-400" />
-                      {product.rating}
+                      <Star className="size-5 fill-[#F2C94C] text-[#F2C94C]" />
+                      <span className="text-lg">{product.rating}</span>
                     </span>
                   )}
                   {product.likes !== undefined && (
-                    <span className="flex items-center gap-1.5">
-                      <Heart className="size-4 fill-red-500 text-red-500" />
-                      {product.likes}
+                    <span className="flex items-center gap-1.5 ml-2">
+                      <Heart className="size-5 fill-[#EB5757] text-[#EB5757]" />
+                      <span className="text-lg">{product.likes}</span>
                     </span>
                   )}
                   {product.reviews_count !== undefined && (
-                    <span className="flex items-center gap-1.5">
-                      <MessageSquare className="size-4" />
-                      {product.reviews_count}
+                    <span className="flex items-center gap-1.5 ml-2">
+                      <MessageSquare className="size-5" />
+                      <span className="text-lg">{product.reviews_count}</span>
                       <button
                         type="button"
                         onClick={wip}
-                        className="ml-1 text-xs font-normal text-muted-foreground underline"
+                        className="ml-2 text-xs font-normal text-muted-foreground underline"
                       >
                         Read reviews
                       </button>
@@ -338,40 +359,15 @@ export const ProductDetailsTemplate = ({
                 </div>
               )}
 
-              <p className="mt-4 text-2xl font-bold text-grey-black dark:text-white">
+              <p className="mt-6 text-[24px] font-bold text-black dark:text-white">
                 {NGN(product.price)}
               </p>
 
               {product.items_delivered !== undefined && (
-                <div className="mt-3 inline-flex items-center gap-2 rounded-md bg-accent px-3 py-1.5 text-xs text-grey-black dark:text-white">
-                  Items delivered:{' '}
-                  <span className="font-semibold">
-                    {product.items_delivered.toLocaleString()}
-                  </span>
+                <div className="mt-4 inline-flex items-center gap-2 rounded-[10px] bg-accent px-4 py-2 text-xs text-grey-black dark:text-white font-medium">
+                  <span className="font-semibold">Items delivered: {product.items_delivered.toLocaleString()}</span>
                 </div>
               )}
-
-              <div className="mt-5 flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={wip}
-                  className="flex size-9 items-center justify-center rounded-md bg-accent text-grey-black hover:opacity-80 dark:text-white"
-                  aria-label="Copy"
-                >
-                  <Clipboard className="size-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={wip}
-                  className="flex size-9 items-center justify-center rounded-md bg-accent text-destructive hover:opacity-80"
-                  aria-label="Flag"
-                >
-                  <Flag className="size-4" />
-                </button>
-                <Button variant="outline" onClick={wip} className="text-destructive">
-                  Escalate to support
-                </Button>
-              </div>
             </div>
 
             {/* Detail card */}
@@ -449,16 +445,8 @@ export const ProductDetailsTemplate = ({
                   {accSizes.length ? (
                     <DetailRow label="Available Sizes">
                       {accSizes.map((s, i) => (
-                        <span
-                          key={i}
-                          className="flex items-center gap-1 rounded-md border border-input px-2 py-1.5 text-xs text-foreground"
-                        >
-                          <span className="font-semibold">{s.size}</span>
-                          {s.measurement ? (
-                            <span className="text-muted-foreground">
-                              {s.measurement}
-                            </span>
-                          ) : null}
+                        <span key={i} className="font-bold text-sm">
+                          {s.size}
                         </span>
                       ))}
                     </DetailRow>
@@ -507,10 +495,7 @@ export const ProductDetailsTemplate = ({
               {sizes.length ? (
                 <DetailRow label="Available Sizes">
                   {sizes.map((s) => (
-                    <span
-                      key={s}
-                      className="flex min-w-9 items-center justify-center rounded-md bg-accent px-2 py-1 text-xs font-semibold"
-                    >
+                    <span key={s} className="font-bold text-sm mx-1">
                       {s}
                     </span>
                   ))}
@@ -545,18 +530,18 @@ export const ProductDetailsTemplate = ({
             </div>
 
             {/* Footer actions */}
-            <div className="flex items-center justify-end gap-6">
+            <div className="flex items-center justify-end gap-6 mt-8">
               <button
                 type="button"
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="text-sm font-medium text-destructive hover:underline disabled:opacity-50"
+                className="text-sm font-bold text-destructive hover:underline disabled:opacity-50"
               >
                 {isDeleting ? 'Deleting…' : 'Delete'}
               </button>
               <Button
                 onClick={() => router.push('/products/add-product')}
-                className="px-8"
+                className="px-8 bg-[#3d2817] hover:bg-[#3d2817]/90 text-white font-semibold rounded-lg"
               >
                 Edit
               </Button>
