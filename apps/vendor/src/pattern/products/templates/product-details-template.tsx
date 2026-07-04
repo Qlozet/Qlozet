@@ -163,7 +163,14 @@ export const ProductDetailsTemplate = ({
     .filter((u): u is string => Boolean(u));
 
   const colorImages = selectedColorIndex !== null 
-    ? (product.color_variants?.[selectedColorIndex]?.images ?? []).map((i: any) => typeof i === 'string' ? i : i?.url).filter(Boolean) as string[]
+    ? Array.from(new Set(
+        [
+          ...(product.color_variants?.[selectedColorIndex]?.images ?? []),
+          ...(product.color_variants?.[selectedColorIndex]?.variants?.flatMap((v: any) => v.images ?? []) ?? [])
+        ]
+        .map((i: any) => typeof i === 'string' ? i : i?.url)
+        .filter(Boolean)
+      )) as string[]
     : [];
 
   const images = colorImages.length > 0 ? colorImages : baseImages;
