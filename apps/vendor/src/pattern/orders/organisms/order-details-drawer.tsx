@@ -86,11 +86,14 @@ const OrderItem = ({ item, index }: { item: SampleOrderItem; index: number }) =>
 );
 
 export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(({ order }) => {
-  const { visible, resolve, remove } = useModal();
+  const { visible, resolve, hide, remove } = useModal();
 
-  const handleClose = () => {
-    resolve({ resolved: true });
-    remove();
+  const handleClose = (open?: boolean | React.MouseEvent) => {
+    if (typeof open !== 'boolean' || !open) {
+      resolve({ resolved: true });
+      hide();
+      setTimeout(() => remove(), 300);
+    }
   };
 
   const customerId =

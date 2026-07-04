@@ -179,13 +179,11 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
           </div>
         </div>
       </div>
-      {showProfile && (
-        <Profile
-          showProfileHandler={showProfileHandler}
-          userDetails={userDetails}
-          showProfile={showProfile}
-        />
-      )}
+      <Profile
+        showProfileHandler={showProfileHandler}
+        userDetails={userDetails}
+        showProfile={showProfile}
+      />
     </div>
   );
 };
