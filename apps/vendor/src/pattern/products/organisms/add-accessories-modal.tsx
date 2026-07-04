@@ -92,9 +92,11 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
 
     // Taxonomy hooks
     const { data: accessoryTypes, isLoading: isLoadingTypes } = useGetProductTypesQuery('accessory')
+    // Skip categories query if product_type isn't a real taxonomy type (e.g. generic 'accessory')
+    const isValidProductType = Boolean(productType && productType !== 'accessory')
     const { data: categoryData, isLoading: isLoadingCategories } = useGetCategoriesForTypeQuery(
         { kind: 'accessory', product_type: productType },
-        { skip: !productType }
+        { skip: !isValidProductType }
     )
     const { data: vendorTags, isLoading: isLoadingTags } = useGetVendorTagsQuery()
 
@@ -220,20 +222,20 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                     description: description.trim() || undefined,
                     price: Number(price),
                     taxonomy: {
-                        product_type: productType || 'accessory',
+                        product_type: productType || undefined,
                         categories: selectedCategories,
                         attributes: [],
                         audience: audience || 'unisex'
                     },
-                    variants: variantsToSubmit,
-                    images: finalImageUrl ? [{ url: finalImageUrl, public_id: finalPublicId }] : []
+                    variants: variantsToSubmit.length > 0 ? variantsToSubmit : [],
+                    images: finalImageUrl ? [{ url: finalImageUrl, public_id: finalPublicId }] : (existingImage ? [existingImage] : [])
                 }
             }).unwrap()
 
-            toast.success("Accessory created successfully!")
+            toast.success(editId ? "Accessory updated successfully!" : "Accessory created successfully!")
             handleCloseModal()
         } catch (error) {
-            toast.error("Failed to create accessory.")
+            toast.error(editId ? "Failed to update accessory." : "Failed to create accessory.")
         }
     }
 
@@ -287,7 +289,7 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                                     {isLoadingTypes ? (
                                         <Skeleton className="h-10 w-full" />
                                     ) : (
-                                        <Select value={productType} onValueChange={(v) => { setProductType(v); setSelectedCategories([]); }}>
+                                        <Select value={productType || undefined} onValueChange={(v) => { setProductType(v); setSelectedCategories([]); }}>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Select product type" />
                                             </SelectTrigger>
@@ -308,7 +310,7 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                                         Category
                                         <InfoIcon className="size-3.5 text-muted-foreground" />
                                     </label>
-                                    {isLoadingCategories && productType ? (
+                                    {isLoadingCategories && isValidProductType ? (
                                         <Skeleton className="h-10 w-full" />
                                     ) : categoryData?.categories && categoryData.categories.length > 0 ? (
                                         <Select
