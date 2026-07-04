@@ -1,29 +1,21 @@
 "use client"
 
-import { JSX } from "react";
-import { useGetTopProductsQuery } from "@/redux/services/dashboard/dashboard.api-slice";
+import { JSX, useMemo } from "react";
+import { useGetOrdersQuery } from "@/redux/services/dashboard/dashboard.api-slice";
 import { ChartSkeleton } from "../molecules/chart-skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bar, BarChart, Label, LabelList, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { PieChart, Pie, Cell, Legend, ResponsiveContainer, Tooltip } from "recharts";
 import { CustomChartTooltip } from "../molecules/custom-chart-tooltip";
 import ChartLegendIcon from "../atoms/chart-legend-icon";
 
-const chartData = [
-    { label: "AMASI QUEEN DRE...", male: 50, female: 30 },
-    { label: "MAISON DE VETEMENTS ...", male: 40, female: 25 },
-    { label: "MOTORSPORT RU...", male: 30, female: 20 },
-    { label: "WARM CASUAL", male: 25, female: 15 },
-]
-
-const renderBlackLegendText = (value: string, entry: any) => {
-    return <span style={{ display: "inline-block", color: "#000", marginRight: "32px" }}>{value}</span>
-};
+// Brown palette: dark brown → warm tan → soft beige → muted cream
+const COLORS = ["#3d2817", "#8B6914", "#C4A265", "#E8D5B5"]
 
 const renderLegend = (props: any): JSX.Element => {
     const payload = props?.payload ?? [];
 
     return (
-        <ul className="w-full h-fit flex items-center gap-8 p-0 pl-2.5 pb-[1px] pt-[20px] m-0 text-left text-xs capitalize">
+        <ul className="w-full h-fit flex flex-wrap items-center justify-center gap-x-6 gap-y-2 p-0 pt-[20px] pb-[1px] m-0 text-center text-xs capitalize">
             {
                 payload?.map((entry: any, index: number) => {
                     const { color } = entry;
@@ -43,20 +35,57 @@ const renderLegend = (props: any): JSX.Element => {
     );
 }
 
-const renderLabel = (props: any): JSX.Element => {
-    console.log("Label list label props: ", props?.content)
-    return (
-        <p className="text-white font-medium">
-            {props?.entry?.value}
-        </p>
-    );
-}
-
 export const OrdersByProduct = () => {
-    // Top Products API Query
-    const { data: productsData, isLoading: productsLoading } = useGetTopProductsQuery();
+    const { data: ordersResponse, isLoading } = useGetOrdersQuery();
 
-    if (productsLoading) {
+    // Derive product kind counts from orders
+    const chartData = useMemo(() => {
+        const orders = ordersResponse?.data?.data ?? []
+        let customClothing = 0
+        let nonCustomClothing = 0
+        let fabric = 0
+        let accessory = 0
+
+        orders.forEach((order: any) => {
+            const items = order.items ?? order.products ?? []
+            items.forEach((item: any) => {
+                const kind = item.kind ?? item.product?.kind ?? ''
+                const type = item.type ?? item.product?.clothing?.type ?? item.clothing?.type ?? ''
+
+                if (kind === 'clothing') {
+                    if (type === 'custom') {
+                        customClothing++
+                    } else {
+                        nonCustomClothing++
+                    }
+                } else if (kind === 'fabric') {
+                    fabric++
+                } else if (kind === 'accessory') {
+                    accessory++
+                }
+            })
+        })
+
+        // If no real data, show placeholder
+        const total = customClothing + nonCustomClothing + fabric + accessory
+        if (total === 0) {
+            return [
+                { name: "Custom Clothing", value: 40 },
+                { name: "Non-Custom Clothing", value: 30 },
+                { name: "Fabric", value: 20 },
+                { name: "Accessory", value: 10 },
+            ]
+        }
+
+        return [
+            { name: "Custom Clothing", value: customClothing },
+            { name: "Non-Custom Clothing", value: nonCustomClothing },
+            { name: "Fabric", value: fabric },
+            { name: "Accessory", value: accessory },
+        ].filter(d => d.value > 0)
+    }, [ordersResponse])
+
+    if (isLoading) {
         return <ChartSkeleton />;
     }
 
@@ -64,56 +93,25 @@ export const OrdersByProduct = () => {
         <Card className="w-full max-h-[330px] rounded-[12px] custom-card-shadow">
             <CardHeader className="px-6 pb-4">
                 <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
-                    Orders by product
+                    Orders by product kind
                 </CardTitle>
             </CardHeader>
             <CardContent className='w-full font-poppins px-3 pt-0 pb-6'>
                 <ResponsiveContainer width="100%" height={250}>
-                    <BarChart
-                        data={chartData}
-                        responsive
-                        layout="vertical"
-                        barGap={2}
-                        margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
-                    >
-                        <XAxis type="number" hide />
-                        <YAxis
-                            dataKey="label"
-                            type="category"
-                            tickLine={false}
-                            axisLine={false}
-                            tick={{ fill: "#000", fontSize: 10, fontWeight: 500 }}
-                            padding={{ top: 0, bottom: 0}}
-                        />
-                        <div className="h-full w-full flex flex-col gap-y-4">
-                            {chartData?.map(({ label }, index) => (
-                                <Label key={index} value={label} />
+                    <PieChart>
+                        <Pie data={chartData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value">
+                            {chartData?.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS?.length]} />
                             ))}
-                        </div>
+                        </Pie>
                         <Tooltip content={<CustomChartTooltip />} cursor={false} />
                         <Legend
-                            align='left'
+                            align='center'
                             iconType="circle"
                             iconSize={9}
                             content={renderLegend}
                         />
-                        <Bar
-                            dataKey="male"
-                            stackId="a"
-                            fill="#3d2817"
-                            label={{ fill: '#fff', fontSize: 10, fontWeight: 700, position: 'center' }}
-                            maxBarSize={24}
-                            radius={[2.26, 0, 0, 2.26]}
-                        />
-                        <Bar
-                            dataKey="female"
-                            stackId="a"
-                            fill="#9C857870"
-                            label={{ fill: '#3d2817', fontSize: 10, fontWeight: 700, position: 'center' }}
-                            maxBarSize={24}
-                            radius={[0, 2.26, 2.26, 0]}
-                        />
-                    </BarChart>
+                    </PieChart>
                 </ResponsiveContainer>
             </CardContent>
         </Card>
