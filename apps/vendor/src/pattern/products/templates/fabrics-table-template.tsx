@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { clearProductId } from '@/lib/utils'
 import { show } from '@ebay/nice-modal-react'
-import { ProductDetailsModal } from '../organisms/product-details-modal'
+import { APP_ROUTES } from '@/lib/routes'
 import { toast } from 'sonner'
 import { OutlinRulerIcon } from '@/pattern/common/atoms/outline-ruler-icon'
 import { LinearImportIcon } from '@/pattern/common/atoms/linear-import-icon'
@@ -205,17 +205,7 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   }
 
   const handleViewDetails = (productId: string) => {
-    show(ProductDetailsModal, {
-      productId,
-      onProductUpdated: () => refetch(),
-      onProductDeleted: () => refetch(),
-      onEdit: (id: string) => {
-        router.push(`/products/add-product?edit=${id}`)
-      },
-      onDuplicate: async (id: string) => {
-        toast.success('Product duplication will be implemented')
-      },
-    })
+    router.push(`${APP_ROUTES.productDetails}?id=${productId}`)
   }
 
   const handleEditProduct = (productId: string) => {

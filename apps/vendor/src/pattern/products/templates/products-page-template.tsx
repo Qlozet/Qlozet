@@ -9,7 +9,8 @@ import {
   ProductFilterData,
 } from '../molecules/product-search-filter';
 import { ProductsTable } from '../organisms/products-table';
-import { ProductDetailsModal } from '../organisms/product-details-modal';
+import { APP_ROUTES } from '@/lib/routes';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -142,20 +143,9 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
   };
 
   // Handle product actions
+  const router = useRouter();
   const handleViewDetails = (productId: string) => {
-    show(ProductDetailsModal, {
-      productId,
-      onProductUpdated: () => refetchProducts(),
-      onProductDeleted: () => refetchProducts(),
-      onEdit: (id: string) => {
-        // Navigate to edit page or show edit modal
-        window.location.href = `/add?edit=${id}`;
-      },
-      onDuplicate: async (id: string) => {
-        // TODO: Implement product duplication
-        toast.success('Product duplication will be implemented');
-      },
-    });
+    router.push(`${APP_ROUTES.productDetails}?id=${productId}`);
   };
 
   const handleEditProduct = (productId: string) => {
