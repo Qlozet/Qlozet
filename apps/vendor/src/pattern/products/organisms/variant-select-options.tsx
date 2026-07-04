@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode, useState } from "react"
+import { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
 import { Trash2, Palette, X } from "lucide-react"
 import { useModal } from "@ebay/nice-modal-react"
@@ -38,14 +38,23 @@ export function VariantSelectOptions({
     const colorPickerModal = useModal(AdvancedColorPickerModal)
     const displayColors = [...AVAILABLE_COLORS, ...availableColors.filter((c) => !AVAILABLE_COLORS.find((ac) => ac.value === c.value))]
 
-    const [size, setSize] = useState<string[]>([""])
-
     const sizes = [
         {
             label: "Gender",
             tags: AVAILABLE_SIZES,
         },
     ]
+
+    // Sync MultiSelectTagsDropdown changes back to the parent via onSizeToggle
+    const handleSizeChange = (newSizes: string[]) => {
+        // Find added sizes
+        const added = newSizes.filter((s) => s && !selectedSizes.includes(s))
+        // Find removed sizes
+        const removed = selectedSizes.filter((s) => s && !newSizes.includes(s))
+        // Toggle each change
+        added.forEach((s) => onSizeToggle(s))
+        removed.forEach((s) => onSizeToggle(s))
+    }
 
     const handlePredefinedColorSelect = (color: PredefinedColor) => {
         const colorOption: ColorOption = {
@@ -125,7 +134,7 @@ export function VariantSelectOptions({
                         Size
                     </ProductFieldGroup.Label>
                     <ProductFieldGroup.Content>
-                        <MultiSelectTagsDropdown placeholder="Size" groups={sizes} value={size} onChange={setSize} />
+                        <MultiSelectTagsDropdown placeholder="Size" groups={sizes} value={selectedSizes} onChange={handleSizeChange} />
                     </ProductFieldGroup.Content>
                 </ProductFieldGroup>
 

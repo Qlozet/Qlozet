@@ -141,10 +141,11 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
             const color = allColors.find((c) => c.value === colorValue)!
 
             const sizeMap: Record<string, string> = {
-                xs: "S",
-                s: "M",
-                m: "L",
-                l: "XL",
+                xs: "XS",
+                s: "S",
+                m: "M",
+                l: "L",
+                xl: "XL",
             }
 
             const availableSizes = selectedSizes?.map((sizeValue) => sizeMap[sizeValue] || sizeValue.toUpperCase()) || [];
