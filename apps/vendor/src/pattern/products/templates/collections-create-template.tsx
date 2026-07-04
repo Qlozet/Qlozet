@@ -101,9 +101,9 @@ const getNestedValue = (obj: any, path: string): any => {
 const evaluateOperator = (value: any, operator: string, expected: any): boolean => {
     switch (operator) {
         case 'is_equal_to':
-            return value == expected
+            return String(value).toLowerCase() === String(expected).toLowerCase()
         case 'not_equal_to':
-            return value != expected
+            return String(value).toLowerCase() !== String(expected).toLowerCase()
         case 'greater_than':
             return Number(value) > Number(expected)
         case 'less_than':
@@ -216,12 +216,12 @@ export const CollectionsCreateTemplate = () => {
                         .map((cat) => ({ value: cat, label: cat }))
                 }
                 case 'audience':
-                    // Standard audience values
+                    // Values must be lowercase to match what products store
                     return [
-                        { value: 'Men', label: 'Men' },
-                        { value: 'Women', label: 'Women' },
-                        { value: 'Unisex', label: 'Unisex' },
-                        { value: 'Kids', label: 'Kids' },
+                        { value: 'men', label: 'Men' },
+                        { value: 'women', label: 'Women' },
+                        { value: 'unisex', label: 'Unisex' },
+                        { value: 'kids', label: 'Kids' },
                     ]
                 case 'attributes': {
                     // Aggregate all attributes across all product types for this kind
