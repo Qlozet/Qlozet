@@ -59,13 +59,13 @@ export const OrdersByLocation = () => {
                         Orders by top location
                     </CardTitle>
                 </CardHeader>
-                <CardContent className='w-full font-poppins px-3 pt-0 pb-6'>
+                <CardContent className='w-full font-poppins pl-3 pr-8 pt-0 pb-6'>
                     <ResponsiveContainer width="100%" height={250}>
                         <BarChart
                             data={chartData}
                             layout="vertical"
                             barGap={2}
-                            margin={{ left: 24, right: 0, top: 0, bottom: 0 }}
+                            margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
                         >
                             <XAxis type="number" hide />
                             <YAxis
