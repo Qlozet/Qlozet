@@ -8,7 +8,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
-import { useForm, useFieldArray } from 'react-hook-form'
+import { useForm, useFieldArray, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { toast } from 'sonner'
@@ -266,9 +266,15 @@ export const CollectionsCreateTemplate = () => {
         }
     }
 
-    // Watch conditions reactively for live product preview
-    const watchedConditions = form.watch('conditions')
-    const watchedConditionMatch = form.watch('condition_match')
+    // Watch conditions reactively for live product preview.
+    // useWatch returns new references on every change (unlike form.watch which
+    // can return the same mutated array reference), so useMemo detects updates.
+    const watchedConditions = useWatch({ control: form.control, name: 'conditions' })
+    const watchedConditionMatch = useWatch({ control: form.control, name: 'condition_match' })
+
+    // Serialize conditions to a string so useMemo re-evaluates when any
+    // individual field / operator / value changes inside a condition row.
+    const conditionsKey = JSON.stringify(watchedConditions) + watchedConditionMatch
 
     // All raw vendor products from the API (before the transformResponse flattening)
     const allRawProducts = useMemo(() => {
@@ -281,7 +287,8 @@ export const CollectionsCreateTemplate = () => {
         return allRawProducts.filter((product: any) =>
             evaluateProductAgainstConditions(product, watchedConditions, watchedConditionMatch)
         )
-    }, [allRawProducts, watchedConditions, watchedConditionMatch])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [allRawProducts, conditionsKey])
 
     // Apply search filter on top of matched products
     const filteredProducts = useMemo(() => {
