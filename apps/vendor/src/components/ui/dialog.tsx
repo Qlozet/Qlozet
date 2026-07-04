@@ -31,50 +31,44 @@ const DialogOverlay = React.forwardRef<
 ));
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
-import { gsap } from 'gsap';
-
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, forwardedRef) => {
-  const localRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    if (localRef.current) {
-      gsap.fromTo(
-        localRef.current,
-        { scale: 0.9, opacity: 0, xPercent: -50, yPercent: -30 },
-        { scale: 1, opacity: 1, xPercent: -50, yPercent: -50, duration: 1.5, ease: 'elastic.out(1, 0.4)', delay: 0.1 }
-      );
-    }
-  }, []);
-
-  return (
-    <DialogPortal>
-      <DialogOverlay />
-      <DialogPrimitive.Content
-        ref={(node) => {
-          localRef.current = node as any;
-          if (typeof forwardedRef === 'function') {
-            forwardedRef(node);
-          } else if (forwardedRef) {
-            (forwardedRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
-          }
-        }}
-        className={cn(
-          'fixed left-[50%] top-[50%] z-50 w-full max-w-lg border bg-background p-6 shadow-lg sm:rounded-[16px] !animate-none',
-          className
-        )}
-        {...props}
-      >
-        {children}
-        <DialogPrimitive.Close className='cursor-pointer absolute right-4 top-4'>
-          <CloseSquareIcon className='disabled:pointer-events-none' />
-        </DialogPrimitive.Close>
-      </DialogPrimitive.Content>
-    </DialogPortal>
-  );
-});
+>(({ className, children, ...props }, ref) => (
+  <DialogPortal>
+    <DialogOverlay />
+    <DialogPrimitive.Content
+      ref={ref}
+      className={cn(
+        'fixed inset-0 z-50 flex items-center justify-center bg-transparent pointer-events-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95'
+      )}
+      {...props}
+    >
+      <div className="pointer-events-auto">
+        <AnimatedContent
+          distance={100}
+          direction="vertical"
+          reverse={true}
+          duration={1.5}
+          ease="elastic.out(1, 0.4)"
+          initialOpacity={0}
+          animateOpacity
+          scale={0.9}
+          threshold={0.1}
+          delay={0.1}
+        >
+          <div className={cn('relative w-full max-w-lg border bg-background p-6 shadow-lg sm:rounded-[16px]', className)}>
+            {children}
+            <DialogPrimitive.Close className='absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary'>
+              <X className='h-4 w-4' />
+              <span className='sr-only'>Close</span>
+            </DialogPrimitive.Close>
+          </div>
+        </AnimatedContent>
+      </div>
+    </DialogPrimitive.Content>
+  </DialogPortal>
+));
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 const DialogHeader = ({
