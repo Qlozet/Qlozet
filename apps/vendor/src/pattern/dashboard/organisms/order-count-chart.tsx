@@ -1,6 +1,6 @@
 "use client"
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useGetDailyOrdersQuery, useGetOrdersQuery } from "@/redux/services/dashboard/dashboard.api-slice";
 import { ChartSkeleton } from "../molecules/chart-skeleton";
@@ -29,6 +29,8 @@ export const OrderCountChart = () => {
         return <ChartSkeleton />;
     }
 
+    const maxEarnings = Math.max(...chartData.map(d => d.earnings));
+
     return (
         <Card className="w-full max-h-[450px] rounded-[12px] custom-card-shadow">
             <CardHeader>
@@ -56,10 +58,16 @@ export const OrderCountChart = () => {
                         />
                         <Bar
                             dataKey="earnings"
-                            fill="#c4b5a0"
                             maxBarSize={24}
                             radius={[2.26, 2.26, 0, 0]}
-                        />
+                        >
+                            {chartData.map((entry, index) => (
+                                <Cell 
+                                    key={`cell-${index}`} 
+                                    fill={entry.earnings === maxEarnings ? '#3d2817' : '#d4c5b9'} 
+                                />
+                            ))}
+                        </Bar>
                     </BarChart>
                 </ResponsiveContainer>
             </CardContent>
