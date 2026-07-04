@@ -86,14 +86,15 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
     }
   }, [productData]);
 
-  if (!modal.visible) return null;
-
   const [closing, setClosing] = useState(false);
 
   const handleClose = useCallback(() => {
     setClosing(true);
     setTimeout(() => modal.remove(), 280);
   }, [modal]);
+
+  if (!modal.visible) return null;
+
   const isValid = name.trim().length > 0 && pricePerYard > 0 && yardsLength > 0 && width >= 10;
 
   const handleFile = (file?: File) => {

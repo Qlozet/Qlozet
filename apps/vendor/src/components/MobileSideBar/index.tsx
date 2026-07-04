@@ -153,7 +153,7 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
               )}
               <p
                 className={`font-normal text-sm ${
-                  active === item.name ? 'text-primary' : 'text-gray-100'
+                  active === item.name ? 'text-primary' : 'text-[#6B7280]'
                 }`}
               >
                 {item.name}
