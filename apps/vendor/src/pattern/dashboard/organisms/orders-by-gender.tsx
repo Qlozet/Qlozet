@@ -38,7 +38,7 @@ const renderLegend = (props: any): JSX.Element => {
     );
 }
 
-const COLORS = ["#3d2817", "#d4c5b9"]
+const COLORS = ["#3d2817", "#9C857870"]
 
 export const OrdersByGender = () => {
     // Gender by Order API Query

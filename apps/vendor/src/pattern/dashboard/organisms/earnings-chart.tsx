@@ -63,7 +63,7 @@ export const EarningsChart = () => {
                             {chartData.map((entry, index) => (
                                 <Cell 
                                     key={`cell-${index}`} 
-                                    fill={entry.earnings === maxEarnings ? '#3d2817' : '#d4c5b9'} 
+                                    fill={entry.earnings === maxEarnings ? '#3d2817' : '#9C857870'} 
                                 />
                             ))}
                         </Bar>

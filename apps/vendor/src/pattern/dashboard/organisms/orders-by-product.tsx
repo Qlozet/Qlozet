@@ -9,7 +9,7 @@ import { CustomChartTooltip } from "../molecules/custom-chart-tooltip";
 import ChartLegendIcon from "../atoms/chart-legend-icon";
 
 // Brown shades matching Sales by Product Category
-const COLORS = ['#3d2817', '#5b4636', '#8a7060', '#d4c5b9'];
+const COLORS = ['#3d2817', '#5b4636', '#8a7060', '#9C857870'];
 
 const renderLegend = (props: any): JSX.Element => {
     const payload = props?.payload ?? [];
