@@ -60,7 +60,7 @@ const SummaryRow = ({ label, value }: { label: string; value: React.ReactNode })
 
 export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
   ({ customerId }) => {
-    const { visible, resolve, remove } = useModal();
+    const { visible, resolve, hide, remove } = useModal();
     const [pagination, setPagination] = useState<PaginationState>({
       pageIndex: 0,
       pageSize: ORDERS_PAGE_SIZE,
@@ -79,9 +79,13 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
 
     const orders = useMemo(() => customer?.orders ?? [], [customer]);
 
-    const handleClose = () => {
-      resolve({ resolved: true });
-      remove();
+    const handleClose = (open?: boolean | React.MouseEvent) => {
+      // If it's a mouse event (from clicking the Close button) or a boolean false (from Dialog onOpenChange)
+      if (typeof open !== 'boolean' || !open) {
+        resolve({ resolved: true });
+        hide();
+        setTimeout(() => remove(), 300);
+      }
     };
 
     const openMeasurements = () => {
