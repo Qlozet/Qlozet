@@ -145,6 +145,7 @@ export const ProductDetailsTemplate = ({
   });
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
   const [activeImage, setActiveImage] = useState(0);
+  const [selectedColorIndex, setSelectedColorIndex] = useState<number | null>(null);
 
   // Handle nested API response structures based on product kind
   const apiProduct = (data as any)?.data || data || {};
@@ -157,9 +158,15 @@ export const ProductDetailsTemplate = ({
     status: apiProduct.status ?? 'draft',
   };
   
-  const images = (product.images ?? [])
+  const baseImages = (product.images ?? [])
     .map((i) => (typeof i === 'string' ? i : i?.url))
     .filter((u): u is string => Boolean(u));
+
+  const colorImages = selectedColorIndex !== null 
+    ? (product.color_variants?.[selectedColorIndex]?.images ?? []).map(i => i?.url).filter(Boolean) as string[]
+    : [];
+
+  const images = colorImages.length > 0 ? colorImages : baseImages;
 
   const businessName = product.business?.name ?? product.business_name;
   const customisation = product.type
@@ -169,8 +176,8 @@ export const ProductDetailsTemplate = ({
     : undefined;
 
   const colours = (product.color_variants ?? [])
-    .map((c) => c.hex)
-    .filter((h): h is string => Boolean(h));
+    .map((c, i) => ({ hex: c.hex, index: i }))
+    .filter((c) => Boolean(c.hex));
   const sizes = Array.from(
     new Set(
       (product.color_variants ?? []).flatMap((c) =>
@@ -492,11 +499,19 @@ export const ProductDetailsTemplate = ({
               ) : null}
               {colours.length ? (
                 <DetailRow label="Available colours">
-                  {colours.map((hex, i) => (
-                    <span
-                      key={`${hex}-${i}`}
-                      style={{ backgroundColor: hex }}
-                      className="size-6 rounded-full border border-border"
+                  {colours.map((c) => (
+                    <button
+                      key={`${c.hex}-${c.index}`}
+                      type="button"
+                      onClick={() => {
+                        setSelectedColorIndex(c.index === selectedColorIndex ? null : c.index);
+                        setActiveImage(0);
+                      }}
+                      style={{ backgroundColor: c.hex }}
+                      className={cn(
+                        "size-6 rounded-full border transition-all",
+                        selectedColorIndex === c.index ? "ring-2 ring-primary ring-offset-1 border-transparent" : "border-border hover:scale-110"
+                      )}
                     />
                   ))}
                 </DetailRow>
