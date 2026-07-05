@@ -196,6 +196,5 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
           )}
         </div>
       </div>
-    </div>
   );
 };
