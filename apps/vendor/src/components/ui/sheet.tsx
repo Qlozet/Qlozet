@@ -6,7 +6,6 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { X } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import AnimatedContent from './animated-content';
 
 const Sheet = SheetPrimitive.Root;
 
