@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Typography from '../Typography';
 import Profile from '../Profile.js';
+import { UserDetails } from '@/types';
 
 // Import SVG assets
 import searchNormalicon from '@/public/assets/svg/search-normal.svg';
@@ -15,10 +16,7 @@ import menuIcon from '@/public/assets/svg/menu-icon.svg';
 import mobileProfile from '@/public/assets/svg/mobile-oct-icon.svg';
 import { cn } from '@/lib/utils';
 
-interface UserDetails {
-  personalName?: string;
-  [key: string]: any;
-}
+
 
 interface DashboardNavWithOutSearchProps {
   name?: string;
