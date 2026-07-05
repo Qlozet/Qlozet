@@ -212,63 +212,48 @@ export const CollectionsTableColumns = ({
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='h-8 w-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <MoreHorizontal className='h-4 w-4' />
+            <Button variant='ghost' size='sm' className='h-8 w-8 p-0'>
+              <MoreHorizontal className='h-4 w-4 text-gray-500' />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align='end' className='w-56 p-0'>
-            <ScrollArea className='max-h-75 space-y-4'>
-              <div className='px-2 py-1.5 text-sm font-medium text-muted-foreground'>
-                Collection menu
-              </div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => onEdit(collection._id)}>
-                Edit Collection
+          <DropdownMenuContent align='end'>
+            <DropdownMenuItem onClick={() => onEdit(collection._id)}>
+              Edit Collection
+            </DropdownMenuItem>
+            {onSelect && (
+              <DropdownMenuItem onClick={() => onSelect(collection._id)}>
+                Select Collection
               </DropdownMenuItem>
-              {onSelect && (
-                <DropdownMenuItem onClick={() => onSelect(collection._id)}>
-                  Select Collection
-                </DropdownMenuItem>
-              )}
-              {onActivate && (
-                <DropdownMenuItem onClick={() => onActivate(collection._id)}>
-                  Activate Collection
-                </DropdownMenuItem>
-              )}
-              {onScheduleActivation && (
-                <DropdownMenuItem
-                  onClick={() => onScheduleActivation(collection._id)}
-                >
-                  Schedule activation
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              {onArchive && (
-                <DropdownMenuItem
-                  onClick={() => onArchive(collection._id)}
-                  className='text-red-600'
-                >
-                  Archive Collection
-                </DropdownMenuItem>
-              )}
-              {onDeactivate && (
-                <DropdownMenuItem
-                  onClick={() => onDeactivate(collection._id)}
-                  className='text-red-600'
-                >
-                  Deactivate Collection
-                </DropdownMenuItem>
-              )}
-              {onDelete && (
-                <DropdownMenuItem
-                  onClick={() => onDelete(collection._id)}
-                  className='text-red-600'
-                >
-                  Delete Collection
-                </DropdownMenuItem>
-              )}
-            </ScrollArea>
+            )}
+            {onActivate && (
+              <DropdownMenuItem onClick={() => onActivate(collection._id)}>
+                Activate Collection
+              </DropdownMenuItem>
+            )}
+            {onArchive && (
+              <DropdownMenuItem
+                onClick={() => onArchive(collection._id)}
+                className='text-red-600 focus:text-red-600'
+              >
+                Archive Collection
+              </DropdownMenuItem>
+            )}
+            {onDeactivate && (
+              <DropdownMenuItem
+                onClick={() => onDeactivate(collection._id)}
+                className='text-red-600 focus:text-red-600'
+              >
+                Deactivate Collection
+              </DropdownMenuItem>
+            )}
+            {onDelete && (
+              <DropdownMenuItem
+                onClick={() => onDelete(collection._id)}
+                className='text-red-600 focus:text-red-600'
+              >
+                Delete Collection
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       )
