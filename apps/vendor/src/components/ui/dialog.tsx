@@ -40,27 +40,25 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg sm:rounded-[16px] dialog-bounce-anim",
+        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg sm:rounded-[16px] dialog-gentle-anim",
         className
       )}
       {...props}
     >
       <style>{`
-        @keyframes dialogBounceDown {
-          0% { opacity: 0; translate: -50% -65%; }
-          60% { opacity: 1; translate: -50% -48%; }
-          80% { translate: -50% -51%; }
-          100% { translate: -50% -50%; }
+        @keyframes dialogGentleIn {
+          0% { opacity: 0; scale: 0.97; }
+          100% { opacity: 1; scale: 1; }
         }
-        @keyframes dialogSlideUpOut {
-          0% { opacity: 1; translate: -50% -50%; }
-          100% { opacity: 0; translate: -50% -65%; }
+        @keyframes dialogGentleOut {
+          0% { opacity: 1; scale: 1; }
+          100% { opacity: 0; scale: 0.97; }
         }
-        .dialog-bounce-anim[data-state="open"] {
-          animation: dialogBounceDown 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        .dialog-gentle-anim[data-state="open"] {
+          animation: dialogGentleIn 0.25s cubic-bezier(0, 0, 0.2, 1) forwards;
         }
-        .dialog-bounce-anim[data-state="closed"] {
-          animation: dialogSlideUpOut 0.2s ease-in forwards;
+        .dialog-gentle-anim[data-state="closed"] {
+          animation: dialogGentleOut 0.15s cubic-bezier(0.4, 0, 1, 1) forwards;
         }
       `}</style>
       {children}
