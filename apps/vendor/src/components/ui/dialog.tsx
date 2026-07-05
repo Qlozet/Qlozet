@@ -47,14 +47,14 @@ const DialogContent = React.forwardRef<
     >
       <style>{`
         @keyframes dialogBounceDown {
-          0% { opacity: 0; transform: translate(-50%, -65%); }
-          60% { opacity: 1; transform: translate(-50%, -48%); }
-          80% { transform: translate(-50%, -51%); }
-          100% { transform: translate(-50%, -50%); }
+          0% { opacity: 0; translate: -50% -65%; }
+          60% { opacity: 1; translate: -50% -48%; }
+          80% { translate: -50% -51%; }
+          100% { translate: -50% -50%; }
         }
         @keyframes dialogSlideUpOut {
-          0% { opacity: 1; transform: translate(-50%, -50%); }
-          100% { opacity: 0; transform: translate(-50%, -65%); }
+          0% { opacity: 1; translate: -50% -50%; }
+          100% { opacity: 0; translate: -50% -65%; }
         }
         .dialog-bounce-anim[data-state="open"] {
           animation: dialogBounceDown 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
