@@ -1,207 +1,210 @@
-import { useState, FC } from 'react';
-import Typography from '@/components/Typography';
-import UserAndPermissionTableItem from '../UserAndPermissionTableItem';
-import SearchInput from '@/components/SearchInput';
+import { useState, FC, useMemo } from 'react';
 import Image from 'next/image';
-import icon from '@/public/assets/svg/Icon container.svg';
+import { ColumnDef } from '@tanstack/react-table';
+import { DataTable } from '@/pattern/common/organisms/table/data-table';
+import SearchInput from '@/components/SearchInput';
+import DropDownComponent from '@/components/DropDownComponent';
+import Typography from '@/components/Typography';
+import threeDotIcon from '@/public/assets/svg/three-dot.svg';
 import exportIcon from '@/public/assets/svg/Content.svg';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
+interface UserData {
+  name: string;
+  emailAddress: string;
+  phoneNumber: string;
+  role: string;
+  status: string;
+  address: string;
+}
 
 const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({ handleEdit }) => {
-  const data = [
-    {
-      name: 'Shola James',
-      emailAddress: 'Hello',
-      phoneNumber: '+234 8123456789',
-      role: 'Super admin',
-      status: 'Hello',
-      address: '14, Jones street, Lagos Nigeria',
-    },
-    {
-      name: 'Shola James',
-      emailAddress: 'Hello',
-      phoneNumber: '+234 8123456789',
-      role: 'Super admin',
-      status: 'Hello',
-      address: '14, Jones street, Lagos Nigeria',
-    },
-    {
-      name: 'Shola James',
-      emailAddress: 'Hello',
-      phoneNumber: '+234 8123456789',
-      role: 'Super admin',
-      status: 'Hello',
-      address: '14, Jones street, Lagos Nigeria',
-    },
-  ];
   const [searchValue, setSearchValue] = useState('');
-  return (
-    <div>
-      <table className='w-full hidden lg:block'>
-        <thead className='w-full bg-[#F4F4F4] '>
-          <tr>
-            <th className='w-[8%] p-4  text-dark text-xs'>
-              <div className='flex items-center justify-start font-medium'>
-                Name
-              </div>
-            </th>
-            <th className='w-[8%] p-4  text-dark text-xs'>
-              <div className='flex items-center justify-start font-medium'>
-                Email address
-              </div>
-            </th>
-            <th className='w-[10%] p-4  text-dark text-xs'>
-              <div className='flex items-center justify-start font-medium'>
-                Phone number
-              </div>
-            </th>
-            <th className='w-[8%] p-4  text-dark text-xs'>
-              <div className='flex items-center justify-start font-medium'>
-                Role
-              </div>
-            </th>
-            <th className='w-[8%] p-4  text-dark text-xs'>
-              <div className='flex items-center justify-start font-medium'>
-                Status
-              </div>
-            </th>
-            <th className='w-[8%] p-4  text-dark text-xs'></th>
-          </tr>
-        </thead>
-        <tbody>
-          {data?.map((item) => (
-            <UserAndPermissionTableItem
-              {...item}
-              handleEdit={handleEdit}
-              // viewDetails={viewDetails}
-              // showRejectModal={showRejectModal}
-            />
-          ))}
-        </tbody>
-      </table>
-      <div className='block lg:hidden'>
-        <div className='flex items-center justify-between'>
-          <div className='w-[70%] block'>
-            <SearchInput placeholder='Search' value={searchValue} setValue={setSearchValue} />
-          </div>
-          <div className='flex items-center justify-center'>
-            <Image src={icon} alt='' />
-          </div>
-          <div className='flex items-center justify-center'>
-            <div className='w-[3rem] h-[3rem] bg-primary rounded-[12px] flex items-center justify-center'>
-              <Image src={exportIcon} alt='' />
-            </div>
-          </div>
-        </div>
-        <div className=''>
-          <div className=' bg-[#F4F4F4] p-4 rounded-t-[12px] lg:hidden'>
-            <Typography
-              textColor='text-dark'
-              textWeight='font-[700]'
-              textSize=''
-            >
-              Users and permissions
-            </Typography>
-          </div>
-          {data?.map((item) => (
-            <div
-              className={`border-l-[4px] border-solid border-success bg-white my-4 rounded-[12px] shadow py-4`}
-            >
-              <div className='flex justify-between items-center px-4 py-2'>
-                <Typography
-                  textColor='text-dark'
-                  textWeight='font-[400]'
-                  textSize='text-sm'
-                >
-                  Name
-                </Typography>
-                <div className='flex items-center justify-end'>
-                  <Typography
-                    textColor='text-dark'
-                    textWeight='font-medium'
-                    textSize='text-sm'
-                  >
-                    {item.name}
-                  </Typography>
-                </div>
-              </div>
-              <div className='flex justify-between items-center px-4 py-2'>
-                <Typography
-                  textColor='text-dark'
-                  textWeight='font-[400]'
-                  textSize='text-sm'
-                >
-                  Phone Number
-                </Typography>
-                <div className='flex items-center justify-end'>
-                  <Typography
-                    textColor='text-dark'
-                    textWeight='font-medium'
-                    textSize='text-sm'
-                  >
-                    {item.phoneNumber}
-                  </Typography>
-                </div>
-              </div>
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
 
-              <div className='flex justify-between items-center px-4 py-2'>
-                <Typography
-                  textColor='text-dark'
-                  textWeight='font-[400]'
-                  textSize='text-sm'
-                >
-                  Roles
-                </Typography>
-                <div className='flex items-center justify-end'>
-                  <Typography
-                    textColor='text-dark'
-                    textWeight='font-medium'
-                    textSize='text-sm'
-                  >
-                    {item.role}
-                  </Typography>
-                </div>
-              </div>
-              <div className='flex justify-between items-center px-4 py-2'>
-                <Typography
-                  textColor='text-dark'
-                  textWeight='font-[400]'
-                  textSize='text-sm'
-                >
-                  Email address
-                </Typography>
-                <div className='flex items-center justify-end'>
-                  <Typography
-                    textColor='text-dark'
-                    textWeight='font-medium'
-                    textSize='text-sm'
-                  >
-                    {item.emailAddress}
-                  </Typography>
-                </div>
-              </div>
-              <div className='flex justify-between items-center px-4 py-2'>
-                <Typography
-                  textColor='text-dark'
-                  textWeight='font-[400]'
-                  textSize='text-sm'
-                >
-                  Address
-                </Typography>
-                <div className='flex items-center justify-end'>
-                  <Typography
-                    textColor='text-dark'
-                    textWeight='font-medium'
-                    textSize='text-sm'
-                  >
-                    {item.address}
-                  </Typography>
-                </div>
-              </div>
-            </div>
-          ))}
+  const data: UserData[] = useMemo(() => [
+    {
+      name: 'Shola James',
+      emailAddress: 'shola@mail.com',
+      phoneNumber: '+234 8123456789',
+      role: 'Super admin',
+      status: 'Active',
+      address: '14, Jones street, Lagos Nigeria',
+    },
+    {
+      name: 'Esther Oke',
+      emailAddress: 'oke@mail.com',
+      phoneNumber: '+234 8123456789',
+      role: 'Marketing',
+      status: 'Active',
+      address: '14, Jones street, Lagos Nigeria',
+    },
+    {
+      name: 'Fola James',
+      emailAddress: 'fola@mail.com',
+      phoneNumber: '+234 8123456789',
+      role: 'Customer service',
+      status: 'Inactive',
+      address: '14, Jones street, Lagos Nigeria',
+    },
+    {
+      name: 'Fola James',
+      emailAddress: 'fola2@mail.com',
+      phoneNumber: '+234 8123456789',
+      role: 'Operations',
+      status: 'Active',
+      address: '14, Jones street, Lagos Nigeria',
+    },
+    {
+      name: 'Fola James',
+      emailAddress: 'fola3@mail.com',
+      phoneNumber: '+234 8123456789',
+      role: 'Sales',
+      status: 'Active',
+      address: '14, Jones street, Lagos Nigeria',
+    },
+    {
+      name: 'Fola James',
+      emailAddress: 'fola4@mail.com',
+      phoneNumber: '+234 8123456789',
+      role: 'Data analyst',
+      status: 'Active',
+      address: '14, Jones street, Lagos Nigeria',
+    },
+  ], []);
+
+  const columns: ColumnDef<UserData>[] = useMemo(() => [
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => <div>{row.original.name}</div>,
+    },
+    {
+      accessorKey: 'emailAddress',
+      header: 'Email address',
+      cell: ({ row }) => <div>{row.original.emailAddress}</div>,
+    },
+    {
+      accessorKey: 'phoneNumber',
+      header: 'Phone number',
+      cell: ({ row }) => <div>{row.original.phoneNumber}</div>,
+    },
+    {
+      accessorKey: 'role',
+      header: 'Role',
+      cell: ({ row }) => <div>{row.original.role}</div>,
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => {
+        const isActive = row.original.status === 'Active';
+        return (
+          <div className="flex items-center">
+            <span
+              className={`px-3 py-1 rounded-[4px] text-xs font-medium ${
+                isActive
+                  ? 'bg-[#EAFFF2] text-[#00A843]'
+                  : 'bg-[#FFF0F0] text-[#E02B2B]'
+              }`}
+            >
+              {row.original.status}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => {
+        return (
+          <div className='relative flex items-center justify-end w-full'>
+            <ActionMenu handleEdit={() => handleEdit(row.original)} />
+          </div>
+        );
+      },
+    },
+  ], [handleEdit]);
+
+  const toolbar = (
+    <div className='flex items-center justify-between p-6 border-b border-gray-100 bg-white rounded-t-xl'>
+      <div className='text-lg font-semibold text-gray-900'>Roles & Permissions</div>
+      
+      <div className='flex items-center gap-4'>
+        <div className='flex items-center gap-2'>
+          <span className='text-sm font-medium text-gray-700 whitespace-nowrap'>Filter By :</span>
+          <Select defaultValue='all'>
+            <SelectTrigger className='w-[140px] bg-white'>
+              <SelectValue placeholder='Select role' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='all'>All roles</SelectItem>
+              <SelectItem value='admin'>Admin</SelectItem>
+              <SelectItem value='marketing'>Marketing</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
+
+        <div className='w-[240px]'>
+          <SearchInput placeholder='Search' value={searchValue} setValue={setSearchValue} />
+        </div>
+
+        <Button className='bg-[#492F1D] hover:bg-[#3a2517] text-white flex items-center gap-2 h-10 px-4 rounded-lg'>
+          <Image src={exportIcon} alt='export' className='w-4 h-4 brightness-0 invert' />
+          Export
+        </Button>
       </div>
+    </div>
+  );
+
+  return (
+    <div className='w-full'>
+      <DataTable
+        columns={columns}
+        data={data}
+        pagination={pagination}
+        setPagination={setPagination}
+        toolbar={toolbar}
+      />
+    </div>
+  );
+};
+
+const ActionMenu: FC<{ handleEdit: () => void }> = ({ handleEdit }) => {
+  const [showDropDown, setShowDropDown] = useState(false);
+
+  const selectDropDownHandler = (option: string) => {
+    if (option === 'Edit user') {
+      handleEdit();
+    }
+    setShowDropDown(false);
+  };
+
+  return (
+    <div className='relative'>
+      <div
+        className='cursor-pointer flex items-center justify-center p-2 rounded-md hover:bg-gray-100'
+        onClick={() => setShowDropDown(!showDropDown)}
+      >
+        <Image src={threeDotIcon} alt='more' />
+      </div>
+      {showDropDown && (
+        <div className='absolute top-8 right-0 z-50'>
+          <DropDownComponent
+            dropdownTitle='Menu'
+            width='w-[15rem]'
+            data={['Edit user', 'Deactivate user']}
+            clickHandler={selectDropDownHandler}
+          />
+        </div>
+      )}
     </div>
   );
 };
