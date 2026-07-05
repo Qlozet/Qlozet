@@ -253,80 +253,84 @@ export const createClothingTableColumns = ({
       // Show checkbox when in select mode
       if (showSelect) {
         return (
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={value => row.toggleSelected(!!value)}
-            aria-label='Select row'
-          />
+          <div onClick={(e) => e.stopPropagation()}>
+            <Checkbox
+              checked={row.getIsSelected()}
+              onCheckedChange={value => row.toggleSelected(!!value)}
+              aria-label='Select row'
+            />
+          </div>
         )
       }
 
       // Show actions dropdown by default
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='h-8 w-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <MoreHorizontal className='h-4 w-4' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end' className='w-56 p-0'>
-            <ScrollArea className='max-h-[300px]'>
-              <div className='px-2 py-1.5 text-sm font-semibold text-muted-foreground'>
-                Product menu
-              </div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => onViewDetails(product._id as string)}
-              >
-                View product
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onEdit(product._id as string)}>
-                Edit product
-              </DropdownMenuItem>
-              {onDuplicate && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant='ghost' className='h-8 w-8 p-0'>
+                <span className='sr-only'>Open menu</span>
+                <MoreHorizontal className='h-4 w-4' />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align='end' className='w-56 p-0'>
+              <ScrollArea className='max-h-[300px]'>
+                <div className='px-2 py-1.5 text-sm font-semibold text-muted-foreground'>
+                  Product menu
+                </div>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onClick={() => onDuplicate(product._id as string)}
+                  onClick={() => onViewDetails(product._id as string)}
                 >
-                  Select Product
+                  View product
                 </DropdownMenuItem>
-              )}
-              <DropdownMenuItem
-                disabled
-                className='text-muted-foreground'
-              >
-                Feature product
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onStatusChange?.(product._id as string, 'active')}>
-                Activate product
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled>
-                Schedule activation
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={() => onStatusChange?.(product._id as string, 'inactive')}
-                className='text-red-600'
-              >
-                Archive product
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => onStatusChange?.(product._id as string, 'inactive')}
-                className='text-red-600'
-              >
-                Deactivate product
-              </DropdownMenuItem>
-              {onDelete && (
+                <DropdownMenuItem onClick={() => onEdit(product._id as string)}>
+                  Edit product
+                </DropdownMenuItem>
+                {onDuplicate && (
+                  <DropdownMenuItem
+                    onClick={() => onDuplicate(product._id as string)}
+                  >
+                    Select Product
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem
-                  onClick={() => onDelete(product._id as string)}
+                  disabled
+                  className='text-muted-foreground'
+                >
+                  Feature product
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onStatusChange?.(product._id as string, 'active')}>
+                  Activate product
+                </DropdownMenuItem>
+                <DropdownMenuItem disabled>
+                  Schedule activation
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={() => onStatusChange?.(product._id as string, 'inactive')}
                   className='text-red-600'
                 >
-                  Delete product
+                  Archive product
                 </DropdownMenuItem>
-              )}
-            </ScrollArea>
-          </DropdownMenuContent>
-        </DropdownMenu>
+                <DropdownMenuItem 
+                  onClick={() => onStatusChange?.(product._id as string, 'inactive')}
+                  className='text-red-600'
+                >
+                  Deactivate product
+                </DropdownMenuItem>
+                {onDelete && (
+                  <DropdownMenuItem
+                    onClick={() => onDelete(product._id as string)}
+                    className='text-red-600'
+                  >
+                    Delete product
+                  </DropdownMenuItem>
+                )}
+              </ScrollArea>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       )
     },
     enableSorting: false,
