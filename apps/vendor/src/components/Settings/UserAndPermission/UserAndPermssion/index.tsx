@@ -30,6 +30,7 @@ const UserAndPermission = () => {
 
       <Modal
         show={showAddModal}
+        closeModal={closeAddModal}
         content={
           <>
             {showAddModal && (
