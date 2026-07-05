@@ -13,7 +13,7 @@ import BillingAndInvoice from '@/components/Settings/BillingAndInvioceInfo';
 import { WarehouseContent } from './warehouse-content';
 import UserAndPermission from '@/components/Settings/UserAndPermission/UserAndPermssion';
 import Category from '@/components/Settings/Category/Category';
-import OrderSetting from '@/components/Settings/OrderSettings/OrderSettings';
+import { OrderSettingsContent } from './order-settings-content';
 
 interface SettingsContentProps {
   activeTab: string;
@@ -98,7 +98,7 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
         return <Category />;
 
       case 'Order Settings':
-        return <OrderSetting />;
+        return <OrderSettingsContent />;
 
       case 'Security':
         return (
