@@ -77,15 +77,14 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            {/* Row 1: Country & Phone Number */}
+            {/* Full Name (read-only) */}
             <FormField
               control={form.control}
-              name='country'
+              name='fullName'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 flex items-center gap-1'>
-                    Country
-                    <span className='text-gray-400'>ⓘ</span>
+                  <FormLabel className='text-sm font-medium text-gray-700'>
+                    Full Name
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -95,11 +94,62 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                       {...field}
                     />
                   </FormControl>
+                  <p className='text-xs text-gray-400 mt-1'>
+                    Name cannot be changed here
+                  </p>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+            {/* Username */}
+            <FormField
+              control={form.control}
+              name='username'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className='text-sm font-medium text-gray-700'>
+                    Username
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder='johndoe'
+                      className='bg-gray-50 border-gray-200'
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Email Address (read-only) */}
+            <FormField
+              control={form.control}
+              name='email'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className='text-sm font-medium text-gray-700'>
+                    Email Address
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type='email'
+                      className='bg-gray-100 border-gray-200 text-gray-500'
+                      readOnly
+                      disabled
+                      {...field}
+                    />
+                  </FormControl>
+                  <p className='text-xs text-gray-400 mt-1'>
+                    Email cannot be changed here
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Phone Number */}
             <FormField
               control={form.control}
               name='phoneNumber'
@@ -132,29 +182,33 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
               )}
             />
 
-            {/* Row 2: Email Address & Address */}
+            {/* Country (display-only, from business) */}
             <FormField
               control={form.control}
-              name='email'
+              name='country'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
-                    Email Address
+                  <FormLabel className='text-sm font-medium text-gray-700 flex items-center gap-1'>
+                    Country
+                    <span className='text-gray-400'>ⓘ</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      type='email'
                       className='bg-gray-100 border-gray-200 text-gray-500'
                       readOnly
                       disabled
                       {...field}
                     />
                   </FormControl>
+                  <p className='text-xs text-gray-400 mt-1'>
+                    Set in Organization profile
+                  </p>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+            {/* Address (display-only, from business) */}
             <FormField
               control={form.control}
               name='address'
@@ -171,72 +225,9 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Row 3: NIN (with Verify text) & Empty Column */}
-            <div className='col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6'>
-              <div className='flex items-end gap-4'>
-                <FormItem className='flex-1'>
-                  <FormLabel className='text-sm font-medium text-gray-700 flex items-center gap-1'>
-                    National Identity Number
-                    <span className='text-orange-500'>ⓘ</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder='1234567890'
-                      className='bg-gray-50 border-gray-200'
-                      disabled
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-                <div className='pb-2'>
-                  <span className='text-[#5C2D0D] font-bold text-sm cursor-pointer'>Verify NIN</span>
-                </div>
-              </div>
-              <div>{/* Empty column */}</div>
-            </div>
-
-            {/* Row 4: Full Name & Username */}
-            <FormField
-              control={form.control}
-              name='fullName'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
-                    Full name
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      className='bg-gray-100 border-gray-200 text-gray-500'
-                      readOnly
-                      disabled
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name='username'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
-                    Username
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder='johndoe'
-                      className='bg-gray-50 border-gray-200'
-                      {...field}
-                    />
-                  </FormControl>
+                  <p className='text-xs text-gray-400 mt-1'>
+                    Set in Organization profile
+                  </p>
                   <FormMessage />
                 </FormItem>
               )}
