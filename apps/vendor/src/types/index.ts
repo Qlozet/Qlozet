@@ -133,7 +133,7 @@ export interface UserDetails {
 }
 
 export interface ProfileProps {
-  userDetails: UserDetails;
+  userDetails?: UserDetails;
   showProfile: boolean;
   showProfileHandler: () => void;
 }

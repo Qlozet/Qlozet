@@ -108,27 +108,35 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
   }
 
   return (
-    <div className='space-y-6'>
-      {/* Profile Tabs */}
-      <div className='flex gap-4 border-b border-gray-200 pb-2'>
-        <ProfileTabButton
-          isActive={activeProfileTab === 'organization'}
-          onClick={() => setActiveProfileTab('organization')}
-        >
-          Organization profile
-        </ProfileTabButton>
-        <ProfileTabButton
-          isActive={activeProfileTab === 'user'}
-          onClick={() => setActiveProfileTab('user')}
-        >
-          User profile
-        </ProfileTabButton>
-      </div>
+    <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+      {/* Left Column - Form Card */}
+      <div className='lg:col-span-2 bg-white rounded-[12px] p-6 lg:p-8 custom-card-shadow'>
+        {/* Profile Tabs Pill Toggle */}
+        <div className='flex w-full bg-[#F3F4F6] rounded-[10px] p-1 mb-8'>
+          <button
+            onClick={() => setActiveProfileTab('organization')}
+            className={`flex-1 py-2.5 text-sm font-semibold rounded-[8px] transition-all duration-200 ${
+              activeProfileTab === 'organization'
+                ? 'bg-[#6D5545] text-white shadow-sm'
+                : 'text-gray-500 hover:text-gray-900 bg-transparent'
+            }`}
+          >
+            Organization profile
+          </button>
+          <button
+            onClick={() => setActiveProfileTab('user')}
+            className={`flex-1 py-2.5 text-sm font-semibold rounded-[8px] transition-all duration-200 ${
+              activeProfileTab === 'user'
+                ? 'bg-[#6D5545] text-white shadow-sm'
+                : 'text-gray-500 hover:text-gray-900 bg-transparent'
+            }`}
+          >
+            User profile
+          </button>
+        </div>
 
-      {/* Two Column Layout */}
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-        {/* Left Column - Form */}
-        <div className='lg:col-span-2'>
+        {/* Form Content */}
+        <div>
           {activeProfileTab === 'organization' ? (
             <OrganizationProfileForm
               initialData={{
@@ -165,6 +173,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
             />
           )}
         </div>
+      </div>
 
         {/* Right Column - Profile Cards */}
         <div className='lg:col-span-1'>
@@ -187,6 +196,5 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
           )}
         </div>
       </div>
-    </div>
   );
 };

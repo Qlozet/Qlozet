@@ -73,7 +73,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
   }, [initialData?.fullName, initialData?.email, initialData?.username]);
 
   return (
-    <div className='bg-white rounded-lg p-6'>
+    <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>

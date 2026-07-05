@@ -61,7 +61,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
   const displayPicture = localPicture || imageUrl;
 
   return (
-    <div className={cn('bg-white rounded-lg p-6 shadow-sm', className)}>
+    <div className={cn('bg-white rounded-[12px] py-10 px-6 custom-card-shadow', className)}>
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
@@ -74,7 +74,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
       {/* Avatar Section */}
       <div className='flex flex-col items-center'>
         <div className='relative'>
-          <div className='w-32 h-32 bg-white rounded-full border-4 border-gray-100 shadow-lg flex items-center justify-center overflow-hidden'>
+          <div className='w-32 h-32 bg-[#F8F9FA] rounded-full border-4 border-white custom-card-shadow flex items-center justify-center overflow-hidden'>
             {displayPicture ? (
               <Image
                 src={displayPicture}
@@ -95,12 +95,12 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
-            className='absolute bottom-0 right-0 bg-white p-2.5 rounded-full shadow-md border-2 border-gray-100 hover:bg-gray-50 disabled:opacity-50'
+            className='absolute bottom-0 right-0 bg-[#3d2817] p-2.5 rounded-full shadow-md border-2 border-white hover:bg-[#2c1d11] disabled:opacity-50'
           >
             {isUploading ? (
-              <Loader2 className='w-5 h-5 text-gray-700 animate-spin' />
+              <Loader2 className='w-5 h-5 text-white animate-spin' />
             ) : (
-              <Camera className='w-5 h-5 text-gray-700' />
+              <Camera className='w-5 h-5 text-white' />
             )}
           </button>
         </div>
@@ -109,7 +109,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
         <h3 className='text-xl font-semibold text-gray-900 mt-6'>
           {fullName || 'User'}
         </h3>
-        <p className='text-sm text-gray-600 mt-2'>{registrationId}</p>
+        <p className='text-sm text-gray-400 mt-2 uppercase tracking-wider'>{registrationId}</p>
         <p className='text-sm text-gray-600 mt-1'>{email}</p>
       </div>
     </div>
