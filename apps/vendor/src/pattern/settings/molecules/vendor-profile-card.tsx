@@ -112,7 +112,9 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   };
 
   return (
-    <div className={cn('bg-white rounded-lg p-6 shadow-sm', className)}>
+    <div className={cn('space-y-6', className)}>
+      {/* Main Vendor Card */}
+      <div className='bg-white rounded-[12px] custom-card-shadow overflow-hidden pb-6'>
       {/* Hidden file inputs */}
       <input
         ref={logoInputRef}
@@ -136,8 +138,8 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
         onChange={(e) => handleFileChange(e, 'cac')}
       />
 
-      {/* Cover Image Section */}
-      <div className='relative h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg mb-4 overflow-hidden'>
+      {/* Cover Image Section (Touches edges) */}
+      <div className='relative h-32 bg-gradient-to-br from-gray-100 to-gray-200'>
         {displayCover ? (
           <Image
             src={displayCover}
@@ -165,7 +167,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
       </div>
 
       {/* Logo Section */}
-      <div className='flex flex-col items-center -mt-16 mb-4'>
+      <div className='px-6 flex flex-col items-center -mt-16'>
         <div className='relative'>
           <div className='w-24 h-24 bg-white rounded-full border-4 border-white shadow-lg flex items-center justify-center overflow-hidden'>
             {displayLogo ? (
@@ -188,54 +190,55 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
           <button
             onClick={() => logoInputRef.current?.click()}
             disabled={isUploading}
-            className='absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-gray-200 hover:bg-gray-50'
+            className='absolute bottom-0 right-0 bg-[#3d2817] p-2 rounded-full shadow-md border-2 border-white hover:bg-[#2c1d11]'
           >
             {isUploading ? (
               <Loader2 className='w-4 h-4 text-gray-600 animate-spin' />
             ) : (
-              <Camera className='w-4 h-4 text-gray-600' />
+              <Camera className='w-4 h-4 text-white' />
             )}
           </button>
         </div>
 
         {/* Vendor Info */}
-        <h3 className='text-lg font-semibold text-gray-900 mt-4'>
+        <h3 className='text-lg font-semibold text-[#1C1C1E] mt-4'>
           {vendorName}
         </h3>
-        <p className='text-sm text-gray-600 mt-1'>{registrationId}</p>
+        <p className='text-sm text-gray-400 mt-1 uppercase tracking-wider'>{registrationId}</p>
         <p className='text-sm text-[#5C2D0D] mt-1'>{website}</p>
-        <p className={cn('text-sm font-medium mt-2', getStatusColor())}>
+        <p className={cn('text-xs font-semibold mt-1', getStatusColor())}>
           {getStatusText()}
         </p>
       </div>
+      </div>
 
-      {/* Upload Buttons */}
-      <div className='space-y-3 mt-6'>
+      {/* Upload Buttons - Separated */}
+      <div className='space-y-4'>
         <button
           onClick={() => logoInputRef.current?.click()}
           disabled={isUploading}
-          className='w-full flex items-center gap-3 px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50'
+          className='w-full flex items-center gap-3 px-6 py-4 bg-white rounded-[12px] custom-card-shadow transition-colors hover:bg-gray-50 disabled:opacity-50'
         >
-          <Upload className='w-5 h-5 text-gray-600' />
-          <span className='text-sm text-gray-700'>Upload SVG/PNG logo</span>
+          <Upload className='w-5 h-5 text-gray-400' />
+          <span className='text-sm font-medium text-gray-600'>Upload SVG/PNG logo</span>
         </button>
 
         <button
           onClick={() => coverInputRef.current?.click()}
           disabled={isUploading}
-          className='w-full flex items-center gap-3 px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50'
+          className='w-full flex items-center gap-3 px-6 py-4 bg-white rounded-[12px] custom-card-shadow transition-colors hover:bg-gray-50 disabled:opacity-50'
         >
-          <Upload className='w-5 h-5 text-gray-600' />
-          <span className='text-sm text-gray-700'>Upload Cover image</span>
+          <Upload className='w-5 h-5 text-gray-400' />
+          <span className='text-sm font-medium text-gray-600'>Upload Cover image</span>
         </button>
 
         <button
           onClick={() => cacInputRef.current?.click()}
           disabled={isUploading}
-          className='w-full flex items-center gap-3 px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50'
+          className='w-full flex items-center gap-3 px-6 py-4 bg-white rounded-[12px] custom-card-shadow transition-colors hover:bg-gray-50 disabled:opacity-50'
         >
-          <Upload className='w-5 h-5 text-gray-600' />
-          <span className='text-sm text-gray-700'>Upload CAC Document</span>
+          <Upload className='w-5 h-5 text-gray-400' />
+          <span className='text-sm font-medium text-gray-600'>Upload CAC Document</span>
         </button>
       </div>
     </div>
