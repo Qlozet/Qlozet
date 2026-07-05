@@ -1,11 +1,15 @@
 import { useState, FC, useMemo } from 'react';
-import Image from 'next/image';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
-import DropDownComponent from '@/components/DropDownComponent';
-import threeDotIcon from '@/public/assets/svg/three-dot.svg';
+import { MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Select,
   SelectContent,
@@ -186,34 +190,22 @@ const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({ 
 };
 
 const ActionMenu: FC<{ handleEdit: () => void }> = ({ handleEdit }) => {
-  const [showDropDown, setShowDropDown] = useState(false);
-
-  const selectDropDownHandler = (option: string) => {
-    if (option === 'Edit user') {
-      handleEdit();
-    }
-    setShowDropDown(false);
-  };
-
   return (
-    <div className='relative'>
-      <div
-        className='cursor-pointer flex items-center justify-center p-2 rounded-md hover:bg-gray-100'
-        onClick={() => setShowDropDown(!showDropDown)}
-      >
-        <Image src={threeDotIcon} alt='more' />
-      </div>
-      {showDropDown && (
-        <div className='absolute top-8 right-0 z-50'>
-          <DropDownComponent
-            dropdownTitle='Menu'
-            width='w-[15rem]'
-            data={['Edit user', 'Deactivate user']}
-            clickHandler={selectDropDownHandler}
-          />
-        </div>
-      )}
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant='ghost' size='sm' className='h-8 w-8 p-0'>
+          <MoreHorizontal className='h-4 w-4 text-gray-500' />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align='end'>
+        <DropdownMenuItem onClick={handleEdit}>
+          Edit user
+        </DropdownMenuItem>
+        <DropdownMenuItem className='text-red-600 focus:text-red-600'>
+          Deactivate user
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
