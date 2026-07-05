@@ -27,9 +27,10 @@ interface UserData {
 
 const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({ handleEdit }) => {
   const [searchValue, setSearchValue] = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
 
-  const data: UserData[] = useMemo(() => [
+  const rawData: UserData[] = useMemo(() => [
     {
       name: 'Shola James',
       emailAddress: 'shola@mail.com',
@@ -79,6 +80,19 @@ const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({ 
       address: '14, Jones street, Lagos Nigeria',
     },
   ], []);
+
+  const data = useMemo(() => {
+    return rawData.filter((user) => {
+      const matchesSearch =
+        user.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        user.emailAddress.toLowerCase().includes(searchValue.toLowerCase()) ||
+        user.role.toLowerCase().includes(searchValue.toLowerCase());
+      
+      const matchesRole = roleFilter === 'all' || user.role.toLowerCase() === roleFilter.toLowerCase();
+      
+      return matchesSearch && matchesRole;
+    });
+  }, [rawData, searchValue, roleFilter]);
 
   const columns: ColumnDef<UserData>[] = useMemo(() => [
     {
@@ -140,14 +154,18 @@ const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({ 
       <div className='flex items-center gap-4'>
         <div className='flex items-center gap-2'>
           <span className='text-sm font-medium text-gray-700 whitespace-nowrap'>Filter By :</span>
-          <Select defaultValue='all'>
+          <Select value={roleFilter} onValueChange={setRoleFilter}>
             <SelectTrigger className='w-[140px] bg-white'>
               <SelectValue placeholder='Select role' />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value='all'>All roles</SelectItem>
-              <SelectItem value='admin'>Admin</SelectItem>
+              <SelectItem value='super admin'>Super admin</SelectItem>
               <SelectItem value='marketing'>Marketing</SelectItem>
+              <SelectItem value='customer service'>Customer service</SelectItem>
+              <SelectItem value='operations'>Operations</SelectItem>
+              <SelectItem value='sales'>Sales</SelectItem>
+              <SelectItem value='data analyst'>Data analyst</SelectItem>
             </SelectContent>
           </Select>
         </div>
