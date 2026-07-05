@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import {
   Select,
@@ -20,6 +20,12 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import {
+  useGetOrderSettingsQuery,
+  useUpdateOrderSettingsMutation,
+} from '@/redux/services/settings/settings.api-slice';
+import type { OrderSettingsData } from '@/lib/validations/settings';
+import Loader from '@/components/Loader';
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface ToggleSettingItem {
@@ -67,6 +73,19 @@ interface SettingsSection {
   icon: React.ReactNode;
   items: SettingItem[];
 }
+
+// ─── Default settings (fallback if API hasn't returned yet) ─────────
+const DEFAULT_SETTINGS: OrderSettingsData = {
+  orderConfirmation: true,
+  orderNotifications: true,
+  orderTracking: false,
+  dailyOrderLimit: 50,
+  automaticRefunds: false,
+  returnWindow: 14,
+  customOrderOptions: true,
+  foreignFabricAcceptance: false,
+  defaultCurrency: 'NGN',
+};
 
 // ─── Setting Row Component ──────────────────────────────────────────
 const SettingRow = ({
@@ -175,51 +194,54 @@ const SettingsCard = ({
 
 // ─── Main Order Settings Component ──────────────────────────────────
 export const OrderSettingsContent = () => {
-  const [isSaving, setIsSaving] = useState(false);
+  // ─── API Integration ────────────────────────────────────────────
+  const { data: apiData, isLoading: isLoadingSettings } = useGetOrderSettingsQuery();
+  const [updateOrderSettings, { isLoading: isSaving }] = useUpdateOrderSettingsMutation();
 
-  // ─── State ──────────────────────────────────────────────────────
-  const [settings, setSettings] = useState<Record<string, any>>({
-    // Order Processing
-    orderConfirmation: true,
-    orderNotifications: true,
-    orderTracking: false,
-    dailyOrderLimit: '50',
+  // ─── Local State (seeded from API) ──────────────────────────────
+  const [settings, setSettings] = useState<OrderSettingsData>(DEFAULT_SETTINGS);
+  const [hasChanges, setHasChanges] = useState(false);
 
-    // Returns & Customization
-    automaticRefunds: false,
-    returnWindow: '14',
-    customOrderOptions: true,
-    foreignFabricAcceptance: false,
-
-    // Payment & Currency
-    defaultCurrency: 'NGN',
-  });
+  // Seed local state when API data arrives
+  useEffect(() => {
+    if (apiData?.data) {
+      setSettings(apiData.data);
+    }
+  }, [apiData]);
 
   // ─── Handlers ───────────────────────────────────────────────────
   const handleToggle = (id: string, value: boolean) => {
     setSettings((prev) => ({ ...prev, [id]: value }));
+    setHasChanges(true);
   };
 
   const handleSelectChange = (id: string, value: string) => {
     setSettings((prev) => ({ ...prev, [id]: value }));
+    setHasChanges(true);
   };
 
   const handleInputChange = (id: string, value: string) => {
-    setSettings((prev) => ({ ...prev, [id]: value }));
+    // For numeric fields, parse to number
+    const numericFields = ['dailyOrderLimit', 'returnWindow'];
+    const parsedValue = numericFields.includes(id) ? Number(value) || 0 : value;
+    setSettings((prev) => ({ ...prev, [id]: parsedValue }));
+    setHasChanges(true);
   };
 
   const handleSave = async () => {
-    setIsSaving(true);
     try {
-      // TODO: Replace with actual API call when backend endpoint is available
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      await updateOrderSettings(settings).unwrap();
       toast.success('Order settings saved successfully');
-    } catch {
-      toast.error('Failed to save settings');
-    } finally {
-      setIsSaving(false);
+      setHasChanges(false);
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Failed to save settings');
     }
   };
+
+  // ─── Loading State ──────────────────────────────────────────────
+  if (isLoadingSettings) {
+    return <Loader />;
+  }
 
   // ─── Section Definitions ────────────────────────────────────────
   const sections: SettingsSection[] = [
@@ -253,7 +275,7 @@ export const OrderSettingsContent = () => {
           id: 'dailyOrderLimit',
           label: 'Daily Order Limit',
           description: 'Maximum orders accepted per day',
-          value: settings.dailyOrderLimit,
+          value: String(settings.dailyOrderLimit ?? ''),
           inputType: 'number',
           placeholder: '50',
         },
@@ -275,7 +297,7 @@ export const OrderSettingsContent = () => {
           id: 'returnWindow',
           label: 'Return Window',
           description: 'Days customers can return items',
-          value: settings.returnWindow,
+          value: String(settings.returnWindow),
           options: [
             { label: '7 days', value: '7' },
             { label: '14 days', value: '14' },
@@ -352,7 +374,7 @@ export const OrderSettingsContent = () => {
       <div className='pt-2'>
         <Button
           onClick={handleSave}
-          disabled={isSaving}
+          disabled={isSaving || !hasChanges}
           className='min-w-[160px]'
         >
           {isSaving && <Loader2 className='mr-2 size-4 animate-spin' />}

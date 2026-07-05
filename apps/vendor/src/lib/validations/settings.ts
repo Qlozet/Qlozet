@@ -64,13 +64,20 @@ export const categorySchema = z.object({
 
 // Order Settings Schema
 export const orderSettingsSchema = z.object({
-  autoConfirm: z.boolean(),
-  maxOrderItems: z.number().min(1, 'Max order items must be at least 1'),
-  orderTimeout: z.number().min(1, 'Order timeout must be at least 1 minute'),
-  allowBackorders: z.boolean(),
-  requireSignature: z.boolean(),
-  sendNotifications: z.boolean(),
-  defaultShippingMethod: z.string().optional(),
+  // Order Processing
+  orderConfirmation: z.boolean(),
+  orderNotifications: z.boolean(),
+  orderTracking: z.boolean(),
+  dailyOrderLimit: z.number().min(0).optional(),
+
+  // Returns & Customization
+  automaticRefunds: z.boolean(),
+  returnWindow: z.number().min(0),
+  customOrderOptions: z.boolean(),
+  foreignFabricAcceptance: z.boolean(),
+
+  // Payment & Currency
+  defaultCurrency: z.string(),
 });
 
 // Type exports
