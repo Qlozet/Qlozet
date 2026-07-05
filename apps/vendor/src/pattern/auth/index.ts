@@ -3,7 +3,6 @@
 
 // Atoms
 export { AuthInput } from './atoms/auth-input';
-export { AuthButton } from '../common/molecules/submit-button';
 export { AuthLink } from './atoms/auth-link';
 export { PasswordInput } from './atoms/password-input';
 
