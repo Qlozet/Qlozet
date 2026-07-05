@@ -110,7 +110,7 @@ export const OrganizationProfileForm: React.FC<
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='Garm Island'
+                      placeholder='Qlozet Store'
                       className='bg-gray-50 border-gray-200'
                       {...field}
                     />
