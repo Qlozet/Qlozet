@@ -2,11 +2,9 @@ import { useState, FC, useMemo } from 'react';
 import Image from 'next/image';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
-import SearchInput from '@/components/SearchInput';
+import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
 import DropDownComponent from '@/components/DropDownComponent';
-import Typography from '@/components/Typography';
 import threeDotIcon from '@/public/assets/svg/three-dot.svg';
-import exportIcon from '@/public/assets/svg/Content.svg';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -148,10 +146,11 @@ const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({ 
   ], [handleEdit]);
 
   const toolbar = (
-    <div className='flex items-center justify-between p-6 border-b border-gray-100 bg-white rounded-t-xl'>
-      <div className='text-lg font-semibold text-gray-900'>Roles & Permissions</div>
-      
-      <div className='flex items-center gap-4'>
+    <TableToolbar
+      title="Roles & Permissions"
+      search={searchValue}
+      onSearchChange={setSearchValue}
+      filterControl={
         <div className='flex items-center gap-2'>
           <span className='text-sm font-medium text-gray-700 whitespace-nowrap'>Filter By :</span>
           <Select value={roleFilter} onValueChange={setRoleFilter}>
@@ -169,17 +168,8 @@ const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({ 
             </SelectContent>
           </Select>
         </div>
-
-        <div className='w-[240px]'>
-          <SearchInput placeholder='Search' value={searchValue} setValue={setSearchValue} />
-        </div>
-
-        <Button className='bg-[#492F1D] hover:bg-[#3a2517] text-white flex items-center gap-2 h-10 px-4 rounded-lg'>
-          <Image src={exportIcon} alt='export' className='w-4 h-4 brightness-0 invert' />
-          Export
-        </Button>
-      </div>
-    </div>
+      }
+    />
   );
 
   return (
