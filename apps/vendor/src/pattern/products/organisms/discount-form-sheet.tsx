@@ -388,11 +388,13 @@ export const DiscountFormSheet = ({
         value: values.value,
         value_type: showValueType ? values.value_type : undefined,
         condition_match: values.condition_match as 'all' | 'any',
-        conditions: values.conditions.map((c) => ({
-          field: c.field,
-          operator: c.operator,
-          value: c.value,
-        })),
+        conditions: values.conditions
+          .filter((c) => c.field && c.operator && c.value)
+          .map((c) => ({
+            field: c.field,
+            operator: c.operator,
+            value: c.value,
+          })),
         required_discount: values.required_discount,
         is_active: values.is_active,
         start_date: values.is_flash && values.start_date ? new Date(values.start_date).toISOString() : undefined,
