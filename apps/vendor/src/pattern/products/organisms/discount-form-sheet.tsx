@@ -47,7 +47,7 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form'
-import { cn, formatCurrency } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import {
   useCreateDiscountMutation,
   useUpdateDiscountMutation,
@@ -201,7 +201,7 @@ export const DiscountFormSheet = ({
 
   // ─── Form ─────────────────────────────────────────────────────
   const form = useForm<DiscountForm>({
-    resolver: zodResolver(discountFormSchema),
+    resolver: zodResolver(discountFormSchema) as any,
     defaultValues: {
       title: '',
       type: 'percentage',
@@ -453,14 +453,14 @@ export const DiscountFormSheet = ({
         ) : (
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={form.handleSubmit(onSubmit as any)}
               className='flex-1 flex flex-col overflow-hidden'
             >
               <ScrollArea className='flex-1 px-6'>
                 <div className='space-y-6 py-6'>
                   {/* ── Title ──────────────────────────────── */}
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name='title'
                     render={({ field }) => (
                       <FormItem>
@@ -475,7 +475,7 @@ export const DiscountFormSheet = ({
 
                   {/* ── Discount Type ──────────────────────── */}
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name='type'
                     render={({ field }) => (
                       <FormItem>
@@ -502,7 +502,7 @@ export const DiscountFormSheet = ({
                   {/* ── Value Type (for store_wide / category_specific) ── */}
                   {showValueType && (
                     <FormField
-                      control={form.control}
+                      control={form.control as any}
                       name='value_type'
                       render={({ field }) => (
                         <FormItem>
@@ -528,7 +528,7 @@ export const DiscountFormSheet = ({
 
                   {/* ── Value ──────────────────────────────── */}
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name='value'
                     render={({ field }) => (
                       <FormItem>
@@ -559,7 +559,7 @@ export const DiscountFormSheet = ({
                       <p className='text-xs text-muted-foreground'>Time-limited discount with auto start/end</p>
                     </div>
                     <FormField
-                      control={form.control}
+                      control={form.control as any}
                       name='is_flash'
                       render={({ field }) => (
                         <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -571,7 +571,7 @@ export const DiscountFormSheet = ({
                   {watchedIsFlash && (
                     <div className='grid grid-cols-2 gap-3'>
                       <FormField
-                        control={form.control}
+                        control={form.control as any}
                         name='start_date'
                         render={({ field }) => (
                           <FormItem>
@@ -583,7 +583,7 @@ export const DiscountFormSheet = ({
                         )}
                       />
                       <FormField
-                        control={form.control}
+                        control={form.control as any}
                         name='end_date'
                         render={({ field }) => (
                           <FormItem>
@@ -605,7 +605,7 @@ export const DiscountFormSheet = ({
                         <p className='text-xs text-muted-foreground'>Must be applied if conditions match</p>
                       </div>
                       <FormField
-                        control={form.control}
+                        control={form.control as any}
                         name='required_discount'
                         render={({ field }) => (
                           <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -618,7 +618,7 @@ export const DiscountFormSheet = ({
                         <p className='text-xs text-muted-foreground'>Discount is live and applied</p>
                       </div>
                       <FormField
-                        control={form.control}
+                        control={form.control as any}
                         name='is_active'
                         render={({ field }) => (
                           <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -630,7 +630,7 @@ export const DiscountFormSheet = ({
                   {/* ── Conditions ─────────────────────────── */}
                   <div className='space-y-4'>
                     <FormField
-                      control={form.control}
+                      control={form.control as any}
                       name='condition_match'
                       render={({ field }) => (
                         <FormItem>
@@ -694,7 +694,7 @@ export const DiscountFormSheet = ({
 
                             {/* Field */}
                             <FormField
-                              control={form.control}
+                              control={form.control as any}
                               name={`conditions.${index}.field`}
                               render={({ field }) => (
                                 <FormItem className='flex-1 min-w-[100px]'>
@@ -722,7 +722,7 @@ export const DiscountFormSheet = ({
 
                             {/* Operator */}
                             <FormField
-                              control={form.control}
+                              control={form.control as any}
                               name={`conditions.${index}.operator`}
                               render={({ field }) => (
                                 <FormItem className='flex-1 min-w-[100px]'>
@@ -744,7 +744,7 @@ export const DiscountFormSheet = ({
 
                             {/* Value */}
                             <FormField
-                              control={form.control}
+                              control={form.control as any}
                               name={`conditions.${index}.value`}
                               render={({ field }) => (
                                 <FormItem className='flex-1 min-w-[100px]'>
