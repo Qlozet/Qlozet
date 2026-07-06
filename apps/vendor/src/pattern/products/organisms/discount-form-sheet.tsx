@@ -386,7 +386,9 @@ export const DiscountFormSheet = ({
         title: values.title,
         type: apiType,
         value: values.value,
-        value_type: showValueType ? values.value_type : undefined,
+        value_type: showValueType 
+          ? values.value_type 
+          : (apiType.includes('fixed') ? 'fixed' : 'percentage'),
         condition_match: values.condition_match as 'all' | 'any',
         conditions: values.conditions
           .filter((c) => c.field && c.operator && c.value)
@@ -413,7 +415,11 @@ export const DiscountFormSheet = ({
       onOpenChange(false)
       onSuccess?.()
     } catch (err) {
-      const message = (err as any)?.data?.message || `Could not ${isEditing ? 'update' : 'create'} the discount.`
+      console.error('Submit error:', err)
+      const data = (err as any)?.data
+      const message = Array.isArray(data?.message)
+        ? data.message.join(', ')
+        : data?.message || JSON.stringify(data) || `Could not ${isEditing ? 'update' : 'create'} the discount.`
       toast.error(message)
     }
   }
