@@ -110,7 +110,9 @@ const getNestedValue = (obj: any, path: string): any => {
   let current: any = obj
   for (const key of keys) {
     if (Array.isArray(current)) {
-      current = current.map((item) => item?.[key]).filter((v) => v !== undefined)
+      current = current
+        .map((item) => item?.[key])
+        .filter((v) => v !== undefined)
       if (current.length === 0) return undefined
       if (current.length === 1) current = current[0]
     } else {
@@ -121,16 +123,34 @@ const getNestedValue = (obj: any, path: string): any => {
   return current
 }
 
-const evaluateOperator = (value: any, operator: string, expected: any): boolean => {
+const evaluateOperator = (
+  value: any,
+  operator: string,
+  expected: any
+): boolean => {
   switch (operator) {
-    case 'is_equal_to': return String(value).toLowerCase() === String(expected).toLowerCase()
-    case 'not_equal_to': return String(value).toLowerCase() !== String(expected).toLowerCase()
-    case 'greater_than': return Number(value) > Number(expected)
-    case 'less_than': return Number(value) < Number(expected)
-    case 'contains': return String(value).toLowerCase().includes(String(expected).toLowerCase())
-    case 'starts_with': return String(value).toLowerCase().startsWith(String(expected).toLowerCase())
-    case 'ends_with': return String(value).toLowerCase().endsWith(String(expected).toLowerCase())
-    default: return false
+    case 'is_equal_to':
+      return String(value).toLowerCase() === String(expected).toLowerCase()
+    case 'not_equal_to':
+      return String(value).toLowerCase() !== String(expected).toLowerCase()
+    case 'greater_than':
+      return Number(value) > Number(expected)
+    case 'less_than':
+      return Number(value) < Number(expected)
+    case 'contains':
+      return String(value)
+        .toLowerCase()
+        .includes(String(expected).toLowerCase())
+    case 'starts_with':
+      return String(value)
+        .toLowerCase()
+        .startsWith(String(expected).toLowerCase())
+    case 'ends_with':
+      return String(value)
+        .toLowerCase()
+        .endsWith(String(expected).toLowerCase())
+    default:
+      return false
   }
 }
 
@@ -143,14 +163,21 @@ const evaluateProductAgainstConditions = (
   if (!valid.length) return false
   const results = valid.map((cond) => {
     const pv = getNestedValue(product, cond.field)
-    if (Array.isArray(pv)) return pv.some((v) => evaluateOperator(v, cond.operator, cond.value))
+    if (Array.isArray(pv))
+      return pv.some((v) => evaluateOperator(v, cond.operator, cond.value))
     return evaluateOperator(pv, cond.operator, cond.value)
   })
-  return conditionMatch === 'all' ? results.every((r) => r) : results.some((r) => r)
+  return conditionMatch === 'all'
+    ? results.every((r) => r)
+    : results.some((r) => r)
 }
 
 const getProductName = (p: any): string =>
-  p.name || p.clothing?.name || p.fabric?.name || p.accessory?.name || 'Untitled'
+  p.name ||
+  p.clothing?.name ||
+  p.fabric?.name ||
+  p.accessory?.name ||
+  'Untitled'
 
 const getProductImage = (p: any): string | undefined => {
   const inner = p?.[p?.kind] ?? p
@@ -169,15 +196,18 @@ export const DiscountsCreateTemplate = () => {
   const isEditing = Boolean(editId)
 
   // ─── API hooks ────────────────────────────────────────────────
-  const [createDiscount, { isLoading: isCreating }] = useCreateDiscountMutation()
-  const [updateDiscount, { isLoading: isUpdating }] = useUpdateDiscountMutation()
-  const [deleteDiscount, { isLoading: isDeleting }] = useDeleteDiscountMutation()
-  const { data: discountResponse, isLoading: isLoadingDiscount } = useGetDiscountQuery(
-    editId as string,
-    { skip: !editId }
-  )
+  const [createDiscount, { isLoading: isCreating }] =
+    useCreateDiscountMutation()
+  const [updateDiscount, { isLoading: isUpdating }] =
+    useUpdateDiscountMutation()
+  const [deleteDiscount, { isLoading: isDeleting }] =
+    useDeleteDiscountMutation()
+  const { data: discountResponse, isLoading: isLoadingDiscount } =
+    useGetDiscountQuery(editId as string, { skip: !editId })
   const { data: taxonomyTree } = useGetTaxonomyTreeQuery()
-  const { data: vendorProductsResponse } = useGetProductsByVendorQuery({ size: 200 })
+  const { data: vendorProductsResponse } = useGetProductsByVendorQuery({
+    size: 200,
+  })
 
   const isSaving = isCreating || isUpdating
 
@@ -197,7 +227,13 @@ export const DiscountsCreateTemplate = () => {
       value: 0,
       value_type: undefined,
       condition_match: 'all',
-      conditions: [{ field: 'clothing.taxonomy.product_type', operator: 'is_equal_to', value: '' }],
+      conditions: [
+        {
+          field: 'clothing.taxonomy.product_type',
+          operator: 'is_equal_to',
+          value: '',
+        },
+      ],
       required_discount: false,
       is_active: true,
       is_flash: false,
@@ -215,19 +251,28 @@ export const DiscountsCreateTemplate = () => {
   const [dragIndex, setDragIndex] = useState<number | null>(null)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
 
-  const handleDragStart = useCallback((index: number) => { setDragIndex(index) }, [])
+  const handleDragStart = useCallback((index: number) => {
+    setDragIndex(index)
+  }, [])
   const handleDragOver = useCallback((e: React.DragEvent, index: number) => {
     e.preventDefault()
     e.dataTransfer.dropEffect = 'move'
     setDragOverIndex(index)
   }, [])
-  const handleDrop = useCallback((e: React.DragEvent, targetIndex: number) => {
-    e.preventDefault()
-    if (dragIndex !== null && dragIndex !== targetIndex) move(dragIndex, targetIndex)
+  const handleDrop = useCallback(
+    (e: React.DragEvent, targetIndex: number) => {
+      e.preventDefault()
+      if (dragIndex !== null && dragIndex !== targetIndex)
+        move(dragIndex, targetIndex)
+      setDragIndex(null)
+      setDragOverIndex(null)
+    },
+    [dragIndex, move]
+  )
+  const handleDragEnd = useCallback(() => {
     setDragIndex(null)
     setDragOverIndex(null)
-  }, [dragIndex, move])
-  const handleDragEnd = useCallback(() => { setDragIndex(null); setDragOverIndex(null) }, [])
+  }, [])
 
   // ─── Taxonomy-driven value dropdowns ──────────────────────────
   const getTaxonomyValues = useMemo(() => {
@@ -238,24 +283,38 @@ export const DiscountsCreateTemplate = () => {
       const kindData = taxonomyTree[config.kind]
       if (!kindData?.product_types) return []
       switch (config.type) {
-        case 'product_type': return kindData.product_types.map((pt: any) => ({ value: pt.name, label: pt.name }))
+        case 'product_type':
+          return kindData.product_types.map((pt: any) => ({
+            value: pt.name,
+            label: pt.name,
+          }))
         case 'categories': {
           const all = new Set<string>()
-          kindData.product_types.forEach((pt: any) => pt.categories?.forEach((c: string) => all.add(c)))
-          return Array.from(all).sort().map((c) => ({ value: c, label: c }))
+          kindData.product_types.forEach((pt: any) =>
+            pt.categories?.forEach((c: string) => all.add(c))
+          )
+          return Array.from(all)
+            .sort()
+            .map((c) => ({ value: c, label: c }))
         }
-        case 'audience': return [
-          { value: 'men', label: 'Men' },
-          { value: 'women', label: 'Women' },
-          { value: 'unisex', label: 'Unisex' },
-          { value: 'kids', label: 'Kids' },
-        ]
+        case 'audience':
+          return [
+            { value: 'men', label: 'Men' },
+            { value: 'women', label: 'Women' },
+            { value: 'unisex', label: 'Unisex' },
+            { value: 'kids', label: 'Kids' },
+          ]
         case 'attributes': {
           const all = new Set<string>()
-          kindData.product_types.forEach((pt: any) => pt.attributes?.forEach((a: string) => all.add(a)))
-          return Array.from(all).sort().map((a) => ({ value: a, label: a }))
+          kindData.product_types.forEach((pt: any) =>
+            pt.attributes?.forEach((a: string) => all.add(a))
+          )
+          return Array.from(all)
+            .sort()
+            .map((a) => ({ value: a, label: a }))
         }
-        default: return []
+        default:
+          return []
       }
     }
   }, [taxonomyTree])
@@ -266,8 +325,10 @@ export const DiscountsCreateTemplate = () => {
     if (!d || !isEditing) return
     const isFlash = d.type?.startsWith('flash_') ?? false
     const baseType = isFlash
-      ? (d.type === 'flash_percentage' ? 'percentage' : 'fixed')
-      : d.type ?? 'percentage'
+      ? d.type === 'flash_percentage'
+        ? 'percentage'
+        : 'fixed'
+      : (d.type ?? 'percentage')
     form.reset({
       title: d.title ?? '',
       type: baseType as any,
@@ -275,56 +336,106 @@ export const DiscountsCreateTemplate = () => {
       value_type: d.value_type,
       condition_match: d.condition_match ?? 'all',
       conditions: d.conditions?.length
-        ? d.conditions.map((c) => ({ field: c.field, operator: c.operator, value: c.value }))
-        : [{ field: 'clothing.taxonomy.product_type', operator: 'is_equal_to', value: '' }],
+        ? d.conditions.map((c) => ({
+            field: c.field,
+            operator: c.operator,
+            value: c.value,
+          }))
+        : [
+            {
+              field: 'clothing.taxonomy.product_type',
+              operator: 'is_equal_to',
+              value: '',
+            },
+          ],
       required_discount: d.required_discount ?? false,
       is_active: d.is_active ?? true,
       is_flash: isFlash,
-      start_date: d.start_date ? new Date(d.start_date).toISOString().slice(0, 16) : '',
-      end_date: d.end_date ? new Date(d.end_date).toISOString().slice(0, 16) : '',
+      start_date: d.start_date
+        ? new Date(d.start_date).toISOString().slice(0, 16)
+        : '',
+      end_date: d.end_date
+        ? new Date(d.end_date).toISOString().slice(0, 16)
+        : '',
     })
-    if (d.manual_includes?.length) setManualIncludes(new Set(d.manual_includes.map(String)))
-    if (d.manual_excludes?.length) setManualExcludes(new Set(d.manual_excludes.map(String)))
+    if (d.manual_includes?.length)
+      setManualIncludes(new Set(d.manual_includes.map(String)))
+    if (d.manual_excludes?.length)
+      setManualExcludes(new Set(d.manual_excludes.map(String)))
   }, [discountResponse, isEditing, form])
 
   // ─── Watched values ───────────────────────────────────────────
   const watchedType = useWatch({ control: form.control as any, name: 'type' })
-  const watchedIsFlash = useWatch({ control: form.control as any, name: 'is_flash' })
-  const watchedConditions = useWatch({ control: form.control as any, name: 'conditions' })
-  const watchedConditionMatch = useWatch({ control: form.control as any, name: 'condition_match' })
+  const watchedIsFlash = useWatch({
+    control: form.control as any,
+    name: 'is_flash',
+  })
+  const watchedConditions = useWatch({
+    control: form.control as any,
+    name: 'conditions',
+  })
+  const watchedConditionMatch = useWatch({
+    control: form.control as any,
+    name: 'condition_match',
+  })
 
-  const showValueType = watchedType === 'store_wide' || watchedType === 'category_specific'
-  const isPercentType = watchedType === 'percentage' || watchedType === 'flash_percentage'
-  const watchedValueType = useWatch({ control: form.control as any, name: 'value_type' })
-  const isPercentValue = showValueType ? watchedValueType === 'percentage' : isPercentType
+  const showValueType =
+    watchedType === 'store_wide' || watchedType === 'category_specific'
+  const isPercentType =
+    watchedType === 'percentage' || watchedType === 'flash_percentage'
+  const watchedValueType = useWatch({
+    control: form.control as any,
+    name: 'value_type',
+  })
+  const isPercentValue = showValueType
+    ? watchedValueType === 'percentage'
+    : isPercentType
 
   // ─── Product preview ──────────────────────────────────────────
-  const conditionsKey = JSON.stringify(watchedConditions) + watchedConditionMatch
-  const allRawProducts = useMemo(() => vendorProductsResponse?.data?.data ?? [], [vendorProductsResponse])
+  const conditionsKey =
+    JSON.stringify(watchedConditions) + watchedConditionMatch
+  const allRawProducts = useMemo(
+    () => vendorProductsResponse?.data?.data ?? [],
+    [vendorProductsResponse]
+  )
 
   const conditionMatchedProducts = useMemo(() => {
     if (!allRawProducts.length || !watchedConditions?.length) return []
     // Store-wide with no conditions matches everything
-    if (watchedType === 'store_wide' && (!watchedConditions.length || watchedConditions.every((c: any) => !c.field && !c.value))) {
+    if (
+      watchedType === 'store_wide' &&
+      (!watchedConditions.length ||
+        watchedConditions.every((c: any) => !c.field && !c.value))
+    ) {
       return allRawProducts
     }
     return allRawProducts.filter((product: any) =>
-      evaluateProductAgainstConditions(product, watchedConditions, watchedConditionMatch)
+      evaluateProductAgainstConditions(
+        product,
+        watchedConditions,
+        watchedConditionMatch
+      )
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allRawProducts, conditionsKey, watchedType])
 
   const matchingProducts = useMemo(() => {
-    const afterExcludes = conditionMatchedProducts.filter((p: any) => !manualExcludes.has(p._id))
+    const afterExcludes = conditionMatchedProducts.filter(
+      (p: any) => !manualExcludes.has(p._id)
+    )
     const matchedIds = new Set(afterExcludes.map((p: any) => p._id))
-    const manuallyIncluded = allRawProducts.filter((p: any) => manualIncludes.has(p._id) && !matchedIds.has(p._id))
+    const manuallyIncluded = allRawProducts.filter(
+      (p: any) => manualIncludes.has(p._id) && !matchedIds.has(p._id)
+    )
     return [...afterExcludes, ...manuallyIncluded]
   }, [conditionMatchedProducts, manualIncludes, manualExcludes, allRawProducts])
 
   const filteredProducts = useMemo(() => {
     const term = productSearch.trim().toLowerCase()
     if (!term) return matchingProducts
-    return matchingProducts.filter((p: any) => getProductName(p).toLowerCase().includes(term))
+    return matchingProducts.filter((p: any) =>
+      getProductName(p).toLowerCase().includes(term)
+    )
   }, [matchingProducts, productSearch])
 
   const availableForInclude = useMemo(() => {
@@ -340,17 +451,33 @@ export const DiscountsCreateTemplate = () => {
   // ─── Manual overrides ─────────────────────────────────────────
   const handleExclude = (productId: string) => {
     setManualExcludes((prev) => new Set([...prev, productId]))
-    setManualIncludes((prev) => { const n = new Set(prev); n.delete(productId); return n })
+    setManualIncludes((prev) => {
+      const n = new Set(prev)
+      n.delete(productId)
+      return n
+    })
   }
   const handleInclude = (productId: string) => {
     setManualIncludes((prev) => new Set([...prev, productId]))
-    setManualExcludes((prev) => { const n = new Set(prev); n.delete(productId); return n })
+    setManualExcludes((prev) => {
+      const n = new Set(prev)
+      n.delete(productId)
+      return n
+    })
   }
   const handleUndoExclude = (productId: string) => {
-    setManualExcludes((prev) => { const n = new Set(prev); n.delete(productId); return n })
+    setManualExcludes((prev) => {
+      const n = new Set(prev)
+      n.delete(productId)
+      return n
+    })
   }
   const handleRemoveInclude = (productId: string) => {
-    setManualIncludes((prev) => { const n = new Set(prev); n.delete(productId); return n })
+    setManualIncludes((prev) => {
+      const n = new Set(prev)
+      n.delete(productId)
+      return n
+    })
   }
 
   // ─── Submit ───────────────────────────────────────────────────
@@ -365,9 +492,11 @@ export const DiscountsCreateTemplate = () => {
         title: values.title,
         type: apiType,
         value: Number(values.value),
-        value_type: showValueType 
-          ? values.value_type 
-          : (apiType.includes('fixed') ? 'fixed' : 'percentage'),
+        value_type: showValueType
+          ? values.value_type
+          : apiType.includes('fixed')
+            ? 'fixed'
+            : 'percentage',
         condition_match: values.condition_match as 'all' | 'any',
         conditions: values.conditions
           .filter((c) => c.field && c.operator && c.value)
@@ -378,8 +507,14 @@ export const DiscountsCreateTemplate = () => {
           })),
         required_discount: values.required_discount,
         is_active: values.is_active,
-        start_date: values.is_flash && values.start_date ? new Date(values.start_date).toISOString() : undefined,
-        end_date: values.is_flash && values.end_date ? new Date(values.end_date).toISOString() : undefined,
+        start_date:
+          values.is_flash && values.start_date
+            ? new Date(values.start_date).toISOString()
+            : undefined,
+        end_date:
+          values.is_flash && values.end_date
+            ? new Date(values.end_date).toISOString()
+            : undefined,
         manual_includes: [...manualIncludes],
         manual_excludes: [...manualExcludes],
       }
@@ -397,7 +532,9 @@ export const DiscountsCreateTemplate = () => {
       const data = (err as any)?.data
       const message = Array.isArray(data?.message)
         ? data.message.join(', ')
-        : data?.message || JSON.stringify(data) || `Could not ${isEditing ? 'update' : 'create'} the discount.`
+        : data?.message ||
+          JSON.stringify(data) ||
+          `Could not ${isEditing ? 'update' : 'create'} the discount.`
       toast.error(message)
     }
   }
@@ -415,57 +552,69 @@ export const DiscountsCreateTemplate = () => {
 
   if (isEditing && isLoadingDiscount) {
     return (
-      <div className='flex h-64 items-center justify-center'>
-        <Loader2 className='size-8 animate-spin text-primary' />
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-primary" />
       </div>
     )
   }
 
   // ─── Render ───────────────────────────────────────────────────
   return (
-    <div className='max-w-5xl mx-auto space-y-6 pb-20'>
-      <div className='flex items-center gap-4'>
+    <div className="max-w-5xl mx-auto space-y-6 pb-20">
+      <div className="flex items-center gap-4">
         <GoBackButton />
-        <h2 className='text-xl font-semibold'>
+        <h2 className="text-xl font-semibold">
           {isEditing ? 'Edit Discount' : 'Create Discount'}
         </h2>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit as any)} className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-          
+        <form
+          onSubmit={form.handleSubmit(onSubmit as any)}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+        >
           {/* LEFT COLUMN: Main Form & Conditions */}
-          <div className='lg:col-span-2 space-y-6'>
-            
+          <div className="lg:col-span-2 space-y-6">
             {/* General Info Card */}
             <div className={cardClass}>
-              <h3 className='text-base font-medium mb-6'>Discount Details</h3>
-              <div className='space-y-6'>
+              <h3 className="text-base font-medium mb-6">Discount Details</h3>
+              <div className="space-y-6">
                 <FormField
                   control={form.control as any}
-                  name='title'
+                  name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <Label className='text-sm font-medium'>Discount Title</Label>
+                      <Label className="text-sm font-medium">
+                        Discount Title
+                      </Label>
                       <FormControl>
-                        <Input placeholder='e.g. Summer Sale 20% Off' className='h-11' {...field} />
+                        <Input
+                          placeholder="e.g. Summer Sale 20% Off"
+                          className="h-11"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <FormField
                     control={form.control as any}
-                    name='type'
+                    name="type"
                     render={({ field }) => (
                       <FormItem>
-                        <Label className='text-sm font-medium'>Discount Type</Label>
-                        <Select value={field.value} onValueChange={field.onChange}>
+                        <Label className="text-sm font-medium">
+                          Discount Type
+                        </Label>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
                           <FormControl>
-                            <SelectTrigger className='h-11'>
-                              <SelectValue placeholder='Select type' />
+                            <SelectTrigger className="h-11">
+                              <SelectValue placeholder="Select type" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -483,21 +632,25 @@ export const DiscountsCreateTemplate = () => {
 
                   <FormField
                     control={form.control as any}
-                    name='value'
+                    name="value"
                     render={({ field }) => (
                       <FormItem>
-                        <Label className='text-sm font-medium'>Discount Value</Label>
-                        <div className='relative'>
+                        <Label className="text-sm font-medium">
+                          Discount Value
+                        </Label>
+                        <div className="relative">
                           <FormControl>
                             <Input
-                              type='number'
-                              placeholder='0'
-                              className='h-11 pr-12'
+                              type="number"
+                              placeholder="0"
+                              className="h-11 pr-12"
                               {...field}
-                              onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                              onChange={(e) =>
+                                field.onChange(e.target.valueAsNumber || 0)
+                              }
                             />
                           </FormControl>
-                          <span className='absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium'>
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
                             {isPercentValue ? '%' : '₦'}
                           </span>
                         </div>
@@ -510,22 +663,34 @@ export const DiscountsCreateTemplate = () => {
                 {showValueType && (
                   <FormField
                     control={form.control as any}
-                    name='value_type'
+                    name="value_type"
                     render={({ field }) => (
                       <FormItem>
-                        <Label className='text-sm font-medium'>Value Type</Label>
+                        <Label className="text-sm font-medium">
+                          Value Type
+                        </Label>
                         <RadioGroup
                           value={field.value ?? 'percentage'}
                           onValueChange={field.onChange}
-                          className='flex items-center gap-6'
+                          className="flex items-center gap-6"
                         >
-                          <div className='flex items-center gap-2'>
-                            <RadioGroupItem value='percentage' id='vt-pct' />
-                            <Label htmlFor='vt-pct' className='cursor-pointer text-sm'>Percentage</Label>
+                          <div className="flex items-center gap-2">
+                            <RadioGroupItem value="percentage" id="vt-pct" />
+                            <Label
+                              htmlFor="vt-pct"
+                              className="cursor-pointer text-sm"
+                            >
+                              Percentage
+                            </Label>
                           </div>
-                          <div className='flex items-center gap-2'>
-                            <RadioGroupItem value='fixed' id='vt-fixed' />
-                            <Label htmlFor='vt-fixed' className='cursor-pointer text-sm'>Fixed Amount</Label>
+                          <div className="flex items-center gap-2">
+                            <RadioGroupItem value="fixed" id="vt-fixed" />
+                            <Label
+                              htmlFor="vt-fixed"
+                              className="cursor-pointer text-sm"
+                            >
+                              Fixed Amount
+                            </Label>
                           </div>
                         </RadioGroup>
                       </FormItem>
@@ -535,111 +700,45 @@ export const DiscountsCreateTemplate = () => {
               </div>
             </div>
 
-            {/* Timings & Status Card */}
-            <div className={cardClass}>
-              <h3 className='text-base font-medium mb-6'>Configuration</h3>
-              <div className='space-y-6'>
-                <div className='flex items-center justify-between rounded-lg border border-border/60 p-4'>
-                  <div>
-                    <p className='text-sm font-medium'>Flash Sale</p>
-                    <p className='text-xs text-muted-foreground mt-1'>Time-limited discount with auto start/end</p>
-                  </div>
-                  <FormField
-                    control={form.control as any}
-                    name='is_flash'
-                    render={({ field }) => (
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
-                    )}
-                  />
-                </div>
-
-                {watchedIsFlash && (
-                  <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 bg-muted/30 p-4 rounded-lg'>
-                    <FormField
-                      control={form.control as any}
-                      name='start_date'
-                      render={({ field }) => (
-                        <FormItem>
-                          <Label className='text-xs font-medium'>Start Date</Label>
-                          <FormControl>
-                            <Input type='datetime-local' className='h-10 text-sm' {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control as any}
-                      name='end_date'
-                      render={({ field }) => (
-                        <FormItem>
-                          <Label className='text-xs font-medium'>End Date</Label>
-                          <FormControl>
-                            <Input type='datetime-local' className='h-10 text-sm' {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
-
-                <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
-                  <div className='flex items-center justify-between rounded-lg border border-border/60 p-4'>
-                    <div>
-                      <p className='text-sm font-medium'>Required Discount</p>
-                      <p className='text-xs text-muted-foreground mt-1'>Must be applied if conditions match</p>
-                    </div>
-                    <FormField
-                      control={form.control as any}
-                      name='required_discount'
-                      render={({ field }) => (
-                        <Switch checked={field.value} onCheckedChange={field.onChange} />
-                      )}
-                    />
-                  </div>
-                  <div className='flex items-center justify-between rounded-lg border border-border/60 p-4'>
-                    <div>
-                      <p className='text-sm font-medium'>Active Status</p>
-                      <p className='text-xs text-muted-foreground mt-1'>Discount is live and applied</p>
-                    </div>
-                    <FormField
-                      control={form.control as any}
-                      name='is_active'
-                      render={({ field }) => (
-                        <Switch checked={field.value} onCheckedChange={field.onChange} />
-                      )}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* Conditions Card */}
             <div className={cardClass}>
-              <h3 className='text-base font-medium mb-2'>Conditions</h3>
-              <p className='text-sm text-muted-foreground mb-6'>
+              <h3 className="text-base font-medium mb-2">Conditions</h3>
+              <p className="text-sm text-muted-foreground mb-6">
                 Products must match these rules for the discount to apply.
               </p>
 
-              <div className='space-y-6'>
+              <div className="space-y-6">
                 <FormField
                   control={form.control as any}
-                  name='condition_match'
+                  name="condition_match"
                   render={({ field }) => (
                     <FormItem>
-                      <div className='flex flex-wrap items-center gap-4'>
-                        <span className='text-sm font-medium'>Products must match:</span>
+                      <div className="flex flex-wrap items-center gap-4">
+                        <span className="text-sm font-medium">
+                          Products must match:
+                        </span>
                         <RadioGroup
                           value={field.value}
                           onValueChange={field.onChange}
-                          className='flex items-center gap-4'
+                          className="flex items-center gap-4"
                         >
-                          <div className='flex items-center gap-1.5'>
-                            <RadioGroupItem value='all' id='d-match-all' />
-                            <Label htmlFor='d-match-all' className='cursor-pointer text-sm'>All conditions</Label>
+                          <div className="flex items-center gap-1.5">
+                            <RadioGroupItem value="all" id="d-match-all" />
+                            <Label
+                              htmlFor="d-match-all"
+                              className="cursor-pointer text-sm"
+                            >
+                              All conditions
+                            </Label>
                           </div>
-                          <div className='flex items-center gap-1.5'>
-                            <RadioGroupItem value='any' id='d-match-any' />
-                            <Label htmlFor='d-match-any' className='cursor-pointer text-sm'>Any condition</Label>
+                          <div className="flex items-center gap-1.5">
+                            <RadioGroupItem value="any" id="d-match-any" />
+                            <Label
+                              htmlFor="d-match-any"
+                              className="cursor-pointer text-sm"
+                            >
+                              Any condition
+                            </Label>
                           </div>
                         </RadioGroup>
                       </div>
@@ -647,15 +746,20 @@ export const DiscountsCreateTemplate = () => {
                   )}
                 />
 
-                <div className='space-y-3'>
+                <div className="space-y-3">
                   {fields.map((row, index) => {
-                    const selectedField = form.watch(`conditions.${index}.field`)
+                    const selectedField = form.watch(
+                      `conditions.${index}.field`
+                    )
                     const isFreeText = FREE_TEXT_FIELDS.has(selectedField)
-                    const isTaxonomyField = selectedField in TAXONOMY_FIELD_CONFIG
+                    const isTaxonomyField =
+                      selectedField in TAXONOMY_FIELD_CONFIG
                     const isStaticField = selectedField in STATIC_VALUE_OPTIONS
                     let valueOptions: { value: string; label: string }[] = []
-                    if (isTaxonomyField) valueOptions = getTaxonomyValues(selectedField)
-                    else if (isStaticField) valueOptions = STATIC_VALUE_OPTIONS[selectedField]
+                    if (isTaxonomyField)
+                      valueOptions = getTaxonomyValues(selectedField)
+                    else if (isStaticField)
+                      valueOptions = STATIC_VALUE_OPTIONS[selectedField]
 
                     return (
                       <div
@@ -668,7 +772,9 @@ export const DiscountsCreateTemplate = () => {
                         className={cn(
                           'flex flex-wrap items-start gap-3 sm:flex-nowrap rounded-lg p-3 border border-border/50 transition-all duration-200 bg-background',
                           dragIndex === index && 'opacity-40 scale-[0.98]',
-                          dragOverIndex === index && dragIndex !== index && 'border-2 border-primary/40 bg-primary/5',
+                          dragOverIndex === index &&
+                            dragIndex !== index &&
+                            'border-2 border-primary/40 bg-primary/5'
                         )}
                       >
                         {/* Drag Handle */}
@@ -679,9 +785,9 @@ export const DiscountsCreateTemplate = () => {
                               ? 'bg-primary border-primary text-white'
                               : 'border-border text-muted-foreground hover:bg-primary/10 hover:border-primary/30'
                           )}
-                          title='Drag to reorder'
+                          title="Drag to reorder"
                         >
-                          <GripVertical className='size-4' />
+                          <GripVertical className="size-4" />
                         </div>
 
                         {/* Field */}
@@ -689,7 +795,7 @@ export const DiscountsCreateTemplate = () => {
                           control={form.control as any}
                           name={`conditions.${index}.field`}
                           render={({ field }) => (
-                            <FormItem className='flex-1 min-w-[150px]'>
+                            <FormItem className="flex-1 min-w-[150px]">
                               <Select
                                 value={field.value}
                                 onValueChange={(next) => {
@@ -698,13 +804,18 @@ export const DiscountsCreateTemplate = () => {
                                 }}
                               >
                                 <FormControl>
-                                  <SelectTrigger className='h-11'>
-                                    <SelectValue placeholder='Select field...' />
+                                  <SelectTrigger className="h-11">
+                                    <SelectValue placeholder="Select field..." />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
                                   {CONDITION_FIELD_OPTIONS.map((opt) => (
-                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                    <SelectItem
+                                      key={opt.value}
+                                      value={opt.value}
+                                    >
+                                      {opt.label}
+                                    </SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
@@ -717,16 +828,24 @@ export const DiscountsCreateTemplate = () => {
                           control={form.control as any}
                           name={`conditions.${index}.operator`}
                           render={({ field }) => (
-                            <FormItem className='flex-[0.8] min-w-[130px]'>
-                              <Select value={field.value} onValueChange={field.onChange}>
+                            <FormItem className="flex-[0.8] min-w-[130px]">
+                              <Select
+                                value={field.value}
+                                onValueChange={field.onChange}
+                              >
                                 <FormControl>
-                                  <SelectTrigger className='h-11'>
-                                    <SelectValue placeholder='Operator...' />
+                                  <SelectTrigger className="h-11">
+                                    <SelectValue placeholder="Operator..." />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
                                   {CONDITION_OPERATOR_OPTIONS.map((opt) => (
-                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                    <SelectItem
+                                      key={opt.value}
+                                      value={opt.value}
+                                    >
+                                      {opt.label}
+                                    </SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
@@ -739,30 +858,44 @@ export const DiscountsCreateTemplate = () => {
                           control={form.control as any}
                           name={`conditions.${index}.value`}
                           render={({ field }) => (
-                            <FormItem className='flex-1 min-w-[150px]'>
+                            <FormItem className="flex-1 min-w-[150px]">
                               {isFreeText ? (
                                 <FormControl>
                                   <Input
-                                    placeholder={selectedField === 'base_price' ? 'Price value...' : 'Value...'}
-                                    className='h-11'
+                                    placeholder={
+                                      selectedField === 'base_price'
+                                        ? 'Price value...'
+                                        : 'Value...'
+                                    }
+                                    className="h-11"
                                     {...field}
                                   />
                                 </FormControl>
                               ) : (
-                                <Select value={field.value} onValueChange={field.onChange}>
+                                <Select
+                                  value={field.value}
+                                  onValueChange={field.onChange}
+                                >
                                   <FormControl>
-                                    <SelectTrigger className='h-11'>
-                                      <SelectValue placeholder='Select value...' />
+                                    <SelectTrigger className="h-11">
+                                      <SelectValue placeholder="Select value..." />
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
                                     {valueOptions.length > 0 ? (
                                       valueOptions.map((opt) => (
-                                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                        <SelectItem
+                                          key={opt.value}
+                                          value={opt.value}
+                                        >
+                                          {opt.label}
+                                        </SelectItem>
                                       ))
                                     ) : (
-                                      <SelectItem value='__loading' disabled>
-                                        {isTaxonomyField ? 'Loading...' : 'Select field first'}
+                                      <SelectItem value="__loading" disabled>
+                                        {isTaxonomyField
+                                          ? 'Loading...'
+                                          : 'Select field first'}
                                       </SelectItem>
                                     )}
                                   </SelectContent>
@@ -774,14 +907,14 @@ export const DiscountsCreateTemplate = () => {
 
                         {/* Delete */}
                         <Button
-                          type='button'
-                          variant='outline'
-                          size='icon'
+                          type="button"
+                          variant="outline"
+                          size="icon"
                           disabled={fields.length === 1}
                           onClick={() => remove(index)}
-                          className='h-11 w-11 shrink-0 text-muted-foreground hover:text-destructive hover:border-destructive/30 hover:bg-destructive/5'
+                          className="h-11 w-11 shrink-0 text-muted-foreground hover:text-destructive hover:border-destructive/30 hover:bg-destructive/5"
                         >
-                          <Trash2 className='size-4' />
+                          <Trash2 className="size-4" />
                         </Button>
                       </div>
                     )
@@ -789,58 +922,61 @@ export const DiscountsCreateTemplate = () => {
                 </div>
 
                 <Button
-                  type='button'
-                  variant='outline'
-                  onClick={() => append({ field: 'clothing.taxonomy.product_type', operator: 'is_equal_to', value: '' })}
-                  className='w-full border-dashed py-6 text-muted-foreground hover:text-primary hover:border-primary/50'
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    append({
+                      field: 'clothing.taxonomy.product_type',
+                      operator: 'is_equal_to',
+                      value: '',
+                    })
+                  }
+                  className="w-full border-dashed py-6 text-muted-foreground hover:text-primary hover:border-primary/50"
                 >
-                  <Plus className='mr-2 size-4' />
+                  <Plus className="mr-2 size-4" />
                   Add Another Condition
                 </Button>
               </div>
             </div>
-          </div>
-
-          {/* RIGHT COLUMN: Product Preview */}
-          <div className='lg:col-span-1'>
-            <div className={cn(cardClass, 'sticky top-6 flex flex-col h-[calc(100vh-120px)]')}>
-              <div className='flex items-center justify-between mb-4'>
-                <h3 className='text-base font-medium'>Product Preview</h3>
-                <span className='rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary'>
+            <div className={cn(cardClass, 'flex flex-col h-[600px]')}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-medium">Product Preview</h3>
+                <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
                   {matchingProducts.length} matching
                 </span>
               </div>
-              
-              <p className='text-xs text-muted-foreground mb-4'>
-                These products currently match your conditions and will receive this discount.
+
+              <p className="text-xs text-muted-foreground mb-4">
+                These products currently match your conditions and will receive
+                this discount.
               </p>
 
-              <div className='relative mb-4'>
-                <Search className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground' />
+              <div className="relative mb-4">
+                <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   value={productSearch}
                   onChange={(e) => setProductSearch(e.target.value)}
-                  placeholder='Search matching products...'
-                  className='h-10 pl-9 text-sm'
+                  placeholder="Search matching products..."
+                  className="h-10 pl-9 text-sm"
                 />
               </div>
 
               {/* Product list */}
-              <ScrollArea className='flex-1 border rounded-lg bg-background/50 p-2'>
+              <ScrollArea className="flex-1 border rounded-lg bg-background/50 p-2">
                 {filteredProducts.length === 0 ? (
-                  <div className='h-full flex flex-col items-center justify-center p-6 text-center'>
-                    <div className='rounded-full bg-muted p-3 mb-3'>
-                      <Search className='size-5 text-muted-foreground' />
+                  <div className="h-full flex flex-col items-center justify-center p-6 text-center">
+                    <div className="rounded-full bg-muted p-3 mb-3">
+                      <Search className="size-5 text-muted-foreground" />
                     </div>
-                    <p className='text-sm font-medium'>No products found</p>
-                    <p className='text-xs text-muted-foreground mt-1'>
+                    <p className="text-sm font-medium">No products found</p>
+                    <p className="text-xs text-muted-foreground mt-1">
                       {matchingProducts.length === 0
                         ? 'Try adjusting your conditions.'
                         : 'No products match your search.'}
                     </p>
                   </div>
                 ) : (
-                  <div className='space-y-1.5 pr-3'>
+                  <div className="space-y-1.5 pr-3">
                     {filteredProducts.slice(0, 100).map((product: any) => {
                       const img = getProductImage(product)
                       const name = getProductName(product)
@@ -849,49 +985,61 @@ export const DiscountsCreateTemplate = () => {
                       return (
                         <div
                           key={product._id}
-                          className='flex items-center gap-3 rounded-md p-2 hover:bg-muted transition-colors border border-transparent hover:border-border/50'
+                          className="flex items-center gap-3 rounded-md p-2 hover:bg-muted transition-colors border border-transparent hover:border-border/50"
                         >
-                          <div className='relative size-10 shrink-0 rounded-md overflow-hidden border bg-muted'>
+                          <div className="relative size-10 shrink-0 rounded-md overflow-hidden border bg-muted">
                             {img ? (
-                              <Image src={img} alt={name} fill className='object-cover' sizes='40px' />
+                              <Image
+                                src={img}
+                                alt={name}
+                                fill
+                                className="object-cover"
+                                sizes="40px"
+                              />
                             ) : (
-                              <div className='w-full h-full flex items-center justify-center text-[9px] text-muted-foreground text-center leading-none'>
+                              <div className="w-full h-full flex items-center justify-center text-[9px] text-muted-foreground text-center leading-none">
                                 No img
                               </div>
                             )}
                           </div>
-                          <div className='flex-1 min-w-0'>
-                            <p className='text-sm font-medium truncate text-foreground/90'>{name}</p>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate text-foreground/90">
+                              {name}
+                            </p>
                             {price != null && (
-                              <p className='text-xs text-muted-foreground mt-0.5'>
+                              <p className="text-xs text-muted-foreground mt-0.5">
                                 ₦{price.toLocaleString()}
                               </p>
                             )}
                           </div>
                           {isManuallyIncluded && (
-                            <span className='rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-600 font-medium'>
+                            <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-600 font-medium">
                               Added
                             </span>
                           )}
                           <Button
-                            type='button'
-                            variant='ghost'
-                            size='icon'
+                            type="button"
+                            variant="ghost"
+                            size="icon"
                             onClick={() =>
                               isManuallyIncluded
                                 ? handleRemoveInclude(product._id)
                                 : handleExclude(product._id)
                             }
-                            className='h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10'
-                            title={isManuallyIncluded ? 'Remove from includes' : 'Exclude product manually'}
+                            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                            title={
+                              isManuallyIncluded
+                                ? 'Remove from includes'
+                                : 'Exclude product manually'
+                            }
                           >
-                            <X className='size-4' />
+                            <X className="size-4" />
                           </Button>
                         </div>
                       )
                     })}
                     {filteredProducts.length > 100 && (
-                      <p className='text-center text-xs text-muted-foreground py-4'>
+                      <p className="text-center text-xs text-muted-foreground py-4">
                         Showing 100 of {filteredProducts.length}
                       </p>
                     )}
@@ -900,61 +1048,71 @@ export const DiscountsCreateTemplate = () => {
               </ScrollArea>
 
               {/* Manual include picker */}
-              <div className='mt-4 pt-4 border-t'>
+              <div className="mt-4 pt-4 border-t">
                 {!showManualPicker ? (
                   <Button
-                    type='button'
-                    variant='outline'
+                    type="button"
+                    variant="outline"
                     onClick={() => setShowManualPicker(true)}
-                    className='w-full text-sm'
+                    className="w-full text-sm"
                   >
-                    <UserPlus className='mr-2 size-4' />
+                    <UserPlus className="mr-2 size-4" />
                     Manually Include Products
                   </Button>
                 ) : (
-                  <div className='rounded-lg border p-3 bg-muted/20 space-y-3'>
-                    <div className='flex items-center justify-between'>
-                      <span className='text-sm font-medium'>Include Overrides</span>
+                  <div className="rounded-lg border p-3 bg-muted/20 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">
+                        Include Overrides
+                      </span>
                       <Button
-                        type='button'
-                        variant='ghost'
-                        size='icon'
+                        type="button"
+                        variant="ghost"
+                        size="icon"
                         onClick={() => setShowManualPicker(false)}
-                        className='h-7 w-7 hover:bg-muted'
+                        className="h-7 w-7 hover:bg-muted"
                       >
-                        <X className='size-4' />
+                        <X className="size-4" />
                       </Button>
                     </div>
-                    <div className='relative'>
-                      <Search className='pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground' />
+                    <div className="relative">
+                      <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         value={manualPickerSearch}
                         onChange={(e) => setManualPickerSearch(e.target.value)}
-                        placeholder='Search products to include...'
-                        className='h-9 pl-8 text-xs'
+                        placeholder="Search products to include..."
+                        className="h-9 pl-8 text-xs"
                       />
                     </div>
-                    <ScrollArea className='h-[180px]'>
-                      <div className='space-y-1 pr-3'>
+                    <ScrollArea className="h-[180px]">
+                      <div className="space-y-1 pr-3">
                         {availableForInclude.slice(0, 30).map((p: any) => (
                           <div
                             key={p._id}
-                            className='flex items-center gap-2.5 rounded-md p-1.5 hover:bg-muted cursor-pointer transition-colors'
+                            className="flex items-center gap-2.5 rounded-md p-1.5 hover:bg-muted cursor-pointer transition-colors"
                             onClick={() => handleInclude(p._id)}
                           >
-                            <div className='relative size-8 shrink-0 rounded overflow-hidden border bg-background'>
+                            <div className="relative size-8 shrink-0 rounded overflow-hidden border bg-background">
                               {getProductImage(p) ? (
-                                <Image src={getProductImage(p)!} alt='' fill className='object-cover' sizes='32px' />
+                                <Image
+                                  src={getProductImage(p)!}
+                                  alt=""
+                                  fill
+                                  className="object-cover"
+                                  sizes="32px"
+                                />
                               ) : null}
                             </div>
-                            <span className='text-xs font-medium truncate flex-1'>{getProductName(p)}</span>
-                            <div className='flex size-6 items-center justify-center rounded-full bg-primary/10 text-primary'>
-                              <Plus className='size-3' />
+                            <span className="text-xs font-medium truncate flex-1">
+                              {getProductName(p)}
+                            </span>
+                            <div className="flex size-6 items-center justify-center rounded-full bg-primary/10 text-primary">
+                              <Plus className="size-3" />
                             </div>
                           </div>
                         ))}
                         {availableForInclude.length === 0 && (
-                          <p className='text-center text-xs text-muted-foreground py-6'>
+                          <p className="text-center text-xs text-muted-foreground py-6">
                             No more products available to include.
                           </p>
                         )}
@@ -966,35 +1124,41 @@ export const DiscountsCreateTemplate = () => {
 
               {/* Excluded products */}
               {manualExcludes.size > 0 && (
-                <div className='mt-4 pt-4 border-t space-y-2'>
-                  <span className='text-xs font-semibold text-destructive uppercase tracking-wider'>
+                <div className="mt-4 pt-4 border-t space-y-2">
+                  <span className="text-xs font-semibold text-destructive uppercase tracking-wider">
                     Excluded Overrides ({manualExcludes.size})
                   </span>
-                  <div className='space-y-1.5 max-h-[140px] overflow-y-auto pr-2'>
+                  <div className="space-y-1.5 max-h-[140px] overflow-y-auto pr-2">
                     {allRawProducts
                       .filter((p: any) => manualExcludes.has(p._id))
                       .map((p: any) => (
                         <div
                           key={p._id}
-                          className='flex items-center gap-2.5 rounded-md p-1.5 bg-destructive/5 border border-destructive/10'
+                          className="flex items-center gap-2.5 rounded-md p-1.5 bg-destructive/5 border border-destructive/10"
                         >
-                          <div className='relative size-8 shrink-0 rounded overflow-hidden border bg-background'>
+                          <div className="relative size-8 shrink-0 rounded overflow-hidden border bg-background">
                             {getProductImage(p) ? (
-                              <Image src={getProductImage(p)!} alt='' fill className='object-cover' sizes='32px' />
+                              <Image
+                                src={getProductImage(p)!}
+                                alt=""
+                                fill
+                                className="object-cover"
+                                sizes="32px"
+                              />
                             ) : null}
                           </div>
-                          <span className='text-xs font-medium truncate flex-1 text-destructive/80 line-through'>
+                          <span className="text-xs font-medium truncate flex-1 text-destructive/80 line-through">
                             {getProductName(p)}
                           </span>
                           <Button
-                            type='button'
-                            variant='ghost'
-                            size='icon'
+                            type="button"
+                            variant="ghost"
+                            size="icon"
                             onClick={() => handleUndoExclude(p._id)}
-                            className='h-7 w-7 text-destructive hover:bg-destructive/10'
-                            title='Restore to discount'
+                            className="h-7 w-7 text-destructive hover:bg-destructive/10"
+                            title="Restore to discount"
                           >
-                            <Undo2 className='size-3.5' />
+                            <Undo2 className="size-3.5" />
                           </Button>
                         </div>
                       ))}
@@ -1004,33 +1168,141 @@ export const DiscountsCreateTemplate = () => {
             </div>
           </div>
 
+          {/* RIGHT COLUMN: Configuration */}
+          <div className="lg:col-span-1">
+            {/* Timings & Status Card */}
+            <div className={cn(cardClass, 'sticky top-6')}>
+              <h3 className="text-base font-medium mb-6">Configuration</h3>
+              <div className="space-y-6">
+                <div className="flex items-center justify-between rounded-lg border border-border/60 p-4">
+                  <div>
+                    <p className="text-sm font-medium">Flash Sale</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Time-limited discount with auto start/end
+                    </p>
+                  </div>
+                  <FormField
+                    control={form.control as any}
+                    name="is_flash"
+                    render={({ field }) => (
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    )}
+                  />
+                </div>
+
+                {watchedIsFlash && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-muted/30 p-4 rounded-lg">
+                    <FormField
+                      control={form.control as any}
+                      name="start_date"
+                      render={({ field }) => (
+                        <FormItem>
+                          <Label className="text-xs font-medium">
+                            Start Date
+                          </Label>
+                          <FormControl>
+                            <Input
+                              type="datetime-local"
+                              className="h-10 text-sm"
+                              {...field}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control as any}
+                      name="end_date"
+                      render={({ field }) => (
+                        <FormItem>
+                          <Label className="text-xs font-medium">
+                            End Date
+                          </Label>
+                          <FormControl>
+                            <Input
+                              type="datetime-local"
+                              className="h-10 text-sm"
+                              {...field}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="flex items-center justify-between rounded-lg border border-border/60 p-4">
+                    <div>
+                      <p className="text-sm font-medium">Required Discount</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Must be applied if conditions match
+                      </p>
+                    </div>
+                    <FormField
+                      control={form.control as any}
+                      name="required_discount"
+                      render={({ field }) => (
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between rounded-lg border border-border/60 p-4">
+                    <div>
+                      <p className="text-sm font-medium">Active Status</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Discount is live and applied
+                      </p>
+                    </div>
+                    <FormField
+                      control={form.control as any}
+                      name="is_active"
+                      render={({ field }) => (
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Sticky Bottom Actions */}
-          <div className='lg:col-span-3 sticky bottom-0 z-10 -mx-6 bg-background/80 backdrop-blur-md border-t p-6 mt-6 flex items-center justify-end gap-4'>
+          <div className="lg:col-span-3 sticky bottom-0 z-10 -mx-6 bg-background/80 backdrop-blur-md border-t p-6 mt-6 flex items-center justify-end gap-4">
             {isEditing && (
               <Button
-                type='button'
-                variant='outline'
+                type="button"
+                variant="outline"
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className='text-destructive border-destructive/20 hover:bg-destructive/5 mr-auto'
+                className="text-destructive border-destructive/20 hover:bg-destructive/5 mr-auto"
               >
-                {isDeleting ? <Loader2 className='mr-2 size-4 animate-spin' /> : <Trash2 className='mr-2 size-4' />}
+                {isDeleting ? (
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                ) : (
+                  <Trash2 className="mr-2 size-4" />
+                )}
                 Delete Discount
               </Button>
             )}
             <Button
-              type='button'
-              variant='outline'
+              type="button"
+              variant="outline"
               onClick={() => router.push(APP_ROUTES.productsDiscounts)}
             >
               Cancel
             </Button>
-            <Button
-              type='submit'
-              disabled={isSaving}
-              className='min-w-[140px]'
-            >
-              {isSaving && <Loader2 className='mr-2 size-4 animate-spin' />}
+            <Button type="submit" disabled={isSaving} className="min-w-[140px]">
+              {isSaving && <Loader2 className="mr-2 size-4 animate-spin" />}
               {isEditing ? 'Save Changes' : 'Create Discount'}
             </Button>
           </div>
