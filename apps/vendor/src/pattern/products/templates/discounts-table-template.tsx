@@ -15,7 +15,8 @@ import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-ic
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
 import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
 import { DiscountsTable } from '../organisms/discounts-table'
-import { DiscountFormSheet } from '../organisms/discount-form-sheet'
+import { useRouter } from 'next/navigation'
+import { APP_ROUTES } from '@/lib/routes'
 import { formatCondition } from '../molecules/discounts-table-columns'
 
 const DiscountsTableTemplate = () => {
@@ -26,9 +27,7 @@ const DiscountsTableTemplate = () => {
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [typeFilter, setTypeFilter] = useState<string>('all')
 
-  // Sheet state
-  const [sheetOpen, setSheetOpen] = useState(false)
-  const [editId, setEditId] = useState<string | null>(null)
+  const router = useRouter()
 
   // API
   const {
@@ -87,13 +86,11 @@ const DiscountsTableTemplate = () => {
   }
 
   const handleCreateDiscount = () => {
-    setEditId(null)
-    setSheetOpen(true)
+    router.push(APP_ROUTES.productsDiscountsCreate)
   }
 
   const handleEditDiscount = (discountId: string) => {
-    setEditId(discountId)
-    setSheetOpen(true)
+    router.push(`${APP_ROUTES.productsDiscountsEdit}?id=${discountId}`)
   }
 
   const setActive = async (discountId: string, is_active: boolean) => {
@@ -188,12 +185,7 @@ const DiscountsTableTemplate = () => {
         />
       </div>
 
-      {/* Create / Edit Sheet */}
-      <DiscountFormSheet
-        open={sheetOpen}
-        onOpenChange={setSheetOpen}
-        editId={editId}
-      />
+      {/* Sheet removed - now using page routing */}
     </div>
   )
 }

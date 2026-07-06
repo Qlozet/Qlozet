@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Discount, DiscountCondition } from '@/redux/services/discounts/discounts.api-slice'
-import { MoreHorizontal } from 'lucide-react'
+import { MoreHorizontal, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 // ─── Helpers ─────────────────────────────────────────────────────────
@@ -244,7 +244,8 @@ export const DiscountsTableColumns = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
             <DropdownMenuItem onClick={() => onEdit(discount._id)}>
-              Edit Discount
+              <Pencil className='mr-2 size-4 text-primary' />
+              Edit
             </DropdownMenuItem>
             {isActive && onDeactivate && (
               <DropdownMenuItem onClick={() => onDeactivate(discount._id)}>
