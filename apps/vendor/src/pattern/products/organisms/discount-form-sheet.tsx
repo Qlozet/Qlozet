@@ -385,7 +385,7 @@ export const DiscountFormSheet = ({
       const payload = {
         title: values.title,
         type: apiType,
-        value: values.value,
+        value: Number(values.value),
         value_type: showValueType 
           ? values.value_type 
           : (apiType.includes('fixed') ? 'fixed' : 'percentage'),
