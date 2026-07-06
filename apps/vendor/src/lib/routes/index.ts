@@ -23,6 +23,7 @@ export const APP_ROUTES = {
   productsFabrics: '/products/fabrics',
   productsCollections: '/products/collections',
   productsCollectionsCreate: '/products/collections/create',
+  productsDiscounts: '/products/discounts',
   productsVideos: '/products/videos',
   productDetails: '/product-details',
   wallet: '/wallet',

@@ -89,9 +89,9 @@ const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({ 
         user.name.toLowerCase().includes(searchValue.toLowerCase()) ||
         user.emailAddress.toLowerCase().includes(searchValue.toLowerCase()) ||
         user.role.toLowerCase().includes(searchValue.toLowerCase());
-      
+
       const matchesRole = roleFilter === 'all' || user.role.toLowerCase() === roleFilter.toLowerCase();
-      
+
       return matchesSearch && matchesRole;
     });
   }, [rawData, searchValue, roleFilter]);
@@ -125,11 +125,10 @@ const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({ 
         return (
           <div className="flex items-center">
             <span
-              className={`px-3 py-1 rounded-[4px] text-xs font-medium ${
-                isActive
+              className={`px-3 py-1 rounded-[4px] text-xs font-medium ${isActive
                   ? 'bg-[#EAFFF2] text-[#00A843]'
                   : 'bg-[#FFF0F0] text-[#E02B2B]'
-              }`}
+                }`}
             >
               {row.original.status}
             </span>
