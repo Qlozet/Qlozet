@@ -37,7 +37,7 @@ export const createOrderHistoryColumns = (
     id: 'date',
     header: 'Date',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600'>
+      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-gray-400'>
         {formatDate(row.original.createdAt)}
       </span>
     ),
@@ -46,20 +46,20 @@ export const createOrderHistoryColumns = (
   {
     id: 'product_name',
     header: 'Product name',
-    cell: () => <span className='text-sm text-gray-600'>—</span>,
+    cell: () => <span className='text-sm text-gray-600 dark:text-gray-400'>—</span>,
     enableSorting: false,
   },
   {
     id: 'product_price',
     header: 'Product price',
-    cell: () => <span className='text-sm text-gray-600'>—</span>,
+    cell: () => <span className='text-sm text-gray-600 dark:text-gray-400'>—</span>,
     enableSorting: false,
   },
   {
     id: 'amount_paid',
     header: 'Amount paid',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600'>
+      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-gray-400'>
         {formatNaira(row.original.total)}
       </span>
     ),

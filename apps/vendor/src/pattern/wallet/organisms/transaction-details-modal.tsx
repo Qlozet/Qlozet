@@ -42,9 +42,9 @@ const DetailRow = ({
   label: string;
   value: ReactNode;
 }) => (
-  <div className='flex items-center justify-between gap-4 border-b border-[#DDE2E5] px-5 py-4 last:border-b-0'>
-    <span className='text-sm text-grey-black'>{label}</span>
-    <span className='text-right text-sm text-[#333333]'>{value}</span>
+  <div className='flex items-center justify-between gap-4 border-b border-[#DDE2E5] dark:border-border px-5 py-4 last:border-b-0'>
+    <span className='text-sm text-grey-black dark:text-gray-400'>{label}</span>
+    <span className='text-right text-sm text-[#333333] dark:text-white'>{value}</span>
   </div>
 );
 
@@ -61,15 +61,15 @@ export const TransactionDetailsModal = create<TransactionDetailsModalProps>(
 
     return (
       <Dialog open={visible} onOpenChange={handleClose}>
-        <DialogContent className='bg-white! flex max-h-[85vh] max-w-xl flex-col overflow-hidden p-6'>
-          <DialogHeader className='shrink-0 border-b border-dashed pb-3 text-left mb-4'>
-            <DialogTitle className='text-lg font-medium text-[#000000]'>
+        <DialogContent className='bg-white dark:bg-muted flex max-h-[85vh] max-w-xl flex-col overflow-hidden p-6'>
+          <DialogHeader className='shrink-0 border-b border-dashed dark:border-border pb-3 text-left mb-4'>
+            <DialogTitle className='text-lg font-medium text-[#000000] dark:text-white'>
               Transaction details
             </DialogTitle>
           </DialogHeader>
 
           <div className='min-h-0 flex-1 overflow-y-auto pr-1'>
-            <div className='bg-[#F7F7F7F8] rounded-[20px]'>
+            <div className='bg-[#F7F7F7F8] dark:bg-[#404040] dark:border dark:border-border rounded-[20px]'>
             <DetailRow
               label='Transaction ID'
               value={readTransactionId(transaction)}

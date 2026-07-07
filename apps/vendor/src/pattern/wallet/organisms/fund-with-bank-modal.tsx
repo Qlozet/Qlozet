@@ -35,9 +35,9 @@ const DetailField = ({
   onCopy?: () => void;
 }) => (
   <div className='space-y-1.5'>
-    <label className='text-sm font-medium text-[#333333]'>{label}</label>
-    <div className='flex h-12 items-center justify-between gap-3 rounded-lg bg-[#EDEFF2] px-4'>
-      <span className='truncate text-sm font-semibold text-[#1A1A1A]'>
+    <label className='text-sm font-medium text-[#333333] dark:text-gray-300'>{label}</label>
+    <div className='flex h-12 items-center justify-between gap-3 rounded-lg bg-[#EDEFF2] dark:bg-[#404040] px-4'>
+      <span className='truncate text-sm font-semibold text-[#1A1A1A] dark:text-white'>
         {value}
       </span>
       {onCopy ? (
@@ -45,7 +45,7 @@ const DetailField = ({
           type='button'
           onClick={onCopy}
           aria-label={`Copy ${label.toLowerCase()}`}
-          className='shrink-0 cursor-pointer text-[#646A86] transition hover:text-[#1A1A1A]'
+          className='shrink-0 cursor-pointer text-[#646A86] dark:text-gray-400 transition hover:text-[#1A1A1A] dark:text-white'
         >
           <Copy className='size-5' />
         </button>
@@ -73,14 +73,14 @@ export const FundWithBankModal = create(() => {
 
   return (
     <Dialog open={visible} onOpenChange={handleClose}>
-      <DialogContent className='max-w-md p-6'>
-        <DialogHeader className='border-b border-dashed pb-3 text-left mb-4'>
-          <DialogTitle className='text-base font-medium text-[#0C0C0D]'>
+      <DialogContent className='max-w-md p-6 dark:bg-muted'>
+        <DialogHeader className='border-b border-dashed dark:border-border pb-3 text-left mb-4'>
+          <DialogTitle className='text-base font-medium text-[#0C0C0D] dark:text-white'>
             Send Money
           </DialogTitle>
         </DialogHeader>
 
-        <p className='text-sm font-normal text-[#0C0C0D] mb-4'>
+        <p className='text-sm font-normal text-[#0C0C0D] dark:text-white mb-4'>
           Copy the account details below to send funds to your wallet
         </p>
 
@@ -103,3 +103,4 @@ export const FundWithBankModal = create(() => {
     </Dialog>
   );
 });
+

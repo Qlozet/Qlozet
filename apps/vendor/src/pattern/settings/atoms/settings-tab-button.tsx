@@ -24,7 +24,7 @@ export const SettingsTabButton: React.FC<SettingsTabButtonProps> = ({
         'px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200',
         isActive
           ? 'bg-primary text-white'
-          : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+          : 'bg-gray-100 dark:bg-muted text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-muted/80',
         className
       )}
     >

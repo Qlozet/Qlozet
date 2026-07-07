@@ -82,7 +82,7 @@ export const CustomersTable = ({
   return (
     <div>
       <Table>
-        <TableHeader className='bg-[hsla(0,0%,96%,1)]'>
+        <TableHeader className='bg-[hsla(0,0%,96%,1)] dark:bg-muted'>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className='hover:bg-transparent'>
               {headerGroup.headers.map((header, index) => {
@@ -92,7 +92,7 @@ export const CustomersTable = ({
                   <TableHead
                     key={header.id}
                     className={cn(
-                      'h-[52px] whitespace-nowrap text-sm font-medium text-grey-black',
+                      'h-[52px] whitespace-nowrap text-sm font-medium text-grey-black dark:text-foreground',
                       isFirst && 'pl-6',
                       isLast && 'pr-6'
                     )}
@@ -223,7 +223,7 @@ export const CustomersTable = ({
             </div>
 
             <Button
-              className='w-6 h-6 text-sm rounded-full'
+              className='w-6 h-6 text-sm rounded-full dark:border-gray-500'
               variant='outline'
               size='icon'
               onClick={() => table.previousPage()}
@@ -233,7 +233,7 @@ export const CustomersTable = ({
             </Button>
 
             <Button
-              className='w-6 h-6 text-sm rounded-full'
+              className='w-6 h-6 text-sm rounded-full dark:border-gray-500'
               variant='outline'
               size='icon'
               onClick={() => table.nextPage()}

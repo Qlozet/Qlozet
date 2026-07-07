@@ -27,7 +27,7 @@ const renderLegend = (props: any): JSX.Element => {
                             <span>
                                 <ChartLegendIcon color={color ?? "#000"} />
                             </span>
-                            <span className="text-black dark:text-white">
+                            <span className="text-black dark:text-foreground">
                                 {entry.value}
                             </span>
                         </li>
@@ -38,7 +38,7 @@ const renderLegend = (props: any): JSX.Element => {
     );
 }
 
-const COLORS = ["#3d2817", "#9C857870"]
+const COLORS = ["var(--chart-primary)", "var(--chart-secondary)"]
 
 export const OrdersByGender = () => {
     // Gender by Order API Query
@@ -57,7 +57,7 @@ export const OrdersByGender = () => {
     return (
         <Card className="w-full max-h-[330px] rounded-[12px] custom-card-shadow">
             <CardHeader className="px-6 pb-4">
-                <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
+                <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
                     Orders by gender
                 </CardTitle>
             </CardHeader>
@@ -66,7 +66,7 @@ export const OrdersByGender = () => {
                     <PieChart>
                         <Pie data={sortedData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value">
                             {sortedData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
                             ))}
                         </Pie>
                         <Tooltip content={<CustomChartTooltip />} cursor={false} />

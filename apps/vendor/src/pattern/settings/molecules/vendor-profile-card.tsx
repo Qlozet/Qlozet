@@ -114,7 +114,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   return (
     <div className={cn('space-y-6', className)}>
       {/* Main Vendor Card */}
-      <div className='bg-white rounded-[12px] custom-card-shadow overflow-hidden pb-6'>
+      <div className='bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] custom-card-shadow overflow-hidden pb-6'>
       {/* Hidden file inputs */}
       <input
         ref={logoInputRef}
@@ -156,7 +156,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
         <button
           onClick={() => coverInputRef.current?.click()}
           disabled={isUploading}
-          className='absolute top-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-50'
+          className='absolute top-2 right-2 bg-white dark:bg-muted p-2 rounded-full shadow-md hover:bg-gray-50 dark:hover:bg-muted/80'
         >
           {isUploading ? (
             <Loader2 className='w-4 h-4 text-gray-600 animate-spin' />
@@ -169,7 +169,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
       {/* Logo Section */}
       <div className='px-6 flex flex-col items-center -mt-16'>
         <div className='relative'>
-          <div className='w-24 h-24 bg-white rounded-full border-4 border-white shadow-lg flex items-center justify-center overflow-hidden'>
+          <div className='w-24 h-24 bg-white dark:bg-muted rounded-full border-4 border-white dark:border-card shadow-lg flex items-center justify-center overflow-hidden'>
             {displayLogo ? (
               <Image
                 src={displayLogo}

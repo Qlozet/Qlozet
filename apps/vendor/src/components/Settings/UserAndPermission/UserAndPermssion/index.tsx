@@ -20,9 +20,11 @@ const UserAndPermission = () => {
       <div className='flex items-center justify-end mb-4'>
         <Button
           onClick={() => setShowAddModal(true)}
-          className='flex items-center space-x-2'
+          variant="default"
+          size="default"
+          className="gap-[10px] text-xs! font-medium flex items-center"
         >
-          <Plus className='h-4 w-4' />
+          <Plus className="size-[18px]" />
           <span>Add new user</span>
         </Button>
       </div>

@@ -102,7 +102,7 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
 
       case 'Security':
         return (
-          <div className='bg-white rounded-lg p-6'>
+          <div className='bg-white dark:bg-card dark:border dark:border-white/10 rounded-lg p-6'>
             <p className='text-gray-500'>Security settings coming soon...</p>
           </div>
         );

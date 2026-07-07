@@ -111,7 +111,7 @@ export const OrganizationProfileForm: React.FC<
                   <FormControl>
                     <Input
                       placeholder='Qlozet Store'
-                      className='bg-gray-50 border-gray-200'
+                      className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
                   </FormControl>
@@ -135,7 +135,7 @@ export const OrganizationProfileForm: React.FC<
                     value={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger className='bg-gray-50 border-gray-200'>
+                      <SelectTrigger className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'>
                         <SelectValue placeholder='Select country' />
                       </SelectTrigger>
                     </FormControl>
@@ -170,7 +170,7 @@ export const OrganizationProfileForm: React.FC<
                   <FormControl>
                     <Input
                       placeholder='Lagos'
-                      className='bg-gray-50 border-gray-200'
+                      className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
                   </FormControl>
@@ -191,7 +191,7 @@ export const OrganizationProfileForm: React.FC<
                   <FormControl>
                     <Input
                       placeholder='Ikeja'
-                      className='bg-gray-50 border-gray-200'
+                      className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
                   </FormControl>
@@ -212,7 +212,7 @@ export const OrganizationProfileForm: React.FC<
                   <FormControl>
                     <Input
                       placeholder='24 Avil Street'
-                      className='bg-gray-50 border-gray-200'
+                      className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
                   </FormControl>
@@ -233,7 +233,7 @@ export const OrganizationProfileForm: React.FC<
                   <FormControl>
                     <Input
                       placeholder='2020'
-                      className='bg-gray-50 border-gray-200'
+                      className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
                   </FormControl>
@@ -255,7 +255,7 @@ export const OrganizationProfileForm: React.FC<
                     <Input
                       type='email'
                       placeholder='admin@garmisland.com'
-                      className='bg-gray-50 border-gray-200'
+                      className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
                   </FormControl>
@@ -276,7 +276,7 @@ export const OrganizationProfileForm: React.FC<
                   <FormControl>
                     <div className='flex gap-2'>
                       <Select defaultValue='+234'>
-                        <SelectTrigger className='w-[100px] bg-gray-50 border-gray-200'>
+                        <SelectTrigger className='w-[100px] bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -287,7 +287,7 @@ export const OrganizationProfileForm: React.FC<
                       </Select>
                       <Input
                         placeholder='8132205304'
-                        className='bg-gray-50 border-gray-200 flex-1'
+                        className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200 flex-1'
                         {...field}
                       />
                     </div>
@@ -309,7 +309,7 @@ export const OrganizationProfileForm: React.FC<
                   <FormControl>
                     <Input
                       placeholder='https://www.garmisland.com'
-                      className='bg-gray-50 border-gray-200'
+                      className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
                   </FormControl>
@@ -331,7 +331,7 @@ export const OrganizationProfileForm: React.FC<
                   <FormControl>
                     <Input
                       placeholder='1234567890'
-                      className='bg-gray-50 border-gray-200'
+                      className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
                   </FormControl>
@@ -353,7 +353,7 @@ export const OrganizationProfileForm: React.FC<
                   <FormControl>
                     <Input
                       placeholder='22123456789'
-                      className='bg-gray-50 border-gray-200'
+                      className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
                   </FormControl>
@@ -373,7 +373,7 @@ export const OrganizationProfileForm: React.FC<
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className='bg-gray-100 border-gray-200 text-gray-500'
+                      className='bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400'
                       readOnly
                       disabled
                       {...field}
@@ -397,7 +397,7 @@ export const OrganizationProfileForm: React.FC<
                 <FormControl>
                   <Textarea
                     placeholder='Tell customers about your business...'
-                    className='bg-gray-50 border-gray-200 min-h-[100px] resize-none'
+                    className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200 min-h-[100px] resize-none'
                     {...field}
                   />
                 </FormControl>

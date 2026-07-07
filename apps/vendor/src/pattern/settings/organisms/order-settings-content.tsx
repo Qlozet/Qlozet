@@ -165,7 +165,7 @@ const SettingsCard = ({
   onInputChange: (id: string, value: string) => void;
 }) => {
   return (
-    <div className='bg-white rounded-xl p-5 lg:p-6 custom-card-shadow'>
+    <div className='bg-white dark:bg-card dark:border dark:border-white/10 rounded-xl p-5 lg:p-6 custom-card-shadow'>
       {/* Card Header */}
       <div className='flex items-center gap-2.5 mb-5 pb-4 border-b border-border/60'>
         <div className='flex items-center justify-center size-8 rounded-lg bg-primary/10 text-primary'>

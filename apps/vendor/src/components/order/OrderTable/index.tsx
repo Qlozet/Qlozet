@@ -21,31 +21,31 @@ const OrderTable = ({
   return (
     <div className=' mt-4 min-h-[50vh] overflow-hidden rounded-xl mb-8'>
       <table className='w-full hidden lg:block border-3px overflow-hidden rounded-xl '>
-        <thead className='w-full bg-[#F4F4F4]  px-[8px] border-solid border-primary rounded-tl-xl rounded-tr-xl'>
+        <thead className='w-full bg-[#F4F4F4] dark:bg-[#4A4949] px-[8px] border-solid border-primary rounded-tl-xl rounded-tr-xl'>
           <tr className=''>
             <th className='w-[8%] px-6 py-3 text-xs'>
-              <div className='flex items-center justify-start font-medium text-dark'>
+              <div className='flex items-center justify-start font-medium text-dark dark:text-white'>
                 Date
               </div>
             </th>
             <th className='w-[5%] px-3 py-3 text-xs'>
-              <div className='flex items-center justify-start font-medium text-dark'>
+              <div className='flex items-center justify-start font-medium text-dark dark:text-white'>
                 Order ID
               </div>
             </th>
 
             <th className='w-[10%] px-3 py-3 text-xs'>
-              <div className='flex items-center justify-start font-medium text-dark'>
+              <div className='flex items-center justify-start font-medium text-dark dark:text-white'>
                 Customer name
               </div>
             </th>
             <th className='w-[8%] px-3 py-3 text-xs'>
-              <div className='flex items-center justify-start font-medium text-dark'>
+              <div className='flex items-center justify-start font-medium text-dark dark:text-white'>
                 Amount paid
               </div>
             </th>
             <th className='w-[9%] px-3 py-3 text-xs'>
-              <div className='flex items-center justify-start font-medium text-dark'>
+              <div className='flex items-center justify-start font-medium text-dark dark:text-white'>
                 Delivery Status
               </div>
             </th>

@@ -128,22 +128,7 @@ const DiscountsTableTemplate = () => {
       {/* Header */}
       <div className='w-full h-[44px] flex flex-col sm:flex-row sm:items-end sm:justify-end gap-4 mb-[21px]'>
         <div className='flex items-center gap-2 flex-wrap'>
-          {/* Type Filter */}
-          <select
-            value={typeFilter}
-            onChange={(e) => {
-              setTypeFilter(e.target.value)
-              setPagination((prev) => ({ ...prev, pageIndex: 0 }))
-            }}
-            className='h-10 rounded-lg border border-input bg-background px-3 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-ring'
-          >
-            <option value='all'>All Types</option>
-            <option value='percentage'>Percentage</option>
-            <option value='fixed'>Fixed</option>
-            <option value='store_wide'>Store-Wide</option>
-            <option value='flash'>Flash Sales</option>
-            <option value='category_specific'>Category</option>
-          </select>
+
 
           {/* Create Discount */}
           <Button
@@ -164,10 +149,27 @@ const DiscountsTableTemplate = () => {
           title='Discount'
           search={searchQuery}
           onSearchChange={handleSearchChange}
-          onFilterDate={() => toast.info('Filter coming soon')}
           onExport={handleExport}
-          filterLabel='Filter By :'
-          filterIcon={null}
+          filterControl={
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Filter By :</span>
+              <select
+                value={typeFilter}
+                onChange={(e) => {
+                  setTypeFilter(e.target.value)
+                  setPagination((prev) => ({ ...prev, pageIndex: 0 }))
+                }}
+                className='h-10 rounded-lg border border-input bg-transparent dark:bg-transparent dark:border-gray-500 dark:text-foreground px-3 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-ring'
+              >
+                <option value='all'>All Types</option>
+                <option value='percentage'>Percentage</option>
+                <option value='fixed'>Fixed</option>
+                <option value='store_wide'>Store-Wide</option>
+                <option value='flash'>Flash Sales</option>
+                <option value='category_specific'>Category</option>
+              </select>
+            </div>
+          }
         />
         <DiscountsTable
           data={discounts}

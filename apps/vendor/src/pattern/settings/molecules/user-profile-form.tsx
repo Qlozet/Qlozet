@@ -88,7 +88,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className='bg-gray-100 border-gray-200 text-gray-500'
+                      className='bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400'
                       readOnly
                       disabled
                       {...field}
@@ -114,7 +114,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                   <FormControl>
                     <Input
                       placeholder='johndoe'
-                      className='bg-gray-50 border-gray-200'
+                      className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
                   </FormControl>
@@ -135,7 +135,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                   <FormControl>
                     <Input
                       type='email'
-                      className='bg-gray-100 border-gray-200 text-gray-500'
+                      className='bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400'
                       readOnly
                       disabled
                       {...field}
@@ -161,7 +161,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                   <FormControl>
                     <div className='flex gap-2'>
                       <Select defaultValue='+234'>
-                        <SelectTrigger className='w-[100px] bg-gray-50 border-gray-200'>
+                        <SelectTrigger className='w-[100px] bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -172,7 +172,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                       </Select>
                       <Input
                         placeholder='8132205304'
-                        className='bg-gray-50 border-gray-200 flex-1'
+                        className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200 flex-1'
                         {...field}
                       />
                     </div>
@@ -194,7 +194,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className='bg-gray-100 border-gray-200 text-gray-500'
+                      className='bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400'
                       readOnly
                       disabled
                       {...field}
@@ -219,7 +219,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className='bg-gray-100 border-gray-200 text-gray-500'
+                      className='bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400'
                       readOnly
                       disabled
                       {...field}

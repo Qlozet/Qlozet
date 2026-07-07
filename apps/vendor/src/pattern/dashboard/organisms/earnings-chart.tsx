@@ -33,7 +33,7 @@ export const EarningsChart = () => {
     return (
         <Card className="w-full max-h-[450px] rounded-[12px] custom-card-shadow">
             <CardHeader>
-                <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">Earnings</CardTitle>
+                <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">Earnings</CardTitle>
             </CardHeader>
             <CardContent className='w-full'>
                 <ResponsiveContainer width="100%" height={350}>
@@ -63,7 +63,7 @@ export const EarningsChart = () => {
                             {chartData.map((entry, index) => (
                                 <Cell 
                                     key={`cell-${index}`} 
-                                    fill={entry.earnings === maxEarnings ? '#3d2817' : '#9C857870'} 
+                                    fill={entry.earnings === maxEarnings ? 'var(--chart-primary)' : 'var(--chart-secondary)'} 
                                 />
                             ))}
                         </Bar>

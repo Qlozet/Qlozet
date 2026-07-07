@@ -8,8 +8,7 @@ import { PieChart, Pie, Cell, Legend, ResponsiveContainer, Tooltip } from "recha
 import { CustomChartTooltip } from "../molecules/custom-chart-tooltip";
 import ChartLegendIcon from "../atoms/chart-legend-icon";
 
-// Brown shades matching Sales by Product Category
-const COLORS = ['#3d2817', '#5b4636', '#8a7060', '#9C857870'];
+const COLORS = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)'];
 
 const renderLegend = (props: any): JSX.Element => {
     const payload = props?.payload ?? [];
@@ -24,7 +23,7 @@ const renderLegend = (props: any): JSX.Element => {
                             <span>
                                 <ChartLegendIcon color={color ?? "#000"} />
                             </span>
-                            <span className="text-black dark:text-white">
+                            <span className="text-black dark:text-foreground">
                                 {entry.value}
                             </span>
                         </li>
@@ -92,7 +91,7 @@ export const OrdersByProduct = () => {
     return (
         <Card className="w-full max-h-[330px] rounded-[12px] custom-card-shadow">
             <CardHeader className="px-6 pb-4">
-                <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
+                <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
                     Orders by product kind
                 </CardTitle>
             </CardHeader>
@@ -101,7 +100,7 @@ export const OrdersByProduct = () => {
                     <PieChart>
                         <Pie data={chartData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value">
                             {chartData?.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS?.length]} />
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS?.length]} stroke="none" />
                             ))}
                         </Pie>
                         <Tooltip content={<CustomChartTooltip />} cursor={false} />

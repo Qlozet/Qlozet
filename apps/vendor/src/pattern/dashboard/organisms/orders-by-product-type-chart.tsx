@@ -11,7 +11,7 @@ const FALLBACK: DonutDatum[] = [
   { name: 'Accessories', value: 20 },
 ];
 
-const COLORS = ['#3d2817', '#5b4636', '#8a7060', '#d4c5b9'];
+const COLORS = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)'];
 
 interface OrdersByProductTypeChartProps {
   data?: DonutDatum[];

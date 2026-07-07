@@ -90,6 +90,7 @@ export const DonutChart = ({
                     <Cell
                       key={`cell-${index}`}
                       fill={colors[index % colors.length]}
+                      stroke="none"
                     />
                   ))}
                 </Pie>
@@ -140,7 +141,7 @@ export const DonutChart = ({
               dataKey="value"
             >
               {sortedData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                <Cell key={`cell-${index}`} fill={colors[index % colors.length]} stroke="none" />
               ))}
             </Pie>
             <Tooltip content={<CustomChartTooltip />} cursor={false} />

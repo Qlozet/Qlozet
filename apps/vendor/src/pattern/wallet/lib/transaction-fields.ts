@@ -106,22 +106,22 @@ export interface TransactionBadge {
 export const transactionBadge = (status: string): TransactionBadge => {
   const s = status.toLowerCase().replace(/[\s-]+/g, '_');
   const map: Record<string, TransactionBadge> = {
-    pending: { label: 'Pending', className: 'bg-[#FEF6E7] text-[#DD900D]' },
-    processing: { label: 'Pending', className: 'bg-[#FEF6E7] text-[#DD900D]' },
-    in_review: { label: 'Pending', className: 'bg-[#FEF6E7] text-[#DD900D]' },
-    successful: { label: 'Successful', className: 'bg-[#E7F6EC] text-[#0F973D]' },
-    success: { label: 'Successful', className: 'bg-[#E7F6EC] text-[#0F973D]' },
-    completed: { label: 'Successful', className: 'bg-[#E7F6EC] text-[#0F973D]' },
-    failed: { label: 'Failed', className: 'bg-[#FBEAE9] text-[#D42620]' },
-    cancelled: { label: 'Failed', className: 'bg-[#FBEAE9] text-[#D42620]' },
-    refund: { label: 'Refund', className: 'bg-[#F4EBFF] text-[#7E22CE]' },
-    refunded: { label: 'Refund', className: 'bg-[#F4EBFF] text-[#7E22CE]' },
-    reversed: { label: 'Refund', className: 'bg-[#F4EBFF] text-[#7E22CE]' },
+    pending: { label: 'Pending', className: 'bg-[#FEF6E7] dark:bg-[#DD900D]/10 text-[#DD900D] dark:text-[#FBBF24]' },
+    processing: { label: 'Pending', className: 'bg-[#FEF6E7] dark:bg-[#DD900D]/10 text-[#DD900D] dark:text-[#FBBF24]' },
+    in_review: { label: 'Pending', className: 'bg-[#FEF6E7] dark:bg-[#DD900D]/10 text-[#DD900D] dark:text-[#FBBF24]' },
+    successful: { label: 'Successful', className: 'bg-[#E7F6EC] dark:bg-[#0F973D]/10 text-[#0F973D] dark:text-[#4ADE80]' },
+    success: { label: 'Successful', className: 'bg-[#E7F6EC] dark:bg-[#0F973D]/10 text-[#0F973D] dark:text-[#4ADE80]' },
+    completed: { label: 'Successful', className: 'bg-[#E7F6EC] dark:bg-[#0F973D]/10 text-[#0F973D] dark:text-[#4ADE80]' },
+    failed: { label: 'Failed', className: 'bg-[#FBEAE9] dark:bg-[#D42620]/10 text-[#D42620] dark:text-[#F87171]' },
+    cancelled: { label: 'Failed', className: 'bg-[#FBEAE9] dark:bg-[#D42620]/10 text-[#D42620] dark:text-[#F87171]' },
+    refund: { label: 'Refund', className: 'bg-[#F4EBFF] dark:bg-[#7E22CE]/10 text-[#7E22CE] dark:text-[#C084FC]' },
+    refunded: { label: 'Refund', className: 'bg-[#F4EBFF] dark:bg-[#7E22CE]/10 text-[#7E22CE] dark:text-[#C084FC]' },
+    reversed: { label: 'Refund', className: 'bg-[#F4EBFF] dark:bg-[#7E22CE]/10 text-[#7E22CE] dark:text-[#C084FC]' },
   };
   return (
     map[s] ?? {
       label: status.charAt(0).toUpperCase() + status.slice(1),
-      className: 'bg-[#EAECF0] text-[#475467]',
+      className: 'bg-[#EAECF0] dark:bg-gray-800 text-[#475467] dark:text-gray-300',
     }
   );
 };

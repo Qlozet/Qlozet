@@ -124,7 +124,7 @@ export const AddWarehouseModal = create<AddWarehouseModalProps>(
                       <FormControl>
                         <Input
                           placeholder='Enter warehouse name'
-                          className='bg-white border-gray-200'
+                          className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
                           {...field}
                         />
                       </FormControl>
@@ -145,7 +145,7 @@ export const AddWarehouseModal = create<AddWarehouseModalProps>(
                       <FormControl>
                         <Input
                           placeholder='Enter vendor name'
-                          className='bg-white border-gray-200'
+                          className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
                           {...field}
                         />
                       </FormControl>
@@ -166,7 +166,7 @@ export const AddWarehouseModal = create<AddWarehouseModalProps>(
                       <FormControl>
                         <Input
                           placeholder='Enter warehouse address'
-                          className='bg-white border-gray-200'
+                          className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
                           {...field}
                         />
                       </FormControl>
@@ -187,7 +187,7 @@ export const AddWarehouseModal = create<AddWarehouseModalProps>(
                       <FormControl>
                         <Input
                           placeholder='Enter contact name'
-                          className='bg-white border-gray-200'
+                          className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
                           {...field}
                         />
                       </FormControl>
@@ -208,7 +208,7 @@ export const AddWarehouseModal = create<AddWarehouseModalProps>(
                       <FormControl>
                         <Input
                           placeholder='Enter contact phone number'
-                          className='bg-white border-gray-200'
+                          className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
                           {...field}
                         />
                       </FormControl>
@@ -230,7 +230,7 @@ export const AddWarehouseModal = create<AddWarehouseModalProps>(
                         <Input
                           type='email'
                           placeholder='Enter contact email address'
-                          className='bg-white border-gray-200'
+                          className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
                           {...field}
                         />
                       </FormControl>
@@ -253,7 +253,7 @@ export const AddWarehouseModal = create<AddWarehouseModalProps>(
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className='bg-white border-gray-200'>
+                          <SelectTrigger className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'>
                             <SelectValue placeholder='Select an option' />
                           </SelectTrigger>
                         </FormControl>

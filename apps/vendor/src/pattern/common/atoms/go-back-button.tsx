@@ -16,9 +16,9 @@ export const GoBackButton = ({ href, label = 'Go Back' }: GoBackButtonProps) => 
     <button
       type='button'
       onClick={() => (href ? router.push(href) : router.back())}
-      className='inline-flex items-center gap-2 text-sm font-medium text-grey-black hover:opacity-80 transition-opacity cursor-pointer'
+      className='inline-flex items-center gap-2 text-sm font-medium text-grey-black dark:text-gray-200 hover:opacity-80 transition-opacity cursor-pointer'
     >
-      <span className='flex size-7 items-center justify-center rounded-full border border-border bg-white'>
+      <span className='flex size-7 items-center justify-center rounded-full border border-border bg-white dark:bg-muted'>
         <ArrowLeft className='size-4' />
       </span>
       {label}

@@ -9,7 +9,7 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { X } from 'lucide-react';
 import Image from 'next/image';
 
@@ -137,19 +137,38 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
     [dispatch]
   );
 
+  const searchParams = useSearchParams();
+  const isEditing = !!searchParams.get('edit');
+
   // Memoized computed values
   const { addSearch, currentPage } = useMemo(() => {
     const cleanPath = pathname.replace(/^\//, '');
     const pathSegments = cleanPath.split('/');
     const basePage = pathSegments[0];
+    const subPage = pathSegments[1];
+    const actionPage = pathSegments[2];
 
     const searchablePages = ['orders', 'products', 'wallet', 'customers'];
 
+    let computedPageName = subPage || basePage;
+
+    if (subPage === 'discounts') {
+      if (actionPage === 'create' && isEditing) computedPageName = 'Edit Discount';
+      else if (actionPage === 'create') computedPageName = 'Add Discount';
+      else if (actionPage === 'edit') computedPageName = 'Edit Discount';
+    } else if (subPage === 'collections') {
+      if (actionPage === 'create' && isEditing) computedPageName = 'Edit Collection';
+      else if (actionPage === 'create') computedPageName = 'Add Collection';
+      else if (actionPage === 'edit') computedPageName = 'Edit Collection';
+    } else if (subPage === 'add-product') {
+      computedPageName = isEditing ? 'Edit Product' : 'Add Product';
+    }
+
     return {
       addSearch: searchablePages.includes(basePage),
-      currentPage: pathSegments[1] || basePage,
+      currentPage: computedPageName,
     };
-  }, [pathname]);
+  }, [pathname, isEditing]);
 
   // if (loadingState.isLoading) {
   //   return (

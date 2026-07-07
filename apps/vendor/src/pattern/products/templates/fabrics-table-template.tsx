@@ -242,7 +242,7 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
             variant='outline'
             size='default'
             onClick={handleSizeGuide}
-            className='gap-0! text-xs! font-medium'
+            className='gap-0! text-xs! font-medium dark:text-white dark:border-gray-500'
           >
             <OutlinRulerIcon className='w-[24px] h-[16.54px]' />
             <span className='hidden sm:inline'>Size guide</span>
@@ -253,7 +253,7 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
             variant='outline'
             size='default'
             onClick={handleImportProducts}
-            className='gap-[10px] text-xs! font-medium'
+            className='gap-[10px] text-xs! font-medium dark:text-white dark:border-gray-500'
           >
             <LinearImportIcon className='w-[18px] h-[18px]' />
             <span className='hidden sm:inline'>Import Products</span>
@@ -264,7 +264,7 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
             variant='outline'
             size='default'
             onClick={handleManageStyles}
-            className='gap-[10px] text-xs! font-medium'
+            className='gap-[10px] text-xs! font-medium dark:text-white dark:border-gray-500'
           >
             <ClothingStylesIcon className='w-[18px] h-[20px]' />
             <span className='hidden sm:inline'>Manage Styles</span>
@@ -275,7 +275,7 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
             variant='outline'
             size='default'
             onClick={() => setShowSelect(!showSelect)}
-            className='gap-[10px] text-xs! font-medium'
+            className='gap-[10px] text-xs! font-medium dark:text-white dark:border-gray-500'
           >
             <span>{showSelect ? 'Cancel Selection' : 'Select Products'}</span>
           </Button>

@@ -4,9 +4,7 @@ import Image from 'next/image';
 import Typography from '../Typography';
 import Profile from '../Profile.js';
 import { UserDetails } from '@/types';
-
-// Import SVG assets
-import searchNormalicon from '@/public/assets/svg/search-normal.svg';
+import { Search, Bell } from 'lucide-react';
 import notificationIcon from '@/public/assets/svg/notification-bing.svg';
 import altireicon from '@/public/assets/svg/altire-icon.svg';
 import transformText from '@/public/assets/svg/textformat.size.svg';
@@ -87,7 +85,7 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
                 </div>
                 <div className='hidden md:block'>
                   <Typography
-                    textColor='text-dark'
+                    textColor='text-dark dark:text-foreground'
                     textWeight='font-medium'
                     textSize='text-[18px]'
                   >
@@ -96,7 +94,7 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
                 </div>
               </div>
               <div className='flex items-center gap-4'>
-                <div className='rounded-[12px] p-2 bg-[#F8F9FA] cursor-pointer'>
+                <div className='rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer'>
                   <Image
                     alt='Notification icon'
                     src={notificationIcon}
@@ -105,14 +103,14 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
                 </div>
                 <div className='hidden md:block'>
                   <Typography
-                    textColor='text-dark'
+                    textColor='text-dark dark:text-foreground'
                     textWeight='font-semibold'
                     textSize='text-[18px]'
                   >
                     {userDetails && userDetails.personalName}
                   </Typography>
                 </div>
-                <div className='rounded-[12px] p-2 bg-[#F8F9FA] cursor-pointer'>
+                <div className='rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer'>
                   <Image
                     alt='Profile icon'
                     src={mobileProfile}
@@ -125,10 +123,10 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
           )}
         </div>
 
-        <div className='hidden lg:w-full lg:flex items-center gap-6 bg-white py-2 px-6 rounded-[12px]'>
+        <div className='hidden lg:w-full lg:flex items-center gap-6 bg-white dark:bg-card py-2 px-6 rounded-[12px]'>
           <div className='hidden md:block'>
             <Typography
-              textColor='text-dark'
+              textColor='text-dark dark:text-foreground'
               textWeight='font-medium'
               textSize='text-[18px]'
             >
@@ -138,14 +136,14 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
           {addSearch && (
             <div className='flex flex-1 justify-center'>
               <div className='relative w-full max-w-xl'>
-                <div className='absolute left-2 top-[10px]'>
-                  <Image alt='Search icon' src={searchNormalicon} />
+                <div className='absolute left-4 top-1/2 -translate-y-1/2'>
+                  <Search className='text-gray-400 dark:text-muted-foreground size-5' />
                 </div>
                 <input
                   value={value}
                   onChange={handleInputChange}
                   placeholder='Search'
-                  className='py-2 pl-12 w-full border-solid border-[1.5px] placeholder-gray-200 text-dark focus:outline-none focus:border-none border-gray-2 rounded-[12px] overflow-hidden text-sm text-font-light placeholder:font-300 bg-[#F8F9FA]'
+                  className='py-2 pl-12 w-full border-solid border-[1.5px] placeholder-gray-4 dark:placeholder-muted-foreground text-dark dark:text-foreground focus:outline-none focus:border-none border-gray-2 dark:border-border rounded-[12px] overflow-hidden text-sm font-light placeholder:font-light bg-[#F8F9FA] dark:bg-muted'
                 />
               </div>
             </div>
@@ -153,19 +151,19 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
           <div className='flex items-center justify-end gap-6 ml-auto'>
             <div className='flex items-center justify-between gap-4'>
               <div
-                className='rounded-[12px] p-2 bg-[#F8F9FA] cursor-pointer'
+                className='rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer flex items-center justify-center'
                 onClick={handleNotificationClick}
               >
-                <Image alt='Notification icon' src={notificationIcon} />
+                <Bell className='size-5 text-gray-800 dark:text-white' />
               </div>
               <Typography
-                textColor='text-dark'
+                textColor='text-dark dark:text-foreground'
                 textWeight='font-normal'
                 textSize=''
               >
                 {userDetails && userDetails.personalName}
               </Typography>
-              <div className='rounded-[12px] p-2 bg-[#F8F9FA] cursor-pointer'>
+              <div className='rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer'>
                 <Image
                   alt='User icon'
                   src={userIcon}

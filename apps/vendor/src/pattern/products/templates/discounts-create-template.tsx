@@ -23,6 +23,9 @@ import {
   UserPlus,
 } from 'lucide-react'
 import { GoBackButton } from '@/pattern/common/atoms/go-back-button'
+import { useProductConditions } from '../hooks/use-product-conditions'
+import { ConditionsCard } from '../organisms/conditions-card'
+import { ProductPreviewCard } from '../organisms/product-preview-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -93,7 +96,7 @@ const discountFormSchema = z.object({
 
 type DiscountForm = z.infer<typeof discountFormSchema>
 
-const cardClass = 'rounded-[10px] bg-card p-6 custom-card-shadow'
+const cardClass = 'rounded-[10px] bg-card p-6 custom-card-shadow dark:border dark:border-white/10'
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
@@ -104,88 +107,7 @@ const DISCOUNT_TYPE_OPTIONS: { value: DiscountType; label: string }[] = [
   { value: 'category_specific', label: 'Category Specific' },
 ]
 
-// Client-side condition evaluation (same logic as backend)
-const getNestedValue = (obj: any, path: string): any => {
-  const keys = path.split('.')
-  let current: any = obj
-  for (const key of keys) {
-    if (Array.isArray(current)) {
-      current = current
-        .map((item) => item?.[key])
-        .filter((v) => v !== undefined)
-      if (current.length === 0) return undefined
-      if (current.length === 1) current = current[0]
-    } else {
-      current = current?.[key]
-      if (current === undefined) return undefined
-    }
-  }
-  return current
-}
-
-const evaluateOperator = (
-  value: any,
-  operator: string,
-  expected: any
-): boolean => {
-  switch (operator) {
-    case 'is_equal_to':
-      return String(value).toLowerCase() === String(expected).toLowerCase()
-    case 'not_equal_to':
-      return String(value).toLowerCase() !== String(expected).toLowerCase()
-    case 'greater_than':
-      return Number(value) > Number(expected)
-    case 'less_than':
-      return Number(value) < Number(expected)
-    case 'contains':
-      return String(value)
-        .toLowerCase()
-        .includes(String(expected).toLowerCase())
-    case 'starts_with':
-      return String(value)
-        .toLowerCase()
-        .startsWith(String(expected).toLowerCase())
-    case 'ends_with':
-      return String(value)
-        .toLowerCase()
-        .endsWith(String(expected).toLowerCase())
-    default:
-      return false
-  }
-}
-
-const evaluateProductAgainstConditions = (
-  product: any,
-  conditions: { field: string; operator: string; value: string }[],
-  conditionMatch: 'all' | 'any'
-): boolean => {
-  const valid = conditions.filter((c) => c.field && c.operator && c.value)
-  if (!valid.length) return false
-  const results = valid.map((cond) => {
-    const pv = getNestedValue(product, cond.field)
-    if (Array.isArray(pv))
-      return pv.some((v) => evaluateOperator(v, cond.operator, cond.value))
-    return evaluateOperator(pv, cond.operator, cond.value)
-  })
-  return conditionMatch === 'all'
-    ? results.every((r) => r)
-    : results.some((r) => r)
-}
-
-const getProductName = (p: any): string =>
-  p.name ||
-  p.clothing?.name ||
-  p.fabric?.name ||
-  p.accessory?.name ||
-  'Untitled'
-
-const getProductImage = (p: any): string | undefined => {
-  const inner = p?.[p?.kind] ?? p
-  const img = inner?.images?.[0]
-  return typeof img === 'string' ? img : img?.url
-}
-
-const getProductPrice = (p: any): number | undefined => p.base_price ?? p.price
+// Client-side condition evaluation logic has been moved to useProductConditions hook
 
 // ─── Component ───────────────────────────────────────────────────────
 
@@ -211,12 +133,7 @@ export const DiscountsCreateTemplate = () => {
 
   const isSaving = isCreating || isUpdating
 
-  // ─── Local state ──────────────────────────────────────────────
-  const [productSearch, setProductSearch] = useState('')
-  const [manualPickerSearch, setManualPickerSearch] = useState('')
-  const [showManualPicker, setShowManualPicker] = useState(false)
-  const [manualIncludes, setManualIncludes] = useState<Set<string>>(new Set())
-  const [manualExcludes, setManualExcludes] = useState<Set<string>>(new Set())
+  // Local state for product preview has been moved to useProductConditions
 
   // ─── Form ─────────────────────────────────────────────────────
   const form = useForm<DiscountForm>({
@@ -358,10 +275,12 @@ export const DiscountsCreateTemplate = () => {
         ? new Date(d.end_date).toISOString().slice(0, 16)
         : '',
     })
-    if (d.manual_includes?.length)
-      setManualIncludes(new Set(d.manual_includes.map(String)))
-    if (d.manual_excludes?.length)
-      setManualExcludes(new Set(d.manual_excludes.map(String)))
+    if (d.manual_includes?.length || d.manual_excludes?.length) {
+      conditionState.syncInitialState(
+        d.manual_includes || [],
+        d.manual_excludes || []
+      )
+    }
   }, [discountResponse, isEditing, form])
 
   // ─── Watched values ───────────────────────────────────────────
@@ -392,94 +311,14 @@ export const DiscountsCreateTemplate = () => {
     : isPercentType
 
   // ─── Product preview ──────────────────────────────────────────
-  const conditionsKey =
-    JSON.stringify(watchedConditions) + watchedConditionMatch
-  const allRawProducts = useMemo(
-    () => vendorProductsResponse?.data?.data ?? [],
-    [vendorProductsResponse]
-  )
-
-  const conditionMatchedProducts = useMemo(() => {
-    if (!allRawProducts.length || !watchedConditions?.length) return []
-    // Store-wide with no conditions matches everything
-    if (
+  const conditionState = useProductConditions({
+    watchedConditions,
+    watchedConditionMatch,
+    alwaysMatchAll:
       watchedType === 'store_wide' &&
-      (!watchedConditions.length ||
-        watchedConditions.every((c: any) => !c.field && !c.value))
-    ) {
-      return allRawProducts
-    }
-    return allRawProducts.filter((product: any) =>
-      evaluateProductAgainstConditions(
-        product,
-        watchedConditions,
-        watchedConditionMatch
-      )
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allRawProducts, conditionsKey, watchedType])
-
-  const matchingProducts = useMemo(() => {
-    const afterExcludes = conditionMatchedProducts.filter(
-      (p: any) => !manualExcludes.has(p._id)
-    )
-    const matchedIds = new Set(afterExcludes.map((p: any) => p._id))
-    const manuallyIncluded = allRawProducts.filter(
-      (p: any) => manualIncludes.has(p._id) && !matchedIds.has(p._id)
-    )
-    return [...afterExcludes, ...manuallyIncluded]
-  }, [conditionMatchedProducts, manualIncludes, manualExcludes, allRawProducts])
-
-  const filteredProducts = useMemo(() => {
-    const term = productSearch.trim().toLowerCase()
-    if (!term) return matchingProducts
-    return matchingProducts.filter((p: any) =>
-      getProductName(p).toLowerCase().includes(term)
-    )
-  }, [matchingProducts, productSearch])
-
-  const availableForInclude = useMemo(() => {
-    const matchedIds = new Set(matchingProducts.map((p: any) => p._id))
-    const term = manualPickerSearch.trim().toLowerCase()
-    return allRawProducts.filter((p: any) => {
-      if (matchedIds.has(p._id) || manualExcludes.has(p._id)) return false
-      if (!term) return true
-      return getProductName(p).toLowerCase().includes(term)
-    })
-  }, [allRawProducts, matchingProducts, manualExcludes, manualPickerSearch])
-
-  // ─── Manual overrides ─────────────────────────────────────────
-  const handleExclude = (productId: string) => {
-    setManualExcludes((prev) => new Set([...prev, productId]))
-    setManualIncludes((prev) => {
-      const n = new Set(prev)
-      n.delete(productId)
-      return n
-    })
-  }
-  const handleInclude = (productId: string) => {
-    setManualIncludes((prev) => new Set([...prev, productId]))
-    setManualExcludes((prev) => {
-      const n = new Set(prev)
-      n.delete(productId)
-      return n
-    })
-  }
-  const handleUndoExclude = (productId: string) => {
-    setManualExcludes((prev) => {
-      const n = new Set(prev)
-      n.delete(productId)
-      return n
-    })
-  }
-  const handleRemoveInclude = (productId: string) => {
-    setManualIncludes((prev) => {
-      const n = new Set(prev)
-      n.delete(productId)
-      return n
-    })
-  }
-
+      (!watchedConditions?.length ||
+        watchedConditions.every((c: any) => !c.field && !c.value)),
+  })
   // ─── Submit ───────────────────────────────────────────────────
   const onSubmit = async (values: DiscountForm) => {
     try {
@@ -515,8 +354,8 @@ export const DiscountsCreateTemplate = () => {
           values.is_flash && values.end_date
             ? new Date(values.end_date).toISOString()
             : undefined,
-        manual_includes: [...manualIncludes],
-        manual_excludes: [...manualExcludes],
+        manual_includes: Array.from(conditionState.manualIncludes as Set<string>),
+        manual_excludes: Array.from(conditionState.manualExcludes as Set<string>),
       }
 
       if (isEditing && editId) {
@@ -560,12 +399,10 @@ export const DiscountsCreateTemplate = () => {
 
   // ─── Render ───────────────────────────────────────────────────
   return (
-    <div className="max-w-5xl mx-auto space-y-6 pb-20">
-      <div className="flex items-center gap-4">
+    <div className="max-w-7xl mx-auto space-y-6 pb-20">
+      {/* Go Back */}
+      <div className="mb-6">
         <GoBackButton />
-        <h2 className="text-xl font-semibold">
-          {isEditing ? 'Edit Discount' : 'Create Discount'}
-        </h2>
       </div>
 
       <Form {...form}>
@@ -584,13 +421,13 @@ export const DiscountsCreateTemplate = () => {
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <Label className="text-sm font-medium">
+                      <Label className="text-sm font-medium text-grey-black dark:text-gray-200">
                         Discount Title
                       </Label>
                       <FormControl>
                         <Input
                           placeholder="e.g. Summer Sale 20% Off"
-                          className="h-11"
+                          className="h-11 bg-muted/40 dark:border-white/10"
                           {...field}
                         />
                       </FormControl>
@@ -605,7 +442,7 @@ export const DiscountsCreateTemplate = () => {
                     name="type"
                     render={({ field }) => (
                       <FormItem>
-                        <Label className="text-sm font-medium">
+                        <Label className="text-sm font-medium text-grey-black dark:text-gray-200">
                           Discount Type
                         </Label>
                         <Select
@@ -613,7 +450,7 @@ export const DiscountsCreateTemplate = () => {
                           onValueChange={field.onChange}
                         >
                           <FormControl>
-                            <SelectTrigger className="h-11">
+                            <SelectTrigger className="h-11 bg-muted/40 dark:border-white/10">
                               <SelectValue placeholder="Select type" />
                             </SelectTrigger>
                           </FormControl>
@@ -635,7 +472,7 @@ export const DiscountsCreateTemplate = () => {
                     name="value"
                     render={({ field }) => (
                       <FormItem>
-                        <Label className="text-sm font-medium">
+                        <Label className="text-sm font-medium text-grey-black dark:text-gray-200">
                           Discount Value
                         </Label>
                         <div className="relative">
@@ -643,7 +480,7 @@ export const DiscountsCreateTemplate = () => {
                             <Input
                               type="number"
                               placeholder="0"
-                              className="h-11 pr-12"
+                              className="h-11 pr-12 bg-muted/40 dark:border-white/10"
                               {...field}
                               onChange={(e) =>
                                 field.onChange(e.target.valueAsNumber || 0)
@@ -666,7 +503,7 @@ export const DiscountsCreateTemplate = () => {
                     name="value_type"
                     render={({ field }) => (
                       <FormItem>
-                        <Label className="text-sm font-medium">
+                        <Label className="text-sm font-medium text-grey-black dark:text-gray-200">
                           Value Type
                         </Label>
                         <RadioGroup
@@ -678,7 +515,7 @@ export const DiscountsCreateTemplate = () => {
                             <RadioGroupItem value="percentage" id="vt-pct" />
                             <Label
                               htmlFor="vt-pct"
-                              className="cursor-pointer text-sm"
+                              className="cursor-pointer text-sm text-grey-black dark:text-gray-200"
                             >
                               Percentage
                             </Label>
@@ -687,7 +524,7 @@ export const DiscountsCreateTemplate = () => {
                             <RadioGroupItem value="fixed" id="vt-fixed" />
                             <Label
                               htmlFor="vt-fixed"
-                              className="cursor-pointer text-sm"
+                              className="cursor-pointer text-sm text-grey-black dark:text-gray-200"
                             >
                               Fixed Amount
                             </Label>
@@ -701,482 +538,28 @@ export const DiscountsCreateTemplate = () => {
             </div>
 
             {/* Conditions Card */}
-            <div className={cardClass}>
-              <h3 className="text-base font-medium mb-2">Conditions</h3>
-              <p className="text-sm text-muted-foreground mb-6">
-                Products must match these rules for the discount to apply.
-              </p>
+            <ConditionsCard
+              control={form.control as any}
+              form={form as any}
+              taxonomyTree={taxonomyTree}
+            />
 
-              <div className="space-y-6">
-                <FormField
-                  control={form.control as any}
-                  name="condition_match"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex flex-wrap items-center gap-4">
-                        <span className="text-sm font-medium">
-                          Products must match:
-                        </span>
-                        <RadioGroup
-                          value={field.value}
-                          onValueChange={field.onChange}
-                          className="flex items-center gap-4"
-                        >
-                          <div className="flex items-center gap-1.5">
-                            <RadioGroupItem value="all" id="d-match-all" />
-                            <Label
-                              htmlFor="d-match-all"
-                              className="cursor-pointer text-sm"
-                            >
-                              All conditions
-                            </Label>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <RadioGroupItem value="any" id="d-match-any" />
-                            <Label
-                              htmlFor="d-match-any"
-                              className="cursor-pointer text-sm"
-                            >
-                              Any condition
-                            </Label>
-                          </div>
-                        </RadioGroup>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-
-                <div className="space-y-3">
-                  {fields.map((row, index) => {
-                    const selectedField = form.watch(
-                      `conditions.${index}.field`
-                    )
-                    const isFreeText = FREE_TEXT_FIELDS.has(selectedField)
-                    const isTaxonomyField =
-                      selectedField in TAXONOMY_FIELD_CONFIG
-                    const isStaticField = selectedField in STATIC_VALUE_OPTIONS
-                    let valueOptions: { value: string; label: string }[] = []
-                    if (isTaxonomyField)
-                      valueOptions = getTaxonomyValues(selectedField)
-                    else if (isStaticField)
-                      valueOptions = STATIC_VALUE_OPTIONS[selectedField]
-
-                    return (
-                      <div
-                        key={row.id}
-                        draggable
-                        onDragStart={() => handleDragStart(index)}
-                        onDragOver={(e) => handleDragOver(e, index)}
-                        onDrop={(e) => handleDrop(e, index)}
-                        onDragEnd={handleDragEnd}
-                        className={cn(
-                          'flex flex-wrap items-start gap-3 sm:flex-nowrap rounded-lg p-3 border border-border/50 transition-all duration-200 bg-background',
-                          dragIndex === index && 'opacity-40 scale-[0.98]',
-                          dragOverIndex === index &&
-                            dragIndex !== index &&
-                            'border-2 border-primary/40 bg-primary/5'
-                        )}
-                      >
-                        {/* Drag Handle */}
-                        <div
-                          className={cn(
-                            'flex h-11 w-8 shrink-0 cursor-grab items-center justify-center rounded-md border transition-all active:cursor-grabbing',
-                            dragIndex === index
-                              ? 'bg-primary border-primary text-white'
-                              : 'border-border text-muted-foreground hover:bg-primary/10 hover:border-primary/30'
-                          )}
-                          title="Drag to reorder"
-                        >
-                          <GripVertical className="size-4" />
-                        </div>
-
-                        {/* Field */}
-                        <FormField
-                          control={form.control as any}
-                          name={`conditions.${index}.field`}
-                          render={({ field }) => (
-                            <FormItem className="flex-1 min-w-[150px]">
-                              <Select
-                                value={field.value}
-                                onValueChange={(next) => {
-                                  field.onChange(next)
-                                  form.setValue(`conditions.${index}.value`, '')
-                                }}
-                              >
-                                <FormControl>
-                                  <SelectTrigger className="h-11">
-                                    <SelectValue placeholder="Select field..." />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {CONDITION_FIELD_OPTIONS.map((opt) => (
-                                    <SelectItem
-                                      key={opt.value}
-                                      value={opt.value}
-                                    >
-                                      {opt.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormItem>
-                          )}
-                        />
-
-                        {/* Operator */}
-                        <FormField
-                          control={form.control as any}
-                          name={`conditions.${index}.operator`}
-                          render={({ field }) => (
-                            <FormItem className="flex-[0.8] min-w-[130px]">
-                              <Select
-                                value={field.value}
-                                onValueChange={field.onChange}
-                              >
-                                <FormControl>
-                                  <SelectTrigger className="h-11">
-                                    <SelectValue placeholder="Operator..." />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {CONDITION_OPERATOR_OPTIONS.map((opt) => (
-                                    <SelectItem
-                                      key={opt.value}
-                                      value={opt.value}
-                                    >
-                                      {opt.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormItem>
-                          )}
-                        />
-
-                        {/* Value */}
-                        <FormField
-                          control={form.control as any}
-                          name={`conditions.${index}.value`}
-                          render={({ field }) => (
-                            <FormItem className="flex-1 min-w-[150px]">
-                              {isFreeText ? (
-                                <FormControl>
-                                  <Input
-                                    placeholder={
-                                      selectedField === 'base_price'
-                                        ? 'Price value...'
-                                        : 'Value...'
-                                    }
-                                    className="h-11"
-                                    {...field}
-                                  />
-                                </FormControl>
-                              ) : (
-                                <Select
-                                  value={field.value}
-                                  onValueChange={field.onChange}
-                                >
-                                  <FormControl>
-                                    <SelectTrigger className="h-11">
-                                      <SelectValue placeholder="Select value..." />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {valueOptions.length > 0 ? (
-                                      valueOptions.map((opt) => (
-                                        <SelectItem
-                                          key={opt.value}
-                                          value={opt.value}
-                                        >
-                                          {opt.label}
-                                        </SelectItem>
-                                      ))
-                                    ) : (
-                                      <SelectItem value="__loading" disabled>
-                                        {isTaxonomyField
-                                          ? 'Loading...'
-                                          : 'Select field first'}
-                                      </SelectItem>
-                                    )}
-                                  </SelectContent>
-                                </Select>
-                              )}
-                            </FormItem>
-                          )}
-                        />
-
-                        {/* Delete */}
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          disabled={fields.length === 1}
-                          onClick={() => remove(index)}
-                          className="h-11 w-11 shrink-0 text-muted-foreground hover:text-destructive hover:border-destructive/30 hover:bg-destructive/5"
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
-                      </div>
-                    )
-                  })}
-                </div>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() =>
-                    append({
-                      field: 'clothing.taxonomy.product_type',
-                      operator: 'is_equal_to',
-                      value: '',
-                    })
-                  }
-                  className="w-full border-dashed py-6 text-muted-foreground hover:text-primary hover:border-primary/50"
-                >
-                  <Plus className="mr-2 size-4" />
-                  Add Another Condition
-                </Button>
-              </div>
-            </div>
-            <div className={cn(cardClass, 'flex flex-col h-[600px]')}>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-medium">Product Preview</h3>
-                <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
-                  {matchingProducts.length} matching
-                </span>
-              </div>
-
-              <p className="text-xs text-muted-foreground mb-4">
-                These products currently match your conditions and will receive
-                this discount.
-              </p>
-
-              <div className="relative mb-4">
-                <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={productSearch}
-                  onChange={(e) => setProductSearch(e.target.value)}
-                  placeholder="Search matching products..."
-                  className="h-10 pl-9 text-sm"
-                />
-              </div>
-
-              {/* Product list */}
-              <ScrollArea className="flex-1 border rounded-lg bg-background/50 p-2">
-                {filteredProducts.length === 0 ? (
-                  <div className="h-full flex flex-col items-center justify-center p-6 text-center">
-                    <div className="rounded-full bg-muted p-3 mb-3">
-                      <Search className="size-5 text-muted-foreground" />
-                    </div>
-                    <p className="text-sm font-medium">No products found</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {matchingProducts.length === 0
-                        ? 'Try adjusting your conditions.'
-                        : 'No products match your search.'}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-1.5 pr-3">
-                    {filteredProducts.slice(0, 100).map((product: any) => {
-                      const img = getProductImage(product)
-                      const name = getProductName(product)
-                      const price = getProductPrice(product)
-                      const isManuallyIncluded = manualIncludes.has(product._id)
-                      return (
-                        <div
-                          key={product._id}
-                          className="flex items-center gap-3 rounded-md p-2 hover:bg-muted transition-colors border border-transparent hover:border-border/50"
-                        >
-                          <div className="relative size-10 shrink-0 rounded-md overflow-hidden border bg-muted">
-                            {img ? (
-                              <Image
-                                src={img}
-                                alt={name}
-                                fill
-                                className="object-cover"
-                                sizes="40px"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-[9px] text-muted-foreground text-center leading-none">
-                                No img
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate text-foreground/90">
-                              {name}
-                            </p>
-                            {price != null && (
-                              <p className="text-xs text-muted-foreground mt-0.5">
-                                ₦{price.toLocaleString()}
-                              </p>
-                            )}
-                          </div>
-                          {isManuallyIncluded && (
-                            <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] text-blue-600 font-medium">
-                              Added
-                            </span>
-                          )}
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={() =>
-                              isManuallyIncluded
-                                ? handleRemoveInclude(product._id)
-                                : handleExclude(product._id)
-                            }
-                            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                            title={
-                              isManuallyIncluded
-                                ? 'Remove from includes'
-                                : 'Exclude product manually'
-                            }
-                          >
-                            <X className="size-4" />
-                          </Button>
-                        </div>
-                      )
-                    })}
-                    {filteredProducts.length > 100 && (
-                      <p className="text-center text-xs text-muted-foreground py-4">
-                        Showing 100 of {filteredProducts.length}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </ScrollArea>
-
-              {/* Manual include picker */}
-              <div className="mt-4 pt-4 border-t">
-                {!showManualPicker ? (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowManualPicker(true)}
-                    className="w-full text-sm"
-                  >
-                    <UserPlus className="mr-2 size-4" />
-                    Manually Include Products
-                  </Button>
-                ) : (
-                  <div className="rounded-lg border p-3 bg-muted/20 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">
-                        Include Overrides
-                      </span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setShowManualPicker(false)}
-                        className="h-7 w-7 hover:bg-muted"
-                      >
-                        <X className="size-4" />
-                      </Button>
-                    </div>
-                    <div className="relative">
-                      <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        value={manualPickerSearch}
-                        onChange={(e) => setManualPickerSearch(e.target.value)}
-                        placeholder="Search products to include..."
-                        className="h-9 pl-8 text-xs"
-                      />
-                    </div>
-                    <ScrollArea className="h-[180px]">
-                      <div className="space-y-1 pr-3">
-                        {availableForInclude.slice(0, 30).map((p: any) => (
-                          <div
-                            key={p._id}
-                            className="flex items-center gap-2.5 rounded-md p-1.5 hover:bg-muted cursor-pointer transition-colors"
-                            onClick={() => handleInclude(p._id)}
-                          >
-                            <div className="relative size-8 shrink-0 rounded overflow-hidden border bg-background">
-                              {getProductImage(p) ? (
-                                <Image
-                                  src={getProductImage(p)!}
-                                  alt=""
-                                  fill
-                                  className="object-cover"
-                                  sizes="32px"
-                                />
-                              ) : null}
-                            </div>
-                            <span className="text-xs font-medium truncate flex-1">
-                              {getProductName(p)}
-                            </span>
-                            <div className="flex size-6 items-center justify-center rounded-full bg-primary/10 text-primary">
-                              <Plus className="size-3" />
-                            </div>
-                          </div>
-                        ))}
-                        {availableForInclude.length === 0 && (
-                          <p className="text-center text-xs text-muted-foreground py-6">
-                            No more products available to include.
-                          </p>
-                        )}
-                      </div>
-                    </ScrollArea>
-                  </div>
-                )}
-              </div>
-
-              {/* Excluded products */}
-              {manualExcludes.size > 0 && (
-                <div className="mt-4 pt-4 border-t space-y-2">
-                  <span className="text-xs font-semibold text-destructive uppercase tracking-wider">
-                    Excluded Overrides ({manualExcludes.size})
-                  </span>
-                  <div className="space-y-1.5 max-h-[140px] overflow-y-auto pr-2">
-                    {allRawProducts
-                      .filter((p: any) => manualExcludes.has(p._id))
-                      .map((p: any) => (
-                        <div
-                          key={p._id}
-                          className="flex items-center gap-2.5 rounded-md p-1.5 bg-destructive/5 border border-destructive/10"
-                        >
-                          <div className="relative size-8 shrink-0 rounded overflow-hidden border bg-background">
-                            {getProductImage(p) ? (
-                              <Image
-                                src={getProductImage(p)!}
-                                alt=""
-                                fill
-                                className="object-cover"
-                                sizes="32px"
-                              />
-                            ) : null}
-                          </div>
-                          <span className="text-xs font-medium truncate flex-1 text-destructive/80 line-through">
-                            {getProductName(p)}
-                          </span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleUndoExclude(p._id)}
-                            className="h-7 w-7 text-destructive hover:bg-destructive/10"
-                            title="Restore to discount"
-                          >
-                            <Undo2 className="size-3.5" />
-                          </Button>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* Product Preview Card */}
+            <ProductPreviewCard
+              conditionState={conditionState}
+              className="flex flex-col h-fit"
+            />
           </div>
 
           {/* RIGHT COLUMN: Configuration */}
           <div className="lg:col-span-1">
             {/* Timings & Status Card */}
             <div className={cn(cardClass, 'sticky top-6')}>
-              <h3 className="text-base font-medium mb-6">Configuration</h3>
+              <h3 className="text-base font-medium mb-6 text-grey-black dark:text-gray-200">Configuration</h3>
               <div className="space-y-6">
-                <div className="flex items-center justify-between rounded-lg border border-border/60 p-4">
+                <div className="flex items-center justify-between rounded-lg border border-border/60 dark:border-white/10 p-4">
                   <div>
-                    <p className="text-sm font-medium">Flash Sale</p>
+                    <p className="text-sm font-medium text-grey-black dark:text-gray-200">Flash Sale</p>
                     <p className="text-xs text-muted-foreground mt-1">
                       Time-limited discount with auto start/end
                     </p>
@@ -1194,19 +577,19 @@ export const DiscountsCreateTemplate = () => {
                 </div>
 
                 {watchedIsFlash && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-muted/30 p-4 rounded-lg">
+                  <div className="flex flex-col gap-4 bg-muted/30 p-4 rounded-lg">
                     <FormField
                       control={form.control as any}
                       name="start_date"
                       render={({ field }) => (
                         <FormItem>
-                          <Label className="text-xs font-medium">
+                          <Label className="text-xs font-medium text-grey-black dark:text-gray-200">
                             Start Date
                           </Label>
                           <FormControl>
                             <Input
                               type="datetime-local"
-                              className="h-10 text-sm"
+                              className="h-10 text-sm bg-muted/40 dark:border-white/10"
                               {...field}
                             />
                           </FormControl>
@@ -1218,13 +601,13 @@ export const DiscountsCreateTemplate = () => {
                       name="end_date"
                       render={({ field }) => (
                         <FormItem>
-                          <Label className="text-xs font-medium">
+                          <Label className="text-xs font-medium text-grey-black dark:text-gray-200">
                             End Date
                           </Label>
                           <FormControl>
                             <Input
                               type="datetime-local"
-                              className="h-10 text-sm"
+                              className="h-10 text-sm bg-muted/40 dark:border-white/10"
                               {...field}
                             />
                           </FormControl>
@@ -1234,10 +617,10 @@ export const DiscountsCreateTemplate = () => {
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="flex items-center justify-between rounded-lg border border-border/60 p-4">
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between rounded-lg border border-border/60 dark:border-white/10 p-4">
                     <div>
-                      <p className="text-sm font-medium">Required Discount</p>
+                      <p className="text-sm font-medium text-grey-black dark:text-gray-200">Required Discount</p>
                       <p className="text-xs text-muted-foreground mt-1">
                         Must be applied if conditions match
                       </p>
@@ -1253,9 +636,9 @@ export const DiscountsCreateTemplate = () => {
                       )}
                     />
                   </div>
-                  <div className="flex items-center justify-between rounded-lg border border-border/60 p-4">
+                  <div className="flex items-center justify-between rounded-lg border border-border/60 dark:border-white/10 p-4">
                     <div>
-                      <p className="text-sm font-medium">Active Status</p>
+                      <p className="text-sm font-medium text-grey-black dark:text-gray-200">Active Status</p>
                       <p className="text-xs text-muted-foreground mt-1">
                         Discount is live and applied
                       </p>
