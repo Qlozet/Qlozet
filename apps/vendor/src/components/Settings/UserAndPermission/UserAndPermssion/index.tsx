@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import Image from 'next/image';
-import Button from '@/components/Button';
-import addIcon from '@/public/assets/svg/add-square.svg';
+import { Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import Modal from '@/components/Modal';
 import UserAndPermissionTable from '../UserAndPermissionTable';
 import AddNewUserAndPermissionForm from '../AddUserAndPermissionForm';
+
 const UserAndPermission = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const closeAddModal = () => {
@@ -18,25 +19,20 @@ const UserAndPermission = () => {
     <div className=''>
       <div className='flex items-center justify-end mb-4'>
         <Button
-          children={
-            <span className='flex justify-center items-center'>
-              <span>Add new user</span>
-              <Image src={addIcon} className='ml-4' />
-            </span>
-          }
-          btnSize='small'
-          minWidth='min-w-[14rem]'
-          variant='primary'
-          clickHandler={() => {
-            setShowAddModal(true);
-          }}
-        />
-        <div></div>
+          onClick={() => setShowAddModal(true)}
+          variant="default"
+          size="default"
+          className="gap-[10px] text-xs! font-medium flex items-center"
+        >
+          <Plus className="size-[18px]" />
+          <span>Add new user</span>
+        </Button>
       </div>
       <UserAndPermissionTable handleEdit={handleEdit} />
 
       <Modal
         show={showAddModal}
+        closeModal={closeAddModal}
         content={
           <>
             {showAddModal && (

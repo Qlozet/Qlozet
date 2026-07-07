@@ -23,7 +23,7 @@ export const createOrdersColumns = (
     id: 'date',
     header: 'Date',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600'>
+      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
         {formatDate(row.original.createdAt ?? row.original.date)}
       </span>
     ),
@@ -33,7 +33,7 @@ export const createOrdersColumns = (
     id: 'order_id',
     header: 'Order ID',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm font-medium text-grey-black'>
+      <span className='whitespace-nowrap text-sm font-medium text-grey-black dark:text-foreground'>
         {readOrderId(row.original)}
       </span>
     ),
@@ -43,7 +43,7 @@ export const createOrdersColumns = (
     id: 'product_price',
     header: 'Product price',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600'>
+      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
         {formatNaira(readProductPrice(row.original))}
       </span>
     ),
@@ -53,7 +53,7 @@ export const createOrdersColumns = (
     id: 'customer',
     header: 'Customer name',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600'>
+      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
         {readCustomerName(row.original)}
       </span>
     ),
@@ -63,7 +63,7 @@ export const createOrdersColumns = (
     id: 'amount_paid',
     header: 'Amount paid',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600'>
+      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
         {formatNaira(readAmountPaid(row.original))}
       </span>
     ),
@@ -75,7 +75,7 @@ export const createOrdersColumns = (
     cell: ({ row }) => {
       const count = readItemsCount(row.original);
       return (
-        <span className='whitespace-nowrap text-sm text-gray-600'>
+        <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
           {count} item{count === 1 ? '' : 's'}
         </span>
       );
@@ -109,7 +109,7 @@ export const createOrdersColumns = (
         variant='outline'
         size='sm'
         onClick={() => onViewDetails(row.original)}
-        className='h-9 text-sm'
+        className='h-9 text-sm dark:border-border dark:text-foreground dark:hover:bg-muted'
       >
         View details
       </Button>

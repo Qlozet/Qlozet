@@ -15,9 +15,7 @@ const chartData = [
     { label: "JOS", male: 1800, female: 500 },
 ];
 
-const renderBlackLegendText = (value: string, entry: any) => {
-    return <span style={{ display: "inline-block", color: "#000", marginRight: "32px" }}>{value}</span>
-};
+
 
 const renderLegend = (props: any): JSX.Element => {
     const payload = props?.payload ?? [];
@@ -32,7 +30,7 @@ const renderLegend = (props: any): JSX.Element => {
                             <span>
                                 <ChartLegendIcon color={color} />
                             </span>
-                            <span className="text-black dark:text-white">
+                            <span className="text-black dark:text-foreground">
                                 {entry.value}
                             </span>
                         </li>
@@ -55,7 +53,7 @@ export const OrdersByLocation = () => {
         <>
             <Card className="w-full max-h-[330px] rounded-[12px] custom-card-shadow">
                 <CardHeader className="px-6 pb-4">
-                    <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
+                    <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
                         Orders by top location
                     </CardTitle>
                 </CardHeader>
@@ -73,7 +71,7 @@ export const OrdersByLocation = () => {
                                 type="category"
                                 tickLine={false}
                                 axisLine={false}
-                                tick={{ fill: "#000", fontSize: 10, fontWeight: 500 }}
+                                tick={{ fill: "var(--foreground)", fontSize: 10, fontWeight: 500 }}
                                 padding={{ top: 0, bottom: 0 }}
                             />
                             <Tooltip content={<CustomChartTooltip />} cursor={false} />
@@ -86,14 +84,14 @@ export const OrdersByLocation = () => {
                             <Bar
                                 dataKey="male"
                                 stackId="a"
-                                fill="#3d2817"
+                                fill="var(--chart-primary)"
                                 maxBarSize={24}
                                 radius={[2.26, 0, 0, 2.26]}
                             />
                             <Bar
                                 dataKey="female"
                                 stackId="a"
-                                fill="#9C857870"
+                                fill="var(--chart-secondary)"
                                 maxBarSize={24}
                                 radius={[0, 2.26, 2.26, 0]}
                             />

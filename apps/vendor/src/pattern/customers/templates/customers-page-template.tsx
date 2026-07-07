@@ -102,7 +102,7 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
                 size='icon'
                 onClick={notReady('Filter')}
                 aria-label='Filter'
-                className='h-10 w-10 shrink-0 text-gray-600'
+                className='h-10 w-10 shrink-0 text-gray-600 dark:text-gray-400 dark:border-gray-500'
               >
                 <SlidersHorizontal className='size-4' />
               </Button>
@@ -113,7 +113,7 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder='Search'
-                  className='h-10 w-full rounded-lg pl-9 sm:w-[200px]'
+                  className='h-10 w-full rounded-lg pl-9 sm:w-[200px] bg-[#F8F9FA] dark:bg-muted dark:border-border dark:text-foreground'
                 />
               </div>
 

@@ -93,11 +93,11 @@ export function DataTable<TData>({
   const skeletonRowCount = pageSize || 5;
 
   return (
-    <div className='overflow-hidden rounded-xl border bg-white custom-card-shadow'>
+    <div className='overflow-hidden rounded-xl border dark:border-border bg-white dark:bg-card custom-card-shadow'>
       {toolbar}
 
       <Table style={{ minWidth }}>
-        <TableHeader className='bg-[#F9FAFB]'>
+        <TableHeader className='bg-[#F9FAFB] dark:bg-[#4A4949]'>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className='hover:bg-transparent'>
               {headerGroup.headers.map((header, index) => {
@@ -107,7 +107,7 @@ export function DataTable<TData>({
                   <TableHead
                     key={header.id}
                     className={cn(
-                      'h-13 whitespace-nowrap text-sm font-medium text-grey-black',
+                      'h-13 whitespace-nowrap text-sm font-medium text-grey-black dark:text-white',
                       isFirst && 'pl-6',
                       isLast && 'pr-6'
                     )}
@@ -131,7 +131,7 @@ export function DataTable<TData>({
             Array.from({ length: skeletonRowCount }).map((_, rowIndex) => (
               <TableRow
                 key={`skeleton-${rowIndex}`}
-                className='border-t hover:bg-transparent'
+                className='border-t dark:border-border hover:bg-transparent'
               >
                 {columns.map((_, cellIndex) => {
                   const isFirst = cellIndex === 0;
@@ -160,7 +160,7 @@ export function DataTable<TData>({
               <TableRow
                 key={row.id}
                 onClick={onRowClick ? () => onRowClick(row.original) : undefined}
-                className={cn('border-t', onRowClick && 'cursor-pointer')}
+                className={cn('border-t dark:border-border', onRowClick && 'cursor-pointer')}
               >
                 {row.getVisibleCells().map((cell, cellIndex) => {
                   const isFirst = cellIndex === 0;
@@ -174,7 +174,7 @@ export function DataTable<TData>({
                           : undefined
                       }
                       className={cn(
-                        'py-4 align-middle text-sm',
+                        'py-4 align-middle text-sm text-dark dark:text-foreground',
                         isFirst && 'pl-6',
                         isLast && 'pr-6'
                       )}
@@ -187,7 +187,7 @@ export function DataTable<TData>({
             ))}
 
           {!showLoader && isSuccess && data.length === 0 && (
-            <TableRow>
+            <TableRow className='bg-white dark:bg-card'>
               <TableCell
                 colSpan={columns.length}
                 className='h-48 text-center text-sm text-muted-foreground'
@@ -198,7 +198,7 @@ export function DataTable<TData>({
           )}
 
           {!showLoader && isError && (
-            <TableRow>
+            <TableRow className='bg-white dark:bg-card'>
               <TableCell colSpan={columns.length} className='h-48 text-center'>
                 <p className='text-base font-medium text-destructive'>
                   Error loading data

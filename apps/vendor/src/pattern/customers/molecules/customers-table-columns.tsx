@@ -61,7 +61,7 @@ export const createCustomersTableColumns = ({
     id: 'username',
     header: 'Username',
     cell: ({ row }) => (
-      <span className='text-sm font-medium text-gray-900'>
+      <span className='text-sm font-medium text-gray-900 dark:text-white'>
         {getCustomerIdentifier(row.original)}
       </span>
     ),
@@ -71,7 +71,7 @@ export const createCustomersTableColumns = ({
     id: 'totalOrders',
     header: 'Total orders',
     cell: ({ row }) => (
-      <div className='text-sm text-gray-600'>
+      <div className='text-sm text-gray-600 dark:text-gray-300'>
         {formatCount(row.original.total_orders)}
       </div>
     ),

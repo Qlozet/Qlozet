@@ -1,208 +1,210 @@
-import { useState, FC } from 'react';
-import Typography from '@/components/Typography';
-import UserAndPermissionTableItem from '../UserAndPermissionTableItem';
-import SearchInput from '@/components/SearchInput';
-import Image from 'next/image';
-import icon from '@/public/assets/svg/Icon container.svg';
-import exportIcon from '@/public/assets/svg/Content.svg';
+import { useState, FC, useMemo } from 'react';
+import { ColumnDef } from '@tanstack/react-table';
+import { DataTable } from '@/pattern/common/organisms/table/data-table';
+import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
+import { MoreHorizontal } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
+interface UserData {
+  name: string;
+  emailAddress: string;
+  phoneNumber: string;
+  role: string;
+  status: string;
+  address: string;
+}
 
 const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({ handleEdit }) => {
-  const data = [
-    {
-      name: 'Shola James',
-      emailAddress: 'Hello',
-      phoneNumber: '+234 8123456789',
-      role: 'Super admin',
-      status: 'Hello',
-      address: '14, Jones street, Lagos Nigeria',
-    },
-    {
-      name: 'Shola James',
-      emailAddress: 'Hello',
-      phoneNumber: '+234 8123456789',
-      role: 'Super admin',
-      status: 'Hello',
-      address: '14, Jones street, Lagos Nigeria',
-    },
-    {
-      name: 'Shola James',
-      emailAddress: 'Hello',
-      phoneNumber: '+234 8123456789',
-      role: 'Super admin',
-      status: 'Hello',
-      address: '14, Jones street, Lagos Nigeria',
-    },
-  ];
   const [searchValue, setSearchValue] = useState('');
-  return (
-    <div>
-      <table className='w-full hidden lg:block'>
-        <thead className='w-full bg-[#F4F4F4] '>
-          <tr>
-            <th className='w-[8%] p-4  text-dark text-xs'>
-              <div className='flex items-center justify-start font-medium'>
-                Name
-              </div>
-            </th>
-            <th className='w-[8%] p-4  text-dark text-xs'>
-              <div className='flex items-center justify-start font-medium'>
-                Email address
-              </div>
-            </th>
-            <th className='w-[10%] p-4  text-dark text-xs'>
-              <div className='flex items-center justify-start font-medium'>
-                Phone number
-              </div>
-            </th>
-            <th className='w-[8%] p-4  text-dark text-xs'>
-              <div className='flex items-center justify-start font-medium'>
-                Role
-              </div>
-            </th>
-            <th className='w-[8%] p-4  text-dark text-xs'>
-              <div className='flex items-center justify-start font-medium'>
-                Status
-              </div>
-            </th>
-            <th className='w-[8%] p-4  text-dark text-xs'></th>
-          </tr>
-        </thead>
-        <tbody>
-          {data?.map((item) => (
-            <UserAndPermissionTableItem
-              {...item}
-              handleEdit={handleEdit}
-              // viewDetails={viewDetails}
-              // showRejectModal={showRejectModal}
-            />
-          ))}
-        </tbody>
-      </table>
-      <div className='block lg:hidden'>
-        <div className='flex items-center justify-between'>
-          <div className='w-[70%] block'>
-            <SearchInput placeholder='Search' value={searchValue} setValue={setSearchValue} />
-          </div>
-          <div className='flex items-center justify-center'>
-            <Image src={icon} alt='' />
-          </div>
-          <div className='flex items-center justify-center'>
-            <div className='w-[3rem] h-[3rem] bg-primary rounded-[12px] flex items-center justify-center'>
-              <Image src={exportIcon} alt='' />
-            </div>
-          </div>
-        </div>
-        <div className=''>
-          <div className=' bg-[#F4F4F4] p-4 rounded-t-[12px] lg:hidden'>
-            <Typography
-              textColor='text-dark'
-              textWeight='font-[700]'
-              textSize=''
-            >
-              Users and permissions
-            </Typography>
-          </div>
-          {data?.map((item) => (
-            <div
-              className={`border-l-[4px] border-solid border-success bg-white my-4 rounded-[12px] shadow py-4`}
-            >
-              <div className='flex justify-between items-center px-4 py-2'>
-                <Typography
-                  textColor='text-dark'
-                  textWeight='font-[400]'
-                  textSize='text-sm'
-                >
-                  Name
-                </Typography>
-                <div className='flex items-center justify-end'>
-                  <Typography
-                    textColor='text-dark'
-                    textWeight='font-medium'
-                    textSize='text-sm'
-                  >
-                    {item.name}
-                  </Typography>
-                </div>
-              </div>
-              <div className='flex justify-between items-center px-4 py-2'>
-                <Typography
-                  textColor='text-dark'
-                  textWeight='font-[400]'
-                  textSize='text-sm'
-                >
-                  Phone Number
-                </Typography>
-                <div className='flex items-center justify-end'>
-                  <Typography
-                    textColor='text-dark'
-                    textWeight='font-medium'
-                    textSize='text-sm'
-                  >
-                    {item.phoneNumber}
-                  </Typography>
-                </div>
-              </div>
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
 
-              <div className='flex justify-between items-center px-4 py-2'>
-                <Typography
-                  textColor='text-dark'
-                  textWeight='font-[400]'
-                  textSize='text-sm'
-                >
-                  Roles
-                </Typography>
-                <div className='flex items-center justify-end'>
-                  <Typography
-                    textColor='text-dark'
-                    textWeight='font-medium'
-                    textSize='text-sm'
-                  >
-                    {item.role}
-                  </Typography>
-                </div>
-              </div>
-              <div className='flex justify-between items-center px-4 py-2'>
-                <Typography
-                  textColor='text-dark'
-                  textWeight='font-[400]'
-                  textSize='text-sm'
-                >
-                  Email address
-                </Typography>
-                <div className='flex items-center justify-end'>
-                  <Typography
-                    textColor='text-dark'
-                    textWeight='font-medium'
-                    textSize='text-sm'
-                  >
-                    {item.emailAddress}
-                  </Typography>
-                </div>
-              </div>
-              <div className='flex justify-between items-center px-4 py-2'>
-                <Typography
-                  textColor='text-dark'
-                  textWeight='font-[400]'
-                  textSize='text-sm'
-                >
-                  Address
-                </Typography>
-                <div className='flex items-center justify-end'>
-                  <Typography
-                    textColor='text-dark'
-                    textWeight='font-medium'
-                    textSize='text-sm'
-                  >
-                    {item.address}
-                  </Typography>
-                </div>
-              </div>
-            </div>
-          ))}
+  const rawData: UserData[] = useMemo(() => [
+    {
+      name: 'Shola James',
+      emailAddress: 'shola@mail.com',
+      phoneNumber: '+234 8123456789',
+      role: 'Super admin',
+      status: 'Active',
+      address: '14, Jones street, Lagos Nigeria',
+    },
+    {
+      name: 'Esther Oke',
+      emailAddress: 'oke@mail.com',
+      phoneNumber: '+234 8123456789',
+      role: 'Marketing',
+      status: 'Active',
+      address: '14, Jones street, Lagos Nigeria',
+    },
+    {
+      name: 'Fola James',
+      emailAddress: 'fola@mail.com',
+      phoneNumber: '+234 8123456789',
+      role: 'Customer service',
+      status: 'Inactive',
+      address: '14, Jones street, Lagos Nigeria',
+    },
+    {
+      name: 'Fola James',
+      emailAddress: 'fola2@mail.com',
+      phoneNumber: '+234 8123456789',
+      role: 'Operations',
+      status: 'Active',
+      address: '14, Jones street, Lagos Nigeria',
+    },
+    {
+      name: 'Fola James',
+      emailAddress: 'fola3@mail.com',
+      phoneNumber: '+234 8123456789',
+      role: 'Sales',
+      status: 'Active',
+      address: '14, Jones street, Lagos Nigeria',
+    },
+    {
+      name: 'Fola James',
+      emailAddress: 'fola4@mail.com',
+      phoneNumber: '+234 8123456789',
+      role: 'Data analyst',
+      status: 'Active',
+      address: '14, Jones street, Lagos Nigeria',
+    },
+  ], []);
+
+  const data = useMemo(() => {
+    return rawData.filter((user) => {
+      const matchesSearch =
+        user.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        user.emailAddress.toLowerCase().includes(searchValue.toLowerCase()) ||
+        user.role.toLowerCase().includes(searchValue.toLowerCase());
+
+      const matchesRole = roleFilter === 'all' || user.role.toLowerCase() === roleFilter.toLowerCase();
+
+      return matchesSearch && matchesRole;
+    });
+  }, [rawData, searchValue, roleFilter]);
+
+  const columns: ColumnDef<UserData>[] = useMemo(() => [
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => <div>{row.original.name}</div>,
+    },
+    {
+      accessorKey: 'emailAddress',
+      header: 'Email address',
+      cell: ({ row }) => <div>{row.original.emailAddress}</div>,
+    },
+    {
+      accessorKey: 'phoneNumber',
+      header: 'Phone number',
+      cell: ({ row }) => <div>{row.original.phoneNumber}</div>,
+    },
+    {
+      accessorKey: 'role',
+      header: 'Role',
+      cell: ({ row }) => <div>{row.original.role}</div>,
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => {
+        const isActive = row.original.status === 'Active';
+        return (
+          <div className="flex items-center">
+            <span
+              className={`px-3 py-1 rounded-[4px] text-xs font-medium ${isActive
+                  ? 'bg-[#EAFFF2] text-[#00A843]'
+                  : 'bg-[#FFF0F0] text-[#E02B2B]'
+                }`}
+            >
+              {row.original.status}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => {
+        return (
+          <div className='relative flex items-center justify-end w-full'>
+            <ActionMenu handleEdit={() => handleEdit(row.original)} />
+          </div>
+        );
+      },
+    },
+  ], [handleEdit]);
+
+  const toolbar = (
+    <TableToolbar
+      title="Roles & Permissions"
+      search={searchValue}
+      onSearchChange={setSearchValue}
+      filterControl={
+        <div className='flex items-center gap-2'>
+          <span className='text-sm font-medium text-gray-700 whitespace-nowrap'>Filter By :</span>
+          <Select value={roleFilter} onValueChange={setRoleFilter}>
+            <SelectTrigger className='w-[140px] bg-white'>
+              <SelectValue placeholder='Select role' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='all'>All roles</SelectItem>
+              <SelectItem value='super admin'>Super admin</SelectItem>
+              <SelectItem value='marketing'>Marketing</SelectItem>
+              <SelectItem value='customer service'>Customer service</SelectItem>
+              <SelectItem value='operations'>Operations</SelectItem>
+              <SelectItem value='sales'>Sales</SelectItem>
+              <SelectItem value='data analyst'>Data analyst</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-      </div>
+      }
+    />
+  );
+
+  return (
+    <div className='w-full'>
+      <DataTable
+        columns={columns}
+        data={data}
+        pagination={pagination}
+        setPagination={setPagination}
+        toolbar={toolbar}
+      />
     </div>
+  );
+};
+
+const ActionMenu: FC<{ handleEdit: () => void }> = ({ handleEdit }) => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant='ghost' size='sm' className='h-8 w-8 p-0'>
+          <MoreHorizontal className='h-4 w-4 text-gray-500' />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align='end'>
+        <DropdownMenuItem onClick={handleEdit}>
+          Edit user
+        </DropdownMenuItem>
+        <DropdownMenuItem className='text-red-600 focus:text-red-600'>
+          Deactivate user
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

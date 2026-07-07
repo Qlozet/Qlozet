@@ -53,14 +53,14 @@ export const SendMoneyModal = create(() => {
 
   return (
     <Dialog open={visible} onOpenChange={handleClose}>
-      <DialogContent className='max-w-md p-6'>
+      <DialogContent className='max-w-md p-6 dark:bg-muted'>
         <DialogHeader className='text-left pb-4'>
-          <DialogTitle className='text-lg font-medium text-[#0C0C0D]'>
+          <DialogTitle className='text-lg font-medium text-[#0C0C0D] dark:text-white'>
             Send money
           </DialogTitle>
         </DialogHeader>
 
-        <p className='text-sm font-normal text-[#0C0C0D] mb-4 mt-4'>
+        <p className='text-sm font-normal text-[#0C0C0D] dark:text-white mb-4 mt-4'>
           Choose preferred funding method
         </p>
 
@@ -81,3 +81,4 @@ export const SendMoneyModal = create(() => {
     </Dialog>
   );
 });
+

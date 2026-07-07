@@ -53,8 +53,8 @@ interface CustomerDetailsModalProps {
 
 const SummaryRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
   <div className='flex items-center gap-6 text-sm'>
-    <span className='w-28 shrink-0 text-gray-500'>{label}</span>
-    <span className='font-medium text-gray-900'>{value}</span>
+    <span className='w-28 shrink-0 text-gray-500 dark:text-gray-400'>{label}</span>
+    <span className='font-medium text-gray-900 dark:text-white'>{value}</span>
   </div>
 );
 
@@ -110,7 +110,7 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
       <Dialog open={visible} onOpenChange={handleClose}>
         <DialogContent className='max-w-3xl max-h-[90vh] overflow-y-auto p-0'>
           <DialogHeader className='border-b px-6 py-4'>
-            <DialogTitle className='text-lg font-bold text-gray-900'>
+            <DialogTitle className='text-lg font-bold text-gray-900 dark:text-white'>
               Customer details
             </DialogTitle>
           </DialogHeader>
@@ -189,7 +189,7 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
 
             {/* Order history */}
             <div className='space-y-3'>
-              <h3 className='text-base font-semibold text-gray-900'>
+              <h3 className='text-base font-semibold text-gray-900 dark:text-white'>
                 Order history
               </h3>
               <DataTable

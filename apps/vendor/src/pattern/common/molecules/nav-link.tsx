@@ -16,7 +16,7 @@ interface INavLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
     onToggle?: () => void
 }
 
-const activeStyle = `font-semibold text-primary font-normal`
+const activeStyle = `font-semibold text-primary dark:text-white font-normal`
 
 const NavLink = ({
     href,
@@ -46,7 +46,7 @@ const NavLink = ({
             <Link
                 href={href}
                 className={cn(
-                    "w-fit 2xl:w-full flex items-center gap-3 px-2 2xl:px-4 py-2 2xl:py-3 text-sidebar-foreground hover:text-secondary transition-colors text-sm font-normal duration-300",
+                    "w-fit 2xl:w-full flex items-center gap-3 px-2 2xl:px-4 py-2 2xl:py-3 text-[#ACB5BD] dark:text-gray-400 hover:text-secondary dark:hover:text-white transition-colors text-sm font-normal duration-300",
                     (isActiveState() || isActive) && activeStyle,
                     className,
                 )}

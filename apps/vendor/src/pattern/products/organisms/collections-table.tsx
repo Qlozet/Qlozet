@@ -108,7 +108,7 @@ export const CollectionsTable = ({
             <div className=''>
                 <Table>
                     {/* Header */}
-                    <TableHeader className='bg-[hsla(0,0%,96%,1)] h-[52px] pt-7 pb-4'>
+                    <TableHeader className='bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] h-[52px] pt-7 pb-4'>
                         {collectionsTable.getHeaderGroups()?.map(headerGroup => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers?.map((header, index) => {
@@ -118,7 +118,7 @@ export const CollectionsTable = ({
                                         <TableHead
                                             key={header.id}
                                             className={cn(
-                                                'h-[52px] pt-7 pb-4 whitespace-nowrap text-grey-black text-sm font-medium',
+                                                'h-[52px] pt-7 pb-4 whitespace-nowrap text-grey-black dark:text-white text-sm font-medium',
                                                 isFirst && 'pl-6',
                                                 isLast && 'pr-6'
                                             )}
@@ -211,10 +211,10 @@ export const CollectionsTable = ({
                             without flipping isSuccess, which would otherwise leave the
                             body blank. Any settled, non-error, no-rows state shows this. */}
                         {!showLoader && !isError && data?.length === 0 && (
-                            <TableRow className='bg-white hover:bg-white'>
+                            <TableRow className='bg-white dark:bg-card hover:bg-white dark:hover:bg-card'>
                                 <TableCell
                                     colSpan={columns?.length}
-                                    className='h-125 text-center bg-white'
+                                    className='h-125 text-center bg-white dark:bg-card'
                                 >
                                     <div className='flex flex-col items-center gap-4'>
                                         <BoldBoxRemoveIcon />

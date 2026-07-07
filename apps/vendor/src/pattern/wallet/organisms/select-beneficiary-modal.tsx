@@ -59,9 +59,9 @@ export const SelectBeneficiaryModal = create(() => {
 
   return (
     <Dialog open={visible} onOpenChange={handleClose}>
-      <DialogContent className='flex max-h-[85vh] max-w-md flex-col overflow-hidden p-6'>
-        <DialogHeader className='shrink-0 border-b border-dashed pb-3 text-left mb-4'>
-          <DialogTitle className='text-base font-medium text-[#0C0C0D]'>
+      <DialogContent className='flex max-h-[85vh] max-w-md flex-col overflow-hidden p-6 dark:bg-muted'>
+        <DialogHeader className='shrink-0 border-b border-dashed dark:border-border pb-3 text-left mb-4'>
+          <DialogTitle className='text-base font-medium text-[#0C0C0D] dark:text-white'>
             Select Beneficiary
           </DialogTitle>
         </DialogHeader>
@@ -73,7 +73,7 @@ export const SelectBeneficiaryModal = create(() => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder='Search'
-            className='h-12 rounded-lg bg-[#F7F7F7] pl-9'
+            className='h-12 rounded-lg bg-[#F7F7F7] dark:bg-[#404040] pl-9'
           />
         </div>
 
@@ -100,7 +100,7 @@ export const SelectBeneficiaryModal = create(() => {
                     {getBeneficiaryInitials(beneficiary.name)}
                   </span>
                   <div className='min-w-0 flex-1'>
-                    <p className='truncate text-sm font-semibold uppercase text-[#1A1A1A]'>
+                    <p className='truncate text-sm font-semibold uppercase text-[#1A1A1A] dark:text-white'>
                       {beneficiary.name}
                     </p>
                     <p className='truncate text-sm text-muted-foreground'>
@@ -133,3 +133,4 @@ export const SelectBeneficiaryModal = create(() => {
     </Dialog>
   );
 });
+

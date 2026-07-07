@@ -72,7 +72,7 @@ const sendMoneySchema = z.object({
 type SendMoneyFormData = z.infer<typeof sendMoneySchema>;
 
 const inputClass = 'h-12 rounded-lg';
-const labelClass = 'text-sm font-medium text-[#333333]';
+const labelClass = 'text-sm font-medium text-[#333333] dark:text-gray-300';
 
 interface SendManuallyModalProps {
   // When opened from the beneficiary picker, prefill the form with it.
@@ -123,9 +123,9 @@ export const SendManuallyModal = create<SendManuallyModalProps>(
 
     return (
       <Dialog open={visible} onOpenChange={handleClose}>
-        <DialogContent className='flex max-h-[85vh] max-w-md flex-col overflow-hidden p-6'>
-          <DialogHeader className='shrink-0 border-b border-dashed pb-3 text-left mb-4'>
-            <DialogTitle className='text-base font-medium text-[#0C0C0D]'>
+        <DialogContent className='flex max-h-[85vh] max-w-md flex-col overflow-hidden p-6 dark:bg-muted'>
+          <DialogHeader className='shrink-0 border-b border-dashed dark:border-border pb-3 text-left mb-4'>
+            <DialogTitle className='text-base font-medium text-[#0C0C0D] dark:text-white'>
               Send Money
             </DialogTitle>
           </DialogHeader>
@@ -247,7 +247,7 @@ export const SendManuallyModal = create<SendManuallyModalProps>(
                     >
                       <span
                         className={
-                          schedule ? 'text-[#333333]' : 'text-muted-foreground'
+                          schedule ? 'text-[#333333] dark:text-gray-300' : 'text-muted-foreground'
                         }
                       >
                         {schedule || 'Select time and date'}
@@ -298,7 +298,7 @@ export const SendManuallyModal = create<SendManuallyModalProps>(
                     </FormControl>
                     <FormLabel
                       htmlFor='save-beneficiary'
-                      className='cursor-pointer text-sm text-[#333333]'
+                      className='cursor-pointer text-sm text-[#333333] dark:text-gray-300'
                     >
                       Save recipient as beneficiary
                     </FormLabel>
@@ -330,3 +330,4 @@ export const SendManuallyModal = create<SendManuallyModalProps>(
     );
   }
 );
+

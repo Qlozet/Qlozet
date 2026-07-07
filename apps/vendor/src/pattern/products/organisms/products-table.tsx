@@ -140,7 +140,7 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
   return (
     <div className='bg-white rounded-lg shadow overflow-hidden'>
       <Table>
-        <TableHeader>
+        <TableHeader className='bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]'>
           <TableRow>
             {showSelection && (
               <TableHead className='w-12'>
@@ -156,68 +156,68 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
               </TableHead>
             )}
 
-            <TableHead>
+            <TableHead className='dark:text-white'>
               <Button
                 variant='ghost'
                 onClick={() => handleSort('name')}
-                className='h-auto p-0 font-medium text-left justify-start hover:bg-transparent'
+                className='h-auto p-0 font-medium text-left justify-start hover:bg-transparent dark:text-white'
               >
                 Product
                 {getSortIcon('name')}
               </Button>
             </TableHead>
 
-            <TableHead>
+            <TableHead className='dark:text-white'>
               <Button
                 variant='ghost'
                 onClick={() => handleSort('price')}
-                className='h-auto p-0 font-medium text-left justify-start hover:bg-transparent'
+                className='h-auto p-0 font-medium text-left justify-start hover:bg-transparent dark:text-white'
               >
                 Price
                 {getSortIcon('price')}
               </Button>
             </TableHead>
 
-            <TableHead>
+            <TableHead className='dark:text-white'>
               <Button
                 variant='ghost'
                 onClick={() => handleSort('stock')}
-                className='h-auto p-0 font-medium text-left justify-start hover:bg-transparent'
+                className='h-auto p-0 font-medium text-left justify-start hover:bg-transparent dark:text-white'
               >
                 Stock
                 {getSortIcon('stock')}
               </Button>
             </TableHead>
 
-            <TableHead>
+            <TableHead className='dark:text-white'>
               <Button
                 variant='ghost'
                 onClick={() => handleSort('status')}
-                className='h-auto p-0 font-medium text-left justify-start hover:bg-transparent'
+                className='h-auto p-0 font-medium text-left justify-start hover:bg-transparent dark:text-white'
               >
                 Status
                 {getSortIcon('status')}
               </Button>
             </TableHead>
 
-            <TableHead>Tags</TableHead>
+            <TableHead className='dark:text-white'>Tags</TableHead>
 
-            <TableHead>Variants</TableHead>
+            <TableHead className='dark:text-white'>Variants</TableHead>
 
-            <TableHead>
+            <TableHead className='dark:text-white'>
               <Button
                 variant='ghost'
                 onClick={() => handleSort('createdAt')}
-                className='h-auto p-0 font-medium text-left justify-start hover:bg-transparent'
+                className='h-auto p-0 font-medium text-left justify-start hover:bg-transparent dark:text-white'
               >
                 Created
                 {getSortIcon('createdAt')}
               </Button>
             </TableHead>
 
-            <TableHead>Active</TableHead>
+            <TableHead className='dark:text-white'>Active</TableHead>
 
-            <TableHead>Actions</TableHead>
+            <TableHead className='dark:text-white'>Actions</TableHead>
           </TableRow>
         </TableHeader>
 

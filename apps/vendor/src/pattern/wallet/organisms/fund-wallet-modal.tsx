@@ -28,7 +28,7 @@ interface FundingOption {
   id: FundingMethod;
   title: string;
   description: string;
-  icon: StaticImageData;
+  icon: StaticImageData | string;
 }
 
 const OPTIONS: FundingOption[] = [
@@ -77,14 +77,14 @@ export const FundWalletModal = create(() => {
 
   return (
     <Dialog open={visible} onOpenChange={handleClose}>
-      <DialogContent className='max-w-md p-6'>
+      <DialogContent className='max-w-md p-6 dark:bg-muted'>
         <DialogHeader className='text-left pb-4'>
-          <DialogTitle className='text-base font-medium text-[#0C0C0D]'>
+          <DialogTitle className='text-base font-medium text-[#0C0C0D] dark:text-white'>
             Fund your account
           </DialogTitle>
         </DialogHeader>
 
-        <p className='text-sm font-normal text-[#0C0C0D] mb-4 mt-4'>
+        <p className='text-sm font-normal text-[#0C0C0D] dark:text-white mb-4 mt-4'>
           Choose preferred funding method
         </p>
 
@@ -94,7 +94,7 @@ export const FundWalletModal = create(() => {
               key={option.id}
               type='button'
               onClick={() => handleSelect(option)}
-              className='flex w-full items-center gap-4 rounded-[10px] focus:border focus:border-secondary focus-visible:border focus-visible:border-secondary bg-white py-4 px-2 text-left transition hover:border hover:border-border focus:outline-none cursor-pointer'
+              className='flex w-full items-center gap-4 rounded-[10px] focus:border focus:border-secondary focus-visible:border focus-visible:border-secondary bg-white dark:bg-[#404040] py-4 px-2 text-left transition hover:border hover:border-border focus:outline-none cursor-pointer'
             >
               <Image
                 src={option.icon}
@@ -104,10 +104,10 @@ export const FundWalletModal = create(() => {
                 className='size-10 shrink-0 rounded-md'
               />
               <div className='space-y-1'>
-                <p className='text-base font-normal text-[#333333]'>
+                <span className='block text-base font-normal text-[#333333] dark:text-gray-300'>
                   {option.title}
-                </p>
-                <p className='text-xs text-[#646A86]'>{option.description}</p>
+                </span>
+                <span className='block text-xs text-[#646A86] dark:text-gray-400'>{option.description}</span>
               </div>
             </button>
           ))}
@@ -116,3 +116,4 @@ export const FundWalletModal = create(() => {
     </Dialog>
   );
 });
+

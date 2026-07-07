@@ -1,13 +1,32 @@
-import React from 'react';
-import { AuthMessageCard } from '../molecules/auth-message-card';
+'use client';
 
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { AUTH_ROUTES } from '@/lib/routes';
+import { AuthFormCard } from '../molecules/auth-form-card';
+
+/**
+ * Since OTP verification is now handled inline in the signup wizard,
+ * this page redirects back to the signup flow.
+ */
 const AwaitingVerificationTemplate = () => {
-    return (
-        <AuthMessageCard
-            title='Account created successfully'
-            description="Your Qlozet account has been successfully set up, and we've received your information. Our team will thoroughly review the details and documents provided. Your account verification status will be communicated to you via the email you provided within the next 48 hours."
-        />
-    );
+  const { push } = useRouter();
+
+  useEffect(() => {
+    push(AUTH_ROUTES.signup);
+  }, [push]);
+
+  return (
+    <AuthFormCard
+      title='Redirecting...'
+      subtitle='Taking you back to complete your verification'
+      showLogo={true}
+    >
+      <div className='flex justify-center py-8'>
+        <div className='size-6 animate-spin rounded-full border-2 border-primary border-t-transparent' />
+      </div>
+    </AuthFormCard>
+  );
 };
 
 export default AwaitingVerificationTemplate;

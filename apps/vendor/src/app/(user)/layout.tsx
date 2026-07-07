@@ -3,13 +3,14 @@
 export const dynamic = 'force-dynamic';
 
 import React, {
+  Suspense,
   useState,
   useEffect,
   ReactNode,
   useCallback,
   useMemo,
 } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { X } from 'lucide-react';
 import Image from 'next/image';
 
@@ -31,17 +32,7 @@ import {
 import CompleteKycPopover from '@/pattern/common/organisms/complete-kyc-popover';
 import { If } from '@/pattern/common/atoms/If';
 import { Sidebar } from '@/pattern/common/templates/sidebar';
-
-interface UserDetails {
-  businessName: string;
-  profileImage: string;
-  personalName: string;
-  profilePic?: string;
-  averageRating: string;
-  profit: string;
-  items: string;
-  ratings?: string;
-}
+import { type UserDetails } from '@/types';
 
 interface LoadingState {
   isLoading: boolean;
@@ -52,7 +43,7 @@ interface UserLayoutProps {
   children: ReactNode;
 }
 
-const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
+const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
   const stateData = useAppSelector(reduxData);
   const dispatch = useAppDispatch();
   const pathname = usePathname();
@@ -61,10 +52,16 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
     businessName: '',
     profileImage: '',
     personalName: '',
-    profilePic: '',
-    averageRating: '',
-    profit: '',
-    items: '',
+    averageRating: 0,
+    profit: 0,
+    items: 0,
+    ratings: {
+      excellent: 0,
+      good: 0,
+      average: 0,
+      belowAverage: 0,
+      poor: 0,
+    },
   });
 
   const [loadingState, setLoadingState] = useState<LoadingState>({
@@ -89,11 +86,18 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
         businessName: apiData?.businessName ?? '',
         personalName: apiData?.personalName ?? '',
         profileImage: apiData?.profileImage ?? '',
-        profilePic: apiData?.profilePic ?? '',
-        averageRating: apiData?.averageRating ?? '',
-        profit: apiData?.profit ?? '',
-        items: apiData?.items ?? '',
-        ratings: apiData?.ratings ?? '',
+        averageRating: Number(apiData?.averageRating ?? 0),
+        profit: Number(apiData?.profit ?? 0),
+        items: Number(apiData?.items ?? 0),
+        ratings: typeof apiData?.ratings === 'object' && apiData?.ratings !== null
+          ? apiData.ratings
+          : {
+              excellent: 0,
+              good: 0,
+              average: 0,
+              belowAverage: 0,
+              poor: 0,
+            },
       };
 
       setUserDetails(details);
@@ -137,19 +141,38 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
     [dispatch]
   );
 
+  const searchParams = useSearchParams();
+  const isEditing = !!searchParams.get('edit');
+
   // Memoized computed values
   const { addSearch, currentPage } = useMemo(() => {
     const cleanPath = pathname.replace(/^\//, '');
     const pathSegments = cleanPath.split('/');
     const basePage = pathSegments[0];
+    const subPage = pathSegments[1];
+    const actionPage = pathSegments[2];
 
     const searchablePages = ['orders', 'products', 'wallet', 'customers'];
 
+    let computedPageName = subPage || basePage;
+
+    if (subPage === 'discounts') {
+      if (actionPage === 'create' && isEditing) computedPageName = 'Edit Discount';
+      else if (actionPage === 'create') computedPageName = 'Add Discount';
+      else if (actionPage === 'edit') computedPageName = 'Edit Discount';
+    } else if (subPage === 'collections') {
+      if (actionPage === 'create' && isEditing) computedPageName = 'Edit Collection';
+      else if (actionPage === 'create') computedPageName = 'Add Collection';
+      else if (actionPage === 'edit') computedPageName = 'Edit Collection';
+    } else if (subPage === 'add-product') {
+      computedPageName = isEditing ? 'Edit Product' : 'Add Product';
+    }
+
     return {
       addSearch: searchablePages.includes(basePage),
-      currentPage: pathSegments[1] || basePage,
+      currentPage: computedPageName,
     };
-  }, [pathname]);
+  }, [pathname, isEditing]);
 
   // if (loadingState.isLoading) {
   //   return (
@@ -219,4 +242,13 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
   );
 };
 
+const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
+  return (
+    <Suspense fallback={null}>
+      <UserLayoutInner>{children}</UserLayoutInner>
+    </Suspense>
+  );
+};
+
 export default UserLayout;
+

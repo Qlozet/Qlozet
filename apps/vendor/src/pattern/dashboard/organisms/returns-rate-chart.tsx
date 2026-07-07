@@ -9,7 +9,7 @@ const FALLBACK: DonutDatum[] = [
   { name: 'Returned', value: 45 },
 ];
 
-const COLORS = ['#3d2817', '#d4c5b9'];
+const COLORS = ['var(--chart-primary)', 'var(--chart-secondary)'];
 
 interface ReturnsRateChartProps {
   data?: DonutDatum[];

@@ -36,7 +36,7 @@ export const RecentOrders = () => {
     return (
         <Card className="w-full h-[443px] overflow-y-auto rounded-[12px] custom-card-shadow">
             <CardHeader className="flex flex-row items-center justify-between pb-4">
-                <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] m-0">
+                <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground m-0">
                     Recent orders
                 </CardTitle>
                 <Link href={APP_ROUTES.orders} className="flex items-center gap-1 text-xs text-foreground">
@@ -47,22 +47,22 @@ export const RecentOrders = () => {
                 {orders?.map((order) => (
                     <div
                         key={order.id}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
+                        className="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 dark:bg-muted dark:hover:bg-muted/80 rounded-[12px] transition"
                     >
                         <div className="flex items-center gap-3">
                             <div className={`size-11 rounded-md shrink-0 ${order.bgColor}`} />
                             <div className="flex flex-col gap-0.5">
-                                <p className="text-sm font-medium text-gray-900">{order.product}</p>
-                                <p className="text-xs text-gray-600">{order.customerName}</p>
+                                <p className="text-sm font-medium text-gray-900 dark:text-foreground">{order.product}</p>
+                                <p className="text-xs text-gray-600 dark:text-muted-foreground">{order.customerName}</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="flex flex-col items-end gap-0.5">
-                                <p className="text-sm font-semibold text-gray-900">{order.amount}</p>
-                                <p className="text-xs text-gray-500">{order.date}</p>
+                                <p className="text-sm font-semibold text-gray-900 dark:text-foreground">{order.amount}</p>
+                                <p className="text-xs text-gray-500 dark:text-muted-foreground">{order.date}</p>
                             </div>
-                            <button className="p-1.5 bg-gray-200 hover:bg-gray-300 rounded-full transition">
-                                <ChevronRight size={16} className="text-gray-600" />
+                            <button className="p-1.5 bg-gray-200 hover:bg-gray-300 dark:bg-muted dark:hover:bg-secondary rounded-full transition">
+                                <ChevronRight size={16} className="text-gray-600 dark:text-muted-foreground" />
                             </button>
                         </div>
                     </div>

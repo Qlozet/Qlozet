@@ -23,6 +23,19 @@ export default function RootLayout({
         <body
           className={`${poppins.variable} ${inter.variable} ${roboto_mono.variable} font-poppins antialiased relative bg-background flex justify-center`}
         >
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                try {
+                  if (localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (_) {}
+              `,
+            }}
+          />
           <Providers>{children}</Providers>
         </body>
       </html>

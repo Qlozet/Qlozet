@@ -27,7 +27,7 @@ const CardIcon = ({ bg, children }: { bg: string; children: ReactNode }) => (
   </div>
 );
 
-const DONUT_COLORS = ['#3d2817', '#5b4636', '#8a7060', '#d4c5b9'];
+const DONUT_COLORS = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)'];
 
 interface ProductsStatsProps {
   /** Real total product count from the paginated list response. */

@@ -17,8 +17,8 @@ interface CustomTooltipProps {
 export const CustomChartTooltip = ({ active, payload }: CustomTooltipProps) => {
     if (active && payload && payload?.length) {
         return (
-            <div className="bg-white font-poppins p-2 border border-gray-200 rounded shadow">
-                <p className="text-sm font-medium">{payload[0]?.payload?.label}</p>
+            <div className="bg-white dark:bg-muted font-poppins p-2 border border-gray-200 dark:border-border rounded-xl shadow-lg">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{payload[0]?.payload?.label}</p>
                 {payload?.map((entry, index) => (
                     <p key={index} style={{ color: entry.color }} className="text-xs capitalize">
                         {entry.name}: {entry.value}

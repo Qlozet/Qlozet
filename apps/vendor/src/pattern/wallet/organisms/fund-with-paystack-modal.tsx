@@ -174,9 +174,9 @@ export const FundWithPaystackModal = create(() => {
 
   return (
     <Dialog open={visible} onOpenChange={handleClose}>
-      <DialogContent className='max-w-md p-6'>
-        <DialogHeader className='border-b border-dashed pb-3 text-left mb-4'>
-          <DialogTitle className='flex items-center gap-3 text-base font-medium text-[#0C0C0D]'>
+      <DialogContent className='max-w-md p-6 dark:bg-muted'>
+        <DialogHeader className='border-b border-dashed dark:border-border pb-3 text-left mb-4'>
+          <DialogTitle className='flex items-center gap-3 text-base font-medium text-[#0C0C0D] dark:text-white'>
             <Image
               src={paystackLogo}
               alt=''
@@ -188,7 +188,7 @@ export const FundWithPaystackModal = create(() => {
           </DialogTitle>
         </DialogHeader>
 
-        <p className='text-sm font-normal text-[#0C0C0D] mb-4'>
+        <p className='text-sm font-normal text-[#0C0C0D] dark:text-white mb-4'>
           Enter the amount you want to add to your wallet. You’ll be redirected
           to Paystack to complete the payment.
         </p>
@@ -200,12 +200,12 @@ export const FundWithPaystackModal = create(() => {
               name='amount'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-[#333333]'>
+                  <FormLabel className='text-sm font-medium text-[#333333] dark:text-gray-300'>
                     Amount
                   </FormLabel>
                   <FormControl>
                     <div className='relative'>
-                      <span className='pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#646A86]'>
+                      <span className='pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#646A86] dark:text-gray-400'>
                         ₦
                       </span>
                       <Input
@@ -251,3 +251,4 @@ export const FundWithPaystackModal = create(() => {
     </Dialog>
   );
 });
+

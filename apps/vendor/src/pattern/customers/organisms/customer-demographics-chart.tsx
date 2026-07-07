@@ -36,8 +36,8 @@ const DEMOGRAPHICS: DemographicDatum[] = [
   { age: '60 - 70+', male: 0, female: 55 },
 ];
 
-const MALE_COLOR = '#3E2118';
-const FEMALE_COLOR = '#D8CBC4';
+const MALE_COLOR = 'var(--chart-primary)';
+const FEMALE_COLOR = 'var(--chart-secondary)';
 
 const renderLegend = () => (
   <ul className='flex items-center justify-center gap-x-8 pt-4 text-sm'>
@@ -46,14 +46,14 @@ const renderLegend = () => (
         className='inline-block size-2.5 rounded-full'
         style={{ backgroundColor: MALE_COLOR }}
       />
-      <span className='text-[hsla(210,9%,31%,1)]'>Male</span>
+      <span className='text-[hsla(210,9%,31%,1)] dark:text-white'>Male</span>
     </li>
     <li className='flex items-center gap-x-2'>
       <span
         className='inline-block size-2.5 rounded-full'
         style={{ backgroundColor: FEMALE_COLOR }}
       />
-      <span className='text-[hsla(210,9%,31%,1)]'>Female</span>
+      <span className='text-[hsla(210,9%,31%,1)] dark:text-white'>Female</span>
     </li>
   </ul>
 );
@@ -68,7 +68,7 @@ export const CustomerDemographicsChart = ({
       className={`w-full rounded-[12px] custom-card-shadow ${className ?? ''}`}
     >
       <CardHeader className='px-6 pb-4'>
-        <CardTitle className='text-lg font-semibold text-[hsla(210,9%,31%,1)]'>
+        <CardTitle className='text-lg font-semibold text-[hsla(210,9%,31%,1)] dark:text-white'>
           Demographics
         </CardTitle>
       </CardHeader>
@@ -87,13 +87,13 @@ export const CustomerDemographicsChart = ({
               angle={-45}
               textAnchor='end'
               height={50}
-              tick={{ fontSize: 11, fill: '#98A2B3' }}
+              tick={{ fontSize: 11, fill: 'var(--foreground)' }}
             />
             <YAxis
               tickLine={false}
               axisLine={false}
               width={44}
-              tick={{ fontSize: 11, fill: '#98A2B3' }}
+              tick={{ fontSize: 11, fill: 'var(--foreground)' }}
               tickFormatter={(value: number) =>
                 value >= 1000 ? `${value / 1000}K` : `${value}`
               }

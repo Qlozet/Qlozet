@@ -106,7 +106,7 @@ export const AccessoriesTable = ({
             <div className=''>
                 <Table>
                     {/* Header */}
-                    <TableHeader className='bg-[hsla(0,0%,96%,1)] h-[52px] pt-7 pb-4'>
+                    <TableHeader className='bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] h-[52px] pt-7 pb-4'>
                         {clothingTable.getHeaderGroups()?.map(headerGroup => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers?.map((header, index) => {
@@ -116,7 +116,7 @@ export const AccessoriesTable = ({
                                         <TableHead
                                             key={header.id}
                                             className={cn(
-                                                'h-[52px] pt-7 pb-4 whitespace-nowrap text-grey-black text-sm font-medium',
+                                                'h-[52px] pt-7 pb-4 whitespace-nowrap text-grey-black dark:text-white text-sm font-medium',
                                                 isFirst && 'pl-6',
                                                 isLast && 'pr-6'
                                             )}

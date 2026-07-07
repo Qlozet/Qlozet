@@ -206,7 +206,7 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
                         variant='outline'
                         size='default'
                         onClick={handleImportProducts}
-                        className='gap-[10px] text-xs! font-medium'
+                        className='gap-[10px] text-xs! font-medium dark:text-white dark:border-gray-500'
                     >
                         <LinearImportIcon className='w-[18px] h-[18px]' />
                         <span className='hidden sm:inline'>Import Products</span>
@@ -216,7 +216,7 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
                         variant='outline'
                         size='default'
                         onClick={() => setShowSelect(!showSelect)}
-                        className='gap-[10px] text-xs! font-medium'
+                        className='gap-[10px] text-xs! font-medium dark:text-white dark:border-gray-500'
                     >
                         <span>{showSelect ? 'Cancel Selection' : 'Select Products'}</span>
                     </Button>

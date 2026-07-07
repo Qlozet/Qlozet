@@ -61,7 +61,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
   const displayPicture = localPicture || imageUrl;
 
   return (
-    <div className={cn('bg-white rounded-[12px] py-10 px-6 custom-card-shadow', className)}>
+    <div className={cn('bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] py-10 px-6 custom-card-shadow', className)}>
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
@@ -74,7 +74,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
       {/* Avatar Section */}
       <div className='flex flex-col items-center'>
         <div className='relative'>
-          <div className='w-32 h-32 bg-[#F8F9FA] rounded-full border-4 border-white custom-card-shadow flex items-center justify-center overflow-hidden'>
+          <div className='w-32 h-32 bg-[#F8F9FA] dark:bg-muted rounded-full border-4 border-white dark:border-card custom-card-shadow flex items-center justify-center overflow-hidden'>
             {displayPicture ? (
               <Image
                 src={displayPicture}
@@ -95,7 +95,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
-            className='absolute bottom-0 right-0 bg-[#3d2817] p-2.5 rounded-full shadow-md border-2 border-white hover:bg-[#2c1d11] disabled:opacity-50'
+            className='absolute bottom-0 right-0 bg-[#3d2817] p-2.5 rounded-full shadow-md border-2 border-white dark:border-card hover:bg-[#2c1d11] disabled:opacity-50'
           >
             {isUploading ? (
               <Loader2 className='w-5 h-5 text-white animate-spin' />

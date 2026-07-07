@@ -23,7 +23,7 @@ export const createTransactionColumns = (
     id: 'date',
     header: 'Date',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600'>
+      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-gray-200'>
         {formatDate(readTransactionDate(row.original))}
       </span>
     ),
@@ -33,7 +33,7 @@ export const createTransactionColumns = (
     id: 'transaction_id',
     header: 'Transaction ID',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600 font-normal'>
+      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-gray-200 font-normal'>
         {readTransactionId(row.original)}
       </span>
     ),
@@ -43,7 +43,7 @@ export const createTransactionColumns = (
     id: 'transaction_type',
     header: 'Transaction type',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600'>
+      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-gray-200'>
         {readTransactionType(row.original)}
       </span>
     ),
@@ -53,7 +53,7 @@ export const createTransactionColumns = (
     id: 'narration',
     header: 'Narration',
     cell: ({ row }) => (
-      <span className='block max-w-[200px] truncate text-sm text-gray-600'>
+      <span className='block max-w-[200px] truncate text-sm text-gray-600 dark:text-gray-200'>
         {readNarration(row.original)}
       </span>
     ),
@@ -63,7 +63,7 @@ export const createTransactionColumns = (
     id: 'amount',
     header: 'Amount',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600'>
+      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-gray-200'>
         {formatNaira(readAmount(row.original))}
       </span>
     ),

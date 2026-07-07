@@ -24,7 +24,7 @@ export const ProfileTabButton: React.FC<ProfileTabButtonProps> = ({
         'px-6 py-3 text-sm font-medium transition-all duration-200 rounded-lg',
         isActive
           ? 'bg-[#5C2D0D] text-white'
-          : 'bg-transparent text-[#333333] hover:bg-gray-100',
+          : 'bg-transparent text-[#333333] dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-muted',
         className
       )}
     >

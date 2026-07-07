@@ -40,13 +40,9 @@ export interface LoginResponse {
 
 export interface RegisterRequest {
   business_name: string,
-  business_email: string,
-  business_phone_number: string,
-  business_address: string,
   personal_name: string,
   personal_email: string,
   personal_phone_number: string,
-  national_identity_number: string,
   password: string
 }
 
