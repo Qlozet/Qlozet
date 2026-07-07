@@ -11,26 +11,11 @@ import {
   saveCookie,
 } from '@/lib/helpers/cookies-manager';
 import { SESSION_COOKIE_KEY } from '@/lib/constants';
+import { type UserDetails } from '@/types';
 
 const USER_DETAILS_KEY = 'AltireuserDetails';
 const PRODUCT_ID_KEY = 'productId';
 const CUSTOMER_KEY = 'customer';
-
-// Type safety for user data
-interface UserDetails {
-  // Define the structure of your user object
-  id?: string;
-  name?: string;
-  email?: string;
-  businessName?: string;
-  personalName?: string;
-  profileImage?: string;
-  profilePic?: string;
-  averageRating?: string;
-  profit?: string;
-  items?: string;
-  ratings?: string;
-}
 
 export const setToken = (data: string): void => {
   saveCookie({

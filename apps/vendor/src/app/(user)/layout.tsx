@@ -32,17 +32,7 @@ import {
 import CompleteKycPopover from '@/pattern/common/organisms/complete-kyc-popover';
 import { If } from '@/pattern/common/atoms/If';
 import { Sidebar } from '@/pattern/common/templates/sidebar';
-
-interface UserDetails {
-  businessName: string;
-  profileImage: string;
-  personalName: string;
-  profilePic?: string;
-  averageRating: string;
-  profit: string;
-  items: string;
-  ratings?: string;
-}
+import { type UserDetails } from '@/types';
 
 interface LoadingState {
   isLoading: boolean;
@@ -62,10 +52,16 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
     businessName: '',
     profileImage: '',
     personalName: '',
-    profilePic: '',
-    averageRating: '',
-    profit: '',
-    items: '',
+    averageRating: 0,
+    profit: 0,
+    items: 0,
+    ratings: {
+      excellent: 0,
+      good: 0,
+      average: 0,
+      belowAverage: 0,
+      poor: 0,
+    },
   });
 
   const [loadingState, setLoadingState] = useState<LoadingState>({
@@ -90,11 +86,18 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
         businessName: apiData?.businessName ?? '',
         personalName: apiData?.personalName ?? '',
         profileImage: apiData?.profileImage ?? '',
-        profilePic: apiData?.profilePic ?? '',
-        averageRating: apiData?.averageRating ?? '',
-        profit: apiData?.profit ?? '',
-        items: apiData?.items ?? '',
-        ratings: apiData?.ratings ?? '',
+        averageRating: Number(apiData?.averageRating ?? 0),
+        profit: Number(apiData?.profit ?? 0),
+        items: Number(apiData?.items ?? 0),
+        ratings: typeof apiData?.ratings === 'object' && apiData?.ratings !== null
+          ? apiData.ratings
+          : {
+              excellent: 0,
+              good: 0,
+              average: 0,
+              belowAverage: 0,
+              poor: 0,
+            },
       };
 
       setUserDetails(details);
