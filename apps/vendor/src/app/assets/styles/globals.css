@@ -325,6 +325,16 @@ input[type='number'] {
   body {
     @apply bg-background max-w-[3024px] text-foreground my-0 mx-auto;
   }
+
+  /* Fix for browser autofill styles (e.g., Chrome making inputs white) */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover, 
+  input:-webkit-autofill:focus, 
+  input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 50px var(--background) inset !important;
+      -webkit-text-fill-color: var(--foreground) !important;
+      transition: background-color 5000s ease-in-out 0s;
+  }
 }
 
 

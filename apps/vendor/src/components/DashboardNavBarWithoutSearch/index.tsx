@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Typography from '../Typography';
 import Profile from '../Profile.js';
 import { UserDetails } from '@/types';
-import { Search, Bell } from 'lucide-react';
+import { Search, Bell, Menu, User } from 'lucide-react';
 import notificationIcon from '@/public/assets/svg/notification-bing.svg';
 import altireicon from '@/public/assets/svg/altire-icon.svg';
 import transformText from '@/public/assets/svg/textformat.size.svg';
@@ -75,47 +75,40 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
           </div>
           {/* Mobile Navigation End */}
           {!hideNav && (
-            <div className='flex items-center justify-between mt-0 lg:mt-0'>
-              <div className='flex items-center gap-4'>
+            <div className='flex items-center justify-between bg-white dark:bg-card py-2 px-3 sm:px-4 rounded-[12px] border border-border shadow-sm transition-colors'>
+              <div className='flex items-center gap-3'>
                 <div
-                  className='w-[2rem] h-[2rem] bg-primary flex items-center justify-center rounded-[8px] cursor-pointer'
+                  className='w-10 h-10 bg-primary hover:bg-primary/90 flex items-center justify-center rounded-[10px] cursor-pointer transition-colors shadow-sm'
                   onClick={showSideBar}
                 >
-                  <Image alt='Menu icon' src={menuIcon} />
+                  <Menu className='size-5 text-primary-foreground' />
                 </div>
-                <div className='hidden md:block'>
+                <div className='block'>
                   <Typography
                     textColor='text-dark dark:text-foreground'
-                    textWeight='font-medium'
-                    textSize='text-[18px]'
+                    textWeight='font-semibold'
+                    textSize='text-[16px] sm:text-[18px]'
                   >
                     {capitalizedName}
                   </Typography>
                 </div>
               </div>
-              <div className='flex items-center gap-4'>
-                <div className='rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer'>
-                  <Image
-                    alt='Notification icon'
-                    src={notificationIcon}
-                    onClick={handleNotificationClick}
-                  />
+              
+              <div className='flex items-center gap-2 sm:gap-3'>
+                <div 
+                  className='rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
+                  onClick={handleNotificationClick}
+                >
+                  <Bell className='size-5 text-gray-800 dark:text-white' />
                 </div>
-                <div className='hidden md:block'>
-                  <Typography
-                    textColor='text-dark dark:text-foreground'
-                    textWeight='font-semibold'
-                    textSize='text-[18px]'
-                  >
-                    {userDetails && userDetails.personalName}
-                  </Typography>
-                </div>
-                <div className='rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer'>
+                <div 
+                  className='rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
+                  onClick={handleProfileClick}
+                >
                   <Image
                     alt='Profile icon'
-                    src={mobileProfile}
-                    onClick={handleProfileClick}
-                    className='cursor-pointer'
+                    src={userIcon}
+                    className='size-5 dark:brightness-200'
                   />
                 </div>
               </div>

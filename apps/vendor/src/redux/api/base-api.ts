@@ -74,6 +74,8 @@ export const baseAPI = createApi({
     'PlatformSettings',
     'StyleLibrary',
     'Taxonomy',
+    'SizeGuide',
+    'SizeGuides',
   ],
   endpoints: () => ({}),
 });

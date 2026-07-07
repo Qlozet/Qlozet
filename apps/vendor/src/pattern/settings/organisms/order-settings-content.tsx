@@ -121,7 +121,7 @@ const SettingRow = ({
             value={item.value}
             onValueChange={(val) => onSelectChange?.(item.id, val)}
           >
-            <SelectTrigger className='w-[130px] h-9 text-xs'>
+            <SelectTrigger className='w-[130px] h-9 text-xs bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -140,7 +140,7 @@ const SettingRow = ({
             value={item.value}
             onChange={(e) => onInputChange?.(item.id, e.target.value)}
             placeholder={item.placeholder}
-            className='w-[80px] h-9 text-center text-sm'
+            className='w-[80px] h-9 text-center text-sm bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
           />
         )}
 

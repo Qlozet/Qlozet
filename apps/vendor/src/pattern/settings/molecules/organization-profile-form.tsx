@@ -105,7 +105,7 @@ export const OrganizationProfileForm: React.FC<
               name='businessName'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Business Name
                   </FormLabel>
                   <FormControl>
@@ -126,7 +126,7 @@ export const OrganizationProfileForm: React.FC<
               name='country'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 flex items-center gap-1'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1'>
                     Country
                     <span className='text-gray-400'>ⓘ</span>
                   </FormLabel>
@@ -135,7 +135,7 @@ export const OrganizationProfileForm: React.FC<
                     value={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'>
+                      <SelectTrigger className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'>
                         <SelectValue placeholder='Select country' />
                       </SelectTrigger>
                     </FormControl>
@@ -163,7 +163,7 @@ export const OrganizationProfileForm: React.FC<
               name='state'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 flex items-center gap-1'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1'>
                     State
                     <span className='text-gray-400'>ⓘ</span>
                   </FormLabel>
@@ -185,7 +185,7 @@ export const OrganizationProfileForm: React.FC<
               name='city'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                     City
                   </FormLabel>
                   <FormControl>
@@ -206,7 +206,7 @@ export const OrganizationProfileForm: React.FC<
               name='address'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Address
                   </FormLabel>
                   <FormControl>
@@ -227,7 +227,7 @@ export const OrganizationProfileForm: React.FC<
               name='yearFounded'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Year Founded
                   </FormLabel>
                   <FormControl>
@@ -248,7 +248,7 @@ export const OrganizationProfileForm: React.FC<
               name='email'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Email Address
                   </FormLabel>
                   <FormControl>
@@ -270,13 +270,13 @@ export const OrganizationProfileForm: React.FC<
               name='phoneNumber'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Phone Number
                   </FormLabel>
                   <FormControl>
                     <div className='flex gap-2'>
                       <Select defaultValue='+234'>
-                        <SelectTrigger className='w-[100px] bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'>
+                        <SelectTrigger className='w-[100px] bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -303,7 +303,7 @@ export const OrganizationProfileForm: React.FC<
               name='website'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Website
                   </FormLabel>
                   <FormControl>
@@ -324,7 +324,7 @@ export const OrganizationProfileForm: React.FC<
               name='nin'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 flex items-center gap-1'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1'>
                     National Identity Number (NIN)
                     <span className='text-orange-500'>ⓘ</span>
                   </FormLabel>
@@ -346,7 +346,7 @@ export const OrganizationProfileForm: React.FC<
               name='bvn'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 flex items-center gap-1'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1'>
                     Bank Verification Number (BVN)
                     <span className='text-orange-500'>ⓘ</span>
                   </FormLabel>
@@ -368,7 +368,7 @@ export const OrganizationProfileForm: React.FC<
               name='registrationId'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Registration ID
                   </FormLabel>
                   <FormControl>
@@ -391,7 +391,7 @@ export const OrganizationProfileForm: React.FC<
             name='about'
             render={({ field }) => (
               <FormItem>
-                <FormLabel className='text-sm font-medium text-gray-700'>
+                <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                   About
                 </FormLabel>
                 <FormControl>
@@ -411,7 +411,7 @@ export const OrganizationProfileForm: React.FC<
             <Button
               type='submit'
               disabled={isLoading}
-              className='bg-[#5C2D0D] hover:bg-[#4A2409] text-white px-8 py-2 rounded-lg'
+              className='bg-[#5C2D0D] hover:bg-[#4A2409] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black px-8 py-2 rounded-lg'
             >
               {isLoading ? 'Saving...' : 'Save'}
             </Button>

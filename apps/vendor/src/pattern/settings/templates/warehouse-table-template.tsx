@@ -169,7 +169,7 @@ const WarehouseTableTemplate = ({
             variant="default"
             size='default'
             onClick={handleAddWarehouse}
-            className='gap-[10px] text-xs! font-medium bg-[#5C2D0D] hover:bg-[#4A2409]'
+            className='gap-[10px] text-xs! font-medium bg-[#5C2D0D] hover:bg-[#4A2409] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black'
           >
             <Plus className='size-[18px]' />
             <span>Add warehouse</span>
@@ -188,7 +188,7 @@ const WarehouseTableTemplate = ({
               <Button
                 variant='outline'
                 size='default'
-                className='bg-transparent gap-2 text-sm! font-medium py-3 rounded-[12px] relative'
+                className='bg-transparent gap-2 text-sm! font-medium py-3 rounded-[12px] relative dark:border-white/10 dark:text-white'
               >
                 <Filter className='w-4 h-4' />
                 <span>Filter By:</span>

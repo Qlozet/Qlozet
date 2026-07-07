@@ -219,7 +219,7 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
       {/* Main Content Area */}
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Sticky Navigation Header */}
-        <header className='sticky top-0 bg-background w-full px-8 pt-6'>
+        <header className='sticky top-0 bg-background w-full px-4 md:px-8 pt-4 md:pt-6'>
           <DasboardNavWithOutSearch
             userDetails={userDetails}
             value={stateData.state}
@@ -231,7 +231,7 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
         </header>
 
         {/* Page Content */}
-        <main className="w-full overflow-auto pt-6 px-8 pb-8">{children}</main>
+        <main className="w-full overflow-auto pt-4 md:pt-6 px-4 md:px-8 pb-4 md:pb-8">{children}</main>
       </div>
 
       {/* KYC Completion Popup */}

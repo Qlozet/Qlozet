@@ -6,12 +6,22 @@ import React from 'react';
 // Define the props interface for the Logo component
 interface LogoProps {
   brown?: boolean;
+  white?: boolean;
 }
 
-const Logo: React.FC<LogoProps> = ({ brown }) => {
+const Logo: React.FC<LogoProps> = ({ brown, white }) => {
   return (
     <div>
-      {brown ? (
+      {white ? (
+        <div className='items-center justify-center lg:justify-start flex'>
+          <Image
+            src={whiteLogo}
+            alt='Qlozet Logo'
+            style={{ width: '100px', height: 'auto' }}
+            priority
+          />
+        </div>
+      ) : brown ? (
         <div className='items-center justify-center lg:justify-start flex'>
           <Image
             src={brownLogo}

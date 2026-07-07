@@ -139,7 +139,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
       />
 
       {/* Cover Image Section (Touches edges) */}
-      <div className='relative h-32 bg-gradient-to-br from-gray-100 to-gray-200'>
+      <div className='relative h-32 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700'>
         {displayCover ? (
           <Image
             src={displayCover}
@@ -150,7 +150,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
           />
         ) : (
           <div className='absolute inset-0 flex items-center justify-center'>
-            <div className='w-full h-full bg-gradient-to-br from-orange-100 via-purple-100 to-blue-100' />
+            <div className='w-full h-full bg-gradient-to-br from-orange-100 via-purple-100 to-blue-100 dark:from-orange-900/30 dark:via-purple-900/30 dark:to-blue-900/30' />
           </div>
         )}
         <button
@@ -180,8 +180,8 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
                 unoptimized={displayLogo?.includes('/raw/')}
               />
             ) : (
-              <div className='w-full h-full bg-white flex items-center justify-center'>
-                <span className='text-3xl font-bold text-gray-800'>
+              <div className='w-full h-full bg-white dark:bg-muted flex items-center justify-center'>
+                <span className='text-3xl font-bold text-gray-800 dark:text-gray-200'>
                   {vendorName.charAt(0)}
                 </span>
               </div>
@@ -201,11 +201,11 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
         </div>
 
         {/* Vendor Info */}
-        <h3 className='text-lg font-semibold text-[#1C1C1E] mt-4'>
+        <h3 className='text-lg font-semibold text-[#1C1C1E] dark:text-white mt-4'>
           {vendorName}
         </h3>
         <p className='text-sm text-gray-400 mt-1 uppercase tracking-wider'>{registrationId}</p>
-        <p className='text-sm text-[#5C2D0D] mt-1'>{website}</p>
+        <p className='text-sm text-[#5C2D0D] dark:text-amber-400 mt-1'>{website}</p>
         <p className={cn('text-xs font-semibold mt-1', getStatusColor())}>
           {getStatusText()}
         </p>
@@ -217,28 +217,28 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
         <button
           onClick={() => logoInputRef.current?.click()}
           disabled={isUploading}
-          className='w-full flex items-center gap-3 px-6 py-4 bg-white rounded-[12px] custom-card-shadow transition-colors hover:bg-gray-50 disabled:opacity-50'
+          className='w-full flex items-center gap-3 px-6 py-4 bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] custom-card-shadow transition-colors hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50'
         >
           <Upload className='w-5 h-5 text-gray-400' />
-          <span className='text-sm font-medium text-gray-600'>Upload SVG/PNG logo</span>
+          <span className='text-sm font-medium text-gray-600 dark:text-gray-300'>Upload SVG/PNG logo</span>
         </button>
 
         <button
           onClick={() => coverInputRef.current?.click()}
           disabled={isUploading}
-          className='w-full flex items-center gap-3 px-6 py-4 bg-white rounded-[12px] custom-card-shadow transition-colors hover:bg-gray-50 disabled:opacity-50'
+          className='w-full flex items-center gap-3 px-6 py-4 bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] custom-card-shadow transition-colors hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50'
         >
           <Upload className='w-5 h-5 text-gray-400' />
-          <span className='text-sm font-medium text-gray-600'>Upload Cover image</span>
+          <span className='text-sm font-medium text-gray-600 dark:text-gray-300'>Upload Cover image</span>
         </button>
 
         <button
           onClick={() => cacInputRef.current?.click()}
           disabled={isUploading}
-          className='w-full flex items-center gap-3 px-6 py-4 bg-white rounded-[12px] custom-card-shadow transition-colors hover:bg-gray-50 disabled:opacity-50'
+          className='w-full flex items-center gap-3 px-6 py-4 bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] custom-card-shadow transition-colors hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50'
         >
           <Upload className='w-5 h-5 text-gray-400' />
-          <span className='text-sm font-medium text-gray-600'>Upload CAC Document</span>
+          <span className='text-sm font-medium text-gray-600 dark:text-gray-300'>Upload CAC Document</span>
         </button>
       </div>
     </div>

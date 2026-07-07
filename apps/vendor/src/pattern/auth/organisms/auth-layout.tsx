@@ -28,7 +28,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
 }) => {
   return (
     <section
-      className={`relative h-dvh w-full min-w-0 overflow-y-auto bg-[rgba(0,0,0,.7)] lg:bg-accent ${className}`}
+      className={`relative h-dvh w-full min-w-0 overflow-y-auto bg-[rgba(0,0,0,.7)] lg:bg-accent dark:lg:bg-background ${className}`}
     >
       {/* Mobile Background Overlay — fixed to the viewport so it stays in place while the content scrolls */}
       <div className='fixed inset-0 -z-10 lg:hidden'>
@@ -50,10 +50,15 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
         </div>
 
         {/* Form Container */}
-        <div className='w-full max-w-[424px] rounded-[12px] bg-accent px-5 py-12 lg:bg-transparent lg:p-0'>
+        <div className='w-full max-w-[424px] rounded-[12px] bg-accent dark:bg-card px-5 py-12 lg:bg-transparent dark:lg:bg-transparent lg:p-0'>
           {/* Desktop Logo */}
           <div className='mb-8 hidden lg:block'>
-            <Logo brown={true} />
+            <div className='dark:hidden'>
+              <Logo brown={true} />
+            </div>
+            <div className='hidden dark:block'>
+              <Logo white={true} />
+            </div>
           </div>
 
           <If isTrue={isError ?? false}>
@@ -62,11 +67,11 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
 
           {/* Title Section */}
           <div className='mb-8'>
-            <h1 className='text-[2rem] font-medium font-poppins text-primary mb-2'>
+            <h1 className='text-[2rem] font-medium font-poppins text-primary dark:text-white mb-2'>
               {title}
             </h1>
             {subtitle && (
-              <p className='text-sm font-normal text-gray-600'>
+              <p className='text-sm font-normal text-gray-600 dark:text-gray-400'>
                 {subtitle}
               </p>
             )}

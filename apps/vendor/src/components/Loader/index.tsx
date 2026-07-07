@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { BallTriangle } from 'react-loader-spinner';
+import { Loader2 } from 'lucide-react';
 
 interface LoaderProps {
   small?: boolean;
@@ -10,18 +10,12 @@ interface LoaderProps {
 const Loader: FC<LoaderProps> = ({ small = false, height, width }) => {
   return (
     <div
-      className={`${small ? 'bg-[#DDE2E5]' : 'h-screen w-full bg-[#F8F9FA]'
-        }  flex items-center justify-center max-w-[1324px] m-auto h-screen`}
+      className={`${small ? 'bg-[#DDE2E5] dark:bg-muted/30' : 'h-screen w-full bg-[#F8F9FA] dark:bg-background'
+        } flex items-center justify-center max-w-[1324px] m-auto`}
     >
-      <BallTriangle
-        height={height ? height : 100}
-        width={width ? width : 100}
-        radius={5}
-        color='rgba(62, 28, 1, 1)'
-        ariaLabel='ball-triangle-loading'
-        wrapperStyle={{}}
-        wrapperClass=''
-        visible={true}
+      <Loader2
+        className='animate-spin text-[#5C2D0D] dark:text-gray-300'
+        size={height ? height : 48}
       />
     </div>
   );

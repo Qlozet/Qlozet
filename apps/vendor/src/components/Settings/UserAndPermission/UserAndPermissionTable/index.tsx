@@ -155,9 +155,9 @@ const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({ 
       onSearchChange={setSearchValue}
       filterControl={
         <div className='flex items-center gap-2'>
-          <span className='text-sm font-medium text-gray-700 whitespace-nowrap'>Filter By :</span>
+          <span className='text-sm font-medium text-gray-700 dark:text-muted-foreground whitespace-nowrap'>Filter By :</span>
           <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className='w-[140px] bg-white'>
+            <SelectTrigger className='w-[140px]'>
               <SelectValue placeholder='Select role' />
             </SelectTrigger>
             <SelectContent>

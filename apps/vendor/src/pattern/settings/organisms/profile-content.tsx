@@ -117,8 +117,8 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
             onClick={() => setActiveProfileTab('organization')}
             className={`flex-1 py-2.5 text-sm font-semibold rounded-[8px] transition-all duration-200 ${
               activeProfileTab === 'organization'
-                ? 'bg-[#6D5545] text-white shadow-sm'
-                : 'text-gray-500 hover:text-gray-900 bg-transparent'
+                ? 'bg-[#6D5545] text-white shadow-sm dark:bg-white dark:text-black'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent'
             }`}
           >
             Organization profile
@@ -127,8 +127,8 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
             onClick={() => setActiveProfileTab('user')}
             className={`flex-1 py-2.5 text-sm font-semibold rounded-[8px] transition-all duration-200 ${
               activeProfileTab === 'user'
-                ? 'bg-[#6D5545] text-white shadow-sm'
-                : 'text-gray-500 hover:text-gray-900 bg-transparent'
+                ? 'bg-[#6D5545] text-white shadow-sm dark:bg-white dark:text-black'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent'
             }`}
           >
             User profile

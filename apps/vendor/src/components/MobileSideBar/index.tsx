@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { X } from 'lucide-react';
 import { StaticImageData } from 'next/image';
 import Logo from '../Logo';
 import Modal from '../Modal';
@@ -9,6 +10,7 @@ import { handlelogout } from '@/redux/slices/filter-slice';
 import { useAppDispatch } from '@/redux/store';
 import { show } from '@ebay/nice-modal-react';
 import LogoutConfirmationModal from '@/pattern/common/organisms/logout-confirmation-modal';
+import { cn } from '@/lib/utils';
 
 // Import icons
 import dashboardIcon from '@/public/assets/svg/dashboardIcon.svg';
@@ -127,34 +129,63 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
 
   return (
     <div
-      className={`w-screen ${
-        showMobileNav ? 'block lg:hidden' : 'hidden'
-      } bg-[rgba(0,0,0,.2)] fixed h-[100rem] z-40 top-0`}
+      className={cn(
+        'w-screen fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity duration-300',
+        showMobileNav ? 'opacity-100 visible block lg:hidden' : 'opacity-0 invisible hidden'
+      )}
       style={{ zIndex: 10000 }}
       onClick={handleBackdropClick}
     >
-      <div className='bg-white h-screen w-[250px]'>
-        <div className='py-10 px-16'>
-          <div className='flex items-center justify-center'>
-            <Image src={logo} alt='Altire Logo' />
+      <div 
+        className={cn(
+          'bg-background dark:bg-card h-full w-[280px] flex flex-col shadow-2xl transition-transform duration-300',
+          showMobileNav ? 'translate-x-0' : '-translate-x-full'
+        )}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className='flex items-center justify-between py-6 px-6 border-b border-border/50'>
+          <div className='flex items-center'>
+            <div className='dark:hidden block'>
+              <Logo brown />
+            </div>
+            <div className='hidden dark:block'>
+              <Logo white />
+            </div>
           </div>
+          <button 
+            onClick={closeSideBar} 
+            className='p-2 rounded-full text-muted-foreground hover:bg-accent dark:hover:bg-muted transition-colors'
+          >
+            <X className='size-5' />
+          </button>
         </div>
-        <div>
+        
+        <div className='flex-1 overflow-y-auto py-4 custom-scrollbar'>
           {sidebaritems?.map((item: SidebarItem, index: number) => (
             <div
-              className='px-16 flex items-center gap-4 py-3 cursor-pointer hover:bg-[#f4f4f4] min-w-[250px]'
+              className={cn(
+                'px-6 flex items-center gap-4 py-3.5 mx-3 mb-1 rounded-xl cursor-pointer transition-colors group',
+                active === item.name 
+                  ? 'bg-primary/5 dark:bg-primary/10' 
+                  : 'hover:bg-accent dark:hover:bg-muted'
+              )}
               key={index}
               onClick={() => handleItemClick(item)}
             >
               {active === item.name ? (
-                <Image src={item.activeIcon} alt={`${item.name} active icon`} />
+                <Image src={item.activeIcon} alt={`${item.name} active icon`} className='size-5' />
               ) : (
-                <Image src={item.defaultIcon} alt={`${item.name} icon`} />
+                <Image 
+                  src={item.defaultIcon} 
+                  alt={`${item.name} icon`} 
+                  className='size-5 opacity-70 group-hover:opacity-100 transition-opacity' 
+                />
               )}
               <p
-                className={`font-normal text-sm ${
-                  active === item.name ? 'text-primary' : 'text-[#6B7280]'
-                }`}
+                className={cn(
+                  'font-medium text-[15px] transition-colors',
+                  active === item.name ? 'text-primary dark:text-white' : 'text-muted-foreground group-hover:text-foreground'
+                )}
               >
                 {item.name}
               </p>
