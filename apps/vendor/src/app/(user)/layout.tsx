@@ -3,6 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import React, {
+  Suspense,
   useState,
   useEffect,
   ReactNode,
@@ -52,7 +53,7 @@ interface UserLayoutProps {
   children: ReactNode;
 }
 
-const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
+const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
   const stateData = useAppSelector(reduxData);
   const dispatch = useAppDispatch();
   const pathname = usePathname();
@@ -238,4 +239,13 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
   );
 };
 
+const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
+  return (
+    <Suspense fallback={null}>
+      <UserLayoutInner>{children}</UserLayoutInner>
+    </Suspense>
+  );
+};
+
 export default UserLayout;
+
