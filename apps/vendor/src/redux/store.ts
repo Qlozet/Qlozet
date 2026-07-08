@@ -12,7 +12,7 @@ import {
 } from 'redux-persist';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import rootReducer, { rootPersistConfig } from './root-reducer';
-import { baseAPI, custom401Middleware } from './api/base-api';
+import { baseAPI, custom401Middleware, custom403Middleware } from './api/base-api';
 import env from '@/env';
 
 const reducer = persistReducer<ReturnType<typeof rootReducer>>(
@@ -29,7 +29,8 @@ export const store = configureStore({
       },
     })
       .concat(baseAPI.middleware)
-      .concat(custom401Middleware),
+      .concat(custom401Middleware)
+      .concat(custom403Middleware),
 
   devTools: env.NODE_ENV !== 'production',
 });

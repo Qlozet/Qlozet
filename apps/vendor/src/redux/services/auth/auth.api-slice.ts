@@ -17,24 +17,64 @@ export interface SignInRequest {
   rememberMe?: boolean;
 }
 
+export interface LoginResponseBusiness {
+  _id: string;
+  business_name: string;
+  business_logo_url?: string | null;
+  status?: string;
+  role: string;
+  role_id: string;
+  is_owner: boolean;
+}
+
+export interface LoginResponseActiveBusiness {
+  _id: string;
+  business_name: string;
+  role: string;
+  is_owner: boolean;
+}
+
 export interface LoginResponse {
+  message?: string;
   data: {
     user: {
       _id: string;
-      name: string;
+      full_name?: string;
+      name?: string;
       email: string;
-      role: 'vendor' | 'admin' | 'customer';
+      type?: string;
+      role?: 'vendor' | 'admin' | 'customer';
       profileImage?: string;
       phone?: string;
-      isEmailVerified: boolean;
-      isActive: boolean;
+      status?: string;
+      isEmailVerified?: boolean;
+      isActive?: boolean;
+      must_change_password?: boolean;
       lastLogin?: string;
-      createdAt: string;
+      createdAt?: string;
     };
     token: {
       access_token: string;
       refresh_token: string;
-    }
+    };
+    businesses?: LoginResponseBusiness[];
+    active_business?: LoginResponseActiveBusiness;
+    must_change_password?: boolean;
+  };
+}
+
+export interface SwitchBusinessRequest {
+  business_id: string;
+}
+
+export interface SwitchBusinessResponse {
+  message?: string;
+  data: {
+    token: {
+      access_token: string;
+      refresh_token: string;
+    };
+    active_business: LoginResponseActiveBusiness;
   };
 }
 
@@ -342,6 +382,15 @@ export const authApiSlice = baseAPI.injectEndpoints({
       }),
       invalidatesTags: ['Profile'],
     }),
+
+    // Switch Business (multi-business users)
+    switchBusiness: builder.mutation<SwitchBusinessResponse, SwitchBusinessRequest>({
+      query: (body) => ({
+        url: '/auth/switch-business',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
@@ -368,4 +417,5 @@ export const {
   useEnableTwoFactorMutation,
   useVerifyTwoFactorSetupMutation,
   useDisableTwoFactorMutation,
+  useSwitchBusinessMutation,
 } = authApiSlice;

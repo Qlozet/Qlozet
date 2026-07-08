@@ -30,7 +30,7 @@ const LogoutConfirmationModal = create(() => {
                 <QuestionMarkIcon />
 
                 <div className='w-full flex flex-col items-center gap-y-[24px] mt-[38px]'>
-                    <h1 className='text-black text-lg text-center font-bold font-poppins'>
+                    <h1 className='text-black dark:text-foreground text-lg text-center font-bold font-poppins'>
                         Are you sure you want to logout?
                     </h1>
                     <Button onClick={handleLogoutClick} variant="destructive" size="lg" className='w-full max-w-[327px]'>Logout</Button>

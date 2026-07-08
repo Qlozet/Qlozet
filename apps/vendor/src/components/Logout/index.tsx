@@ -25,16 +25,16 @@ const Logout: React.FC<LogoutProps> = ({ logoutFunction }) => {
   };
 
   return (
-    <div className='relative bg-white w-full lg:w-[35%] rounded-[12px] flex flex-col items-center gap-6 p-6'>
+    <div className='relative bg-white dark:bg-card w-full lg:w-[35%] rounded-[12px] flex flex-col items-center gap-6 p-6'>
       <div
         className='absolute top-4 right-4 cursor-pointer'
         onClick={handleCloseClick}
       >
-        <Image src={closeIcon} alt='Close icon' />
+        <Image src={closeIcon} alt='Close icon' className='dark:brightness-0 dark:invert' />
       </div>
       <Image src={questionMarkIcon} alt='Question mark icon' />
       <Typography
-        textColor='text-black'
+        textColor='text-black dark:text-foreground'
         textWeight='font-bold'
         textSize='text-[18px]'
       >
