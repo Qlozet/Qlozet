@@ -41,7 +41,7 @@ export const OrderCountChart = () => {
                     <BarChart
                         data={chartData}
                         barGap={2}
-                        margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                        margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="0" vertical={false} stroke="#e5e7eb" />
                         <XAxis
                             dataKey="day"
