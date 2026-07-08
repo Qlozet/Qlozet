@@ -1,4 +1,6 @@
 "use client"
+import React, { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 
 import NavLink from "../molecules/nav-link"
 import BrandLogo from "../molecules/brand-logo"
@@ -47,6 +49,19 @@ export const Sidebar = () => {
         { icon: SupportNavIcon, label: "Support", href: APP_ROUTES.support },
     ]
 
+    const pathname = usePathname();
+    const [expandedItem, setExpandedItem] = useState<string | undefined>();
+
+    useEffect(() => {
+        const activeIndex = menuItems.findIndex(item => item.subItems && (pathname === item.href || pathname.startsWith(`${item.href}/`)));
+        if (activeIndex !== -1) {
+            setExpandedItem(`item-${activeIndex}`);
+        } else {
+            setExpandedItem(undefined);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pathname]);
+
     const screenSize = useScreenSize();
     console.log("SCREEN SIZE: ", screenSize.toString() ?? "");
 
@@ -65,8 +80,14 @@ export const Sidebar = () => {
                             {menuItems?.map((item, idx) => {
                                 return item.subItems ?
                                     (
-                                        <Accordion key={idx} type="single" collapsible>
-                                            <AccordionItem value="item-1" className="border-none">
+                                        <Accordion 
+                                            key={idx} 
+                                            type="single" 
+                                            collapsible
+                                            value={expandedItem === `item-${idx}` ? `item-${idx}` : ""}
+                                            onValueChange={(val) => setExpandedItem(val)}
+                                        >
+                                            <AccordionItem value={`item-${idx}`} className="border-none">
                                                 <AccordionTrigger className="flex items-center justify-center 2xl:justify-start gap-x-0 2xl:gap-x-3 px-2 2xl:px-4 py-2 2xl:py-3 text-[#ACB5BD] dark:text-gray-400 hover:text-secondary dark:hover:text-white transition-colors text-sm font-normal data-[state=open]:text-primary dark:data-[state=open]:text-white hover:no-underline cursor-pointer border-none outline-none shadow-none duration-300">
                                                     <span> <item.icon className="w-5 h-5 transition-colors duration-75" /></span>
                                                     <span className="invisible hidden 2xl:visible 2xl:inline-block">{item.label}</span>

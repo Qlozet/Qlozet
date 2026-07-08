@@ -1,6 +1,6 @@
 'use client';
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { X } from 'lucide-react';
 import { StaticImageData } from 'next/image';
@@ -56,13 +56,15 @@ interface MobileSideBarProps {
 }
 
 const MobileSideBar: React.FC<MobileSideBarProps> = ({
-  active,
+  active, // Kept for backwards compatibility if needed elsewhere
   closeSideBar,
   showMobileNav,
 }) => {
   const dispatch = useAppDispatch();
   const [showLogOutModal, setShowLogOutModal] = useState<boolean>(false);
   const router = useRouter();
+  const pathname = usePathname();
+  
   const sidebaritems: SidebarItem[] = [
     {
       name: 'Dashboard',
@@ -145,6 +147,23 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
     }
   };
 
+  const isItemActive = (link: string) => {
+    if (!link) return false;
+    return pathname === link || pathname.startsWith(`${link}/`);
+  };
+
+  const [expandedItem, setExpandedItem] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    const activeIndex = sidebaritems.findIndex(item => item.subItems && isItemActive(item.link));
+    if (activeIndex !== -1) {
+      setExpandedItem(`item-${activeIndex}`);
+    } else {
+      setExpandedItem(undefined);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, showMobileNav]);
+
   return (
     <div
       className={cn(
@@ -162,7 +181,7 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         <div className='flex items-center justify-between py-6 px-6 border-b border-border/50'>
-          <div className='flex items-center'>
+          <div className='flex items-center scale-[0.60] origin-left'>
             <div className='dark:hidden block'>
               <Logo brown />
             </div>
@@ -180,19 +199,28 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
         
         <div className='flex-1 overflow-y-auto py-4 custom-scrollbar'>
           {sidebaritems?.map((item: SidebarItem, index: number) => {
+            const isActive = isItemActive(item.link);
+            
             if (item.subItems) {
                return (
-                  <Accordion key={index} type="single" collapsible className="w-full">
+                  <Accordion 
+                    key={index} 
+                    type="single" 
+                    collapsible 
+                    className="w-full"
+                    value={expandedItem === `item-${index}` ? `item-${index}` : ""}
+                    onValueChange={(val) => setExpandedItem(val)}
+                  >
                      <AccordionItem value={`item-${index}`} className="border-none">
                         <AccordionTrigger className={cn(
                             'px-6 flex items-center justify-between py-3.5 mx-3 mb-1 rounded-xl transition-colors hover:no-underline group',
-                            active === item.name 
+                            isActive 
                             ? 'bg-primary/5 dark:bg-primary/10 text-primary dark:text-white' 
                             : 'hover:bg-accent dark:hover:bg-muted text-muted-foreground'
                         )}>
                             <div className="flex items-center gap-4">
-                                {active === item.name ? (
-                                    <Image src={item.activeIcon} alt={`${item.name} active icon`} className='size-5' />
+                                {isActive ? (
+                                    <Image src={item.activeIcon} alt={`${item.name} active icon`} className='size-5 dark:brightness-0 dark:invert transition-all' />
                                 ) : (
                                     <Image 
                                     src={item.defaultIcon} 
@@ -202,7 +230,7 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
                                 )}
                                 <span className={cn(
                                     'font-medium text-[15px] transition-colors',
-                                    active === item.name ? 'text-primary dark:text-white' : 'text-muted-foreground group-hover:text-foreground'
+                                    isActive ? 'text-primary dark:text-white' : 'text-muted-foreground group-hover:text-foreground'
                                 )}>
                                     {item.name}
                                 </span>
@@ -210,18 +238,26 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
                         </AccordionTrigger>
                         <AccordionContent className="pl-12 pr-6 pb-2">
                            <div className="flex flex-col gap-2 border-l border-border/50 pl-4 py-1">
-                              {item.subItems.map((sub, i) => (
-                                 <button
-                                    key={i}
-                                    className="text-left text-[14px] text-muted-foreground hover:text-foreground py-1.5 transition-colors"
-                                    onClick={() => {
-                                        router.push(sub.link);
-                                        closeSideBar();
-                                    }}
-                                 >
-                                    {sub.name}
-                                 </button>
-                              ))}
+                              {item.subItems.map((sub, i) => {
+                                 const isSubActive = pathname === sub.link;
+                                 return (
+                                     <button
+                                        key={i}
+                                        className={cn(
+                                            "text-left text-[14px] py-1.5 transition-colors",
+                                            isSubActive 
+                                            ? "text-primary dark:text-white font-medium" 
+                                            : "text-muted-foreground hover:text-foreground"
+                                        )}
+                                        onClick={() => {
+                                            router.push(sub.link);
+                                            closeSideBar();
+                                        }}
+                                     >
+                                        {sub.name}
+                                     </button>
+                                 );
+                              })}
                            </div>
                         </AccordionContent>
                      </AccordionItem>
@@ -233,15 +269,15 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
               <div
                 className={cn(
                   'px-6 flex items-center gap-4 py-3.5 mx-3 mb-1 rounded-xl cursor-pointer transition-colors group',
-                  active === item.name 
+                  isActive 
                     ? 'bg-primary/5 dark:bg-primary/10' 
                     : 'hover:bg-accent dark:hover:bg-muted'
                 )}
                 key={index}
                 onClick={() => handleItemClick(item)}
               >
-                {active === item.name ? (
-                  <Image src={item.activeIcon} alt={`${item.name} active icon`} className='size-5' />
+                {isActive ? (
+                  <Image src={item.activeIcon} alt={`${item.name} active icon`} className='size-5 dark:brightness-0 dark:invert transition-all' />
                 ) : (
                   <Image 
                     src={item.defaultIcon} 
@@ -252,7 +288,7 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
                 <p
                   className={cn(
                     'font-medium text-[15px] transition-colors',
-                    active === item.name ? 'text-primary dark:text-white' : 'text-muted-foreground group-hover:text-foreground'
+                    isActive ? 'text-primary dark:text-white' : 'text-muted-foreground group-hover:text-foreground'
                   )}
                 >
                   {item.name}
