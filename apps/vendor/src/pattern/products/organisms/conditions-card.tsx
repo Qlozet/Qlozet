@@ -26,15 +26,75 @@ import {
   FREE_TEXT_FIELDS,
 } from '../lib/collection-condition-options'
 
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+
 export interface ConditionsCardProps {
-  /** The form control from useForm */
   control: any
-  /** The form instance (to use setValue) */
   form: any
-  /** The name of the field array (e.g. 'conditions') */
   name?: string
-  /** The taxonomy tree response */
   taxonomyTree: any
+}
+
+function SortableConditionRow({ id, children }: { id: string, children: React.ReactNode }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    ...(isDragging ? { position: 'relative' as any, zIndex: 50 } : {}),
+  }
+
+  return (
+    <div 
+      ref={setNodeRef} 
+      style={style} 
+      className={cn(
+        'flex flex-wrap items-start gap-2 sm:flex-nowrap rounded-xl p-2 -mx-2 transition-colors duration-200 bg-card',
+        isDragging && 'shadow-lg border border-primary/20 bg-primary/5 opacity-90 scale-[1.02]'
+      )}
+    >
+      {/* Drag Handle */}
+      <div
+        ref={setActivatorNodeRef}
+        {...attributes}
+        {...listeners}
+        className={cn(
+          'flex h-12 w-10 shrink-0 cursor-grab items-center justify-center rounded-lg border transition-all duration-200 active:cursor-grabbing touch-none',
+          isDragging
+            ? 'bg-primary border-primary text-white shadow-md'
+            : 'bg-muted/40 border-border/60 dark:border-white/10 text-muted-foreground hover:bg-primary/10 hover:border-primary/30 hover:text-primary'
+        )}
+        title='Drag to reorder'
+      >
+        <GripVertical className='size-4' />
+      </div>
+
+      {children}
+    </div>
+  )
 }
 
 export const ConditionsCard = ({
@@ -49,22 +109,25 @@ export const ConditionsCard = ({
   })
 
   // ─── Drag-and-drop state ──────────────────────────────────────
-  const [dragIndex, setDragIndex] = useState<number | null>(null)
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
 
-  const handleDragStart = useCallback((index: number) => { setDragIndex(index) }, [])
-  const handleDragOver = useCallback((e: React.DragEvent, index: number) => {
-    e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
-    setDragOverIndex(index)
-  }, [])
-  const handleDrop = useCallback((e: React.DragEvent, targetIndex: number) => {
-    e.preventDefault()
-    if (dragIndex !== null && dragIndex !== targetIndex) move(dragIndex, targetIndex)
-    setDragIndex(null)
-    setDragOverIndex(null)
-  }, [dragIndex, move])
-  const handleDragEnd = useCallback(() => { setDragIndex(null); setDragOverIndex(null) }, [])
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (over && active.id !== over.id) {
+      const oldIndex = fields.findIndex((f) => f.id === active.id)
+      const newIndex = fields.findIndex((f) => f.id === over.id)
+      move(oldIndex, newIndex)
+    }
+  }
 
   // ─── Taxonomy-driven value dropdowns ──────────────────────────
   const getTaxonomyValues = useMemo(() => {
@@ -131,149 +194,132 @@ export const ConditionsCard = ({
           )}
         />
 
-        <div className='space-y-3'>
-          {fields.map((row, index) => {
-            const selectedField = form.watch(`${name}.${index}.field`)
-            const isFreeText = FREE_TEXT_FIELDS.has(selectedField)
-            const isTaxonomyField = selectedField in TAXONOMY_FIELD_CONFIG
-            const isStaticField = selectedField in STATIC_VALUE_OPTIONS
-            let valueOptions: { value: string; label: string }[] = []
-            if (isTaxonomyField) valueOptions = getTaxonomyValues(selectedField)
-            else if (isStaticField) valueOptions = STATIC_VALUE_OPTIONS[selectedField]
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={fields.map((f) => f.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className='space-y-3'>
+              {fields.map((row, index) => {
+                const selectedField = form.watch(`${name}.${index}.field`)
+                const isFreeText = FREE_TEXT_FIELDS.has(selectedField)
+                const isTaxonomyField = selectedField in TAXONOMY_FIELD_CONFIG
+                const isStaticField = selectedField in STATIC_VALUE_OPTIONS
+                let valueOptions: { value: string; label: string }[] = []
+                if (isTaxonomyField) valueOptions = getTaxonomyValues(selectedField)
+                else if (isStaticField) valueOptions = STATIC_VALUE_OPTIONS[selectedField]
 
-            return (
-              <div
-                key={row.id}
-                draggable
-                onDragStart={() => handleDragStart(index)}
-                onDragOver={(e) => handleDragOver(e, index)}
-                onDrop={(e) => handleDrop(e, index)}
-                onDragEnd={handleDragEnd}
-                className={cn(
-                  'flex flex-wrap items-start gap-2 sm:flex-nowrap rounded-xl p-2 -mx-2 transition-all duration-200',
-                  dragIndex === index && 'opacity-40 scale-[0.98]',
-                  dragOverIndex === index && dragIndex !== index && 'border-2 border-primary/40 bg-primary/5',
-                  dragIndex !== null && dragOverIndex !== index && dragIndex !== index && 'opacity-80',
-                )}
-              >
-                {/* Drag Handle */}
-                <div
-                  className={cn(
-                    'flex h-12 w-10 shrink-0 cursor-grab items-center justify-center rounded-lg border transition-all duration-200 active:cursor-grabbing',
-                    dragIndex === index
-                      ? 'bg-primary border-primary text-white shadow-md'
-                      : 'bg-muted/40 border-border/60 dark:border-white/10 text-muted-foreground hover:bg-primary/10 hover:border-primary/30 hover:text-primary'
-                  )}
-                  title='Drag to reorder'
-                >
-                  <GripVertical className='size-4' />
-                </div>
-
-                {/* Field */}
-                <FormField
-                  control={control}
-                  name={`${name}.${index}.field`}
-                  render={({ field }) => (
-                    <FormItem className='flex-1 min-w-[140px]'>
-                      <Select
-                        value={field.value}
-                        onValueChange={(next) => {
-                          field.onChange(next)
-                          form.setValue(`${name}.${index}.value`, '')
-                        }}
-                      >
-                        <FormControl>
-                          <SelectTrigger className='h-12 rounded-lg bg-muted/40 dark:border-white/10'>
-                            <SelectValue placeholder='Select field...' />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {CONDITION_FIELD_OPTIONS.map((opt) => (
-                            <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-
-                {/* Operator */}
-                <FormField
-                  control={control}
-                  name={`${name}.${index}.operator`}
-                  render={({ field }) => (
-                    <FormItem className='flex-1 min-w-[140px]'>
-                      <Select value={field.value} onValueChange={field.onChange}>
-                        <FormControl>
-                          <SelectTrigger className='h-12 rounded-lg bg-muted/40 dark:border-white/10'>
-                            <SelectValue placeholder='Operator...' />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {CONDITION_OPERATOR_OPTIONS.map((opt) => (
-                            <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-
-                {/* Value */}
-                <FormField
-                  control={control}
-                  name={`${name}.${index}.value`}
-                  render={({ field }) => (
-                    <FormItem className='flex-1 min-w-[140px]'>
-                      {isFreeText ? (
-                        <FormControl>
-                          <Input
-                            placeholder={selectedField === 'base_price' ? 'Enter price (e.g. 5000)' : 'Enter value'}
-                            className='h-12 rounded-lg bg-muted/40 dark:border-white/10'
-                            {...field}
-                          />
-                        </FormControl>
-                      ) : (
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <FormControl>
-                            <SelectTrigger className='h-12 rounded-lg bg-muted/40 dark:border-white/10'>
-                              <SelectValue placeholder='Select value...' />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {valueOptions.length > 0 ? (
-                              valueOptions.map((opt) => (
+                return (
+                  <SortableConditionRow key={row.id} id={row.id}>
+                    {/* Field */}
+                    <FormField
+                      control={control}
+                      name={`${name}.${index}.field`}
+                      render={({ field }) => (
+                        <FormItem className='flex-1 min-w-[140px]'>
+                          <Select
+                            value={field.value}
+                            onValueChange={(next) => {
+                              field.onChange(next)
+                              form.setValue(`${name}.${index}.value`, '')
+                            }}
+                          >
+                            <FormControl>
+                              <SelectTrigger className='h-12 rounded-lg bg-muted/40 dark:border-white/10'>
+                                <SelectValue placeholder='Select field...' />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {CONDITION_FIELD_OPTIONS.map((opt) => (
                                 <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                              ))
-                            ) : (
-                              <SelectItem value='__loading' disabled>
-                                {isTaxonomyField ? 'Loading from taxonomy...' : 'Select a field first'}
-                              </SelectItem>
-                            )}
-                          </SelectContent>
-                        </Select>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormItem>
                       )}
-                    </FormItem>
-                  )}
-                />
+                    />
 
-                {/* No Chevrons */}
+                    {/* Operator */}
+                    <FormField
+                      control={control}
+                      name={`${name}.${index}.operator`}
+                      render={({ field }) => (
+                        <FormItem className='flex-1 min-w-[140px]'>
+                          <Select value={field.value} onValueChange={field.onChange}>
+                            <FormControl>
+                              <SelectTrigger className='h-12 rounded-lg bg-muted/40 dark:border-white/10'>
+                                <SelectValue placeholder='Operator...' />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {CONDITION_OPERATOR_OPTIONS.map((opt) => (
+                                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormItem>
+                      )}
+                    />
 
-                {/* Delete */}
-                <Button
-                  type='button'
-                  variant='outline'
-                  size='icon'
-                  disabled={fields.length === 1}
-                  onClick={() => remove(index)}
-                  className='h-12 w-12 shrink-0 rounded-lg text-muted-foreground hover:text-red-600'
-                >
-                  <Trash2 className='size-4' />
-                </Button>
-              </div>
-            )
-          })}
-        </div>
+                    {/* Value */}
+                    <FormField
+                      control={control}
+                      name={`${name}.${index}.value`}
+                      render={({ field }) => (
+                        <FormItem className='flex-1 min-w-[140px]'>
+                          {isFreeText ? (
+                            <FormControl>
+                              <Input
+                                placeholder={selectedField === 'base_price' ? 'Enter price (e.g. 5000)' : 'Enter value'}
+                                className='h-12 rounded-lg bg-muted/40 dark:border-white/10'
+                                {...field}
+                              />
+                            </FormControl>
+                          ) : (
+                            <Select value={field.value} onValueChange={field.onChange}>
+                              <FormControl>
+                                <SelectTrigger className='h-12 rounded-lg bg-muted/40 dark:border-white/10'>
+                                  <SelectValue placeholder='Select value...' />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {valueOptions.length > 0 ? (
+                                  valueOptions.map((opt) => (
+                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                  ))
+                                ) : (
+                                  <SelectItem value='__loading' disabled>
+                                    {isTaxonomyField ? 'Loading from taxonomy...' : 'Select a field first'}
+                                  </SelectItem>
+                                )}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Delete */}
+                    <Button
+                      type='button'
+                      variant='outline'
+                      size='icon'
+                      disabled={fields.length === 1}
+                      onClick={() => remove(index)}
+                      className='h-12 w-12 shrink-0 rounded-lg text-muted-foreground hover:text-red-600'
+                    >
+                      <Trash2 className='size-4' />
+                    </Button>
+                  </SortableConditionRow>
+                )
+              })}
+            </div>
+          </SortableContext>
+        </DndContext>
 
         <button
           type='button'
