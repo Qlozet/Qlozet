@@ -44,7 +44,7 @@ export const SettingsTemplate: React.FC<SettingsTemplateProps> = ({
   return (
     <section className={cn('min-h-screen pb-10', className)}>
       <div className='flex bg-[#F8F9FA] dark:bg-background'>
-        <div className='w-full max-w-7xl mx-auto p-4 md:p-6'>
+        <div className='w-full max-w-7xl mx-auto p-0 md:p-6'>
           <SettingsNavigation
             navigationItems={navigationItems}
             activeTab={activeTab}

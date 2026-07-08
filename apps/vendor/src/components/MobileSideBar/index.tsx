@@ -182,10 +182,10 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
           {sidebaritems?.map((item: SidebarItem, index: number) => {
             if (item.subItems) {
                return (
-                  <Accordion key={index} type="single" collapsible className="w-full px-3 mb-1">
+                  <Accordion key={index} type="single" collapsible className="w-full">
                      <AccordionItem value={`item-${index}`} className="border-none">
                         <AccordionTrigger className={cn(
-                            'px-3 flex items-center justify-between py-3.5 rounded-xl transition-colors hover:no-underline group',
+                            'px-6 flex items-center justify-between py-3.5 mx-3 mb-1 rounded-xl transition-colors hover:no-underline group',
                             active === item.name 
                             ? 'bg-primary/5 dark:bg-primary/10 text-primary dark:text-white' 
                             : 'hover:bg-accent dark:hover:bg-muted text-muted-foreground'
