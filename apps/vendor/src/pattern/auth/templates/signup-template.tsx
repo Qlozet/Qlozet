@@ -67,7 +67,7 @@ const PasswordChecklist = ({ password, confirmPassword }: { password: string; co
     [password, confirmPassword]
   );
 
-  if (!password) return null;
+  // Always show the checklist so the user knows the requirements upfront
 
   return (
     <div className='flex flex-col gap-2 mt-3'>
@@ -77,7 +77,7 @@ const PasswordChecklist = ({ password, confirmPassword }: { password: string; co
             className={cn(
               'flex items-center justify-center size-5 rounded-full shrink-0 transition-colors',
               check.met
-                ? 'bg-primary text-white'
+                ? 'bg-primary text-primary-foreground'
                 : 'bg-muted border border-border'
             )}
           >
@@ -357,7 +357,7 @@ export const SignupTemplate = () => {
             <button
               type='button'
               onClick={handleBack}
-              className='flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors'
+              className='flex items-center gap-1.5 text-sm font-medium text-primary dark:text-white hover:text-primary/80 transition-colors'
             >
               <ArrowLeft className='size-4' />
               Back
@@ -405,12 +405,12 @@ export const SignupTemplate = () => {
                 </Button>
 
                 <div className='flex items-center justify-center gap-1.5'>
-                  <p className='font-poppins font-medium text-primary text-sm'>
+                  <p className='font-poppins font-medium text-primary dark:text-gray-300 text-sm'>
                     Already have an account?
                   </p>
                   <AuthLink
                     href={AUTH_ROUTES.signIn}
-                    className='text-base underline font-medium'
+                    className='text-base underline font-medium dark:text-white'
                   >
                     Sign In
                   </AuthLink>

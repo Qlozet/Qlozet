@@ -119,10 +119,10 @@ export const SignInTemplate = () => {
 
                 {/* Sign up link */}
                 <div className='flex items-center justify-center gap-1.5'>
-                  <p className='font-poppins font-medium tex-primary text-sm'>New to Qlozet?</p>
+                  <p className='font-poppins font-medium text-primary dark:text-gray-300 text-sm'>New to Qlozet?</p>
                   <AuthLink
                     href={AUTH_ROUTES.signup}
-                    className='text-base underline font-medium'
+                    className='text-base underline font-medium dark:text-white'
                   >
                     Sign Up
                   </AuthLink>

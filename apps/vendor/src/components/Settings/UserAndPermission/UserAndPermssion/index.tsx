@@ -21,8 +21,7 @@ const UserAndPermission = () => {
         <Button
           onClick={() => setShowAddModal(true)}
           variant="default"
-          size="default"
-          className="gap-[10px] text-xs! font-medium flex items-center"
+          className="gap-[10px] text-xs! font-medium flex items-center bg-[#5C2D0D] hover:bg-[#4A2409] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black"
         >
           <Plus className="size-[18px]" />
           <span>Add new user</span>

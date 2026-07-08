@@ -17,6 +17,7 @@ import { ProductsAccessoriesNavIcon } from "../atoms/nav-icons/products-accessor
 import { ProductsFabricsNavIcon } from "../atoms/nav-icons/products-fabrics-nav-icon"
 import { ProductsCollectionsNavIcon } from "../atoms/nav-icons/products-collections-nav-icon"
 import { ProductsDiscountsNavIcon } from "../atoms/nav-icons/products-discounts-nav-icon"
+import { ProductsSizeGuidesNavIcon } from "../atoms/nav-icons/products-size-guides-nav-icon"
 import { ProductsVideosNavIcon } from "../atoms/nav-icons/products-videos-nav-icon"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { useScreenSize } from "@/lib/hooks/useScreenSize"
@@ -36,6 +37,7 @@ export const Sidebar = () => {
                 { icon: ProductsFabricsNavIcon, label: "Fabrics", href: APP_ROUTES.productsFabrics },
                 { icon: ProductsCollectionsNavIcon, label: "Collections", href: APP_ROUTES.productsCollections },
                 { icon: ProductsDiscountsNavIcon, label: "Discounts", href: APP_ROUTES.productsDiscounts },
+                { icon: ProductsSizeGuidesNavIcon, label: "Size Guides", href: APP_ROUTES.productsSizeGuides },
                 { icon: ProductsVideosNavIcon, label: "Videos", href: APP_ROUTES.productsVideos },
             ]
         },

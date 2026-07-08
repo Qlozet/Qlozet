@@ -83,7 +83,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
               name='fullName'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Full Name
                   </FormLabel>
                   <FormControl>
@@ -108,7 +108,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
               name='username'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Username
                   </FormLabel>
                   <FormControl>
@@ -129,7 +129,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
               name='email'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Email Address
                   </FormLabel>
                   <FormControl>
@@ -155,7 +155,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
               name='phoneNumber'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Phone Number
                   </FormLabel>
                   <FormControl>
@@ -188,7 +188,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
               name='country'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 flex items-center gap-1'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1'>
                     Country
                     <span className='text-gray-400'>ⓘ</span>
                   </FormLabel>
@@ -214,7 +214,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
               name='address'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700'>
+                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Address
                   </FormLabel>
                   <FormControl>
@@ -239,7 +239,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
             <Button
               type='submit'
               disabled={isLoading}
-              className='bg-[#5C2D0D] hover:bg-[#4A2409] text-white px-8 py-2 rounded-lg'
+              className='bg-[#5C2D0D] hover:bg-[#4A2409] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black px-8 py-2 rounded-lg'
             >
               {isLoading ? 'Saving...' : 'Save'}
             </Button>

@@ -85,8 +85,8 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
                 unoptimized={displayPicture?.includes('/raw/')}
               />
             ) : (
-              <div className='w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center'>
-                <span className='text-4xl font-bold text-gray-600'>
+              <div className='w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center'>
+                <span className='text-4xl font-bold text-gray-600 dark:text-gray-300'>
                   {fullName.charAt(0) || 'U'}
                 </span>
               </div>
@@ -106,11 +106,11 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
         </div>
 
         {/* User Info */}
-        <h3 className='text-xl font-semibold text-gray-900 mt-6'>
+        <h3 className='text-xl font-semibold text-gray-900 dark:text-white mt-6'>
           {fullName || 'User'}
         </h3>
         <p className='text-sm text-gray-400 mt-2 uppercase tracking-wider'>{registrationId}</p>
-        <p className='text-sm text-gray-600 mt-1'>{email}</p>
+        <p className='text-sm text-gray-600 dark:text-gray-400 mt-1'>{email}</p>
       </div>
     </div>
   );

@@ -198,7 +198,7 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     return (
         <div className='w-full bg-background'>
             {/* Header Section */}
-            <div className='w-full h-[44px] flex flex-col sm:flex-row sm:items-end sm:justify-end gap-4 mb-[21px]'>
+            <div className='w-full flex flex-col items-end sm:flex-row sm:items-center sm:justify-end gap-4 mb-[21px]'>
                 {/* Action Buttons */}
                 <div className='flex items-center gap-2 flex-wrap'>
                     {/* Import Product */}
@@ -216,7 +216,7 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
                         variant='outline'
                         size='default'
                         onClick={() => setShowSelect(!showSelect)}
-                        className='gap-[10px] text-xs! font-medium dark:text-white dark:border-gray-500'
+                        className='hidden sm:flex gap-[10px] text-xs! font-medium dark:text-white dark:border-gray-500'
                     >
                         <span>{showSelect ? 'Cancel Selection' : 'Select Products'}</span>
                     </Button>
