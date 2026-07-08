@@ -17,7 +17,7 @@ import { OrderStatsSection } from '../molecules/order-stats-section';
 import { createOrdersColumns } from '../molecules/orders-table-columns';
 import { OrderDetailsDrawer } from '../organisms/order-details-drawer';
 import { OrderQuoteDrawer } from '../organisms/order-quote-drawer';
-import { SetOrdersPerDayModal } from '../organisms/set-orders-per-day-modal';
+
 import {
   isCustomOrder,
   readCustomerName,
@@ -65,18 +65,13 @@ export const OrdersPageTemplate: React.FC = () => {
 
   const columns = useMemo(() => createOrdersColumns(openDetails), []);
 
-  const showSetPerDay = () => NiceModal.show(SetOrdersPerDayModal);
+
   const notReady = (label: string) => () =>
     toast.info(`${label} is coming soon.`);
 
   return (
     <div className='w-full min-h-screen h-fit space-y-6 pb-10'>
-      {/* Set custom orders per day */}
-      <div className='flex justify-end'>
-        <Button type='button' onClick={showSetPerDay} className='h-10'>
-          Set Total Custom Orders per day
-        </Button>
-      </div>
+
 
       {/* Metrics */}
       <OrderStatsSection isLoading={isLoading} />
