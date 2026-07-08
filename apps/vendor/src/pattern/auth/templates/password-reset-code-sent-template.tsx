@@ -75,7 +75,7 @@ export const PasswordResetCodeSentTemplate = () => {
     >
       <div className='space-y-6'>
         {/* Email message */}
-        <p className='text-center text-[hsla(0,0%,7%,1)] text-sm leading-relaxed'>
+        <p className='text-center text-[hsla(0,0%,7%,1)] dark:text-gray-300 text-sm leading-relaxed'>
           We've sent a code to the email associated with your business account (
           <span className='font-medium underline'>{email}</span>). Please check
           your email inbox and utilize the code provided to create a new
