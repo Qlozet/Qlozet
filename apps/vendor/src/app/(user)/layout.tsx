@@ -28,6 +28,8 @@ import {
   setFilter,
   reduxData,
 } from '@/redux/slices/filter-slice';
+import { selectMustChangePassword } from '@/redux/slices/auth-slice';
+import { AUTH_ROUTES } from '@/lib/routes';
 
 import CompleteKycPopover from '@/pattern/common/organisms/complete-kyc-popover';
 import { If } from '@/pattern/common/atoms/If';
@@ -45,8 +47,17 @@ interface UserLayoutProps {
 
 const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
   const stateData = useAppSelector(reduxData);
+  const mustChangePassword = useAppSelector(selectMustChangePassword);
   const dispatch = useAppDispatch();
   const pathname = usePathname();
+  const router = useRouter();
+
+  // Route guard: redirect team members who must change their password
+  useEffect(() => {
+    if (mustChangePassword) {
+      router.replace(AUTH_ROUTES.createNewPassword);
+    }
+  }, [mustChangePassword, router]);
 
   const [userDetails, setUserDetails] = useState<UserDetails>({
     businessName: '',

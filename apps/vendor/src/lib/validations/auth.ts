@@ -49,10 +49,10 @@ export const phoneWithExtensionSchema = z
   .regex(/^\+?[1-9]\d{1,14}(\s?(ext|x|extension)\.?\s?\d{1,6})?$/i, "Invalid phone number format with extension")
   .describe("Phone number with optional extension")
 
-// Login Schema
+// Login Schema (no password complexity — backend validates credentials)
 export const signInSchema = z.object({
   email: emailSchema,
-  password: passwordSchema,
+  password: z.string().min(1, 'Password is required'),
   // rememberMe: z.boolean().default(false),
 });
 

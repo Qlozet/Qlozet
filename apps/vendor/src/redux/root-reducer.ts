@@ -3,6 +3,7 @@ import { combineReducers } from '@reduxjs/toolkit';
 import { baseAPI } from './api/base-api';
 import storage from 'redux-persist/lib/storage';
 import { filterSliceReducer } from './slices/filter-slice';
+import { authSliceReducer } from './slices/auth-slice';
 // Individual API slices are no longer needed here when using injectEndpoints
 // They are automatically included in the baseAPI.reducer
 
@@ -13,11 +14,13 @@ export const rootPersistConfig = {
   blacklist: [
     baseAPI.reducerPath, // All API slices use the same reducer path when using injectEndpoints
   ],
+  // auth slice IS persisted (not blacklisted) so businesses/activeBusiness survive refresh
 };
 
 const rootReducer = combineReducers({
   [baseAPI.reducerPath]: baseAPI.reducer,
   filter: filterSliceReducer,
+  auth: authSliceReducer,
 });
 
 export default rootReducer;

@@ -2,7 +2,7 @@ import { useState, FC, useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -17,71 +17,48 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  useGetTeamMembersQuery,
+  type TeamMember,
+} from '@/redux/services/users/users.api-slice';
 
 interface UserData {
+  _id: string;
   name: string;
   emailAddress: string;
   phoneNumber: string;
   role: string;
   status: string;
-  address: string;
+  is_owner: boolean;
 }
 
-const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({ handleEdit }) => {
+const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({
+  handleEdit,
+}) => {
   const [searchValue, setSearchValue] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
 
-  const rawData: UserData[] = useMemo(() => [
-    {
-      name: 'Shola James',
-      emailAddress: 'shola@mail.com',
-      phoneNumber: '+234 8123456789',
-      role: 'Super admin',
-      status: 'Active',
-      address: '14, Jones street, Lagos Nigeria',
-    },
-    {
-      name: 'Esther Oke',
-      emailAddress: 'oke@mail.com',
-      phoneNumber: '+234 8123456789',
-      role: 'Marketing',
-      status: 'Active',
-      address: '14, Jones street, Lagos Nigeria',
-    },
-    {
-      name: 'Fola James',
-      emailAddress: 'fola@mail.com',
-      phoneNumber: '+234 8123456789',
-      role: 'Customer service',
-      status: 'Inactive',
-      address: '14, Jones street, Lagos Nigeria',
-    },
-    {
-      name: 'Fola James',
-      emailAddress: 'fola2@mail.com',
-      phoneNumber: '+234 8123456789',
-      role: 'Operations',
-      status: 'Active',
-      address: '14, Jones street, Lagos Nigeria',
-    },
-    {
-      name: 'Fola James',
-      emailAddress: 'fola3@mail.com',
-      phoneNumber: '+234 8123456789',
-      role: 'Sales',
-      status: 'Active',
-      address: '14, Jones street, Lagos Nigeria',
-    },
-    {
-      name: 'Fola James',
-      emailAddress: 'fola4@mail.com',
-      phoneNumber: '+234 8123456789',
-      role: 'Data analyst',
-      status: 'Active',
-      address: '14, Jones street, Lagos Nigeria',
-    },
-  ], []);
+  const { data: response, isLoading, isError } = useGetTeamMembersQuery();
+  const members = response?.data ?? [];
+
+  // Map API response to table format
+  const rawData: UserData[] = useMemo(
+    () =>
+      members.map((m: TeamMember) => ({
+        _id: m._id,
+        name: m.full_name ?? '',
+        emailAddress: m.email ?? '',
+        phoneNumber: m.phone_number ?? '—',
+        role:
+          m.role?.name
+            ?.replace(/_/g, ' ')
+            .replace(/\b\w/g, (c) => c.toUpperCase()) ?? 'Unknown',
+        status: m.accepted ? 'Active' : 'Pending',
+        is_owner: m.is_owner ?? false,
+      })),
+    [members]
+  );
 
   const data = useMemo(() => {
     return rawData.filter((user) => {
@@ -90,90 +67,125 @@ const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({ 
         user.emailAddress.toLowerCase().includes(searchValue.toLowerCase()) ||
         user.role.toLowerCase().includes(searchValue.toLowerCase());
 
-      const matchesRole = roleFilter === 'all' || user.role.toLowerCase() === roleFilter.toLowerCase();
+      const matchesRole =
+        roleFilter === 'all' ||
+        user.role.toLowerCase() === roleFilter.toLowerCase();
 
       return matchesSearch && matchesRole;
     });
   }, [rawData, searchValue, roleFilter]);
 
-  const columns: ColumnDef<UserData>[] = useMemo(() => [
-    {
-      accessorKey: 'name',
-      header: 'Name',
-      cell: ({ row }) => <div>{row.original.name}</div>,
-    },
-    {
-      accessorKey: 'emailAddress',
-      header: 'Email address',
-      cell: ({ row }) => <div>{row.original.emailAddress}</div>,
-    },
-    {
-      accessorKey: 'phoneNumber',
-      header: 'Phone number',
-      cell: ({ row }) => <div>{row.original.phoneNumber}</div>,
-    },
-    {
-      accessorKey: 'role',
-      header: 'Role',
-      cell: ({ row }) => <div>{row.original.role}</div>,
-    },
-    {
-      accessorKey: 'status',
-      header: 'Status',
-      cell: ({ row }) => {
-        const isActive = row.original.status === 'Active';
-        return (
-          <div className="flex items-center">
-            <span
-              className={`px-3 py-1 rounded-[4px] text-xs font-medium ${isActive
-                  ? 'bg-[#EAFFF2] text-[#00A843]'
-                  : 'bg-[#FFF0F0] text-[#E02B2B]'
-                }`}
-            >
-              {row.original.status}
-            </span>
+  const columns: ColumnDef<UserData>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'name',
+        header: 'Name',
+        cell: ({ row }) => (
+          <div className='flex items-center gap-2'>
+            {row.original.name}
+            {row.original.is_owner && (
+              <span className='text-[10px] font-medium bg-primary/10 text-primary dark:bg-white/10 dark:text-white px-1.5 py-0.5 rounded'>
+                Owner
+              </span>
+            )}
           </div>
-        );
+        ),
       },
-    },
-    {
-      id: 'actions',
-      cell: ({ row }) => {
-        return (
-          <div className='relative flex items-center justify-end w-full'>
-            <ActionMenu handleEdit={() => handleEdit(row.original)} />
-          </div>
-        );
+      {
+        accessorKey: 'emailAddress',
+        header: 'Email address',
+        cell: ({ row }) => <div>{row.original.emailAddress}</div>,
       },
-    },
-  ], [handleEdit]);
+      {
+        accessorKey: 'phoneNumber',
+        header: 'Phone number',
+        cell: ({ row }) => <div>{row.original.phoneNumber}</div>,
+      },
+      {
+        accessorKey: 'role',
+        header: 'Role',
+        cell: ({ row }) => <div>{row.original.role}</div>,
+      },
+      {
+        accessorKey: 'status',
+        header: 'Status',
+        cell: ({ row }) => {
+          const status = row.original.status;
+          const colorMap: Record<string, string> = {
+            Active: 'bg-[#EAFFF2] text-[#00A843]',
+            Pending: 'bg-[#FFF8E1] text-[#F59E0B]',
+            Inactive: 'bg-[#FFF0F0] text-[#E02B2B]',
+          };
+          return (
+            <div className='flex items-center'>
+              <span
+                className={`px-3 py-1 rounded-[4px] text-xs font-medium ${colorMap[status] ?? ''}`}
+              >
+                {status}
+              </span>
+            </div>
+          );
+        },
+      },
+      {
+        id: 'actions',
+        cell: ({ row }) => {
+          return (
+            <div className='relative flex items-center justify-end w-full'>
+              <ActionMenu handleEdit={() => handleEdit(row.original)} />
+            </div>
+          );
+        },
+      },
+    ],
+    [handleEdit]
+  );
 
   const toolbar = (
     <TableToolbar
-      title="Roles & Permissions"
+      title='Roles & Permissions'
       search={searchValue}
       onSearchChange={setSearchValue}
       filterControl={
         <div className='flex items-center gap-2'>
-          <span className='text-sm font-medium text-gray-700 dark:text-muted-foreground whitespace-nowrap'>Filter By :</span>
+          <span className='text-sm font-medium text-gray-700 dark:text-muted-foreground whitespace-nowrap'>
+            Filter By :
+          </span>
           <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className='w-[140px]'>
+            <SelectTrigger className='w-[160px]'>
               <SelectValue placeholder='Select role' />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value='all'>All roles</SelectItem>
-              <SelectItem value='super admin'>Super admin</SelectItem>
-              <SelectItem value='marketing'>Marketing</SelectItem>
-              <SelectItem value='customer service'>Customer service</SelectItem>
+              <SelectItem value='owner'>Owner</SelectItem>
               <SelectItem value='operations'>Operations</SelectItem>
+              <SelectItem value='marketing'>Marketing</SelectItem>
+              <SelectItem value='customer support'>Customer Support</SelectItem>
+              <SelectItem value='tailor'>Tailor</SelectItem>
               <SelectItem value='sales'>Sales</SelectItem>
-              <SelectItem value='data analyst'>Data analyst</SelectItem>
+              <SelectItem value='data analyst'>Data Analyst</SelectItem>
             </SelectContent>
           </Select>
         </div>
       }
     />
   );
+
+  if (isLoading) {
+    return (
+      <div className='flex justify-center py-12'>
+        <Loader2 className='size-6 animate-spin text-muted-foreground' />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className='text-center text-red-500 py-12'>
+        Failed to load team members. Please try again.
+      </div>
+    );
+  }
 
   return (
     <div className='w-full'>
@@ -197,9 +209,7 @@ const ActionMenu: FC<{ handleEdit: () => void }> = ({ handleEdit }) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>
-        <DropdownMenuItem onClick={handleEdit}>
-          Edit user
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleEdit}>Edit user</DropdownMenuItem>
         <DropdownMenuItem className='text-red-600 focus:text-red-600'>
           Deactivate user
         </DropdownMenuItem>

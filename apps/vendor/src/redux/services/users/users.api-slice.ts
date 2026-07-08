@@ -90,7 +90,7 @@ export interface InviteTeamMemberRequest {
   role: string;
   email: string;
   full_name: string;
-  phone_number: string;
+  phone_number?: string;
 }
 
 export interface TeamMember {
@@ -98,8 +98,17 @@ export interface TeamMember {
   full_name?: string;
   email?: string;
   phone_number?: string;
-  role?: string;
-  status?: string;
+  role?: {
+    _id: string;
+    name: string;
+    description?: string;
+  };
+  accepted?: boolean;
+  is_active?: boolean;
+  is_owner?: boolean;
+  invited_by?: string;
+  invite_expires?: string;
+  createdAt?: string;
   [key: string]: unknown;
 }
 

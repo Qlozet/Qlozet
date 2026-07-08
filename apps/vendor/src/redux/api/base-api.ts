@@ -3,6 +3,7 @@ import { Middleware } from '@reduxjs/toolkit';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { SESSION_COOKIE_KEY } from '../../lib/constants';
 import { env } from '@/env';
+import { toast } from 'sonner';
 
 const BASE_URL = env.NEXT_PUBLIC_BASE_URL;
 
@@ -98,6 +99,29 @@ export const custom401Middleware: Middleware =
       console.log('Received 401 Unauthorized response');
       removeCookie(SESSION_COOKIE_KEY);
       window.location.replace('/auth/sign-in');
+    }
+    return next(action);
+  };
+
+// Global 403 handler — shows a toast when a team member lacks permission
+export const custom403Middleware: Middleware =
+  () => (next: any) => (action: any) => {
+    if (
+      typeof action === 'object' &&
+      action !== null &&
+      'type' in action &&
+      'payload' in action &&
+      typeof action.type === 'string' &&
+      action.type.endsWith('/rejected') &&
+      typeof action.payload === 'object' &&
+      action.payload !== null &&
+      'status' in action.payload &&
+      action.payload.status === 403
+    ) {
+      const message =
+        (action.payload as any)?.data?.message ||
+        "You don't have permission to perform this action.";
+      toast.error(message);
     }
     return next(action);
   };
