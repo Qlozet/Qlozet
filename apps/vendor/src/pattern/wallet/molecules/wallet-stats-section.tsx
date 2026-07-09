@@ -108,9 +108,9 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
                 variant='outline'
                 size='sm'
                 onClick={onPurchaseTokens}
-                className='h-7 px-3 text-[10px] font-bold uppercase tracking-wider text-[#462814] border-[#462814] hover:bg-[#462814]/10 dark:text-[#EBB857] dark:border-[#EBB857] dark:hover:bg-[#EBB857]/10 flex items-center gap-1.5 rounded-md'
+                className='h-8 px-3 text-xs flex items-center gap-2'
               >
-                <Sparkles className='size-3' />
+                <Sparkles className='size-3.5' />
                 Buy Tokens
               </Button>
             }
