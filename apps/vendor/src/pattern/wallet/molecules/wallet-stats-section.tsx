@@ -8,6 +8,8 @@ import { Wallet, HandCoins, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { MetricCard } from '@/pattern/common/molecules/metric-card';
+import { useAppSelector } from '@/redux/store';
+import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 import { StatsCardSkeleton } from '@/pattern/dashboard/molecules/stats-card-skeleton';
 import { LinearMoneySendIcon } from '@/pattern/common/atoms/linear-money-send-icon';
 import { LinearReceiveMoneyIcon } from '@/pattern/common/atoms/linear-money-receive-icon';
@@ -53,6 +55,9 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
   onPurchaseTokens,
   historyHref = '#recent-transactions',
 }) => {
+  const activeBusiness = useAppSelector(selectActiveBusiness);
+  const isOwner = activeBusiness?.role === 'owner';
+
   return (
     <div className='flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between'>
       {/* Metric cards */}
@@ -104,15 +109,17 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
               </CardIcon>
             }
             actionButton={
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={onPurchaseTokens}
-                className='h-8 px-3 text-xs flex items-center gap-2'
-              >
-                <Sparkles className='size-3.5' />
-                Buy Tokens
-              </Button>
+              isOwner ? (
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={onPurchaseTokens}
+                  className='h-8 px-3 text-xs flex items-center gap-2'
+                >
+                  <Sparkles className='size-3.5' />
+                  Buy Tokens
+                </Button>
+              ) : undefined
             }
           />
         )}

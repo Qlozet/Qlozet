@@ -57,12 +57,17 @@ export const PurchaseTokensModal = NiceModal.create(() => {
     setPurchasedTokens(selected.tokens);
 
     try {
-      await purchaseTokensMutation({ amount: selected.tokens, tokens: selected.tokens }).unwrap();
+      await purchaseTokensMutation({ amount: selected.tokens }).unwrap();
       refetchBalance();
       setActiveSection('token-purchase-success');
     } catch (err: any) {
       const msg = err?.data?.message || err?.message || 'Failed to purchase tokens. Please try again.';
-      toast.error(msg);
+      if (msg.toLowerCase().includes('insufficient balance')) {
+        toast.error('Insufficient wallet balance. Please fund your wallet first.');
+        handleFundWallet();
+      } else {
+        toast.error(msg);
+      }
     }
   };
 
