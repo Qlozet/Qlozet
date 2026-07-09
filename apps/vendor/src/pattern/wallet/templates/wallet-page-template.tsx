@@ -21,6 +21,7 @@ import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
 import { WalletStatsSection } from '../molecules/wallet-stats-section';
 import { FundWalletModal } from '../organisms/fund-wallet-modal';
 import { SendMoneyModal } from '../organisms/send-money-modal';
+import { PurchaseTokensModal } from '../organisms/purchase-tokens-modal';
 import { TransactionDetailsModal } from '../organisms/transaction-details-modal';
 import { createTransactionColumns } from '../molecules/wallet-transactions-columns';
 import {
@@ -220,7 +221,7 @@ export const WalletPageTemplate: React.FC = () => {
         tokenBalance={tokenData?.data?.balance}
         isLoading={isBalanceLoading}
         isTokenLoading={isTokenLoading}
-        onPurchaseTokens={() => toast.info('Purchase tokens coming soon!')}
+        onPurchaseTokens={() => NiceModal.show(PurchaseTokensModal)}
         onSendMoney={() => NiceModal.show(SendMoneyModal)}
         onFundWallet={() => NiceModal.show(FundWalletModal)}
       />
