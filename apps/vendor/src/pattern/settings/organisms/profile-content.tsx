@@ -184,6 +184,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
               website={businessData?.website || ''}
               status={(businessData?.status as any) || 'pending'}
               logoUrl={businessData?.business_logo_url}
+              svgLogoUrl={businessData?.business_logo_svg_url}
               coverImageUrl={businessData?.cover_image_url}
             />
           ) : (

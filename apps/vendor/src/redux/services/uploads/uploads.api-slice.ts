@@ -20,9 +20,15 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     uploadProductImage: builder.mutation<ApiResponse<UploadedImage>, File>({
       query: (file) => {
-        const form = new FormData();
-        form.append('file', file);
-        return { url: '/uploads/product', method: 'POST', body: form };
+        const formData = new FormData();
+        formData.append('file', file);
+        return {
+          url: '/uploads/product',
+          method: 'POST',
+          body: formData,
+          // Let browser set Content-Type with boundary — do NOT set it manually
+          formData: true,
+        };
       },
       transformResponse: (response: any) => {
         if (response?.data?.imageUrl) {
@@ -37,9 +43,15 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
 
     uploadProfileImage: builder.mutation<ApiResponse<UploadedImage>, File>({
       query: (file) => {
-        const form = new FormData();
-        form.append('file', file);
-        return { url: '/uploads/profile', method: 'POST', body: form };
+        const formData = new FormData();
+        formData.append('file', file);
+        return {
+          url: '/uploads/profile',
+          method: 'POST',
+          body: formData,
+          // Let browser set Content-Type with boundary — do NOT set it manually
+          formData: true,
+        };
       },
       transformResponse: (response: any) => {
         if (response?.data?.imageUrl) {
@@ -54,9 +66,15 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
 
     uploadOutfitImages: builder.mutation<ApiResponse<UploadedImage[]>, File[]>({
       query: (files) => {
-        const form = new FormData();
-        files.forEach((file) => form.append('files', file));
-        return { url: '/uploads/outfits', method: 'POST', body: form };
+        const formData = new FormData();
+        files.forEach((file) => formData.append('files', file));
+        return {
+          url: '/uploads/outfits',
+          method: 'POST',
+          body: formData,
+          // Let browser set Content-Type with boundary — do NOT set it manually
+          formData: true,
+        };
       },
       transformResponse: (response: any) => {
         if (Array.isArray(response?.data)) {
