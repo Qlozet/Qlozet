@@ -108,10 +108,6 @@ export const Sidebar = () => {
                                                                                 <subItem.icon className="w-6 h-6 transition-colors duration-75 " />
                                                                                 <span className="invisible hidden 2xl:visible 2xl:inline-block">{subItem.label}</span>
                                                                             </NavLink>
-                                                                            {/* Active dot indicator for collapsed view */}
-                                                                            {isActive && (
-                                                                                <div className="absolute top-1/2 -translate-y-1/2 right-0 w-1 h-1 rounded-full bg-[#8E2829] 2xl:hidden"></div>
-                                                                            )}
                                                                         </div>
                                                                     </TooltipTrigger>
                                                                     <TooltipContent className="2xl:hidden 2xl:invisible">
