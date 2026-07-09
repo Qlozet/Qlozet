@@ -97,7 +97,7 @@ export const Sidebar = () => {
                                                     <div className="w-[1px] h-[10px] border-l-2 border-dashed border-[#D3D8DB] dark:border-gray-600 2xl:hidden my-0.5"></div>
                                                     
                                                     {/* Sub-items container with dashed border in collapsed view */}
-                                                    <div className="flex flex-col items-center 2xl:items-start 2xl:block w-[40px] 2xl:w-full border-2 border-dashed border-[#D3D8DB] dark:border-gray-600 rounded-xl p-1 gap-y-1 2xl:border-none 2xl:rounded-none 2xl:p-0 2xl:gap-y-0">
+                                                    <div className="flex flex-col items-center 2xl:items-start 2xl:block w-[48px] 2xl:w-full border-2 border-dashed border-[#D3D8DB] dark:border-gray-600 rounded-xl p-1 gap-y-1 2xl:border-none 2xl:rounded-none 2xl:p-0 2xl:gap-y-0">
                                                         {item.subItems?.map((subItem) => {
                                                             const isActive = pathname === subItem.href || pathname.startsWith(`${subItem.href}/`);
                                                             return (
