@@ -97,7 +97,7 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
         <Button
           type='button'
           onClick={onFundWallet}
-          className='bg-[#056921] h-11 gap-2'
+          className='bg-[#056921] text-white dark:text-white hover:bg-[#056921]/90 h-11 gap-2'
         >
           <LinearReceiveMoneyIcon />
           Fund wallet

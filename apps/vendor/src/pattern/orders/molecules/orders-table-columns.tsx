@@ -109,9 +109,9 @@ export const createOrdersColumns = (
         variant='outline'
         size='sm'
         onClick={() => onViewDetails(row.original)}
-        className='h-9 text-sm dark:border-border dark:text-foreground dark:hover:bg-muted'
+        className='text-xs'
       >
-        View details
+        View Details
       </Button>
     ),
     enableSorting: false,
