@@ -89,23 +89,34 @@ export const Sidebar = () => {
                                         >
                                             <AccordionItem value={`item-${idx}`} className="border-none">
                                                 <AccordionTrigger className="flex items-center justify-center 2xl:justify-start gap-x-0 2xl:gap-x-3 px-2 2xl:px-4 py-2 2xl:py-3 text-[#ACB5BD] dark:text-gray-400 hover:text-secondary dark:hover:text-white transition-colors text-sm font-normal data-[state=open]:text-primary dark:data-[state=open]:text-white hover:no-underline cursor-pointer border-none outline-none shadow-none duration-300">
-                                                    <span> <item.icon className="w-5 h-5 transition-colors duration-75" /></span>
+                                                    <span> <item.icon className="w-6 h-6 transition-colors duration-75" /></span>
                                                     <span className="invisible hidden 2xl:visible 2xl:inline-block">{item.label}</span>
                                                 </AccordionTrigger>
-                                                <AccordionContent className="pl-2 2xl:pl-[30px] pb-0">
-                                                    {item.subItems?.map((subItem) => (
-                                                        <Tooltip key={subItem.label}>
-                                                            <TooltipTrigger asChild>
-                                                                <NavLink href={subItem.href}>
-                                                                    <subItem.icon className="w-5 h-5 transition-colors duration-75 " />
-                                                                    <span className="invisible hidden 2xl:visible 2xl:inline-block">{subItem.label}</span>
-                                                                </NavLink>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent className="2xl:hidden 2xl:invisible">
-                                                                {subItem.label}
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    ))}
+                                                <AccordionContent className="pb-0 2xl:pl-[30px] flex flex-col items-center 2xl:items-start 2xl:block">
+                                                    {/* Vertical dashed line for collapsed view */}
+                                                    <div className="w-[1px] h-[10px] border-l border-dashed border-[#D3D8DB] dark:border-gray-600 2xl:hidden my-0.5"></div>
+                                                    
+                                                    {/* Sub-items container with dashed border in collapsed view */}
+                                                    <div className="flex flex-col items-center 2xl:items-start 2xl:block w-[46px] 2xl:w-full border border-dashed border-[#D3D8DB] dark:border-gray-600 rounded-xl p-1 gap-y-1 2xl:border-none 2xl:rounded-none 2xl:p-0 2xl:gap-y-0">
+                                                        {item.subItems?.map((subItem) => {
+                                                            const isActive = pathname === subItem.href || pathname.startsWith(`${subItem.href}/`);
+                                                            return (
+                                                                <Tooltip key={subItem.label}>
+                                                                    <TooltipTrigger asChild>
+                                                                        <div className="relative w-full flex justify-center 2xl:justify-start">
+                                                                            <NavLink href={subItem.href} className="w-full justify-center 2xl:justify-start">
+                                                                                <subItem.icon className="w-6 h-6 transition-colors duration-75 " />
+                                                                                <span className="invisible hidden 2xl:visible 2xl:inline-block">{subItem.label}</span>
+                                                                            </NavLink>
+                                                                        </div>
+                                                                    </TooltipTrigger>
+                                                                    <TooltipContent className="2xl:hidden 2xl:invisible">
+                                                                        {subItem.label}
+                                                                    </TooltipContent>
+                                                                </Tooltip>
+                                                            );
+                                                        })}
+                                                    </div>
                                                 </AccordionContent>
                                             </AccordionItem>
                                         </Accordion>
@@ -114,7 +125,7 @@ export const Sidebar = () => {
                                         <Tooltip key={item.label}>
                                             <TooltipTrigger asChild>
                                                 <NavLink href={item.href}>
-                                                    <item.icon className="w-5 h-5" />
+                                                    <item.icon className="w-6 h-6" />
                                                     <span className="invisible hidden 2xl:visible 2xl:inline-block">{item.label}</span>
                                                 </NavLink>
                                             </TooltipTrigger>

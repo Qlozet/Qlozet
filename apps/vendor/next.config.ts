@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const nextConfig: any = {
   images: {
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       {
         protocol: "https",
@@ -15,9 +18,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // @ts-ignore
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // @ts-ignore
   typescript: {
     ignoreBuildErrors: true,
   },

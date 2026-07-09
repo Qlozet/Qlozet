@@ -7,6 +7,7 @@ import { ApiResponse } from '../types';
 export interface TokenBalance {
   balance?: number;
   active_tokens?: number;
+  tokens?: number;
   currency?: string;
   [key: string]: unknown;
 }

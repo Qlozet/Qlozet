@@ -16,6 +16,7 @@ interface VendorProfileCardProps {
   website: string;
   status: 'pending' | 'approved' | 'rejected';
   logoUrl?: string;
+  svgLogoUrl?: string;
   coverImageUrl?: string;
   className?: string;
 }
@@ -26,15 +27,18 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   website,
   status,
   logoUrl,
+  svgLogoUrl,
   coverImageUrl,
   className,
 }) => {
   const logoInputRef = useRef<HTMLInputElement>(null);
+  const svgLogoInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const cacInputRef = useRef<HTMLInputElement>(null);
 
   // Local state for uploaded images (shown immediately after upload)
   const [localLogo, setLocalLogo] = useState<string | null>(null);
+  const [localSvgLogo, setLocalSvgLogo] = useState<string | null>(null);
   const [localCover, setLocalCover] = useState<string | null>(null);
 
   const [uploadImage, { isLoading: isUploading }] = useUploadProfileImageMutation();
@@ -42,7 +46,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
 
   const handleImageUpload = async (
     file: File,
-    type: 'logo' | 'cover' | 'cac'
+    type: 'logo' | 'svg_logo' | 'cover' | 'cac'
   ) => {
     try {
       const result = await uploadImage(file).unwrap();
@@ -53,7 +57,11 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
         return;
       }
 
-      const payloadKey = type === 'logo' ? 'business_logo_url' : type === 'cover' ? 'cover_image_url' : 'cac_document_url';
+      const payloadKey =
+        type === 'logo' ? 'business_logo_url'
+        : type === 'svg_logo' ? 'business_logo_svg_url'
+        : type === 'cover' ? 'cover_image_url'
+        : 'cac_document_url';
       
       // Save URL to business profile
       await updateBusinessDetails({ [payloadKey]: type === 'cac' ? [imageUrl] : imageUrl } as any).unwrap();
@@ -62,6 +70,9 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
       if (type === 'logo') {
         setLocalLogo(imageUrl);
         toast.success('Logo uploaded successfully!');
+      } else if (type === 'svg_logo') {
+        setLocalSvgLogo(imageUrl);
+        toast.success('SVG/PNG logo uploaded successfully!');
       } else if (type === 'cover') {
         setLocalCover(imageUrl);
         toast.success('Cover image uploaded successfully!');
@@ -75,7 +86,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    type: 'logo' | 'cover' | 'cac'
+    type: 'logo' | 'svg_logo' | 'cover' | 'cac'
   ) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -85,6 +96,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   };
 
   const displayLogo = localLogo || logoUrl;
+  const displaySvgLogo = localSvgLogo || svgLogoUrl;
   const displayCover = localCover || coverImageUrl;
 
   const getStatusColor = () => {
@@ -124,6 +136,13 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
         onChange={(e) => handleFileChange(e, 'logo')}
       />
       <input
+        ref={svgLogoInputRef}
+        type='file'
+        accept='image/png,image/svg+xml,image/jpeg,image/webp'
+        className='hidden'
+        onChange={(e) => handleFileChange(e, 'svg_logo')}
+      />
+      <input
         ref={coverInputRef}
         type='file'
         accept='image/png,image/jpeg,image/webp'
@@ -153,6 +172,23 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
             <div className='w-full h-full bg-gradient-to-br from-orange-100 via-purple-100 to-blue-100 dark:from-orange-900/30 dark:via-purple-900/30 dark:to-blue-900/30' />
           </div>
         )}
+
+        {/* Scaled SVG/PNG logo in top-left corner */}
+        {displaySvgLogo && (
+          <div className='absolute top-2 left-2 z-10'>
+            <div className='size-10 rounded-md bg-white/80 dark:bg-black/40 backdrop-blur-sm p-1 shadow-sm'>
+              <Image
+                src={displaySvgLogo}
+                alt={vendorName}
+                width={32}
+                height={32}
+                className='size-full object-contain'
+                unoptimized={displaySvgLogo?.toLowerCase().includes('.svg') || displaySvgLogo?.includes('/raw/')}
+              />
+            </div>
+          </div>
+        )}
+
         <button
           onClick={() => coverInputRef.current?.click()}
           disabled={isUploading}
@@ -215,7 +251,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
       {/* Upload Buttons - Separated */}
       <div className='space-y-4'>
         <button
-          onClick={() => logoInputRef.current?.click()}
+          onClick={() => svgLogoInputRef.current?.click()}
           disabled={isUploading}
           className='w-full flex items-center gap-3 px-6 py-4 bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] custom-card-shadow transition-colors hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50'
         >

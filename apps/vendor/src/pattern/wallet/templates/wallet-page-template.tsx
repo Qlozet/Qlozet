@@ -15,11 +15,13 @@ import {
   useGetWalletTransactionsQuery,
   useLazyVerifyWalletPaymentQuery,
 } from '@/redux/services/wallet/wallet.api-slice';
+import { useGetTokenBalanceQuery } from '@/redux/services/tokens/tokens.api-slice';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
 import { WalletStatsSection } from '../molecules/wallet-stats-section';
 import { FundWalletModal } from '../organisms/fund-wallet-modal';
 import { SendMoneyModal } from '../organisms/send-money-modal';
+import { PurchaseTokensModal } from '../organisms/purchase-tokens-modal';
 import { TransactionDetailsModal } from '../organisms/transaction-details-modal';
 import { createTransactionColumns } from '../molecules/wallet-transactions-columns';
 import {
@@ -118,6 +120,11 @@ export const WalletPageTemplate: React.FC = () => {
   } = useGetWalletBalanceQuery();
 
   const {
+    data: tokenData,
+    isLoading: isTokenLoading,
+  } = useGetTokenBalanceQuery();
+
+  const {
     data: transactionsData,
     isLoading,
     isFetching,
@@ -209,10 +216,12 @@ export const WalletPageTemplate: React.FC = () => {
 
   return (
     <div className='w-full min-h-screen h-fit space-y-6 pb-10'>
-      {/* Header: balance cards + actions */}
       <WalletStatsSection
         balance={balance}
+        tokenBalance={tokenData?.data?.tokens ?? tokenData?.data?.balance}
         isLoading={isBalanceLoading}
+        isTokenLoading={isTokenLoading}
+        onPurchaseTokens={() => NiceModal.show(PurchaseTokensModal)}
         onSendMoney={() => NiceModal.show(SendMoneyModal)}
         onFundWallet={() => NiceModal.show(FundWalletModal)}
       />
