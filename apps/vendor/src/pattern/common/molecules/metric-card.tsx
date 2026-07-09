@@ -19,6 +19,8 @@ export interface MetricCardProps {
   viewAllLink?: string;
   /** Label for the footer link (defaults to "View All"). */
   viewAllLabel?: string;
+  /** Custom action button to render in the footer instead of a link. */
+  actionButton?: ReactNode;
   className?: string;
 }
 
@@ -32,6 +34,7 @@ export const MetricCard = ({
   subLabel,
   viewAllLink,
   viewAllLabel = 'View All',
+  actionButton,
   className,
 }: MetricCardProps) => {
   const isPositive = !change?.startsWith('-');
@@ -83,7 +86,11 @@ export const MetricCard = ({
                 </p>
               </If>
 
-              <If isTrue={Boolean(viewAllLink)}>
+              <If isTrue={Boolean(actionButton)}>
+                {actionButton}
+              </If>
+
+              <If isTrue={Boolean(viewAllLink) && !Boolean(actionButton)}>
                 <Link
                   href={viewAllLink ?? '#'}
                   className='flex items-center gap-x-1 text-success dark:text-gray-400 text-xs whitespace-nowrap'

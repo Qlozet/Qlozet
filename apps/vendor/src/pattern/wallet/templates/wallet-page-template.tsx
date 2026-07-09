@@ -220,6 +220,7 @@ export const WalletPageTemplate: React.FC = () => {
         tokenBalance={tokenData?.data?.balance}
         isLoading={isBalanceLoading}
         isTokenLoading={isTokenLoading}
+        onPurchaseTokens={() => toast.info('Purchase tokens coming soon!')}
         onSendMoney={() => NiceModal.show(SendMoneyModal)}
         onFundWallet={() => NiceModal.show(FundWalletModal)}
       />

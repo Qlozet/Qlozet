@@ -4,7 +4,7 @@
 // plus the Send money / Fund wallet actions, matching the design.
 
 import React, { ReactNode } from 'react';
-import { Wallet, HandCoins } from 'lucide-react';
+import { Wallet, HandCoins, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { MetricCard } from '@/pattern/common/molecules/metric-card';
@@ -38,6 +38,7 @@ interface WalletStatsSectionProps {
   isTokenLoading?: boolean;
   onSendMoney?: () => void;
   onFundWallet?: () => void;
+  onPurchaseTokens?: () => void;
   /** Anchor the "History" link scrolls to (the transactions table). */
   historyHref?: string;
 }
@@ -49,6 +50,7 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
   isTokenLoading = false,
   onSendMoney,
   onFundWallet,
+  onPurchaseTokens,
   historyHref = '#recent-transactions',
 }) => {
   return (
@@ -100,6 +102,17 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
               <CardIcon bg='bg-[#EBB857]'>
                 <HandCoins className='size-6' /> {/* Reusing HandCoins or use another if needed, will use a similar one */}
               </CardIcon>
+            }
+            actionButton={
+              <Button
+                variant='outline'
+                size='sm'
+                onClick={onPurchaseTokens}
+                className='h-7 px-3 text-[10px] font-bold uppercase tracking-wider text-[#462814] border-[#462814] hover:bg-[#462814]/10 dark:text-[#EBB857] dark:border-[#EBB857] dark:hover:bg-[#EBB857]/10 flex items-center gap-1.5 rounded-md'
+              >
+                <Sparkles className='size-3' />
+                Buy Tokens
+              </Button>
             }
           />
         )}
