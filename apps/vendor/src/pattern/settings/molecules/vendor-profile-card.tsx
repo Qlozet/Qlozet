@@ -183,7 +183,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
                 width={32}
                 height={32}
                 className='size-full object-contain'
-                unoptimized={displaySvgLogo?.includes('/raw/')}
+                unoptimized={displaySvgLogo?.toLowerCase().includes('.svg') || displaySvgLogo?.includes('/raw/')}
               />
             </div>
           </div>
