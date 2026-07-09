@@ -57,7 +57,7 @@ export const PurchaseTokensModal = NiceModal.create(() => {
     setPurchasedTokens(selected.tokens);
 
     try {
-      await purchaseTokensMutation({ amount: selected.tokens }).unwrap();
+      await purchaseTokensMutation({ amount: selected.tokens, tokens: selected.tokens }).unwrap();
       refetchBalance();
       setActiveSection('token-purchase-success');
     } catch (err: any) {

@@ -218,7 +218,7 @@ export const WalletPageTemplate: React.FC = () => {
     <div className='w-full min-h-screen h-fit space-y-6 pb-10'>
       <WalletStatsSection
         balance={balance}
-        tokenBalance={tokenData?.data?.balance}
+        tokenBalance={tokenData?.data?.tokens ?? tokenData?.data?.balance}
         isLoading={isBalanceLoading}
         isTokenLoading={isTokenLoading}
         onPurchaseTokens={() => NiceModal.show(PurchaseTokensModal)}
