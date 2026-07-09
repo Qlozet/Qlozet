@@ -28,7 +28,7 @@ export const tokensApiSlice = baseAPI.injectEndpoints({
       ApiResponse<unknown>,
       PurchaseTokensRequest
     >({
-      query: (body) => ({ url: '/api/token/vendor/purchase', method: 'POST', body }),
+      query: (body) => ({ url: '/token/vendor/purchase', method: 'POST', body }),
       invalidatesTags: ['TokenBalance'],
     }),
 
