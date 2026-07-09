@@ -30,7 +30,7 @@ export const tokensApiSlice = baseAPI.injectEndpoints({
       PurchaseTokensRequest
     >({
       query: (body) => ({ url: '/token/vendor/purchase', method: 'POST', body }),
-      invalidatesTags: ['TokenBalance'],
+      invalidatesTags: ['TokenBalance', 'WalletBalance', 'Transaction'],
     }),
 
     // POST /token/customer/purchase — purchase tokens for a customer
@@ -43,7 +43,7 @@ export const tokensApiSlice = baseAPI.injectEndpoints({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['TokenBalance'],
+      invalidatesTags: ['TokenBalance', 'WalletBalance', 'Transaction'],
     }),
   }),
 });
