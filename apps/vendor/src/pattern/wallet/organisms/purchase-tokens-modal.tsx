@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { usePurchaseVendorTokensMutation } from '@/redux/services/tokens/tokens.api-slice';
-import { useGetWalletBalanceQuery } from '@/redux/services/wallet/wallet.api-slice';
+import { useGetWalletBalanceQuery, useGetWalletPriceQuery } from '@/redux/services/wallet/wallet.api-slice';
 import { FundWalletModal } from './fund-wallet-modal';
 import { toast } from 'sonner';
 
@@ -78,7 +78,23 @@ export const PurchaseTokensModal = NiceModal.create(() => {
 
   const selected = TOKEN_PACKAGES.find((p) => p.id === selectedPackage) || TOKEN_PACKAGES[1];
   const SelectedIcon = selected.icon;
-  const price = Math.round(FALLBACK_PRICE_PER_TOKEN_NGN * selected.tokens * 10) / 10;
+
+  // Fetch live token price from backend (GET /wallets/price?tokens=&currency=NGN)
+  const { data: priceData } = useGetWalletPriceQuery(
+    { tokens: selected.tokens, currency: 'NGN' },
+  );
+
+  const readPrice = (raw: unknown): number => {
+    if (typeof raw === 'number') return raw;
+    const d = (raw ?? {}) as Record<string, unknown>;
+    if (typeof d['amount'] === 'number') return d['amount'] as number;
+    return 0;
+  };
+
+  const livePrice = readPrice(priceData?.data);
+  const price = livePrice > 0
+    ? livePrice
+    : Math.round(FALLBACK_PRICE_PER_TOKEN_NGN * selected.tokens * 10) / 10;
   const hasEnough = walletBalance >= price;
   const errorText = purchaseError ? ((purchaseError as any)?.data?.message || 'An error occurred') : null;
 
