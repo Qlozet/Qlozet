@@ -92,20 +92,20 @@ export const Sidebar = () => {
                                                     <span> <item.icon className="w-6 h-6 transition-colors duration-75" /></span>
                                                     <span className="invisible hidden 2xl:visible 2xl:inline-block">{item.label}</span>
                                                 </AccordionTrigger>
-                                                <AccordionContent className="pb-0 2xl:pl-[30px] flex flex-col items-center 2xl:items-start 2xl:block">
+                                                <AccordionContent className="pb-0 pr-[4px] 2xl:pr-0 2xl:pl-[30px] flex flex-col items-center 2xl:items-start 2xl:block">
                                                     {/* Vertical dashed line for collapsed view */}
                                                     <div className="w-[1px] h-[10px] border-l border-dashed border-[#D3D8DB] dark:border-gray-600 2xl:hidden my-0.5"></div>
                                                     
                                                     {/* Sub-items container with dashed border in collapsed view */}
-                                                    <div className="flex flex-col items-center 2xl:items-start 2xl:block w-[46px] 2xl:w-full border border-dashed border-[#D3D8DB] dark:border-gray-600 rounded-xl p-1 gap-y-1 2xl:border-none 2xl:rounded-none 2xl:p-0 2xl:gap-y-0">
+                                                    <div className="flex flex-col items-center 2xl:items-start 2xl:block w-[42px] 2xl:w-full border border-dashed border-[#D3D8DB] dark:border-gray-600 rounded-xl p-1 gap-y-1 2xl:border-none 2xl:rounded-none 2xl:p-0 2xl:gap-y-0">
                                                         {item.subItems?.map((subItem) => {
                                                             const isActive = pathname === subItem.href || pathname.startsWith(`${subItem.href}/`);
                                                             return (
                                                                 <Tooltip key={subItem.label}>
                                                                     <TooltipTrigger asChild>
                                                                         <div className="relative w-full flex justify-center 2xl:justify-start">
-                                                                            <NavLink href={subItem.href} className="w-full justify-center 2xl:justify-start">
-                                                                                <subItem.icon className="w-6 h-6 transition-colors duration-75 " />
+                                                                            <NavLink href={subItem.href} className="w-full justify-center 2xl:justify-start px-0 2xl:px-4">
+                                                                                <subItem.icon className="w-6 h-6 transition-colors duration-75 shrink-0" />
                                                                                 <span className="invisible hidden 2xl:visible 2xl:inline-block">{subItem.label}</span>
                                                                             </NavLink>
                                                                         </div>

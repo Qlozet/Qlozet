@@ -114,9 +114,9 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
                   variant='outline'
                   size='sm'
                   onClick={onPurchaseTokens}
-                  className='h-8 px-3 text-xs flex items-center gap-2'
+                  className='h-6 px-2.5 py-0 text-[11px] flex items-center gap-1.5 mt-0.5'
                 >
-                  <Sparkles className='size-3.5' />
+                  <Sparkles className='size-3' />
                   Buy Tokens
                 </Button>
               ) : undefined

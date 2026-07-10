@@ -1,12 +1,6 @@
-import { LoadingWidget } from '@/pattern/common/organisms/loading-widget'
-import React from 'react'
+import { redirect } from 'next/navigation';
 
-const HomePage = () => {
-  return (
-    <>
-      <LoadingWidget />
-    </>
-  )
+export default function HomePage() {
+  // Redirect root path to the dashboard.
+  redirect('/dashboard');
 }
-
-export default HomePage
