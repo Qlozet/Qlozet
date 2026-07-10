@@ -107,16 +107,18 @@ export const SetVariantsTable = ({
   };
 
   return (
-    <div className="rounded-lg bg-card p-6 custom-card-shadow">
-      <h3 className="mb-4 text-sm font-semibold text-grey-black dark:text-white">
+    <div className="rounded-lg bg-card p-4 md:p-6 custom-card-shadow overflow-hidden flex flex-col">
+      <h3 className="mb-4 text-sm font-semibold text-grey-black dark:text-white shrink-0">
         Set Variants
       </h3>
 
-      {/* Column header */}
-      <div className="flex items-center gap-4 border-b border-border pb-3">
-        <span className="w-[110px] text-xs font-medium text-muted-foreground">
-          Colours
-        </span>
+      <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 pb-2">
+        <div className="min-w-[800px]">
+          {/* Column header */}
+          <div className="flex items-center gap-4 border-b border-border pb-3">
+            <span className="w-[110px] text-xs font-medium text-muted-foreground shrink-0">
+              Colours
+            </span>
         <span className="flex-1 text-xs font-medium text-muted-foreground">
           Available Sizes
         </span>
@@ -339,6 +341,8 @@ export const SetVariantsTable = ({
             )}
           </div>
         ))}
+          </div>
+        </div>
       </div>
     </div>
   );

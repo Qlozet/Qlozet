@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Calendar, Search } from 'lucide-react';
+import { Calendar, Search, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ExcelExportButton } from './excel-export-button';
@@ -53,20 +53,23 @@ export const TableToolbar = ({
         {title}
       </h2>
 
-      <div className='flex flex-wrap items-center gap-3'>
+      <div className='flex items-center gap-2 sm:gap-3 w-full md:w-auto'>
         {filterControl ?? (
           <Button
             type='button'
             variant='outline'
             onClick={onFilterDate}
-            className='h-10 gap-2 text-sm text-gray-600 dark:text-muted-foreground bg-transparent hover:bg-transparent dark:border-gray-500'
+            className='h-10 w-10 sm:w-auto px-0 sm:px-4 gap-2 text-sm text-gray-600 dark:text-muted-foreground bg-transparent hover:bg-transparent dark:border-gray-500 shrink-0'
           >
-            {filterIcon}
-            {filterLabel}
+            <SlidersHorizontal className='size-4 sm:hidden' />
+            <div className='hidden sm:flex items-center gap-2'>
+              {filterIcon}
+              <span>{filterLabel}</span>
+            </div>
           </Button>
         )}
 
-        <div className='relative'>
+        <div className='relative flex-1 sm:flex-none'>
           <Search className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400 dark:text-muted-foreground' />
           <Input
             value={search ?? ''}

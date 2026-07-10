@@ -2,6 +2,7 @@ import { useState, FC, useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
+import { FilterMenu, type FilterOption } from '@/pattern/common/molecules/filter-menu';
 import { MoreHorizontal, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,16 +12,20 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   useGetTeamMembersQuery,
   type TeamMember,
 } from '@/redux/services/users/users.api-slice';
+
+const ROLE_OPTIONS: FilterOption[] = [
+  { value: 'all', label: 'All roles' },
+  { value: 'owner', label: 'Owner' },
+  { value: 'operations', label: 'Operations' },
+  { value: 'marketing', label: 'Marketing' },
+  { value: 'customer support', label: 'Customer Support' },
+  { value: 'tailor', label: 'Tailor' },
+  { value: 'sales', label: 'Sales' },
+  { value: 'data analyst', label: 'Data Analyst' },
+];
 
 interface UserData {
   _id: string;
@@ -148,26 +153,11 @@ const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({
         search={searchValue}
         onSearchChange={setSearchValue}
         filterControl={
-          <div className='flex items-center gap-2'>
-            <span className='text-sm font-medium text-gray-700 dark:text-muted-foreground whitespace-nowrap'>
-              Filter By :
-            </span>
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className='w-[160px]'>
-                <SelectValue placeholder='Select role' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='all'>All roles</SelectItem>
-                <SelectItem value='owner'>Owner</SelectItem>
-                <SelectItem value='operations'>Operations</SelectItem>
-                <SelectItem value='marketing'>Marketing</SelectItem>
-                <SelectItem value='customer support'>Customer Support</SelectItem>
-                <SelectItem value='tailor'>Tailor</SelectItem>
-                <SelectItem value='sales'>Sales</SelectItem>
-                <SelectItem value='data analyst'>Data Analyst</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <FilterMenu
+            options={ROLE_OPTIONS}
+            value={roleFilter}
+            onChange={setRoleFilter}
+          />
         }
       />
       <DataTable

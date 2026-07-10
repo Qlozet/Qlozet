@@ -19,6 +19,13 @@ import { SizeGuidesTableColumns } from '../molecules/size-guides-table-columns'
 import { useRouter } from 'next/navigation'
 import { APP_ROUTES } from '@/lib/routes'
 import { formatCondition } from '../molecules/size-guides-table-columns'
+import { FilterMenu, type FilterOption } from '@/pattern/common/molecules/filter-menu'
+
+const UNIT_OPTIONS: FilterOption[] = [
+  { value: 'all', label: 'All Units' },
+  { value: 'cm', label: 'Centimeters (cm)' },
+  { value: 'inch', label: 'Inches (inch)' },
+]
 
 const SizeGuidesTableTemplate = () => {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -161,21 +168,14 @@ const SizeGuidesTableTemplate = () => {
           onSearchChange={handleSearchChange}
           onExport={handleExport}
           filterControl={
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Filter By :</span>
-              <select
-                value={unitFilter}
-                onChange={(e) => {
-                  setUnitFilter(e.target.value)
-                  setPagination((prev) => ({ ...prev, pageIndex: 0 }))
-                }}
-                className='h-10 rounded-lg border border-input bg-transparent dark:bg-transparent dark:border-gray-500 dark:text-foreground px-3 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-ring'
-              >
-                <option value='all'>All Units</option>
-                <option value='cm'>Centimeters (cm)</option>
-                <option value='inch'>Inches (inch)</option>
-              </select>
-            </div>
+            <FilterMenu
+              options={UNIT_OPTIONS}
+              value={unitFilter}
+              onChange={(val) => {
+                setUnitFilter(val)
+                setPagination((prev) => ({ ...prev, pageIndex: 0 }))
+              }}
+            />
           }
         />
         <DataTable

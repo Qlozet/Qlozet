@@ -17,6 +17,14 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { show } from '@ebay/nice-modal-react'
 import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
+import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
+import { FilterMenu, type FilterOption } from '@/pattern/common/molecules/filter-menu'
+
+const WAREHOUSE_OPTIONS: FilterOption[] = [
+  { value: 'all', label: 'All Warehouses' },
+  { value: 'default', label: 'Default Warehouse' },
+  { value: 'alternate', label: 'Alternate Warehouses' },
+]
 
 interface WarehouseTableTemplateProps {
   data: Warehouse[]
@@ -188,102 +196,21 @@ const WarehouseTableTemplate = ({
         </div>
       </div>
 
-      {/* Filter and Search Section */}
-      <div className='bg-card w-full h-[72px] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 py-4 rounded-t-[10px] shadow-md'>
-        <h3 className='text-base font-medium'>Warehouses</h3>
-
-        <div className='flex items-center gap-3'>
-          {/* Filter Popover */}
-          <Popover open={filterOpen} onOpenChange={setFilterOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant='outline'
-                size='default'
-                className='bg-transparent gap-2 text-sm! font-medium py-3 rounded-[12px] relative dark:border-white/10 dark:text-white'
-              >
-                <Filter className='w-4 h-4' />
-                <span>Filter By:</span>
-                {activeFilter !== 'all' && (
-                  <span className='ml-1 font-semibold capitalize'>
-                    {activeFilter}
-                  </span>
-                )}
-                <ChevronDown className='w-4 h-4 ml-1' />
-                {activeFilter !== 'all' && (
-                  <div className='absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full' />
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className='w-80 p-0' align='start'>
-              <div className='p-4 space-y-4'>
-                {/* Header */}
-                <div className='flex items-center justify-between'>
-                  <h4 className='font-semibold text-sm'>Filter Warehouses</h4>
-                  {activeFilter !== 'all' && (
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      onClick={handleClearFilters}
-                      className='h-auto p-1 text-xs text-muted-foreground hover:text-foreground'
-                    >
-                      Clear All
-                    </Button>
-                  )}
-                </div>
-
-                <Separator />
-
-                {/* Status Filter */}
-                <div className='space-y-3'>
-                  <h5 className='text-xs font-medium text-muted-foreground uppercase'>Status</h5>
-                  <RadioGroup value={activeFilter} onValueChange={handleFilterChange}>
-                    <div className='flex items-center space-x-2'>
-                      <RadioGroupItem value='all' id='all' />
-                      <Label htmlFor='all' className='text-sm font-normal cursor-pointer'>
-                        All Warehouses
-                      </Label>
-                    </div>
-                    <div className='flex items-center space-x-2'>
-                      <RadioGroupItem value='default' id='default' />
-                      <Label htmlFor='default' className='text-sm font-normal cursor-pointer'>
-                        Default Warehouse
-                      </Label>
-                    </div>
-                    <div className='flex items-center space-x-2'>
-                      <RadioGroupItem value='alternate' id='alternate' />
-                      <Label htmlFor='alternate' className='text-sm font-normal cursor-pointer'>
-                        Alternate Warehouses
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-
-          {/* Search Input */}
-          <SearchInputWithParams
-            placeholder='Search'
-            className='w-full sm:w-80'
-            inputClassName='h-10 rounded-[12px]'
-            paramName='search'
-            onSearchChange={setSearchQuery}
-          />
-
-          {/* Export */}
-          <Button
-            variant="default"
-            size='default'
-            onClick={handleExportWarehouses}
-            className='gap-[10px] text-sm font-semibold'
-          >
-            <span>Export</span>
-          </Button>
-        </div>
-      </div>
-
       {/* Table Section */}
-      <div className='bg-card'>
+      <div className='bg-card w-full rounded-[10px] shadow-md'>
+        <TableToolbar
+          title='Warehouses'
+          search={searchQuery}
+          onSearchChange={setSearchQuery}
+          onExport={handleExportWarehouses}
+          filterControl={
+            <FilterMenu
+              options={WAREHOUSE_OPTIONS}
+              value={activeFilter}
+              onChange={handleFilterChange}
+            />
+          }
+        />
         <DataTable
           columns={warehouseColumns}
           data={filteredData}
