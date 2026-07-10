@@ -29,12 +29,20 @@ export const getCustomerStatus = (
 };
 
 // Full display name, used in the detail header and CSV.
-export const getCustomerName = (customer: VendorCustomer): string =>
-  customer.full_name?.trim() || customer.username?.trim() || 'Unnamed customer';
+export const getCustomerName = (customer: VendorCustomer): string => {
+  if (!customer) return 'Unnamed customer';
+  const name = String(customer.full_name || '').trim();
+  const username = String(customer.username || '').trim();
+  return name || username || 'Unnamed customer';
+};
 
 // The list identifier prefers the @username, falling back to the full name.
-export const getCustomerIdentifier = (customer: VendorCustomer): string =>
-  customer.username?.trim() || customer.full_name?.trim() || '—';
+export const getCustomerIdentifier = (customer: VendorCustomer): string => {
+  if (!customer) return '—';
+  const username = String(customer.username || '').trim();
+  const name = String(customer.full_name || '').trim();
+  return username || name || '—';
+};
 
 export const getCustomerInitial = (customer: VendorCustomer): string =>
   getCustomerName(customer).replace(/^@/, '').charAt(0).toUpperCase() || 'C';

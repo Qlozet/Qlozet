@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { PaginationState } from '@tanstack/react-table'
 import { Product, useGetProductsByVendorQuery, useDeleteProductMutation, useUpdateProductStatusMutation } from '@/redux/services/products/products.api-slice'
 import { Button } from '@/components/ui/button'
@@ -15,7 +15,8 @@ import { ClothingStylesIcon } from '@/pattern/common/atoms/clothing-styles-icon'
 import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-icon'
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
 import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
-import { AccessoriesTable } from '../organisms/accessories-table'
+import { DataTable } from '@/pattern/common/organisms/table/data-table'
+import { AccessoriesTableColumns } from '../molecules/accessories-table-column'
 import { AddAccessoryModal } from '../organisms/add-accessories-modal'
 import { ProductsStats } from './products-stats'
 import { DonutDatum } from '@/pattern/dashboard/molecules/donut-chart'
@@ -195,6 +196,19 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
             })
     }
 
+    const accessoryColumns = useMemo(
+      () =>
+        AccessoriesTableColumns({
+          onViewDetails: handleViewDetails,
+          onEdit: handleEditProduct,
+          onDuplicate: handleDuplicateProduct,
+          onDelete: handleDeleteProduct,
+          onStatusChange: handleStatusChange,
+          showSelect,
+        }),
+      [handleViewDetails, handleEditProduct, handleDuplicateProduct, handleDeleteProduct, handleStatusChange, showSelect]
+    )
+
     return (
         <div className='w-full bg-background'>
             {/* Header Section */}
@@ -257,22 +271,19 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
                   filterLabel="Filter By :"
                   filterIcon={null}
                 />
-                <AccessoriesTable
+                <DataTable
+                    columns={accessoryColumns}
                     data={products as Product[]}
                     isLoading={isLoading}
-                    error={error}
-                    isError={isError}
-                    isSuccess={isSuccess}
                     isFetching={isFetching}
-                    pageCount={pageCount}
+                    isSuccess={isSuccess}
+                    isError={isError}
+                    error={error}
                     pagination={pagination}
                     setPagination={setPagination}
-                    onViewDetails={handleViewDetails}
-                    onEdit={handleEditProduct}
-                    onDuplicate={handleDuplicateProduct}
-                    onDelete={handleDeleteProduct}
-                    onStatusChange={handleStatusChange}
-                    showSelect={showSelect}
+                    pageCount={pageCount}
+                    manualPagination
+                    emptyMessage='Products will show up here once you add a product.'
                 />
             </div>
         </div>

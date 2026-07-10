@@ -3,6 +3,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import type { Order } from '@/redux/services/orders/orders.api-slice';
 import {
   deliveryBadge,
   formatDate,
@@ -13,18 +14,17 @@ import {
   readOrderId,
   readProductPrice,
   readStatus,
-  type OrderRow,
 } from '../lib/order-fields';
 
 export const createOrdersColumns = (
-  onViewDetails: (order: OrderRow) => void
-): ColumnDef<OrderRow>[] => [
+  onViewDetails: (order: Order) => void
+): ColumnDef<Order>[] => [
   {
     id: 'date',
     header: 'Date',
     cell: ({ row }) => (
       <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
-        {formatDate(row.original.createdAt ?? row.original.date)}
+        {formatDate(row.original.createdAt)}
       </span>
     ),
     enableSorting: false,
@@ -84,7 +84,7 @@ export const createOrdersColumns = (
   },
   {
     id: 'delivery_status',
-    header: 'Delivery Status',
+    header: 'Status',
     cell: ({ row }) => {
       const badge = deliveryBadge(readStatus(row.original));
       return (

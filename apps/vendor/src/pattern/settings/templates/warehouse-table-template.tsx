@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { WarehouseTable } from '../organisms/warehouse-table'
+import { useState, useEffect, useMemo } from 'react'
+import { DataTable } from '@/pattern/common/organisms/table/data-table'
+import { createWarehouseTableColumns } from '../molecules/warehouse-table-columns'
 import { PaginationState } from '@tanstack/react-table'
 import { Warehouse } from '../molecules/warehouse-table-columns'
 import { Button } from '@/components/ui/button'
@@ -159,6 +160,16 @@ const WarehouseTableTemplate = ({
     }
   }
 
+  const warehouseColumns = useMemo(
+    () =>
+      createWarehouseTableColumns({
+        onEdit: handleEditWarehouse,
+        onDelete: handleDeleteWarehouse,
+        onSetDefault: handleSetDefaultWarehouse,
+      }),
+    [handleEditWarehouse, handleDeleteWarehouse, handleSetDefaultWarehouse]
+  )
+
   return (
     <div className='w-full bg-background'>
       {/* Header Section */}
@@ -273,19 +284,18 @@ const WarehouseTableTemplate = ({
 
       {/* Table Section */}
       <div className='bg-card'>
-        <WarehouseTable
+        <DataTable
+          columns={warehouseColumns}
           data={filteredData}
           isLoading={isLoading}
-          error={error}
-          isError={isError}
-          isSuccess={isSuccess}
           isFetching={isFetching}
-          pageCount={pageCount}
+          isSuccess={isSuccess}
+          isError={isError}
+          error={error}
           pagination={pagination}
           setPagination={setPagination}
-          onEdit={handleEditWarehouse}
-          onDelete={handleDeleteWarehouse}
-          onSetDefault={handleSetDefaultWarehouse}
+          pageCount={pageCount}
+          emptyMessage='Warehouses will show up here once you add one.'
         />
       </div>
     </div>

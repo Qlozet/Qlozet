@@ -42,15 +42,15 @@ export const MetricCard = ({
   return (
     <Card
       className={cn(
-        'h-[120px] p-3 2xl:p-5 rounded-[12px] custom-card-shadow',
+        'h-[120px] p-3 2xl:py-3 2xl:px-5 rounded-[12px] custom-card-shadow',
         className
       )}
     >
       <CardContent className='h-full p-0'>
-        <div className='flex items-start justify-start gap-x-4'>
+        <div className='flex items-start justify-start gap-x-4 h-full'>
           <div className='shrink-0'>{icon}</div>
 
-          <div className='flex-1 space-y-2'>
+          <div className='flex-1 flex flex-col justify-between h-full'>
             <div className='space-y-2'>
               <div className='flex items-center justify-between gap-2'>
                 <p className='text-[hsla(210,9%,31%,1)] dark:text-white text-xs font-normal'>

@@ -1,32 +1,24 @@
-// Tolerant accessors + formatters for vendor order rows.
+// Accessors + formatters for vendor order rows (reconciled with backend).
 //
-// GET /orders/vendor has no documented response shape, so rows arrive loosely
-// typed. These helpers read the most likely keys and fall back gracefully.
+// Uses the real Order type from orders.api-slice.ts. The helpers are tolerant
+// of missing fields because the API response can have optional/null values.
 
-export type OrderRow = Record<string, unknown> & { _id: string };
+import type {
+  Order,
+  OrderStatus,
+  ShipmentStatus,
+} from '@/redux/services/orders/orders.api-slice';
 
-const asDict = (v: unknown): Record<string, unknown> =>
-  v && typeof v === 'object' ? (v as Record<string, unknown>) : {};
-
-const str = (v: unknown): string | undefined =>
-  typeof v === 'string' && v.trim() ? v.trim() : undefined;
-
-const num = (v: unknown): number | undefined =>
-  typeof v === 'number' && !Number.isNaN(v) ? v : undefined;
-
-const firstItem = (o: OrderRow): Record<string, unknown> => {
-  const items = Array.isArray(o.items) ? o.items : [];
-  return asDict(items[0]);
-};
+// ──────────────── Formatters ────────────────
 
 export const formatNaira = (value?: number): string =>
   typeof value === 'number' && !Number.isNaN(value)
     ? `NGN ${value.toLocaleString()}`
     : '—';
 
-// DD/MM/YYYY to match the Orders table.
+// DD/MM/YYYY — used in the Orders table.
 export const formatDate = (value?: unknown): string => {
-  const s = str(value);
+  const s = typeof value === 'string' && value.trim() ? value.trim() : undefined;
   if (!s) return '—';
   const date = new Date(s);
   if (Number.isNaN(date.getTime())) return s;
@@ -35,9 +27,9 @@ export const formatDate = (value?: unknown): string => {
   return `${day}/${month}/${date.getFullYear()}`;
 };
 
-// "12 Oct. 2023" — used in the order detail drawer header.
+// "12 Oct. 2023" — used in the quote drawer header.
 export const formatLongDate = (value?: unknown): string => {
-  const s = str(value);
+  const s = typeof value === 'string' && value.trim() ? value.trim() : undefined;
   if (!s) return '—';
   const date = new Date(s);
   if (Number.isNaN(date.getTime())) return s;
@@ -48,77 +40,120 @@ export const formatLongDate = (value?: unknown): string => {
   });
 };
 
-export const readOrderId = (o: OrderRow): string =>
-  str(o.reference) ?? str(o.orderNumber) ?? str(o.order_id) ?? o._id;
+// ──────────────── Field Readers ────────────────
 
-export const readCustomerName = (o: OrderRow): string =>
-  str(o.customerName) ??
-  str(o.customer_name) ??
-  str(asDict(o.customer).full_name) ??
-  str(asDict(o.customer).username) ??
-  str(asDict(o.customer).name) ??
-  '—';
+export const readOrderId = (o: Order): string => o.reference ?? o._id;
 
-export const readCustomerHandle = (o: OrderRow): string => {
-  const handle =
-    str(asDict(o.customer).username) ??
-    str(o.customer_username) ??
-    readCustomerName(o);
-  return handle.startsWith('@') ? handle : `@${handle}`;
+export const readCustomerName = (o: Order): string => {
+  const c = o.customer;
+  if (!c) return '—';
+  const parts = [c.firstName, c.lastName].filter(Boolean);
+  return parts.length > 0 ? parts.join(' ') : c.email ?? '—';
 };
 
-export const readItemsCount = (o: OrderRow): number =>
-  (Array.isArray(o.items) ? o.items.length : undefined) ??
-  num(o.total_items) ??
-  num(o.items_count) ??
-  num(firstItem(o).quantity) ??
-  1;
+export const readCustomerHandle = (o: Order): string => {
+  const name = readCustomerName(o);
+  return name.startsWith('@') ? name : `@${name}`;
+};
 
-export const readAmountPaid = (o: OrderRow): number | undefined =>
-  num(o.amount_paid) ?? num(o.total) ?? num(o.amount);
+export const readItemsCount = (o: Order): number =>
+  Array.isArray(o.items) ? o.items.length : 0;
 
-export const readProductPrice = (o: OrderRow): number | undefined =>
-  num(o.product_price) ?? num(firstItem(o).price) ?? num(o.subtotal);
+export const readAmountPaid = (o: Order): number | undefined => o.total;
 
-export const readStatus = (o: OrderRow): string =>
-  (str(o.delivery_status) ?? str(o.status) ?? 'pending').toLowerCase();
+export const readProductPrice = (o: Order): number | undefined => o.subtotal;
+
+export const readStatus = (o: Order): OrderStatus => o.status ?? 'pending';
 
 // Custom (bespoke) orders open the quote builder instead of the standard drawer.
-export const isCustomOrder = (o: OrderRow): boolean =>
-  Boolean(
-    o.is_custom ||
-      o.bespoke ||
-      o.quote ||
-      o.quote_id ||
-      ['custom', 'bespoke'].includes(str(o.order_type)?.toLowerCase() ?? '') ||
-      ['custom', 'bespoke'].includes(str(o.type)?.toLowerCase() ?? '')
-  );
+export const isCustomOrder = (o: Order): boolean =>
+  o.type === 'bespoke' || Boolean(o.bespoke_design) || Boolean(o.bespoke_quote);
 
-export const readQuoteId = (o: OrderRow): string =>
-  str(o.quote_id) ?? str(asDict(o.quote)._id) ?? readOrderId(o);
+export const readQuoteId = (o: Order): string =>
+  o.bespoke_quote ?? o._id;
 
-// Delivery-status pill: label + colour classes, matching the design.
-export interface DeliveryBadge {
+// ──────────────── Order-Status Badge ────────────────
+
+export interface StatusBadge {
   label: string;
   className: string;
 }
 
-export const deliveryBadge = (status: string): DeliveryBadge => {
-  const s = status.toLowerCase().replace(/[\s-]+/g, '_');
-  const map: Record<string, DeliveryBadge> = {
-    out_for_delivery: { label: 'Out for delivery', className: 'bg-[#EAECF0] text-[#475467]' },
-    pending: { label: 'Pending', className: 'bg-[#FEF6E7] text-[#DD900D]' },
-    processing: { label: 'Pending', className: 'bg-[#FEF6E7] text-[#DD900D]' },
-    return: { label: 'Return', className: 'bg-[#F4EBFF] text-[#7E22CE]' },
-    returned: { label: 'Return', className: 'bg-[#F4EBFF] text-[#7E22CE]' },
-    successful: { label: 'Successful', className: 'bg-[#E7F6EC] text-[#0F973D]' },
-    delivered: { label: 'Successful', className: 'bg-[#E7F6EC] text-[#0F973D]' },
-    completed: { label: 'Successful', className: 'bg-[#E7F6EC] text-[#0F973D]' },
-    failed: { label: 'Failed', className: 'bg-[#FBEAE9] text-[#D42620]' },
-    rejected: { label: 'Rejected', className: 'bg-[#FEECEB] text-[#D42620]' },
-    cancelled: { label: 'Rejected', className: 'bg-[#FEECEB] text-[#D42620]' },
-    ready_to_ship: { label: 'Ready to ship', className: 'bg-[#E7F0FA] text-[#3387CC]' },
-    shipped: { label: 'Ready to ship', className: 'bg-[#E7F0FA] text-[#3387CC]' },
+export const orderStatusBadge = (status: OrderStatus): StatusBadge => {
+  const map: Record<OrderStatus, StatusBadge> = {
+    pending: {
+      label: 'Pending',
+      className: 'bg-[#FEF6E7] text-[#DD900D]',
+    },
+    in_review: {
+      label: 'In Review',
+      className: 'bg-[#E7F0FA] text-[#3387CC]',
+    },
+    processing: {
+      label: 'Processing',
+      className: 'bg-[#F4EBFF] text-[#7E22CE]',
+    },
+    in_transit: {
+      label: 'In Transit',
+      className: 'bg-[#EAECF0] text-[#475467]',
+    },
+    completed: {
+      label: 'Completed',
+      className: 'bg-[#E7F6EC] text-[#0F973D]',
+    },
+    cancelled: {
+      label: 'Cancelled',
+      className: 'bg-[#FBEAE9] text-[#D42620]',
+    },
+    returned: {
+      label: 'Returned',
+      className: 'bg-[#FEECEB] text-[#D42620]',
+    },
   };
-  return map[s] ?? { label: status.charAt(0).toUpperCase() + status.slice(1), className: 'bg-[#EAECF0] text-[#475467]' };
+  return (
+    map[status] ?? {
+      label: status.charAt(0).toUpperCase() + status.slice(1),
+      className: 'bg-[#EAECF0] text-[#475467]',
+    }
+  );
+};
+
+// Backward-compatible alias used in the table columns and drawers.
+export const deliveryBadge = orderStatusBadge;
+
+// ──────────────── Shipment-Status Badge ────────────────
+
+export const shipmentStatusBadge = (status: ShipmentStatus): StatusBadge => {
+  const map: Record<ShipmentStatus, StatusBadge> = {
+    pending: {
+      label: 'Pending',
+      className: 'bg-[#FEF6E7] text-[#DD900D]',
+    },
+    ready_to_ship: {
+      label: 'Ready to Ship',
+      className: 'bg-[#E7F0FA] text-[#3387CC]',
+    },
+    shipped: {
+      label: 'Shipped',
+      className: 'bg-[#F4EBFF] text-[#7E22CE]',
+    },
+    in_transit: {
+      label: 'In Transit',
+      className: 'bg-[#EAECF0] text-[#475467]',
+    },
+    delivered: {
+      label: 'Delivered',
+      className: 'bg-[#E7F6EC] text-[#0F973D]',
+    },
+    failed: {
+      label: 'Failed',
+      className: 'bg-[#FBEAE9] text-[#D42620]',
+    },
+  };
+  return (
+    map[status] ?? {
+      label: status.charAt(0).toUpperCase() + status.slice(1),
+      className: 'bg-[#EAECF0] text-[#475467]',
+    }
+  );
 };

@@ -17,7 +17,8 @@ import { LinearImportIcon } from '@/pattern/common/atoms/linear-import-icon'
 import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-icon'
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
 import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
-import { CollectionsTable } from '../organisms/collections-table'
+import { DataTable } from '@/pattern/common/organisms/table/data-table'
+import { CollectionsTableColumns } from '../molecules/collections-table-column'
 import { formatCondition } from '../molecules/collections-table-column'
 
 interface CollectionsTableTemplateProps {
@@ -144,6 +145,20 @@ const CollectionsTableTemplate = ({ onExport }: CollectionsTableTemplateProps) =
         toast.info('Archive collection feature coming soon')
     }
 
+    const collectionColumns = useMemo(
+        () =>
+            CollectionsTableColumns({
+                onEdit: handleEditCollection,
+                onSelect: handleSelectCollection,
+                onActivate: handleActivateCollection,
+                onScheduleActivation: handleScheduleActivation,
+                onArchive: handleArchiveCollection,
+                onDeactivate: handleDeactivateCollection,
+                onDelete: handleDeleteCollection,
+            }),
+        [handleEditCollection, handleSelectCollection, handleActivateCollection, handleScheduleActivation, handleArchiveCollection, handleDeactivateCollection, handleDeleteCollection]
+    )
+
     return (
         <div className='w-full bg-background'>
             {/* Header Section */}
@@ -184,22 +199,17 @@ const CollectionsTableTemplate = ({ onExport }: CollectionsTableTemplateProps) =
                     filterLabel='Filter By :'
                     filterIcon={null}
                 />
-                <CollectionsTable
+                <DataTable
+                    columns={collectionColumns}
                     data={collections}
                     isLoading={isLoading}
-                    error={error}
-                    isError={isError}
-                    isSuccess={isSuccess}
                     isFetching={isFetching}
+                    isSuccess={isSuccess}
+                    isError={isError}
+                    error={error}
                     pagination={pagination}
                     setPagination={setPagination}
-                    onEdit={handleEditCollection}
-                    onSelect={handleSelectCollection}
-                    onActivate={handleActivateCollection}
-                    onScheduleActivation={handleScheduleActivation}
-                    onArchive={handleArchiveCollection}
-                    onDeactivate={handleDeactivateCollection}
-                    onDelete={handleDeleteCollection}
+                    emptyMessage='Collections will show up here once you create one.'
                 />
             </div>
         </div>

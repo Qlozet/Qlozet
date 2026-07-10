@@ -14,7 +14,8 @@ import { toast } from 'sonner'
 import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-icon'
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
 import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
-import { DiscountsTable } from '../organisms/discounts-table'
+import { DataTable } from '@/pattern/common/organisms/table/data-table'
+import { DiscountsTableColumns } from '../molecules/discounts-table-columns'
 import { useRouter } from 'next/navigation'
 import { APP_ROUTES } from '@/lib/routes'
 import { formatCondition } from '../molecules/discounts-table-columns'
@@ -123,6 +124,17 @@ const DiscountsTableTemplate = () => {
     toast.info('Export feature coming soon')
   }
 
+  const discountColumns = useMemo(
+    () =>
+      DiscountsTableColumns({
+        onEdit: handleEditDiscount,
+        onActivate: handleActivateDiscount,
+        onDeactivate: handleDeactivateDiscount,
+        onDelete: handleDeleteDiscount,
+      }),
+    [handleEditDiscount, handleActivateDiscount, handleDeactivateDiscount, handleDeleteDiscount]
+  )
+
   return (
     <div className='w-full bg-background'>
       {/* Header */}
@@ -171,19 +183,17 @@ const DiscountsTableTemplate = () => {
             </div>
           }
         />
-        <DiscountsTable
+        <DataTable
+          columns={discountColumns}
           data={discounts}
           isLoading={isLoading}
-          error={error}
-          isError={isError}
-          isSuccess={isSuccess}
           isFetching={isFetching}
+          isSuccess={isSuccess}
+          isError={isError}
+          error={error}
           pagination={pagination}
           setPagination={setPagination}
-          onEdit={handleEditDiscount}
-          onActivate={handleActivateDiscount}
-          onDeactivate={handleDeactivateDiscount}
-          onDelete={handleDeleteDiscount}
+          emptyMessage='Discounts will show up here once you create one.'
         />
       </div>
 

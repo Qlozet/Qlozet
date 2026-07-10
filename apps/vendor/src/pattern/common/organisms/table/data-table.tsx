@@ -1,5 +1,12 @@
 'use client';
 
+// DataTable — the single, shared table component for the entire vendor app.
+// Every page (Orders, Clothing, Fabrics, Accessories, Collections, Customers,
+// Wallet) uses this component with its own column definitions and data.
+//
+// Features: skeleton loading, data rows, BoldBoxRemoveIcon empty state,
+// error state, pagination, optional toolbar, optional row click handler.
+
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import {
@@ -19,10 +26,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { BoldBoxRemoveIcon } from '@/pattern/common/atoms/bold-box-remove-icon';
+import { Pagination } from '@/pattern/common/organisms/table/pagination';
 
 export interface DataTableProps<TData> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,13 +51,16 @@ export interface DataTableProps<TData> {
   /** Rendered inside the card, above the table (e.g. a TableToolbar). */
   toolbar?: ReactNode;
   onRowClick?: (row: TData) => void;
+  /** Main message shown in the empty state (default: "Nothing in here yet.") */
+  emptyTitle?: string;
+  /** Subtitle shown below the empty title */
   emptyMessage?: string;
   minWidth?: string;
 }
 
-// Generic TanStack-backed table used by the detail-page tables. Encapsulates
-// the loading / empty / error states and a design-matching footer so each table
-// only supplies its column definitions and data.
+// Generic TanStack-backed table used across the whole vendor app.
+// Matches the design language of ClothingTable / CustomersTable with the
+// BoldBoxRemoveIcon empty state, skeleton loader, error state, and Pagination.
 export function DataTable<TData>({
   columns,
   data,
@@ -66,7 +76,8 @@ export function DataTable<TData>({
   manualPagination = false,
   toolbar,
   onRowClick,
-  emptyMessage = 'Nothing here yet.',
+  emptyTitle = 'Nothing in here yet.',
+  emptyMessage,
   minWidth = '900px',
 }: DataTableProps<TData>) {
   const defaultData = useMemo<TData[]>(() => [], []);
@@ -88,16 +99,12 @@ export function DataTable<TData>({
 
   const rows = table.getRowModel().rows;
   const showLoader = isLoading || isFetching;
-  const { pageIndex, pageSize } = pagination;
-  const total = manualPagination ? (totalCount ?? data.length) : data.length;
-  const skeletonRowCount = pageSize || 5;
+  const skeletonRowCount = pagination.pageSize || 5;
 
   return (
-    <div className='overflow-hidden rounded-xl border dark:border-border bg-white dark:bg-card custom-card-shadow'>
-      {toolbar}
-
+    <>
       <Table style={{ minWidth }}>
-        <TableHeader className='bg-[#F9FAFB] dark:bg-[#4A4949]'>
+        <TableHeader className='bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]'>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className='hover:bg-transparent'>
               {headerGroup.headers.map((header, index) => {
@@ -107,7 +114,7 @@ export function DataTable<TData>({
                   <TableHead
                     key={header.id}
                     className={cn(
-                      'h-13 whitespace-nowrap text-sm font-medium text-grey-black dark:text-white',
+                      'h-[52px] pt-7 pb-4 whitespace-nowrap text-sm font-medium text-grey-black dark:text-white',
                       isFirst && 'pl-6',
                       isLast && 'pr-6'
                     )}
@@ -126,12 +133,12 @@ export function DataTable<TData>({
         </TableHeader>
 
         <TableBody>
-          {/* Loading: skeleton rows that mirror the real table layout */}
+          {/* Loading: skeleton rows */}
           {showLoader &&
             Array.from({ length: skeletonRowCount }).map((_, rowIndex) => (
               <TableRow
                 key={`skeleton-${rowIndex}`}
-                className='border-t dark:border-border hover:bg-transparent'
+                className='border-b hover:bg-transparent'
               >
                 {columns.map((_, cellIndex) => {
                   const isFirst = cellIndex === 0;
@@ -139,7 +146,11 @@ export function DataTable<TData>({
                   return (
                     <TableCell
                       key={cellIndex}
-                      className={cn('py-4', isFirst && 'pl-6', isLast && 'pr-6')}
+                      className={cn(
+                        'py-4',
+                        isFirst && 'pl-6',
+                        isLast && 'pr-6'
+                      )}
                     >
                       <Skeleton
                         className={cn(
@@ -153,18 +164,25 @@ export function DataTable<TData>({
               </TableRow>
             ))}
 
+          {/* Data rows */}
           {!showLoader &&
-            isSuccess &&
             rows.length > 0 &&
             rows.map((row) => (
               <TableRow
                 key={row.id}
-                onClick={onRowClick ? () => onRowClick(row.original) : undefined}
-                className={cn('border-t dark:border-border', onRowClick && 'cursor-pointer')}
+                data-state={row.getIsSelected() && 'selected'}
+                onClick={
+                  onRowClick ? () => onRowClick(row.original) : undefined
+                }
+                className={cn(
+                  'border-b',
+                  onRowClick && 'cursor-pointer hover:bg-muted/50'
+                )}
               >
                 {row.getVisibleCells().map((cell, cellIndex) => {
                   const isFirst = cellIndex === 0;
-                  const isLast = cellIndex === row.getVisibleCells().length - 1;
+                  const isLast =
+                    cellIndex === row.getVisibleCells().length - 1;
                   return (
                     <TableCell
                       key={cell.id}
@@ -174,70 +192,72 @@ export function DataTable<TData>({
                           : undefined
                       }
                       className={cn(
-                        'py-4 align-middle text-sm text-dark dark:text-foreground',
+                        'whitespace-nowrap',
                         isFirst && 'pl-6',
                         isLast && 'pr-6'
                       )}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   );
                 })}
               </TableRow>
             ))}
 
-          {!showLoader && isSuccess && data.length === 0 && (
-            <TableRow className='bg-white dark:bg-card'>
+          {/* Empty state */}
+          {!showLoader && rows.length === 0 && !isError && (
+            <TableRow>
               <TableCell
                 colSpan={columns.length}
-                className='h-48 text-center text-sm text-muted-foreground'
+                className='h-64 text-center'
               >
-                {emptyMessage}
+                <div className='flex flex-col items-center gap-4'>
+                  <BoldBoxRemoveIcon />
+                  <div className='flex flex-col items-center gap-2'>
+                    <p className='text-lg font-medium text-muted-foreground'>
+                      {emptyTitle}
+                    </p>
+                    {emptyMessage && (
+                      <p className='text-sm text-muted-foreground'>
+                        {emptyMessage}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </TableCell>
             </TableRow>
           )}
 
+          {/* Error state */}
           {!showLoader && isError && (
-            <TableRow className='bg-white dark:bg-card'>
-              <TableCell colSpan={columns.length} className='h-48 text-center'>
-                <p className='text-base font-medium text-destructive'>
-                  Error loading data
-                </p>
-                <p className='text-sm text-muted-foreground'>{errorMessage}</p>
+            <TableRow>
+              <TableCell
+                colSpan={columns.length}
+                className='h-64 text-center'
+              >
+                <div className='flex flex-col items-center gap-2'>
+                  <p className='text-lg font-medium text-destructive'>
+                    Error loading data
+                  </p>
+                  <p className='text-sm text-muted-foreground'>
+                    {errorMessage}
+                  </p>
+                </div>
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
 
-      {!showLoader && isSuccess && rows.length > 0 && (
-        <div className='w-full flex items-center justify-end py-4 pr-6'>
-          <div className='h-fit flex items-center gap-x-4'>
-            <div className='text-sm text-muted-foreground text-center'>
-              Showing {pageIndex * pageSize + 1} -{' '}
-              {Math.min((pageIndex + 1) * pageSize, total)} of {total}
-            </div>
-            <Button
-              className='w-6 h-6 text-sm rounded-full'
-              variant='outline'
-              size='icon'
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <ChevronLeft className='w-4 h-4' />
-            </Button>
-            <Button
-              className='w-6 h-6 text-sm rounded-full'
-              variant='outline'
-              size='icon'
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              <ChevronRight className='w-4 h-4' />
-            </Button>
-          </div>
+      {/* Pagination */}
+      {!showLoader && rows.length > 0 && (
+        <div className='py-4'>
+          <Pagination table={table} />
         </div>
       )}
-    </div>
+    </>
   );
 }
