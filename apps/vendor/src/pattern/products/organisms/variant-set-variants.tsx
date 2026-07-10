@@ -15,17 +15,18 @@ interface VariantSetVariantsProps {
 
 export function VariantSetVariants({ variants, onVariantUpdate, onVariantDelete, onVariantToggle }: VariantSetVariantsProps) {
     return (
-        <div className="bg-card rounded-lg p-6 border border-border mt-6">
-            <h3 className="text-sm font-medium text-foreground mb-4">Set Variants</h3>
+        <div className="bg-card rounded-lg p-4 md:p-6 border border-border mt-6 overflow-hidden flex flex-col">
+            <h3 className="text-sm font-medium text-foreground mb-4 shrink-0">Set Variants</h3>
 
             {variants?.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                     <p className="text-sm">No variants created yet. Select colors and sizes above, then click "Add Variants".</p>
                 </div>
             ) : (
-                <>
-                    {/* Header Row */}
-                    <div className="flex gap-4 mb-2 text-sm font-medium text-muted-foreground">
+                <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 pb-2">
+                    <div className="min-w-[800px]">
+                        {/* Header Row */}
+                        <div className="flex gap-4 mb-2 text-sm font-medium text-muted-foreground">
                         <div className="w-[16.67%]">Colours</div>
                         <div className="w-[50%]">Available Sizes</div>
                         <div className="w-[25%]">Add Product Images</div>
@@ -44,7 +45,8 @@ export function VariantSetVariants({ variants, onVariantUpdate, onVariantDelete,
                             />
                         ))}
                     </div>
-                </>
+                    </div>
+                </div>
             )}
         </div>
     )

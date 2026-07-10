@@ -20,6 +20,11 @@ import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delet
 import { DataTable } from '@/pattern/common/organisms/table/data-table'
 import { CollectionsTableColumns } from '../molecules/collections-table-column'
 import { formatCondition } from '../molecules/collections-table-column'
+import { FilterMenu, type FilterOption } from '@/pattern/common/molecules/filter-menu'
+
+const COLLECTION_OPTIONS: FilterOption[] = [
+    { value: 'all', label: 'All Collections' }
+]
 
 interface CollectionsTableTemplateProps {
     onExport?: () => void
@@ -194,10 +199,14 @@ const CollectionsTableTemplate = ({ onExport }: CollectionsTableTemplateProps) =
                     title='Collection'
                     search={searchQuery}
                     onSearchChange={handleSearchChange}
-                    onFilterDate={() => toast.info('Filter coming soon')}
                     onExport={handleExport}
-                    filterLabel='Filter By :'
-                    filterIcon={null}
+                    filterControl={
+                        <FilterMenu
+                            options={COLLECTION_OPTIONS}
+                            value='all'
+                            onChange={() => toast.info('Filter coming soon')}
+                        />
+                    }
                 />
                 <DataTable
                     columns={collectionColumns}

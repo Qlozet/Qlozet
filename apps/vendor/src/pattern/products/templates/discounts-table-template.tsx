@@ -19,6 +19,16 @@ import { DiscountsTableColumns } from '../molecules/discounts-table-columns'
 import { useRouter } from 'next/navigation'
 import { APP_ROUTES } from '@/lib/routes'
 import { formatCondition } from '../molecules/discounts-table-columns'
+import { FilterMenu, type FilterOption } from '@/pattern/common/molecules/filter-menu'
+
+const TYPE_OPTIONS: FilterOption[] = [
+  { value: 'all', label: 'All Types' },
+  { value: 'percentage', label: 'Percentage' },
+  { value: 'fixed', label: 'Fixed' },
+  { value: 'store_wide', label: 'Store-Wide' },
+  { value: 'flash', label: 'Flash Sales' },
+  { value: 'category_specific', label: 'Category' },
+]
 
 const DiscountsTableTemplate = () => {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -163,24 +173,14 @@ const DiscountsTableTemplate = () => {
           onSearchChange={handleSearchChange}
           onExport={handleExport}
           filterControl={
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">Filter By :</span>
-              <select
-                value={typeFilter}
-                onChange={(e) => {
-                  setTypeFilter(e.target.value)
-                  setPagination((prev) => ({ ...prev, pageIndex: 0 }))
-                }}
-                className='h-10 rounded-lg border border-input bg-transparent dark:bg-transparent dark:border-gray-500 dark:text-foreground px-3 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-ring'
-              >
-                <option value='all'>All Types</option>
-                <option value='percentage'>Percentage</option>
-                <option value='fixed'>Fixed</option>
-                <option value='store_wide'>Store-Wide</option>
-                <option value='flash'>Flash Sales</option>
-                <option value='category_specific'>Category</option>
-              </select>
-            </div>
+            <FilterMenu
+              options={TYPE_OPTIONS}
+              value={typeFilter}
+              onChange={(val) => {
+                setTypeFilter(val)
+                setPagination((prev) => ({ ...prev, pageIndex: 0 }))
+              }}
+            />
           }
         />
         <DataTable

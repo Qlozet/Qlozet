@@ -160,13 +160,17 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
       {/* Cover Image Section (Touches edges) */}
       <div className='relative h-32 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700'>
         {displayCover ? (
-          <Image
-            src={displayCover}
-            alt='Cover'
-            fill
-            className='object-cover'
-            unoptimized={displayCover?.includes('/raw/')}
-          />
+          <>
+            <Image
+              src={displayCover}
+              alt='Cover'
+              fill
+              className='object-cover'
+              unoptimized={displayCover?.includes('/raw/')}
+            />
+            {/* Tint overlay to make the logo and camera button pop out */}
+            <div className='absolute inset-0 bg-black/20 dark:bg-black/40 pointer-events-none' />
+          </>
         ) : (
           <div className='absolute inset-0 flex items-center justify-center'>
             <div className='w-full h-full bg-gradient-to-br from-orange-100 via-purple-100 to-blue-100 dark:from-orange-900/30 dark:via-purple-900/30 dark:to-blue-900/30' />
@@ -175,13 +179,14 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
 
         {/* Scaled SVG/PNG logo in top-left corner */}
         {displaySvgLogo && (
-          <div className='absolute top-2 left-2 z-10'>
-            <div className='size-10 rounded-md bg-white/80 dark:bg-black/40 backdrop-blur-sm p-1 shadow-sm'>
+          <div className='absolute top-2 left-4 z-10'>
+            <div className='size-10'>
               <Image
                 src={displaySvgLogo}
                 alt={vendorName}
-                width={32}
-                height={32}
+                width={100}
+                height={100}
+                quality={100}
                 className='size-full object-contain'
                 unoptimized={displaySvgLogo?.toLowerCase().includes('.svg') || displaySvgLogo?.includes('/raw/')}
               />
@@ -210,9 +215,10 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
               <Image
                 src={displayLogo}
                 alt={vendorName}
-                width={96}
-                height={96}
-                className='object-cover'
+                width={200}
+                height={200}
+                quality={100}
+                className='object-cover size-full'
                 unoptimized={displayLogo?.includes('/raw/')}
               />
             ) : (
