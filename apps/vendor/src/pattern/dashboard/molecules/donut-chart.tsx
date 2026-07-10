@@ -100,7 +100,7 @@ export const DonutChart = ({
           </div>
 
           <div className="flex-1 space-y-3">
-            <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
+            <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
               {title}
             </CardTitle>
             <ul className="grid w-fit grid-cols-2 gap-x-10 gap-y-2 p-0 m-0 text-xs capitalize">
@@ -124,7 +124,7 @@ export const DonutChart = ({
   return (
     <Card className={`w-full rounded-[12px] custom-card-shadow ${className ?? ''}`}>
       <CardHeader className="px-6 pb-4">
-        <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
+        <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
           {title}
         </CardTitle>
       </CardHeader>

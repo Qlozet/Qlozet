@@ -42,7 +42,7 @@ export const MetricCard = ({
   return (
     <Card
       className={cn(
-        'h-[120px] p-3 2xl:py-3 2xl:px-5 rounded-[12px] custom-card-shadow',
+        'h-[120px] p-3 2xl:p-5 rounded-[12px] custom-card-shadow',
         className
       )}
     >
