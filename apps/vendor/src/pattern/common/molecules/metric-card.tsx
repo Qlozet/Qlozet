@@ -50,22 +50,24 @@ export const MetricCard = ({
         <div className='flex items-start justify-start gap-x-4 h-full'>
           <div className='shrink-0'>{icon}</div>
 
-          <div className='flex-1 flex flex-col h-full space-y-1'>
-            <div className='flex items-center justify-between gap-2 shrink-0'>
-              <p className='text-[hsla(210,9%,31%,1)] dark:text-white text-xs font-normal'>
-                {title}
+          <div className='flex-1 flex flex-col justify-between h-full'>
+            <div className='space-y-2'>
+              <div className='flex items-center justify-between gap-2'>
+                <p className='text-[hsla(210,9%,31%,1)] dark:text-white text-xs font-normal'>
+                  {title}
+                </p>
+                <If isTrue={Boolean(subLabel)}>
+                  <span className='text-[11px] text-muted-foreground whitespace-nowrap'>
+                    {subLabel}
+                  </span>
+                </If>
+              </div>
+              <p className='text-2xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white truncate'>
+                {value}
               </p>
-              <If isTrue={Boolean(subLabel)}>
-                <span className='text-[11px] text-muted-foreground whitespace-nowrap'>
-                  {subLabel}
-                </span>
-              </If>
             </div>
-            <p className='text-2xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white truncate leading-none'>
-              {value}
-            </p>
 
-            <div className='w-full flex items-center justify-between mt-auto'>
+            <div className='w-full flex items-center justify-between'>
               <If isTrue={Boolean(change)}>
                 <p
                   className={cn(
