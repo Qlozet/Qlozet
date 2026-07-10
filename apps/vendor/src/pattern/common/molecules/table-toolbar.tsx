@@ -53,7 +53,7 @@ export const TableToolbar = ({
         {title}
       </h2>
 
-      <div className='flex items-center gap-2 sm:gap-3 w-full md:w-auto'>
+      <div className='flex items-stretch gap-2 sm:gap-3 w-full md:w-auto'>
         {filterControl ?? (
           <Button
             type='button'
@@ -75,7 +75,7 @@ export const TableToolbar = ({
             value={search ?? ''}
             onChange={(e) => onSearchChange?.(e.target.value)}
             placeholder='Search'
-            className='h-10 w-full sm:w-[240px] rounded-lg pl-9 bg-[#F8F9FA] dark:bg-muted dark:border-border dark:text-foreground'
+            className='h-full min-h-[40px] w-full sm:w-[240px] rounded-lg pl-9 bg-[#F8F9FA] dark:bg-muted dark:border-border dark:text-foreground'
           />
         </div>
 
