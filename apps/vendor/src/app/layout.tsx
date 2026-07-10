@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
+    <html lang='en' suppressHydrationWarning>
       <body
         className={`${poppins.variable} ${inter.variable} ${roboto_mono.variable} font-poppins antialiased relative bg-background flex justify-center`}
       >

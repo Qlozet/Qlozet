@@ -14,7 +14,8 @@ import { toast } from 'sonner'
 import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-icon'
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
 import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
-import { SizeGuidesTable } from '../organisms/size-guides-table'
+import { DataTable } from '@/pattern/common/organisms/table/data-table'
+import { SizeGuidesTableColumns } from '../molecules/size-guides-table-columns'
 import { useRouter } from 'next/navigation'
 import { APP_ROUTES } from '@/lib/routes'
 import { formatCondition } from '../molecules/size-guides-table-columns'
@@ -123,6 +124,17 @@ const SizeGuidesTableTemplate = () => {
     toast.info('Export feature coming soon')
   }
 
+  const sizeGuideColumns = useMemo(
+    () =>
+      SizeGuidesTableColumns({
+        onEdit: handleEditSizeGuide,
+        onActivate: handleActivateSizeGuide,
+        onDeactivate: handleDeactivateSizeGuide,
+        onDelete: handleDeleteSizeGuide,
+      }),
+    [handleEditSizeGuide, handleActivateSizeGuide, handleDeactivateSizeGuide, handleDeleteSizeGuide]
+  )
+
   return (
     <div className='w-full bg-background'>
       {/* Header */}
@@ -166,19 +178,17 @@ const SizeGuidesTableTemplate = () => {
             </div>
           }
         />
-        <SizeGuidesTable
+        <DataTable
+          columns={sizeGuideColumns}
           data={sizeGuides}
           isLoading={isLoading}
-          error={error}
-          isError={isError}
-          isSuccess={isSuccess}
           isFetching={isFetching}
+          isSuccess={isSuccess}
+          isError={isError}
+          error={error}
           pagination={pagination}
           setPagination={setPagination}
-          onEdit={handleEditSizeGuide}
-          onActivate={handleActivateSizeGuide}
-          onDeactivate={handleDeactivateSizeGuide}
-          onDelete={handleDeleteSizeGuide}
+          emptyMessage='Size guides will show up here once you create one.'
         />
       </div>
     </div>

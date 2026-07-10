@@ -39,7 +39,7 @@ const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({
   const [roleFilter, setRoleFilter] = useState('all');
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
 
-  const { data: response, isLoading, isError } = useGetTeamMembersQuery();
+  const { data: response, isLoading, isFetching, isSuccess, isError, error } = useGetTeamMembersQuery();
   const members = response?.data ?? [];
 
   // Map API response to table format
@@ -141,60 +141,46 @@ const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({
     [handleEdit]
   );
 
-  const toolbar = (
-    <TableToolbar
-      title='Roles & Permissions'
-      search={searchValue}
-      onSearchChange={setSearchValue}
-      filterControl={
-        <div className='flex items-center gap-2'>
-          <span className='text-sm font-medium text-gray-700 dark:text-muted-foreground whitespace-nowrap'>
-            Filter By :
-          </span>
-          <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className='w-[160px]'>
-              <SelectValue placeholder='Select role' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='all'>All roles</SelectItem>
-              <SelectItem value='owner'>Owner</SelectItem>
-              <SelectItem value='operations'>Operations</SelectItem>
-              <SelectItem value='marketing'>Marketing</SelectItem>
-              <SelectItem value='customer support'>Customer Support</SelectItem>
-              <SelectItem value='tailor'>Tailor</SelectItem>
-              <SelectItem value='sales'>Sales</SelectItem>
-              <SelectItem value='data analyst'>Data Analyst</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      }
-    />
-  );
-
-  if (isLoading) {
-    return (
-      <div className='flex justify-center py-12'>
-        <Loader2 className='size-6 animate-spin text-muted-foreground' />
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className='text-center text-red-500 py-12'>
-        Failed to load team members. Please try again.
-      </div>
-    );
-  }
-
   return (
-    <div className='w-full'>
+    <div className='bg-card w-full rounded-[10px] shadow-md'>
+      <TableToolbar
+        title='Roles & Permissions'
+        search={searchValue}
+        onSearchChange={setSearchValue}
+        filterControl={
+          <div className='flex items-center gap-2'>
+            <span className='text-sm font-medium text-gray-700 dark:text-muted-foreground whitespace-nowrap'>
+              Filter By :
+            </span>
+            <Select value={roleFilter} onValueChange={setRoleFilter}>
+              <SelectTrigger className='w-[160px]'>
+                <SelectValue placeholder='Select role' />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value='all'>All roles</SelectItem>
+                <SelectItem value='owner'>Owner</SelectItem>
+                <SelectItem value='operations'>Operations</SelectItem>
+                <SelectItem value='marketing'>Marketing</SelectItem>
+                <SelectItem value='customer support'>Customer Support</SelectItem>
+                <SelectItem value='tailor'>Tailor</SelectItem>
+                <SelectItem value='sales'>Sales</SelectItem>
+                <SelectItem value='data analyst'>Data Analyst</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        }
+      />
       <DataTable
         columns={columns}
         data={data}
+        isLoading={isLoading}
+        isFetching={isFetching}
+        isSuccess={isSuccess}
+        isError={isError}
+        error={error}
         pagination={pagination}
         setPagination={setPagination}
-        toolbar={toolbar}
+        emptyMessage='Team members will show up here once you add them.'
       />
     </div>
   );

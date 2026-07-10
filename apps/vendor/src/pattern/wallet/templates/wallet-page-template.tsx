@@ -227,7 +227,19 @@ export const WalletPageTemplate: React.FC = () => {
       />
 
       {/* Recent transactions */}
-      <div id='recent-transactions'>
+      <div id='recent-transactions' className='bg-card w-full rounded-[10px] shadow-md'>
+        <TableToolbar
+          title='Recent Transactions'
+          search={search}
+          onSearchChange={setSearch}
+          filterControl={
+            <TransactionFilterMenu
+              value={statusFilter}
+              onChange={setStatusFilter}
+            />
+          }
+          onExport={handleExport}
+        />
         <DataTable
           columns={columns}
           data={filtered}
@@ -240,20 +252,6 @@ export const WalletPageTemplate: React.FC = () => {
           setPagination={setPagination}
           emptyMessage='No transactions yet.'
           minWidth='980px'
-          toolbar={
-            <TableToolbar
-              title='Recent Transactions'
-              search={search}
-              onSearchChange={setSearch}
-              filterControl={
-                <TransactionFilterMenu
-                  value={statusFilter}
-                  onChange={setStatusFilter}
-                />
-              }
-              onExport={handleExport}
-            />
-          }
         />
       </div>
     </div>

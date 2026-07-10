@@ -21,7 +21,8 @@ import {
   getCustomerName,
 } from '@/lib/customers';
 import { CustomerStatsSection } from '../molecules/customer-stats-section';
-import { CustomersTable } from '../organisms/customers-table';
+import { DataTable } from '@/pattern/common/organisms/table/data-table';
+import { createCustomersTableColumns } from '../molecules/customers-table-columns';
 import { CustomerDemographicsChart } from '../organisms/customer-demographics-chart';
 import { CustomerDetailsModal } from '../organisms/customer-details-modal';
 
@@ -46,8 +47,14 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
   const { data, isLoading, isFetching, isSuccess, isError, error } =
     useGetVendorCustomersQuery({ page: 1, limit: FETCH_LIMIT, orders_limit: 5 });
 
-  const allCustomers = useMemo(() => data?.data ?? [], [data]);
-  const total = data?.total ?? allCustomers.length;
+  const allCustomers = useMemo(() => {
+    if (!data) return [];
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data.data)) return data.data;
+    if (data.data && Array.isArray((data.data as any).data)) return (data.data as any).data;
+    return [];
+  }, [data]);
+  const total = data?.total ?? (data?.data as any)?.total ?? allCustomers.length;
 
   // Client-side search across the identifier and full name.
   const customers = useMemo(() => {
@@ -79,6 +86,11 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
     }
     exportCustomersToCsv(customers);
   };
+
+  const customerColumns = useMemo(
+    () => createCustomersTableColumns({ onViewDetails: openDetails }),
+    [openDetails]
+  );
 
   return (
     <div className='w-full min-h-screen h-fit space-y-6 pb-10'>
@@ -129,7 +141,8 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
             </div>
           </div>
 
-          <CustomersTable
+          <DataTable
+            columns={customerColumns}
             data={customers}
             isLoading={isLoading}
             isFetching={isFetching}
@@ -139,7 +152,7 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
             pagination={pagination}
             setPagination={setPagination}
             onRowClick={openDetails}
-            actions={{ onViewDetails: openDetails }}
+            emptyMessage='Customers will show up here once they make a purchase.'
           />
         </div>
 

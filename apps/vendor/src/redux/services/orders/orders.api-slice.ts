@@ -1,430 +1,264 @@
-// Orders API Service - RTK Query
-// Handles all order-related API operations
+// Orders API Service — RTK Query (Reconciled with Qlozet Backend)
+// Only 4 real endpoints exist: getVendorOrders, fulfillOrder, cancelOrder, getOrdersChart.
 
 import { baseAPI } from '@/redux/api/base-api';
 
-// Types
-export interface OrderItem {
-  productId: string;
-  productName: string;
-  quantity: number;
+// ──────────────── Enums ────────────────
+
+export type OrderStatus =
+  | 'pending'
+  | 'in_review'
+  | 'processing'
+  | 'in_transit'
+  | 'completed'
+  | 'cancelled'
+  | 'returned';
+
+export type ShipmentStatus =
+  | 'pending'
+  | 'ready_to_ship'
+  | 'shipped'
+  | 'in_transit'
+  | 'delivered'
+  | 'failed';
+
+export type OrderType = 'standard' | 'bespoke';
+
+// ──────────────── Sub-Schemas ────────────────
+
+export interface VariantSelection {
+  variant_id: string;
+  size?: string;
   price: number;
-  total: number;
-  variant?: {
-    size?: string;
-    color?: string;
-    material?: string;
-  };
-  customizations?: {
-    name: string;
-    value: string;
-    additionalPrice: number;
-  }[];
+  quantity: number;
+  total_amount: number;
 }
+
+export interface FabricSelection {
+  fabric_id: string;
+  yardage: number;
+  price: number;
+  quantity: number;
+  total_amount: number;
+}
+
+export interface StyleSelection {
+  style_id: string;
+  price: number;
+  quantity: number;
+  total_amount: number;
+}
+
+export interface AccessorySelection {
+  accessory_id: string;
+  variant_id: string;
+  price: number;
+  quantity: number;
+  total_amount: number;
+}
+
+// ──────────────── Order Item ────────────────
+
+export interface OrderItem {
+  /** Populated product (has name, images, base_price) or ObjectId string */
+  product:
+    | { _id: string; name: string; images?: string[]; base_price?: number }
+    | string;
+  /** The vendor's business ID */
+  business: string;
+  color_variant_selections?: VariantSelection[];
+  fabric_selections?: FabricSelection[];
+  style_selections?: StyleSelection[];
+  accessory_selections?: AccessorySelection[];
+  applied_fabric?: string;
+  applied_fabric_yards?: number;
+  note?: string;
+}
+
+// ──────────────── Vendor Shipment ────────────────
+
+export interface VendorShipment {
+  _id: string;
+  business: string;
+  request_token?: string;
+  service_code?: string;
+  courier_id?: string;
+  courier_name?: string;
+  shipping_fee: number;
+  shipment_id?: string;
+  tracking_number?: string;
+  label_url?: string;
+  status: ShipmentStatus;
+  rate_fetched_at?: string;
+  shipped_at?: string;
+  delivered_at?: string;
+}
+
+// ──────────────── Order ────────────────
 
 export interface Order {
   _id: string;
-  orderNumber: string;
-  customerId: string;
-  customerName: string;
-  customerEmail: string;
+  reference: string;
+  customer: {
+    _id: string;
+    email: string;
+    firstName?: string;
+    lastName?: string;
+  };
   items: OrderItem[];
-  subtotal: number;
-  tax: number;
-  shipping: number;
-  discount: number;
-  total: number;
-  status:
-    | 'pending'
-    | 'confirmed'
-    | 'processing'
-    | 'shipped'
-    | 'delivered'
-    | 'cancelled'
-    | 'return';
-  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
-  paymentMethod: string;
-  shippingAddress: {
-    name: string;
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
+  address: {
+    street?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    zip_code?: string;
     phone?: string;
+    [key: string]: unknown;
   };
-  billingAddress?: {
-    name: string;
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-  };
-  notes?: string;
+  subtotal: number;
+  shipping_fee: number;
+  total: number;
+  status: OrderStatus;
+  type?: OrderType;
+  bespoke_design?: string;
+  bespoke_quote?: string;
+  shipments: VendorShipment[];
+  vendor_earnings?: number;
+  platform_commission?: number;
+  payout_eligible_at?: string;
+  payout_status?: 'pending' | 'eligible' | 'paid';
   createdAt: string;
   updatedAt: string;
-  deliveredAt?: string;
-  cancelledAt?: string;
 }
 
-export interface OrdersResponse {
+// ──────────────── Paginated Response ────────────────
+
+export interface PaginatedOrdersResponse {
   data: Order[];
-  totalCount: number;
-  currentPage: number;
-  totalPages: number;
+  total_items: number;
+  total_pages: number;
+  current_page: number;
+  has_next_page: boolean;
+  has_previous_page: boolean;
+  page_size: number;
 }
 
-export interface OrderStats {
-  totalOrders: number;
-  pendingOrders: number;
-  completedOrders: number;
-  cancelledOrders: number;
-  returnedOrders: number;
-  totalRevenue: number;
-  averageOrderValue: number;
+// ──────────────── Vendor-Specific Helpers ────────────────
+// GET /orders/vendor returns the entire order, including items and shipments
+// from other vendors. The frontend must filter locally.
+
+/** Filter order items to only show this vendor's products */
+export function getVendorItems(
+  order: Order,
+  businessId: string
+): OrderItem[] {
+  return order.items.filter((item) => {
+    const itemBiz =
+      typeof item.business === 'string'
+        ? item.business
+        : (item.business as { _id?: string })?._id;
+    return itemBiz === businessId;
+  });
 }
 
-export interface OrdersByLocation {
-  location: string;
-  male: number;
-  female: number;
-  total: number;
-  percentage: number;
+/** Get this vendor's shipment from the order */
+export function getVendorShipment(
+  order: Order,
+  businessId: string
+): VendorShipment | undefined {
+  return order.shipments?.find((s) => {
+    const shipBiz =
+      typeof s.business === 'string'
+        ? s.business
+        : (s.business as unknown as { _id?: string })?._id;
+    return shipBiz === businessId;
+  });
 }
 
-export interface OrdersByGender {
-  male: number;
-  female: number;
+/** Calculate the vendor-specific subtotal */
+export function getVendorSubtotal(
+  order: Order,
+  businessId: string
+): number {
+  const items = getVendorItems(order, businessId);
+  return items.reduce((sum, item) => {
+    let itemTotal = 0;
+    item.color_variant_selections?.forEach(
+      (v) => (itemTotal += v.total_amount)
+    );
+    item.fabric_selections?.forEach((f) => (itemTotal += f.total_amount));
+    item.style_selections?.forEach((s) => (itemTotal += s.total_amount));
+    item.accessory_selections?.forEach(
+      (a) => (itemTotal += a.total_amount)
+    );
+    return sum + itemTotal;
+  }, 0);
 }
 
-export interface DailyOrderData {
-  date: string;
-  count: number;
-  revenue: number;
-}
+// ──────────────── API Slice ────────────────
 
-export interface CreateOrderRequest {
-  customerId: string;
-  items: Omit<OrderItem, 'productName' | 'total'>[];
-  shippingAddress: Order['shippingAddress'];
-  billingAddress?: Order['billingAddress'];
-  paymentMethod: string;
-  notes?: string;
-  discount?: number;
-}
-
-export interface UpdateOrderRequest {
-  _id: string;
-  status?: Order['status'];
-  paymentStatus?: Order['paymentStatus'];
-  shippingAddress?: Order['shippingAddress'];
-  billingAddress?: Order['billingAddress'];
-  notes?: string;
-}
-
-// API Slice
 export const ordersApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
-    // Get all orders with pagination and filters
-    getOrders: builder.query<
-      OrdersResponse,
-      {
-        page?: number;
-        limit?: number;
-        search?: string;
-        status?: Order['status'] | 'all';
-        paymentStatus?: Order['paymentStatus'] | 'all';
-        dateRange?: {
-          startDate: string;
-          endDate: string;
-        };
-        sortBy?:
-          | 'orderNumber'
-          | 'customerName'
-          | 'total'
-          | 'createdAt'
-          | 'status';
-        sortOrder?: 'asc' | 'desc';
-      }
-    >({
-      query: (params = {}) => {
-        const searchParams = new URLSearchParams();
-        Object.entries(params).forEach(([key, value]) => {
-          if (value !== undefined) {
-            if (typeof value === 'object') {
-              searchParams.append(key, JSON.stringify(value));
-            } else {
-              searchParams.append(key, value.toString());
-            }
-          }
-        });
-        return `/orders/vendor?${searchParams.toString()}`;
-      },
-      providesTags: ['Order'],
-    }),
-
-    // Get single order
-    getOrder: builder.query<{ data: Order }, string>({
-      query: (orderId) => ({
-        url: `/vendor/orders/${orderId}`,
-        method: 'GET',
-      }),
-      providesTags: ['Order'],
-    }),
-
-    // Create order
-    createOrder: builder.mutation<{ data: Order }, CreateOrderRequest>({
-      query: (orderData) => ({
-        url: '/vendor/orders',
-        method: 'POST',
-        body: orderData,
-      }),
-      invalidatesTags: ['Order', 'OrderStats'],
-    }),
-
-    // Update order
-    updateOrder: builder.mutation<{ data: Order }, UpdateOrderRequest>({
-      query: ({ _id, ...orderData }) => ({
-        url: `/vendor/orders/${_id}`,
-        method: 'PATCH',
-        body: orderData,
-      }),
-      invalidatesTags: ['Order', 'OrderStats'],
-    }),
-
-    // Cancel order
-    cancelOrder: builder.mutation<
-      { data: Order },
-      { orderId: string; reason?: string }
-    >({
-      query: ({ orderId, reason }) => ({
-        url: `/vendor/orders/${orderId}/cancel`,
-        method: 'PATCH',
-        body: { reason },
-      }),
-      invalidatesTags: ['Order', 'OrderStats'],
-    }),
-
-    // Process return
-    processReturn: builder.mutation<
-      { data: Order },
-      {
-        orderId: string;
-        items: { productId: string; quantity: number; reason: string }[];
-        refundAmount: number;
-      }
-    >({
-      query: ({ orderId, items, refundAmount }) => ({
-        url: `/vendor/orders/${orderId}/return`,
-        method: 'PATCH',
-        body: { items, refundAmount },
-      }),
-      invalidatesTags: ['Order', 'OrderStats'],
-    }),
-
-    // Get order statistics
-    getOrderStats: builder.query<{ data: OrderStats }, void>({
-      query: () => ({
-        url: '/vendor/orders/stats',
-        method: 'GET',
-      }),
-      providesTags: ['OrderStats'],
-    }),
-
-    // Get orders by location (for dashboard)
-    getOrdersByLocation: builder.query<
-      {
-        data: {
-          locations: OrdersByLocation[];
-          totalOrders: number;
-        };
-      },
-      void
-    >({
-      query: () => ({
-        url: '/vendor/dashboard/orders/top-locations',
-        method: 'GET',
-      }),
-      providesTags: ['OrderStats'],
-    }),
-
-    // Get orders by gender (for dashboard)
-    getOrdersByGender: builder.query<{ data: OrdersByGender }, void>({
-      query: () => ({
-        url: '/vendor/dashboard/orders/tag',
-        method: 'GET',
-      }),
-      providesTags: ['OrderStats'],
-    }),
-
-    // Get daily orders data
-    getDailyOrders: builder.query<
-      { data: DailyOrderData[] },
-      {
-        filter?: 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom';
-        startDate?: string;
-        endDate?: string;
-      }
-    >({
-      query: (params = {}) => {
-        const searchParams = new URLSearchParams();
-        Object.entries(params).forEach(([key, value]) => {
-          if (value !== undefined) {
-            searchParams.append(key, value.toString());
-          }
-        });
-        return `/vendor/orders/daily-order?${searchParams.toString()}`;
-      },
-      providesTags: ['OrderStats'],
-    }),
-
-    // Generate order report
-    generateOrderReport: builder.mutation<
-      Blob,
-      {
-        format: 'pdf' | 'csv' | 'xlsx';
-        dateRange?: {
-          startDate: string;
-          endDate: string;
-        };
-        status?: Order['status'][];
-        includeItems?: boolean;
-      }
-    >({
-      query: ({ format, dateRange, status, includeItems = true }) => {
-        const searchParams = new URLSearchParams();
-        searchParams.append('format', format);
-        searchParams.append('includeItems', includeItems.toString());
-
-        if (dateRange) {
-          searchParams.append('dateRange', JSON.stringify(dateRange));
-        }
-        if (status?.length) {
-          searchParams.append('status', JSON.stringify(status));
-        }
-
-        return {
-          url: `/vendor/orders/report?${searchParams.toString()}`,
-          method: 'POST',
-          responseHandler: (response) => response.blob(),
-        };
-      },
-    }),
-
-    // Bulk update orders
-    bulkUpdateOrders: builder.mutation<
-      {
-        data: {
-          updated: number;
-          failed: number;
-          errors?: string[];
-        };
-      },
-      {
-        orderIds: string[];
-        updates: {
-          status?: Order['status'];
-          paymentStatus?: Order['paymentStatus'];
-        };
-      }
-    >({
-      query: ({ orderIds, updates }) => ({
-        url: '/vendor/orders/bulk-update',
-        method: 'PATCH',
-        body: { orderIds, updates },
-      }),
-      invalidatesTags: ['Order', 'OrderStats'],
-    }),
-
-    // Get order invoice
-    getOrderInvoice: builder.query<
-      Blob,
-      { orderId: string; format?: 'pdf' | 'html' }
-    >({
-      query: ({ orderId, format = 'pdf' }) => ({
-        url: `/vendor/orders/${orderId}/invoice?format=${format}`,
-        responseHandler: (response) => response.blob(),
-      }),
-    }),
-
-    // ---- Reconciled Qlozet "Orders" endpoints ----
-
-    // GET /orders/vendor — vendor orders, optionally filtered by status
+    // GET /orders/vendor — paginated vendor orders, optionally filtered by status
     getVendorOrders: builder.query<
-      { data: Order[]; [key: string]: unknown },
-      { status?: string } | void
+      PaginatedOrdersResponse,
+      { page?: number; size?: number; status?: OrderStatus | 'all' } | void
     >({
       query: (params) => {
-        const status = params && 'status' in params ? params.status : undefined;
+        const search = new URLSearchParams();
+        if (params) {
+          if (params.page) search.set('page', String(params.page));
+          if (params.size) search.set('size', String(params.size));
+          if (params.status && params.status !== 'all')
+            search.set('status', params.status);
+        }
+        const qs = search.toString();
         return {
-          url: status ? `/orders/vendor?status=${status}` : '/orders/vendor',
+          url: qs ? `/orders/vendor?${qs}` : '/orders/vendor',
           method: 'GET',
         };
       },
       providesTags: ['Orders'],
     }),
 
-    // GET /orders/customer — customer orders, optionally filtered by status
-    getCustomerOrders: builder.query<
-      { data: Order[]; [key: string]: unknown },
-      { status?: string } | void
+    // POST /orders/:reference/fulfill — create Shipbubble shipping label
+    fulfillOrder: builder.mutation<
+      { message: string; data: unknown },
+      {
+        reference: string;
+        courier_id?: string;
+        service_code?: string;
+      }
     >({
-      query: (params) => {
-        const status = params && 'status' in params ? params.status : undefined;
-        return {
-          url: status ? `/orders/customer?status=${status}` : '/orders/customer',
-          method: 'GET',
-        };
-      },
-      providesTags: ['Orders'],
+      query: ({ reference, ...body }) => ({
+        url: `/orders/${reference}/fulfill`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Orders'],
     }),
 
-    // GET /orders/chart — order chart data
-    getOrdersChart: builder.query<{ data: unknown }, void>({
-      query: () => ({ url: '/orders/chart', method: 'GET' }),
-      providesTags: ['OrderStats'],
-    }),
-
-    // POST /orders — create a new order (direct or from cart). CreateOrderDto.
-    placeOrder: builder.mutation<
-      { data: Order },
-      { items: { product_id: string; note?: string; selections: unknown }[] }
-    >({
-      query: (body) => ({ url: '/orders', method: 'POST', body }),
-      invalidatesTags: ['Order', 'Orders', 'OrderStats'],
-    }),
-
-    // PATCH /orders/cancel/{reference} — cancel an order and refund the customer
-    cancelOrderByReference: builder.mutation<{ data: Order }, string>({
+    // PATCH /orders/cancel/:reference — cancel order and refund customer
+    cancelOrder: builder.mutation<{ data: Order }, string>({
       query: (reference) => ({
         url: `/orders/cancel/${reference}`,
         method: 'PATCH',
       }),
-      invalidatesTags: ['Order', 'Orders', 'OrderStats'],
+      invalidatesTags: ['Orders'],
+    }),
+
+    // GET /orders/chart — dashboard chart data
+    getOrdersChart: builder.query<{ data: unknown }, void>({
+      query: () => ({ url: '/orders/chart', method: 'GET' }),
+      providesTags: ['OrderStats'],
     }),
   }),
 });
 
 // Export hooks
 export const {
-  useGetOrdersQuery,
-  useGetOrderQuery,
-  useCreateOrderMutation,
-  useUpdateOrderMutation,
-  useCancelOrderMutation,
-  useProcessReturnMutation,
-  useGetOrderStatsQuery,
-  useGetOrdersByLocationQuery,
-  useGetOrdersByGenderQuery,
-  useGetDailyOrdersQuery,
-  useGenerateOrderReportMutation,
-  useBulkUpdateOrdersMutation,
-  useGetOrderInvoiceQuery,
-  // Reconciled Qlozet endpoints
   useGetVendorOrdersQuery,
-  useGetCustomerOrdersQuery,
+  useFulfillOrderMutation,
+  useCancelOrderMutation,
   useGetOrdersChartQuery,
-  usePlaceOrderMutation,
-  useCancelOrderByReferenceMutation,
 } = ordersApiSlice;

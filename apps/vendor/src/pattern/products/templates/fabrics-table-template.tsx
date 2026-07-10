@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { FabricsTable } from '@/pattern/products/organisms/fabrics-table'
+import { useState, useEffect, useMemo } from 'react'
+import { DataTable } from '@/pattern/common/organisms/table/data-table'
+import { createFabricTableColumns } from '@/pattern/products/molecules/fabric-table-columns'
 import { PaginationState } from '@tanstack/react-table'
 import { Product, useGetProductsByVendorQuery, useDeleteProductMutation, useUpdateProductStatusMutation } from '@/redux/services/products/products.api-slice'
 import { Button } from '@/components/ui/button'
@@ -231,6 +232,19 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
       })
   }
 
+  const fabricColumns = useMemo(
+    () =>
+      createFabricTableColumns({
+        onViewDetails: handleViewDetails,
+        onEdit: handleEditProduct,
+        onDuplicate: handleDuplicateProduct,
+        onDelete: handleDeleteProduct,
+        onStatusChange: handleStatusChange,
+        showSelect,
+      }),
+    [handleViewDetails, handleEditProduct, handleDuplicateProduct, handleDeleteProduct, handleStatusChange, showSelect]
+  )
+
   return (
     <div className='w-full bg-background'>
       {/* Header Section */}
@@ -316,22 +330,19 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
           filterLabel="Filter By :"
           filterIcon={null}
         />
-        <FabricsTable
+        <DataTable
+          columns={fabricColumns}
           data={products as Product[]}
           isLoading={isLoading}
-          error={error}
-          isError={isError}
-          isSuccess={isSuccess}
           isFetching={isFetching}
-          pageCount={pageCount}
+          isSuccess={isSuccess}
+          isError={isError}
+          error={error}
           pagination={pagination}
           setPagination={setPagination}
-          onViewDetails={handleViewDetails}
-          onEdit={handleEditProduct}
-          onDuplicate={handleDuplicateProduct}
-          onDelete={handleDeleteProduct}
-          onStatusChange={handleStatusChange}
-          showSelect={showSelect}
+          pageCount={pageCount}
+          manualPagination
+          emptyMessage='Products will show up here once you add a product.'
         />
       </div>
     </div>

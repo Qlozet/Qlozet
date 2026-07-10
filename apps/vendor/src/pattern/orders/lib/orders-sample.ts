@@ -1,11 +1,10 @@
 // Mockup sample data for the parts of the Orders feature with no backend
-// endpoint (stats, "most purchased", order-detail item visuals, quote
-// defaults, garment specs). Per the agreed approach, these mirror the design
-// mockups; replace with real queries when endpoints exist.
+// endpoint (stats, "most purchased"). Uses the real Order schema so the table
+// renders correctly whether real data or fallback is shown.
 
-import type { OrderRow } from './order-fields';
+import type { Order, OrderStatus } from '@/redux/services/orders/orders.api-slice';
 
-// ---- Headline stats (no /orders/stats endpoint) ----
+// ---- Headline stats (no /orders/stats endpoint — use /orders/chart) ----
 export const SAMPLE_ORDER_STATS = {
   totalOrders: 1000,
   ordersDelivered: 900,
@@ -14,41 +13,52 @@ export const SAMPLE_ORDER_STATS = {
   trend: '2.5%',
 };
 
+// ---- Helper to create a sample order matching the real schema ----
+const sample = (
+  id: string,
+  ref: string,
+  name: string,
+  status: OrderStatus,
+  total: number,
+  opts?: { type?: 'bespoke'; bespoke_quote?: string }
+): Order => ({
+  _id: id,
+  reference: ref,
+  customer: {
+    _id: `cust-${id}`,
+    email: `${name.toLowerCase().replace(/\s/g, '.')}@example.com`,
+    firstName: name.split(' ')[0],
+    lastName: name.split(' ').slice(1).join(' ') || undefined,
+  },
+  items: [],
+  address: {},
+  subtotal: total,
+  shipping_fee: 0,
+  total,
+  status,
+  type: opts?.type,
+  bespoke_quote: opts?.bespoke_quote,
+  shipments: [],
+  createdAt: '2023-09-23T00:00:00.000Z',
+  updatedAt: '2023-09-23T00:00:00.000Z',
+});
+
 // ---- Fallback rows so the table matches the populated mockup when the real
 // /orders/vendor list is empty in this environment. ----
-export const SAMPLE_ORDERS: OrderRow[] = [
-  { _id: 's1', reference: '123455ASDF', createdAt: '2023-09-23', customerName: 'Omoniyi Precious', product_price: 120000, amount_paid: 120000, total_items: 1, status: 'out_for_delivery' },
-  { _id: 's2', reference: '123455ASDF', createdAt: '2023-09-23', customerName: 'Kennedy James', product_price: 120000, amount_paid: 120000, total_items: 1, status: 'pending' },
-  { _id: 's3', reference: '123455ASDF', createdAt: '2023-09-24', customerName: 'Toyosi Adeyemi', product_price: 120000, amount_paid: 120000, total_items: 1, status: 'return' },
-  { _id: 's4', reference: '123455ASDF', createdAt: '2023-09-24', customerName: 'Kunle Remi', product_price: 120000, amount_paid: 120000, total_items: 1, status: 'successful' },
-  { _id: 's5', reference: '123455ASDF', createdAt: '2023-09-24', customerName: 'Kiki Mordi', product_price: 120000, amount_paid: 120000, total_items: 1, status: 'failed' },
-  { _id: 's6', reference: '123455ASDF', createdAt: '2023-09-24', customerName: 'Erica Queen', product_price: 120000, amount_paid: 120000, total_items: 1, status: 'rejected' },
-  { _id: 's7', reference: '123455ASDF', createdAt: '2023-09-24', customerName: 'Erica Queen', product_price: 120000, amount_paid: 120000, total_items: 1, status: 'ready_to_ship' },
-  // A custom/bespoke order so the quote-builder drawer is reachable from the demo.
-  { _id: 's8', reference: '256038', createdAt: '2023-10-12', customerName: 'Erica Queen', product_price: 250000, amount_paid: 250000, total_items: 1, status: 'pending', order_type: 'custom', quote_id: 's8-quote' },
+export const SAMPLE_ORDERS: Order[] = [
+  sample('s1', 'ORD-123455', 'Omoniyi Precious', 'in_transit', 120000),
+  sample('s2', 'ORD-123456', 'Kennedy James', 'pending', 120000),
+  sample('s3', 'ORD-123457', 'Toyosi Adeyemi', 'returned', 120000),
+  sample('s4', 'ORD-123458', 'Kunle Remi', 'completed', 120000),
+  sample('s5', 'ORD-123459', 'Kiki Mordi', 'cancelled', 120000),
+  sample('s6', 'ORD-123460', 'Erica Queen', 'in_review', 120000),
+  sample('s7', 'ORD-123461', 'David Olumide', 'processing', 120000),
+  // A bespoke order so the quote-builder drawer is reachable from the demo.
+  sample('s8', 'ORD-256038', 'Erica Queen', 'pending', 250000, {
+    type: 'bespoke',
+    bespoke_quote: 's8-quote',
+  }),
 ];
-
-// ---- Standard order detail: items + payment (no order-detail endpoint) ----
-export interface SampleOrderItem {
-  image: string;
-  name: string;
-  price: number;
-  oldPrice?: number;
-  qty: number;
-  discounts?: string[];
-}
-
-export const SAMPLE_ORDER_ITEMS: SampleOrderItem[] = [
-  { image: '', name: 'Poofie dress', price: 28000, oldPrice: 35000, qty: 2 },
-  { image: '', name: 'Double breasted c...', price: 105000, qty: 2, discounts: ['$10,000 off'] },
-  { image: '', name: 'Garm Island Maiso...', price: 33750, oldPrice: 67500, qty: 2, discounts: ['20% off', '30% off', '$10,000 off'] },
-];
-
-export const SAMPLE_ORDER_PAYMENT = {
-  total: 25000,
-  paymentStatus: 'Paid',
-  refundStatus: 'Not Refunded',
-};
 
 // ---- Quote builder defaults (prefill before a real quote is loaded) ----
 export const SAMPLE_QUOTE = {
