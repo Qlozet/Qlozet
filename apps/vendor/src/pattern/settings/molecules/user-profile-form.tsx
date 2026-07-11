@@ -114,7 +114,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                   <FormControl>
                     <Input
                       placeholder='johndoe'
-                      className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
+                      className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
                   </FormControl>
@@ -161,7 +161,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                   <FormControl>
                     <div className='flex gap-2'>
                       <Select defaultValue='+234'>
-                        <SelectTrigger className='w-[100px] bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'>
+                        <SelectTrigger className='w-[100px] bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -172,7 +172,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                       </Select>
                       <Input
                         placeholder='8132205304'
-                        className='bg-gray-50 dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200 flex-1'
+                        className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 flex-1'
                         {...field}
                       />
                     </div>
@@ -239,7 +239,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
             <Button
               type='submit'
               disabled={isLoading}
-              className='bg-[#5C2D0D] hover:bg-[#4A2409] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black px-8 py-2 rounded-lg'
+              className='bg-[#3d2817] hover:bg-[#2e1e10] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black px-8 py-2 rounded-lg'
             >
               {isLoading ? 'Saving...' : 'Save'}
             </Button>

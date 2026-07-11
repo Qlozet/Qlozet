@@ -375,7 +375,7 @@ export const OrderSettingsContent = () => {
         <Button
           onClick={handleSave}
           disabled={isSaving || !hasChanges}
-          className='min-w-[160px]'
+          className='min-w-[160px] bg-[#3d2817] hover:bg-[#2e1e10] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black'
         >
           {isSaving && <Loader2 className='mr-2 size-4 animate-spin' />}
           Save Changes

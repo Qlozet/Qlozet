@@ -77,7 +77,7 @@ export const MultiSelectTagsDropdown = ({
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex h-10 w-full items-center justify-between rounded-md border border-border-input bg-accent px-3 py-2 text-sm text-foreground hover:bg-accent/80 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                className="flex h-10 w-full items-center justify-between rounded-md border border-input dark:border-white/10 bg-background dark:bg-muted px-3 py-2 text-sm text-foreground dark:text-gray-200 hover:bg-accent/80 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             >
                 <span className="truncate">{getDisplayValue()}</span>
                 <ChevronDown className={cn("h-4 w-4 flex-shrink-0 transition-transform", isOpen && "rotate-180")} />
@@ -102,7 +102,7 @@ export const MultiSelectTagsDropdown = ({
                                                     "inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors",
                                                     isSelected
                                                         ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                                                        : "border border-border-input bg-card text-foreground hover:bg-accent",
+                                                        : "border border-input dark:border-white/10 bg-background dark:bg-muted text-foreground hover:bg-accent",
                                                 )}
                                             >
                                                 {tag.label}

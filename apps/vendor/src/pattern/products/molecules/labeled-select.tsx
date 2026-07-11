@@ -41,7 +41,7 @@ export const LabeledSelect = ({
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}
-          className="flex h-10 w-full items-center justify-between gap-2 rounded-md border border-input bg-background px-3 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+          className="flex h-10 w-full items-center justify-between gap-2 rounded-md border border-input dark:border-white/10 bg-background dark:bg-muted px-3 text-sm text-gray-700 dark:text-gray-200 transition-colors hover:bg-gray-50 dark:hover:bg-muted/80"
         >
           <span className={cn('truncate', !value && 'text-muted-foreground')}>
             {value || placeholder}
@@ -55,7 +55,7 @@ export const LabeledSelect = ({
         </button>
 
         {open && (
-          <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-60 overflow-auto rounded-lg border border-border bg-white py-1 shadow-lg">
+          <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-60 overflow-auto rounded-lg border border-border bg-white dark:bg-card py-1 shadow-lg">
             {options.map((option) => (
               <button
                 key={option}
@@ -64,7 +64,7 @@ export const LabeledSelect = ({
                   onChange(option);
                   setOpen(false);
                 }}
-                className="flex w-full items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                className="flex w-full items-center justify-between px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-muted"
               >
                 <span>{option}</span>
                 {option === value && <Check className="size-4 text-success" />}

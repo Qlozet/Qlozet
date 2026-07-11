@@ -229,7 +229,7 @@ export const ConditionsCard = ({
                             }}
                           >
                             <FormControl>
-                              <SelectTrigger className='h-12 rounded-lg bg-muted/40 dark:border-white/10'>
+                              <SelectTrigger className='h-12 rounded-lg bg-muted/40 dark:bg-muted dark:border-white/10'>
                                 <SelectValue placeholder='Select field...' />
                               </SelectTrigger>
                             </FormControl>
@@ -251,7 +251,7 @@ export const ConditionsCard = ({
                         <FormItem className='flex-1 min-w-[140px]'>
                           <Select value={field.value} onValueChange={field.onChange}>
                             <FormControl>
-                              <SelectTrigger className='h-12 rounded-lg bg-muted/40 dark:border-white/10'>
+                              <SelectTrigger className='h-12 rounded-lg bg-muted/40 dark:bg-muted dark:border-white/10'>
                                 <SelectValue placeholder='Operator...' />
                               </SelectTrigger>
                             </FormControl>
@@ -282,7 +282,7 @@ export const ConditionsCard = ({
                           ) : (
                             <Select value={field.value} onValueChange={field.onChange}>
                               <FormControl>
-                                <SelectTrigger className='h-12 rounded-lg bg-muted/40 dark:border-white/10'>
+                                <SelectTrigger className='h-12 rounded-lg bg-muted/40 dark:bg-muted dark:border-white/10'>
                                   <SelectValue placeholder='Select value...' />
                                 </SelectTrigger>
                               </FormControl>

@@ -1,18 +1,13 @@
 "use client"
 
 import { JSX } from "react";
-import { useGetTotalCustomersQuery } from "@/redux/services/customers/customers.api-slice"
-import { useGetGenderByOrderQuery } from "@/redux/services/dashboard/dashboard.api-slice"
+import { useGetOrdersChartQuery } from '@/redux/services/orders/orders.api-slice';
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer, Tooltip } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CustomChartTooltip } from "../molecules/custom-chart-tooltip";
 import { ChartSkeleton } from "../molecules/chart-skeleton"
 import ChartLegendIcon from "../atoms/chart-legend-icon";
-
-const data = [
-    { name: "Male", value: 65 },
-    { name: "Female", value: 35 },
-]
+import { ChartEmptyState } from "../molecules/chart-empty-state";
 
 const renderLegend = (props: any): JSX.Element => {
     const payload = props?.payload ?? [];
@@ -40,19 +35,29 @@ const renderLegend = (props: any): JSX.Element => {
 
 const COLORS = ["var(--chart-primary)", "var(--chart-secondary)"]
 
+const PLACEHOLDER_DATA = [
+    { name: "Male", value: 60 },
+    { name: "Female", value: 40 },
+];
+
 export const OrdersByGender = () => {
-    // Gender by Order API Query
-    const { data: genderData, isLoading: genderLoading } = useGetGenderByOrderQuery();
+    const { data: chartResponse, isLoading } = useGetOrdersChartQuery();
 
-    // Total Customers API Query
-    const { data: customersData, isLoading: customersLoading } =
-        useGetTotalCustomersQuery();
-
-    if (customersLoading || genderLoading) {
+    if (isLoading) {
         return <ChartSkeleton />;
     }
 
-    const sortedData = [...data].sort((a, b) => b.value - a.value);
+    const rawGenderData = chartResponse?.data?.charts?.ordersByGender?.series?.[0]?.data;
+    const hasData = rawGenderData && rawGenderData.length > 0 && rawGenderData.some((d: any) => d.value > 0);
+
+    const chartData = hasData
+        ? rawGenderData.map((item: any) => ({
+            name: item.label,
+            value: item.value,
+        }))
+        : PLACEHOLDER_DATA;
+
+    const sortedData = [...chartData].sort((a: any, b: any) => b.value - a.value);
 
     return (
         <Card className="w-full max-h-[330px] rounded-[12px] custom-card-shadow">
@@ -62,22 +67,28 @@ export const OrdersByGender = () => {
                 </CardTitle>
             </CardHeader>
             <CardContent className='w-full font-poppins px-3 pt-0 pb-6'>
-                <ResponsiveContainer width="100%" height={250}>
-                    <PieChart>
-                        <Pie data={sortedData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value">
-                            {sortedData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
-                            ))}
-                        </Pie>
-                        <Tooltip content={<CustomChartTooltip />} cursor={false} />
-                        <Legend
-                            align='center'
-                            iconType="circle"
-                            iconSize={9}
-                            content={renderLegend}
-                        />
-                    </PieChart>
-                </ResponsiveContainer>
+                <ChartEmptyState
+                    isEmpty={!hasData}
+                    variant="pie"
+                    description="Gender breakdown will show once orders start coming in"
+                >
+                    <ResponsiveContainer width="100%" height={250}>
+                        <PieChart>
+                            <Pie data={sortedData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value">
+                                {sortedData.map((entry: any, index: number) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
+                                ))}
+                            </Pie>
+                            <Tooltip content={<CustomChartTooltip />} cursor={false} />
+                            <Legend
+                                align='center'
+                                iconType="circle"
+                                iconSize={9}
+                                content={renderLegend}
+                            />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </ChartEmptyState>
             </CardContent>
         </Card>
     )

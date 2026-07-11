@@ -217,7 +217,7 @@ export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
           </div>
 
           <div className='flex justify-end'>
-            <Button type='submit' disabled={isLoading}>
+            <Button type='submit' disabled={isLoading} className='bg-[#3d2817] hover:bg-[#2e1e10] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black'>
               {isLoading ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>

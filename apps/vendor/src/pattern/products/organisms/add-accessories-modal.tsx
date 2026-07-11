@@ -242,12 +242,12 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
 
     return (
         <Dialog open={visible} onOpenChange={handleCloseModal}>
-            <DialogContent className="max-w-6xl p-0 pr-2!">
+            <DialogContent className="max-w-6xl p-0 overflow-hidden">
 
-                <div className="h-full w-full max-h-[85vh] grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 pr-1 overflow-y-auto">
+                <div className="h-full w-full max-h-[85vh] grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-0 overflow-y-auto">
                     {/* Left Column - Form */}
-                    <div className="w-full gap-y-[26px] pl-[38px] mt-8">
-                        <DialogTitle className="text-2xl font-semibold">{editId ? 'Edit' : 'Add'} Accessory</DialogTitle>
+                    <div className="w-full gap-y-[26px] pl-[38px] pr-6 mt-8 bg-card">
+                        <DialogTitle className="text-2xl font-semibold text-grey-black dark:text-white">{editId ? 'Edit' : 'Add'} Accessory</DialogTitle>
                         {isLoadingProduct ? (
                             <div className="flex flex-col gap-8 pt-7 w-full max-w-lg">
                                 <div className="space-y-2"><Skeleton className="h-4 w-24" /><Skeleton className="h-10 w-full" /></div>
@@ -408,25 +408,25 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                     </div>
 
                     {/* Preview section */}
-                    <div className="bg-[#f1f1f1] space-y-3 p-7">
-                        <h3 className="text-xl font-semibold">Preview</h3>
+                    <div className="bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] space-y-3 p-7">
+                        <h3 className="text-xl font-semibold text-grey-black dark:text-white">Preview</h3>
 
                         {isLoadingProduct ? (
                             <Skeleton className="w-full min-h-[300px] rounded-lg mt-12" />
                         ) : (
                         <>
-                        <div className="bg-muted/30 rounded-lg p-3 flex items-start gap-2">
-                            <div className="bg-amber-900 rounded-full size-8 flex items-center justify-center shrink-0">
-                                <InfoIcon className="size-4 text-white" />
+                        <div className="bg-[hsla(27,97%,12%,0.06)] dark:bg-white/5 rounded-lg p-3 flex items-start gap-2">
+                            <div className="bg-primary rounded-full size-8 flex items-center justify-center shrink-0">
+                                <InfoIcon className="size-4 text-primary-foreground" />
                             </div>
-                            <p className="text-xs text-muted-foreground leading-relaxed">
+                            <p className="text-xs text-grey-black dark:text-white leading-relaxed">
                                 Add a clear picture of the accessory in white background
                             </p>
                         </div>
 
                         <div 
                             onClick={() => document.getElementById('accessory-image')?.click()}
-                            className="border-2 border-dashed border-border rounded-lg p-12 flex flex-col items-center justify-center gap-4 min-h-[300px] cursor-pointer"
+                            className="border-2 border-dashed border-gray-300 dark:border-white/20 rounded-lg p-12 flex flex-col items-center justify-center gap-4 min-h-[300px] cursor-pointer hover:border-gray-400 dark:hover:border-white/40 transition"
                         >
                             <input 
                                 type="file" 

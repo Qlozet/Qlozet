@@ -24,6 +24,7 @@ interface DashboardNavWithOutSearchProps {
   userDetails?: UserDetails;
   setValue?: (data: string) => void;
   value?: string;
+  isLoading?: boolean;
 }
 
 const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
@@ -34,6 +35,7 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
   showSideBar,
   hideNav,
   userDetails,
+  isLoading,
 }) => {
   const router = useRouter();
   const [showProfile, setShowProfile] = useState<boolean>(false);
@@ -172,6 +174,7 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
         showProfileHandler={showProfileHandler}
         userDetails={userDetails}
         showProfile={showProfile}
+        isLoading={isLoading}
       />
     </div>
   );

@@ -53,7 +53,7 @@ export const TableToolbar = ({
         {title}
       </h2>
 
-      <div className='flex items-center gap-2 sm:gap-3 w-full md:w-auto'>
+      <div className='flex items-stretch gap-2 sm:gap-3 w-full md:w-auto'>
         {filterControl ?? (
           <Button
             type='button'

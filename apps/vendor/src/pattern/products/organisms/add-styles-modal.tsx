@@ -194,7 +194,7 @@ export const AddStylesModal = NiceModal.create(() => {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Left: form */}
-        <div className="space-y-4 overflow-y-auto p-6">
+        <div className="space-y-4 overflow-y-auto p-6 bg-card">
           <h2 className="text-xl font-semibold text-grey-black dark:text-white">
             Add Styles
           </h2>
@@ -206,7 +206,7 @@ export const AddStylesModal = NiceModal.create(() => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Round Neck"
-              className="bg-background"
+              className="bg-background dark:bg-muted dark:border-white/10"
             />
           </div>
 
@@ -217,7 +217,7 @@ export const AddStylesModal = NiceModal.create(() => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="A brief description of this style... (helps AI generate a better image!)"
-              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex min-h-[80px] w-full rounded-md border border-input dark:border-white/10 bg-background dark:bg-muted dark:text-gray-200 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
 
@@ -230,7 +230,7 @@ export const AddStylesModal = NiceModal.create(() => {
               value={styleCode}
               onChange={(e) => setStyleCode(e.target.value)}
               placeholder="BTM-WLP01"
-              className="bg-background"
+              className="bg-background dark:bg-muted dark:border-white/10"
             />
           </div>
 
@@ -240,7 +240,7 @@ export const AddStylesModal = NiceModal.create(() => {
               value={audience}
               onValueChange={(v) => setAudience(v as 'men' | 'women')}
             >
-              <SelectTrigger className="w-full bg-background capitalize">
+              <SelectTrigger className="w-full bg-background dark:bg-muted dark:border-white/10 capitalize">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -267,7 +267,7 @@ export const AddStylesModal = NiceModal.create(() => {
               Style Option Type
             </FieldLabel>
             <Select value={styleType} onValueChange={setStyleType}>
-              <SelectTrigger className="w-full bg-background">
+              <SelectTrigger className="w-full bg-background dark:bg-muted dark:border-white/10">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -302,7 +302,7 @@ export const AddStylesModal = NiceModal.create(() => {
         </div>
 
         {/* Right: preview */}
-        <div className="relative space-y-4 overflow-y-auto bg-accent/40 p-6">
+        <div className="relative space-y-4 overflow-y-auto bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-6">
           <button
             type="button"
             onClick={cancel}

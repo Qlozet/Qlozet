@@ -181,14 +181,14 @@ const WarehouseTableTemplate = ({
   return (
     <div className='w-full bg-background'>
       {/* Header Section */}
-      <div className='w-full h-[44px] flex flex-col sm:flex-row sm:items-end sm:justify-end gap-4 mb-[21px]'>
+      <div className='w-full flex justify-end gap-4 mb-[21px]'>
         {/* Action Button */}
-        <div className='flex items-center gap-2 flex-wrap'>
+        <div className='flex items-center gap-2 flex-wrap justify-end'>
           <Button
             variant="default"
             size='default'
             onClick={handleAddWarehouse}
-            className='gap-[10px] text-xs! font-medium bg-[#5C2D0D] hover:bg-[#4A2409] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black'
+            className='gap-[10px] text-xs! font-medium bg-[#3d2817] hover:bg-[#2e1e10] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black'
           >
             <Plus className='size-[18px]' />
             <span>Add warehouse</span>

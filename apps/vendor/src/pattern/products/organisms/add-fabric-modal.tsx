@@ -174,7 +174,7 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
           type="button"
           onClick={handleClose}
           aria-label="Close"
-          className="absolute right-4 top-4 z-20 flex size-8 items-center justify-center rounded-full bg-white text-gray-500 shadow-sm transition hover:bg-gray-100"
+          className="absolute right-4 top-4 z-20 flex size-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition hover:text-foreground"
         >
           <X className="size-4" />
         </button>
@@ -182,11 +182,11 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
         {/* Left: form */}
         <form
           onSubmit={(e) => e.preventDefault()}
-          className="flex-1 space-y-4 overflow-y-auto p-6"
+          className="flex-1 space-y-4 overflow-y-auto p-6 bg-card"
         >
           <h2
             id="add-fabric-title"
-            className="text-xl font-semibold text-foreground"
+            className="text-xl font-semibold text-grey-black dark:text-white"
           >
             {editId ? 'Edit' : 'Add'} Fabric
           </h2>
@@ -203,7 +203,7 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
           ) : (
           <>
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
               Fabric name
             </label>
             <Input
@@ -214,7 +214,7 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
               Product description
             </label>
             <Textarea
@@ -236,7 +236,7 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
           )}
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-gray-700">Colour</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Colour</label>
             <ColourSelect
               value={colour}
               hex={swatch}
@@ -258,8 +258,8 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
             />
           ) : material ? (
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">Pattern</label>
-              <div className="flex h-10 w-full items-center rounded-md border border-input bg-background px-3 text-sm text-muted-foreground">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Pattern</label>
+              <div className="flex h-10 w-full items-center rounded-md border border-input dark:border-white/10 bg-background dark:bg-muted px-3 text-sm text-muted-foreground">
                 No patterns available for this material
               </div>
             </div>
@@ -280,12 +280,12 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
           </div>
 
           <div className="space-y-1.5">
-            <label className="flex items-center gap-1 text-sm font-medium text-gray-700">
+            <label className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-200">
               Price per yard
               <Info className="size-3.5 text-gray-400" />
             </label>
-            <div className="flex h-10 items-center rounded-md border border-border-input bg-background px-3">
-              <span className="mr-2 text-sm text-gray-500">$</span>
+            <div className="flex h-10 items-center rounded-md border border-input dark:border-white/10 bg-background dark:bg-muted px-3">
+              <span className="mr-2 text-sm text-gray-500 dark:text-gray-400">$</span>
               <input
                 type="number"
                 min={0}
@@ -297,7 +297,7 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
                     e.target.value === '' ? 0 : Number(e.target.value)
                   )
                 }
-                className="w-full border-none bg-transparent text-sm outline-none"
+                className="w-full border-none bg-transparent text-sm outline-none dark:text-gray-200"
               />
             </div>
           </div>
@@ -326,17 +326,17 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
         </form>
 
         {/* Right: preview / upload */}
-        <div className="flex-1 space-y-4 bg-[#F4F4F4] p-6">
-          <h2 className="text-xl font-semibold text-foreground">Preview</h2>
+        <div className="flex-1 space-y-4 bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-6">
+          <h2 className="text-xl font-semibold text-grey-black dark:text-white">Preview</h2>
           {isLoadingProduct ? (
             <Skeleton className="aspect-square w-full rounded-xl" />
           ) : (
           <>
-          <div className="flex items-start gap-3 rounded-lg bg-white p-3">
+          <div className="flex items-start gap-3 rounded-lg bg-[hsla(27,97%,12%,0.06)] dark:bg-white/5 p-3">
             <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Info className="size-3.5" />
             </span>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-grey-black dark:text-white">
               Provide a flat and smooth picture of only the fabric.
             </p>
           </div>
@@ -344,8 +344,8 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
           <label
             htmlFor="fabric-image"
             className={cn(
-              'flex aspect-square cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-gray-300 bg-white/40 p-6 text-center transition hover:border-gray-400',
-              previewUrl && 'border-solid bg-white p-0'
+              'flex aspect-square cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-gray-300 dark:border-white/20 bg-white/40 dark:bg-white/5 p-6 text-center transition hover:border-gray-400 dark:hover:border-white/40',
+              previewUrl && 'border-solid bg-white dark:bg-transparent p-0'
             )}
           >
             {previewUrl ? (
@@ -358,7 +358,7 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
             ) : (
               <>
                 <Upload className="size-6 text-gray-500" />
-                <span className="rounded-md bg-gray-200 px-3 py-1.5 text-sm text-gray-700">
+                <span className="rounded-md bg-gray-200 dark:bg-white/10 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200">
                   Add or Drop image
                 </span>
                 <button

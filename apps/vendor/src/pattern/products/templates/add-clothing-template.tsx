@@ -594,7 +594,7 @@ export default function AddClothingTemplate() {
                 value={status}
                 onValueChange={(v) => setStatus(v as ProductStatus)}
               >
-                <SelectTrigger className="w-full bg-background capitalize">
+                <SelectTrigger className="w-full bg-background dark:bg-muted dark:border-white/10 capitalize">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
