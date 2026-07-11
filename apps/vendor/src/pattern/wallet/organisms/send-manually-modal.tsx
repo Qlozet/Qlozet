@@ -143,7 +143,7 @@ export const SendManuallyModal = create<SendManuallyModalProps>(
                     <FormLabel className={labelClass}>Select bank</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <FormControl>
-                        <SelectTrigger className='h-12 rounded-lg'>
+                        <SelectTrigger className='h-12 rounded-lg dark:bg-muted dark:border-white/10'>
                           <SelectValue placeholder="Select receiver's bank" />
                         </SelectTrigger>
                       </FormControl>

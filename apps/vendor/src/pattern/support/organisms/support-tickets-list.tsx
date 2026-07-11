@@ -84,7 +84,7 @@ export const SupportTicketsList = ({
               setPage(1);
             }}
           >
-            <SelectTrigger className='h-10 w-[170px] gap-2 text-sm text-gray-600'>
+            <SelectTrigger className='h-10 w-[170px] gap-2 text-sm text-gray-600 dark:text-gray-200 dark:bg-muted dark:border-white/10'>
               <ListFilter className='size-4' />
               <SelectValue placeholder='Filter By Status' />
             </SelectTrigger>

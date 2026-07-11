@@ -188,7 +188,7 @@ const WarehouseTableTemplate = ({
             variant="default"
             size='default'
             onClick={handleAddWarehouse}
-            className='gap-[10px] text-xs! font-medium bg-[#5C2D0D] hover:bg-[#4A2409] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black'
+            className='gap-[10px] text-xs! font-medium bg-[#3d2817] hover:bg-[#2e1e10] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black'
           >
             <Plus className='size-[18px]' />
             <span>Add warehouse</span>

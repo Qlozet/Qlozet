@@ -1,14 +1,22 @@
 "use client"
 
 import { JSX, useMemo } from "react";
-import { useGetOrdersQuery } from "@/redux/services/dashboard/dashboard.api-slice";
+import { useGetOrdersChartQuery } from '@/redux/services/orders/orders.api-slice';
 import { ChartSkeleton } from "../molecules/chart-skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer, Tooltip } from "recharts";
 import { CustomChartTooltip } from "../molecules/custom-chart-tooltip";
 import ChartLegendIcon from "../atoms/chart-legend-icon";
+import { ChartEmptyState } from "../molecules/chart-empty-state";
 
 const COLORS = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)'];
+
+const PLACEHOLDER_DATA = [
+    { name: "Accessory", value: 35 },
+    { name: "Custom", value: 25 },
+    { name: "Fabric", value: 20 },
+    { name: "Non-Custom", value: 20 },
+];
 
 const renderLegend = (props: any): JSX.Element => {
     const payload = props?.payload ?? [];
@@ -35,54 +43,26 @@ const renderLegend = (props: any): JSX.Element => {
 }
 
 export const OrdersByProduct = () => {
-    const { data: ordersResponse, isLoading } = useGetOrdersQuery();
+    const { data: chartResponse, isLoading } = useGetOrdersChartQuery();
 
-    // Derive product kind counts from orders
-    const chartData = useMemo(() => {
-        const orders = ordersResponse?.data?.data ?? []
-        let customClothing = 0
-        let nonCustomClothing = 0
-        let fabric = 0
-        let accessory = 0
+    const { chartData, hasData } = useMemo(() => {
+        const rawKindData = chartResponse?.data?.charts?.ordersByProductKind?.series?.[0]?.data;
 
-        orders.forEach((order: any) => {
-            const items = order.items ?? order.products ?? []
-            items.forEach((item: any) => {
-                const kind = item.kind ?? item.product?.kind ?? ''
-                const type = item.type ?? item.product?.clothing?.type ?? item.clothing?.type ?? ''
-
-                if (kind === 'clothing') {
-                    if (type === 'custom') {
-                        customClothing++
-                    } else {
-                        nonCustomClothing++
-                    }
-                } else if (kind === 'fabric') {
-                    fabric++
-                } else if (kind === 'accessory') {
-                    accessory++
-                }
-            })
-        })
-
-        // If no real data, show placeholder
-        const total = customClothing + nonCustomClothing + fabric + accessory
-        if (total === 0) {
-            return [
-                { name: "Custom", value: 40 },
-                { name: "Non-Custom", value: 30 },
-                { name: "Fabric", value: 20 },
-                { name: "Accessory", value: 10 },
-            ]
+        if (!rawKindData || rawKindData.length === 0) {
+            return { chartData: PLACEHOLDER_DATA, hasData: false };
         }
 
-        return [
-            { name: "Custom", value: customClothing },
-            { name: "Non-Custom", value: nonCustomClothing },
-            { name: "Fabric", value: fabric },
-            { name: "Accessory", value: accessory },
-        ].filter(d => d.value > 0).sort((a, b) => b.value - a.value);
-    }, [ordersResponse])
+        const processed = rawKindData.map((item: any) => ({
+            name: item.label,   // "Accessory", "Custom", "Fabric", "Non-Custom"
+            value: item.value,
+        })).filter((d: any) => d.value > 0).sort((a: any, b: any) => b.value - a.value);
+
+        if (processed.length === 0) {
+            return { chartData: PLACEHOLDER_DATA, hasData: false };
+        }
+
+        return { chartData: processed, hasData: true };
+    }, [chartResponse]);
 
     if (isLoading) {
         return <ChartSkeleton />;
@@ -96,22 +76,28 @@ export const OrdersByProduct = () => {
                 </CardTitle>
             </CardHeader>
             <CardContent className='w-full font-poppins px-3 pt-0 pb-6'>
-                <ResponsiveContainer width="100%" height={250}>
-                    <PieChart>
-                        <Pie data={chartData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value">
-                            {chartData?.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS?.length]} stroke="none" />
-                            ))}
-                        </Pie>
-                        <Tooltip content={<CustomChartTooltip />} cursor={false} />
-                        <Legend
-                            align='center'
-                            iconType="circle"
-                            iconSize={9}
-                            content={renderLegend}
-                        />
-                    </PieChart>
-                </ResponsiveContainer>
+                <ChartEmptyState
+                    isEmpty={!hasData}
+                    variant="pie"
+                    description="Product type distribution will appear as orders come in"
+                >
+                    <ResponsiveContainer width="100%" height={250}>
+                        <PieChart>
+                            <Pie data={chartData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value">
+                                {chartData?.map((entry: any, index: number) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS?.length]} stroke="none" />
+                                ))}
+                            </Pie>
+                            <Tooltip content={<CustomChartTooltip />} cursor={false} />
+                            <Legend
+                                align='center'
+                                iconType="circle"
+                                iconSize={9}
+                                content={renderLegend}
+                            />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </ChartEmptyState>
             </CardContent>
         </Card>
     )

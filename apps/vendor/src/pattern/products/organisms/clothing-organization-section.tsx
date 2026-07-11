@@ -124,7 +124,7 @@ export const ProductOrganizationSection = ({
                   onChange({ ...value, productType: next, category: [] })
                 }
               >
-                <SelectTrigger className="w-full bg-background">
+                <SelectTrigger className="w-full bg-background dark:bg-muted dark:border-white/10">
                   <SelectValue placeholder="Select product type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -181,7 +181,7 @@ export const ProductOrganizationSection = ({
               onChange({ ...value, audience: next as Audience })
             }
           >
-            <SelectTrigger className="w-full bg-background">
+            <SelectTrigger className="w-full bg-background dark:bg-muted dark:border-white/10">
               <SelectValue placeholder="Select audience" />
             </SelectTrigger>
             <SelectContent>

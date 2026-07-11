@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import NiceModal from '@ebay/nice-modal-react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -22,6 +23,8 @@ import {
   useGetProductQuery,
   useDeleteProductMutation,
 } from '@/redux/services/products/products.api-slice';
+import { AddFabricModal } from '../organisms/add-fabric-modal';
+import { AddAccessoryModal } from '../organisms/add-accessories-modal';
 
 // Defensive view over the clothing product shape (the catalogue Product carries
 // these nested fields via its index signature).
@@ -245,6 +248,17 @@ export const ProductDetailsTemplate = ({
   };
 
   const wip = () => toast.info('This action is coming soon.');
+
+  const handleEdit = () => {
+    if (isFabric) {
+      NiceModal.show(AddFabricModal, { editId: productId });
+    } else if (isAccessory) {
+      NiceModal.show(AddAccessoryModal, { editId: productId });
+    } else {
+      // Clothing — navigate to the add-product page in edit mode
+      router.push(`/products/add-product?edit=${productId}`);
+    }
+  };
 
   if (isLoading) return <ProductDetailsSkeleton />;
 
@@ -579,8 +593,8 @@ export const ProductDetailsTemplate = ({
                 {isDeleting ? 'Deleting…' : 'Delete'}
               </button>
               <Button
-                onClick={() => router.push('/products/add-product')}
-                className="px-8 bg-[#3d2817] hover:bg-[#3d2817]/90 text-white font-semibold rounded-lg"
+                onClick={handleEdit}
+                className="px-8 bg-[#3d2817] hover:bg-[#2e1e10] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black font-semibold rounded-lg"
               >
                 Edit
               </Button>

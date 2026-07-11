@@ -253,7 +253,7 @@ export const AddWarehouseModal = create<AddWarehouseModalProps>(
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'>
+                          <SelectTrigger className='bg-background dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'>
                             <SelectValue placeholder='Select an option' />
                           </SelectTrigger>
                         </FormControl>

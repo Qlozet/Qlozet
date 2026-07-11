@@ -9,7 +9,7 @@ import { ShoppingCart, Send, Truck, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MetricCard } from '@/pattern/common/molecules/metric-card';
 import { StatsCardSkeleton } from '@/pattern/dashboard/molecules/stats-card-skeleton';
-import { SAMPLE_ORDER_STATS } from '../lib/orders-sample';
+import { useGetVendorDashboardMetricsQuery } from '@/redux/services/orders/orders.api-slice';
 
 const CardIcon = ({ bg, children }: { bg: string; children: ReactNode }) => (
   <div
@@ -25,7 +25,10 @@ const CardIcon = ({ bg, children }: { bg: string; children: ReactNode }) => (
 export const OrderStatsSection: React.FC<{ isLoading?: boolean }> = ({
   isLoading = false,
 }) => {
-  if (isLoading) {
+  const { data: metricsResponse, isLoading: isMetricsLoading, isFetching } = useGetVendorDashboardMetricsQuery();
+  const showLoading = isLoading || isMetricsLoading || isFetching;
+
+  if (showLoading) {
     return (
       <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
         {Array.from({ length: 4 }).map((_, i) => (
@@ -35,15 +38,17 @@ export const OrderStatsSection: React.FC<{ isLoading?: boolean }> = ({
     );
   }
 
-  const { totalOrders, ordersDelivered, ordersInTransit, mostPurchased, trend } =
-    SAMPLE_ORDER_STATS;
+  const stats = metricsResponse?.data || {
+    total_orders: 0,
+    orders_delivered: 0,
+    orders_in_transit: 0,
+  };
 
   return (
     <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
       <MetricCard
         title='Total Orders'
-        value={totalOrders.toLocaleString()}
-        change={trend}
+        value={stats.total_orders.toLocaleString()}
         icon={
           <CardIcon bg='bg-[#57CAEB]'>
             <ShoppingCart className='size-6' />
@@ -52,8 +57,7 @@ export const OrderStatsSection: React.FC<{ isLoading?: boolean }> = ({
       />
       <MetricCard
         title='Orders Delivered'
-        value={ordersDelivered.toLocaleString()}
-        change={trend}
+        value={stats.orders_delivered.toLocaleString()}
         icon={
           <CardIcon bg='bg-[#5DDAB4]'>
             <Send className='size-6' />
@@ -62,7 +66,7 @@ export const OrderStatsSection: React.FC<{ isLoading?: boolean }> = ({
       />
       <MetricCard
         title='Orders in Transit'
-        value={ordersInTransit.toLocaleString()}
+        value={stats.orders_in_transit.toLocaleString()}
         icon={
           <CardIcon bg='bg-[#FF8F6B]'>
             <Truck className='size-6' />
@@ -71,8 +75,7 @@ export const OrderStatsSection: React.FC<{ isLoading?: boolean }> = ({
       />
       <MetricCard
         title='Most purchased order'
-        value={mostPurchased}
-        change={trend}
+        value={'N/A'}
         icon={
           <CardIcon bg='bg-[#FFB200]'>
             <Lock className='size-6' />

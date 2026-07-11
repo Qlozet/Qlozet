@@ -238,6 +238,7 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
             setValue={handleFilterChange}
             name={currentPage}
             showSideBar={toggleMobileSidebar}
+            isLoading={loadingState.isLoading}
           />
         </header>
 

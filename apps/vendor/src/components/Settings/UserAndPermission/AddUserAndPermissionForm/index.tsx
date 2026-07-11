@@ -148,7 +148,7 @@ const AddNewUserAndPermissionForm = ({
                 value={row.role_id || undefined}
                 onValueChange={(v) => updateRow(row.id, 'role_id', v)}
               >
-                <SelectTrigger className='h-10 w-full rounded-lg border-gray-300 dark:border-white/20 text-sm'>
+                <SelectTrigger className='h-10 w-full rounded-lg border-gray-300 dark:border-white/10 dark:bg-muted text-sm'>
                   <SelectValue placeholder='Select role' />
                 </SelectTrigger>
                 <SelectContent>

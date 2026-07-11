@@ -350,7 +350,7 @@ export const CollectionsCreateTemplate = () => {
                         onValueChange={(v) => field.onChange(v === 'active')}
                       >
                         <FormControl>
-                          <SelectTrigger className="h-12 rounded-lg bg-muted/40 dark:border-white/10">
+                          <SelectTrigger className="h-12 rounded-lg bg-muted/40 dark:bg-muted dark:border-white/10">
                             <SelectValue />
                           </SelectTrigger>
                         </FormControl>

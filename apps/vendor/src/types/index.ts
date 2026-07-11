@@ -136,6 +136,7 @@ export interface ProfileProps {
   userDetails?: UserDetails;
   showProfile: boolean;
   showProfileHandler: () => void;
+  isLoading?: boolean;
 }
 
 // Product and Add Page Types

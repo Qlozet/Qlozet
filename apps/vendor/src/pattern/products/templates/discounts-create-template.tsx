@@ -450,7 +450,7 @@ export const DiscountsCreateTemplate = () => {
                           onValueChange={field.onChange}
                         >
                           <FormControl>
-                            <SelectTrigger className="h-11 bg-muted/40 dark:border-white/10">
+                            <SelectTrigger className="h-11 bg-muted/40 dark:bg-muted dark:border-white/10">
                               <SelectValue placeholder="Select type" />
                             </SelectTrigger>
                           </FormControl>

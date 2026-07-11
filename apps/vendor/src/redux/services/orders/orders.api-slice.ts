@@ -195,6 +195,17 @@ export function getVendorSubtotal(
   }, 0);
 }
 
+export interface DashboardMetricsResponse {
+  message?: string;
+  data: {
+    total_orders: number;
+    orders_delivered: number;
+    orders_in_transit: number;
+    total_sales?: number;
+    recent_activity?: any[];
+  };
+}
+
 // ──────────────── API Slice ────────────────
 
 export const ordersApiSlice = baseAPI.injectEndpoints({
@@ -219,6 +230,7 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
         };
       },
       providesTags: ['Orders'],
+      transformResponse: (res: any) => res?.data ?? res,
     }),
 
     // POST /orders/:reference/fulfill — create Shipbubble shipping label
@@ -247,18 +259,31 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Orders'],
     }),
 
-    // GET /orders/chart — dashboard chart data
-    getOrdersChart: builder.query<{ data: unknown }, void>({
+    // GET /orders/chart — dashboard chart data (summary + all charts)
+    getOrdersChart: builder.query<{ data: any }, void>({
       query: () => ({ url: '/orders/chart', method: 'GET' }),
+      providesTags: ['OrderStats'],
+    }),
+
+    // GET /business/earnings-chart — earnings by day of week
+    getEarningsChart: builder.query<{ data: any }, void>({
+      query: () => ({ url: '/business/earnings-chart', method: 'GET' }),
+      providesTags: ['OrderStats'],
+    }),
+
+    // GET /orders/dashboard — top metric cards data
+    getVendorDashboardMetrics: builder.query<DashboardMetricsResponse, void>({
+      query: () => ({ url: '/orders/dashboard', method: 'GET' }),
       providesTags: ['OrderStats'],
     }),
   }),
 });
 
-// Export hooks
 export const {
   useGetVendorOrdersQuery,
   useFulfillOrderMutation,
   useCancelOrderMutation,
   useGetOrdersChartQuery,
+  useGetEarningsChartQuery,
+  useGetVendorDashboardMetricsQuery,
 } = ordersApiSlice;

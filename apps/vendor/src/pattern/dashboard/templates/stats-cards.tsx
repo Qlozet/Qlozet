@@ -1,6 +1,6 @@
 "use client"
 
-import { ShoppingCart, TrendingUp, Package, RotateCcw, ChevronRight } from "lucide-react"
+import { ChevronRight } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
@@ -10,14 +10,29 @@ import { TotalReturnsCardIcon } from "../atoms/total-returns-card-icon"
 import { TotalEarningsCardIcon } from "../atoms/total-earnings-card-icon"
 import { TotalOrdersCardIcon } from "../atoms/total-orders-card-icon"
 import { AverageOrdersPerDayCardIcon } from "../atoms/average-orders-per-day-card-icon"
+import { useGetOrdersChartQuery } from '@/redux/services/orders/orders.api-slice'
+import { StatsCardSkeleton } from "../molecules/stats-card-skeleton"
 
 export const StatsCards = () => {
+  const { data: chartResponse, isLoading } = useGetOrdersChartQuery();
+  const summary = chartResponse?.data?.summary;
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <StatsCardSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
+
   const stats = [
     {
       id: 1,
       title: "Total Orders",
-      value: "1000",
-      change: "+24%",
+      value: summary?.totalOrders?.toLocaleString() ?? "—",
+      change: summary?.totalOrdersChange ?? "—",
       icon: <TotalOrdersCardIcon />,
       bgColor: "bg-blue-100 dark:bg-blue-900",
       iconColor: "text-blue-600 dark:text-blue-400",
@@ -25,8 +40,8 @@ export const StatsCards = () => {
     {
       id: 2,
       title: "Total earnings",
-      value: "N50,000",
-      change: "+2.5%",
+      value: summary ? `₦${summary.totalEarnings?.toLocaleString()}` : "—",
+      change: summary?.totalEarningsChange ?? "—",
       icon: <TotalEarningsCardIcon />,
       bgColor: "bg-green-100 dark:bg-green-900",
       iconColor: "text-green-600 dark:text-green-400",
@@ -34,8 +49,8 @@ export const StatsCards = () => {
     {
       id: 3,
       title: "Average orders per day",
-      value: "900",
-      change: "+2.5%",
+      value: summary?.averageOrdersPerDay?.toLocaleString() ?? "—",
+      change: summary?.averageOrdersChange ?? "—",
       icon: <AverageOrdersPerDayCardIcon />,
       bgColor: "bg-red-100 dark:bg-red-900",
       iconColor: "text-red-600 dark:text-red-400",
@@ -43,8 +58,8 @@ export const StatsCards = () => {
     {
       id: 4,
       title: "Total returns",
-      value: "10",
-      change: "-2.6%",
+      value: summary?.totalReturns?.toLocaleString() ?? "—",
+      change: summary?.totalReturnsChange ?? "—",
       icon: <TotalReturnsCardIcon />,
       bgColor: "bg-orange-100 dark:bg-orange-900",
       iconColor: "text-orange-600 dark:text-orange-400",

@@ -75,7 +75,7 @@ export const TableToolbar = ({
             value={search ?? ''}
             onChange={(e) => onSearchChange?.(e.target.value)}
             placeholder='Search'
-            className='h-full min-h-[40px] w-full sm:w-[240px] rounded-lg pl-9 bg-[#F8F9FA] dark:bg-muted dark:border-border dark:text-foreground'
+            className='h-10 w-full sm:w-[240px] rounded-lg pl-9 bg-[#F8F9FA] dark:bg-muted dark:border-border dark:text-foreground'
           />
         </div>
 
