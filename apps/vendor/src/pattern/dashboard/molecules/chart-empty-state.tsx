@@ -27,26 +27,26 @@ export const ChartEmptyState = ({
 
     return (
         <div className="relative">
-            {/* Ghost chart — muted, non-interactive */}
-            <div className="opacity-[0.35] pointer-events-none select-none" aria-hidden="true">
+            {/* Ghost chart — very faint, non-interactive */}
+            <div className="opacity-[0.12] pointer-events-none select-none" aria-hidden="true">
                 {children}
             </div>
 
             {/* Centered overlay */}
             <div className="absolute inset-0 flex items-center justify-center z-10">
-                <div className="text-center px-4 max-w-[220px]">
-                    <div className="mx-auto mb-2 flex items-center justify-center">
+                <div className="text-center px-5 py-4 max-w-[240px] rounded-xl bg-background/70 dark:bg-card/70 backdrop-blur-sm">
+                    <div className="mx-auto mb-2.5 flex items-center justify-center">
                         <Icon
-                            size={28}
-                            className="text-muted-foreground/60 animate-pulse"
+                            size={32}
+                            className="text-muted-foreground"
                             strokeWidth={1.5}
                         />
                     </div>
-                    <p className="text-sm font-medium text-muted-foreground">
+                    <p className="text-sm font-semibold text-foreground">
                         {message}
                     </p>
                     {description && (
-                        <p className="text-xs text-muted-foreground/70 mt-1 leading-relaxed">
+                        <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
                             {description}
                         </p>
                     )}
