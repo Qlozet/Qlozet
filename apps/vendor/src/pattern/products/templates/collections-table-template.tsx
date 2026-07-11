@@ -167,8 +167,8 @@ const CollectionsTableTemplate = ({ onExport }: CollectionsTableTemplateProps) =
     return (
         <div className='w-full bg-background'>
             {/* Header Section */}
-            <div className='w-full h-[44px] flex flex-col sm:flex-row sm:items-end sm:justify-end gap-4 mb-[21px]'>
-                <div className='flex items-center gap-2 flex-wrap'>
+            <div className='w-full flex justify-end gap-4 mb-[21px]'>
+                <div className='flex items-center gap-2 flex-wrap justify-end'>
                     {/* Import Collections */}
                     <Button
                         variant='outline'
