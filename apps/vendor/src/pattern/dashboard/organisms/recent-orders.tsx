@@ -45,7 +45,7 @@ export const RecentOrders = () => {
                             <p className="text-base font-medium text-muted-foreground">
                                 Nothing in here yet.
                             </p>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-muted-foreground text-center">
                                 Your recent orders will show up here as customers place them
                             </p>
                         </div>
