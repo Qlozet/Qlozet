@@ -23,7 +23,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      'fixed inset-0 z-[99999999px] bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-150',
+      'fixed inset-0 z-[99999999px] bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-150',
       className
     )}
     {...props}
@@ -40,12 +40,46 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg sm:rounded-[16px] dialog-gentle-anim",
+        // Mobile: floating bottom sheet
+        "fixed z-50 grid w-[calc(100%-32px)] gap-4 border bg-background p-6 shadow-lg rounded-[16px]",
+        "bottom-4 left-4 right-4 max-h-[85vh] overflow-y-auto",
+        "dialog-mobile-anim",
+        // sm+: centered dialog
+        "sm:bottom-auto sm:left-[50%] sm:right-auto sm:top-[50%] sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:w-full sm:max-h-none sm:overflow-visible sm:rounded-[16px]",
+        "sm:dialog-gentle-anim",
         className
       )}
       {...props}
     >
       <style>{`
+        /* Mobile: slide up from bottom */
+        @media (max-width: 639px) {
+          .dialog-mobile-anim[data-state="open"] {
+            animation: dialogSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          }
+          .dialog-mobile-anim[data-state="closed"] {
+            animation: dialogSlideDown 0.2s cubic-bezier(0.4, 0, 1, 1) forwards;
+          }
+        }
+        @keyframes dialogSlideUp {
+          0% { opacity: 0; translate: 0 100%; }
+          100% { opacity: 1; translate: 0 0; }
+        }
+        @keyframes dialogSlideDown {
+          0% { opacity: 1; translate: 0 0; }
+          100% { opacity: 0; translate: 0 100%; }
+        }
+        /* Desktop: gentle scale */
+        @media (min-width: 640px) {
+          .dialog-mobile-anim[data-state="open"],
+          .dialog-gentle-anim[data-state="open"] {
+            animation: dialogGentleIn 0.25s cubic-bezier(0, 0, 0.2, 1) forwards;
+          }
+          .dialog-mobile-anim[data-state="closed"],
+          .dialog-gentle-anim[data-state="closed"] {
+            animation: dialogGentleOut 0.15s cubic-bezier(0.4, 0, 1, 1) forwards;
+          }
+        }
         @keyframes dialogGentleIn {
           0% { opacity: 0; scale: 0.97; }
           100% { opacity: 1; scale: 1; }
@@ -53,12 +87,6 @@ const DialogContent = React.forwardRef<
         @keyframes dialogGentleOut {
           0% { opacity: 1; scale: 1; }
           100% { opacity: 0; scale: 0.97; }
-        }
-        .dialog-gentle-anim[data-state="open"] {
-          animation: dialogGentleIn 0.25s cubic-bezier(0, 0, 0.2, 1) forwards;
-        }
-        .dialog-gentle-anim[data-state="closed"] {
-          animation: dialogGentleOut 0.15s cubic-bezier(0.4, 0, 1, 1) forwards;
         }
       `}</style>
       {children}

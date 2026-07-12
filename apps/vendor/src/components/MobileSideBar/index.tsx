@@ -130,6 +130,7 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
       defaultIcon: loggoutDefault,
       activeIcon: loggoutDefault,
       function: () => {
+        closeSideBar();
         show(LogoutConfirmationModal);
       },
     },

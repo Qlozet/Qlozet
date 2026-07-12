@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Check, Info, Upload, X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
@@ -158,38 +159,20 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div
-        className={`absolute inset-0 bg-black/40 backdrop-blur-sm ${closing ? 'animate-[overlay-fade-out_350ms_ease-in_forwards]' : 'animate-[overlay-fade-in_400ms_ease-out_forwards]'}`}
-        onClick={handleClose}
-      />
-
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="add-fabric-title"
-        className={`relative z-10 flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-card shadow-2xl md:flex-row ${closing ? 'animate-[modal-slide-out-down_350ms_ease-in_forwards]' : 'animate-[modal-bounce-in_500ms_ease-out_forwards]'}`}
-      >
-        <button
-          type="button"
-          onClick={handleClose}
-          aria-label="Close"
-          className="absolute right-4 top-4 z-20 flex size-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition hover:text-foreground"
-        >
-          <X className="size-4" />
-        </button>
-
-        {/* Left: form */}
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="flex-1 space-y-4 overflow-y-auto p-6 bg-card"
-        >
-          <h2
-            id="add-fabric-title"
-            className="text-xl font-semibold text-grey-black dark:text-white"
+    <Dialog open={modal.visible && !closing} onOpenChange={(open) => !open && handleClose()}>
+      <DialogContent className="max-w-4xl p-0 overflow-hidden sm:rounded-[16px]">
+        <div className="flex max-h-[90vh] w-full flex-col sm:rounded-[16px] md:flex-row md:overflow-hidden overflow-y-auto">
+          {/* Left: form */}
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            className="flex-1 space-y-4 p-6 bg-card md:overflow-y-auto custom-scrollbar"
           >
-            {editId ? 'Edit' : 'Add'} Fabric
-          </h2>
+            <DialogTitle
+              id="add-fabric-title"
+              className="text-xl font-semibold text-grey-black dark:text-white"
+            >
+              {editId ? 'Edit' : 'Add'} Fabric
+            </DialogTitle>
 
           {isLoadingProduct ? (
             <div className="flex flex-col gap-6 pt-4">
@@ -326,7 +309,7 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
         </form>
 
         {/* Right: preview / upload */}
-        <div className="flex-1 space-y-4 bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-6">
+        <div className="flex-1 space-y-4 bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-6 md:overflow-y-auto custom-scrollbar h-full">
           <h2 className="text-xl font-semibold text-grey-black dark:text-white">Preview</h2>
           {isLoadingProduct ? (
             <Skeleton className="aspect-square w-full rounded-xl" />
@@ -413,6 +396,7 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
           )}
         </div>
       </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 });

@@ -2,7 +2,8 @@
 
 import { useRef, useState } from 'react';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import { Info, Upload, X } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Camera, Plus, Trash2, Sparkles, Loader2, Info, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import {
@@ -18,7 +19,6 @@ import {
 } from '@/pattern/common/organisms/multi-select-tag-dropdown';
 import { FieldLabel } from '../atoms/field-label';
 import { useCreateVendorStyleMutation, useGenerateStyleImageMutation } from '@/redux/services/style-library/style-library.api-slice';
-import { Loader2, Sparkles } from 'lucide-react';
 
 export interface CreatedStyle {
   id?: string;
@@ -185,19 +185,14 @@ export const AddStylesModal = NiceModal.create(() => {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-      onClick={cancel}
-    >
-      <div
-        className="grid max-h-[90vh] w-full max-w-3xl grid-cols-1 overflow-hidden rounded-2xl bg-card shadow-xl md:grid-cols-2"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <Dialog open={modal.visible} onOpenChange={(open) => !open && cancel()}>
+      <DialogContent className="max-w-4xl p-0 overflow-hidden sm:rounded-[16px]">
+        <div className="grid max-h-[90vh] w-full grid-cols-1 overflow-y-auto sm:rounded-[16px] md:grid-cols-2 md:overflow-hidden">
         {/* Left: form */}
-        <div className="space-y-4 overflow-y-auto p-6 bg-card">
-          <h2 className="text-xl font-semibold text-grey-black dark:text-white">
+        <div className="space-y-4 p-6 bg-card md:overflow-y-auto custom-scrollbar">
+          <DialogTitle className="text-xl font-semibold text-grey-black dark:text-white">
             Add Styles
-          </h2>
+          </DialogTitle>
 
           <div>
             <FieldLabel htmlFor="style-name">Style name</FieldLabel>
@@ -302,15 +297,7 @@ export const AddStylesModal = NiceModal.create(() => {
         </div>
 
         {/* Right: preview */}
-        <div className="relative space-y-4 overflow-y-auto bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-6">
-          <button
-            type="button"
-            onClick={cancel}
-            className="absolute right-4 top-4 flex size-7 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground"
-            aria-label="Close"
-          >
-            <X className="size-4" />
-          </button>
+        <div className="relative space-y-4 md:overflow-y-auto h-full bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-6 custom-scrollbar">
 
           <h2 className="text-xl font-semibold text-grey-black dark:text-white">
             Preview
@@ -426,6 +413,7 @@ export const AddStylesModal = NiceModal.create(() => {
           )}
         </div>
       </div>
-    </div>
-  );
+    </DialogContent>
+  </Dialog>
+);
 });

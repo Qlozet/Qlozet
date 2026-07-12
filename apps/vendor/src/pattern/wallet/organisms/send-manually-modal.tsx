@@ -123,7 +123,7 @@ export const SendManuallyModal = create<SendManuallyModalProps>(
 
     return (
       <Dialog open={visible} onOpenChange={handleClose}>
-        <DialogContent className='flex max-h-[85vh] max-w-md flex-col overflow-hidden p-6 dark:bg-muted'>
+        <DialogContent className='flex max-h-[85vh] max-w-md flex-col overflow-hidden p-6 bg-card'>
           <DialogHeader className='shrink-0 border-b border-dashed dark:border-border pb-3 text-left mb-4'>
             <DialogTitle className='text-base font-medium text-[#0C0C0D] dark:text-white'>
               Send Money

@@ -242,11 +242,10 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
 
     return (
         <Dialog open={visible} onOpenChange={handleCloseModal}>
-            <DialogContent className="max-w-6xl p-0 overflow-hidden">
-
-                <div className="h-full w-full max-h-[85vh] grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-0 overflow-y-auto">
+            <DialogContent className="max-w-5xl sm:max-w-5xl p-0 overflow-hidden sm:rounded-[16px]">
+                <div className="h-full w-full max-h-[85vh] grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-0 overflow-y-auto lg:overflow-hidden sm:rounded-[16px]">
                     {/* Left Column - Form */}
-                    <div className="w-full gap-y-[26px] pl-[38px] pr-6 mt-8 bg-card">
+                    <div className="w-full gap-y-[26px] p-6 lg:p-8 bg-card lg:overflow-y-auto">
                         <DialogTitle className="text-2xl font-semibold text-grey-black dark:text-white">{editId ? 'Edit' : 'Add'} Accessory</DialogTitle>
                         {isLoadingProduct ? (
                             <div className="flex flex-col gap-8 pt-7 w-full max-w-lg">
@@ -258,8 +257,8 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                                 </div>
                             </div>
                         ) : (
-                        <div className="flex items-start justify-between gap-6 pt-7">
-                            <div className="space-y-6">
+                        <div className="flex flex-col gap-8 pt-7 w-full">
+                            <div className="space-y-6 w-full">
                                 {/* Accessory Name */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Accessory name</label>
@@ -380,35 +379,37 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                                 </div>
 
                                 {/* Set Variants Section */}
-                                <div className="space-y-4">
-                                    <SetVariantsTable variants={variants} onChange={setVariants} />
+                                <div className="space-y-6 pt-2">
+                                    <VariantSelectOptions
+                                        selectedColors={selectedColors}
+                                        selectedSizes={selectedSizes}
+                                        onColorToggle={handleColorToggle}
+                                        onSizeToggle={handleSizeToggle}
+                                        onAddVariants={handleAddVariants}
+                                        onAddCustomColor={handleAddCustomColor}
+                                        availableColors={customColors}
+                                        className="w-full bg-transparent p-0 border-none"
+                                    />
+                                    {variants.length > 0 && (
+                                        <SetVariantsTable variants={variants} onChange={setVariants} />
+                                    )}
 
-                                    <div className="flex items-center gap-4">
-                                        <Button variant="outline" onClick={() => handleSubmit(true)} disabled={isSaving} className="px-8 bg-transparent">
+                                    <div className="flex flex-col-reverse sm:flex-row items-center gap-4 pt-4">
+                                        <Button variant="outline" onClick={() => handleSubmit(true)} disabled={isSaving} className="w-full sm:w-1/2 bg-transparent">
                                             {isSaving ? "Saving..." : "Save as Draft"}
                                         </Button>
-                                        <Button onClick={() => handleSubmit(false)} disabled={isSaving} className="px-8">
+                                        <Button onClick={() => handleSubmit(false)} disabled={isSaving} className="w-full sm:w-1/2">
                                             {isSaving ? "Publishing..." : "Publish Now"}
                                         </Button>
                                     </div>
                                 </div>
                             </div>
-                            <VariantSelectOptions
-                                selectedColors={selectedColors}
-                                selectedSizes={selectedSizes}
-                                onColorToggle={handleColorToggle}
-                                onSizeToggle={handleSizeToggle}
-                                onAddVariants={handleAddVariants}
-                                onAddCustomColor={handleAddCustomColor}
-                                availableColors={customColors}
-                                className="w-full! bg-transparent p-0.5! border-none!"
-                            />
                         </div>
                         )}
                     </div>
 
                     {/* Preview section */}
-                    <div className="bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] space-y-3 p-7">
+                    <div className="bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] space-y-3 p-7 lg:overflow-y-auto h-full">
                         <h3 className="text-xl font-semibold text-grey-black dark:text-white">Preview</h3>
 
                         {isLoadingProduct ? (

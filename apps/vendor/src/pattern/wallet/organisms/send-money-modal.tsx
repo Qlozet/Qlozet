@@ -53,7 +53,7 @@ export const SendMoneyModal = create(() => {
 
   return (
     <Dialog open={visible} onOpenChange={handleClose}>
-      <DialogContent className='max-w-md p-6 dark:bg-muted'>
+      <DialogContent className='max-w-md p-6 bg-card'>
         <DialogHeader className='text-left pb-4'>
           <DialogTitle className='text-lg font-medium text-[#0C0C0D] dark:text-white'>
             Send money

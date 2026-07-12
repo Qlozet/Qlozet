@@ -323,7 +323,8 @@ export const CollectionsCreateTemplate = () => {
             </div>
 
             {/* Right column */}
-            <div className="space-y-6">
+            <div className="lg:col-span-1">
+              <div className="sticky top-6 space-y-6">
               {/* Status */}
               <div className={cardClass}>
                 <div className="mb-4 flex items-center justify-between">
@@ -434,6 +435,7 @@ export const CollectionsCreateTemplate = () => {
                 >
                   Cancel
                 </Button>
+              </div>
               </div>
             </div>
           </form>
