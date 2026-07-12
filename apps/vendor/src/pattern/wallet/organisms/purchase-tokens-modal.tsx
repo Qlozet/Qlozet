@@ -100,7 +100,7 @@ export const PurchaseTokensModal = NiceModal.create(() => {
 
   return (
     <Dialog open={visible} onOpenChange={handleClose}>
-      <DialogContent className='max-w-md p-6 dark:bg-muted'>
+      <DialogContent className='max-w-md p-6 bg-card'>
         {activeSection === 'buy-tokens' && (
           <>
             <DialogHeader className='text-left pb-4'>

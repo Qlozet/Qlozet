@@ -61,7 +61,7 @@ export const TransactionDetailsModal = create<TransactionDetailsModalProps>(
 
     return (
       <Dialog open={visible} onOpenChange={handleClose}>
-        <DialogContent className='bg-white dark:bg-muted flex max-h-[85vh] max-w-xl flex-col overflow-hidden p-6'>
+        <DialogContent className='bg-card flex max-h-[85vh] max-w-xl flex-col overflow-hidden p-6'>
           <DialogHeader className='shrink-0 border-b border-dashed dark:border-border pb-3 text-left mb-4'>
             <DialogTitle className='text-lg font-medium text-[#000000] dark:text-white'>
               Transaction details

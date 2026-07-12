@@ -73,7 +73,7 @@ export const FundWithBankModal = create(() => {
 
   return (
     <Dialog open={visible} onOpenChange={handleClose}>
-      <DialogContent className='max-w-md p-6 dark:bg-muted'>
+      <DialogContent className='max-w-md p-6 bg-card'>
         <DialogHeader className='border-b border-dashed dark:border-border pb-3 text-left mb-4'>
           <DialogTitle className='text-base font-medium text-[#0C0C0D] dark:text-white'>
             Send Money

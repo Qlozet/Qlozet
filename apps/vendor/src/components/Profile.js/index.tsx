@@ -19,7 +19,7 @@ const Profile = ({
     <Sheet open={showProfile} onOpenChange={(open) => !open && showProfileHandler()}>
       <SheetContent
         side="right"
-        className="flex w-full flex-col overflow-hidden p-0 sm:max-w-md !top-6 !bottom-6 !right-6 !h-[calc(100vh-3rem)] rounded-[15px] custom-card-shadow !bg-white dark:!bg-card border border-gray-100 dark:border-border"
+        className="flex w-full flex-col overflow-hidden p-0 sm:max-w-md sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] sm:rounded-[15px] custom-card-shadow !bg-white dark:!bg-card border border-gray-100 dark:border-border"
       >
         <div className="flex flex-col h-full bg-white dark:bg-card rounded-[15px]">
           {/* Header */}

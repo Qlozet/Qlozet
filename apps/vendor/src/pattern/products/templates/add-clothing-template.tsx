@@ -540,7 +540,7 @@ export default function AddClothingTemplate() {
                 images={defaultImages}
                 onChange={setDefaultImages}
               />
-              <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
+              <div className="mt-4 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="text-sm">
                   <p className="font-medium text-foreground">Interactive Hotspots</p>
                   <p className="text-muted-foreground text-xs">Link style options to your primary product image.</p>
@@ -579,10 +579,15 @@ export default function AddClothingTemplate() {
             </div>
 
             <VariantSelectOptions onAddVariant={addVariant} />
+
+            {variants.length > 0 && (
+              <SetVariantsTable variants={variants} onChange={setVariants} />
+            )}
           </div>
 
           {/* Right column */}
-          <div className="space-y-6">
+          <div className="lg:col-span-1">
+            <div className="sticky top-6 space-y-6">
             <div className="rounded-lg bg-card p-6 custom-card-shadow">
               <div className="mb-3 flex items-center justify-between">
                 <span className="text-sm font-semibold text-grey-black dark:text-white">
@@ -664,29 +669,29 @@ export default function AddClothingTemplate() {
               onDiscountChange={setDiscount}
             />
 
-            <div className="flex justify-end gap-3">
+            <div className="flex flex-col gap-3">
+              <Button 
+                type="button" 
+                onClick={() => handleSave(false)} 
+                disabled={isSaving} 
+                className="h-12 w-full"
+              >
+                {isSaving ? 'Publishing…' : 'Publish Now'}
+              </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => handleSave(true)}
                 disabled={isSaving}
-                className="px-8 bg-transparent"
+                className="h-12 w-full bg-transparent"
               >
                 {isSaving ? 'Saving…' : 'Save as Draft'}
               </Button>
-              <Button 
-                type="button" 
-                onClick={() => handleSave(false)} 
-                disabled={isSaving} 
-                className="px-8"
-              >
-                {isSaving ? 'Publishing…' : 'Publish Now'}
-              </Button>
+            </div>
             </div>
           </div>
         </div>
 
-            <SetVariantsTable variants={variants} onChange={setVariants} />
           </>
         )}
       </div>

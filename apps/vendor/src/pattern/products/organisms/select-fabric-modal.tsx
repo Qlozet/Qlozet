@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Check, Info, Layers, Plus, Search, X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetProductsByVendorQuery } from '@/redux/services/products/products.api-slice';
@@ -120,19 +121,14 @@ export const SelectFabricModal = NiceModal.create(() => {
   const loading = isLoading || isFetching;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-      onClick={cancel}
-    >
-      <div
-        className="flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-card shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <Dialog open={modal.visible} onOpenChange={(open) => !open && cancel()}>
+      <DialogContent className="max-w-3xl p-0 overflow-hidden sm:rounded-[16px]">
+        <div className="flex max-h-[90vh] w-full flex-col sm:rounded-[16px]">
         {/* Header */}
-        <div className="flex items-center gap-4 border-b border-border p-6">
-          <h2 className="text-base font-semibold text-grey-black dark:text-white">
+        <div className="flex items-center gap-4 border-b border-border p-6 pr-12">
+          <DialogTitle className="text-base font-semibold text-grey-black dark:text-white shrink-0 m-0">
             Select Fabric
-          </h2>
+          </DialogTitle>
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <input
@@ -142,14 +138,6 @@ export const SelectFabricModal = NiceModal.create(() => {
               className="h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </div>
-          <button
-            type="button"
-            onClick={cancel}
-            className="text-muted-foreground hover:text-foreground"
-            aria-label="Close"
-          >
-            <X className="size-5" />
-          </button>
         </div>
 
         {/* Body */}
@@ -307,6 +295,7 @@ export const SelectFabricModal = NiceModal.create(() => {
           </button>
         </div>
       </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 });

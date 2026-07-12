@@ -26,7 +26,7 @@ const LogoutConfirmationModal = create(() => {
     };
     return (
         <Dialog open={visible} onOpenChange={handleCloseModal}>
-            <DialogContent className="w-full lg:w-[35%] min-h-[383px] h-fit flex flex-col justify-center items-center py-[42px] px-[33px] overflow-y-auto rounded-[12px]">
+            <DialogContent className="w-[calc(100%-32px)] sm:w-full lg:w-[35%] min-h-[383px] h-fit flex flex-col justify-center items-center py-[42px] px-[33px] overflow-y-auto rounded-[12px] bg-card">
                 <QuestionMarkIcon />
 
                 <div className='w-full flex flex-col items-center gap-y-[24px] mt-[38px]'>

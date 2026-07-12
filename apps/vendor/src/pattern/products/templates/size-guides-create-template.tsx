@@ -489,7 +489,8 @@ export const SizeGuidesCreateTemplate = () => {
 
             {/* RIGHT COLUMN: Configuration */}
             <div className='lg:col-span-1'>
-              <div className={cn(cardClass, 'sticky top-6')}>
+              <div className='sticky top-6 space-y-6'>
+                <div className={cardClass}>
                 <h3 className='text-base font-medium mb-6 text-grey-black dark:text-gray-200'>
                   Configuration
                 </h3>
@@ -585,43 +586,38 @@ export const SizeGuidesCreateTemplate = () => {
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Sticky Bottom Actions */}
-            <div className='lg:col-span-3 sticky bottom-0 z-10 -mx-6 bg-background/80 backdrop-blur-md border-t p-6 mt-6 flex items-center justify-end gap-4'>
-              {isEditing && (
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  className='text-destructive border-destructive/20 hover:bg-destructive/5 mr-auto'
-                >
-                  {isDeleting ? (
-                    <Loader2 className='mr-2 size-4 animate-spin' />
-                  ) : (
-                    <Trash2 className='mr-2 size-4' />
-                  )}
-                  Delete Size Guide
+              <div className="flex flex-col gap-3">
+                <Button type="submit" disabled={isSaving} className="h-12 w-full">
+                  {isSaving && <Loader2 className="mr-2 size-4 animate-spin" />}
+                  {isEditing ? 'Save Changes' : 'Create Size Guide'}
                 </Button>
-              )}
-              <Button
-                type='button'
-                variant='outline'
-                onClick={() => router.push(APP_ROUTES.productsSizeGuides)}
-              >
-                Cancel
-              </Button>
-              <Button
-                type='submit'
-                disabled={isSaving}
-                className='min-w-[140px]'
-              >
-                {isSaving && (
-                  <Loader2 className='mr-2 size-4 animate-spin' />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-12 w-full"
+                  onClick={() => router.push(APP_ROUTES.productsSizeGuides)}
+                >
+                  Cancel
+                </Button>
+                {isEditing && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="h-12 w-full text-destructive border-destructive/20 hover:bg-destructive/5"
+                  >
+                    {isDeleting ? (
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="mr-2 size-4" />
+                    )}
+                    Delete Size Guide
+                  </Button>
                 )}
-                {isEditing ? 'Save Changes' : 'Create Size Guide'}
-              </Button>
+              </div>
+            </div>
             </div>
           </form>
         </Form>

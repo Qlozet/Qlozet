@@ -21,7 +21,7 @@ const SheetOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
-      'fixed inset-0 z-50 bg-black/40 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+      'fixed inset-0 z-50 bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
       className
     )}
     {...props}
@@ -59,10 +59,55 @@ const SheetContent = React.forwardRef<
     <SheetOverlay />
     <SheetPrimitive.Content
       ref={ref}
-      className={cn(sheetVariants({ side }), className)}
+      className={cn(
+        // Mobile: floating bottom sheet
+        "fixed z-50 gap-4 bg-background p-6 shadow-lg",
+        "inset-x-4 bottom-4 rounded-[16px] max-h-[85vh] overflow-y-auto",
+        "sheet-mobile-bottom",
+        // sm+: normal sheet behavior
+        "sm:left-auto sm:right-auto sm:bottom-auto sm:rounded-none sm:max-h-none",
+        sheetVariants({ side, className: "hidden sm:block" }),
+        className
+      )}
       {...props}
     >
       <style>{`
+        /* Mobile: force bottom sheet positioning over variant classes */
+        @media (max-width: 639px) {
+          .sheet-mobile-bottom {
+            top: auto !important;
+            height: auto !important;
+            width: calc(100% - 32px) !important;
+            left: 16px !important;
+            right: 16px !important;
+            bottom: 16px !important;
+            border-radius: 16px !important;
+            max-height: 85vh;
+            overflow-y: auto;
+          }
+          .sheet-mobile-bottom[data-state="open"] {
+            animation: sheetMobileSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          }
+          .sheet-mobile-bottom[data-state="closed"] {
+            animation: sheetMobileSlideDown 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          }
+        }
+        @keyframes sheetMobileSlideUp {
+          0% { opacity: 0; translate: 0 100%; }
+          100% { opacity: 1; translate: 0 0; }
+        }
+        @keyframes sheetMobileSlideDown {
+          0% { opacity: 1; translate: 0 0; }
+          100% { opacity: 0; translate: 0 100%; }
+        }
+        /* Desktop: keep existing slide animations */
+        @media (min-width: 640px) {
+          .sheet-mobile-bottom {
+            inset: revert;
+            border-radius: 0;
+            max-height: none;
+          }
+        }
         @keyframes sheetSlideInRight {
           0% { translate: 100% 0; opacity: 0.5; }
           100% { translate: 0 0; opacity: 1; }
@@ -95,29 +140,31 @@ const SheetContent = React.forwardRef<
           0% { translate: 0 0; opacity: 1; }
           100% { translate: 0 100%; opacity: 0; }
         }
-        .sheet-gentle-right[data-state="open"] {
-          animation: sheetSlideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .sheet-gentle-right[data-state="closed"] {
-          animation: sheetSlideOutRight 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        .sheet-gentle-left[data-state="open"] {
-          animation: sheetSlideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .sheet-gentle-left[data-state="closed"] {
-          animation: sheetSlideOutLeft 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        .sheet-gentle-top[data-state="open"] {
-          animation: sheetSlideInTop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .sheet-gentle-top[data-state="closed"] {
-          animation: sheetSlideOutTop 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        .sheet-gentle-bottom[data-state="open"] {
-          animation: sheetSlideInBottom 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .sheet-gentle-bottom[data-state="closed"] {
-          animation: sheetSlideOutBottom 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        @media (min-width: 640px) {
+          .sheet-gentle-right[data-state="open"] {
+            animation: sheetSlideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          }
+          .sheet-gentle-right[data-state="closed"] {
+            animation: sheetSlideOutRight 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          }
+          .sheet-gentle-left[data-state="open"] {
+            animation: sheetSlideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          }
+          .sheet-gentle-left[data-state="closed"] {
+            animation: sheetSlideOutLeft 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          }
+          .sheet-gentle-top[data-state="open"] {
+            animation: sheetSlideInTop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          }
+          .sheet-gentle-top[data-state="closed"] {
+            animation: sheetSlideOutTop 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          }
+          .sheet-gentle-bottom[data-state="open"] {
+            animation: sheetSlideInBottom 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          }
+          .sheet-gentle-bottom[data-state="closed"] {
+            animation: sheetSlideOutBottom 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          }
         }
       `}</style>
       {children}
