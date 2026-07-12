@@ -150,8 +150,8 @@ export const SelectStylesModal = NiceModal.create(() => {
 
   return (
     <Dialog open={modal.visible} onOpenChange={(open) => !open && cancel()}>
-      <DialogContent className="max-w-3xl p-0 overflow-hidden sm:rounded-[16px]">
-        <div className="flex max-h-[90vh] w-full flex-col sm:rounded-[16px]">
+      <DialogContent className="max-w-3xl p-0 gap-0 overflow-hidden sm:rounded-[16px] bg-card border-none sm:border-solid">
+        <div className="flex max-h-[85vh] sm:max-h-[90vh] h-full w-full flex-col sm:rounded-[16px]">
         {/* Header */}
         <div className="flex items-center gap-4 border-b border-border p-6 pr-12">
           <DialogTitle className="text-base font-semibold text-grey-black dark:text-white shrink-0 m-0">
