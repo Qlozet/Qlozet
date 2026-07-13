@@ -24,6 +24,7 @@ import { CustomerStatsSection } from '../molecules/customer-stats-section';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { createCustomersTableColumns } from '../molecules/customers-table-columns';
 import { CustomerDemographicsChart } from '../organisms/customer-demographics-chart';
+import { CustomerAgeGenderChart } from '../organisms/customer-demographics-chart';
 import { CustomerDetailsModal } from '../organisms/customer-details-modal';
 
 const PAGE_SIZE = 5;
@@ -156,8 +157,11 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
           />
         </div>
 
-        {/* Demographics */}
-        <CustomerDemographicsChart />
+        {/* Customer Locations + Demographics */}
+        <div className='flex flex-col gap-6'>
+          <CustomerDemographicsChart />
+          <CustomerAgeGenderChart />
+        </div>
       </div>
     </div>
   );

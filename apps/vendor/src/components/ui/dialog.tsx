@@ -45,7 +45,7 @@ const DialogContent = React.forwardRef<
         "bottom-4 left-4 right-4 max-h-[85vh] overflow-y-auto",
         "dialog-mobile-anim",
         // sm+: centered dialog
-        "sm:bottom-auto sm:left-[50%] sm:right-auto sm:top-[50%] sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:w-full sm:max-h-none sm:overflow-visible sm:rounded-[16px]",
+        "sm:bottom-auto sm:left-[50%] sm:right-auto sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] sm:w-full sm:max-h-none sm:overflow-visible sm:rounded-[16px]",
         "sm:dialog-gentle-anim",
         className
       )}
