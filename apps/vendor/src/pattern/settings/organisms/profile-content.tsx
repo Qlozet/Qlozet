@@ -121,7 +121,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent'
             }`}
           >
-            Organization profile
+            Organization
           </button>
           <button
             onClick={() => setActiveProfileTab('user')}
@@ -131,7 +131,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent'
             }`}
           >
-            User profile
+            User
           </button>
         </div>
 
