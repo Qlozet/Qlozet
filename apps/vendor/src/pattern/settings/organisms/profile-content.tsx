@@ -110,7 +110,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
   return (
     <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
       {/* Left Column - Form Card */}
-      <div className='lg:col-span-2 bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] p-6 lg:p-8 custom-card-shadow'>
+      <div className='lg:col-span-2 bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] p-4 lg:p-8 custom-card-shadow'>
         {/* Profile Tabs Pill Toggle */}
         <div className='flex w-full bg-[#F3F4F6] dark:bg-muted rounded-[10px] p-1 mb-8'>
           <button
