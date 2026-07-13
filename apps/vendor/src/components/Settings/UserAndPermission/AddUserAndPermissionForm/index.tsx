@@ -103,7 +103,7 @@ const AddNewUserAndPermissionForm = ({
         </div>
 
         {/* Column Headers */}
-        <div className='grid grid-cols-[1fr_1fr_1fr_40px] gap-3 mb-3'>
+        <div className='hidden md:grid grid-cols-[1fr_1fr_1fr_40px] gap-3 mb-3'>
           <span className='text-sm font-medium text-gray-600 dark:text-gray-400'>
             Full Name
           </span>
@@ -121,7 +121,7 @@ const AddNewUserAndPermissionForm = ({
           {rows.map((row) => (
             <div
               key={row.id}
-              className='grid grid-cols-[1fr_1fr_1fr_40px] gap-3 items-center'
+              className='grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_40px] gap-3 items-start md:items-center bg-gray-50 dark:bg-white/5 md:bg-transparent p-4 md:p-0 rounded-lg md:rounded-none'
             >
               {/* Full Name */}
               <input
@@ -169,14 +169,16 @@ const AddNewUserAndPermissionForm = ({
               </Select>
 
               {/* Delete */}
-              <button
-                type='button'
-                onClick={() => removeRow(row.id)}
-                disabled={rows.length === 1}
-                className='size-10 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer'
-              >
-                <Trash2 className='size-4' />
-              </button>
+              <div className='flex justify-end md:block'>
+                <button
+                  type='button'
+                  onClick={() => removeRow(row.id)}
+                  disabled={rows.length === 1}
+                  className='size-10 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer'
+                >
+                  <Trash2 className='size-4' />
+                </button>
+              </div>
             </div>
           ))}
         </div>
