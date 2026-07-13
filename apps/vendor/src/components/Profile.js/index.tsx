@@ -23,7 +23,7 @@ const Profile = ({
       >
         <div className="flex flex-col h-full bg-white dark:bg-card rounded-[15px]">
           {/* Header */}
-          <SheetHeader className="shrink-0 border-b border-border px-6 py-5">
+          <SheetHeader className="shrink-0 border-b border-border px-4 py-5">
             <SheetTitle className="text-lg font-semibold text-[#0C0C0D] dark:text-white text-left w-full">
               Profile
             </SheetTitle>
@@ -31,7 +31,7 @@ const Profile = ({
           
           {/* Scrollable body */}
           <div className="flex-1 overflow-y-auto sidebar-scrollbar">
-            <div className="space-y-5 px-6 py-5">
+            <div className="space-y-5 px-4 py-5">
               
               {isLoading ? (
                 <>

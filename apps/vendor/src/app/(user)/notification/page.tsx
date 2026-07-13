@@ -49,7 +49,7 @@ const NotificationPage: React.FC = () => {
   };
 
   return (
-    <section className="py-4 px-4 max-w-4xl mx-auto">
+    <section className="py-4 px-0 md:px-4 max-w-none md:max-w-4xl md:mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
