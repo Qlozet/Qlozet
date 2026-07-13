@@ -5,6 +5,7 @@ import Typography from '../Typography';
 import Profile from '../Profile.js';
 import { UserDetails } from '@/types';
 import { Search, Bell, Menu, User } from 'lucide-react';
+import { useGetUnreadCountQuery } from '@/redux/services/notifications/notifications.api-slice';
 import notificationIcon from '@/public/assets/svg/notification-bing.svg';
 import altireicon from '@/public/assets/svg/altire-icon.svg';
 import transformText from '@/public/assets/svg/textformat.size.svg';
@@ -39,6 +40,8 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
 }) => {
   const router = useRouter();
   const [showProfile, setShowProfile] = useState<boolean>(false);
+  const { data: unreadData } = useGetUnreadCountQuery(undefined, { pollingInterval: 60_000 });
+  const unreadCount = unreadData?.data?.total ?? 0;
 
   const showProfileHandler = (): void => {
     setShowProfile(!showProfile);
@@ -55,7 +58,7 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
   };
 
   const handleNotificationClick = (): void => {
-    router.push('notification');
+    router.push('/notification');
   };
 
   const handleProfileClick = (): void => {
@@ -101,7 +104,14 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
                   className='rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
                   onClick={handleNotificationClick}
                 >
-                  <Bell className='size-5 text-gray-800 dark:text-white' />
+                  <div className='relative'>
+                    <Bell className='size-5 text-gray-800 dark:text-white' />
+                    {unreadCount > 0 && (
+                      <span className='absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white'>
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div 
                   className='rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
@@ -149,7 +159,14 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
                 className='rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer flex items-center justify-center'
                 onClick={handleNotificationClick}
               >
-                <Bell className='size-5 text-gray-800 dark:text-white' />
+                <div className='relative'>
+                  <Bell className='size-5 text-gray-800 dark:text-white' />
+                  {unreadCount > 0 && (
+                    <span className='absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white'>
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </div>
               </div>
               <Typography
                 textColor='text-dark dark:text-foreground'

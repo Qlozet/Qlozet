@@ -107,6 +107,25 @@ export interface VendorCustomersResponse {
   totalPages: number;
 }
 
+export interface DemographicsDistributionItem {
+  label: string;
+  value: number;
+}
+
+export interface AgeGenderDatum {
+  age: string;
+  male: number;
+  female: number;
+}
+
+export interface CustomerDemographicsResponse {
+  totalCustomers: number;
+  topLocations: CustomerLocationData[];
+  genderDistribution: DemographicsDistributionItem[];
+  wearsDistribution: DemographicsDistributionItem[];
+  ageGenderDistribution: AgeGenderDatum[];
+}
+
 // API Slice
 export const customersApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
@@ -130,6 +149,15 @@ export const customersApiSlice = baseAPI.injectEndpoints({
         };
       },
       providesTags: ['Customer'],
+    }),
+
+    // GET /business/customers/demographics — location, gender, wears distribution
+    getCustomerDemographics: builder.query<CustomerDemographicsResponse, void>({
+      query: () => ({
+        url: '/business/customers/demographics',
+        method: 'GET',
+      }),
+      providesTags: ['CustomerStats'],
     }),
 
     // Get all customers with pagination
@@ -304,6 +332,7 @@ export const {
   useGetCustomerStatsQuery,
   useGetTotalCustomersQuery,
   useGetCustomersByLocationQuery,
+  useGetCustomerDemographicsQuery,
   useImportCustomersMutation,
   useExportCustomersMutation,
 } = customersApiSlice;

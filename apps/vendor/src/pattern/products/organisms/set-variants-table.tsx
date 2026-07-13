@@ -310,7 +310,7 @@ export const SetVariantsTable = ({
                                 })
                               }
                               placeholder="0"
-                              className="h-9 bg-background pl-5 text-sm"
+                              className="h-9 bg-accent dark:bg-muted pl-5 text-sm"
                             />
                           </div>
                           <Input
@@ -321,7 +321,7 @@ export const SetVariantsTable = ({
                               })
                             }
                             placeholder="SKU"
-                            className="h-9 bg-background text-sm"
+                            className="h-9 bg-accent dark:bg-muted text-sm"
                           />
                           <div className="flex justify-center">
                             <Checkbox

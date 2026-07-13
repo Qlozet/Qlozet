@@ -160,7 +160,7 @@ export const AddFabricModal = NiceModal.create(({ editId }: { editId?: string })
 
   return (
     <Dialog open={modal.visible && !closing} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden sm:rounded-[16px]">
+      <DialogContent className="sm:max-w-4xl p-0 overflow-hidden sm:rounded-[16px]">
         <div className="flex max-h-[90vh] w-full flex-col sm:rounded-[16px] md:flex-row md:overflow-hidden overflow-y-auto">
           {/* Left: form */}
           <form

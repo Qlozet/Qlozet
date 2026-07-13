@@ -11,30 +11,69 @@ interface ApiResponse<T> {
 }
 
 interface Notification {
-  id: string;
+  _id: string;
+  id?: string;
+  recipient: string;
+  category: 'order' | 'shipping' | 'payment' | 'bespoke' | 'product' | 'team' | 'system';
+  type: string;
   title: string;
-  message: string;
-  type: 'info' | 'success' | 'warning' | 'error';
-  isRead: boolean;
+  body: string;
+  is_read: boolean;
+  metadata?: Record<string, any>;
+  action_url?: string;
   createdAt: string;
+}
+
+interface PaginatedResponse {
+  data: Notification[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+interface UnreadCountResponse {
+  total: number;
+  byCategory: Record<string, number>;
 }
 
 // API Slice
 export const notificationsApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
-    // Get notifications
-    getNotifications: builder.query<ApiResponse<Notification[]>, void>({
+    // Get paginated notifications with optional category filter
+    getNotifications: builder.query<
+      ApiResponse<Notification[]> & { meta: PaginatedResponse['meta'] },
+      { page?: number; limit?: number; category?: string } | void
+    >({
+      query: (params) => {
+        const searchParams = new URLSearchParams();
+        if (params?.page) searchParams.set('page', String(params.page));
+        if (params?.limit) searchParams.set('limit', String(params.limit));
+        if (params?.category) searchParams.set('category', params.category);
+        const qs = searchParams.toString();
+        return {
+          url: `/notifications${qs ? `?${qs}` : ''}`,
+          method: 'GET',
+        };
+      },
+      providesTags: ['Notification'],
+    }),
+
+    // Get unread notification count (total + per category)
+    getUnreadCount: builder.query<ApiResponse<UnreadCountResponse>, void>({
       query: () => ({
-        url: '/vendor/notifications',
+        url: '/notifications/unread-count',
         method: 'GET',
       }),
       providesTags: ['Notification'],
     }),
 
-    // Mark notification as viewed
+    // Mark notification as read
     markNotificationAsViewed: builder.mutation<ApiResponse<null>, string>({
       query: (id) => ({
-        url: `/vendor/notification/view/${id}`,
+        url: `/notifications/${id}/read`,
         method: 'PATCH',
       }),
       invalidatesTags: ['Notification'],
@@ -43,7 +82,7 @@ export const notificationsApiSlice = baseAPI.injectEndpoints({
     // Mark all notifications as read
     markAllAsRead: builder.mutation<ApiResponse<null>, void>({
       query: () => ({
-        url: '/vendor/notifications/mark-all-read',
+        url: '/notifications/mark-all-read',
         method: 'PATCH',
       }),
       invalidatesTags: ['Notification'],
@@ -54,6 +93,7 @@ export const notificationsApiSlice = baseAPI.injectEndpoints({
 // Export hooks
 export const {
   useGetNotificationsQuery,
+  useGetUnreadCountQuery,
   useMarkNotificationAsViewedMutation,
   useMarkAllAsReadMutation,
 } = notificationsApiSlice;

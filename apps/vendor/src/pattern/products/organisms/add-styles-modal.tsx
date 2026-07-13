@@ -186,7 +186,7 @@ export const AddStylesModal = NiceModal.create(() => {
 
   return (
     <Dialog open={modal.visible} onOpenChange={(open) => !open && cancel()}>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden sm:rounded-[16px]">
+      <DialogContent className="sm:max-w-4xl p-0 overflow-hidden sm:rounded-[16px]">
         <div className="grid max-h-[90vh] w-full grid-cols-1 overflow-y-auto sm:rounded-[16px] md:grid-cols-2 md:overflow-hidden">
         {/* Left: form */}
         <div className="space-y-4 p-6 bg-card md:overflow-y-auto custom-scrollbar">

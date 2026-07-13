@@ -1,74 +1,107 @@
-import moment from 'moment';
-import Typography from '../../Typography';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useMarkNotificationAsViewedMutation } from '@/redux/services/notifications/notifications.api-slice';
-const Notification = ({ id, read, title, desc, date }) => {
-  const notificationElement = useRef();
-  const [isOpen, setIsOpen] = useState(true);
-  const [isRead, setIsred] = useState(read);
+import { Package, Truck, CreditCard, Scissors, ShoppingBag, Users, Settings, Bell } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+const CATEGORY_ICONS: Record<string, React.ElementType> = {
+  order: Package,
+  shipping: Truck,
+  payment: CreditCard,
+  bespoke: Scissors,
+  product: ShoppingBag,
+  team: Users,
+  system: Settings,
+};
+
+const CATEGORY_COLORS: Record<string, string> = {
+  order: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+  shipping: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
+  payment: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+  bespoke: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
+  product: 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400',
+  team: 'bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-400',
+  system: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
+};
+
+function timeAgo(dateString: string): string {
+  const now = new Date();
+  const date = new Date(dateString);
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+interface NotificationProps {
+  id: string;
+  read: boolean;
+  title: string;
+  desc: string;
+  date: string;
+  category?: string;
+}
+
+const Notification = ({ id, read, title, desc, date, category }: NotificationProps) => {
+  const [isRead, setIsRead] = useState(read);
   const [markAsViewed] = useMarkNotificationAsViewedMutation();
 
-  const handleOpen = async () => {
-    if (!read) {
+  const handleClick = async () => {
+    if (!isRead) {
       try {
-        setIsOpen(!isOpen);
-        setIsred(true);
+        setIsRead(true);
         await markAsViewed(id).unwrap();
       } catch (error) {
         console.error('Error marking notification as viewed:', error);
+        setIsRead(false);
       }
-    } else {
-      setIsOpen(!isOpen);
     }
   };
+
+  const Icon = (category && CATEGORY_ICONS[category]) || Bell;
+  const colorClass = (category && CATEGORY_COLORS[category]) || CATEGORY_COLORS.system;
+
   return (
-    <div
-      className='block lg:flex items-center justify-between  py-4 lg:py-0 px-6 lg:px-0 cursor-pointer'
-      onClick={handleOpen}
+    <button
+      type="button"
+      onClick={handleClick}
+      className={cn(
+        'flex items-start gap-3 w-full text-left px-4 py-4 transition-colors',
+        !isRead
+          ? 'bg-primary/5 dark:bg-primary/10 hover:bg-primary/10 dark:hover:bg-primary/15'
+          : 'hover:bg-accent dark:hover:bg-muted/50'
+      )}
     >
-      <div className='border-solid border-gray-300 border-b-[1px] pb-1 flex flex-col lg:flex-row lg:justify-between w-full lg:px-6 lg:pt-7 lg:pb-4'>
-        <div className='flex items-start gap-2  '>
-          <div className='flex items-start '>
-            <div
-              className={`w-[1rem] h-[1rem] ml-0 lg:mr-6 mt-[5px] ${
-                !isRead ? 'bg-dark' : 'bg-[#DDE2E5]'
-              }  rounded-[50%] `}
-            ></div>
-          </div>
-          <div className='ml-4 lg:ml-0'>
-            <div className='mb-[7px]'>
-              {' '}
-              <Typography
-                textColor='text-black'
-                textWeight='font-bold'
-                textSize='text-[14px] lg:text-[18px]'
-              >
-                {title}
-              </Typography>
-            </div>
-            {isOpen && (
-              <Typography
-                textColor='text-black'
-                textWeight='font-normal'
-                textSize='text-sm '
-              >
-                {desc}
-              </Typography>
-            )}
-          </div>
-        </div>
-        <div className='ml-10 lg:ml-0 py-3 lg:py-0 flex items-end'>
-          <Typography
-            textWeight='font-normal'
-            textSize='text-sm'
-            textColor='text-[#495057]'
-          >
-            {moment(date).format('MMMM DD,YYYY HH:mm')}{' '}
-            {moment(date, 'HH:mm').format('A')}
-          </Typography>
-        </div>
+      {/* Category icon */}
+      <div className={cn('flex size-9 shrink-0 items-center justify-center rounded-lg mt-0.5', colorClass)}>
+        <Icon className="size-4" />
       </div>
-    </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-2">
+          <p className={cn(
+            'text-sm text-foreground leading-snug',
+            !isRead ? 'font-semibold' : 'font-medium'
+          )}>
+            {title}
+          </p>
+          {!isRead && (
+            <span className="mt-1.5 size-2 shrink-0 rounded-full bg-primary" />
+          )}
+        </div>
+        <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">
+          {desc}
+        </p>
+        <p className="text-xs text-muted-foreground mt-1.5">
+          {timeAgo(date)}
+        </p>
+      </div>
+    </button>
   );
 };
 

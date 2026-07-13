@@ -150,7 +150,7 @@ export const SelectStylesModal = NiceModal.create(() => {
 
   return (
     <Dialog open={modal.visible} onOpenChange={(open) => !open && cancel()}>
-      <DialogContent className="max-w-3xl p-0 gap-0 overflow-hidden sm:rounded-[16px] bg-card border-none sm:border-solid">
+      <DialogContent className="sm:max-w-4xl p-0 gap-0 overflow-hidden sm:rounded-[16px] bg-card border-none sm:border-solid">
         <div className="flex max-h-[85vh] sm:max-h-[90vh] h-full w-full flex-col sm:rounded-[16px]">
         {/* Header */}
         <div className="flex items-center gap-4 border-b border-border p-6 pr-12">
@@ -163,7 +163,7 @@ export const SelectStylesModal = NiceModal.create(() => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search"
-              className="h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="h-10 w-full rounded-lg border border-input bg-accent dark:bg-muted pl-9 pr-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </div>
         </div>

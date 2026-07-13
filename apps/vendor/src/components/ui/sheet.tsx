@@ -65,7 +65,7 @@ const SheetContent = React.forwardRef<
         "inset-x-4 bottom-4 rounded-[16px] max-h-[85vh] overflow-y-auto",
         "sheet-mobile-bottom",
         // sm+: normal sheet behavior
-        "sm:left-auto sm:right-auto sm:bottom-auto sm:rounded-none sm:max-h-none",
+        "sm:left-auto sm:right-auto sm:bottom-auto sm:max-h-none",
         sheetVariants({ side, className: "hidden sm:block" }),
         className
       )}
@@ -104,7 +104,6 @@ const SheetContent = React.forwardRef<
         @media (min-width: 640px) {
           .sheet-mobile-bottom {
             inset: revert;
-            border-radius: 0;
             max-height: none;
           }
         }
