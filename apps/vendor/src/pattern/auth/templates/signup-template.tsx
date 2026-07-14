@@ -37,7 +37,24 @@ const signupSchema = z
       .min(2, 'Business name must be at least 2 characters'),
     personalName: z.string().min(1, 'Full name is required'),
     personalEmail: z.string().email('Please enter a valid email address'),
-    personalPhone: z.string().min(1, 'Phone number is required'),
+    personalPhone: z
+      .string()
+      .min(1, 'Phone number is required')
+      .refine(
+        (val) => {
+          // Clean up for validation
+          const cleanVal = val.replace(/[\s\-\(\)]/g, '');
+          
+          if (cleanVal.startsWith('+')) {
+            // International format: + followed by 10 to 15 digits
+            return /^\+\d{10,15}$/.test(cleanVal);
+          } else {
+            // Local Nigerian number format (usually 10 or 11 digits like 080... or 80...)
+            return /^\d{10,11}$/.test(cleanVal);
+          }
+        },
+        'Please enter a valid phone number (e.g., 08012345678 or +447700900077)'
+      ),
     password: z
       .string()
       .min(8, 'Password must be at least 8 characters')
@@ -206,9 +223,13 @@ export const SignupTemplate = () => {
     if (!isValid) return;
 
     const data = form.getValues();
-    const phone = data.personalPhone.startsWith('+')
-      ? data.personalPhone
-      : `+234${data.personalPhone.replace(/^0/, '')}`;
+    
+    // Clean up phone number: remove all spaces, dashes, and parentheses
+    const cleanPhone = data.personalPhone.replace(/[\s\-\(\)]/g, '');
+    
+    const phone = cleanPhone.startsWith('+')
+      ? cleanPhone
+      : `+234${cleanPhone.replace(/^0/, '')}`;
 
     try {
       await register({
