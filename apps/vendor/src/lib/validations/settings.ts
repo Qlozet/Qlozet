@@ -74,7 +74,6 @@ export const orderSettingsSchema = z.object({
   automaticRefunds: z.boolean(),
   returnWindow: z.number().min(0),
   customOrderOptions: z.boolean(),
-  foreignFabricAcceptance: z.boolean(),
 
   // Payment & Currency
   defaultCurrency: z.string(),

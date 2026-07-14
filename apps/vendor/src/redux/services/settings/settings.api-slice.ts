@@ -56,6 +56,7 @@ export interface BusinessProfileResponse {
   bvn?: string;
   nin?: string;
   status: string;
+  accepts_external_fabric?: boolean;
   email_verified: boolean;
   address_completed: boolean;
   createdAt?: string;
@@ -167,6 +168,18 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       }),
       invalidatesTags: ['VendorDetails'],
     }),
+
+    // Update business settings (e.g. external fabric policy)
+    updateBusinessSettings: builder.mutation<any, { accepts_external_fabric?: boolean }>(
+      {
+        query: (data) => ({
+          url: '/business/update',
+          method: 'PATCH',
+          body: data,
+        }),
+        invalidatesTags: ['VendorDetails'],
+      }
+    ),
 
     // ─── User Profile ───
     getUserProfile: builder.query<UserProfileResponse, void>({
@@ -334,4 +347,5 @@ export const {
   useGetOrderSettingsQuery,
   useUpdateOrderSettingsMutation,
   useLazyVerifyVendorAccountQuery,
+  useUpdateBusinessSettingsMutation,
 } = settingsApiSlice;

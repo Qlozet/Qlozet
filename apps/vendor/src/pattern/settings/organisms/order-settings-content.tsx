@@ -23,6 +23,8 @@ import { cn } from '@/lib/utils';
 import {
   useGetOrderSettingsQuery,
   useUpdateOrderSettingsMutation,
+  useGetBusinessProfileQuery,
+  useUpdateBusinessSettingsMutation,
 } from '@/redux/services/settings/settings.api-slice';
 import type { OrderSettingsData } from '@/lib/validations/settings';
 import Loader from '@/components/Loader';
@@ -83,7 +85,6 @@ const DEFAULT_SETTINGS: OrderSettingsData = {
   automaticRefunds: false,
   returnWindow: 14,
   customOrderOptions: true,
-  foreignFabricAcceptance: false,
   defaultCurrency: 'NGN',
 };
 
@@ -202,6 +203,19 @@ export const OrderSettingsContent = () => {
   const [settings, setSettings] = useState<OrderSettingsData>(DEFAULT_SETTINGS);
   const [hasChanges, setHasChanges] = useState(false);
 
+  // ─── External Fabric (from Business Profile API) ─────────────────
+  const { data: businessProfile } = useGetBusinessProfileQuery();
+  const [updateBusinessSettings, { isLoading: isSavingFabric }] =
+    useUpdateBusinessSettingsMutation();
+  const [acceptsExternalFabric, setAcceptsExternalFabric] = useState(true);
+
+  // Sync external fabric toggle from business profile
+  useEffect(() => {
+    if (businessProfile?.accepts_external_fabric !== undefined) {
+      setAcceptsExternalFabric(businessProfile.accepts_external_fabric);
+    }
+  }, [businessProfile]);
+
   // Seed local state when API data arrives
   useEffect(() => {
     if (apiData?.data) {
@@ -235,6 +249,21 @@ export const OrderSettingsContent = () => {
       setHasChanges(false);
     } catch (error: any) {
       toast.error(error?.data?.message || 'Failed to save settings');
+    }
+  };
+
+  const handleExternalFabricToggle = async (value: boolean) => {
+    setAcceptsExternalFabric(value);
+    try {
+      await updateBusinessSettings({ accepts_external_fabric: value }).unwrap();
+      toast.success(
+        value
+          ? 'External fabric acceptance enabled'
+          : 'External fabric acceptance disabled'
+      );
+    } catch (error: any) {
+      setAcceptsExternalFabric(!value); // revert on error
+      toast.error(error?.data?.message || 'Failed to update setting');
     }
   };
 
@@ -313,13 +342,6 @@ export const OrderSettingsContent = () => {
           description: 'Allow add-ons & customization on orders',
           value: settings.customOrderOptions,
         },
-        {
-          type: 'toggle',
-          id: 'foreignFabricAcceptance',
-          label: 'Foreign Fabric Acceptance',
-          description: 'Accept fabrics from other vendors',
-          value: settings.foreignFabricAcceptance,
-        },
       ],
     },
     {
@@ -368,6 +390,35 @@ export const OrderSettingsContent = () => {
             onInputChange={handleInputChange}
           />
         ))}
+      </div>
+
+      {/* External Fabric Policy — dedicated card, saved via business profile API */}
+      <div className='bg-white dark:bg-card dark:border dark:border-white/10 rounded-xl p-5 lg:p-6 custom-card-shadow'>
+        <div className='flex items-center gap-2.5 mb-5 pb-4 border-b border-border/60'>
+          <div className='flex items-center justify-center size-8 rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'>
+            <Package className='size-4' />
+          </div>
+          <h3 className='text-sm font-semibold text-foreground'>
+            External Fabric Policy
+          </h3>
+        </div>
+        <div className='flex items-center justify-between gap-4'>
+          <div className='flex-1 min-w-0'>
+            <p className='text-sm font-medium text-foreground'>
+              Accept fabric from other vendors
+            </p>
+            <p className='text-xs text-muted-foreground mt-0.5'>
+              {acceptsExternalFabric
+                ? 'Customers can apply fabric from other Qlozet vendors to your clothing products. The fabric vendor ships directly to you before you start working.'
+                : 'Customers can only use your own fabrics for your clothing products.'}
+            </p>
+          </div>
+          <Switch
+            checked={acceptsExternalFabric}
+            onCheckedChange={handleExternalFabricToggle}
+            disabled={isSavingFabric}
+          />
+        </div>
       </div>
 
       {/* Save Button */}

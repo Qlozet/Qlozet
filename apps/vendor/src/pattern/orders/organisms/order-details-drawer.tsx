@@ -16,6 +16,7 @@ import {
   ExternalLink,
   Truck,
   Tag,
+  AlertTriangle,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -34,6 +35,11 @@ import {
   getVendorItems,
   getVendorShipment,
   getVendorSubtotal,
+  getFabricTransferShipments,
+  getIncomingFabricTransfers,
+  getPendingIncomingFabricTransfers,
+  extractBizName,
+  extractFabricName,
   useFulfillOrderMutation,
 } from '@/redux/services/orders/orders.api-slice';
 import { useAppSelector } from '@/redux/store';
@@ -227,9 +233,23 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     const [fulfillOrder, { isLoading: isFulfilling }] =
       useFulfillOrderMutation();
 
-    const canFulfill =
+    const canFulfillBase =
       ['pending', 'in_review', 'processing'].includes(order.status) &&
       (!vendorShipment || vendorShipment.status === 'pending');
+
+    // Fabric transfer data
+    const outgoingFabricTransfers = businessId
+      ? getFabricTransferShipments(order, businessId)
+      : [];
+    const incomingFabricTransfers = businessId
+      ? getIncomingFabricTransfers(order, businessId)
+      : [];
+    const pendingIncomingFabric = businessId
+      ? getPendingIncomingFabricTransfers(order, businessId)
+      : [];
+
+    // Block fulfillment if there are pending incoming fabric transfers
+    const canFulfill = canFulfillBase && pendingIncomingFabric.length === 0;
 
     const hasLabel =
       vendorShipment?.label_url && vendorShipment.status !== 'pending';
@@ -394,6 +414,115 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                 )}
               </section>
 
+              {/* ── Fabric Transfer (Outgoing — You are the fabric vendor) ── */}
+              {outgoingFabricTransfers.length > 0 && (
+                <section className='space-y-3'>
+                  <SectionTitle>📦 Fabric Transfer</SectionTitle>
+                  {outgoingFabricTransfers.map((transfer) => {
+                    const destName = extractBizName(transfer.destination_business);
+                    const fabricName = extractFabricName(transfer.fabric_product);
+                    const sBadge = shipmentStatusBadge(transfer.status);
+                    return (
+                      <Card key={transfer._id}>
+                        <DetailRow
+                          label='Ship to'
+                          value={
+                            <span className='text-sm font-medium'>
+                              {destName} <span className='text-xs text-muted-foreground'>(Tailor)</span>
+                            </span>
+                          }
+                        />
+                        <DetailRow
+                          label='Item'
+                          value={`${transfer.fabric_yards ?? '—'} yards of ${fabricName}`}
+                        />
+                        {transfer.courier_name && (
+                          <DetailRow label='Courier' value={transfer.courier_name} />
+                        )}
+                        <DetailRow
+                          label='Fee'
+                          value={
+                            <span>
+                              {formatNaira(transfer.shipping_fee)}{' '}
+                              <span className='text-xs text-muted-foreground'>(paid by customer)</span>
+                            </span>
+                          }
+                        />
+                        <DetailRow
+                          label='Status'
+                          value={
+                            <span
+                              className={cn(
+                                'inline-flex h-[26px] items-center justify-center whitespace-nowrap rounded-lg px-3 text-xs font-medium',
+                                sBadge.className
+                              )}
+                            >
+                              {sBadge.label}
+                            </span>
+                          }
+                          isLast
+                        />
+                      </Card>
+                    );
+                  })}
+                </section>
+              )}
+
+              {/* ── Incoming Fabric (You are the tailor/receiver) ── */}
+              {incomingFabricTransfers.length > 0 && (
+                <section className='space-y-3'>
+                  <SectionTitle>
+                    {pendingIncomingFabric.length > 0 ? '🧵 Incoming Fabric' : '🧵 Fabric Received ✓'}
+                  </SectionTitle>
+                  {incomingFabricTransfers.map((transfer) => {
+                    const sourceName = extractBizName(transfer.business);
+                    const fabricName = extractFabricName(transfer.fabric_product);
+                    const isDelivered = transfer.status === 'delivered';
+                    const sBadge = shipmentStatusBadge(transfer.status);
+                    return (
+                      <Card key={transfer._id}>
+                        <DetailRow label='From' value={sourceName} />
+                        <DetailRow
+                          label='Item'
+                          value={`${transfer.fabric_yards ?? '—'} yards of ${fabricName}`}
+                        />
+                        <DetailRow
+                          label='Status'
+                          value={
+                            <span
+                              className={cn(
+                                'inline-flex h-[26px] items-center justify-center whitespace-nowrap rounded-lg px-3 text-xs font-medium',
+                                sBadge.className
+                              )}
+                            >
+                              {sBadge.label}
+                            </span>
+                          }
+                          isLast={isDelivered}
+                        />
+                        {!isDelivered && (
+                          <div className='px-5 py-3 bg-amber-50 dark:bg-amber-900/20 border-t border-amber-200 dark:border-amber-800/50'>
+                            <div className='flex items-start gap-2'>
+                              <AlertTriangle className='size-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5' />
+                              <p className='text-xs text-amber-700 dark:text-amber-300'>
+                                You cannot fulfill this order until the fabric arrives and is marked as delivered.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        {isDelivered && (
+                          <div className='px-5 py-3 bg-emerald-50 dark:bg-emerald-900/20 border-t border-emerald-200 dark:border-emerald-800/50'>
+                            <p className='text-xs text-emerald-700 dark:text-emerald-300'>
+                              ✓ Fabric received — you can now start working on this order!
+                            </p>
+                          </div>
+                        )}
+                      </Card>
+                    );
+                  })}
+                </section>
+              )}
+
               {/* ── Payment ── */}
               <section className='space-y-3'>
                 <SectionTitle>Payment</SectionTitle>
@@ -525,7 +654,22 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   className='flex-1 h-11 gap-2 text-sm'
                 >
                   <Truck className='size-4' />
-                  {isFulfilling ? 'Creating label...' : 'Fulfill Order'}
+                  {isFulfilling
+                    ? 'Creating label...'
+                    : outgoingFabricTransfers.length > 0
+                      ? 'Fulfill & Ship to Tailor'
+                      : 'Fulfill Order'}
+                </Button>
+              )}
+              {pendingIncomingFabric.length > 0 && canFulfillBase && (
+                <Button
+                  type='button'
+                  disabled
+                  variant='outline'
+                  className='flex-1 h-11 gap-2 text-sm opacity-60'
+                >
+                  <AlertTriangle className='size-4 text-amber-500' />
+                  Waiting for fabric from {extractBizName(pendingIncomingFabric[0].business)}
                 </Button>
               )}
               {hasLabel && (

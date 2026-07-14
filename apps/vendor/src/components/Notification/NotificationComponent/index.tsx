@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMarkNotificationAsViewedMutation } from '@/redux/services/notifications/notifications.api-slice';
-import { Package, Truck, CreditCard, Scissors, ShoppingBag, Users, Settings, Bell } from 'lucide-react';
+import { Package, Truck, CreditCard, Scissors, ShoppingBag, Users, Settings, Bell, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
@@ -11,6 +11,8 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
   product: ShoppingBag,
   team: Users,
   system: Settings,
+  fabric_transfer: Truck,
+  fabric_transfer_incoming: Layers,
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -21,6 +23,8 @@ const CATEGORY_COLORS: Record<string, string> = {
   product: 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400',
   team: 'bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-400',
   system: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
+  fabric_transfer: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+  fabric_transfer_incoming: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
 };
 
 function timeAgo(dateString: string): string {
