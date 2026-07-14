@@ -60,6 +60,10 @@ import { Layers } from 'lucide-react';
 import { useLazyGetStyleLibraryQuery } from '@/redux/services/style-library/style-library.api-slice';
 import { uploadSequentially } from '@/lib/utils';
 import { useGetCategoriesForTypeQuery } from '@/redux/services/taxonomy/taxonomy.api-slice';
+import { useGetBusinessProfileQuery } from '@/redux/services/settings/settings.api-slice';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { Info } from 'lucide-react';
 
 const countWords = (html: string) =>
   html
@@ -101,6 +105,10 @@ export default function AddClothingTemplate() {
   const [customizationSections, setCustomizationSections] = useState<
     CustomSection[]
   >(DEFAULT_CUSTOMIZATION_SECTIONS);
+
+  // External fabric override: null = inherit, true = always, false = never
+  const [externalFabricOverride, setExternalFabricOverride] = useState<boolean | null>(null);
+  const { data: businessProfile } = useGetBusinessProfileQuery();
 
   const [organization, setOrganization] = useState<ProductOrganizationValue>({
     productType: '',
@@ -150,6 +158,12 @@ export default function AddClothingTemplate() {
       if (pType === 'customize') {
         setCustomizationEnabled(true);
       }
+
+      // External fabric override
+      const pExtFabric = inner?.accepts_external_fabric;
+      if (pExtFabric === true) setExternalFabricOverride(true);
+      else if (pExtFabric === false) setExternalFabricOverride(false);
+      else setExternalFabricOverride(null);
 
       // Map backend tags to the new ProductTag shape
       const rawTags = rawProduct?.tags || [];
@@ -470,6 +484,7 @@ export default function AddClothingTemplate() {
           styles,
           accessories,
           fabrics,
+          accepts_external_fabric: externalFabricOverride,
         },
       };
 
@@ -654,6 +669,61 @@ export default function AddClothingTemplate() {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* External Fabric Override */}
+            <div className="rounded-lg bg-card p-6 custom-card-shadow">
+              <div className="mb-3">
+                <span className="text-sm font-semibold text-grey-black dark:text-white">
+                  External Fabric
+                </span>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Override your store-wide setting for this product only.
+                </p>
+              </div>
+              <RadioGroup
+                value={
+                  externalFabricOverride === null
+                    ? 'inherit'
+                    : externalFabricOverride
+                      ? 'always'
+                      : 'never'
+                }
+                onValueChange={(val) => {
+                  if (val === 'inherit') setExternalFabricOverride(null);
+                  else if (val === 'always') setExternalFabricOverride(true);
+                  else setExternalFabricOverride(false);
+                }}
+                className="space-y-2.5"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="inherit" id="ef-inherit" />
+                  <Label htmlFor="ef-inherit" className="text-sm font-normal cursor-pointer">
+                    Inherit from store settings{' '}
+                    <span className="text-xs text-muted-foreground">
+                      (currently: {businessProfile?.accepts_external_fabric !== false ? 'ON' : 'OFF'})
+                    </span>
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="always" id="ef-always" />
+                  <Label htmlFor="ef-always" className="text-sm font-normal cursor-pointer">
+                    Always accept
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="never" id="ef-never" />
+                  <Label htmlFor="ef-never" className="text-sm font-normal cursor-pointer">
+                    Never accept
+                  </Label>
+                </div>
+              </RadioGroup>
+              <div className="flex items-start gap-2 mt-3 p-2.5 rounded-md bg-muted/50">
+                <Info className="size-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground">
+                  This overrides your store-wide setting for this specific product only.
+                </p>
+              </div>
             </div>
 
             <ProductOrganizationSection

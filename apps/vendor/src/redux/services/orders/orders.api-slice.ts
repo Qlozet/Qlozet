@@ -75,11 +75,38 @@ export interface OrderItem {
   note?: string;
 }
 
+// ──────────────── Shipment Types ────────────────
+
+export type ShipmentType = 'vendor_to_customer' | 'fabric_transfer';
+
+// Populated business reference on shipments
+export interface ShipmentBusinessRef {
+  _id: string;
+  business_name: string;
+  business_logo_url?: string;
+}
+
+// Populated fabric product reference on shipments
+export interface ShipmentFabricProductRef {
+  _id: string;
+  fabric?: { name: string };
+  base_price?: number;
+}
+
 // ──────────────── Vendor Shipment ────────────────
 
 export interface VendorShipment {
   _id: string;
-  business: string;
+  /** Can be a plain ID string or a populated business object */
+  business: string | ShipmentBusinessRef;
+  /** For fabric transfers: the receiving tailor's business */
+  destination_business?: string | ShipmentBusinessRef;
+  /** Type of shipment */
+  shipment_type?: ShipmentType;
+  /** For fabric transfers: the fabric product */
+  fabric_product?: string | ShipmentFabricProductRef;
+  /** For fabric transfers: how many yards */
+  fabric_yards?: number;
   request_token?: string;
   service_code?: string;
   courier_id?: string;
@@ -92,6 +119,24 @@ export interface VendorShipment {
   rate_fetched_at?: string;
   shipped_at?: string;
   delivered_at?: string;
+}
+
+/** Extract the business ID from a shipment's business field (string or populated object) */
+function extractBizId(biz: string | ShipmentBusinessRef | undefined): string | undefined {
+  if (!biz) return undefined;
+  return typeof biz === 'string' ? biz : biz._id;
+}
+
+/** Extract the business name from a populated shipment field, with fallback */
+export function extractBizName(biz: string | ShipmentBusinessRef | undefined): string {
+  if (!biz) return 'Vendor';
+  return typeof biz === 'string' ? 'Vendor' : (biz.business_name || 'Vendor');
+}
+
+/** Extract fabric product name from populated field */
+export function extractFabricName(fp: string | ShipmentFabricProductRef | undefined): string {
+  if (!fp || typeof fp === 'string') return 'Fabric';
+  return fp.fabric?.name || 'Fabric';
 }
 
 // ──────────────── Order ────────────────
@@ -167,10 +212,7 @@ export function getVendorShipment(
   businessId: string
 ): VendorShipment | undefined {
   return order.shipments?.find((s) => {
-    const shipBiz =
-      typeof s.business === 'string'
-        ? s.business
-        : (s.business as unknown as { _id?: string })?._id;
+    const shipBiz = extractBizId(s.business);
     return shipBiz === businessId;
   });
 }
@@ -193,6 +235,43 @@ export function getVendorSubtotal(
     );
     return sum + itemTotal;
   }, 0);
+}
+
+/** Get fabric transfer shipments where this vendor is the SENDER (fabric vendor) */
+export function getFabricTransferShipments(
+  order: Order,
+  businessId: string
+): VendorShipment[] {
+  return (order.shipments ?? []).filter(
+    (s) =>
+      s.shipment_type === 'fabric_transfer' &&
+      extractBizId(s.business) === businessId
+  );
+}
+
+/** Get pending incoming fabric transfers where this vendor is the RECEIVER (tailor) */
+export function getPendingIncomingFabricTransfers(
+  order: Order,
+  businessId: string
+): VendorShipment[] {
+  return (order.shipments ?? []).filter(
+    (s) =>
+      s.shipment_type === 'fabric_transfer' &&
+      extractBizId(s.destination_business) === businessId &&
+      s.status !== 'delivered'
+  );
+}
+
+/** Get ALL incoming fabric transfers (any status) where this vendor is the RECEIVER */
+export function getIncomingFabricTransfers(
+  order: Order,
+  businessId: string
+): VendorShipment[] {
+  return (order.shipments ?? []).filter(
+    (s) =>
+      s.shipment_type === 'fabric_transfer' &&
+      extractBizId(s.destination_business) === businessId
+  );
 }
 
 export interface DashboardMetricsResponse {

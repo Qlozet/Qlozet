@@ -125,6 +125,8 @@ export interface ClothingDto {
   accessories?: AccessoryDto[];
   color_variants: ColorVariantDto[];
   fabrics?: FabricDto[];
+  /** Per-product external fabric override: null = inherit from store, true/false = override */
+  accepts_external_fabric?: boolean | null;
 }
 
 export interface CreateClothingDto {
