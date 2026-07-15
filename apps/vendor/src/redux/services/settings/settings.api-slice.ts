@@ -173,7 +173,7 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
     updateBusinessSettings: builder.mutation<any, { accepts_external_fabric?: boolean }>(
       {
         query: (data) => ({
-          url: '/business/update',
+          url: '/business/profile',
           method: 'PATCH',
           body: data,
         }),
