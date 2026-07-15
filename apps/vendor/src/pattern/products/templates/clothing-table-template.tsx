@@ -41,6 +41,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
 
   const [pageCount, setPageCount] = useState<number>(1)
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const [debouncedSearch, setDebouncedSearch] = useState<string>('')
   const [showSelect, setShowSelect] = useState<boolean>(false)
   const [sortBy, setSortBy] = useState<'name' | 'price' | 'createdAt' | 'stock' | undefined>(undefined)
   const [order, setOrder] = useState<'asc' | 'desc'>('desc')
@@ -60,12 +61,17 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     setPagination(prev => ({ ...prev, pageIndex: 0 }))
   }
 
+  // Debounce search to avoid API call on every keystroke
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 400)
+    return () => clearTimeout(timer)
+  }, [searchQuery])
+
 
 
   // Get Products API query for clothing category.
-  // GET /products/by-vendor is scoped to the authenticated vendor and only
-  // accepts kind + pagination — search/sortBy/order are applied client-side
-  // (see filtering/sorting below).
+  // Pass search/sort to the backend so it can filter across ALL products,
+  // not just the current page.
   const {
     data: productsResponse,
     isLoading,
@@ -76,8 +82,10 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     refetch,
   } = useGetProductsByVendorQuery({
     page: pagination.pageIndex + 1,
-    size: pagination.pageSize, // API uses 'size' instead of 'limit'
-    kind: 'clothing', // API uses 'kind' instead of 'category'
+    size: pagination.pageSize,
+    kind: 'clothing',
+    ...(debouncedSearch.trim() ? { search: debouncedSearch.trim() } : {}),
+    ...(sortBy ? { sortBy, order } : {}),
   })
 
   // Delete product mutation
@@ -143,28 +151,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
 
   // Handle different API response formats - Extract from nested data structure
   const rawProducts = (productsResponse?.data?.data || productsResponse?.products || []) as any[]
-  const mappedProducts = rawProducts.map(transformProduct)
-
-  // /products/by-vendor has no server-side search/sort, so apply both to the
-  // current page client-side to keep the search box and Filter menu working.
-  const products = (() => {
-    const term = searchQuery.trim().toLowerCase()
-    let list = term
-      ? mappedProducts.filter((p) => (p.name ?? '').toLowerCase().includes(term))
-      : mappedProducts
-
-    if (sortBy) {
-      const dir = order === 'asc' ? 1 : -1
-      list = [...list].sort((a, b) => {
-        const av = a[sortBy as keyof Product]
-        const bv = b[sortBy as keyof Product]
-        if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * dir
-        return String(av ?? '').localeCompare(String(bv ?? '')) * dir
-      })
-    }
-
-    return list
-  })()
+  const products = rawProducts.map(transformProduct)
   const totalProducts = productsResponse?.data?.total_items || productsResponse?.totalCount || productsResponse?.total || 0
   const totalPagesFromAPI = productsResponse?.data?.total_pages || productsResponse?.totalPages || Math.ceil(totalProducts / pagination.pageSize) || 1
 
