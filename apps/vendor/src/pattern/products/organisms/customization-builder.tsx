@@ -16,6 +16,10 @@ import {
   SelectStylesModal,
   type SelectedStyle,
 } from './select-styles-modal';
+import {
+  SelectAccessoriesModal,
+  type SelectedAccessory,
+} from './select-accessories-modal';
 import { cn } from '@/lib/utils';
 
 export interface CustomComponentItem {
@@ -188,7 +192,7 @@ export const CustomizationBuilder = ({
 
   const addItem = async (sectionKey: string, subKey?: string) => {
     const section = sections.find((s) => s.key === sectionKey);
-    // Style Options open the "Select Styles" picker; other sections add a tile.
+    // Style Options open the "Select Styles" picker.
     if (section?.hasHotspots && !subKey) {
       const picked = (await NiceModal.show(SelectStylesModal)) as
         | SelectedStyle[]
@@ -207,6 +211,25 @@ export const CustomizationBuilder = ({
       ]);
       return;
     }
+    // Accessory Options open the "Select Accessories" picker.
+    if (sectionKey === 'accessory' && !subKey) {
+      const picked = (await NiceModal.show(SelectAccessoriesModal)) as
+        | SelectedAccessory[]
+        | null;
+      if (!picked?.length) return;
+      updateItems(sectionKey, subKey, (items) => [
+        ...items,
+        ...picked.map((p) => ({
+          id: newId(),
+          productId: p.id,
+          imageUrl: p.imageUrl,
+          label: p.name,
+          price: p.price ?? 0,
+        })),
+      ]);
+      return;
+    }
+    // Default: add a blank tile.
     updateItems(sectionKey, subKey, (items) => [
       ...items,
       { id: newId(), price: 0 },
