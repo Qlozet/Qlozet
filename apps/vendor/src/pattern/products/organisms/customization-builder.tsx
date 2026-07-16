@@ -20,6 +20,10 @@ import {
   SelectAccessoriesModal,
   type SelectedAccessory,
 } from './select-accessories-modal';
+import {
+  SelectFabricModal,
+  type SelectedFabric,
+} from './select-fabric-modal';
 import { AddAddonModal, type AddonDefinition } from './add-addon-modal';
 import { AddAddonVariantModal, type AddonVariantResult } from './add-addon-variant-modal';
 import { cn } from '@/lib/utils';
@@ -314,6 +318,24 @@ export const CustomizationBuilder = ({
       ]);
       return;
     }
+    // Fabric Options open the "Select Fabric" picker.
+    if (sectionKey === 'fabric' && !subKey) {
+      const picked = (await NiceModal.show(SelectFabricModal)) as
+        | SelectedFabric[]
+        | null;
+      if (!picked?.length) return;
+      updateItems(sectionKey, subKey, (items) => [
+        ...items,
+        ...picked.map((p) => ({
+          id: newId(),
+          productId: p.id,
+          imageUrl: p.imageUrl,
+          label: p.name,
+          price: 0,
+        })),
+      ]);
+      return;
+    }
     // Add-Ons section top-level "+" → create a new add-on sub-group
     if (sectionKey === 'addons' && !subKey) {
       const definition = (await NiceModal.show(AddAddonModal)) as
@@ -542,6 +564,7 @@ const Section = ({
 
 export const DEFAULT_CUSTOMIZATION_SECTIONS: CustomSection[] = [
   { key: 'style', title: 'Style Options', hasHotspots: true, items: [] },
+  { key: 'fabric', title: 'Fabric Options', items: [] },
   { key: 'accessory', title: 'Accessory Options', items: [] },
   {
     key: 'addons',
