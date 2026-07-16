@@ -485,7 +485,6 @@ export default function AddClothingTemplate() {
               const res = await getProduct(it.productId).unwrap();
               const prodData = (res as any)?.data || res;
               const finalData = prodData?.kind ? prodData[prodData.kind] : prodData;
-              // Ensure variants is always an array with yard_per_order
               const existingVariants = Array.isArray(finalData.variants) ? finalData.variants : [];
               const yardsPerOrder = it.yardsPerOrder || 3;
               const variants = existingVariants.length > 0
@@ -497,7 +496,6 @@ export default function AddClothingTemplate() {
               return {
                 ...finalData,
                 variants,
-                price: Math.max(1, Number(it.price) || Number(finalData.price_per_yard) || 1),
               };
             } catch (e) {
               console.error("Failed to fetch fabric for custom section", e);

@@ -316,7 +316,7 @@ export const SelectFabricModal = NiceModal.create(() => {
                         [sf.id]: { ...prev[sf.id], yardsPerOrder: isNaN(val) ? undefined : val },
                       }));
                     }}
-                    placeholder="0"
+                    placeholder="3"
                     className="h-8 w-20 rounded-md border border-input bg-background px-2 text-sm text-right outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                   <span className="text-xs text-muted-foreground">yds</span>
