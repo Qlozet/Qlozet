@@ -479,25 +479,17 @@ export default function AddClothingTemplate() {
             }
           }
 
-          // Fabric items: fetch full product, spread all data, ensure variants has yard_per_order
+          // Fabric items: fetch full product, spread all data, send empty variants (schema has it commented out)
           if (sec.key === 'fabric') {
             try {
               const res = await getProduct(it.productId).unwrap();
               const prodData = (res as any)?.data || res;
               const finalData = prodData?.kind ? prodData[prodData.kind] : prodData;
-              // Ensure variants is always an array with yard_per_order
-              const existingVariants = Array.isArray(finalData.variants) ? finalData.variants : [];
-              const yardsPerOrder = it.yardsPerOrder || 3;
-              const variants = existingVariants.length > 0
-                ? existingVariants.map((v: any) => ({
-                    ...v,
-                    yard_per_order: v.yard_per_order || yardsPerOrder,
-                  }))
-                : [{ size: 'default', stock: 100, price: finalData.price_per_yard || 1, sku: `fabric-${it.productId}`, yard_per_order: yardsPerOrder }];
               return {
                 ...finalData,
-                variants,
-                price: Math.max(1, Number(it.price) || Number(finalData.price_per_yard) || 1),
+                // Pricing is price_per_yard × quantity × yardage at order time.
+                // variants is required by DTO but commented out in schema — send empty array.
+                variants: [],
               };
             } catch (e) {
               console.error("Failed to fetch fabric for custom section", e);

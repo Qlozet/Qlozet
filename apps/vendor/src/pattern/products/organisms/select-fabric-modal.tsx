@@ -285,46 +285,6 @@ export const SelectFabricModal = NiceModal.create(() => {
           )}
         </div>
 
-        {/* Selected fabrics — yards per order */}
-        {selectedList.length > 0 && (
-          <div className="border-t border-border px-6 py-4 space-y-3 max-h-48 overflow-y-auto">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Yards per order
-            </p>
-            {selectedList.map((sf) => (
-              <div key={sf.id} className="flex items-center gap-3">
-                {sf.colorHex ? (
-                  <div
-                    className="size-6 shrink-0 rounded-full border border-input"
-                    style={{ backgroundColor: sf.colorHex }}
-                  />
-                ) : sf.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={sf.imageUrl} alt="" className="size-6 shrink-0 rounded object-cover" />
-                ) : null}
-                <span className="flex-1 truncate text-sm text-foreground">{sf.name}</span>
-                <div className="flex items-center gap-1.5">
-                  <input
-                    type="number"
-                    min={0.5}
-                    step={0.5}
-                    value={sf.yardsPerOrder ?? ''}
-                    onChange={(e) => {
-                      const val = parseFloat(e.target.value);
-                      setSelected((prev) => ({
-                        ...prev,
-                        [sf.id]: { ...prev[sf.id], yardsPerOrder: isNaN(val) ? undefined : val },
-                      }));
-                    }}
-                    placeholder="0"
-                    className="h-8 w-20 rounded-md border border-input bg-background px-2 text-sm text-right outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  />
-                  <span className="text-xs text-muted-foreground">yds</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
 
         {/* Footer */}
         <div className="border-t border-border p-6">
