@@ -97,7 +97,6 @@ export default function AddClothingTemplate() {
   const [status, setStatus] = useState<ProductStatus>('active');
   const [defaultImages, setDefaultImages] = useState<DefaultImage[]>([]);
   const [extraFiles, setExtraFiles] = useState<File[]>([]);
-  const [hotspots, setHotspots] = useState<StyleHotspotDto[]>([]);
 
   const [customizationEnabled, setCustomizationEnabled] = useState(false);
   const [measurementRequired, setMeasurementRequired] = useState(false);
@@ -141,12 +140,6 @@ export default function AddClothingTemplate() {
       const pAttributes = inner?.taxonomy?.attributes || rawProduct?.tags || [];
       const pCategory = inner?.taxonomy?.categories?.[0] || rawProduct?.category || '';
       const pImages = inner?.images || rawProduct?.images || [];
-      if (pImages && pImages.length > 0) {
-        const firstImage = typeof pImages[0] === 'object' ? pImages[0] : null;
-        if (firstImage && firstImage.hotspots) {
-          setHotspots(firstImage.hotspots);
-        }
-      }
       const pProductType = inner?.taxonomy?.product_type || rawProduct?.taxonomy?.product_type || '';
       const pAudience = inner?.taxonomy?.audience || rawProduct?.taxonomy?.audience || '';
 
@@ -195,6 +188,7 @@ export default function AddClothingTemplate() {
               id: Math.random().toString(36).substr(2, 9),
               url: url ? url.replace(/^http:\/\//i, 'https://') : '',
               isLocal: false,
+              hotspots: img?.hotspots || [],
             };
           })
         );
@@ -384,7 +378,10 @@ export default function AddClothingTemplate() {
         const finalVariantImages = [
           ...v.images.filter(url => !url.startsWith('blob:')).map((url) => ({ url, public_id: 'unknown' })),
           ...uploadedVariantImages,
-        ];
+        ].map((img, idx) => ({
+          ...img,
+          hotspots: defaultImages[idx]?.hotspots && defaultImages[idx].hotspots!.length > 0 ? defaultImages[idx].hotspots : undefined,
+        }));
 
         return {
           name,
@@ -416,8 +413,8 @@ export default function AddClothingTemplate() {
       );
       
       const defaultImageUrls = [
-        ...defaultImages.filter(img => !img.isLocal).map(img => ({ url: img.url, public_id: 'unknown' })),
-        ...uploadedDefaults.filter(img => !!img.url)
+        ...defaultImages.filter(img => !img.isLocal).map(img => ({ url: img.url, public_id: 'unknown', hotspots: img.hotspots && img.hotspots.length > 0 ? img.hotspots : undefined })),
+        ...uploadedDefaults.filter(img => !!img.url).map((img, idx) => ({ ...img, hotspots: localDefaultImages[idx].hotspots && localDefaultImages[idx].hotspots.length > 0 ? localDefaultImages[idx].hotspots : undefined }))
       ];
 
       const uploadedExtras = await uploadSequentially(
@@ -431,9 +428,6 @@ export default function AddClothingTemplate() {
       const extraImageUrls = uploadedExtras.filter(img => !!img.url);
       
       const finalImages: any[] = [...defaultImageUrls, ...extraImageUrls];
-      if (finalImages.length > 0 && hotspots.length > 0) {
-        finalImages[0] = { ...finalImages[0], hotspots };
-      }
 
       // Prepare customization objects
       const styles: any[] = [];
@@ -479,23 +473,16 @@ export default function AddClothingTemplate() {
             }
           }
 
-          // Fabric items: fetch full product, spread all data, ensure variants has yard_per_order
+          // Fabric items: fetch full product data, ensure variants is an array
           if (sec.key === 'fabric') {
             try {
               const res = await getProduct(it.productId).unwrap();
               const prodData = (res as any)?.data || res;
               const finalData = prodData?.kind ? prodData[prodData.kind] : prodData;
-              const existingVariants = Array.isArray(finalData.variants) ? finalData.variants : [];
-              const yardsPerOrder = it.yardsPerOrder || 3;
-              const variants = existingVariants.length > 0
-                ? existingVariants.map((v: any) => ({
-                    ...v,
-                    yard_per_order: v.yard_per_order || yardsPerOrder,
-                  }))
-                : [{ size: 'default', stock: 100, price: finalData.price_per_yard || 1, sku: `fabric-${it.productId}`, yard_per_order: yardsPerOrder }];
               return {
                 ...finalData,
-                variants,
+                // Ensure variants is always an array (yard_per_order is set per-size in SetVariantsTable)
+                variants: Array.isArray(finalData.variants) ? finalData.variants : [],
               };
             } catch (e) {
               console.error("Failed to fetch fabric for custom section", e);
@@ -634,33 +621,21 @@ export default function AddClothingTemplate() {
               <DefaultImagesUploader
                 images={defaultImages}
                 onChange={setDefaultImages}
+                onConfigureHotspots={async (index) => {
+                  const image = defaultImages[index];
+                  if (!image) return;
+                  const result = await NiceModal.show(HotspotEditorModal, {
+                    imageUrl: image.url,
+                    hotspots: image.hotspots || [],
+                    sections: customizationSections,
+                  });
+                  if (result !== undefined) {
+                    const newImages = [...defaultImages];
+                    newImages[index] = { ...image, hotspots: result as StyleHotspotDto[] };
+                    setDefaultImages(newImages);
+                  }
+                }}
               />
-              <div className="mt-4 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="text-sm">
-                  <p className="font-medium text-foreground">Interactive Hotspots</p>
-                  <p className="text-muted-foreground text-xs">Link style options to your primary product image.</p>
-                </div>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  disabled={defaultImages.length === 0}
-                  onClick={async () => {
-                    const primary = defaultImages[0];
-                    if (!primary) return;
-                    const result = await NiceModal.show(HotspotEditorModal, {
-                      imageUrl: primary.url,
-                      hotspots,
-                      sections: customizationSections,
-                    });
-                    if (result !== undefined) {
-                      setHotspots(result as StyleHotspotDto[]);
-                    }
-                  }}
-                >
-                  <Layers className="size-4 mr-2" />
-                  Configure Hotspots
-                </Button>
-              </div>
             </div>
 
             <div className="rounded-lg bg-card p-6 custom-card-shadow">

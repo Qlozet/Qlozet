@@ -244,7 +244,7 @@ export const SetVariantsTable = ({
                   <HeaderInfo label="Size" />
                   <HeaderInfo label="Stock" />
                   <HeaderInfo label="Yards/order" />
-                  <HeaderInfo label="Price" />
+                  <HeaderInfo label="Extra Cost" />
                   <div className="flex items-center justify-between gap-2">
                     <HeaderInfo label="SKU" />
                     <button
@@ -295,7 +295,7 @@ export const SetVariantsTable = ({
                           />
                           <div className="relative">
                             <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                              $
+                              ₦
                             </span>
                             <Input
                               type="number"

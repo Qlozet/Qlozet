@@ -2,18 +2,20 @@
 
 import { useRef, useState } from 'react';
 import type React from 'react';
-import { Upload, X } from 'lucide-react';
+import { Upload, X, Layers } from 'lucide-react';
 
 interface DefaultImage {
   url: string;
   /** Local object-URL previews can't be submitted (no upload endpoint yet). */
   isLocal: boolean;
   file?: File;
+  hotspots?: any[];
 }
 
 interface DefaultImagesUploaderProps {
   images: DefaultImage[];
   onChange: (next: DefaultImage[]) => void;
+  onConfigureHotspots?: (index: number) => void;
 }
 
 // "Upload Default Images" — one dashed container holding the image thumbnails
@@ -22,6 +24,7 @@ interface DefaultImagesUploaderProps {
 export const DefaultImagesUploader = ({
   images,
   onChange,
+  onConfigureHotspots,
 }: DefaultImagesUploaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showUrlInput, setShowUrlInput] = useState(false);
@@ -66,6 +69,21 @@ export const DefaultImagesUploader = ({
             >
               <X className="size-3.5" />
             </button>
+            {onConfigureHotspots && (
+              <button
+                type="button"
+                onClick={() => onConfigureHotspots(index)}
+                className="absolute bottom-1 right-1 rounded-md bg-background/80 p-1 text-muted-foreground opacity-0 transition-opacity hover:text-primary group-hover:opacity-100 shadow-sm"
+                title="Configure Hotspots"
+              >
+                <Layers className="size-3.5" />
+              </button>
+            )}
+            {image.hotspots && image.hotspots.length > 0 && (
+              <div className="absolute bottom-1 left-1 flex items-center justify-center rounded-md bg-primary/90 px-1.5 py-0.5 text-[9px] font-medium text-primary-foreground shadow-sm">
+                {image.hotspots.length} {image.hotspots.length === 1 ? 'hotspot' : 'hotspots'}
+              </div>
+            )}
           </div>
         ))}
 

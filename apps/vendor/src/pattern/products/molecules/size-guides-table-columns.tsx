@@ -12,7 +12,7 @@ import {
   SizeGuide,
   SizeGuideCondition,
 } from '@/redux/services/size-guides/size-guides.api-slice'
-import { MoreHorizontal, Pencil } from 'lucide-react'
+import { MoreHorizontal, Pencil, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 // ─── Helpers ─────────────────────────────────────────────────────────
@@ -82,6 +82,7 @@ export interface SizeGuidesTableActions {
   onEdit: (guideId: string) => void
   onActivate?: (guideId: string) => void
   onDeactivate?: (guideId: string) => void
+  onApply?: (guideId: string) => void
   onDelete?: (guideId: string) => void
 }
 
@@ -89,6 +90,7 @@ export const SizeGuidesTableColumns = ({
   onEdit,
   onActivate,
   onDeactivate,
+  onApply,
   onDelete,
 }: SizeGuidesTableActions): ColumnDef<SizeGuide>[] => [
   {
@@ -215,6 +217,12 @@ export const SizeGuidesTableColumns = ({
             {!isActive && onActivate && (
               <DropdownMenuItem onClick={() => onActivate(guide._id)}>
                 Activate
+              </DropdownMenuItem>
+            )}
+            {onApply && isActive && (
+              <DropdownMenuItem onClick={() => onApply(guide._id)}>
+                <Zap className='mr-2 size-4 text-amber-500' />
+                Apply to Products
               </DropdownMenuItem>
             )}
             {onDelete && (
