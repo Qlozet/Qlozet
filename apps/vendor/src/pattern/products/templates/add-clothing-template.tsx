@@ -140,12 +140,6 @@ export default function AddClothingTemplate() {
       const pAttributes = inner?.taxonomy?.attributes || rawProduct?.tags || [];
       const pCategory = inner?.taxonomy?.categories?.[0] || rawProduct?.category || '';
       const pImages = inner?.images || rawProduct?.images || [];
-      if (pImages && pImages.length > 0) {
-        const firstImage = typeof pImages[0] === 'object' ? pImages[0] : null;
-        if (firstImage && firstImage.hotspots) {
-          setHotspots(firstImage.hotspots);
-        }
-      }
       const pProductType = inner?.taxonomy?.product_type || rawProduct?.taxonomy?.product_type || '';
       const pAudience = inner?.taxonomy?.audience || rawProduct?.taxonomy?.audience || '';
 
