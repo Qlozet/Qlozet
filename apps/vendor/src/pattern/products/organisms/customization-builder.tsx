@@ -119,6 +119,77 @@ const AddonVariantTile = ({
   </div>
 );
 
+// ─── Fabric Tile ───────────────────────────────────────────────────
+// Shows fabric image, name, and price_per_yard as read-only. No editable
+// price input — fabric pricing comes from price_per_yard on the product.
+const FabricTile = ({
+  item,
+  onRemove,
+}: {
+  item: CustomComponentItem;
+  onRemove: () => void;
+}) => (
+  <div className="w-24 shrink-0">
+    <div className="group relative aspect-square overflow-hidden rounded-md border border-input bg-accent">
+      {item.imageUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={item.imageUrl} alt="" className="size-full object-cover" />
+      ) : (
+        <div className="flex size-full items-center justify-center p-1 text-center text-[11px] text-muted-foreground">
+          {item.label ?? 'Fabric'}
+        </div>
+      )}
+
+      {/* Remove button */}
+      <button
+        type="button"
+        onClick={onRemove}
+        className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground opacity-0 transition-opacity group-hover:opacity-100 shadow-sm"
+        aria-label="Remove fabric"
+      >
+        <X className="size-3" />
+      </button>
+    </div>
+
+    {/* Name + read-only price */}
+    <p className="mt-1 truncate text-[11px] font-medium text-foreground">
+      {item.label ?? 'Fabric'}
+    </p>
+    {item.price > 0 && (
+      <p className="text-[10px] text-muted-foreground">
+        ₦{item.price.toLocaleString()}/yd
+      </p>
+    )}
+    {item.yardsPerOrder && (
+      <p className="text-[10px] text-muted-foreground">
+        {item.yardsPerOrder} yds/order
+      </p>
+    )}
+  </div>
+);
+
+// ─── Fabric Row ────────────────────────────────────────────────────
+const FabricRow = ({
+  items,
+  onAddItem,
+  onRemoveItem,
+}: {
+  items: CustomComponentItem[];
+  onAddItem: () => void;
+  onRemoveItem: (itemId: string) => void;
+}) => (
+  <div className="flex items-start gap-3 overflow-x-auto pb-2">
+    <AddTile onClick={onAddItem} />
+    {items.map((item) => (
+      <FabricTile
+        key={item.id}
+        item={item}
+        onRemove={() => onRemoveItem(item.id)}
+      />
+    ))}
+  </div>
+);
+
 // ─── Standard Component Tile ───────────────────────────────────────
 const ComponentTile = ({
   item,
@@ -453,6 +524,7 @@ const Section = ({
 }) => {
   const [open, setOpen] = useState(true);
   const isAddons = section.key === 'addons';
+  const isFabric = section.key === 'fabric';
 
   return (
     <div>
@@ -477,8 +549,19 @@ const Section = ({
 
       {open && (
         <div className="space-y-4">
-          {/* Regular items (Style Options, Accessory Options) */}
-          {section.items && (
+          {/* Fabric section uses read-only FabricRow (no price input) */}
+          {section.items && isFabric && (
+            <FabricRow
+              items={section.items}
+              onAddItem={() => onAddItem(section.key)}
+              onRemoveItem={(itemId) =>
+                onRemoveItem(undefined, itemId)
+              }
+            />
+          )}
+
+          {/* Other sections use ItemRow with editable price */}
+          {section.items && !isFabric && (
             <ItemRow
               items={section.items}
               hasHotspots={section.hasHotspots}
