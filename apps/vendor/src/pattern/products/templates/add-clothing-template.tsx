@@ -97,7 +97,6 @@ export default function AddClothingTemplate() {
   const [status, setStatus] = useState<ProductStatus>('active');
   const [defaultImages, setDefaultImages] = useState<DefaultImage[]>([]);
   const [extraFiles, setExtraFiles] = useState<File[]>([]);
-  const [hotspots, setHotspots] = useState<StyleHotspotDto[]>([]);
 
   const [customizationEnabled, setCustomizationEnabled] = useState(false);
   const [measurementRequired, setMeasurementRequired] = useState(false);
@@ -195,6 +194,7 @@ export default function AddClothingTemplate() {
               id: Math.random().toString(36).substr(2, 9),
               url: url ? url.replace(/^http:\/\//i, 'https://') : '',
               isLocal: false,
+              hotspots: img?.hotspots || [],
             };
           })
         );
@@ -416,8 +416,8 @@ export default function AddClothingTemplate() {
       );
       
       const defaultImageUrls = [
-        ...defaultImages.filter(img => !img.isLocal).map(img => ({ url: img.url, public_id: 'unknown' })),
-        ...uploadedDefaults.filter(img => !!img.url)
+        ...defaultImages.filter(img => !img.isLocal).map(img => ({ url: img.url, public_id: 'unknown', hotspots: img.hotspots && img.hotspots.length > 0 ? img.hotspots : undefined })),
+        ...uploadedDefaults.filter(img => !!img.url).map((img, idx) => ({ ...img, hotspots: localDefaultImages[idx].hotspots && localDefaultImages[idx].hotspots.length > 0 ? localDefaultImages[idx].hotspots : undefined }))
       ];
 
       const uploadedExtras = await uploadSequentially(
@@ -431,9 +431,6 @@ export default function AddClothingTemplate() {
       const extraImageUrls = uploadedExtras.filter(img => !!img.url);
       
       const finalImages: any[] = [...defaultImageUrls, ...extraImageUrls];
-      if (finalImages.length > 0 && hotspots.length > 0) {
-        finalImages[0] = { ...finalImages[0], hotspots };
-      }
 
       // Prepare customization objects
       const styles: any[] = [];
@@ -627,33 +624,21 @@ export default function AddClothingTemplate() {
               <DefaultImagesUploader
                 images={defaultImages}
                 onChange={setDefaultImages}
+                onConfigureHotspots={async (index) => {
+                  const image = defaultImages[index];
+                  if (!image) return;
+                  const result = await NiceModal.show(HotspotEditorModal, {
+                    imageUrl: image.url,
+                    hotspots: image.hotspots || [],
+                    sections: customizationSections,
+                  });
+                  if (result !== undefined) {
+                    const newImages = [...defaultImages];
+                    newImages[index] = { ...image, hotspots: result as StyleHotspotDto[] };
+                    setDefaultImages(newImages);
+                  }
+                }}
               />
-              <div className="mt-4 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="text-sm">
-                  <p className="font-medium text-foreground">Interactive Hotspots</p>
-                  <p className="text-muted-foreground text-xs">Link style options to your primary product image.</p>
-                </div>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  disabled={defaultImages.length === 0}
-                  onClick={async () => {
-                    const primary = defaultImages[0];
-                    if (!primary) return;
-                    const result = await NiceModal.show(HotspotEditorModal, {
-                      imageUrl: primary.url,
-                      hotspots,
-                      sections: customizationSections,
-                    });
-                    if (result !== undefined) {
-                      setHotspots(result as StyleHotspotDto[]);
-                    }
-                  }}
-                >
-                  <Layers className="size-4 mr-2" />
-                  Configure Hotspots
-                </Button>
-              </div>
             </div>
 
             <div className="rounded-lg bg-card p-6 custom-card-shadow">
