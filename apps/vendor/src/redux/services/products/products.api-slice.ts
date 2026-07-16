@@ -113,6 +113,19 @@ export interface FabricDto {
   variants?: VariantDto[];
 }
 
+export interface AddOnVariantDto {
+  name: string;
+  price: number;
+  color_hex?: string;
+  image_url?: string;
+}
+
+export interface AddOnDto {
+  name: string;
+  display_type: 'colour' | 'picture';
+  variants: AddOnVariantDto[];
+}
+
 export interface ClothingDto {
   name: string;
   type: 'customize' | 'non_customize';
@@ -125,6 +138,7 @@ export interface ClothingDto {
   accessories?: AccessoryDto[];
   color_variants: ColorVariantDto[];
   fabrics?: FabricDto[];
+  addons?: AddOnDto[];
   /** Per-product external fabric override: null = inherit from store, true/false = override */
   accepts_external_fabric?: boolean | null;
 }
