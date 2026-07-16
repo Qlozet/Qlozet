@@ -378,7 +378,10 @@ export default function AddClothingTemplate() {
         const finalVariantImages = [
           ...v.images.filter(url => !url.startsWith('blob:')).map((url) => ({ url, public_id: 'unknown' })),
           ...uploadedVariantImages,
-        ];
+        ].map((img, idx) => ({
+          ...img,
+          hotspots: defaultImages[idx]?.hotspots && defaultImages[idx].hotspots!.length > 0 ? defaultImages[idx].hotspots : undefined,
+        }));
 
         return {
           name,
