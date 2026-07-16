@@ -56,6 +56,7 @@ export const ManageStylesModal = NiceModal.create(() => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [editPrice, setEditPrice] = useState('');
+  const [editDescription, setEditDescription] = useState('');
 
   const { data: libraryData, isLoading, refetch } = useGetStyleLibraryQuery();
   const [deleteStyle, { isLoading: isDeleting }] =
@@ -123,12 +124,14 @@ export const ManageStylesModal = NiceModal.create(() => {
     setEditingId(style.id);
     setEditName(style.name);
     setEditPrice(style.priceSuggestion?.toString() || '');
+    setEditDescription(style.description || '');
   };
 
   const cancelEdit = () => {
     setEditingId(null);
     setEditName('');
     setEditPrice('');
+    setEditDescription('');
   };
 
   const handleSave = async () => {
@@ -144,6 +147,7 @@ export const ManageStylesModal = NiceModal.create(() => {
         data: {
           name: trimmed,
           ...(editPrice ? { price_suggestion: parseFloat(editPrice) } : {}),
+          description: editDescription.trim() || undefined,
         },
       }).unwrap();
       toast.success('Style updated');
@@ -340,6 +344,13 @@ export const ManageStylesModal = NiceModal.create(() => {
                               min={0}
                               className="h-8 text-xs bg-background"
                             />
+                            <textarea
+                              value={editDescription}
+                              onChange={(e) => setEditDescription(e.target.value)}
+                              placeholder="Description (optional)"
+                              rows={2}
+                              className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-xs outline-none resize-none focus-visible:ring-2 focus-visible:ring-ring"
+                            />
                             <div className="flex gap-1.5">
                               <button
                                 type="button"
@@ -369,6 +380,11 @@ export const ManageStylesModal = NiceModal.create(() => {
                             <p className="text-xs font-medium text-foreground truncate">
                               {style.name}
                             </p>
+                            {style.description && (
+                              <p className="text-[10px] text-muted-foreground line-clamp-2">
+                                {style.description}
+                              </p>
+                            )}
                             <div className="flex items-center justify-between gap-1">
                               <span
                                 className={cn(
