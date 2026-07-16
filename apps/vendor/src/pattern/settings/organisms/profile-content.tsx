@@ -66,6 +66,8 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
         state: formData.state,
         city: formData.city,
         zip_code: formData.zipCode || '',
+        latitude: formData.latitude,
+        longitude: formData.longitude,
       };
 
       // Other fields go to PATCH /business/profile

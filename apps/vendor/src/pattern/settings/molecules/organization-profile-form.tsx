@@ -23,6 +23,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { AddressAutocompleteInput } from './address-autocomplete-input';
+import type { PlaceDetails } from '@/hooks/use-google-places';
 
 const organizationProfileSchema = z.object({
   businessName: z.string().min(1, 'Business name is required'),
@@ -30,6 +32,9 @@ const organizationProfileSchema = z.object({
   state: z.string().min(1, 'State is required'),
   city: z.string().optional(),
   address: z.string().min(1, 'Address is required'),
+  zipCode: z.string().optional(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
   yearFounded: z.string().optional(),
   email: z.string().email('Invalid email address'),
   phoneNumber: z.string().min(1, 'Phone number is required'),
@@ -60,6 +65,9 @@ export const OrganizationProfileForm: React.FC<
       state: initialData?.state || '',
       city: initialData?.city || '',
       address: initialData?.address || '',
+      zipCode: initialData?.zipCode || '',
+      latitude: initialData?.latitude || undefined,
+      longitude: initialData?.longitude || undefined,
       yearFounded: initialData?.yearFounded || '',
       email: initialData?.email || '',
       phoneNumber: initialData?.phoneNumber || '',
@@ -81,6 +89,9 @@ export const OrganizationProfileForm: React.FC<
         state: initialData.state || '',
         city: initialData.city || '',
         address: initialData.address || '',
+        zipCode: initialData.zipCode || '',
+        latitude: initialData.latitude || undefined,
+        longitude: initialData.longitude || undefined,
         yearFounded: initialData.yearFounded || '',
         email: initialData.email || '',
         phoneNumber: initialData.phoneNumber || '',
@@ -200,20 +211,29 @@ export const OrganizationProfileForm: React.FC<
               )}
             />
 
-            {/* Address */}
+            {/* Address (Google Places Autocomplete) */}
             <FormField
               control={form.control}
               name='address'
               render={({ field }) => (
-                <FormItem>
+                <FormItem className='md:col-span-2'>
                   <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                    Address
+                    Business Address
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder='24 Avil Street'
-                      className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
-                      {...field}
+                    <AddressAutocompleteInput
+                      value={field.value}
+                      onChange={field.onChange}
+                      onSelect={(details: PlaceDetails) => {
+                        field.onChange(details.address)
+                        form.setValue('city', details.city)
+                        form.setValue('state', details.state)
+                        form.setValue('country', details.country || 'Nigeria')
+                        form.setValue('zipCode', details.postalCode)
+                        form.setValue('latitude', details.lat)
+                        form.setValue('longitude', details.lng)
+                      }}
+                      placeholder='Search for your business address...'
                     />
                   </FormControl>
                   <FormMessage />
