@@ -8,7 +8,7 @@ import { Product, useGetProductsByVendorQuery, useDeleteProductMutation, useUpda
 import { Button } from '@/components/ui/button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { clearProductId } from '@/lib/utils'
-import { show } from '@ebay/nice-modal-react'
+import NiceModal, { show } from '@ebay/nice-modal-react'
 import { APP_ROUTES } from '@/lib/routes'
 import { toast } from 'sonner'
 import { OutlinRulerIcon } from '@/pattern/common/atoms/outline-ruler-icon'
@@ -17,6 +17,7 @@ import { ClothingStylesIcon } from '@/pattern/common/atoms/clothing-styles-icon'
 import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-icon'
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
 import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
+import { ManageStylesModal } from '@/pattern/products/organisms/manage-styles-modal'
 import { ProductsStats } from './products-stats'
 import { DonutDatum } from '@/pattern/dashboard/molecules/donut-chart'
 
@@ -179,7 +180,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   }
 
   const handleManageStyles = () => {
-    toast.info('Manage styles feature coming soon')
+    NiceModal.show(ManageStylesModal)
   }
 
   const handleSizeGuide = () => {

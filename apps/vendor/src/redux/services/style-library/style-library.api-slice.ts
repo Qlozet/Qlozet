@@ -82,6 +82,16 @@ export const styleLibraryApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['StyleLibrary'],
     }),
 
+    updateVendorStyle: builder.mutation<StyleLibraryItem, { id: string; data: Partial<CreateVendorStylePayload> }>({
+      query: ({ id, data }) => ({
+        url: `/style-library/vendor/${id}`,
+        method: 'PATCH',
+        body: data,
+      }),
+      transformResponse: (response: BaseApiResponse<StyleLibraryItem>) => response.data,
+      invalidatesTags: ['StyleLibrary'],
+    }),
+
     generateStyleImage: builder.mutation<GenerateStyleImageResponse, GenerateStyleImagePayload>({
       query: (body) => ({
         url: '/products/clothing/styles/generate-image',
@@ -98,5 +108,6 @@ export const {
   useLazyGetStyleLibraryQuery,
   useCreateVendorStyleMutation,
   useDeleteVendorStyleMutation,
+  useUpdateVendorStyleMutation,
   useGenerateStyleImageMutation,
 } = styleLibraryApiSlice;
