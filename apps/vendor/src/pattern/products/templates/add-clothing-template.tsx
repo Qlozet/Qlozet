@@ -278,7 +278,22 @@ export default function AddClothingTemplate() {
       }
       if (inner?.fabrics && inner.fabrics.length > 0) {
         const fabSec = newSections.find(s => s.key === 'fabric');
-        if (fabSec) fabSec.items = mapCustomItems(inner.fabrics);
+        if (fabSec) {
+          fabSec.items = (inner.fabrics || []).map((bItem: any, idx: number) => {
+            const img = bItem.images?.[0];
+            const imgUrl = typeof img === 'string' ? img : img?.url;
+            const firstVariant = bItem.variants?.[0];
+            return {
+              id: `loaded-fabric-${Math.random()}`,
+              productId: bItem._id || bItem.id,
+              label: bItem.name,
+              imageUrl: imgUrl,
+              price: Number(bItem.price || bItem.price_per_yard || 0),
+              yardsPerOrder: firstVariant?.yard_per_order,
+              originalData: bItem,
+            };
+          });
+        }
       }
 
       // Restore addons sub-groups
@@ -460,6 +475,32 @@ export default function AddClothingTemplate() {
               return null;
             } catch (e) {
               console.error("Failed to fetch style for custom section", e);
+              return null;
+            }
+          }
+
+          // Fabric items: fetch full product, spread all data, ensure variants has yard_per_order
+          if (sec.key === 'fabric') {
+            try {
+              const res = await getProduct(it.productId).unwrap();
+              const prodData = (res as any)?.data || res;
+              const finalData = prodData?.kind ? prodData[prodData.kind] : prodData;
+              // Ensure variants is always an array with yard_per_order
+              const existingVariants = Array.isArray(finalData.variants) ? finalData.variants : [];
+              const yardsPerOrder = it.yardsPerOrder || 3;
+              const variants = existingVariants.length > 0
+                ? existingVariants.map((v: any) => ({
+                    ...v,
+                    yard_per_order: v.yard_per_order || yardsPerOrder,
+                  }))
+                : [{ size: 'default', stock: 100, price: finalData.price_per_yard || 1, sku: `fabric-${it.productId}`, yard_per_order: yardsPerOrder }];
+              return {
+                ...finalData,
+                variants,
+                price: Math.max(1, Number(it.price) || Number(finalData.price_per_yard) || 1),
+              };
+            } catch (e) {
+              console.error("Failed to fetch fabric for custom section", e);
               return null;
             }
           }

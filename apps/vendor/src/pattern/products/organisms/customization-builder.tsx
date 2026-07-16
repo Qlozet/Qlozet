@@ -38,6 +38,8 @@ export interface CustomComponentItem {
   price: number;
   /** Colour hex for addon colour display type */
   colorHex?: string;
+  /** Yards per order for fabric customization */
+  yardsPerOrder?: number;
   originalData?: any;
 }
 
@@ -331,6 +333,7 @@ export const CustomizationBuilder = ({
           productId: p.id,
           imageUrl: p.imageUrl,
           label: p.name,
+          yardsPerOrder: p.yardsPerOrder,
           price: 0,
         })),
       ]);
