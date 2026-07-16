@@ -160,11 +160,6 @@ const FabricTile = ({
         ₦{item.price.toLocaleString()}/yd
       </p>
     )}
-    {item.yardsPerOrder && (
-      <p className="text-[10px] text-muted-foreground">
-        {item.yardsPerOrder} yds/order
-      </p>
-    )}
   </div>
 );
 
