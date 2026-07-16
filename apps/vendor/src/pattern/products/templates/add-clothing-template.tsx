@@ -427,6 +427,8 @@ export default function AddClothingTemplate() {
                   categories: styleItem.category ? [styleItem.category] : [],
                   images: styleItem.image_url ? [{ url: styleItem.image_url, public_id: 'unknown' }] : [],
                   attributes: styleItem.attributes || [],
+                  description: styleItem.description || '',
+                  aliases: styleItem.aliases || [],
                   price: Math.max(1, Number(it.price) || 1),
                   min_width_cm: 1,
                   type: styleItem.type || 'style',
