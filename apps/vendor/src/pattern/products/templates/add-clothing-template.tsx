@@ -245,7 +245,11 @@ export default function AddClothingTemplate() {
       }
 
       // Restore customizations (styles, fabrics, accessories)
-      const newSections = DEFAULT_CUSTOMIZATION_SECTIONS.map(s => ({ ...s, items: s.items ? [...s.items] : [] }));
+      const newSections = DEFAULT_CUSTOMIZATION_SECTIONS.map(s => ({
+        ...s,
+        items: s.items ? [...s.items] : undefined,
+        subGroups: s.subGroups ? s.subGroups.map(sg => ({ ...sg, items: [...sg.items] })) : [],
+      }));
       
       const mapCustomItems = (backendItems: any[] | undefined): CustomComponentItem[] => {
         return (backendItems || []).map((bItem: any, idx: number) => {
@@ -275,6 +279,25 @@ export default function AddClothingTemplate() {
       if (inner?.fabrics && inner.fabrics.length > 0) {
         const fabSec = newSections.find(s => s.key === 'fabric');
         if (fabSec) fabSec.items = mapCustomItems(inner.fabrics);
+      }
+
+      // Restore addons sub-groups
+      if (inner?.addons && inner.addons.length > 0) {
+        const addonsSec = newSections.find(s => s.key === 'addons');
+        if (addonsSec) {
+          addonsSec.subGroups = inner.addons.map((addon: any, idx: number) => ({
+            key: `addon-${addon.name?.toLowerCase().replace(/\s+/g, '-')}-${idx}`,
+            title: addon.name || 'Add-On',
+            displayType: addon.display_type || 'colour',
+            items: (addon.variants || []).map((v: any, vIdx: number) => ({
+              id: `addon-variant-${idx}-${vIdx}-${Math.random()}`,
+              label: v.name || 'Variant',
+              price: v.price || 0,
+              colorHex: v.color_hex,
+              imageUrl: v.image_url,
+            })),
+          }));
+        }
       }
 
       setCustomizationSections(newSections);
@@ -427,6 +450,8 @@ export default function AddClothingTemplate() {
                   categories: styleItem.category ? [styleItem.category] : [],
                   images: styleItem.image_url ? [{ url: styleItem.image_url, public_id: 'unknown' }] : [],
                   attributes: styleItem.attributes || [],
+                  description: styleItem.description || '',
+                  aliases: styleItem.aliases || [],
                   price: Math.max(1, Number(it.price) || 1),
                   min_width_cm: 1,
                   type: styleItem.type || 'style',
@@ -459,6 +484,21 @@ export default function AddClothingTemplate() {
         if (sec.key === 'fabric') validObjects.forEach(o => fabrics.push(o));
       }));
 
+      // Build addons from the addons section's sub-groups
+      const addonsSection = customizationSections.find(s => s.key === 'addons');
+      const addons = (addonsSection?.subGroups ?? [])
+        .filter(sg => sg.displayType && sg.items.length > 0)
+        .map(sg => ({
+          name: sg.title,
+          display_type: sg.displayType as 'colour' | 'picture',
+          variants: sg.items.map(item => ({
+            name: item.label || 'Variant',
+            price: item.price || 0,
+            ...(sg.displayType === 'colour' && item.colorHex ? { color_hex: item.colorHex } : {}),
+            ...(sg.displayType === 'picture' && item.imageUrl ? { image_url: item.imageUrl } : {}),
+          })),
+        }));
+
       const payload: CreateClothingDto = {
         ...(editId ? { product_id: editId } : {}),
         seo: { title: title.trim() },
@@ -484,6 +524,7 @@ export default function AddClothingTemplate() {
           styles,
           accessories,
           fabrics,
+          ...(addons.length > 0 ? { addons } : {}),
           accepts_external_fabric: externalFabricOverride,
         },
       };
