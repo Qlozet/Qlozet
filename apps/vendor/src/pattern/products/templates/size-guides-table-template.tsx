@@ -8,6 +8,7 @@ import {
   useGetSizeGuidesQuery,
   useDeleteSizeGuideMutation,
   useUpdateSizeGuideMutation,
+  useApplySizeGuideMutation,
 } from '@/redux/services/size-guides/size-guides.api-slice'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
@@ -49,6 +50,7 @@ const SizeGuidesTableTemplate = () => {
 
   const [deleteSizeGuide] = useDeleteSizeGuideMutation()
   const [updateSizeGuide] = useUpdateSizeGuideMutation()
+  const [applySizeGuide] = useApplySizeGuideMutation()
 
   // Flatten the response — handle both array and paginated envelope shapes
   const allSizeGuides = useMemo<SizeGuide[]>(() => {
@@ -131,15 +133,25 @@ const SizeGuidesTableTemplate = () => {
     toast.info('Export feature coming soon')
   }
 
+  const handleApplySizeGuide = async (guideId: string) => {
+    try {
+      const result = await applySizeGuide(guideId).unwrap()
+      toast.success(result?.data?.message || result?.message || 'Size guide applied to matching products.')
+    } catch (err) {
+      toast.error((err as any)?.data?.message || 'Failed to apply size guide.')
+    }
+  }
+
   const sizeGuideColumns = useMemo(
     () =>
       SizeGuidesTableColumns({
         onEdit: handleEditSizeGuide,
         onActivate: handleActivateSizeGuide,
         onDeactivate: handleDeactivateSizeGuide,
+        onApply: handleApplySizeGuide,
         onDelete: handleDeleteSizeGuide,
       }),
-    [handleEditSizeGuide, handleActivateSizeGuide, handleDeactivateSizeGuide, handleDeleteSizeGuide]
+    [handleEditSizeGuide, handleActivateSizeGuide, handleDeactivateSizeGuide, handleApplySizeGuide, handleDeleteSizeGuide]
   )
 
   return (
