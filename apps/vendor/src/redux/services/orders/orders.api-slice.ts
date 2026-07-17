@@ -28,6 +28,7 @@ export type OrderType = 'standard' | 'bespoke';
 
 export interface VariantSelection {
   variant_id: string;
+  color?: string;
   size?: string;
   price: number;
   quantity: number;
@@ -37,6 +38,7 @@ export interface VariantSelection {
 export interface FabricSelection {
   fabric_id: string;
   yardage: number;
+  yards?: number;
   price: number;
   quantity: number;
   total_amount: number;
@@ -57,22 +59,61 @@ export interface AccessorySelection {
   total_amount: number;
 }
 
+export interface AddonSelection {
+  addon_id: string;
+  variant_id: string;
+  quantity: number;
+  price: number;
+  total_amount: number;
+}
+
 // ──────────────── Order Item ────────────────
 
+/** Image sub-document from the product schema */
+export interface ProductImage {
+  public_id: string;
+  url: string;
+  width?: number;
+  height?: number;
+}
+
+/** Populated product with kind-specific sub-documents */
+export interface PopulatedProduct {
+  _id: string;
+  name?: string;
+  images?: (string | ProductImage)[];
+  base_price?: number;
+  kind?: 'clothing' | 'fabric' | 'accessory';
+  clothing?: {
+    name: string;
+    description?: string;
+    type?: string;
+    images?: ProductImage[];
+  };
+  fabric?: {
+    name: string;
+    images?: ProductImage[];
+  };
+  accessory?: {
+    name: string;
+    images?: ProductImage[];
+  };
+}
+
 export interface OrderItem {
-  /** Populated product (has name, images, base_price) or ObjectId string */
-  product:
-    | { _id: string; name: string; images?: string[]; base_price?: number }
-    | string;
+  /** Populated product (has name, images, base_price, kind + sub-docs) or ObjectId string */
+  product: PopulatedProduct | string;
   /** The vendor's business ID */
   business: string;
   color_variant_selections?: VariantSelection[];
   fabric_selections?: FabricSelection[];
   style_selections?: StyleSelection[];
   accessory_selections?: AccessorySelection[];
+  addon_selections?: AddonSelection[];
   applied_fabric?: string;
   applied_fabric_yards?: number;
   note?: string;
+  total_price?: number;
 }
 
 // ──────────────── Shipment Types ────────────────
@@ -116,6 +157,15 @@ export interface VendorShipment {
   tracking_number?: string;
   label_url?: string;
   status: ShipmentStatus;
+  confirmed?: boolean;
+  confirmed_at?: string;
+  rejected?: boolean;
+  rejected_at?: string;
+  rejection_reason?: string;
+  fulfillment_deadline?: string;
+  late_penalty_applied?: boolean;
+  late_penalty_amount?: number;
+  late_penalty_days?: number;
   rate_fetched_at?: string;
   shipped_at?: string;
   delivered_at?: string;
@@ -172,6 +222,13 @@ export interface Order {
   platform_commission?: number;
   payout_eligible_at?: string;
   payout_status?: 'pending' | 'eligible' | 'paid';
+  customer_body_profile?: {
+    body_type: string;
+    confidence: string;
+    measurements: Record<string, number>;
+    unit: string;
+    fit_preferences: string[];
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -232,6 +289,9 @@ export function getVendorSubtotal(
     item.style_selections?.forEach((s) => (itemTotal += s.total_amount));
     item.accessory_selections?.forEach(
       (a) => (itemTotal += a.total_amount)
+    );
+    item.addon_selections?.forEach(
+      (ad) => (itemTotal += ad.total_amount)
     );
     return sum + itemTotal;
   }, 0);
@@ -338,6 +398,28 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Orders'],
     }),
 
+    // POST /orders/:reference/confirm — vendor confirms their portion
+    confirmOrder: builder.mutation<{ message: string; data: unknown }, { reference: string }>({
+      query: ({ reference }) => ({
+        url: `/orders/${reference}/confirm`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Orders'],
+    }),
+
+    // PATCH /orders/:reference/reject — vendor rejects their portion (partial refund)
+    rejectOrder: builder.mutation<
+      { message: string; data: unknown },
+      { reference: string; reason?: string }
+    >({
+      query: ({ reference, ...body }) => ({
+        url: `/orders/${reference}/reject`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: ['Orders'],
+    }),
+
     // GET /orders/chart — dashboard chart data (summary + all charts)
     getOrdersChart: builder.query<{ data: any }, void>({
       query: () => ({ url: '/orders/chart', method: 'GET' }),
@@ -362,6 +444,8 @@ export const {
   useGetVendorOrdersQuery,
   useFulfillOrderMutation,
   useCancelOrderMutation,
+  useConfirmOrderMutation,
+  useRejectOrderMutation,
   useGetOrdersChartQuery,
   useGetEarningsChartQuery,
   useGetVendorDashboardMetricsQuery,

@@ -72,10 +72,11 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
         { skip: !customerId || !visible }
       );
 
-    const customer = useMemo(
-      () => data?.data?.find((c) => c._id === customerId),
-      [data, customerId]
-    );
+    const customer = useMemo(() => {
+      const customersData = data?.data;
+      const customersList = Array.isArray(customersData) ? customersData : (customersData ? Object.values(customersData) : []);
+      return customersList.find((c: any) => c._id === customerId);
+    }, [data, customerId]);
 
     const orders = useMemo(() => customer?.orders ?? [], [customer]);
 
