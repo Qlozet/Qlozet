@@ -92,6 +92,8 @@ export interface VendorCustomer {
   _id: string;
   username: string | null;
   full_name: string;
+  email?: string;
+  phone_number?: string;
   profile_picture: string;
   status: 'active' | 'inactive' | 'suspended';
   total_orders: number;
