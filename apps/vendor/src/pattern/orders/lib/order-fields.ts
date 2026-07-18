@@ -47,6 +47,7 @@ export const readOrderId = (o: Order): string => o.reference ?? o._id;
 export const readCustomerName = (o: Order): string => {
   const c = o.customer;
   if (!c) return '—';
+  if (c.username) return c.username;
   const parts = [c.firstName, c.lastName].filter(Boolean);
   return parts.length > 0 ? parts.join(' ') : c.email ?? '—';
 };
