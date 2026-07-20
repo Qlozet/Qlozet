@@ -241,7 +241,7 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
             )}
 
             {/* Order history */}
-            <div className='space-y-3'>
+            <div className='space-y-4 border-t pt-5'>
               <h3 className='text-base font-semibold text-gray-900 dark:text-white'>
                 Order history
               </h3>
@@ -254,13 +254,14 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
                 error={error}
                 pagination={pagination}
                 setPagination={setPagination}
-                emptyMessage='No orders yet.'
-                minWidth='640px'
+                emptyTitle='No orders yet'
+                emptyMessage="This customer hasn't placed any orders."
+                minWidth='700px'
               />
             </div>
 
-            <div className='flex justify-end'>
-              <Button type='button' onClick={handleClose} className='min-w-[8rem]'>
+            <div className='flex justify-end border-t pt-4'>
+              <Button type='button' variant='outline' onClick={handleClose} className='min-w-[8rem]'>
                 Close
               </Button>
             </div>

@@ -510,8 +510,12 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       try {
         await fulfillOrder({ reference: order.reference }).unwrap();
         toast.success('Shipping label created!');
-      } catch {
-        toast.error('Could not create shipping label. Please try again.');
+      } catch (err: any) {
+        const errorMsg =
+          err?.data?.message ||
+          err?.error ||
+          'Could not create shipping label. Please try again.';
+        toast.error(errorMsg);
       }
     };
 
