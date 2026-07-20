@@ -48,36 +48,10 @@ export interface PaginatedTransactions {
   size?: number;
 }
 
-interface Bank {
-  id: string;
-  name: string;
-  code: string;
-  slug?: string;
-}
-
-export interface Beneficiary {
-  id: string;
-  name: string;
-  accountNumber: string;
-  bankName: string;
-  bankCode: string;
-  amount?: string
-  naration?: string
-  schedulePayment?: boolean
-}
-
-interface CreateBeneficiaryRequest {
-  name: string;
-  accountNumber: string;
-  bankCode: string;
-}
-
-interface TransferRequest {
+// POST /wallets/withdraw - amount-only payout to the vendor's registered bank
+// account. Minimum 2,000 NGN (also enforced server-side).
+export interface WithdrawEarningsRequest {
   amount: number;
-  beneficiaryId?: string;
-  accountNumber?: string;
-  bankCode?: string;
-  narration?: string;
 }
 
 // API Slice
@@ -116,6 +90,21 @@ export const walletApiSlice = baseAPI.injectEndpoints({
         method: 'GET',
       }),
       providesTags: ['WalletBalance', 'Transaction'],
+    }),
+
+    // Withdraw available earnings to the vendor's registered payout account
+    // (POST /wallets/withdraw). Amount-only body; refreshes balance +
+    // transactions on success.
+    withdrawEarnings: builder.mutation<
+      ApiResponse<PendingData>,
+      WithdrawEarningsRequest
+    >({
+      query: (body) => ({
+        url: '/wallets/withdraw',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['WalletBalance', 'Transaction'],
     }),
 
     // Get token price quote (GET /wallets/price?tokens=&currency=)
@@ -157,63 +146,6 @@ export const walletApiSlice = baseAPI.injectEndpoints({
       },
       providesTags: ['Transaction'],
     }),
-
-    // ─── Transfer / Beneficiaries ────────────────────────────────────────────
-    // ⚠️ NOT in the backend Swagger. These `/vendor/*` URLs are unverified
-    // guesses kept only so the legacy Send-money components still compile.
-    // Reconcile against real endpoints before wiring the Send-money flow.
-
-    // Get available banks
-    getBanks: builder.query<ApiResponse<Bank[]>, void>({
-      query: () => ({
-        url: '/vendor/transfer/banks',
-        method: 'GET',
-      }),
-      providesTags: ['Bank'],
-    }),
-
-    // Verify account number
-    verifyAccountNumber: builder.query<
-      ApiResponse<{ name: string }>,
-      { accountNumber: string; bankCode: string }
-    >({
-      query: ({ accountNumber, bankCode }) => ({
-        url: `/vendor/transfer/verify-account?accountNumber=${accountNumber}&bankCode=${bankCode}`,
-        method: 'GET',
-      }),
-    }),
-
-    // Get beneficiaries
-    getBeneficiaries: builder.query<ApiResponse<Beneficiary[]>, void>({
-      query: () => ({
-        url: '/vendor/beneficiaries',
-        method: 'GET',
-      }),
-      providesTags: ['Beneficiary'],
-    }),
-
-    // Create beneficiary
-    createBeneficiary: builder.mutation<
-      ApiResponse<Beneficiary>,
-      CreateBeneficiaryRequest
-    >({
-      query: (data) => ({
-        url: '/vendor/beneficiaries',
-        method: 'POST',
-        body: data,
-      }),
-      invalidatesTags: ['Beneficiary'],
-    }),
-
-    // Transfer money
-    transferMoney: builder.mutation<ApiResponse<any>, TransferRequest>({
-      query: (data) => ({
-        url: '/vendor/transfer',
-        method: 'POST',
-        body: data,
-      }),
-      invalidatesTags: ['WalletBalance', 'Transaction'],
-    }),
   }),
 });
 
@@ -221,13 +153,9 @@ export const walletApiSlice = baseAPI.injectEndpoints({
 export const {
   useGetWalletBalanceQuery,
   useFundWalletMutation,
+  useWithdrawEarningsMutation,
   useGetWalletPriceQuery,
   useGetWalletTransactionsQuery,
   useVerifyWalletPaymentQuery,
   useLazyVerifyWalletPaymentQuery,
-  useGetBanksQuery,
-  useLazyVerifyAccountNumberQuery,
-  useGetBeneficiariesQuery,
-  useCreateBeneficiaryMutation,
-  useTransferMoneyMutation,
 } = walletApiSlice;
