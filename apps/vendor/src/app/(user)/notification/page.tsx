@@ -34,7 +34,8 @@ const NotificationPage: React.FC = () => {
   const { data: unreadData } = useGetUnreadCountQuery();
   const [markAllAsRead, { isLoading: isMarkingAll }] = useMarkAllAsReadMutation();
 
-  const notifications = notificationsResponse?.data || [];
+  const rawData = notificationsResponse?.data;
+  const notifications = (Array.isArray(rawData) ? rawData : (rawData ? Object.values(rawData) : [])) as any[];
   const meta = (notificationsResponse as any)?.meta;
   const totalPages = meta?.totalPages ?? 1;
   const unreadCount = unreadData?.data?.total ?? 0;

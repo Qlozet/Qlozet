@@ -16,6 +16,11 @@ const nextConfig: any = {
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "encrypted-tbn0.gstatic.com",
+        pathname: "/**",
+      },
     ],
   },
   // @ts-ignore

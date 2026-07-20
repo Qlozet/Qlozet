@@ -1,16 +1,17 @@
+'use client';
+
 // Customer Details Modal - Organism
 // Vendor customer details shown in a dialog (avatar + summary + Measurement
 // button + order history), matching the vendor design. Resolves the customer
 // from GET /business/customers by id (no single-customer endpoint exists).
 
-'use client';
-
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { create, useModal } from '@ebay/nice-modal-react';
 import NiceModal from '@ebay/nice-modal-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import type { PaginationState } from '@tanstack/react-table';
-import { Ruler, ChevronRight } from 'lucide-react';
+import { Ruler, ChevronRight, Mail, Phone, User } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -25,14 +26,17 @@ import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import {
   useGetVendorCustomersQuery,
   type CustomerOrderPreview,
+  type VendorCustomer,
 } from '@/redux/services/customers/customers.api-slice';
 import {
   getCustomerIdentifier,
+  getCustomerName,
   getCustomerInitial,
   getCustomerStatus,
   formatCount,
   type CustomerStatusVariant,
 } from '@/lib/customers';
+import { APP_ROUTES } from '@/lib/routes';
 import { createOrderHistoryColumns } from '../details/molecules/customer-order-history-columns';
 import { CustomerMeasurementsModal } from '../details/organisms/customer-measurements-modal';
 
@@ -61,6 +65,7 @@ const SummaryRow = ({ label, value }: { label: string; value: React.ReactNode })
 export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
   ({ customerId }) => {
     const { visible, resolve, hide, remove } = useModal();
+    const router = useRouter();
     const [pagination, setPagination] = useState<PaginationState>({
       pageIndex: 0,
       pageSize: ORDERS_PAGE_SIZE,
@@ -72,15 +77,25 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
         { skip: !customerId || !visible }
       );
 
-    const customer = useMemo(
-      () => data?.data?.find((c) => c._id === customerId),
-      [data, customerId]
-    );
+    const customer = useMemo((): VendorCustomer | undefined => {
+      if (!data) return undefined;
+      // The response can be nested differently depending on the API wrapper:
+      //   data.data = VendorCustomer[]           (direct)
+      //   data.data = { data: VendorCustomer[] } (double-wrapped)
+      let list: VendorCustomer[] = [];
+      if (Array.isArray(data)) {
+        list = data as unknown as VendorCustomer[];
+      } else if (Array.isArray(data.data)) {
+        list = data.data;
+      } else if (data.data && Array.isArray((data.data as any).data)) {
+        list = (data.data as any).data;
+      }
+      return list.find((c) => c._id === customerId);
+    }, [data, customerId]);
 
     const orders = useMemo(() => customer?.orders ?? [], [customer]);
 
     const handleClose = (open?: boolean | React.MouseEvent) => {
-      // If it's a mouse event (from clicking the Close button) or a boolean false (from Dialog onOpenChange)
       if (typeof open !== 'boolean' || !open) {
         resolve({ resolved: true });
         hide();
@@ -96,12 +111,17 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
       });
     };
 
+    const handleViewOrder = useCallback((order: CustomerOrderPreview) => {
+      resolve({ resolved: true });
+      hide();
+      setTimeout(() => remove(), 300);
+      router.push(APP_ROUTES.orders);
+      toast.info(`Navigated to orders — look for #${order.reference.slice(-6).toUpperCase()}`);
+    }, [resolve, hide, remove, router]);
+
     const columns = useMemo(
-      () =>
-        createOrderHistoryColumns((_order: CustomerOrderPreview) =>
-          toast.info('Viewing an order is coming soon.')
-        ),
-      []
+      () => createOrderHistoryColumns(handleViewOrder),
+      [handleViewOrder]
     );
 
     const loading = isLoading || isFetching;
@@ -148,8 +168,41 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
                 <div className='flex-1 space-y-3'>
                   <SummaryRow
                     label='Username'
-                    value={getCustomerIdentifier(customer)}
+                    value={
+                      <span className='inline-flex items-center gap-1.5'>
+                        <User className='size-3.5 text-gray-400' />
+                        @{getCustomerIdentifier(customer)}
+                      </span>
+                    }
                   />
+                  {customer.full_name && (
+                    <SummaryRow
+                      label='Full Name'
+                      value={getCustomerName(customer)}
+                    />
+                  )}
+                  {customer.email && (
+                    <SummaryRow
+                      label='Email'
+                      value={
+                        <span className='inline-flex items-center gap-1.5'>
+                          <Mail className='size-3.5 text-gray-400' />
+                          {customer.email}
+                        </span>
+                      }
+                    />
+                  )}
+                  {customer.phone_number && (
+                    <SummaryRow
+                      label='Phone'
+                      value={
+                        <span className='inline-flex items-center gap-1.5'>
+                          <Phone className='size-3.5 text-gray-400' />
+                          {customer.phone_number}
+                        </span>
+                      }
+                    />
+                  )}
                   <SummaryRow
                     label='Total Orders'
                     value={formatCount(customer.total_orders)}
@@ -188,7 +241,7 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
             )}
 
             {/* Order history */}
-            <div className='space-y-3'>
+            <div className='space-y-4 border-t pt-5'>
               <h3 className='text-base font-semibold text-gray-900 dark:text-white'>
                 Order history
               </h3>
@@ -201,13 +254,14 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
                 error={error}
                 pagination={pagination}
                 setPagination={setPagination}
-                emptyMessage='No orders yet.'
-                minWidth='640px'
+                emptyTitle='No orders yet'
+                emptyMessage="This customer hasn't placed any orders."
+                minWidth='700px'
               />
             </div>
 
-            <div className='flex justify-end'>
-              <Button type='button' onClick={handleClose} className='min-w-[8rem]'>
+            <div className='flex justify-end border-t pt-4'>
+              <Button type='button' variant='outline' onClick={handleClose} className='min-w-[8rem]'>
                 Close
               </Button>
             </div>

@@ -48,7 +48,7 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
   const { data, isLoading, isFetching, isSuccess, isError, error } =
     useGetVendorCustomersQuery({ page: 1, limit: FETCH_LIMIT, orders_limit: 5 });
 
-  const allCustomers = useMemo(() => {
+  const allCustomers = useMemo((): VendorCustomer[] => {
     if (!data) return [];
     if (Array.isArray(data)) return data;
     if (Array.isArray(data.data)) return data.data;
