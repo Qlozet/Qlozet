@@ -4,7 +4,7 @@
 // plus the Send money / Fund wallet actions, matching the design.
 
 import React, { ReactNode } from 'react';
-import { Wallet, HandCoins, Sparkles } from 'lucide-react';
+import { Wallet, HandCoins, Sparkles, Hourglass } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { MetricCard } from '@/pattern/common/molecules/metric-card';
@@ -32,13 +32,15 @@ const formatBalance = (value?: number): string =>
     : '—';
 
 interface WalletStatsSectionProps {
-  /** Wallet balance from GET /wallets/balance. */
+  /** Available wallet balance from GET /wallets/balance. */
   balance?: number;
+  /** Pending (held) earnings from the business profile (GET /business). */
+  pendingBalance?: number;
   /** Token balance from GET /token/balance. */
   tokenBalance?: number;
   isLoading?: boolean;
   isTokenLoading?: boolean;
-  onSendMoney?: () => void;
+  onWithdraw?: () => void;
   onFundWallet?: () => void;
   onPurchaseTokens?: () => void;
   /** Anchor the "History" link scrolls to (the transactions table). */
@@ -47,10 +49,11 @@ interface WalletStatsSectionProps {
 
 export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
   balance,
+  pendingBalance,
   tokenBalance,
   isLoading = false,
   isTokenLoading = false,
-  onSendMoney,
+  onWithdraw,
   onFundWallet,
   onPurchaseTokens,
   historyHref = '#recent-transactions',
@@ -81,15 +84,15 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
                 </CardIcon>
               }
             />
-            {/* TODO(api): no backend endpoint for "Total Amount Received" yet —
-                show an honest placeholder until one exists. */}
+            {/* Pending (held) earnings - funds not yet released to the
+                available balance (GET /business, pending_balance). */}
             <MetricCard
-              title='Total Amount Received'
-              value='—'
+              title='Pending Earnings'
+              value={formatBalance(pendingBalance)}
               change='0%'
               icon={
                 <CardIcon bg='bg-[#5DDAB4]'>
-                  <HandCoins className='size-6' />
+                  <Hourglass className='size-6' />
                 </CardIcon>
               }
             />
@@ -127,15 +130,17 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
 
       {/* Actions */}
       <div className='flex items-center gap-4 lg:pt-2'>
-        <Button
-          type='button'
-          variant='outline'
-          onClick={onSendMoney}
-          className='h-11 gap-2'
-        >
-          <LinearMoneySendIcon />
-          Send money
-        </Button>
+        {isOwner && (
+          <Button
+            type='button'
+            variant='outline'
+            onClick={onWithdraw}
+            className='h-11 gap-2'
+          >
+            <LinearMoneySendIcon />
+            Withdraw
+          </Button>
+        )}
         <Button
           type='button'
           onClick={onFundWallet}

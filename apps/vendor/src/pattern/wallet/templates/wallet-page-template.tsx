@@ -16,11 +16,12 @@ import {
   useLazyVerifyWalletPaymentQuery,
 } from '@/redux/services/wallet/wallet.api-slice';
 import { useGetTokenBalanceQuery } from '@/redux/services/tokens/tokens.api-slice';
+import { useGetBusinessProfileQuery } from '@/redux/services/business/business.api-slice';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
 import { WalletStatsSection } from '../molecules/wallet-stats-section';
 import { FundWalletModal } from '../organisms/fund-wallet-modal';
-import { SendMoneyModal } from '../organisms/send-money-modal';
+import { WithdrawModal } from '../organisms/withdraw-modal';
 import { PurchaseTokensModal } from '../organisms/purchase-tokens-modal';
 import { TransactionDetailsModal } from '../organisms/transaction-details-modal';
 import { createTransactionColumns } from '../molecules/wallet-transactions-columns';
@@ -48,6 +49,16 @@ const readBalance = (raw: unknown): number | undefined => {
   if (typeof raw === 'number') return raw;
   const d = (raw ?? {}) as Record<string, unknown>;
   for (const key of ['balance', 'availableBalance', 'available_balance', 'amount']) {
+    if (typeof d[key] === 'number') return d[key] as number;
+  }
+  return undefined;
+};
+
+// The business profile carries the vendor's held (pending) earnings. The key
+// name is undocumented, so read the most likely variants tolerantly.
+const readPendingBalance = (raw: unknown): number | undefined => {
+  const d = (raw ?? {}) as Record<string, unknown>;
+  for (const key of ['pending_balance', 'pendingBalance', 'pending_earnings', 'held_balance']) {
     if (typeof d[key] === 'number') return d[key] as number;
   }
   return undefined;
@@ -124,6 +135,9 @@ export const WalletPageTemplate: React.FC = () => {
     isLoading: isTokenLoading,
   } = useGetTokenBalanceQuery();
 
+  // Business profile supplies the pending (held) earnings figure.
+  const { data: businessData } = useGetBusinessProfileQuery();
+
   const {
     data: transactionsData,
     isLoading,
@@ -174,6 +188,7 @@ export const WalletPageTemplate: React.FC = () => {
   // Real wallet balance (GET /wallets/balance). Undefined until it resolves, so
   // the card shows an honest "—" rather than a fabricated figure.
   const balance = readBalance(balanceData?.data);
+  const pendingBalance = readPendingBalance(businessData?.data);
 
   const transactions = useMemo(
     () => readTransactionList(transactionsData?.data),
@@ -218,11 +233,12 @@ export const WalletPageTemplate: React.FC = () => {
     <div className='w-full min-h-screen h-fit space-y-6 pb-10'>
       <WalletStatsSection
         balance={balance}
+        pendingBalance={pendingBalance}
         tokenBalance={tokenData?.data?.tokens ?? tokenData?.data?.balance}
         isLoading={isBalanceLoading}
         isTokenLoading={isTokenLoading}
         onPurchaseTokens={() => NiceModal.show(PurchaseTokensModal)}
-        onSendMoney={() => NiceModal.show(SendMoneyModal)}
+        onWithdraw={() => NiceModal.show(WithdrawModal, { balance })}
         onFundWallet={() => NiceModal.show(FundWalletModal)}
       />
 
