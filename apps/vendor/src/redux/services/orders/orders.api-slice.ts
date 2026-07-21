@@ -282,6 +282,16 @@ export function getVendorSubtotal(
 ): number {
   const items = getVendorItems(order, businessId);
   return items.reduce((sum, item) => {
+    // The backend computes vendor earnings from item.total_price — the full
+    // per-item goods total (base product price + every selection), shipping
+    // excluded. Use that as the source of truth so the displayed subtotal
+    // matches the basis earnings/commission are calculated on.
+    if (typeof item.total_price === 'number') {
+      return sum + item.total_price;
+    }
+    // Fallback only when total_price is missing: sum the individual selections.
+    // NOTE: this omits the product base_price, so it can understate the item —
+    // it's a last resort, not the primary path.
     let itemTotal = 0;
     item.color_variant_selections?.forEach(
       (v) => (itemTotal += v.total_amount)
