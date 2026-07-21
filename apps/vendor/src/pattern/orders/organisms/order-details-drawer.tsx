@@ -557,6 +557,16 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       ? getVendorSubtotal(order, businessId)
       : order.subtotal;
 
+    // The vendor's commission is the gap between their items subtotal and their
+    // net earnings — derived from the two displayed numbers so it's always
+    // consistent with them (shipping is not part of this; it's customer-paid).
+    const vendorCommission =
+      order.vendor_earnings !== undefined &&
+      typeof vendorSubtotal === 'number' &&
+      vendorSubtotal > order.vendor_earnings
+        ? vendorSubtotal - order.vendor_earnings
+        : undefined;
+
     // Fulfillment
     const [fulfillOrder, { isLoading: isFulfilling }] =
       useFulfillOrderMutation();
@@ -1035,35 +1045,39 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               )}
 
               {/* ── Payment ── */}
+              {/* The vendor's money story is the hero: items subtotal minus
+                  platform commission = their net earnings. Shipping is NOT the
+                  vendor's money (customer-paid, goes to logistics), so it sits
+                  below as a muted footnote — never next to the payout. */}
               <section className='space-y-3'>
                 <SectionTitle>Payment</SectionTitle>
                 <Card>
                   <DetailRow
-                    label='Your subtotal'
+                    label='Items subtotal'
                     value={formatNaira(vendorSubtotal)}
-                  />
-                  <DetailRow
-                    label='Shipping fee'
-                    value={formatNaira(
-                      vendorShipment?.shipping_fee ?? order.shipping_fee
-                    )}
-                  />
-                  <DetailRow
-                    label='Order total'
-                    value={
-                      <span className='text-base font-semibold text-[#0C0C0D] dark:text-white'>
-                        {formatNaira(order.total)}
-                      </span>
+                    isLast={
+                      order.vendor_earnings === undefined && !order.payout_status
                     }
                   />
+                  {vendorCommission !== undefined && (
+                    <DetailRow
+                      label='Platform commission'
+                      value={
+                        <span className='text-[#D42620]'>
+                          -{formatNaira(vendorCommission)}
+                        </span>
+                      }
+                    />
+                  )}
                   {order.vendor_earnings !== undefined && (
                     <DetailRow
                       label='Your earnings'
                       value={
-                        <span className='text-[#0F973D] font-semibold'>
+                        <span className='text-base font-semibold text-[#0F973D]'>
                           {formatNaira(order.vendor_earnings)}
                         </span>
                       }
+                      isLast={!order.payout_status}
                     />
                   )}
                   {order.payout_status && (
@@ -1078,6 +1092,12 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     />
                   )}
                 </Card>
+                <p className='px-1 text-xs text-grey3 dark:text-gray-400'>
+                  Delivery (paid by customer):{' '}
+                  {formatNaira(
+                    vendorShipment?.shipping_fee ?? order.shipping_fee
+                  )}
+                </p>
               </section>
 
               {/* Earnings breakdown (milestones) — custom-clothing orders only */}
