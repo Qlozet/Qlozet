@@ -41,6 +41,7 @@ import {
   getVendorItems,
   getVendorShipment,
   getVendorSubtotal,
+  getOrderGoodsSubtotal,
   getFabricTransferShipments,
   getIncomingFabricTransfers,
   getPendingIncomingFabricTransfers,
@@ -557,14 +558,34 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       ? getVendorSubtotal(order, businessId)
       : order.subtotal;
 
-    // The vendor's commission is the gap between their items subtotal and their
-    // net earnings — derived from the two displayed numbers so it's always
-    // consistent with them (shipping is not part of this; it's customer-paid).
+    // order.vendor_earnings is ORDER-WIDE (net across ALL vendors' items), so on
+    // a multi-vendor order it overstates a single vendor's share. Single-vendor
+    // orders use the exact value; multi-vendor orders get this vendor's share,
+    // allocated by their portion of the order's goods subtotal.
+    // TODO(api): prefer a real per-vendor earnings figure when the backend
+    // exposes one (the disabled getOrderEarnings endpoint would be ideal).
+    const distinctBusinesses = new Set(
+      (order.items ?? [])
+        .map((i) => i.business)
+        .filter((b): b is string => Boolean(b))
+    );
+    const isMultiVendor = distinctBusinesses.size > 1;
+
+    const vendorEarnings = ((): number | undefined => {
+      if (order.vendor_earnings === undefined) return undefined;
+      if (!isMultiVendor) return order.vendor_earnings;
+      const orderGoods = getOrderGoodsSubtotal(order);
+      if (orderGoods <= 0) return undefined;
+      return Math.round(vendorSubtotal * (order.vendor_earnings / orderGoods));
+    })();
+
+    // Commission is the gap between this vendor's subtotal and their net
+    // earnings — both now on a per-vendor basis, so it stays non-negative.
     const vendorCommission =
-      order.vendor_earnings !== undefined &&
+      vendorEarnings !== undefined &&
       typeof vendorSubtotal === 'number' &&
-      vendorSubtotal > order.vendor_earnings
-        ? vendorSubtotal - order.vendor_earnings
+      vendorSubtotal > vendorEarnings
+        ? vendorSubtotal - vendorEarnings
         : undefined;
 
     // Fulfillment
@@ -1056,7 +1077,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     label='Items subtotal'
                     value={formatNaira(vendorSubtotal)}
                     isLast={
-                      order.vendor_earnings === undefined && !order.payout_status
+                      vendorEarnings === undefined && !order.payout_status
                     }
                   />
                   {vendorCommission !== undefined && (
@@ -1069,12 +1090,12 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                       }
                     />
                   )}
-                  {order.vendor_earnings !== undefined && (
+                  {vendorEarnings !== undefined && (
                     <DetailRow
                       label='Your earnings'
                       value={
                         <span className='text-base font-semibold text-[#0F973D]'>
-                          {formatNaira(order.vendor_earnings)}
+                          {formatNaira(vendorEarnings)}
                         </span>
                       }
                       isLast={!order.payout_status}

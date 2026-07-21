@@ -275,37 +275,36 @@ export function getVendorShipment(
   });
 }
 
-/** Calculate the vendor-specific subtotal */
-export function getVendorSubtotal(
-  order: Order,
-  businessId: string
-): number {
-  const items = getVendorItems(order, businessId);
-  return items.reduce((sum, item) => {
-    // The backend computes vendor earnings from item.total_price — the full
-    // per-item goods total (base product price + every selection), shipping
-    // excluded. Use that as the source of truth so the displayed subtotal
-    // matches the basis earnings/commission are calculated on.
-    if (typeof item.total_price === 'number') {
-      return sum + item.total_price;
-    }
-    // Fallback only when total_price is missing: sum the individual selections.
-    // NOTE: this omits the product base_price, so it can understate the item —
-    // it's a last resort, not the primary path.
-    let itemTotal = 0;
-    item.color_variant_selections?.forEach(
-      (v) => (itemTotal += v.total_amount)
-    );
-    item.fabric_selections?.forEach((f) => (itemTotal += f.total_amount));
-    item.style_selections?.forEach((s) => (itemTotal += s.total_amount));
-    item.accessory_selections?.forEach(
-      (a) => (itemTotal += a.total_amount)
-    );
-    item.addon_selections?.forEach(
-      (ad) => (itemTotal += ad.total_amount)
-    );
-    return sum + itemTotal;
-  }, 0);
+/** Goods total for one order item: the backend's item.total_price (base product
+ *  price + every selection, shipping excluded), with a selection-sum fallback
+ *  when total_price is missing. The fallback omits base_price so it can
+ *  understate — it's a last resort, not the primary path. */
+function getItemGoodsTotal(item: OrderItem): number {
+  if (typeof item.total_price === 'number') return item.total_price;
+  let itemTotal = 0;
+  item.color_variant_selections?.forEach((v) => (itemTotal += v.total_amount));
+  item.fabric_selections?.forEach((f) => (itemTotal += f.total_amount));
+  item.style_selections?.forEach((s) => (itemTotal += s.total_amount));
+  item.accessory_selections?.forEach((a) => (itemTotal += a.total_amount));
+  item.addon_selections?.forEach((ad) => (itemTotal += ad.total_amount));
+  return itemTotal;
+}
+
+/** Calculate the vendor-specific goods subtotal (this vendor's items only). */
+export function getVendorSubtotal(order: Order, businessId: string): number {
+  return getVendorItems(order, businessId).reduce(
+    (sum, item) => sum + getItemGoodsTotal(item),
+    0
+  );
+}
+
+/** Goods subtotal across ALL vendors' items on the order — used to allocate an
+ *  order-wide figure (e.g. order.vendor_earnings) to a single vendor's share. */
+export function getOrderGoodsSubtotal(order: Order): number {
+  return (order.items ?? []).reduce(
+    (sum, item) => sum + getItemGoodsTotal(item),
+    0
+  );
 }
 
 /** Get fabric transfer shipments where this vendor is the SENDER (fabric vendor) */
