@@ -50,6 +50,10 @@ import {
   useConfirmOrderMutation,
   useRejectOrderMutation,
 } from '@/redux/services/orders/orders.api-slice';
+import {
+  useGetOrderEarningsQuery,
+  type OrderEarningRecord,
+} from '@/redux/services/business/business.api-slice';
 import { useAppSelector } from '@/redux/store';
 import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 import { CustomerDetailsModal } from '../../customers/organisms/customer-details-modal';
@@ -63,6 +67,7 @@ import {
   readStatus,
   shipmentStatusBadge,
 } from '../lib/order-fields';
+import { isEarningsFrozen } from '../lib/dispute-fields';
 
 interface OrderDetailsDrawerProps {
   order: Order;
@@ -114,6 +119,83 @@ const Card = ({ children }: { children: React.ReactNode }) => (
     {children}
   </div>
 );
+
+/* ------------------------------------------------------------------ */
+/*  Earnings milestones (custom-clothing orders)                        */
+/* ------------------------------------------------------------------ */
+
+// Map a milestone key to a friendly label, tolerating unknown values.
+const milestoneLabel = (rec: OrderEarningRecord): string => {
+  const m = String(rec.milestone ?? '').toLowerCase();
+  if (m.includes('upfront') || m.includes('deposit')) return 'Upfront Payment';
+  if (m.includes('completion') || m.includes('final') || m.includes('balance'))
+    return 'Completion Payment';
+  if (rec.milestone) {
+    // Title-case an unknown key, e.g. "on_shipment" -> "On Shipment".
+    return String(rec.milestone)
+      .replace(/[_-]+/g, ' ')
+      .replace(/\b\w/g, (ch) => ch.toUpperCase());
+  }
+  return 'Earnings';
+};
+
+// Describe when this portion is (or was) released, from status/dates or, as a
+// fallback, the milestone's known release rule.
+const readReleaseText = (rec: OrderEarningRecord): string => {
+  const status = String(rec.status ?? '').toLowerCase();
+  const date = rec.released_at ?? rec.eligible_at;
+  if (status.includes('paid') || status.includes('released'))
+    return date ? `Released ${formatDate(date)}` : 'Released';
+  if (status.includes('eligible')) return 'Eligible for payout';
+  if (rec.description) return String(rec.description);
+  const m = String(rec.milestone ?? '').toLowerCase();
+  if (m.includes('upfront') || m.includes('deposit'))
+    return 'Releases on shipment';
+  if (m.includes('completion') || m.includes('final') || m.includes('balance'))
+    return 'Releases after delivery';
+  return 'Pending';
+};
+
+// Per-order earnings breakdown. Only custom-clothing orders return milestone
+// records, so this renders nothing (no heading) for simple orders or while the
+// request is in flight — the single "Your earnings" line in Payment still
+// covers those.
+const EarningsMilestones = ({ orderId }: { orderId: string }) => {
+  const { data, isLoading } = useGetOrderEarningsQuery(orderId, {
+    skip: !orderId,
+  });
+  const records = Array.isArray(data?.data) ? data.data : [];
+  if (isLoading || records.length === 0) return null;
+
+  return (
+    <section className='space-y-3'>
+      <SectionTitle>Earnings Breakdown</SectionTitle>
+      <Card>
+        {records.map((rec, i) => {
+          const pct =
+            typeof rec.percentage === 'number' ? ` (${rec.percentage}%)` : '';
+          return (
+            <DetailRow
+              key={rec._id ?? i}
+              label={`${milestoneLabel(rec)}${pct}`}
+              isLast={i === records.length - 1}
+              value={
+                <div className='flex flex-col items-end'>
+                  <span className='text-[#0F973D] font-semibold'>
+                    {typeof rec.amount === 'number' ? formatNaira(rec.amount) : ''}
+                  </span>
+                  <span className='text-xs text-grey3 dark:text-gray-400'>
+                    {readReleaseText(rec)}
+                  </span>
+                </div>
+              }
+            />
+          );
+        })}
+      </Card>
+    </section>
+  );
+};
 
 /* ------------------------------------------------------------------ */
 /*  Product helpers                                                     */
@@ -583,14 +665,22 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               <SheetTitle className='text-lg font-semibold text-[#0C0C0D] dark:text-white'>
                 Order details
               </SheetTitle>
-              <span
-                className={cn(
-                  'inline-flex h-[26px] items-center justify-center whitespace-nowrap rounded-lg px-3 text-xs font-medium',
-                  badge.className
+              <div className='flex items-center gap-2'>
+                {isEarningsFrozen(order) && (
+                  <span className='inline-flex h-[26px] items-center gap-1 whitespace-nowrap rounded-lg bg-[#FEF6E7] px-3 text-xs font-medium text-[#DD900D]'>
+                    <ShieldAlert className='size-3.5' />
+                    Earnings Frozen
+                  </span>
                 )}
-              >
-                {badge.label}
-              </span>
+                <span
+                  className={cn(
+                    'inline-flex h-[26px] items-center justify-center whitespace-nowrap rounded-lg px-3 text-xs font-medium',
+                    badge.className
+                  )}
+                >
+                  {badge.label}
+                </span>
+              </div>
             </div>
           </SheetHeader>
 
@@ -926,6 +1016,9 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   )}
                 </Card>
               </section>
+
+              {/* Earnings breakdown (milestones) — custom-clothing orders only */}
+              <EarningsMilestones orderId={order._id} />
 
               {/* ── Shipment ── */}
               {vendorShipment && vendorShipment.status !== 'pending' && (

@@ -62,6 +62,19 @@ export interface EarningsPoint {
   [key: string]: unknown;
 }
 
+// A row from GET /business/earnings/upcoming (paginated). The backend returns
+// net_amount / release_date, which transformResponse normalizes to amount / date.
+export interface UpcomingEarning {
+  _id?: string;
+  order?: string;
+  net_amount?: number;
+  release_date?: string;
+  /** Normalized aliases added client-side. */
+  amount?: number;
+  date?: string;
+  [key: string]: unknown;
+}
+
 // CreateWarehouseDto
 export interface CreateWarehouseRequest {
   name: string;
@@ -81,6 +94,23 @@ export interface Warehouse {
   is_active?: boolean;
   createdAt?: string;
   updatedAt?: string;
+  [key: string]: unknown;
+}
+
+// A single earning record for an order. Custom-clothing orders split earnings
+// into milestones (e.g. an upfront portion released on shipment and a completion
+// portion released after delivery). The GET /business/earnings?order_id= response
+// shape is undocumented in Swagger, so keep it permissive and read tolerantly.
+export interface OrderEarningRecord {
+  _id?: string;
+  order_id?: string;
+  milestone?: string;
+  amount?: number;
+  percentage?: number;
+  status?: string;
+  released_at?: string;
+  eligible_at?: string;
+  description?: string;
   [key: string]: unknown;
 }
 
@@ -114,9 +144,30 @@ export const businessApiSlice = baseAPI.injectEndpoints({
       providesTags: ['Earnings'],
     }),
 
-    // GET /business/earnings/upcoming
-    getUpcomingEarnings: builder.query<ApiResponse<EarningsPoint[]>, void>({
+    // GET /business/earnings/upcoming (paginated). Normalize the backend rows
+    // (net_amount / release_date) into a flat amount / date list for the UI.
+    getUpcomingEarnings: builder.query<UpcomingEarning[], void>({
       query: () => ({ url: '/business/earnings/upcoming', method: 'GET' }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      transformResponse: (res: any): UpcomingEarning[] => {
+        const rows = res?.data?.data ?? res?.data ?? res ?? [];
+        const list = Array.isArray(rows) ? rows : [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return list.map((r: any) => ({
+          ...r,
+          amount: typeof r?.net_amount === 'number' ? r.net_amount : r?.amount,
+          date: r?.release_date ?? r?.date,
+        }));
+      },
+      providesTags: ['Earnings'],
+    }),
+
+    // GET /business/earnings?order_id= - per-order earning records (milestones)
+    getOrderEarnings: builder.query<ApiResponse<OrderEarningRecord[]>, string>({
+      query: (orderId) => ({
+        url: `/business/earnings${buildQueryString({ order_id: orderId })}`,
+        method: 'GET',
+      }),
       providesTags: ['Earnings'],
     }),
 
@@ -177,6 +228,7 @@ export const {
   useUpdateBusinessAddressMutation,
   useGetEarningsChartQuery,
   useGetUpcomingEarningsQuery,
+  useGetOrderEarningsQuery,
   useGetBusinessWarehousesQuery,
   useGetBusinessWarehouseQuery,
   useCreateBusinessWarehouseMutation,
