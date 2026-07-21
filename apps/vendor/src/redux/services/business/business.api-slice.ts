@@ -62,6 +62,19 @@ export interface EarningsPoint {
   [key: string]: unknown;
 }
 
+// A row from GET /business/earnings/upcoming (paginated). The backend returns
+// net_amount / release_date, which transformResponse normalizes to amount / date.
+export interface UpcomingEarning {
+  _id?: string;
+  order?: string;
+  net_amount?: number;
+  release_date?: string;
+  /** Normalized aliases added client-side. */
+  amount?: number;
+  date?: string;
+  [key: string]: unknown;
+}
+
 // CreateWarehouseDto
 export interface CreateWarehouseRequest {
   name: string;
@@ -131,9 +144,21 @@ export const businessApiSlice = baseAPI.injectEndpoints({
       providesTags: ['Earnings'],
     }),
 
-    // GET /business/earnings/upcoming
-    getUpcomingEarnings: builder.query<ApiResponse<EarningsPoint[]>, void>({
+    // GET /business/earnings/upcoming (paginated). Normalize the backend rows
+    // (net_amount / release_date) into a flat amount / date list for the UI.
+    getUpcomingEarnings: builder.query<UpcomingEarning[], void>({
       query: () => ({ url: '/business/earnings/upcoming', method: 'GET' }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      transformResponse: (res: any): UpcomingEarning[] => {
+        const rows = res?.data?.data ?? res?.data ?? res ?? [];
+        const list = Array.isArray(rows) ? rows : [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return list.map((r: any) => ({
+          ...r,
+          amount: typeof r?.net_amount === 'number' ? r.net_amount : r?.amount,
+          date: r?.release_date ?? r?.date,
+        }));
+      },
       providesTags: ['Earnings'],
     }),
 
