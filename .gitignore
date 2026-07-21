@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Turborepo
 .turbo
+
+# local handoff notes (not for git)
+docs/backend-sync.md

@@ -84,6 +84,23 @@ export interface Warehouse {
   [key: string]: unknown;
 }
 
+// A single earning record for an order. Custom-clothing orders split earnings
+// into milestones (e.g. an upfront portion released on shipment and a completion
+// portion released after delivery). The GET /business/earnings?order_id= response
+// shape is undocumented in Swagger, so keep it permissive and read tolerantly.
+export interface OrderEarningRecord {
+  _id?: string;
+  order_id?: string;
+  milestone?: string;
+  amount?: number;
+  percentage?: number;
+  status?: string;
+  released_at?: string;
+  eligible_at?: string;
+  description?: string;
+  [key: string]: unknown;
+}
+
 // ---- API Slice ----
 export const businessApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
@@ -117,6 +134,15 @@ export const businessApiSlice = baseAPI.injectEndpoints({
     // GET /business/earnings/upcoming
     getUpcomingEarnings: builder.query<ApiResponse<EarningsPoint[]>, void>({
       query: () => ({ url: '/business/earnings/upcoming', method: 'GET' }),
+      providesTags: ['Earnings'],
+    }),
+
+    // GET /business/earnings?order_id= - per-order earning records (milestones)
+    getOrderEarnings: builder.query<ApiResponse<OrderEarningRecord[]>, string>({
+      query: (orderId) => ({
+        url: `/business/earnings${buildQueryString({ order_id: orderId })}`,
+        method: 'GET',
+      }),
       providesTags: ['Earnings'],
     }),
 
@@ -177,6 +203,7 @@ export const {
   useUpdateBusinessAddressMutation,
   useGetEarningsChartQuery,
   useGetUpcomingEarningsQuery,
+  useGetOrderEarningsQuery,
   useGetBusinessWarehousesQuery,
   useGetBusinessWarehouseQuery,
   useCreateBusinessWarehouseMutation,
