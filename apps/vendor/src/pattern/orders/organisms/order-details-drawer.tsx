@@ -41,6 +41,7 @@ import {
   getVendorItems,
   getVendorShipment,
   getVendorSubtotal,
+  getOrderGoodsSubtotal,
   getFabricTransferShipments,
   getIncomingFabricTransfers,
   getPendingIncomingFabricTransfers,
@@ -557,6 +558,36 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       ? getVendorSubtotal(order, businessId)
       : order.subtotal;
 
+    // order.vendor_earnings is ORDER-WIDE (net across ALL vendors' items), so on
+    // a multi-vendor order it overstates a single vendor's share. Single-vendor
+    // orders use the exact value; multi-vendor orders get this vendor's share,
+    // allocated by their portion of the order's goods subtotal.
+    // TODO(api): prefer a real per-vendor earnings figure when the backend
+    // exposes one (the disabled getOrderEarnings endpoint would be ideal).
+    const distinctBusinesses = new Set(
+      (order.items ?? [])
+        .map((i) => i.business)
+        .filter((b): b is string => Boolean(b))
+    );
+    const isMultiVendor = distinctBusinesses.size > 1;
+
+    const vendorEarnings = ((): number | undefined => {
+      if (order.vendor_earnings === undefined) return undefined;
+      if (!isMultiVendor) return order.vendor_earnings;
+      const orderGoods = getOrderGoodsSubtotal(order);
+      if (orderGoods <= 0) return undefined;
+      return Math.round(vendorSubtotal * (order.vendor_earnings / orderGoods));
+    })();
+
+    // Commission is the gap between this vendor's subtotal and their net
+    // earnings — both now on a per-vendor basis, so it stays non-negative.
+    const vendorCommission =
+      vendorEarnings !== undefined &&
+      typeof vendorSubtotal === 'number' &&
+      vendorSubtotal > vendorEarnings
+        ? vendorSubtotal - vendorEarnings
+        : undefined;
+
     // Fulfillment
     const [fulfillOrder, { isLoading: isFulfilling }] =
       useFulfillOrderMutation();
@@ -1035,35 +1066,39 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               )}
 
               {/* ── Payment ── */}
+              {/* The vendor's money story is the hero: items subtotal minus
+                  platform commission = their net earnings. Shipping is NOT the
+                  vendor's money (customer-paid, goes to logistics), so it sits
+                  below as a muted footnote — never next to the payout. */}
               <section className='space-y-3'>
                 <SectionTitle>Payment</SectionTitle>
                 <Card>
                   <DetailRow
-                    label='Your subtotal'
+                    label='Items subtotal'
                     value={formatNaira(vendorSubtotal)}
-                  />
-                  <DetailRow
-                    label='Shipping fee'
-                    value={formatNaira(
-                      vendorShipment?.shipping_fee ?? order.shipping_fee
-                    )}
-                  />
-                  <DetailRow
-                    label='Order total'
-                    value={
-                      <span className='text-base font-semibold text-[#0C0C0D] dark:text-white'>
-                        {formatNaira(order.total)}
-                      </span>
+                    isLast={
+                      vendorEarnings === undefined && !order.payout_status
                     }
                   />
-                  {order.vendor_earnings !== undefined && (
+                  {vendorCommission !== undefined && (
+                    <DetailRow
+                      label='Platform commission'
+                      value={
+                        <span className='text-[#D42620]'>
+                          -{formatNaira(vendorCommission)}
+                        </span>
+                      }
+                    />
+                  )}
+                  {vendorEarnings !== undefined && (
                     <DetailRow
                       label='Your earnings'
                       value={
-                        <span className='text-[#0F973D] font-semibold'>
-                          {formatNaira(order.vendor_earnings)}
+                        <span className='text-base font-semibold text-[#0F973D]'>
+                          {formatNaira(vendorEarnings)}
                         </span>
                       }
+                      isLast={!order.payout_status}
                     />
                   )}
                   {order.payout_status && (
@@ -1078,6 +1113,12 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     />
                   )}
                 </Card>
+                <p className='px-1 text-xs text-grey3 dark:text-gray-400'>
+                  Delivery (paid by customer):{' '}
+                  {formatNaira(
+                    vendorShipment?.shipping_fee ?? order.shipping_fee
+                  )}
+                </p>
               </section>
 
               {/* Earnings breakdown (milestones) — custom-clothing orders only */}
