@@ -6,7 +6,7 @@
 // There is NO single-order detail endpoint — the order data is passed from the
 // cached list query.
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
 import {
@@ -530,9 +530,17 @@ const useCopyId = () => {
 /* ------------------------------------------------------------------ */
 
 export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
-  ({ order }) => {
+  ({ order: orderProp }) => {
     const { visible, resolve, hide, remove } = useModal();
     const { copied, copy } = useCopyId();
+
+    // Back the passed order with local state so a successful fulfill can update
+    // the drawer in place (the shipment flips to SHIPPED with tracking + Print
+    // Label). Re-sync if the drawer is reopened with a different order.
+    const [order, setOrder] = useState<Order>(orderProp);
+    useEffect(() => {
+      setOrder(orderProp);
+    }, [orderProp]);
 
     // Vendor business ID for filtering items/shipments
     const activeBusiness = useAppSelector(selectActiveBusiness);
@@ -570,9 +578,19 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       !isConfirmed &&
       !isRejected;
 
+    // The backend now reverts ready_to_ship -> pending when a fulfill fails, so
+    // fresh failures show a normal Fulfill button. This still catches shipments
+    // left in 'ready_to_ship' with no label by a PRE-FIX failed attempt (or a
+    // crash mid-fulfill): the backend allows re-claiming, so offer a retry
+    // rather than a dead end. Safe to keep as a defensive net.
+    const isRetryFulfill =
+      vendorShipment?.status === 'ready_to_ship' && !vendorShipment?.label_url;
+
     const canFulfillBase =
       ['pending', 'in_review', 'processing'].includes(order.status) &&
-      (!vendorShipment || vendorShipment.status === 'pending') &&
+      (!vendorShipment ||
+        vendorShipment.status === 'pending' ||
+        vendorShipment.status === 'ready_to_ship') &&
       isConfirmed; // Must be confirmed before fulfillment
 
     // Fabric transfer data
@@ -594,9 +612,50 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
 
     const handleFulfill = async () => {
       try {
-        await fulfillOrder({ reference: order.reference }).unwrap();
+        const res = await fulfillOrder({ reference: order.reference }).unwrap();
+        // Backend returns { shipment, label_url, tracking_number, order_status }.
+        // Merge it in so the drawer reflects the SHIPPED shipment (with tracking
+        // number + Print Label) right away — the order-level status stays
+        // PROCESSING, so the shipment is the only in-app signal fulfill worked.
+        const payload: any = (res as any)?.data ?? res;
+        const labelUrl = payload?.label_url ?? payload?.shipment?.label_url;
+        const trackingNumber =
+          payload?.tracking_number ?? payload?.shipment?.tracking_number;
+        const shipmentId =
+          payload?.shipment_id ?? payload?.shipment?.shipment_id;
+        const orderStatus = payload?.order_status;
+        setOrder((prev) => ({
+          ...prev,
+          status: (orderStatus as Order['status']) ?? prev.status,
+          shipments: (prev.shipments ?? []).map((s) =>
+            vendorShipment && s._id === vendorShipment._id
+              ? {
+                  ...s,
+                  status: 'shipped' as VendorShipment['status'],
+                  ...(labelUrl ? { label_url: labelUrl } : {}),
+                  ...(trackingNumber ? { tracking_number: trackingNumber } : {}),
+                  ...(shipmentId ? { shipment_id: shipmentId } : {}),
+                  shipped_at: s.shipped_at ?? new Date().toISOString(),
+                }
+              : s
+          ),
+        }));
         toast.success('Shipping label created!');
       } catch (err: any) {
+        // The backend reverts the shipment ready_to_ship -> pending when the
+        // Shipbubble label call fails, then re-throws the real error. Mirror
+        // that locally so the drawer keeps showing a normal Fulfill button for
+        // the retry (rather than a stale ready_to_ship / retry state).
+        setOrder((prev) => ({
+          ...prev,
+          shipments: (prev.shipments ?? []).map((s) =>
+            vendorShipment &&
+            s._id === vendorShipment._id &&
+            (s.status === 'pending' || s.status === 'ready_to_ship')
+              ? { ...s, status: 'pending' as VendorShipment['status'] }
+              : s
+          ),
+        }));
         const errorMsg =
           err?.data?.message ||
           err?.error ||
@@ -1150,6 +1209,15 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
 
           {/* Footer */}
           <div className='shrink-0 border-t border-border px-6 py-4'>
+            {isRetryFulfill && canFulfill && (
+              <div className='mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-800/50 dark:bg-amber-900/20'>
+                <AlertTriangle className='mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400' />
+                <p className='text-xs text-amber-700 dark:text-amber-300'>
+                  A previous fulfillment attempt didn&apos;t complete — no shipping
+                  label was created. You can retry below.
+                </p>
+              </div>
+            )}
             <div className='flex items-center gap-3'>
               {/* Confirm / Reject — shown when order needs confirmation */}
               {needsConfirmation && (
@@ -1186,9 +1254,11 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   <Truck className='size-4' />
                   {isFulfilling
                     ? 'Creating label...'
-                    : outgoingFabricTransfers.length > 0
-                      ? 'Fulfill & Ship to Tailor'
-                      : 'Fulfill Order'}
+                    : isRetryFulfill
+                      ? 'Retry Fulfillment'
+                      : outgoingFabricTransfers.length > 0
+                        ? 'Fulfill & Ship to Tailor'
+                        : 'Fulfill Order'}
                 </Button>
               )}
               {pendingIncomingFabric.length > 0 && canFulfillBase && (
