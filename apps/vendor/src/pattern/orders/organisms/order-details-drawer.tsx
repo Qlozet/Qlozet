@@ -69,6 +69,7 @@ import {
   shipmentStatusBadge,
 } from '../lib/order-fields';
 import { isEarningsFrozen } from '../lib/dispute-fields';
+import { useGetWalletBalanceQuery } from '@/redux/services/wallet/wallet.api-slice';
 
 interface OrderDetailsDrawerProps {
   order: Order;
@@ -120,6 +121,16 @@ const Card = ({ children }: { children: React.ReactNode }) => (
     {children}
   </div>
 );
+
+// The wallet balance envelope is undocumented — read the most likely keys.
+const readBalanceNum = (raw: unknown): number | undefined => {
+  if (typeof raw === 'number') return raw;
+  const d = (raw ?? {}) as Record<string, unknown>;
+  for (const k of ['balance', 'availableBalance', 'available_balance', 'amount']) {
+    if (typeof d[k] === 'number') return d[k] as number;
+  }
+  return undefined;
+};
 
 /* ------------------------------------------------------------------ */
 /*  Earnings milestones (custom-clothing orders)                        */
@@ -554,6 +565,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     const [fulfillOrder, { isLoading: isFulfilling }] =
       useFulfillOrderMutation();
     const router = useRouter();
+    const { data: walletBalanceData } = useGetWalletBalanceQuery();
     const [confirmOrder, { isLoading: isConfirming }] =
       useConfirmOrderMutation();
     const [rejectOrder, { isLoading: isRejecting }] =
@@ -593,6 +605,16 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
 
     const hasLabel =
       vendorShipment?.label_url && vendorShipment.status !== 'pending';
+
+    // Fulfilling buys a Shipbubble label, charged from the vendor wallet. The
+    // shipment's shipping_fee is that courier rate — show it up front so the
+    // cost (and any shortfall) isn't a surprise at click time.
+    const labelCost = vendorShipment?.shipping_fee;
+    const walletBalance = readBalanceNum(walletBalanceData?.data);
+    const insufficientForLabel =
+      typeof labelCost === 'number' &&
+      typeof walletBalance === 'number' &&
+      walletBalance < labelCost;
 
     const handleFulfill = async () => {
       try {
@@ -1166,6 +1188,35 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
 
           {/* Footer */}
           <div className='shrink-0 border-t border-border px-6 py-4'>
+            {canFulfill && typeof labelCost === 'number' && (
+              <div
+                className={cn(
+                  'mb-3 rounded-lg border px-3 py-2',
+                  insufficientForLabel
+                    ? 'border-[#D42620]/30 bg-[#FBEAE9] dark:bg-red-900/20'
+                    : 'border-border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]'
+                )}
+              >
+                <div className='flex items-center justify-between'>
+                  <span className='text-xs text-grey3 dark:text-gray-400'>
+                    Shipping label cost
+                    {vendorShipment?.courier_name
+                      ? ` · ${vendorShipment.courier_name}`
+                      : ''}
+                  </span>
+                  <span className='text-sm font-semibold text-[#333333] dark:text-white'>
+                    {formatNaira(labelCost)}
+                  </span>
+                </div>
+                <p className='mt-1 text-[11px] text-grey3 dark:text-gray-400'>
+                  {insufficientForLabel
+                    ? `Charged from your wallet on fulfillment. Your balance (${formatNaira(
+                        walletBalance as number
+                      )}) is too low — fund your wallet first.`
+                    : 'Charged from your wallet when you fulfill this order.'}
+                </p>
+              </div>
+            )}
             <div className='flex items-center gap-3'>
               {/* Confirm / Reject — shown when order needs confirmation */}
               {needsConfirmation && (
