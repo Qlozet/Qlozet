@@ -6,7 +6,7 @@
 // There is NO single-order detail endpoint — the order data is passed from the
 // cached list query.
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
 import {
@@ -530,9 +530,17 @@ const useCopyId = () => {
 /* ------------------------------------------------------------------ */
 
 export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
-  ({ order }) => {
+  ({ order: orderProp }) => {
     const { visible, resolve, hide, remove } = useModal();
     const { copied, copy } = useCopyId();
+
+    // Back the passed order with local state so a successful fulfill can update
+    // the drawer in place (the shipment flips to SHIPPED with tracking + Print
+    // Label). Re-sync if the drawer is reopened with a different order.
+    const [order, setOrder] = useState<Order>(orderProp);
+    useEffect(() => {
+      setOrder(orderProp);
+    }, [orderProp]);
 
     // Vendor business ID for filtering items/shipments
     const activeBusiness = useAppSelector(selectActiveBusiness);
@@ -594,7 +602,34 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
 
     const handleFulfill = async () => {
       try {
-        await fulfillOrder({ reference: order.reference }).unwrap();
+        const res = await fulfillOrder({ reference: order.reference }).unwrap();
+        // Backend returns { shipment, label_url, tracking_number, order_status }.
+        // Merge it in so the drawer reflects the SHIPPED shipment (with tracking
+        // number + Print Label) right away — the order-level status stays
+        // PROCESSING, so the shipment is the only in-app signal fulfill worked.
+        const payload: any = (res as any)?.data ?? res;
+        const labelUrl = payload?.label_url ?? payload?.shipment?.label_url;
+        const trackingNumber =
+          payload?.tracking_number ?? payload?.shipment?.tracking_number;
+        const shipmentId =
+          payload?.shipment_id ?? payload?.shipment?.shipment_id;
+        const orderStatus = payload?.order_status;
+        setOrder((prev) => ({
+          ...prev,
+          status: (orderStatus as Order['status']) ?? prev.status,
+          shipments: (prev.shipments ?? []).map((s) =>
+            vendorShipment && s._id === vendorShipment._id
+              ? {
+                  ...s,
+                  status: 'shipped' as VendorShipment['status'],
+                  ...(labelUrl ? { label_url: labelUrl } : {}),
+                  ...(trackingNumber ? { tracking_number: trackingNumber } : {}),
+                  ...(shipmentId ? { shipment_id: shipmentId } : {}),
+                  shipped_at: s.shipped_at ?? new Date().toISOString(),
+                }
+              : s
+          ),
+        }));
         toast.success('Shipping label created!');
       } catch (err: any) {
         const errorMsg =
