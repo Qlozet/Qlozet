@@ -99,6 +99,9 @@ export default function AddClothingTemplate() {
   const [extraFiles, setExtraFiles] = useState<File[]>([]);
 
   const [customizationEnabled, setCustomizationEnabled] = useState(false);
+  // Garment fabric requirement: yards this garment uses per size (bill of
+  // materials). Drives fabric pricing, cross-vendor fabric, and inventory.
+  const [yardagePerSize, setYardagePerSize] = useState<Record<string, number>>({});
   const [measurementRequired, setMeasurementRequired] = useState(false);
   const [turnaroundDays, setTurnaroundDays] = useState('2');
   const [customizationSections, setCustomizationSections] = useState<
@@ -550,6 +553,13 @@ export default function AddClothingTemplate() {
           styles,
           accessories,
           fabrics,
+          ...(Object.keys(yardagePerSize).length > 0
+            ? {
+                yardage_per_size: Object.entries(yardagePerSize)
+                  .filter(([, yards]) => yards > 0)
+                  .map(([size, yards]) => ({ size, yards })),
+              }
+            : {}),
           ...(addons.length > 0 ? { addons } : {}),
           accepts_external_fabric: externalFabricOverride,
         },
@@ -722,6 +732,45 @@ export default function AddClothingTemplate() {
                       className="bg-background"
                     />
                   </div>
+
+                  {/* Fabric yardage per size — garment bill of materials */}
+                  {(() => {
+                    const garmentSizes = Array.from(
+                      new Set(variants.flatMap((v) => v.availableSizes || [])),
+                    );
+                    if (garmentSizes.length === 0) return null;
+                    return (
+                      <div>
+                        <FieldLabel
+                          tooltip="Yards of fabric this garment uses per size. Drives fabric pricing and cross-vendor fabric mapping."
+                          className="font-normal"
+                        >
+                          Fabric yardage per size
+                        </FieldLabel>
+                        <div className="grid grid-cols-3 gap-2">
+                          {garmentSizes.map((size) => (
+                            <div key={size}>
+                              <span className="text-xs text-muted-foreground">{size}</span>
+                              <Input
+                                type="number"
+                                min={0}
+                                step={0.5}
+                                placeholder="yds"
+                                value={yardagePerSize[size] ?? ''}
+                                onChange={(e) =>
+                                  setYardagePerSize((prev) => ({
+                                    ...prev,
+                                    [size]: Number(e.target.value) || 0,
+                                  }))
+                                }
+                                className="bg-background"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
             </div>
