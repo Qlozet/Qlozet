@@ -28,6 +28,13 @@ import {
   readCustomerName,
   readOrderId,
 } from '../lib/order-fields';
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from '@/components/ui/tabs';
+import { ReturnsPanel } from '../organisms/returns-panel';
 
 const PAGE_SIZE = 7;
 
@@ -76,46 +83,59 @@ export const OrdersPageTemplate: React.FC = () => {
     toast.info(`${label} is coming soon.`);
 
   return (
-    <div className='w-full min-h-screen h-fit space-y-6 pb-10'>
-      {/* Metrics */}
-      <OrderStatsSection isLoading={isLoading} />
+    <div className='w-full min-h-screen h-fit pb-10'>
+      <Tabs defaultValue='orders' className='space-y-6'>
+        <TabsList>
+          <TabsTrigger value='orders'>Orders</TabsTrigger>
+          <TabsTrigger value='returns'>Returns</TabsTrigger>
+        </TabsList>
 
-      {/* Orders table */}
-      <div className='bg-card w-full rounded-[10px] shadow-md'>
-        <TableToolbar
-          title='Orders'
-          search={search}
-          onSearchChange={(value) => {
-            setSearch(value);
-            setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-          }}
-          filterControl={
-            <OrderStatusFilterMenu
-              value={statusFilter}
-              onChange={(value) => {
-                setStatusFilter(value);
+        <TabsContent value='orders' className='space-y-6'>
+          {/* Metrics */}
+          <OrderStatsSection isLoading={isLoading} />
+
+          {/* Orders table */}
+          <div className='bg-card w-full rounded-[10px] shadow-md'>
+            <TableToolbar
+              title='Orders'
+              search={search}
+              onSearchChange={(value) => {
+                setSearch(value);
                 setPagination((prev) => ({ ...prev, pageIndex: 0 }));
               }}
+              filterControl={
+                <OrderStatusFilterMenu
+                  value={statusFilter}
+                  onChange={(value) => {
+                    setStatusFilter(value);
+                    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+                  }}
+                />
+              }
+              onExport={notReady('Export')}
             />
-          }
-          onExport={notReady('Export')}
-        />
-        <DataTable
-          columns={columns}
-          data={filtered}
-          isLoading={isLoading}
-          isFetching={isFetching}
-          isSuccess={isSuccess}
-          isError={isError}
-          error={error}
-          pagination={pagination}
-          setPagination={setPagination}
-          pageCount={pageCount}
-          manualPagination
-          onRowClick={openDetails}
-          emptyMessage='Orders will show up here once a customer places an order.'
-        />
-      </div>
+            <DataTable
+              columns={columns}
+              data={filtered}
+              isLoading={isLoading}
+              isFetching={isFetching}
+              isSuccess={isSuccess}
+              isError={isError}
+              error={error}
+              pagination={pagination}
+              setPagination={setPagination}
+              pageCount={pageCount}
+              manualPagination
+              onRowClick={openDetails}
+              emptyMessage='Orders will show up here once a customer places an order.'
+            />
+          </div>
+        </TabsContent>
+
+        <TabsContent value='returns'>
+          <ReturnsPanel />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

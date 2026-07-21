@@ -77,6 +77,10 @@ export const baseAPI = createApi({
     'Taxonomy',
     'SizeGuide',
     'SizeGuides',
+    'Return',
+    'Returns',
+    'Dispute',
+    'Disputes',
   ],
   endpoints: () => ({}),
 });
