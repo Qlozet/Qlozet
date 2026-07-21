@@ -8,6 +8,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
 import {
   Printer,
@@ -161,8 +162,12 @@ const readReleaseText = (rec: OrderEarningRecord): string => {
 // request is in flight — the single "Your earnings" line in Payment still
 // covers those.
 const EarningsMilestones = ({ orderId }: { orderId: string }) => {
+  // TODO(api): GET /business/earnings?order_id= is not implemented on the
+  // backend yet (it 404s). Skip the request so we don't spam the console — the
+  // section simply renders nothing. Flip `skip` back to `!orderId` once the
+  // endpoint is live.
   const { data, isLoading } = useGetOrderEarningsQuery(orderId, {
-    skip: !orderId,
+    skip: true,
   });
   const records = Array.isArray(data?.data) ? data.data : [];
   if (isLoading || records.length === 0) return null;
@@ -548,6 +553,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     // Fulfillment
     const [fulfillOrder, { isLoading: isFulfilling }] =
       useFulfillOrderMutation();
+    const router = useRouter();
     const [confirmOrder, { isLoading: isConfirming }] =
       useConfirmOrderMutation();
     const [rejectOrder, { isLoading: isRejecting }] =
@@ -597,7 +603,21 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
           err?.data?.message ||
           err?.error ||
           'Could not create shipping label. Please try again.';
-        toast.error(errorMsg);
+        // Fulfilling buys a Shipbubble label, paid from the vendor wallet — if
+        // the balance is short, point the vendor straight at Fund wallet.
+        if (/insufficient|balance|fund/i.test(String(errorMsg))) {
+          toast.error(errorMsg, {
+            action: {
+              label: 'Fund wallet',
+              onClick: () => {
+                handleClose();
+                router.push('/wallet');
+              },
+            },
+          });
+        } else {
+          toast.error(errorMsg);
+        }
       }
     };
 
