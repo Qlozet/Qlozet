@@ -67,6 +67,7 @@ import {
   readStatus,
   shipmentStatusBadge,
 } from '../lib/order-fields';
+import { isEarningsFrozen } from '../lib/dispute-fields';
 
 interface OrderDetailsDrawerProps {
   order: Order;
@@ -664,14 +665,22 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               <SheetTitle className='text-lg font-semibold text-[#0C0C0D] dark:text-white'>
                 Order details
               </SheetTitle>
-              <span
-                className={cn(
-                  'inline-flex h-[26px] items-center justify-center whitespace-nowrap rounded-lg px-3 text-xs font-medium',
-                  badge.className
+              <div className='flex items-center gap-2'>
+                {isEarningsFrozen(order) && (
+                  <span className='inline-flex h-[26px] items-center gap-1 whitespace-nowrap rounded-lg bg-[#FEF6E7] px-3 text-xs font-medium text-[#DD900D]'>
+                    <ShieldAlert className='size-3.5' />
+                    Earnings Frozen
+                  </span>
                 )}
-              >
-                {badge.label}
-              </span>
+                <span
+                  className={cn(
+                    'inline-flex h-[26px] items-center justify-center whitespace-nowrap rounded-lg px-3 text-xs font-medium',
+                    badge.className
+                  )}
+                >
+                  {badge.label}
+                </span>
+              </div>
             </div>
           </SheetHeader>
 

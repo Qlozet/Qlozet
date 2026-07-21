@@ -35,6 +35,7 @@ import {
   TabsContent,
 } from '@/components/ui/tabs';
 import { ReturnsPanel } from '../organisms/returns-panel';
+import { DisputesPanel } from '../organisms/disputes-panel';
 
 const PAGE_SIZE = 7;
 
@@ -88,6 +89,7 @@ export const OrdersPageTemplate: React.FC = () => {
         <TabsList>
           <TabsTrigger value='orders'>Orders</TabsTrigger>
           <TabsTrigger value='returns'>Returns</TabsTrigger>
+          <TabsTrigger value='disputes'>Disputes</TabsTrigger>
         </TabsList>
 
         <TabsContent value='orders' className='space-y-6'>
@@ -134,6 +136,10 @@ export const OrdersPageTemplate: React.FC = () => {
 
         <TabsContent value='returns'>
           <ReturnsPanel />
+        </TabsContent>
+
+        <TabsContent value='disputes'>
+          <DisputesPanel />
         </TabsContent>
       </Tabs>
     </div>
