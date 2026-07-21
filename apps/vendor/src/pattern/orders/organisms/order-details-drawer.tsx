@@ -578,10 +578,11 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       !isConfirmed &&
       !isRejected;
 
-    // A fulfill whose Shipbubble label failed leaves the shipment stuck at
-    // 'ready_to_ship' (the backend's atomic claim doesn't revert on failure).
-    // It has no label/tracking, and the backend allows re-claiming from this
-    // state — so treat it as a retry-able fulfillment, not a dead end.
+    // The backend now reverts ready_to_ship -> pending when a fulfill fails, so
+    // fresh failures show a normal Fulfill button. This still catches shipments
+    // left in 'ready_to_ship' with no label by a PRE-FIX failed attempt (or a
+    // crash mid-fulfill): the backend allows re-claiming, so offer a retry
+    // rather than a dead end. Safe to keep as a defensive net.
     const isRetryFulfill =
       vendorShipment?.status === 'ready_to_ship' && !vendorShipment?.label_url;
 
@@ -641,17 +642,17 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
         }));
         toast.success('Shipping label created!');
       } catch (err: any) {
-        // The atomic claim already moved the shipment pending -> ready_to_ship
-        // before Shipbubble was called, and leaves it there when the label
-        // fails. Reflect that so the drawer shows the retry state (the backend
-        // allows re-fulfilling from ready_to_ship).
+        // The backend reverts the shipment ready_to_ship -> pending when the
+        // Shipbubble label call fails, then re-throws the real error. Mirror
+        // that locally so the drawer keeps showing a normal Fulfill button for
+        // the retry (rather than a stale ready_to_ship / retry state).
         setOrder((prev) => ({
           ...prev,
           shipments: (prev.shipments ?? []).map((s) =>
             vendorShipment &&
             s._id === vendorShipment._id &&
             (s.status === 'pending' || s.status === 'ready_to_ship')
-              ? { ...s, status: 'ready_to_ship' as VendorShipment['status'] }
+              ? { ...s, status: 'pending' as VendorShipment['status'] }
               : s
           ),
         }));
