@@ -578,9 +578,18 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       !isConfirmed &&
       !isRejected;
 
+    // A fulfill whose Shipbubble label failed leaves the shipment stuck at
+    // 'ready_to_ship' (the backend's atomic claim doesn't revert on failure).
+    // It has no label/tracking, and the backend allows re-claiming from this
+    // state — so treat it as a retry-able fulfillment, not a dead end.
+    const isRetryFulfill =
+      vendorShipment?.status === 'ready_to_ship' && !vendorShipment?.label_url;
+
     const canFulfillBase =
       ['pending', 'in_review', 'processing'].includes(order.status) &&
-      (!vendorShipment || vendorShipment.status === 'pending') &&
+      (!vendorShipment ||
+        vendorShipment.status === 'pending' ||
+        vendorShipment.status === 'ready_to_ship') &&
       isConfirmed; // Must be confirmed before fulfillment
 
     // Fabric transfer data
@@ -632,6 +641,20 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
         }));
         toast.success('Shipping label created!');
       } catch (err: any) {
+        // The atomic claim already moved the shipment pending -> ready_to_ship
+        // before Shipbubble was called, and leaves it there when the label
+        // fails. Reflect that so the drawer shows the retry state (the backend
+        // allows re-fulfilling from ready_to_ship).
+        setOrder((prev) => ({
+          ...prev,
+          shipments: (prev.shipments ?? []).map((s) =>
+            vendorShipment &&
+            s._id === vendorShipment._id &&
+            (s.status === 'pending' || s.status === 'ready_to_ship')
+              ? { ...s, status: 'ready_to_ship' as VendorShipment['status'] }
+              : s
+          ),
+        }));
         const errorMsg =
           err?.data?.message ||
           err?.error ||
@@ -1185,6 +1208,15 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
 
           {/* Footer */}
           <div className='shrink-0 border-t border-border px-6 py-4'>
+            {isRetryFulfill && canFulfill && (
+              <div className='mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-800/50 dark:bg-amber-900/20'>
+                <AlertTriangle className='mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400' />
+                <p className='text-xs text-amber-700 dark:text-amber-300'>
+                  A previous fulfillment attempt didn&apos;t complete — no shipping
+                  label was created. You can retry below.
+                </p>
+              </div>
+            )}
             <div className='flex items-center gap-3'>
               {/* Confirm / Reject — shown when order needs confirmation */}
               {needsConfirmation && (
@@ -1221,9 +1253,11 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   <Truck className='size-4' />
                   {isFulfilling
                     ? 'Creating label...'
-                    : outgoingFabricTransfers.length > 0
-                      ? 'Fulfill & Ship to Tailor'
-                      : 'Fulfill Order'}
+                    : isRetryFulfill
+                      ? 'Retry Fulfillment'
+                      : outgoingFabricTransfers.length > 0
+                        ? 'Fulfill & Ship to Tailor'
+                        : 'Fulfill Order'}
                 </Button>
               )}
               {pendingIncomingFabric.length > 0 && canFulfillBase && (
