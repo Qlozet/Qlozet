@@ -455,12 +455,14 @@ const OrderItemRow: React.FC<{
             }))
           )}
 
-          {/* Fabric selections */}
+          {/* Fabric selections — fabric is priced per yard, so QTY shows the
+              total yards (yardage × cuts) and the unit is the price per yard,
+              so QTY × UNIT = TOTAL reads correctly. */}
           {renderSelectionTable(
             'Fabrics',
             (item.fabric_selections ?? []).map((f) => ({
               label: `Fabric (${f.yardage ?? f.yards ?? '—'} yds)`,
-              qty: f.quantity,
+              qty: (f.yardage ?? f.yards ?? 1) * (f.quantity ?? 1),
               unitPrice: f.price,
               total: f.total_amount,
             }))
