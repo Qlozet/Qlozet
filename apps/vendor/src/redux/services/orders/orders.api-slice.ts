@@ -114,6 +114,18 @@ export interface OrderItem {
   applied_fabric_yards?: number;
   note?: string;
   total_price?: number;
+  /** Frozen itemized pricing snapshot at order time. `final` === total_price. */
+  pricing?: {
+    base: number;
+    styles_total: number;
+    fabric_total: number;
+    variant_total: number;
+    accessories_total: number;
+    addons_total: number;
+    before_discount: number;
+    discount: number;
+    final: number;
+  };
 }
 
 // ──────────────── Shipment Types ────────────────

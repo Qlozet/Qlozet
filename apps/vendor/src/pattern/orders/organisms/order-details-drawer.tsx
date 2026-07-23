@@ -488,11 +488,47 @@ const OrderItemRow: React.FC<{
             }))
           )}
 
-          {/* Item total summary */}
-          <div className='mt-4 flex items-center justify-between rounded-lg bg-gray-50 dark:bg-gray-800/50 px-3 py-2'>
-            <span className='text-xs font-semibold text-[#333333] dark:text-gray-200'>Item Total</span>
-            <span className='text-sm font-bold text-[#0C0C0D] dark:text-white'>{formatNaira(totalAmount)}</span>
-          </div>
+          {/* Item pricing ladder (base → components → before-discount → discount → final) */}
+          {item.pricing ? (
+            <div className='mt-4 rounded-lg bg-gray-50 dark:bg-gray-800/50 px-3 py-2.5 space-y-1.5'>
+              {(
+                [
+                  ['Base', item.pricing.base],
+                  ['Styles', item.pricing.styles_total],
+                  ['Fabric', item.pricing.fabric_total],
+                  ['Variant', item.pricing.variant_total],
+                  ['Accessories', item.pricing.accessories_total],
+                  ['Add-ons', item.pricing.addons_total],
+                ] as [string, number][]
+              )
+                .filter(([label, v]) => label === 'Base' || v > 0)
+                .map(([label, v]) => (
+                  <div key={label} className='flex items-center justify-between text-xs'>
+                    <span className='text-grey3 dark:text-gray-400'>{label}</span>
+                    <span className='text-[#333333] dark:text-gray-200'>{formatNaira(v)}</span>
+                  </div>
+                ))}
+              <div className='flex items-center justify-between border-t border-[#DDE2E5] dark:border-border/50 pt-1.5 text-xs'>
+                <span className='font-semibold text-[#333333] dark:text-gray-200'>Item price before discount</span>
+                <span className='font-semibold text-[#333333] dark:text-gray-200'>{formatNaira(item.pricing.before_discount)}</span>
+              </div>
+              {item.pricing.discount > 0 && (
+                <div className='flex items-center justify-between text-xs'>
+                  <span className='text-grey3 dark:text-gray-400'>Discount</span>
+                  <span className='font-semibold text-red-600'>-{formatNaira(item.pricing.discount)}</span>
+                </div>
+              )}
+              <div className='flex items-center justify-between border-t border-[#DDE2E5] dark:border-border/50 pt-1.5'>
+                <span className='text-xs font-semibold text-[#333333] dark:text-gray-200'>Final item total</span>
+                <span className='text-sm font-bold text-[#0C0C0D] dark:text-white'>{formatNaira(item.pricing.final)}</span>
+              </div>
+            </div>
+          ) : (
+            <div className='mt-4 flex items-center justify-between rounded-lg bg-gray-50 dark:bg-gray-800/50 px-3 py-2'>
+              <span className='text-xs font-semibold text-[#333333] dark:text-gray-200'>Item Total</span>
+              <span className='text-sm font-bold text-[#0C0C0D] dark:text-white'>{formatNaira(totalAmount)}</span>
+            </div>
+          )}
 
           {/* Customer note */}
           {item.note && (
