@@ -21,7 +21,7 @@ import type {
   UpdateUserProfilePayload,
 } from '@/redux/services/settings/settings.api-slice';
 import { toast } from 'sonner';
-import Loader from '@/components/Loader';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ProfileContentProps {
   shopDetails?: any; // kept for backward compat, but no longer used
@@ -31,21 +31,87 @@ interface ProfileContentProps {
   userData?: any;
 }
 
+// Skeleton that mirrors the profile layout (form card + tabs on the left,
+// profile card + upload buttons on the right) so the shape doesn't jump when
+// the data loads.
+const ProfileContentSkeleton: React.FC = () => (
+  <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+    {/* Left — form card */}
+    <div className='lg:col-span-2 bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] p-4 lg:p-8 custom-card-shadow'>
+      {/* Tab pill */}
+      <Skeleton className='mb-8 h-11 w-full rounded-[10px]' />
+
+      {/* Form fields */}
+      <div className='grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2'>
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className='space-y-2'>
+            <Skeleton className='h-3 w-24' />
+            <Skeleton className='h-11 w-full rounded-lg' />
+          </div>
+        ))}
+      </div>
+
+      {/* About / textarea */}
+      <div className='mt-6 space-y-2'>
+        <Skeleton className='h-3 w-20' />
+        <Skeleton className='h-24 w-full rounded-lg' />
+      </div>
+
+      {/* Submit */}
+      <Skeleton className='mt-8 h-11 w-40 rounded-lg' />
+    </div>
+
+    {/* Right — profile card + upload buttons */}
+    <div className='lg:col-span-1 space-y-6'>
+      <div className='overflow-hidden rounded-[12px] bg-white pb-6 custom-card-shadow dark:border dark:border-white/10 dark:bg-card'>
+        {/* Cover */}
+        <Skeleton className='h-32 w-full rounded-none' />
+        {/* Avatar + info */}
+        <div className='-mt-16 flex flex-col items-center px-6'>
+          <Skeleton className='size-24 rounded-full border-4 border-white dark:border-card' />
+          <Skeleton className='mt-4 h-5 w-40' />
+          <Skeleton className='mt-2 h-3 w-28' />
+          <Skeleton className='mt-2 h-3 w-32' />
+          <Skeleton className='mt-2 h-3 w-24' />
+        </div>
+      </div>
+
+      {/* Upload buttons */}
+      <div className='space-y-4'>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Skeleton key={i} className='h-14 w-full rounded-[12px]' />
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
 export const ProfileContent: React.FC<ProfileContentProps> = () => {
   const [activeProfileTab, setActiveProfileTab] = useState<
     'organization' | 'user'
   >('organization');
 
-  // Fetch live data
+  // Fetch live data. refetchOnMountOrArgChange forces a fresh fetch whenever we
+  // navigate to Settings, so a stale/empty cache (e.g. a first fetch that ran
+  // before the auth token was ready) can't leave the profile blank until a full
+  // page refresh.
   const {
     data: businessData,
     isLoading: isLoadingBusiness,
-  } = useGetBusinessProfileQuery();
+    isFetching: isFetchingBusiness,
+    refetch: refetchBusiness,
+  } = useGetBusinessProfileQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   const {
     data: userData,
     isLoading: isLoadingUser,
-  } = useGetUserProfileQuery();
+    isFetching: isFetchingUser,
+    refetch: refetchUser,
+  } = useGetUserProfileQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   // Mutations
   const [updateBusiness, { isLoading: isUpdatingBusiness }] =
@@ -105,8 +171,44 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
     }
   };
 
-  if (isLoadingBusiness || isLoadingUser) {
-    return <Loader />;
+  // The org profile is the primary record; treat it as "present" only when a
+  // real business (with an id) came back.
+  const hasBusiness = !!businessData?._id;
+  const busy =
+    isLoadingBusiness ||
+    isLoadingUser ||
+    isFetchingBusiness ||
+    isFetchingUser;
+
+  // Show the skeleton while we don't yet have the business profile and a
+  // request is in flight (initial load OR a refetch after a stale/empty cache).
+  if (!hasBusiness && busy) {
+    return <ProfileContentSkeleton />;
+  }
+
+  // Finished, but the profile came back empty — offer a retry instead of a
+  // silent blank form.
+  if (!hasBusiness) {
+    return (
+      <div className='flex flex-col items-center justify-center gap-3 rounded-[12px] bg-white dark:bg-card dark:border dark:border-white/10 px-6 py-16 text-center custom-card-shadow'>
+        <p className='text-sm font-medium text-[#1C1C1E] dark:text-white'>
+          Couldn&apos;t load your profile
+        </p>
+        <p className='max-w-sm text-xs text-gray-500 dark:text-gray-400'>
+          Something went wrong fetching your business profile. Please try again.
+        </p>
+        <button
+          type='button'
+          onClick={() => {
+            refetchBusiness();
+            refetchUser();
+          }}
+          className='mt-1 rounded-lg bg-[#6D5545] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#5a4638] dark:bg-white dark:text-black'
+        >
+          Retry
+        </button>
+      </div>
+    );
   }
 
   return (
