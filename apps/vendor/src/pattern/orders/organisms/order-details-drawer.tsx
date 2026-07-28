@@ -22,6 +22,7 @@ import {
   XCircle,
   Clock,
   ShieldAlert,
+  ChevronRight,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -58,6 +59,7 @@ import {
 import { useAppSelector } from '@/redux/store';
 import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 import { CustomerDetailsModal } from '../../customers/organisms/customer-details-modal';
+import { OrderItemDetailModal } from './order-item-detail-modal';
 import {
   deliveryBadge,
   formatDate,
@@ -252,9 +254,9 @@ const KIND_BADGE: Record<string, { label: string; className: string }> = {
 
 const OrderItemRow: React.FC<{
   item: OrderItem;
+  order?: Order;
   isLast?: boolean;
-}> = ({ item, isLast = false }) => {
-  const [expanded, setExpanded] = React.useState(false);
+}> = ({ item, order, isLast = false }) => {
   const product =
     typeof item.product === 'object' && item.product !== null
       ? (item.product as PopulatedProduct)
@@ -264,33 +266,16 @@ const OrderItemRow: React.FC<{
   const kind = product?.kind;
   const kindBadge = kind ? KIND_BADGE[kind] : null;
   const basePrice = product?.base_price;
-  const description = product?.clothing?.description;
 
-  // Sum up all selection amounts for total
+  // Sum up all selection amounts for total + item count
   let totalAmount = item.total_price ?? 0;
   let totalQty = 0;
-  
   if (totalAmount === 0) {
-    item.color_variant_selections?.forEach((v) => {
-      totalAmount += v.total_amount;
-      totalQty += v.quantity;
-    });
-    item.fabric_selections?.forEach((f) => {
-      totalAmount += f.total_amount;
-      totalQty += f.quantity;
-    });
-    item.style_selections?.forEach((s) => {
-      totalAmount += s.total_amount;
-      totalQty += s.quantity;
-    });
-    item.accessory_selections?.forEach((a) => {
-      totalAmount += a.total_amount;
-      totalQty += a.quantity;
-    });
-    item.addon_selections?.forEach((ad) => {
-      totalAmount += ad.total_amount;
-      totalQty += ad.quantity;
-    });
+    item.color_variant_selections?.forEach((v) => { totalAmount += v.total_amount; totalQty += v.quantity; });
+    item.fabric_selections?.forEach((f) => { totalAmount += f.total_amount; totalQty += f.quantity; });
+    item.style_selections?.forEach((s) => { totalAmount += s.total_amount; totalQty += s.quantity; });
+    item.accessory_selections?.forEach((a) => { totalAmount += a.total_amount; totalQty += a.quantity; });
+    item.addon_selections?.forEach((ad) => { totalAmount += ad.total_amount; totalQty += ad.quantity; });
   } else {
     item.color_variant_selections?.forEach((v) => (totalQty += v.quantity));
     item.fabric_selections?.forEach((f) => (totalQty += f.quantity));
@@ -299,253 +284,92 @@ const OrderItemRow: React.FC<{
     item.addon_selections?.forEach((ad) => (totalQty += ad.quantity));
   }
 
-  const renderSelectionTable = (
-    title: string,
-    rows: { label: string; qty: number; unitPrice: number; total: number }[]
-  ) => {
-    if (!rows.length) return null;
-    return (
-      <div className='mt-4'>
-        <p className='text-xs font-semibold text-[#333333] dark:text-gray-200 mb-2'>{title}</p>
-        <div className='rounded-lg border border-[#E5E7EB] dark:border-border/60 overflow-hidden'>
-          <div className='grid grid-cols-[1fr_50px_70px_80px] gap-0 text-[10px] uppercase tracking-wider font-semibold text-grey3 dark:text-gray-500 bg-gray-50 dark:bg-gray-800/50 px-3 py-1.5 border-b border-[#E5E7EB] dark:border-border/60'>
-            <span>Detail</span>
-            <span className='text-center'>Qty</span>
-            <span className='text-right'>Unit</span>
-            <span className='text-right'>Total</span>
-          </div>
-          {rows.map((row, i) => (
-            <div
-              key={i}
-              className={cn(
-                'grid grid-cols-[1fr_50px_70px_80px] gap-0 px-3 py-2 text-xs',
-                i !== rows.length - 1 && 'border-b border-[#F3F4F6] dark:border-border/30'
-              )}
-            >
-              <span className='text-[#333333] dark:text-gray-200 truncate pr-2'>{row.label}</span>
-              <span className='text-center text-grey3 dark:text-gray-400'>×{row.qty}</span>
-              <span className='text-right text-grey3 dark:text-gray-400'>{formatNaira(row.unitPrice)}</span>
-              <span className='text-right font-medium text-[#333333] dark:text-white'>{formatNaira(row.total)}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
+  // One-line summary of what's inside (drives the "View details" affordance).
+  const summaryBits: string[] = [];
+  const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+  if (item.style_selections?.length) summaryBits.push(plural(item.style_selections.length, 'style', 'styles'));
+  if (item.fabric_selections?.length) summaryBits.push('fabric');
+  if (item.accessory_selections?.length) summaryBits.push(plural(item.accessory_selections.length, 'accessory', 'accessories'));
+  if (item.addon_selections?.length) summaryBits.push(plural(item.addon_selections.length, 'add-on', 'add-ons'));
+  if (item.applied_fabric) summaryBits.push('external fabric');
 
-  const hasExtraDetails = !!(
+  const hasDetails = !!(
     item.color_variant_selections?.length ||
     item.style_selections?.length ||
     item.fabric_selections?.length ||
     item.accessory_selections?.length ||
     item.addon_selections?.length ||
     item.note ||
-    description
+    item.applied_fabric ||
+    product?.clothing?.description
   );
 
+  const openModal = () => {
+    if (hasDetails) NiceModal.show(OrderItemDetailModal, { item, order });
+  };
+
   return (
-    <div
+    <button
+      type='button'
+      onClick={openModal}
+      disabled={!hasDetails}
       className={cn(
-        'px-5 py-4',
+        'group flex w-full items-start gap-3 px-5 py-4 text-left transition-colors',
+        hasDetails && 'cursor-pointer hover:bg-gray-50/70 dark:hover:bg-white/5',
         !isLast && 'border-b border-[#DDE2E5] dark:border-border'
       )}
     >
-      <div 
-        className={cn('flex items-start gap-3', hasExtraDetails && 'cursor-pointer group')}
-        onClick={() => hasExtraDetails && setExpanded(!expanded)}
-      >
-        {/* Thumbnail */}
-        <div className='relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700'>
-          {imageUrl ? (
-            <Image
-              src={imageUrl}
-              alt={name}
-              fill
-              className='object-cover'
-              sizes='48px'
-            />
-          ) : (
-            <Package className='size-5 text-gray-400' />
-          )}
-        </div>
-
-        {/* Info */}
-        <div className='min-w-0 flex-1'>
-          <div className='flex justify-between items-start gap-2'>
-            <div className='min-w-0'>
-              <p className='truncate text-sm font-medium text-[#333333] dark:text-white group-hover:text-primary transition-colors'>
-                {name}
-              </p>
-              <div className='flex items-center gap-2 mt-1 flex-wrap'>
-                {kindBadge && (
-                  <span className={cn('inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold', kindBadge.className)}>
-                    {kindBadge.label}
-                  </span>
-                )}
-                {basePrice !== undefined && (
-                  <span className='text-[11px] text-grey3 dark:text-gray-400'>
-                    Base: {formatNaira(basePrice)}
-                  </span>
-                )}
-              </div>
-              {item.applied_fabric && (
-                <p className='text-xs text-grey3 dark:text-gray-400 mt-1'>
-                  Using {item.applied_fabric_yards} yards of {item.applied_fabric}
-                </p>
-              )}
-            </div>
-            <div className='shrink-0 text-right'>
-              <p className='text-sm font-semibold text-[#0C0C0D] dark:text-white'>
-                {formatNaira(totalAmount)}
-              </p>
-              {totalQty > 0 && (
-                <p className='text-[11px] text-grey3 dark:text-gray-400 mt-0.5'>
-                  {totalQty} item{totalQty !== 1 ? 's' : ''}
-                </p>
-              )}
-            </div>
-          </div>
-          
-          {hasExtraDetails && (
-            <div className='mt-2 flex items-center gap-1 text-xs font-medium text-primary'>
-              {expanded ? 'Hide details' : 'View details'}
-              <svg 
-                className={cn('size-3.5 transition-transform duration-200', expanded && 'rotate-180')} 
-                viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-              >
-                <path d="m6 9 6 6 6-6"/>
-              </svg>
-            </div>
-          )}
-        </div>
+      {/* Thumbnail */}
+      <div className='relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700'>
+        {imageUrl ? (
+          <Image src={imageUrl} alt={name} fill className='object-cover' sizes='48px' />
+        ) : (
+          <Package className='size-5 text-gray-400' />
+        )}
       </div>
 
-      {/* Expandable Details */}
-      {hasExtraDetails && expanded && (
-        <div className='mt-4 ml-[60px] pb-1 border-t border-[#DDE2E5] dark:border-border/50 pt-4 space-y-1'>
-          {/* Product description */}
-          {description && (
-            <div className='mb-3'>
-              <p className='text-xs font-semibold text-[#333333] dark:text-gray-200 mb-1'>Description</p>
-              <p className='text-xs text-grey3 dark:text-gray-400 leading-relaxed line-clamp-3'>
-                {description}
-              </p>
-            </div>
+      {/* Info */}
+      <div className='min-w-0 flex-1'>
+        <p className='truncate text-sm font-medium text-[#333333] dark:text-white group-hover:text-primary transition-colors'>
+          {name}
+        </p>
+        <div className='mt-1 flex flex-wrap items-center gap-2'>
+          {kindBadge && (
+            <span className={cn('inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold', kindBadge.className)}>
+              {kindBadge.label}
+            </span>
           )}
-
-          {/* Variant selections */}
-          {renderSelectionTable(
-            'Variants',
-            (item.color_variant_selections ?? []).map((v) => ({
-              label: `${v.color ?? 'Standard'}${v.size ? ` · ${v.size}` : ''}`,
-              qty: v.quantity,
-              unitPrice: v.price,
-              total: v.total_amount,
-            }))
-          )}
-
-          {/* Style selections */}
-          {renderSelectionTable(
-            'Styles',
-            (item.style_selections ?? []).map((s) => ({
-              label: `Style`,
-              qty: s.quantity,
-              unitPrice: s.price,
-              total: s.total_amount,
-            }))
-          )}
-
-          {/* Fabric selections — fabric is priced per yard, so QTY shows the
-              total yards (yardage × cuts) and the unit is the price per yard,
-              so QTY × UNIT = TOTAL reads correctly. */}
-          {renderSelectionTable(
-            'Fabrics',
-            (item.fabric_selections ?? []).map((f) => ({
-              label: `Fabric (${f.yardage ?? f.yards ?? '—'} yds)`,
-              qty: (f.yardage ?? f.yards ?? 1) * (f.quantity ?? 1),
-              unitPrice: f.price,
-              total: f.total_amount,
-            }))
-          )}
-
-          {/* Accessory selections */}
-          {renderSelectionTable(
-            'Accessories',
-            (item.accessory_selections ?? []).map((a) => ({
-              label: 'Accessory',
-              qty: a.quantity,
-              unitPrice: a.price,
-              total: a.total_amount,
-            }))
-          )}
-
-          {/* Addon selections */}
-          {renderSelectionTable(
-            'Add-ons',
-            (item.addon_selections ?? []).map((a) => ({
-              label: 'Add-on',
-              qty: a.quantity,
-              unitPrice: a.price,
-              total: a.total_amount,
-            }))
-          )}
-
-          {/* Item pricing ladder (base → components → before-discount → discount → final) */}
-          {item.pricing ? (
-            <div className='mt-4 rounded-lg bg-gray-50 dark:bg-gray-800/50 px-3 py-2.5 space-y-1.5'>
-              {(
-                [
-                  ['Base', item.pricing.base],
-                  ['Styles', item.pricing.styles_total],
-                  ['Fabric', item.pricing.fabric_total],
-                  ['Variant', item.pricing.variant_total],
-                  ['Accessories', item.pricing.accessories_total],
-                  ['Add-ons', item.pricing.addons_total],
-                ] as [string, number][]
-              )
-                .filter(([label, v]) => label === 'Base' || v > 0)
-                .map(([label, v]) => (
-                  <div key={label} className='flex items-center justify-between text-xs'>
-                    <span className='text-grey3 dark:text-gray-400'>{label}</span>
-                    <span className='text-[#333333] dark:text-gray-200'>{formatNaira(v)}</span>
-                  </div>
-                ))}
-              <div className='flex items-center justify-between border-t border-[#DDE2E5] dark:border-border/50 pt-1.5 text-xs'>
-                <span className='font-semibold text-[#333333] dark:text-gray-200'>Item price before discount</span>
-                <span className='font-semibold text-[#333333] dark:text-gray-200'>{formatNaira(item.pricing.before_discount)}</span>
-              </div>
-              {item.pricing.discount > 0 && (
-                <div className='flex items-center justify-between text-xs'>
-                  <span className='text-grey3 dark:text-gray-400'>Discount</span>
-                  <span className='font-semibold text-red-600'>-{formatNaira(item.pricing.discount)}</span>
-                </div>
-              )}
-              <div className='flex items-center justify-between border-t border-[#DDE2E5] dark:border-border/50 pt-1.5'>
-                <span className='text-xs font-semibold text-[#333333] dark:text-gray-200'>Final item total</span>
-                <span className='text-sm font-bold text-[#0C0C0D] dark:text-white'>{formatNaira(item.pricing.final)}</span>
-              </div>
-            </div>
-          ) : (
-            <div className='mt-4 flex items-center justify-between rounded-lg bg-gray-50 dark:bg-gray-800/50 px-3 py-2'>
-              <span className='text-xs font-semibold text-[#333333] dark:text-gray-200'>Item Total</span>
-              <span className='text-sm font-bold text-[#0C0C0D] dark:text-white'>{formatNaira(totalAmount)}</span>
-            </div>
-          )}
-
-          {/* Customer note */}
-          {item.note && (
-            <div className='mt-4'>
-              <p className='text-xs font-semibold text-[#333333] dark:text-gray-200 mb-1.5'>Customer Note</p>
-              <div className='rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 px-3 py-2.5'>
-                <p className='text-xs text-amber-800 dark:text-amber-200 italic leading-relaxed'>
-                  &ldquo;{item.note}&rdquo;
-                </p>
-              </div>
-            </div>
+          {basePrice !== undefined && (
+            <span className='text-[11px] text-grey3 dark:text-gray-400'>
+              Base: {formatNaira(basePrice)}
+            </span>
           )}
         </div>
-      )}
-    </div>
+        {summaryBits.length > 0 && (
+          <p className='mt-1 truncate text-xs text-grey3 dark:text-gray-400'>
+            {summaryBits.join(' · ')}
+          </p>
+        )}
+        {hasDetails && (
+          <span className='mt-1.5 inline-flex items-center gap-0.5 text-xs font-medium text-primary'>
+            View details
+            <ChevronRight className='size-3.5 transition-transform group-hover:translate-x-0.5' />
+          </span>
+        )}
+      </div>
+
+      {/* Total */}
+      <div className='shrink-0 text-right'>
+        <p className='text-sm font-semibold text-[#0C0C0D] dark:text-white'>
+          {formatNaira(totalAmount)}
+        </p>
+        {totalQty > 0 && (
+          <p className='mt-0.5 text-[11px] text-grey3 dark:text-gray-400'>
+            {totalQty} item{totalQty !== 1 ? 's' : ''}
+          </p>
+        )}
+      </div>
+    </button>
   );
 };
 
@@ -978,6 +802,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                       <OrderItemRow
                         key={index}
                         item={item}
+                        order={order}
                         isLast={index === vendorItems.length - 1}
                       />
                     ))}
