@@ -616,12 +616,14 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
           style={{ height: 'calc(100vh - 3rem)', maxHeight: 'calc(100vh - 3rem)' }}
         >
           {/* Header */}
-          <SheetHeader className='shrink-0 border-b border-border px-6 py-5'>
-            <div className='flex items-center justify-between'>
+          {/* pr-12 reserves room on the right for the Sheet's built-in close (X)
+              at right-4, so the status badge no longer sits under it. */}
+          <SheetHeader className='shrink-0 border-b border-border py-5 pl-6 pr-12'>
+            <div className='flex items-center justify-between gap-3'>
               <SheetTitle className='text-lg font-semibold text-[#0C0C0D] dark:text-white'>
                 Order details
               </SheetTitle>
-              <div className='flex items-center gap-2'>
+              <div className='flex flex-wrap items-center justify-end gap-2'>
                 {isEarningsFrozen(order) && (
                   <span className='inline-flex h-[26px] items-center gap-1 whitespace-nowrap rounded-lg bg-[#FEF6E7] px-3 text-xs font-medium text-[#DD900D]'>
                     <ShieldAlert className='size-3.5' />
