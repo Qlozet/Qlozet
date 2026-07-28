@@ -445,7 +445,7 @@ export const OrderItemDetailModal = create<OrderItemDetailModalProps>(
       <Dialog open={visible} onOpenChange={onOpenChange}>
         <DialogContent
           className={cn(
-            'sm:max-w-[520px] p-0 gap-0',
+            'sm:max-w-[520px] p-0 gap-0 bg-white dark:bg-card',
             // z-index above the order drawer sheet it opens from.
             'z-[60]'
           )}
