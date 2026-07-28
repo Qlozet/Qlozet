@@ -25,7 +25,15 @@ export const EarningsChart = () => {
         return <ChartSkeleton />;
     }
 
-    const seriesData = earningsResponse?.data?.series?.[0]?.data ?? [];
+    // The earnings endpoint nests its payload under an extra `data` (unlike
+    // /orders/chart), so after the global response wrapper the series lives at
+    // response.data.data.series. Read the double-nested path first, then fall
+    // back to the single-nested shape so it works either way.
+    const earningsData: any = earningsResponse?.data;
+    const seriesData =
+      earningsData?.data?.series?.[0]?.data ??
+      earningsData?.series?.[0]?.data ??
+      [];
     const hasData = seriesData.length > 0 && seriesData.some((item: any) => item.value > 0);
 
     const chartData = hasData
