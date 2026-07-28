@@ -162,7 +162,7 @@ export const CustomerMeasurementsModal = create<CustomerMeasurementsModalProps>(
                 {rows.map((row) => (
                   <div
                     key={row.key}
-                    className='flex items-center justify-between gap-2 rounded-xl border border-[#EEF0F2] dark:border-border/60 bg-[hsla(0,0%,98%,1)] dark:bg-gray-800/40 px-3.5 py-3'
+                    className='flex items-center justify-between gap-2 rounded-xl border border-[#EEF0F2] dark:border-border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] px-3.5 py-3'
                   >
                     <span className='truncate text-sm text-gray-600 dark:text-gray-300'>
                       {row.label}
@@ -179,7 +179,7 @@ export const CustomerMeasurementsModal = create<CustomerMeasurementsModalProps>(
                 ))}
               </div>
             ) : (
-              <div className='flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[#E5E7EB] dark:border-border/60 px-6 py-12 text-center'>
+              <div className='flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[#E5E7EB] dark:border-border px-6 py-12 text-center'>
                 <Ruler className='size-7 text-gray-300' />
                 <p className='text-sm font-medium text-[#333] dark:text-white'>
                   No measurements yet

@@ -111,7 +111,7 @@ const ContactChip = ({
   icon: React.ReactNode;
   children: React.ReactNode;
 }) => (
-  <span className='inline-flex max-w-full items-center gap-1.5 rounded-lg bg-[hsla(0,0%,96%,1)] dark:bg-gray-800/60 px-2.5 py-1.5 text-xs text-gray-600 dark:text-gray-300'>
+  <span className='inline-flex max-w-full items-center gap-1.5 rounded-lg bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] px-2.5 py-1.5 text-xs text-gray-600 dark:text-gray-300'>
     {icon}
     <span className='truncate'>{children}</span>
   </span>
@@ -148,7 +148,7 @@ const OrderHistoryTable = ({
 
   if (orders.length === 0) {
     return (
-      <div className='flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[#E5E7EB] dark:border-border/60 px-6 py-10 text-center'>
+      <div className='flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[#E5E7EB] dark:border-border px-6 py-10 text-center'>
         <ShoppingBag className='size-7 text-gray-300' />
         <p className='text-sm font-medium text-[#333] dark:text-white'>No orders yet</p>
         <p className='text-xs text-grey3 dark:text-gray-400'>
@@ -159,11 +159,11 @@ const OrderHistoryTable = ({
   }
 
   return (
-    <div className='overflow-hidden rounded-xl border border-[#EEF0F2] dark:border-border/60'>
+    <div className='overflow-hidden rounded-xl border border-[#EEF0F2] dark:border-border'>
       <div className='overflow-x-auto'>
         <table className='w-full min-w-[520px] text-left'>
           <thead>
-            <tr className='bg-[hsla(0,0%,98%,1)] dark:bg-gray-800/50 text-[11px] uppercase tracking-wider text-grey3 dark:text-gray-500'>
+            <tr className='bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] text-[11px] uppercase tracking-wider text-grey3 dark:text-gray-400'>
               <th className='px-4 py-2.5 font-semibold'>Order ID</th>
               <th className='px-4 py-2.5 font-semibold'>Date</th>
               <th className='px-4 py-2.5 font-semibold'>Amount</th>
@@ -171,7 +171,7 @@ const OrderHistoryTable = ({
               <th className='px-4 py-2.5' />
             </tr>
           </thead>
-          <tbody className='divide-y divide-[#F1F3F5] dark:divide-border/40'>
+          <tbody className='divide-y divide-[#F1F3F5] dark:divide-border'>
             {slice.map((o) => {
               const badge = orderStatusBadge(o.status);
               return (
@@ -215,7 +215,7 @@ const OrderHistoryTable = ({
 
       {/* Pagination footer — only when there's more than one page */}
       {orders.length > ORDERS_PER_PAGE && (
-        <div className='flex items-center justify-between border-t border-[#EEF0F2] dark:border-border/60 px-4 py-2.5'>
+        <div className='flex items-center justify-between border-t border-[#EEF0F2] dark:border-border px-4 py-2.5'>
           <span className='text-xs text-grey3 dark:text-gray-400'>
             Showing {start + 1}–{Math.min(start + ORDERS_PER_PAGE, orders.length)} of{' '}
             {orders.length}
@@ -226,7 +226,7 @@ const OrderHistoryTable = ({
               onClick={() => setPage(current - 1)}
               disabled={current === 0}
               aria-label='Previous page'
-              className='flex size-7 items-center justify-center rounded-md border border-[#E5E7EB] dark:border-border/60 text-gray-500 transition-colors hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:hover:bg-transparent'
+              className='flex size-7 items-center justify-center rounded-md border border-[#E5E7EB] dark:border-border text-gray-500 transition-colors hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:hover:bg-transparent'
             >
               <ChevronLeft className='size-4' />
             </button>
@@ -238,7 +238,7 @@ const OrderHistoryTable = ({
               onClick={() => setPage(current + 1)}
               disabled={current >= pageCount - 1}
               aria-label='Next page'
-              className='flex size-7 items-center justify-center rounded-md border border-[#E5E7EB] dark:border-border/60 text-gray-500 transition-colors hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:hover:bg-transparent'
+              className='flex size-7 items-center justify-center rounded-md border border-[#E5E7EB] dark:border-border text-gray-500 transition-colors hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:hover:bg-transparent'
             >
               <ChevronRight className='size-4' />
             </button>

@@ -85,7 +85,7 @@ const Thumb: React.FC<{
   alt: string;
 }> = ({ url, swatch, fallbackIcon, alt }) => (
   <div
-    className='relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#E5E7EB] dark:border-border/60 bg-gray-100 dark:bg-gray-700'
+    className='relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#E5E7EB] dark:border-border bg-gray-100 dark:bg-gray-700'
     style={swatch ? { backgroundColor: swatch } : undefined}
   >
     {url ? (
@@ -140,7 +140,7 @@ const Section: React.FC<{
         {title}
       </h4>
     </div>
-    <div className='divide-y divide-[#F1F3F5] dark:divide-border/40 rounded-xl border border-[#E5E7EB] dark:border-border/60 bg-[hsla(0,0%,98%,1)] dark:bg-gray-800/40'>
+    <div className='divide-y divide-[#F1F3F5] dark:divide-border rounded-xl border border-[#E5E7EB] dark:border-border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]'>
       {children}
     </div>
   </div>
@@ -359,7 +359,7 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
 
       {/* Pricing ladder */}
       {item.pricing && (
-        <div className='rounded-xl bg-gray-50 dark:bg-gray-800/50 px-3.5 py-3 space-y-1.5'>
+        <div className='rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] px-3.5 py-3 space-y-1.5'>
           {(
             [
               ['Base', item.pricing.base],
@@ -377,7 +377,7 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
                 <span className='text-[#333333] dark:text-gray-200'>{formatNaira(v)}</span>
               </div>
             ))}
-          <div className='flex items-center justify-between border-t border-[#DDE2E5] dark:border-border/50 pt-1.5 text-xs'>
+          <div className='flex items-center justify-between border-t border-[#DDE2E5] dark:border-border pt-1.5 text-xs'>
             <span className='font-medium text-[#333333] dark:text-gray-200'>
               Before discount
             </span>
@@ -393,7 +393,7 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
               </span>
             </div>
           )}
-          <div className='flex items-center justify-between border-t border-[#DDE2E5] dark:border-border/50 pt-1.5'>
+          <div className='flex items-center justify-between border-t border-[#DDE2E5] dark:border-border pt-1.5'>
             <span className='text-xs font-semibold text-[#333333] dark:text-gray-200'>
               Final item total
             </span>
