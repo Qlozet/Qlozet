@@ -1,17 +1,24 @@
 'use client';
 
 // Customer Details Modal - Organism
-// Vendor customer details shown in a dialog (avatar + summary + Measurement
-// button + order history), matching the vendor design. Resolves the customer
-// from GET /business/customers by id (no single-customer endpoint exists).
+// A clean, floating customer overview: profile header (avatar, name, status,
+// contact), a Measurement action, and a compact, paginated order-history table
+// (a handful of orders at a time). Resolves the customer from
+// GET /business/customers by id (no single-customer endpoint exists).
 
 import React, { useCallback, useMemo, useState } from 'react';
 import { create, useModal } from '@ebay/nice-modal-react';
 import NiceModal from '@ebay/nice-modal-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import type { PaginationState } from '@tanstack/react-table';
-import { Ruler, ChevronRight, Mail, Phone, User } from 'lucide-react';
+import {
+  Ruler,
+  ChevronRight,
+  ChevronLeft,
+  Mail,
+  Phone,
+  ShoppingBag,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -22,7 +29,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DataTable } from '@/pattern/common/organisms/table/data-table';
+import { cn } from '@/lib/utils';
 import {
   useGetVendorCustomersQuery,
   type CustomerOrderPreview,
@@ -37,7 +44,6 @@ import {
   type CustomerStatusVariant,
 } from '@/lib/customers';
 import { APP_ROUTES } from '@/lib/routes';
-import { createOrderHistoryColumns } from '../details/molecules/customer-order-history-columns';
 import { CustomerMeasurementsModal } from '../details/organisms/customer-measurements-modal';
 
 const STATUS_BADGE_VARIANT: Record<
@@ -49,39 +55,220 @@ const STATUS_BADGE_VARIANT: Record<
   suspended: 'warning',
 };
 
-const ORDERS_PAGE_SIZE = 5;
+const ORDERS_PER_PAGE = 5;
+
+/* ------------------------------------------------------------------ */
+/*  Formatters + order status badge                                    */
+/* ------------------------------------------------------------------ */
+
+const formatNaira = (value?: number): string =>
+  typeof value === 'number' && !Number.isNaN(value)
+    ? `₦${value.toLocaleString()}`
+    : '—';
+
+const formatDate = (iso?: string): string => {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return isNaN(d.getTime())
+    ? '—'
+    : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+};
+
+const shortRef = (ref?: string): string =>
+  ref ? `#${ref.slice(-6).toUpperCase()}` : '—';
+
+const orderStatusBadge = (status?: string): { label: string; className: string } => {
+  const map: Record<string, { label: string; className: string }> = {
+    pending: { label: 'Pending', className: 'bg-[#FEF6E7] text-[#DD900D]' },
+    in_review: { label: 'In Review', className: 'bg-[#E7F0FA] text-[#3387CC]' },
+    processing: { label: 'Processing', className: 'bg-[#F4EBFF] text-[#7E22CE]' },
+    in_transit: { label: 'In Transit', className: 'bg-[#EAECF0] text-[#475467]' },
+    shipped: { label: 'Shipped', className: 'bg-[#E7F0FA] text-[#3387CC]' },
+    delivered: { label: 'Delivered', className: 'bg-[#E7F6EC] text-[#0F973D]' },
+    completed: { label: 'Completed', className: 'bg-[#E7F6EC] text-[#0F973D]' },
+    cancelled: { label: 'Cancelled', className: 'bg-[#FBEAE9] text-[#D42620]' },
+    refunded: { label: 'Refunded', className: 'bg-[#FEECEB] text-[#D42620]' },
+    returned: { label: 'Returned', className: 'bg-[#FEECEB] text-[#D42620]' },
+  };
+  return (
+    map[status ?? ''] ?? {
+      label: status
+        ? status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' ')
+        : '—',
+      className: 'bg-[#EAECF0] text-[#475467]',
+    }
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/*  Contact chip                                                       */
+/* ------------------------------------------------------------------ */
+
+const ContactChip = ({
+  icon,
+  children,
+}: {
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) => (
+  <span className='inline-flex max-w-full items-center gap-1.5 rounded-lg bg-[hsla(0,0%,96%,1)] dark:bg-gray-800/60 px-2.5 py-1.5 text-xs text-gray-600 dark:text-gray-300'>
+    {icon}
+    <span className='truncate'>{children}</span>
+  </span>
+);
+
+/* ------------------------------------------------------------------ */
+/*  Order history table (paginated, a few at a time)                   */
+/* ------------------------------------------------------------------ */
+
+const OrderHistoryTable = ({
+  orders,
+  loading,
+  onView,
+}: {
+  orders: CustomerOrderPreview[];
+  loading: boolean;
+  onView: (o: CustomerOrderPreview) => void;
+}) => {
+  const [page, setPage] = useState(0);
+  const pageCount = Math.max(1, Math.ceil(orders.length / ORDERS_PER_PAGE));
+  const current = Math.min(page, pageCount - 1);
+  const start = current * ORDERS_PER_PAGE;
+  const slice = orders.slice(start, start + ORDERS_PER_PAGE);
+
+  if (loading) {
+    return (
+      <div className='space-y-2'>
+        {[0, 1, 2].map((i) => (
+          <Skeleton key={i} className='h-12 w-full rounded-lg' />
+        ))}
+      </div>
+    );
+  }
+
+  if (orders.length === 0) {
+    return (
+      <div className='flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[#E5E7EB] dark:border-border/60 px-6 py-10 text-center'>
+        <ShoppingBag className='size-7 text-gray-300' />
+        <p className='text-sm font-medium text-[#333] dark:text-white'>No orders yet</p>
+        <p className='text-xs text-grey3 dark:text-gray-400'>
+          This customer hasn&apos;t placed any orders.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className='overflow-hidden rounded-xl border border-[#EEF0F2] dark:border-border/60'>
+      <div className='overflow-x-auto'>
+        <table className='w-full min-w-[520px] text-left'>
+          <thead>
+            <tr className='bg-[hsla(0,0%,98%,1)] dark:bg-gray-800/50 text-[11px] uppercase tracking-wider text-grey3 dark:text-gray-500'>
+              <th className='px-4 py-2.5 font-semibold'>Order ID</th>
+              <th className='px-4 py-2.5 font-semibold'>Date</th>
+              <th className='px-4 py-2.5 font-semibold'>Amount</th>
+              <th className='px-4 py-2.5 font-semibold'>Status</th>
+              <th className='px-4 py-2.5' />
+            </tr>
+          </thead>
+          <tbody className='divide-y divide-[#F1F3F5] dark:divide-border/40'>
+            {slice.map((o) => {
+              const badge = orderStatusBadge(o.status);
+              return (
+                <tr key={o._id} className='hover:bg-gray-50/70 dark:hover:bg-white/5 transition-colors'>
+                  <td className='whitespace-nowrap px-4 py-3 text-sm font-medium text-[#333] dark:text-white'>
+                    {shortRef(o.reference)}
+                  </td>
+                  <td className='whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400'>
+                    {formatDate(o.createdAt)}
+                  </td>
+                  <td className='whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400'>
+                    {formatNaira(o.total)}
+                  </td>
+                  <td className='px-4 py-3'>
+                    <span
+                      className={cn(
+                        'inline-flex h-[26px] items-center justify-center whitespace-nowrap rounded-lg px-3 text-xs font-medium',
+                        badge.className
+                      )}
+                    >
+                      {badge.label}
+                    </span>
+                  </td>
+                  <td className='px-4 py-3 text-right'>
+                    <Button
+                      type='button'
+                      variant='outline'
+                      size='sm'
+                      onClick={() => onView(o)}
+                      className='text-xs'
+                    >
+                      View
+                    </Button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination footer — only when there's more than one page */}
+      {orders.length > ORDERS_PER_PAGE && (
+        <div className='flex items-center justify-between border-t border-[#EEF0F2] dark:border-border/60 px-4 py-2.5'>
+          <span className='text-xs text-grey3 dark:text-gray-400'>
+            Showing {start + 1}–{Math.min(start + ORDERS_PER_PAGE, orders.length)} of{' '}
+            {orders.length}
+          </span>
+          <div className='flex items-center gap-1.5'>
+            <button
+              type='button'
+              onClick={() => setPage(current - 1)}
+              disabled={current === 0}
+              aria-label='Previous page'
+              className='flex size-7 items-center justify-center rounded-md border border-[#E5E7EB] dark:border-border/60 text-gray-500 transition-colors hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:hover:bg-transparent'
+            >
+              <ChevronLeft className='size-4' />
+            </button>
+            <span className='px-1 text-xs font-medium text-gray-600 dark:text-gray-300'>
+              {current + 1} / {pageCount}
+            </span>
+            <button
+              type='button'
+              onClick={() => setPage(current + 1)}
+              disabled={current >= pageCount - 1}
+              aria-label='Next page'
+              className='flex size-7 items-center justify-center rounded-md border border-[#E5E7EB] dark:border-border/60 text-gray-500 transition-colors hover:bg-gray-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:hover:bg-transparent'
+            >
+              <ChevronRight className='size-4' />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/*  Modal                                                              */
+/* ------------------------------------------------------------------ */
 
 interface CustomerDetailsModalProps {
   customerId: string;
 }
 
-const SummaryRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
-  <div className='flex items-center gap-6 text-sm'>
-    <span className='w-28 shrink-0 text-gray-500 dark:text-gray-400'>{label}</span>
-    <span className='font-medium text-gray-900 dark:text-white'>{value}</span>
-  </div>
-);
-
 export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
   ({ customerId }) => {
     const { visible, resolve, hide, remove } = useModal();
     const router = useRouter();
-    const [pagination, setPagination] = useState<PaginationState>({
-      pageIndex: 0,
-      pageSize: ORDERS_PAGE_SIZE,
-    });
 
-    const { data, isLoading, isFetching, isSuccess, isError, error } =
-      useGetVendorCustomersQuery(
-        { page: 1, limit: 200, orders_limit: 50 },
-        { skip: !customerId || !visible }
-      );
+    const { data, isLoading, isFetching } = useGetVendorCustomersQuery(
+      { page: 1, limit: 200, orders_limit: 50 },
+      { skip: !customerId || !visible }
+    );
 
     const customer = useMemo((): VendorCustomer | undefined => {
       if (!data) return undefined;
-      // The response can be nested differently depending on the API wrapper:
-      //   data.data = VendorCustomer[]           (direct)
-      //   data.data = { data: VendorCustomer[] } (double-wrapped)
       let list: VendorCustomer[] = [];
       if (Array.isArray(data)) {
         list = data as unknown as VendorCustomer[];
@@ -94,6 +281,7 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
     }, [data, customerId]);
 
     const orders = useMemo(() => customer?.orders ?? [], [customer]);
+    const loading = isLoading || isFetching;
 
     const handleClose = (open?: boolean | React.MouseEvent) => {
       if (typeof open !== 'boolean' || !open) {
@@ -111,128 +299,101 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
       });
     };
 
-    const handleViewOrder = useCallback((order: CustomerOrderPreview) => {
-      resolve({ resolved: true });
-      hide();
-      setTimeout(() => remove(), 300);
-      router.push(APP_ROUTES.orders);
-      toast.info(`Navigated to orders — look for #${order.reference.slice(-6).toUpperCase()}`);
-    }, [resolve, hide, remove, router]);
-
-    const columns = useMemo(
-      () => createOrderHistoryColumns(handleViewOrder),
-      [handleViewOrder]
+    const handleViewOrder = useCallback(
+      (order: CustomerOrderPreview) => {
+        resolve({ resolved: true });
+        hide();
+        setTimeout(() => remove(), 300);
+        router.push(APP_ROUTES.orders);
+        toast.info(
+          `Navigated to orders — look for ${shortRef(order.reference)}`
+        );
+      },
+      [resolve, hide, remove, router]
     );
-
-    const loading = isLoading || isFetching;
 
     return (
       <Dialog open={visible} onOpenChange={handleClose}>
-        <DialogContent className='max-w-3xl max-h-[90vh] overflow-y-auto p-0'>
-          <DialogHeader className='border-b px-6 py-4'>
-            <DialogTitle className='text-lg font-bold text-gray-900 dark:text-white'>
+        <DialogContent className='max-w-2xl p-0 gap-0'>
+          <DialogHeader className='border-b border-border px-6 py-4'>
+            <DialogTitle className='text-base font-semibold text-[#0C0C0D] dark:text-white'>
               Customer details
             </DialogTitle>
           </DialogHeader>
 
-          <div className='space-y-6 px-6 pb-6'>
-            {/* Summary */}
+          <div className='max-h-[75vh] space-y-6 overflow-y-auto px-6 py-5'>
+            {/* Profile header */}
             {loading ? (
-              <div className='flex items-start gap-5'>
-                <Skeleton className='size-24 rounded-full' />
-                <div className='flex-1 space-y-3'>
-                  <Skeleton className='h-4 w-48' />
+              <div className='flex items-center gap-4'>
+                <Skeleton className='size-16 rounded-full' />
+                <div className='flex-1 space-y-2'>
                   <Skeleton className='h-4 w-40' />
-                  <Skeleton className='h-4 w-32' />
-                  <Skeleton className='h-10 w-44 rounded-lg' />
+                  <Skeleton className='h-3 w-28' />
+                  <Skeleton className='h-7 w-56 rounded-lg' />
                 </div>
               </div>
             ) : customer ? (
-              <div className='flex flex-col gap-5 sm:flex-row sm:items-start'>
-                {customer.profile_picture ? (
-                  <div className='relative size-24 shrink-0 overflow-hidden rounded-full bg-gray-100'>
-                    <Image
-                      src={customer.profile_picture}
-                      alt={getCustomerIdentifier(customer)}
-                      fill
-                      className='object-cover'
-                      sizes='96px'
-                    />
-                  </div>
-                ) : (
-                  <span className='flex size-24 shrink-0 items-center justify-center rounded-full bg-primary/10 text-2xl font-semibold text-primary'>
-                    {getCustomerInitial(customer)}
-                  </span>
-                )}
-
-                <div className='flex-1 space-y-3'>
-                  <SummaryRow
-                    label='Username'
-                    value={
-                      <span className='inline-flex items-center gap-1.5'>
-                        <User className='size-3.5 text-gray-400' />
-                        @{getCustomerIdentifier(customer)}
-                      </span>
-                    }
-                  />
-                  {customer.full_name && (
-                    <SummaryRow
-                      label='Full Name'
-                      value={getCustomerName(customer)}
-                    />
+              <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
+                <div className='flex items-center gap-4'>
+                  {customer.profile_picture ? (
+                    <div className='relative size-16 shrink-0 overflow-hidden rounded-full bg-gray-100'>
+                      <Image
+                        src={customer.profile_picture}
+                        alt={getCustomerIdentifier(customer)}
+                        fill
+                        className='object-cover'
+                        sizes='64px'
+                      />
+                    </div>
+                  ) : (
+                    <span className='flex size-16 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xl font-semibold text-primary'>
+                      {getCustomerInitial(customer)}
+                    </span>
                   )}
-                  {customer.email && (
-                    <SummaryRow
-                      label='Email'
-                      value={
-                        <span className='inline-flex items-center gap-1.5'>
-                          <Mail className='size-3.5 text-gray-400' />
-                          {customer.email}
-                        </span>
-                      }
-                    />
-                  )}
-                  {customer.phone_number && (
-                    <SummaryRow
-                      label='Phone'
-                      value={
-                        <span className='inline-flex items-center gap-1.5'>
-                          <Phone className='size-3.5 text-gray-400' />
-                          {customer.phone_number}
-                        </span>
-                      }
-                    />
-                  )}
-                  <SummaryRow
-                    label='Total Orders'
-                    value={formatCount(customer.total_orders)}
-                  />
-                  <SummaryRow
-                    label='Status'
-                    value={
+                  <div className='min-w-0'>
+                    <div className='flex flex-wrap items-center gap-2'>
+                      <h3 className='text-base font-semibold text-[#0C0C0D] dark:text-white'>
+                        {getCustomerName(customer)}
+                      </h3>
                       <Badge
-                        variant={
-                          STATUS_BADGE_VARIANT[getCustomerStatus(customer).variant]
-                        }
+                        variant={STATUS_BADGE_VARIANT[getCustomerStatus(customer).variant]}
                         shape='square'
-                        className='h-[26px] px-3 text-xs font-normal'
+                        className='h-[22px] px-2 text-[11px] font-normal'
                       >
                         {getCustomerStatus(customer).label}
                       </Badge>
-                    }
-                  />
-
-                  <Button
-                    type='button'
-                    variant='outline'
-                    onClick={openMeasurements}
-                    className='mt-1 gap-2'
-                  >
-                    <Ruler className='size-4' />
-                    Measurement
-                    <ChevronRight className='size-4' />
-                  </Button>
+                    </div>
+                    <p className='text-sm text-grey3 dark:text-gray-400'>
+                      @{getCustomerIdentifier(customer)}
+                    </p>
+                    <div className='mt-2 flex flex-wrap items-center gap-1.5'>
+                      {customer.email && (
+                        <ContactChip icon={<Mail className='size-3 shrink-0 text-gray-400' />}>
+                          {customer.email}
+                        </ContactChip>
+                      )}
+                      {customer.phone_number && (
+                        <ContactChip icon={<Phone className='size-3 shrink-0 text-gray-400' />}>
+                          {customer.phone_number}
+                        </ContactChip>
+                      )}
+                      <ContactChip icon={<ShoppingBag className='size-3 shrink-0 text-gray-400' />}>
+                        {formatCount(customer.total_orders)} orders
+                      </ContactChip>
+                    </div>
+                  </div>
                 </div>
+
+                <Button
+                  type='button'
+                  variant='outline'
+                  onClick={openMeasurements}
+                  className='shrink-0 gap-2'
+                >
+                  <Ruler className='size-4' />
+                  Measurement
+                  <ChevronRight className='size-4' />
+                </Button>
               </div>
             ) : (
               <p className='py-8 text-center text-sm text-muted-foreground'>
@@ -241,30 +402,34 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
             )}
 
             {/* Order history */}
-            <div className='space-y-4 border-t pt-5'>
-              <h3 className='text-base font-semibold text-gray-900 dark:text-white'>
-                Order history
-              </h3>
-              <DataTable
-                columns={columns}
-                data={orders}
-                isLoading={loading}
-                isSuccess={isSuccess}
-                isError={isError}
-                error={error}
-                pagination={pagination}
-                setPagination={setPagination}
-                emptyTitle='No orders yet'
-                emptyMessage="This customer hasn't placed any orders."
-                minWidth='700px'
+            <div className='space-y-3'>
+              <div className='flex items-center justify-between'>
+                <h3 className='text-sm font-semibold text-[#0C0C0D] dark:text-white'>
+                  Order history
+                </h3>
+                {orders.length > 0 && (
+                  <span className='text-xs text-grey3 dark:text-gray-400'>
+                    {orders.length} total
+                  </span>
+                )}
+              </div>
+              <OrderHistoryTable
+                orders={orders}
+                loading={loading}
+                onView={handleViewOrder}
               />
             </div>
+          </div>
 
-            <div className='flex justify-end border-t pt-4'>
-              <Button type='button' variant='outline' onClick={handleClose} className='min-w-[8rem]'>
-                Close
-              </Button>
-            </div>
+          <div className='flex justify-end border-t border-border px-6 py-4'>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={handleClose}
+              className='min-w-[7rem]'
+            >
+              Close
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

@@ -1,28 +1,24 @@
 'use client';
 
 // Body Measurement Modal - Organism
-// Opened from the clipboard icon in the customer detail header. Shows the
-// customer's body measurements (CM/IN), an expandable full list, and a body
-// type summary.
+// Opened from the "Measurement" button in the customer detail modal. Shows only
+// the measurements the customer actually recorded (no fabricated/blank fields),
+// in a clean two-column grid, with a cm/in toggle.
 //
-// NOTE: the backend exposes measurements only for the logged-in user
-// (`/measurements/users/...`) — there is no endpoint to read a specific
-// customer's measurements as a vendor, and MeasurementValues carries only a
-// subset of the fields in the design. So values render as honest dashes until
-// such an endpoint exists; pass `measurementSet` to populate them. Charts/figure
-// aside, we never fabricate the numeric values (no-stubbed-data).
+// The backend stores measurements as a flat { key: number } map, so we render
+// whatever keys are present — mapping known keys to friendly labels and
+// prettifying the rest — and skip anything missing or zero.
 
-import React, { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { create, useModal } from '@ebay/nice-modal-react';
+import { Ruler } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { MeasurementValues } from '@/redux/services/measurements/measurements.api-slice';
 import type {
   VendorCustomer,
   CustomerMeasurement,
@@ -30,49 +26,38 @@ import type {
 
 type Unit = 'cm' | 'in';
 
-interface FieldDef {
-  label: string;
-  /** Maps to a MeasurementValues key when the backend supplies it. */
-  key?: keyof MeasurementValues;
-}
+// Friendly labels for known measurement keys; anything else is prettified.
+const LABELS: Record<string, string> = {
+  neck: 'Neck',
+  neck_circumference: 'Neck',
+  shoulder: 'Shoulder Width',
+  shoulder_breadth: 'Shoulder Width',
+  chest: 'Chest / Bust',
+  bust: 'Bust',
+  waist: 'Waist',
+  hip: 'Hip',
+  hips: 'Hip',
+  arm_length: 'Arm Length',
+  sleeve_length: 'Sleeve Length',
+  bicep: 'Bicep',
+  forearm: 'Forearm',
+  wrist: 'Wrist',
+  thigh: 'Thigh',
+  calf: 'Calf',
+  ankle: 'Ankle',
+  knee: 'Knee',
+  leg_length: 'Leg Length',
+  inseam: 'Inseam',
+  outseam: 'Outseam',
+  shoulder_to_crotch: 'Torso Length',
+  height: 'Height',
+  back_length: 'Back Length',
+  front_length: 'Front Length',
+};
 
-// Column layouts mirror the design. Only fields the backend actually exposes
-// are mapped to a key; the rest stay dashes rather than inventing values.
-const PRIMARY_LEFT: FieldDef[] = [
-  { label: 'Neck Circum:' },
-  { label: 'Should Width', key: 'shoulder_breadth' },
-  { label: 'Chest/Bust Circ.', key: 'chest' },
-  { label: 'Waist Circ.', key: 'waist' },
-  { label: 'Hip Circ.', key: 'hip' },
-  { label: 'Arm Length', key: 'arm_length' },
-];
-
-const PRIMARY_RIGHT: FieldDef[] = [
-  { label: 'Sleeve length:' },
-  { label: 'Thigh Circum.', key: 'thigh' },
-  { label: 'Inseam Length' },
-  { label: 'Outseam Length' },
-  { label: 'Leg length', key: 'leg_length' },
-  { label: 'Crotch Depth' },
-];
-
-const MORE_LEFT: FieldDef[] = [
-  { label: 'Upper Arm Circum' },
-  { label: 'Bicep Circum.', key: 'bicep' },
-  { label: 'Elbow Circum.' },
-  { label: 'Forearm Circum', key: 'forearm' },
-  { label: 'Back Length' },
-  { label: 'Front Length' },
-];
-
-const MORE_RIGHT: FieldDef[] = [
-  { label: 'Wrist Circum.', key: 'wrist' },
-  { label: 'Knee Circum.' },
-  { label: 'Calf Circum', key: 'calf' },
-  { label: 'Ankle Circum.', key: 'ankle' },
-  { label: 'Hip to knee' },
-  { label: 'Knee to ankle' },
-];
+const prettify = (key: string): string =>
+  LABELS[key] ??
+  key.replace(/[_-]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
 const convert = (value: number, from: 'cm' | 'inch', to: Unit): number => {
   const toUnit = to === 'in' ? 'inch' : 'cm';
@@ -83,32 +68,12 @@ const convert = (value: number, from: 'cm' | 'inch', to: Unit): number => {
 const formatValue = (n: number): string =>
   Number.isInteger(n) ? `${n}` : n.toFixed(1);
 
-interface MeasurementColumnProps {
-  fields: FieldDef[];
-  set?: CustomerMeasurement;
-  unit: Unit;
-}
-
-const MeasurementColumn = ({ fields, set, unit }: MeasurementColumnProps) => {
-  const display = (field: FieldDef): string => {
-    if (!field.key || !set) return '—';
-    const raw = set.measurements?.[field.key];
-    if (typeof raw !== 'number' || Number.isNaN(raw)) return '—';
-    return formatValue(convert(raw, set.unit, unit));
-  };
-
-  return (
-    <div className='flex-1 space-y-4 rounded-xl bg-[#FAFAFA] p-4'>
-      {fields.map((field) => (
-        <div key={field.label} className='flex items-center justify-between gap-2'>
-          <span className='text-sm text-gray-600'>{field.label}</span>
-          <span className='text-sm font-medium text-gray-900'>
-            {display(field)}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
+const formatDate = (iso?: string): string => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return isNaN(d.getTime())
+    ? ''
+    : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 };
 
 const UnitToggle = ({
@@ -118,7 +83,7 @@ const UnitToggle = ({
   unit: Unit;
   onChange: (u: Unit) => void;
 }) => (
-  <div className='inline-flex items-center rounded-full bg-gray-100 p-1 text-xs font-semibold'>
+  <div className='inline-flex items-center rounded-full bg-gray-100 dark:bg-gray-800 p-1 text-xs font-semibold'>
     {(['cm', 'in'] as const).map((u) => (
       <button
         key={u}
@@ -126,7 +91,9 @@ const UnitToggle = ({
         onClick={() => onChange(u)}
         className={cn(
           'rounded-full px-3 py-1 uppercase transition-colors',
-          unit === u ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
+          unit === u
+            ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+            : 'text-gray-500'
         )}
       >
         {u}
@@ -144,98 +111,84 @@ export const CustomerMeasurementsModal = create<CustomerMeasurementsModalProps>(
   ({ measurementSet }) => {
     const { visible, resolve, remove } = useModal();
     const [unit, setUnit] = useState<Unit>('cm');
-    const [expanded, setExpanded] = useState(false);
 
     const handleClose = () => {
       resolve({ resolved: true });
       remove();
     };
 
+    // Only the measurements that are actually recorded (present + non-zero).
+    const rows = useMemo(() => {
+      const m = measurementSet?.measurements ?? {};
+      return Object.entries(m)
+        .filter(([, v]) => typeof v === 'number' && !Number.isNaN(v) && v > 0)
+        .map(([key, v]) => ({ key, label: prettify(key), value: v }));
+    }, [measurementSet]);
+
+    const setDate = formatDate(measurementSet?.createdAt);
+
     return (
       <Dialog open={visible} onOpenChange={handleClose}>
-        <DialogContent className='max-w-md max-h-[90vh] overflow-y-auto'>
-          <DialogHeader>
-            <DialogTitle className='text-xl font-bold text-[hsla(210,9%,31%,1)]'>
+        <DialogContent className='max-w-lg p-0 gap-0'>
+          <DialogHeader className='border-b border-border px-6 py-4'>
+            <DialogTitle className='flex items-center gap-2 text-base font-semibold text-[#0C0C0D] dark:text-white'>
+              <span className='flex size-8 items-center justify-center rounded-lg bg-primary/10'>
+                <Ruler className='size-4 text-primary' />
+              </span>
               Body Measurement
             </DialogTitle>
           </DialogHeader>
 
-          <div className='space-y-6'>
-            <UnitToggle unit={unit} onChange={setUnit} />
-
-            {!measurementSet && (
-              <p className='text-sm text-muted-foreground'>
-                No measurements recorded for this customer yet.
-              </p>
-            )}
-
-            {/* Measurement grid */}
-            <div className='space-y-4'>
-              <div className='flex gap-4'>
-                <MeasurementColumn
-                  fields={PRIMARY_LEFT}
-                  set={measurementSet}
-                  unit={unit}
-                />
-                <MeasurementColumn
-                  fields={PRIMARY_RIGHT}
-                  set={measurementSet}
-                  unit={unit}
-                />
+          <div className='max-h-[70vh] overflow-y-auto px-6 py-5'>
+            {/* Set meta + unit toggle */}
+            <div className='mb-4 flex items-center justify-between gap-3'>
+              <div className='min-w-0'>
+                {measurementSet?.name && (
+                  <p className='truncate text-sm font-medium text-[#333] dark:text-white'>
+                    {measurementSet.name}
+                  </p>
+                )}
+                {setDate && (
+                  <p className='text-xs text-grey3 dark:text-gray-400'>
+                    Updated {setDate}
+                  </p>
+                )}
               </div>
-
-              {expanded && (
-                <div className='flex gap-4'>
-                  <MeasurementColumn
-                    fields={MORE_LEFT}
-                    set={measurementSet}
-                    unit={unit}
-                  />
-                  <MeasurementColumn
-                    fields={MORE_RIGHT}
-                    set={measurementSet}
-                    unit={unit}
-                  />
-                </div>
-              )}
-
-              <Button
-                type='button'
-                variant='outline'
-                onClick={() => setExpanded((prev) => !prev)}
-                className='h-11 w-full rounded-lg text-sm font-medium text-gray-700'
-              >
-                {expanded ? 'View Less' : 'View More'}
-              </Button>
+              {rows.length > 0 && <UnitToggle unit={unit} onChange={setUnit} />}
             </div>
 
-            {/* Body type */}
-            <div className='space-y-4 border-t pt-6'>
-              <h3 className='text-2xl font-bold text-[hsla(210,9%,31%,1)]'>
-                Body Type
-              </h3>
-              {/* Inverted-triangle outline is decorative geometry, not data. */}
-              <div className='flex items-center gap-6'>
-                <svg
-                  width='96'
-                  height='110'
-                  viewBox='0 0 96 110'
-                  fill='none'
-                  className='shrink-0'
-                  aria-hidden='true'
-                >
-                  <path
-                    d='M4 6 L92 6 L48 104 Z'
-                    stroke='#C9C9C9'
-                    strokeWidth='2'
-                    strokeLinejoin='round'
-                  />
-                </svg>
-                <p className='text-sm text-muted-foreground'>
-                  Body type analysis isn&apos;t available for this customer yet.
+            {rows.length > 0 ? (
+              <div className='grid grid-cols-1 gap-2 sm:grid-cols-2'>
+                {rows.map((row) => (
+                  <div
+                    key={row.key}
+                    className='flex items-center justify-between gap-2 rounded-xl border border-[#EEF0F2] dark:border-border/60 bg-[hsla(0,0%,98%,1)] dark:bg-gray-800/40 px-3.5 py-3'
+                  >
+                    <span className='truncate text-sm text-gray-600 dark:text-gray-300'>
+                      {row.label}
+                    </span>
+                    <span className='shrink-0 text-sm font-semibold text-[#0C0C0D] dark:text-white'>
+                      {formatValue(
+                        convert(row.value, measurementSet?.unit ?? 'cm', unit)
+                      )}
+                      <span className='ml-0.5 text-xs font-normal text-grey3'>
+                        {unit}
+                      </span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className='flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[#E5E7EB] dark:border-border/60 px-6 py-12 text-center'>
+                <Ruler className='size-7 text-gray-300' />
+                <p className='text-sm font-medium text-[#333] dark:text-white'>
+                  No measurements yet
+                </p>
+                <p className='text-xs text-grey3 dark:text-gray-400'>
+                  This customer hasn&apos;t recorded any body measurements.
                 </p>
               </div>
-            </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
