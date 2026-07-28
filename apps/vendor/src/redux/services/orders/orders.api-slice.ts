@@ -77,6 +77,62 @@ export interface ProductImage {
   height?: number;
 }
 
+/** Embedded style sub-doc on a clothing product */
+export interface ClothingStyleDoc {
+  _id: string;
+  name?: string;
+  style_code?: string;
+  type?: string;
+  price?: number;
+  images?: ProductImage[];
+}
+
+/** Embedded fabric sub-doc on a clothing product */
+export interface ClothingFabricDoc {
+  _id: string;
+  name?: string;
+  price_per_yard?: number;
+  min_cut?: number;
+  colors?: { name?: string; hex?: string }[];
+  images?: ProductImage[];
+}
+
+/** Embedded accessory sub-doc on a clothing product */
+export interface ClothingAccessoryDoc {
+  _id: string;
+  name?: string;
+  price?: number;
+  images?: ProductImage[];
+  variants?: { _id?: string; name?: string; price?: number; images?: ProductImage[] }[];
+}
+
+/** Embedded add-on sub-doc on a clothing product */
+export interface ClothingAddonDoc {
+  _id: string;
+  name?: string;
+  display_type?: 'colour' | 'picture';
+  variants?: { _id?: string; name?: string; price?: number; color_hex?: string; image_url?: string }[];
+}
+
+/** Embedded colour-variant sub-doc on a clothing product */
+export interface ClothingColorVariantDoc {
+  _id: string;
+  name?: string;
+  color_name?: string;
+  hex?: string;
+  hex_code?: string;
+  images?: ProductImage[];
+  variants?: { _id?: string; size?: string; price?: number; images?: ProductImage[] }[];
+}
+
+/** Populated fabric product applied to a custom outfit (cross-vendor) */
+export interface AppliedFabricRef {
+  _id: string;
+  base_price?: number;
+  fabric?: { name?: string; images?: ProductImage[] };
+  business?: string | { _id: string; business_name?: string; business_logo_url?: string };
+}
+
 /** Populated product with kind-specific sub-documents */
 export interface PopulatedProduct {
   _id: string;
@@ -89,6 +145,13 @@ export interface PopulatedProduct {
     description?: string;
     type?: string;
     images?: ProductImage[];
+    // Sub-arrays populated for the vendor order view so selections can be
+    // resolved to a name + image by their id.
+    styles?: ClothingStyleDoc[];
+    fabrics?: ClothingFabricDoc[];
+    accessories?: ClothingAccessoryDoc[];
+    addons?: ClothingAddonDoc[];
+    color_variants?: ClothingColorVariantDoc[];
   };
   fabric?: {
     name: string;
@@ -110,7 +173,8 @@ export interface OrderItem {
   style_selections?: StyleSelection[];
   accessory_selections?: AccessorySelection[];
   addon_selections?: AddonSelection[];
-  applied_fabric?: string;
+  /** Cross-vendor fabric applied to a custom outfit — id or populated ref. */
+  applied_fabric?: string | AppliedFabricRef;
   applied_fabric_yards?: number;
   note?: string;
   total_price?: number;
