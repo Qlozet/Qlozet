@@ -22,6 +22,10 @@ interface VendorDetails {
   profit?: string;
   items?: string;
   ratings?: string;
+  /** Raw business KYC status: pending | in_review | approved | verified | rejected */
+  status?: string;
+  /** True once KYC has been submitted/approved (status past `pending`/`rejected`). */
+  kycComplete?: boolean;
 }
 
 interface VerificationResponse {
@@ -37,6 +41,11 @@ export const vendorApiSlice = baseAPI.injectEndpoints({
       query: () => '/business',
       transformResponse: (res: any) => {
         const biz = res?.data ?? res;
+        const status = String(biz?.status ?? '').toLowerCase();
+        // KYC counts as complete once the vendor has submitted it — i.e. the
+        // business has moved past `pending`/`rejected`. (Admin approval is a
+        // separate step; the nudge is only about the vendor finishing KYC.)
+        const kycComplete = ['in_review', 'approved', 'verified'].includes(status);
         return {
           success: true,
           message: 'OK',
@@ -52,6 +61,8 @@ export const vendorApiSlice = baseAPI.injectEndpoints({
             profit: '',
             items: '',
             ratings: '',
+            status,
+            kycComplete,
           },
         };
       },
