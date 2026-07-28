@@ -314,7 +314,7 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
 
     return (
       <Dialog open={visible} onOpenChange={handleClose}>
-        <DialogContent className='max-w-2xl p-0 gap-0'>
+        <DialogContent className='max-w-2xl p-0 gap-0 bg-white dark:bg-card'>
           <DialogHeader className='border-b border-border px-6 py-4'>
             <DialogTitle className='text-base font-semibold text-[#0C0C0D] dark:text-white'>
               Customer details

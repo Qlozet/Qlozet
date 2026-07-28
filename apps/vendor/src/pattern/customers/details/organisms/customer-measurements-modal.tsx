@@ -129,7 +129,7 @@ export const CustomerMeasurementsModal = create<CustomerMeasurementsModalProps>(
 
     return (
       <Dialog open={visible} onOpenChange={handleClose}>
-        <DialogContent className='max-w-lg p-0 gap-0'>
+        <DialogContent className='max-w-lg p-0 gap-0 bg-white dark:bg-card'>
           <DialogHeader className='border-b border-border px-6 py-4'>
             <DialogTitle className='flex items-center gap-2 text-base font-semibold text-[#0C0C0D] dark:text-white'>
               <span className='flex size-8 items-center justify-center rounded-lg bg-primary/10'>
