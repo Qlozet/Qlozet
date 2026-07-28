@@ -1,13 +1,16 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import handIcon from '@/public/assets/svg/hand-tone.svg';
-import { X } from 'lucide-react';
+import { X, ChevronRight } from 'lucide-react';
+import { APP_ROUTES } from '@/lib/routes';
 
 interface ICompleteKycPopoverProps {
-    setShowKycPopUp: (show: boolean) => void;
+    /** Dismiss the popover (snoozes it — see the layout). */
+    onDismiss: () => void;
 }
 
-const CompleteKycPopover: FC<ICompleteKycPopoverProps> = ({ setShowKycPopUp }) => {
+const CompleteKycPopover: FC<ICompleteKycPopoverProps> = ({ onDismiss }) => {
     return (
         <div
             className='fixed bottom-4 left-4 z-[10000] bg-orange-50 border border-orange-200 rounded-xl p-4 shadow-lg max-w-sm'
@@ -15,18 +18,18 @@ const CompleteKycPopover: FC<ICompleteKycPopoverProps> = ({ setShowKycPopUp }) =
             aria-live='polite'
         >
             <div className='flex items-start gap-3'>
-                <button
+                <span
                     className='flex-shrink-0 w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center'
-                    aria-label='KYC notification icon'
+                    aria-hidden='true'
                 >
                     <Image
                         src={handIcon}
-                        alt='Hand wave'
+                        alt=''
                         width={16}
                         height={16}
                         className='object-contain'
                     />
-                </button>
+                </span>
 
                 <div className='flex-1 min-w-0'>
                     <h4 className='font-medium text-gray-900 text-sm mb-1'>
@@ -36,12 +39,20 @@ const CompleteKycPopover: FC<ICompleteKycPopoverProps> = ({ setShowKycPopUp }) =
                         Complete KYC registration of your business profile to start
                         work.
                     </p>
+                    <Link
+                        href={APP_ROUTES.settings}
+                        onClick={() => onDismiss()}
+                        className='mt-2 inline-flex items-center gap-0.5 text-xs font-semibold text-orange-700 hover:text-orange-800 transition-colors'
+                    >
+                        Complete now
+                        <ChevronRight size={13} />
+                    </Link>
                 </div>
 
                 <button
                     className='flex-shrink-0 w-6 h-6 bg-orange-100 rounded-md flex items-center justify-center hover:bg-orange-200 transition-colors'
-                    onClick={() => setShowKycPopUp(false)}
-                    aria-label='Close KYC notification'
+                    onClick={() => onDismiss()}
+                    aria-label='Dismiss KYC reminder'
                 >
                     <X size={12} className='text-gray-500' />
                 </button>

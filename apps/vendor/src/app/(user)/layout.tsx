@@ -81,7 +81,9 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
   });
 
   const [showMobileNav, setShowMobileNav] = useState<boolean>(false);
-  const [showKycPopUp, setShowKycPopUp] = useState<boolean>(true);
+  // KYC nudge snooze timestamp (ms). A dismissal snoozes the popover for 24h
+  // (persisted), instead of it re-appearing on every reload.
+  const [kycSnoozedUntil, setKycSnoozedUntil] = useState<number>(0);
 
   // Get Vendor Profile Data
   const {
@@ -89,6 +91,36 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
     error: vendorProfileError,
     isLoading: vendorProfileLoading,
   } = useGetVendorProfileQuery();
+
+  // Load any persisted KYC snooze once, client-side.
+  useEffect(() => {
+    try {
+      setKycSnoozedUntil(
+        Number(localStorage.getItem('qlozet_kyc_snooze_until')) || 0,
+      );
+    } catch {
+      /* storage unavailable — no snooze */
+    }
+  }, []);
+
+  // Only nudge when: the profile has loaded, KYC is genuinely incomplete, and
+  // the reminder isn't currently snoozed.
+  const kycComplete = vendorProfileData?.data?.kycComplete ?? false;
+  const showKycPopUp =
+    !vendorProfileLoading &&
+    !!vendorProfileData &&
+    !kycComplete &&
+    Date.now() > kycSnoozedUntil;
+
+  const dismissKyc = () => {
+    const until = Date.now() + 24 * 60 * 60 * 1000; // snooze 24h
+    try {
+      localStorage.setItem('qlozet_kyc_snooze_until', String(until));
+    } catch {
+      /* ignore */
+    }
+    setKycSnoozedUntil(until);
+  };
 
   useEffect(() => {
     if (vendorProfileData?.data) {
@@ -248,7 +280,7 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
 
       {/* KYC Completion Popup */}
       <If isTrue={showKycPopUp}>
-        <CompleteKycPopover setShowKycPopUp={setShowKycPopUp} />
+        <CompleteKycPopover onDismiss={dismissKyc} />
       </If>
     </div>
   );
