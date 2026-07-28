@@ -91,16 +91,27 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
     'organization' | 'user'
   >('organization');
 
-  // Fetch live data
+  // Fetch live data. refetchOnMountOrArgChange forces a fresh fetch whenever we
+  // navigate to Settings, so a stale/empty cache (e.g. a first fetch that ran
+  // before the auth token was ready) can't leave the profile blank until a full
+  // page refresh.
   const {
     data: businessData,
     isLoading: isLoadingBusiness,
-  } = useGetBusinessProfileQuery();
+    isFetching: isFetchingBusiness,
+    refetch: refetchBusiness,
+  } = useGetBusinessProfileQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   const {
     data: userData,
     isLoading: isLoadingUser,
-  } = useGetUserProfileQuery();
+    isFetching: isFetchingUser,
+    refetch: refetchUser,
+  } = useGetUserProfileQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   // Mutations
   const [updateBusiness, { isLoading: isUpdatingBusiness }] =
@@ -160,8 +171,44 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
     }
   };
 
-  if (isLoadingBusiness || isLoadingUser) {
+  // The org profile is the primary record; treat it as "present" only when a
+  // real business (with an id) came back.
+  const hasBusiness = !!businessData?._id;
+  const busy =
+    isLoadingBusiness ||
+    isLoadingUser ||
+    isFetchingBusiness ||
+    isFetchingUser;
+
+  // Show the skeleton while we don't yet have the business profile and a
+  // request is in flight (initial load OR a refetch after a stale/empty cache).
+  if (!hasBusiness && busy) {
     return <ProfileContentSkeleton />;
+  }
+
+  // Finished, but the profile came back empty — offer a retry instead of a
+  // silent blank form.
+  if (!hasBusiness) {
+    return (
+      <div className='flex flex-col items-center justify-center gap-3 rounded-[12px] bg-white dark:bg-card dark:border dark:border-white/10 px-6 py-16 text-center custom-card-shadow'>
+        <p className='text-sm font-medium text-[#1C1C1E] dark:text-white'>
+          Couldn&apos;t load your profile
+        </p>
+        <p className='max-w-sm text-xs text-gray-500 dark:text-gray-400'>
+          Something went wrong fetching your business profile. Please try again.
+        </p>
+        <button
+          type='button'
+          onClick={() => {
+            refetchBusiness();
+            refetchUser();
+          }}
+          className='mt-1 rounded-lg bg-[#6D5545] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#5a4638] dark:bg-white dark:text-black'
+        >
+          Retry
+        </button>
+      </div>
+    );
   }
 
   return (
