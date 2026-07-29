@@ -56,6 +56,8 @@ export interface BusinessProfileResponse {
   bvn?: string;
   nin?: string;
   status: string;
+  /** Storefront accent colour (hex). */
+  theme_color?: string;
   accepts_external_fabric?: boolean;
   email_verified: boolean;
   address_completed: boolean;
@@ -102,6 +104,8 @@ export interface UpdateBusinessProfileDetailsPayload {
   cac_document_url?: string[];
   nin?: string;
   bvn?: string;
+  /** Storefront accent colour (hex, e.g. '#8D7F72'). */
+  theme_color?: string;
 }
 
 export interface UpdateUserProfilePayload {
