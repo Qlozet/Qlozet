@@ -4,8 +4,26 @@
 
 import React, { useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Camera, Upload, Loader2 } from 'lucide-react';
+import { Camera, Upload, Loader2, Palette } from 'lucide-react';
 import Image from 'next/image';
+
+// Darken a hex colour — mirrors the shop storefront, which paints its page
+// background with darkenHex(theme_color), so the preview here matches what
+// customers actually see.
+function darkenHex(hex: string, amount = 0.55): string {
+  const clean = (hex || '').replace('#', '');
+  if (clean.length !== 6) return hex;
+  const r = Math.round(parseInt(clean.slice(0, 2), 16) * (1 - amount));
+  const g = Math.round(parseInt(clean.slice(2, 4), 16) * (1 - amount));
+  const b = Math.round(parseInt(clean.slice(4, 6), 16) * (1 - amount));
+  return `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+}
+
+// Curated storefront-friendly presets.
+const THEME_PRESETS = [
+  '#8D7F72', '#2C1810', '#1B4332', '#3A0CA3', '#7C2D12',
+  '#0F766E', '#9D174D', '#1E3A8A', '#B45309', '#111827',
+];
 import { useUploadProfileImageMutation } from '@/redux/services/uploads/uploads.api-slice';
 import { useUpdateBusinessProfileDetailsMutation } from '@/redux/services/settings/settings.api-slice';
 import { toast } from 'sonner';
@@ -18,6 +36,7 @@ interface VendorProfileCardProps {
   logoUrl?: string;
   svgLogoUrl?: string;
   coverImageUrl?: string;
+  themeColor?: string;
   className?: string;
 }
 
@@ -29,6 +48,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   logoUrl,
   svgLogoUrl,
   coverImageUrl,
+  themeColor,
   className,
 }) => {
   const logoInputRef = useRef<HTMLInputElement>(null);
@@ -40,9 +60,31 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   const [localLogo, setLocalLogo] = useState<string | null>(null);
   const [localSvgLogo, setLocalSvgLogo] = useState<string | null>(null);
   const [localCover, setLocalCover] = useState<string | null>(null);
+  // Optimistic theme colour, so the preview updates instantly on select.
+  const [localTheme, setLocalTheme] = useState<string | null>(null);
+  const [savingTheme, setSavingTheme] = useState(false);
 
   const [uploadImage, { isLoading: isUploading }] = useUploadProfileImageMutation();
   const [updateBusinessDetails] = useUpdateBusinessProfileDetailsMutation();
+
+  const effectiveTheme = localTheme || themeColor || '#8D7F72';
+  const coverTint = darkenHex(effectiveTheme, 0.45);
+
+  const handleSelectTheme = async (color: string) => {
+    if (!color) return;
+    const prev = localTheme;
+    setLocalTheme(color);
+    setSavingTheme(true);
+    try {
+      await updateBusinessDetails({ theme_color: color }).unwrap();
+      toast.success('Storefront theme colour updated');
+    } catch (error: any) {
+      setLocalTheme(prev); // revert on failure
+      toast.error(error?.data?.message || 'Failed to update theme colour');
+    } finally {
+      setSavingTheme(false);
+    }
+  };
 
   const handleImageUpload = async (
     file: File,
@@ -157,8 +199,13 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
         onChange={(e) => handleFileChange(e, 'cac')}
       />
 
-      {/* Cover Image Section (Touches edges) */}
-      <div className='relative h-32 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700'>
+      {/* Cover Image Section (Touches edges). Backed by the theme colour so it
+          previews the storefront accent — the shop paints its whole page with a
+          darkened theme_color, matched here via coverTint. */}
+      <div
+        className='relative h-32'
+        style={{ background: `linear-gradient(135deg, ${effectiveTheme}, ${coverTint})` }}
+      >
         {displayCover ? (
           <>
             <Image
@@ -168,14 +215,14 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
               className='object-cover'
               unoptimized={displayCover?.includes('/raw/')}
             />
-            {/* Tint overlay to make the logo and camera button pop out */}
-            <div className='absolute inset-0 bg-black/20 dark:bg-black/40 pointer-events-none' />
+            {/* Theme-tinted overlay so the logo/buttons pop and the accent reads
+                through even with a cover photo. */}
+            <div
+              className='absolute inset-0 pointer-events-none'
+              style={{ background: `linear-gradient(to bottom, transparent 30%, ${coverTint}cc 100%)` }}
+            />
           </>
-        ) : (
-          <div className='absolute inset-0 flex items-center justify-center'>
-            <div className='w-full h-full bg-gradient-to-br from-orange-100 via-purple-100 to-blue-100 dark:from-orange-900/30 dark:via-purple-900/30 dark:to-blue-900/30' />
-          </div>
-        )}
+        ) : null}
 
         {/* Scaled SVG/PNG logo in top-left corner */}
         {displaySvgLogo && (
@@ -251,6 +298,58 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
         <p className={cn('text-xs font-semibold mt-1', getStatusColor())}>
           {getStatusText()}
         </p>
+
+        {/* Storefront theme colour picker — previews live in the cover above */}
+        <div className='mt-5 w-full px-2 pb-1'>
+          <div className='mb-2.5 flex items-center justify-center gap-1.5'>
+            <Palette className='size-3.5 text-gray-400' />
+            <span className='text-xs font-medium text-gray-500 dark:text-gray-400'>
+              Storefront theme
+            </span>
+            {savingTheme && <Loader2 className='size-3 animate-spin text-gray-400' />}
+          </div>
+          <div className='flex flex-wrap items-center justify-center gap-2'>
+            {THEME_PRESETS.map((c) => {
+              const active = effectiveTheme.toLowerCase() === c.toLowerCase();
+              return (
+                <button
+                  key={c}
+                  type='button'
+                  disabled={savingTheme}
+                  onClick={() => handleSelectTheme(c)}
+                  aria-label={`Theme colour ${c}`}
+                  className='size-7 rounded-full transition-transform hover:scale-110 disabled:opacity-60'
+                  style={{
+                    backgroundColor: c,
+                    boxShadow: active
+                      ? `0 0 0 2px #fff, 0 0 0 4px ${c}`
+                      : '0 0 0 1px rgba(0,0,0,0.12)',
+                  }}
+                />
+              );
+            })}
+            {/* Custom colour — native picker behind a rainbow swatch */}
+            <label
+              className='relative size-7 cursor-pointer overflow-hidden rounded-full border border-white shadow-sm'
+              title='Custom colour'
+              style={{
+                background:
+                  'conic-gradient(from 0deg, #ef4444, #f59e0b, #22c55e, #06b6d4, #3b82f6, #a855f7, #ef4444)',
+              }}
+            >
+              <input
+                type='color'
+                value={effectiveTheme}
+                onChange={(e) => handleSelectTheme(e.target.value)}
+                disabled={savingTheme}
+                className='absolute inset-0 cursor-pointer opacity-0'
+              />
+            </label>
+          </div>
+          <p className='mt-2.5 text-center text-[11px] leading-relaxed text-gray-400'>
+            This colours your storefront background for customers.
+          </p>
+        </div>
       </div>
       </div>
 

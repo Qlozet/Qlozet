@@ -290,6 +290,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
               logoUrl={businessData?.business_logo_url}
               svgLogoUrl={businessData?.business_logo_svg_url}
               coverImageUrl={businessData?.cover_image_url}
+              themeColor={businessData?.theme_color}
             />
           ) : (
             <UserProfileCard
