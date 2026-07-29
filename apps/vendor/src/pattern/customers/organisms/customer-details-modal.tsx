@@ -215,7 +215,7 @@ const OrderHistoryTable = ({
 
       {/* Pagination footer — only when there's more than one page */}
       {orders.length > ORDERS_PER_PAGE && (
-        <div className='flex items-center justify-between border-t border-[#EEF0F2] dark:border-border px-4 py-2.5'>
+        <div className='flex items-center justify-end gap-4 border-t border-[#EEF0F2] dark:border-border px-4 py-2.5'>
           <span className='text-xs text-grey3 dark:text-gray-400'>
             Showing {start + 1}–{Math.min(start + ORDERS_PER_PAGE, orders.length)} of{' '}
             {orders.length}
