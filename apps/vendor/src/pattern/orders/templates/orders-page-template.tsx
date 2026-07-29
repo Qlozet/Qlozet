@@ -86,10 +86,21 @@ export const OrdersPageTemplate: React.FC = () => {
   return (
     <div className='w-full min-h-screen h-fit pb-10'>
       <Tabs defaultValue='orders' className='space-y-6'>
-        <TabsList>
-          <TabsTrigger value='orders'>Orders</TabsTrigger>
-          <TabsTrigger value='returns'>Returns</TabsTrigger>
-          <TabsTrigger value='disputes'>Disputes</TabsTrigger>
+        {/* Card-background tab bar; active tab uses the theme's primary colour. */}
+        <TabsList className='h-11 gap-1 border border-border bg-card p-1 custom-card-shadow'>
+          {[
+            { value: 'orders', label: 'Orders' },
+            { value: 'returns', label: 'Returns' },
+            { value: 'disputes', label: 'Disputes' },
+          ].map((tab) => (
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className='data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm'
+            >
+              {tab.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
         <TabsContent value='orders' className='space-y-6'>
