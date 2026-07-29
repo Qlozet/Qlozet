@@ -100,8 +100,10 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
 
       {/* Table + demographics */}
       <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
-        {/* Customers table */}
-        <div className='overflow-hidden rounded-xl border bg-card custom-card-shadow'>
+        {/* Customers table — flex column so the pagination is pushed to the
+            bottom of the card (auto gap) when the card stretches taller than
+            the table (e.g. matching the demographics column height). */}
+        <div className='flex flex-col overflow-hidden rounded-xl border bg-card custom-card-shadow'>
           {/* Toolbar */}
           <div className='flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between'>
             <h2 className='text-lg font-semibold text-[hsla(210,9%,31%,1)] dark:text-white'>
