@@ -252,9 +252,10 @@ export function DataTable<TData>({
         </TableBody>
       </Table>
 
-      {/* Pagination */}
+      {/* Pagination — mt-auto pins it to the bottom when the table sits in a
+          flex-column container taller than its rows (no-op otherwise). */}
       {!showLoader && rows.length > 0 && (
-        <div className='py-4'>
+        <div className='mt-auto py-4'>
           <Pagination table={table} />
         </div>
       )}
