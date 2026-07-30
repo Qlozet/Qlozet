@@ -22,7 +22,7 @@ export const OrdersByProductTypeChart = ({
 }: OrdersByProductTypeChartProps) => {
   return (
     <DonutChart
-      title='Orders by product type'
+      title='Sales by product type'
       data={data?.length ? data : FALLBACK}
       colors={COLORS}
     />

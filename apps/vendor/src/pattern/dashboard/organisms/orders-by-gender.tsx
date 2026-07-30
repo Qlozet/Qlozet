@@ -33,11 +33,14 @@ const renderLegend = (props: any): JSX.Element => {
     );
 }
 
-const COLORS = ["var(--chart-primary)", "var(--chart-secondary)"]
+// Distinct palette — same as "Sales by product kind" so Men / Women / Unisex
+// each get a clearly different colour.
+const COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)"]
 
 const PLACEHOLDER_DATA = [
-    { name: "Male", value: 60 },
-    { name: "Female", value: 40 },
+    { name: "Women", value: 58 },
+    { name: "Men", value: 34 },
+    { name: "Unisex", value: 8 },
 ];
 
 export const OrdersByGender = () => {
@@ -63,14 +66,14 @@ export const OrdersByGender = () => {
         <Card className="w-full max-h-[330px] rounded-[12px] custom-card-shadow">
             <CardHeader className="px-6 pb-4">
                 <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
-                    Orders by gender
+                    Sales by audience
                 </CardTitle>
             </CardHeader>
             <CardContent className='w-full font-poppins px-3 pt-0 pb-6'>
                 <ChartEmptyState
                     isEmpty={!hasData}
                     variant="pie"
-                    description="Gender breakdown will show once orders start coming in"
+                    description="Your sales split by audience (men / women / unisex) will show once orders come in"
                 >
                     <ResponsiveContainer width="100%" height={250}>
                         <PieChart>
