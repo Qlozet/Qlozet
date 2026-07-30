@@ -33,7 +33,9 @@ const renderLegend = (props: any): JSX.Element => {
     );
 }
 
-const COLORS = ["var(--chart-primary)", "var(--chart-secondary)", "#9C8578"]
+// Distinct palette — same as "Sales by product kind" so Men / Women / Unisex
+// each get a clearly different colour.
+const COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)"]
 
 const PLACEHOLDER_DATA = [
     { name: "Women", value: 58 },

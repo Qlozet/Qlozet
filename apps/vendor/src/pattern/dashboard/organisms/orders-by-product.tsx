@@ -72,7 +72,7 @@ export const OrdersByProduct = () => {
         <Card className="w-full max-h-[330px] rounded-[12px] custom-card-shadow">
             <CardHeader className="px-6 pb-4">
                 <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
-                    Orders by product kind
+                    Sales by product kind
                 </CardTitle>
             </CardHeader>
             <CardContent className='w-full font-poppins px-3 pt-0 pb-6'>
