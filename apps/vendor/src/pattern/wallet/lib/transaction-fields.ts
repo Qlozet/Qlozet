@@ -125,3 +125,29 @@ export const transactionBadge = (status: string): TransactionBadge => {
     }
   );
 };
+
+// Type pill: coloured by money direction so the column scans at a glance.
+// Money-in (credit/fund) reads green/blue, money-out (debit) red, reversals
+// (refund) purple — same palette language as the status pills above.
+export const transactionTypeBadge = (type: string): TransactionBadge => {
+  const t = type.toLowerCase().replace(/[\s-]+/g, '_');
+  const map: Record<string, TransactionBadge> = {
+    // Earnings released into the wallet — money in.
+    credit: { label: 'Credit', className: 'bg-[#E7F6EC] dark:bg-[#0F973D]/10 text-[#0F973D] dark:text-[#4ADE80]' },
+    earning: { label: 'Credit', className: 'bg-[#E7F6EC] dark:bg-[#0F973D]/10 text-[#0F973D] dark:text-[#4ADE80]' },
+    // Wallet top-up — money in, but distinct from earnings.
+    fund: { label: 'Funding', className: 'bg-[#E3EFFC] dark:bg-[#1671D9]/10 text-[#1671D9] dark:text-[#60A5FA]' },
+    funding: { label: 'Funding', className: 'bg-[#E3EFFC] dark:bg-[#1671D9]/10 text-[#1671D9] dark:text-[#60A5FA]' },
+    // Payout / withdrawal — money out.
+    debit: { label: 'Debit', className: 'bg-[#FBEAE9] dark:bg-[#D42620]/10 text-[#D42620] dark:text-[#F87171]' },
+    // Reversed earning — money out, flagged distinctly.
+    refund: { label: 'Refund', className: 'bg-[#F4EBFF] dark:bg-[#7E22CE]/10 text-[#7E22CE] dark:text-[#C084FC]' },
+    reversed: { label: 'Refund', className: 'bg-[#F4EBFF] dark:bg-[#7E22CE]/10 text-[#7E22CE] dark:text-[#C084FC]' },
+  };
+  return (
+    map[t] ?? {
+      label: type && type !== '—' ? type.charAt(0).toUpperCase() + type.slice(1) : '—',
+      className: 'bg-[#EAECF0] dark:bg-gray-800 text-[#475467] dark:text-gray-300',
+    }
+  );
+};

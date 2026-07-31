@@ -13,6 +13,7 @@ import {
   readTransactionId,
   readTransactionType,
   transactionBadge,
+  transactionTypeBadge,
   type TransactionRow,
 } from '../lib/transaction-fields';
 
@@ -42,11 +43,19 @@ export const createTransactionColumns = (
   {
     id: 'transaction_type',
     header: 'Transaction type',
-    cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-gray-200'>
-        {readTransactionType(row.original)}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const badge = transactionTypeBadge(readTransactionType(row.original));
+      return (
+        <span
+          className={cn(
+            'inline-flex h-6.5 items-center justify-center whitespace-nowrap rounded-lg px-3 text-xs font-medium',
+            badge.className
+          )}
+        >
+          {badge.label}
+        </span>
+      );
+    },
     enableSorting: false,
   },
   {
