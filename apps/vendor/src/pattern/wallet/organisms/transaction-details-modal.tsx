@@ -28,6 +28,7 @@ import {
   readTransactionId,
   readTransactionType,
   transactionBadge,
+  transactionTypeBadge,
   type TransactionRow,
 } from '../lib/transaction-fields';
 
@@ -58,6 +59,7 @@ export const TransactionDetailsModal = create<TransactionDetailsModalProps>(
     };
 
     const badge = transactionBadge(readStatus(transaction));
+    const typeBadge = transactionTypeBadge(readTransactionType(transaction));
 
     return (
       <Dialog open={visible} onOpenChange={handleClose}>
@@ -81,7 +83,16 @@ export const TransactionDetailsModal = create<TransactionDetailsModalProps>(
             />
             <DetailRow
               label='Transaction type'
-              value={readTransactionType(transaction)}
+              value={
+                <span
+                  className={cn(
+                    'inline-flex h-6.5 items-center justify-center whitespace-nowrap rounded-lg px-3 text-xs font-medium',
+                    typeBadge.className
+                  )}
+                >
+                  {typeBadge.label}
+                </span>
+              }
             />
             <DetailRow label='Sender' value={readSender(transaction)} />
             <DetailRow
