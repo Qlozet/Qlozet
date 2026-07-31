@@ -6,12 +6,13 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
-  useSendChatMutation,
   useGetConversationsQuery,
   useLazyGetConversationQuery,
   type AssistantMessage,
+  type AssistantChart,
 } from '@/redux/services/assistant/assistant.api-slice';
 import { AssistantMiniChart } from '../molecules/assistant-mini-chart';
+import { streamChat } from '../lib/stream-chat';
 
 const SUGGESTIONS = [
   'How were my sales this month?',
@@ -30,8 +31,8 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
   const [conversationId, setConversationId] = useState<string | undefined>();
   const [input, setInput] = useState('');
   const [showHistory, setShowHistory] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
 
-  const [sendChat, { isLoading: isSending }] = useSendChatMutation();
   const { data: convosRes } = useGetConversationsQuery(
     { size: 20 },
     { skip: !open },
@@ -39,15 +40,35 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
   const [loadConversation, { isFetching: isLoadingThread }] =
     useLazyGetConversationQuery();
 
+  const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
       behavior: 'smooth',
     });
-  }, [messages, isSending]);
+  }, [messages, isStreaming]);
+
+  // Abort any in-flight stream when the sheet closes or unmounts.
+  useEffect(() => {
+    if (!open) abortRef.current?.abort();
+  }, [open]);
+  useEffect(() => () => abortRef.current?.abort(), []);
+
+  // Patch the trailing assistant message as tokens/charts stream in.
+  const patchLastAssistant = (patch: Partial<AssistantMessage>) => {
+    setMessages((prev) => {
+      const copy = [...prev];
+      const i = copy.length - 1;
+      if (i >= 0 && copy[i].role === 'assistant') {
+        copy[i] = { ...copy[i], ...patch };
+      }
+      return copy;
+    });
+  };
 
   const startNew = () => {
+    abortRef.current?.abort();
     setMessages([]);
     setConversationId(undefined);
     setShowHistory(false);
@@ -65,40 +86,44 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
 
   const submit = async (text: string) => {
     const q = text.trim();
-    if (!q || isSending) return;
+    if (!q || isStreaming) return;
     setInput('');
+    // Add the user turn + an empty assistant turn we'll stream into.
     setMessages((prev) => [
       ...prev,
       { role: 'user', content: q, createdAt: new Date().toISOString() },
+      { role: 'assistant', content: '', charts: [], createdAt: new Date().toISOString() },
     ]);
-    try {
-      const res = await sendChat({
-        message: q,
-        conversation_id: conversationId,
-      }).unwrap();
-      const data = res.data;
-      setConversationId(data.conversation_id);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: data.answer,
-          charts: data.charts,
-          createdAt: new Date().toISOString(),
+    setIsStreaming(true);
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+    let acc = '';
+    const chartsAcc: AssistantChart[] = [];
+
+    await streamChat(
+      { message: q, conversation_id: conversationId },
+      {
+        onDelta: (t) => {
+          acc += t;
+          patchLastAssistant({ content: acc });
         },
-      ]);
-    } catch (e: any) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content:
-            e?.data?.message ??
-            'Sorry, something went wrong. Please try again.',
-          createdAt: new Date().toISOString(),
+        onChart: (c) => {
+          chartsAcc.push(c);
+          patchLastAssistant({ charts: [...chartsAcc] });
         },
-      ]);
-    }
+        onDone: ({ conversation_id }) => {
+          setConversationId(conversation_id);
+        },
+        onError: (m) => {
+          patchLastAssistant({ content: acc || m });
+        },
+      },
+      controller.signal,
+    );
+
+    setIsStreaming(false);
+    abortRef.current = null;
   };
 
   const convos = convosRes?.data?.items ?? [];
@@ -231,26 +256,24 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
                     : 'bg-muted text-foreground dark:bg-[#4A4949]',
                 )}
               >
-                <p className='whitespace-pre-wrap leading-relaxed'>
-                  {m.content}
-                </p>
+                {m.content ? (
+                  <p className='whitespace-pre-wrap leading-relaxed'>
+                    {m.content}
+                  </p>
+                ) : m.role === 'assistant' &&
+                  isStreaming &&
+                  i === messages.length - 1 ? (
+                  <span className='flex items-center gap-2 text-xs text-muted-foreground'>
+                    <Loader2 className='h-4 w-4 animate-spin' />
+                    Analysing…
+                  </span>
+                ) : null}
                 {m.charts?.map((chart, ci) => (
                   <AssistantMiniChart key={ci} chart={chart} />
                 ))}
               </div>
             </div>
           ))}
-
-          {isSending && (
-            <div className='flex justify-start'>
-              <div className='flex items-center gap-2 rounded-2xl bg-muted px-3 py-2 dark:bg-[#4A4949]'>
-                <Loader2 className='h-4 w-4 animate-spin text-muted-foreground' />
-                <span className='text-xs text-muted-foreground'>
-                  Analysing…
-                </span>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Composer */}
@@ -278,7 +301,7 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
             <Button
               type='submit'
               size='icon'
-              disabled={isSending || !input.trim()}
+              disabled={isStreaming || !input.trim()}
               className='h-9 w-9 shrink-0 rounded-xl'
             >
               <Send className='h-4 w-4' />
