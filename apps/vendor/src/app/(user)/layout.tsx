@@ -32,6 +32,11 @@ import { selectMustChangePassword } from '@/redux/slices/auth-slice';
 import { AUTH_ROUTES } from '@/lib/routes';
 
 import CompleteKycPopover from '@/pattern/common/organisms/complete-kyc-popover';
+import WeeklyDigestCard from '@/pattern/common/organisms/weekly-digest-card';
+import {
+  useGetLatestDigestQuery,
+  useMarkDigestReadMutation,
+} from '@/redux/services/assistant/assistant.api-slice';
 import { If } from '@/pattern/common/atoms/If';
 import { Sidebar } from '@/pattern/common/templates/sidebar';
 import { type UserDetails } from '@/types';
@@ -120,6 +125,23 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
       /* ignore */
     }
     setKycSnoozedUntil(until);
+  };
+
+  // Weekly digest nudge — surface the latest UNREAD digest as a dismissible
+  // card. Dismissing marks it read so it won't reappear until next week's.
+  const { data: digestRes } = useGetLatestDigestQuery();
+  const [markDigestRead] = useMarkDigestReadMutation();
+  const [digestDismissed, setDigestDismissed] = useState<boolean>(false);
+  const latestDigest = digestRes?.data?.digest ?? null;
+  const showDigest =
+    !digestDismissed &&
+    !!latestDigest &&
+    !latestDigest.read &&
+    (digestRes?.data?.unread ?? 0) > 0;
+
+  const dismissDigest = () => {
+    setDigestDismissed(true);
+    if (latestDigest?._id) markDigestRead(latestDigest._id);
   };
 
   useEffect(() => {
@@ -281,6 +303,11 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
       {/* KYC Completion Popup */}
       <If isTrue={showKycPopUp}>
         <CompleteKycPopover onDismiss={dismissKyc} />
+      </If>
+
+      {/* Weekly business digest */}
+      <If isTrue={showDigest}>
+        <WeeklyDigestCard digest={latestDigest!} onDismiss={dismissDigest} />
       </If>
     </div>
   );
