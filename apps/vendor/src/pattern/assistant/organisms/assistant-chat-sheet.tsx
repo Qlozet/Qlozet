@@ -133,8 +133,11 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side='right'
-        className='flex w-full flex-col overflow-hidden p-0 sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] sm:max-w-md sm:rounded-[15px] !bg-white dark:!bg-card border border-gray-100 dark:border-border'
+        className='w-full overflow-hidden p-0 sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] sm:max-w-md sm:rounded-[15px] !bg-white dark:!bg-card border border-gray-100 dark:border-border'
       >
+        {/* Fixed-height flex column: header + history are fixed, messages scroll,
+            composer is pinned to the bottom. */}
+        <div className='flex h-[80vh] w-full flex-col overflow-hidden sm:h-full'>
         {/* Header */}
         <div className='flex shrink-0 items-center justify-between border-b border-border px-4 py-4'>
           <div className='flex items-center gap-2'>
@@ -208,7 +211,10 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
         )}
 
         {/* Messages */}
-        <div ref={scrollRef} className='flex-1 space-y-4 overflow-y-auto p-4'>
+        <div
+          ref={scrollRef}
+          className='min-h-0 flex-1 space-y-4 overflow-y-auto p-4'
+        >
           {isEmpty && !isLoadingThread && (
             <div className='flex h-full flex-col items-center justify-center text-center'>
               <span className='mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10'>
@@ -310,6 +316,7 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
           <p className='mt-1.5 px-1 text-center text-[10px] text-muted-foreground'>
             Insights only — not financial advice.
           </p>
+        </div>
         </div>
       </SheetContent>
     </Sheet>
