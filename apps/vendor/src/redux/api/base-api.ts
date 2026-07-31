@@ -81,6 +81,9 @@ export const baseAPI = createApi({
     'Returns',
     'Dispute',
     'Disputes',
+    'AssistantConversation',
+    'AssistantConversations',
+    'AssistantDigest',
   ],
   endpoints: () => ({}),
 });

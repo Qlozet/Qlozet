@@ -4,8 +4,10 @@ import Image from 'next/image';
 import Typography from '../Typography';
 import Profile from '../Profile.js';
 import { UserDetails } from '@/types';
-import { Search, Bell, Menu, User } from 'lucide-react';
+import { Search, Bell, Menu, User, Sparkles } from 'lucide-react';
 import { useGetUnreadCountQuery } from '@/redux/services/notifications/notifications.api-slice';
+import { useGetLatestDigestQuery } from '@/redux/services/assistant/assistant.api-slice';
+import { AssistantChatSheet } from '@/pattern/assistant/organisms/assistant-chat-sheet';
 import notificationIcon from '@/public/assets/svg/notification-bing.svg';
 import altireicon from '@/public/assets/svg/altire-icon.svg';
 import transformText from '@/public/assets/svg/textformat.size.svg';
@@ -40,8 +42,11 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
 }) => {
   const router = useRouter();
   const [showProfile, setShowProfile] = useState<boolean>(false);
+  const [showAsk, setShowAsk] = useState<boolean>(false);
   const { data: unreadData } = useGetUnreadCountQuery(undefined, { pollingInterval: 60_000 });
   const unreadCount = unreadData?.data?.total ?? 0;
+  const { data: digestData } = useGetLatestDigestQuery();
+  const digestUnread = digestData?.data?.unread ?? 0;
 
   const showProfileHandler = (): void => {
     setShowProfile(!showProfile);
@@ -100,7 +105,17 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
               </div>
               
               <div className='flex items-center gap-2 sm:gap-3'>
-                <div 
+                <div
+                  className='relative rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
+                  onClick={() => setShowAsk(true)}
+                  aria-label='Ask assistant'
+                >
+                  <Sparkles className='size-5 text-primary' />
+                  {digestUnread > 0 && (
+                    <span className='absolute -top-1 -right-1 size-2.5 rounded-full bg-primary' />
+                  )}
+                </div>
+                <div
                   className='rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
                   onClick={handleNotificationClick}
                 >
@@ -156,6 +171,16 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
           <div className='flex items-center justify-end gap-6 ml-auto'>
             <div className='flex items-center justify-between gap-4'>
               <div
+                className='relative rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer flex items-center justify-center hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
+                onClick={() => setShowAsk(true)}
+                aria-label='Ask assistant'
+              >
+                <Sparkles className='size-5 text-primary' />
+                {digestUnread > 0 && (
+                  <span className='absolute -top-1 -right-1 size-2.5 rounded-full bg-primary' />
+                )}
+              </div>
+              <div
                 className='rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer flex items-center justify-center'
                 onClick={handleNotificationClick}
               >
@@ -193,6 +218,7 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
         showProfile={showProfile}
         isLoading={isLoading}
       />
+      <AssistantChatSheet open={showAsk} onOpenChange={setShowAsk} />
     </div>
   );
 };
