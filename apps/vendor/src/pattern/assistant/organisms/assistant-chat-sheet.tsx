@@ -13,6 +13,7 @@ import {
 } from '@/redux/services/assistant/assistant.api-slice';
 import { AssistantMiniChart } from '../molecules/assistant-mini-chart';
 import { streamChat } from '../lib/stream-chat';
+import { Markdown } from '@/components/ui/markdown';
 
 const SUGGESTIONS = [
   'How were my sales this month?',
@@ -263,9 +264,13 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
                 )}
               >
                 {m.content ? (
-                  <p className='whitespace-pre-wrap leading-relaxed'>
-                    {m.content}
-                  </p>
+                  m.role === 'assistant' ? (
+                    <Markdown content={m.content} />
+                  ) : (
+                    <p className='whitespace-pre-wrap leading-relaxed'>
+                      {m.content}
+                    </p>
+                  )
                 ) : m.role === 'assistant' &&
                   isStreaming &&
                   i === messages.length - 1 ? (
