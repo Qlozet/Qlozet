@@ -4,6 +4,7 @@ import { FC } from 'react';
 import Link from 'next/link';
 import { X, ChevronRight, Sparkles } from 'lucide-react';
 import { APP_ROUTES } from '@/lib/routes';
+import { Markdown } from '@/components/ui/markdown';
 import type { WeeklyDigest } from '@/redux/services/assistant/assistant.api-slice';
 
 // Map a recommendation's action hint to an in-app route so it becomes a task.
@@ -36,9 +37,10 @@ const WeeklyDigestCard: FC<Props> = ({ digest, onDismiss }) => {
           <h4 className='mb-1 text-sm font-medium text-foreground'>
             Your weekly digest
           </h4>
-          <p className='text-xs leading-relaxed text-muted-foreground'>
-            {digest.summary}
-          </p>
+          <Markdown
+            content={digest.summary}
+            className='text-xs leading-relaxed text-muted-foreground'
+          />
 
           {digest.recommendations?.length > 0 && (
             <div className='mt-2 space-y-1'>
