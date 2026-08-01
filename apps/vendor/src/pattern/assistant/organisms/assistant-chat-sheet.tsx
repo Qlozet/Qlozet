@@ -133,7 +133,7 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side='right'
-        className='w-full overflow-hidden p-0 sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] sm:max-w-md sm:rounded-[15px] !bg-white dark:!bg-card border border-gray-100 dark:border-border'
+        className='flex w-full flex-col overflow-hidden p-0 sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] sm:max-w-md sm:rounded-[15px] !bg-white dark:!bg-card border border-gray-100 dark:border-border'
       >
         {/* Fixed-height flex column: header + history are fixed, messages scroll,
             composer is pinned to the bottom. */}
