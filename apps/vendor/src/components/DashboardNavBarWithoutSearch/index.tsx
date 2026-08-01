@@ -106,14 +106,11 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
               
               <div className='flex items-center gap-2 sm:gap-3'>
                 <div
-                  className='relative rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
+                  className='rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
                   onClick={() => setShowAsk(true)}
                   aria-label='Ask assistant'
                 >
                   <Sparkles className='size-5 text-primary' />
-                  {digestUnread > 0 && (
-                    <span className='absolute -top-1 -right-1 size-2.5 rounded-full bg-primary' />
-                  )}
                 </div>
                 <div
                   className='rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
@@ -128,8 +125,8 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
                     )}
                   </div>
                 </div>
-                <div 
-                  className='rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
+                <div
+                  className='relative rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
                   onClick={handleProfileClick}
                 >
                   <Image
@@ -137,6 +134,9 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
                     src={userIcon}
                     className='size-5 dark:brightness-200'
                   />
+                  {digestUnread > 0 && (
+                    <span className='absolute -top-1 -right-1 size-2.5 rounded-full bg-primary' />
+                  )}
                 </div>
               </div>
             </div>
@@ -171,14 +171,11 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
           <div className='flex items-center justify-end gap-6 ml-auto'>
             <div className='flex items-center justify-between gap-4'>
               <div
-                className='relative rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer flex items-center justify-center hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
+                className='rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer flex items-center justify-center hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
                 onClick={() => setShowAsk(true)}
                 aria-label='Ask assistant'
               >
                 <Sparkles className='size-5 text-primary' />
-                {digestUnread > 0 && (
-                  <span className='absolute -top-1 -right-1 size-2.5 rounded-full bg-primary' />
-                )}
               </div>
               <div
                 className='rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer flex items-center justify-center'
@@ -200,13 +197,18 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
               >
                 {userDetails && userDetails.personalName}
               </Typography>
-              <div className='rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer'>
+              <div
+                className='relative rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer'
+                onClick={handleProfileClick}
+              >
                 <Image
                   alt='User icon'
                   src={userIcon}
-                  onClick={handleProfileClick}
                   className='cursor-pointer'
                 />
+                {digestUnread > 0 && (
+                  <span className='absolute -top-1 -right-1 size-2.5 rounded-full bg-primary' />
+                )}
               </div>
             </div>
           </div>

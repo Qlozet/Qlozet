@@ -8,6 +8,7 @@ import Rating from '../Rating';
 import { ProfileProps } from '../../types';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
+import WeeklyDigestSection from '@/pattern/common/organisms/weekly-digest-section';
 
 const Profile = ({
   userDetails,
@@ -163,29 +164,8 @@ const Profile = ({
                     </div>
                   </div>
 
-                  {/* Box 3: Tasks Last Month */}
-                  <div className="rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] overflow-hidden">
-                    <div className="px-5 py-4 border-b border-[#DDE2E5] dark:border-border">
-                      <Typography textColor="text-[#1C1C1E] dark:text-white" textWeight="font-semibold" textSize="text-[15px]">
-                        Tasks Last Month
-                      </Typography>
-                    </div>
-
-                    <div className="flex flex-col">
-                      <div className="flex justify-between items-center px-5 py-3.5 border-b border-[#DDE2E5] dark:border-border">
-                        <span className="text-[14px] font-medium text-[#1C1C1E] dark:text-white">Restock New kaftan products</span>
-                        <span className="text-[13px] text-[#8E8E93] dark:text-gray-400">5d ago</span>
-                      </div>
-                      <div className="flex justify-between items-center px-5 py-3.5 border-b border-[#DDE2E5] dark:border-border">
-                        <span className="text-[14px] font-medium text-[#1C1C1E] dark:text-white truncate max-w-[70%]">Purchase report for last month for investor client</span>
-                        <span className="text-[13px] text-[#8E8E93] dark:text-gray-400">5d ago</span>
-                      </div>
-                      <div className="flex justify-between items-center px-5 py-3.5">
-                        <span className="text-[14px] font-medium text-[#1C1C1E] dark:text-white">New product order from port</span>
-                        <span className="text-[13px] text-[#8E8E93] dark:text-gray-400">5d ago</span>
-                      </div>
-                    </div>
-                  </div>
+                  {/* Box 3: Weekly Digest (AI) — replaces the old static tasks */}
+                  <WeeklyDigestSection />
                 </>
               )}
 
