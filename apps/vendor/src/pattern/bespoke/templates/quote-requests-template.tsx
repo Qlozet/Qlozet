@@ -38,6 +38,7 @@ export const QuoteRequestsTemplate = () => {
       order: {
         _id: quote._id,
         bespoke_quote: quote._id,
+        bespoke_quote_status: quote.status,
         type: 'bespoke',
         bespoke_design: quote.design,
         customer: quote.customer,
