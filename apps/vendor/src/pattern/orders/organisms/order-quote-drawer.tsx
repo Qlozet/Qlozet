@@ -132,7 +132,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
     <Sheet open={visible} onOpenChange={handleClose}>
       <SheetContent
         side='right'
-        className='flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-md !top-6 !bottom-6 !right-6 !h-[calc(100vh-3rem)] rounded-2xl custom-card-shadow bg-white dark:bg-[#404040] dark:bg-card'
+        className='flex w-full flex-col gap-0 !overflow-y-auto p-0 sm:max-w-md !top-6 !bottom-6 !right-6 !h-[calc(100vh-3rem)] rounded-2xl custom-card-shadow bg-white dark:bg-[#404040] dark:bg-card'
       >
         {/* Header */}
         <div className='flex shrink-0 items-start justify-between px-6 pb-3 pt-6'>
@@ -166,7 +166,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
           })()}
         </div>
 
-        <div className='min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-5'>
+        <div className='flex flex-col gap-5 px-6 py-5'>
           {/* Quote card */}
           <section className='space-y-4 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4'>
             <div className='flex items-center justify-between'>
@@ -330,7 +330,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
               designSelections?.fabric,
             ].filter(Boolean) as string[];
             return (
-              <section className='space-y-3'>
+              <section className='order-first space-y-3'>
                 <h3 className='text-base font-semibold text-grey-black dark:text-white'>
                   Design Details
                 </h3>
