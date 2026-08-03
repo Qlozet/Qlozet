@@ -38,7 +38,8 @@
       "Bash(curl:*)",
       "Bash(git mv:*)",
       "Bash(python:*)",
-      "Bash(pnpm build:*)"
+      "Bash(pnpm build:*)",
+      "Bash(awk -F/ '{print $1}')"
     ],
     "deny": [],
     "ask": []
