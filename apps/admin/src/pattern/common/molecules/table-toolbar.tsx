@@ -16,6 +16,11 @@ interface TableToolbarProps {
   filterLabel?: string;
   /** Icon for the filter button; pass null to hide it (defaults to a Calendar). */
   filterIcon?: ReactNode;
+  /**
+   * Replaces the default filter button entirely (e.g. with a status dropdown).
+   * When set, `filterLabel` / `filterIcon` / `onFilterDate` are ignored.
+   */
+  filterControl?: ReactNode;
   /** Optional extra control rendered at the far right (e.g. a status filter). */
   rightExtra?: ReactNode;
   className?: string;
@@ -31,6 +36,7 @@ export const TableToolbar = ({
   onExport,
   filterLabel = 'Filter By Date',
   filterIcon = <Calendar className="size-4" />,
+  filterControl,
   rightExtra,
   className,
 }: TableToolbarProps) => {
@@ -46,15 +52,17 @@ export const TableToolbar = ({
       </h2>
 
       <div className="flex flex-wrap items-center gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onFilterDate}
-          className="h-10 gap-2 text-sm text-gray-600"
-        >
-          {filterIcon}
-          {filterLabel}
-        </Button>
+        {filterControl ?? (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onFilterDate}
+            className="h-10 gap-2 text-sm text-gray-600"
+          >
+            {filterIcon}
+            {filterLabel}
+          </Button>
+        )}
 
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400" />

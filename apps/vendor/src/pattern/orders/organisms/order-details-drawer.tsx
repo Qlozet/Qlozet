@@ -23,6 +23,7 @@ import {
   Clock,
   ShieldAlert,
   ChevronRight,
+  Maximize2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -60,6 +61,12 @@ import { useAppSelector } from '@/redux/store';
 import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 import { CustomerDetailsModal } from '../../customers/organisms/customer-details-modal';
 import { OrderItemDetailModal } from './order-item-detail-modal';
+import { MediaPreviewModal } from './media-preview-modal';
+import { allProductImages, asProduct } from '../lib/item-resolvers';
+import {
+  OrderMediaPanel,
+  ignoreMediaPanelInteraction,
+} from '../molecules/order-media-panel';
 import {
   deliveryBadge,
   formatDate,
@@ -263,6 +270,7 @@ const OrderItemRow: React.FC<{
       : null;
   const name = getProductName(product);
   const imageUrl = getProductImageUrl(product);
+  const gallery = allProductImages(product);
   const kind = product?.kind;
   const kindBadge = kind ? KIND_BADGE[kind] : null;
   const basePrice = product?.base_price;
@@ -283,6 +291,20 @@ const OrderItemRow: React.FC<{
     item.accessory_selections?.forEach((a) => (totalQty += a.quantity));
     item.addon_selections?.forEach((ad) => (totalQty += ad.quantity));
   }
+
+  // Discount taken from the frozen pricing snapshot. Only struck through when
+  // the pre-discount figure actually differs from what was charged, so a row
+  // never implies a discount that wasn't applied.
+  const discount =
+    typeof item.pricing?.discount === 'number' && item.pricing.discount > 0
+      ? item.pricing.discount
+      : undefined;
+  const beforeDiscount =
+    discount !== undefined &&
+    typeof item.pricing?.before_discount === 'number' &&
+    item.pricing.before_discount !== totalAmount
+      ? item.pricing.before_discount
+      : undefined;
 
   // One-line summary of what's inside (drives the "View details" affordance).
   const summaryBits: string[] = [];
@@ -308,28 +330,57 @@ const OrderItemRow: React.FC<{
     if (hasDetails) NiceModal.show(OrderItemDetailModal, { item, order });
   };
 
+  // Always opens — with no image the preview shows a placeholder rather than
+  // the click doing nothing.
+  const openMedia = () => {
+    const images = gallery.length > 0 ? gallery : imageUrl ? [imageUrl] : [];
+    NiceModal.show(MediaPreviewModal, { images, title: name });
+  };
+
+  // The thumbnail and the rest of the row are sibling buttons rather than one
+  // nested inside the other — the image opens the lightbox, the row opens the
+  // item breakdown.
   return (
-    <button
-      type='button'
-      onClick={openModal}
-      disabled={!hasDetails}
+    <div
       className={cn(
-        'group flex w-full items-start gap-3 px-5 py-4 text-left transition-colors',
-        hasDetails && 'cursor-pointer hover:bg-gray-50/70 dark:hover:bg-white/5',
+        'group flex w-full items-start gap-3 px-5 py-4 transition-colors',
+        hasDetails && 'hover:bg-gray-50/70 dark:hover:bg-white/5',
         !isLast && 'border-b border-[#DDE2E5] dark:border-border'
       )}
     >
-      {/* Thumbnail */}
-      <div className='relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700'>
+      {/* Thumbnail — opens the media preview, with or without an image. */}
+      <button
+        type='button'
+        onClick={openMedia}
+        aria-label={`View ${name} media`}
+        className='relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700 cursor-pointer'
+      >
         {imageUrl ? (
-          <Image src={imageUrl} alt={name} fill className='object-cover' sizes='48px' />
+          <Image
+            src={imageUrl}
+            alt={name}
+            fill
+            className='object-cover'
+            sizes='48px'
+          />
         ) : (
           <Package className='size-5 text-gray-400' />
         )}
-      </div>
+        <span className='absolute inset-0 flex items-center justify-center bg-black/0 text-white/0 transition-colors hover:bg-black/35 hover:text-white'>
+          <Maximize2 className='size-3.5' />
+        </span>
+      </button>
 
       {/* Info */}
-      <div className='min-w-0 flex-1'>
+      <button
+        type='button'
+        onClick={openModal}
+        disabled={!hasDetails}
+        className={cn(
+          'min-w-0 flex-1 text-left',
+          hasDetails && 'cursor-pointer'
+        )}
+      >
         <p className='truncate text-sm font-medium text-[#333333] dark:text-white group-hover:text-primary transition-colors'>
           {name}
         </p>
@@ -356,20 +407,30 @@ const OrderItemRow: React.FC<{
             <ChevronRight className='size-3.5 transition-transform group-hover:translate-x-0.5' />
           </span>
         )}
-      </div>
+      </button>
 
       {/* Total */}
       <div className='shrink-0 text-right'>
         <p className='text-sm font-semibold text-[#0C0C0D] dark:text-white'>
           {formatNaira(totalAmount)}
         </p>
-        {totalQty > 0 && (
-          <p className='mt-0.5 text-[11px] text-grey3 dark:text-gray-400'>
-            {totalQty} item{totalQty !== 1 ? 's' : ''}
+        {beforeDiscount !== undefined && (
+          <p className='text-[11px] text-grey3 dark:text-gray-400 line-through'>
+            {formatNaira(beforeDiscount)}
           </p>
         )}
+        {totalQty > 0 && (
+          <p className='mt-0.5 text-[11px] text-grey3 dark:text-gray-400'>
+            QTY: {totalQty}
+          </p>
+        )}
+        {discount !== undefined && (
+          <span className='mt-1 inline-flex items-center rounded-md bg-[#D42620] px-1.5 py-0.5 text-[10px] font-semibold text-white'>
+            {formatNaira(discount)} off
+          </span>
+        )}
       </div>
-    </button>
+    </div>
   );
 };
 
@@ -599,19 +660,43 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     const badge = deliveryBadge(readStatus(order));
     const displayOrderId = readOrderId(order);
 
-    // Shipping address
+    // Shipping address. The API returns the street line as `address` and the
+    // phone as `phone_number`; `street` / `phone` are legacy fallbacks.
     const addr = order.address ?? {};
+    const addressPhone = addr.phone_number ?? addr.phone;
+    // The street line already includes city/state/country on most records, so
+    // only append the parts it doesn't already mention.
+    const streetLine = addr.address ?? addr.street;
     const addressParts = [
-      addr.street,
+      streetLine,
       addr.city,
       addr.state,
       addr.country,
-    ].filter((v) => typeof v === 'string' && v.trim()) as string[];
+    ].filter((value, index, all): value is string => {
+      if (typeof value !== 'string' || !value.trim()) return false;
+      if (index === 0) return true;
+      const street = all[0];
+      return typeof street === 'string'
+        ? !street.toLowerCase().includes(value.toLowerCase())
+        : true;
+    });
+
+    // Every image across this vendor's items, feeding the companion panel.
+    const orderMedia = vendorItems.flatMap((item) =>
+      allProductImages(asProduct(item.product))
+    );
 
     return (
       <Sheet open={visible} onOpenChange={handleClose}>
+        <OrderMediaPanel
+          images={Array.from(new Set(orderMedia))}
+          title={`Order ${displayOrderId}`}
+          drawerOpen={visible}
+          onClose={() => handleClose()}
+        />
         <SheetContent
           side='right'
+          onInteractOutside={ignoreMediaPanelInteraction}
           className='flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white dark:bg-card'
           style={{ height: 'calc(100vh - 3rem)', maxHeight: 'calc(100vh - 3rem)' }}
         >
@@ -667,7 +752,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     }
                   />
                   <DetailRow
-                    label='Date'
+                    label='Order date'
                     value={formatDate(order.createdAt)}
                   />
                   <DetailRow
@@ -712,6 +797,38 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     isLast
                   />
                 </Card>
+              </section>
+
+              {/* ── Vendor Items ──
+                  Sits directly under Order Summary, as in the design — the
+                  item media is the first thing the vendor should see, so the
+                  Confirmation block must not push it below the fold. */}
+              <section className='space-y-3'>
+                <SectionTitle>
+                  Your items ({vendorItems.length})
+                </SectionTitle>
+
+                {vendorItems.length > 0 ? (
+                  <Card>
+                    {vendorItems.map((item, index) => (
+                      <OrderItemRow
+                        key={index}
+                        item={item}
+                        order={order}
+                        isLast={index === vendorItems.length - 1}
+                      />
+                    ))}
+                  </Card>
+                ) : (
+                  <Card>
+                    <div className='flex flex-col items-center justify-center gap-2 px-5 py-8 text-center'>
+                      <Package className='size-8 text-grey3 dark:text-gray-500' />
+                      <p className='text-sm text-grey3 dark:text-gray-400'>
+                        No items from your store in this order.
+                      </p>
+                    </div>
+                  </Card>
+                )}
               </section>
 
               {/* ── Confirmation Status ── */}
@@ -791,35 +908,6 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   </Card>
                 </section>
               )}
-
-              {/* ── Vendor Items ── */}
-              <section className='space-y-3'>
-                <SectionTitle>
-                  Your items ({vendorItems.length})
-                </SectionTitle>
-
-                {vendorItems.length > 0 ? (
-                  <Card>
-                    {vendorItems.map((item, index) => (
-                      <OrderItemRow
-                        key={index}
-                        item={item}
-                        order={order}
-                        isLast={index === vendorItems.length - 1}
-                      />
-                    ))}
-                  </Card>
-                ) : (
-                  <Card>
-                    <div className='flex flex-col items-center justify-center gap-2 px-5 py-8 text-center'>
-                      <Package className='size-8 text-grey3 dark:text-gray-500' />
-                      <p className='text-sm text-grey3 dark:text-gray-400'>
-                        No items from your store in this order.
-                      </p>
-                    </div>
-                  </Card>
-                )}
-              </section>
 
               {/* ── Fabric Transfer (Outgoing — You are the fabric vendor) ── */}
               {outgoingFabricTransfers.length > 0 && (
@@ -1048,12 +1136,17 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   <SectionTitle>Delivery address</SectionTitle>
                   <Card>
                     <div className='px-5 py-4'>
+                      {typeof addr.full_name === 'string' && addr.full_name && (
+                        <p className='text-sm font-medium text-[#333333] dark:text-white'>
+                          {addr.full_name}
+                        </p>
+                      )}
                       <p className='text-sm text-[#333333] dark:text-white leading-relaxed'>
                         {addressParts.join(', ')}
                       </p>
-                      {typeof addr.phone === 'string' && addr.phone && (
+                      {typeof addressPhone === 'string' && addressPhone && (
                         <p className='mt-1 text-xs text-grey3 dark:text-gray-400'>
-                          {addr.phone}
+                          {addressPhone}
                         </p>
                       )}
                     </div>

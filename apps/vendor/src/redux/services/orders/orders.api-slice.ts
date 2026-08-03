@@ -278,11 +278,23 @@ export interface Order {
     lastName?: string;
   };
   items: OrderItem[];
+  /**
+   * Shipping address as returned by GET /orders/vendor. The street line is
+   * `address`, not `street`, and the phone is `phone_number` — the legacy
+   * `street` / `phone` / `zip_code` names are kept as optional fallbacks only.
+   */
   address: {
-    street?: string;
+    full_name?: string;
+    /** Street line, e.g. "2GR3+99Q, Gimbiya St, Garki, Abuja 900103". */
+    address?: string;
     city?: string;
     state?: string;
     country?: string;
+    postal_code?: string;
+    phone_number?: string;
+    label?: string;
+    /** @deprecated legacy names — the API returns the fields above. */
+    street?: string;
     zip_code?: string;
     phone?: string;
     [key: string]: unknown;
@@ -512,11 +524,9 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
       providesTags: ['OrderStats'],
     }),
 
-    // GET /business/earnings-chart — earnings by day of week
-    getEarningsChart: builder.query<{ data: any }, void>({
-      query: () => ({ url: '/business/earnings-chart', method: 'GET' }),
-      providesTags: ['OrderStats'],
-    }),
+    // NOTE: getEarningsChart lives in business.api-slice.ts — it is a
+    // /business/* endpoint. Declaring it here too made both slices inject the
+    // same endpoint name into baseAPI, which RTK Query warns about at runtime.
 
     // GET /orders/dashboard — top metric cards data
     getVendorDashboardMetrics: builder.query<DashboardMetricsResponse, void>({
@@ -533,6 +543,5 @@ export const {
   useConfirmOrderMutation,
   useRejectOrderMutation,
   useGetOrdersChartQuery,
-  useGetEarningsChartQuery,
   useGetVendorDashboardMetricsQuery,
 } = ordersApiSlice;

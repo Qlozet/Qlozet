@@ -11,8 +11,16 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { create, useModal } from '@ebay/nice-modal-react';
-import { Package, Scissors, Layers, Gem, PlusCircle, Palette } from 'lucide-react';
+import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
+import {
+  Package,
+  Scissors,
+  Layers,
+  Gem,
+  PlusCircle,
+  Palette,
+  Maximize2,
+} from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -23,7 +31,6 @@ import { cn } from '@/lib/utils';
 import type {
   Order,
   OrderItem,
-  PopulatedProduct,
   ProductImage,
   ClothingStyleDoc,
   ClothingFabricDoc,
@@ -33,118 +40,16 @@ import type {
   AppliedFabricRef,
 } from '@/redux/services/orders/orders.api-slice';
 import { formatNaira } from '../lib/order-fields';
-
-/* ------------------------------------------------------------------ */
-/*  Resolvers                                                          */
-/* ------------------------------------------------------------------ */
-
-const firstImg = (images?: (string | ProductImage)[]): string | null => {
-  if (!images?.length) return null;
-  const first = images[0];
-  if (typeof first === 'string') return first;
-  if (first && typeof first === 'object' && first.url) return first.url;
-  return null;
-};
-
-const asProduct = (p: OrderItem['product']): PopulatedProduct | null =>
-  typeof p === 'object' && p !== null ? (p as PopulatedProduct) : null;
-
-const getProductName = (product: PopulatedProduct | null): string => {
-  if (!product) return 'Product';
-  return (
-    product.clothing?.name ??
-    product.fabric?.name ??
-    product.accessory?.name ??
-    product.name ??
-    'Product'
-  );
-};
-
-const getProductImageUrl = (product: PopulatedProduct | null): string | null => {
-  if (!product) return null;
-  const kindImages =
-    product.clothing?.images ??
-    product.fabric?.images ??
-    product.accessory?.images;
-  return firstImg(kindImages) ?? firstImg(product.images);
-};
-
-const byId = <T extends { _id?: string }>(
-  arr: T[] | undefined,
-  id?: string,
-): T | undefined => (id ? arr?.find((x) => String(x._id) === String(id)) : undefined);
-
-/* ------------------------------------------------------------------ */
-/*  Shared UI atoms                                                    */
-/* ------------------------------------------------------------------ */
-
-const Thumb: React.FC<{
-  url?: string | null;
-  swatch?: string | null;
-  fallbackIcon?: React.ReactNode;
-  alt: string;
-}> = ({ url, swatch, fallbackIcon, alt }) => (
-  <div
-    className='relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#E5E7EB] dark:border-border bg-gray-100 dark:bg-gray-700'
-    style={swatch ? { backgroundColor: swatch } : undefined}
-  >
-    {url ? (
-      <Image src={url} alt={alt} fill className='object-cover' sizes='44px' />
-    ) : swatch ? null : (
-      fallbackIcon ?? <Package className='size-4 text-gray-400' />
-    )}
-  </div>
-);
-
-const SelectionRow: React.FC<{
-  url?: string | null;
-  swatch?: string | null;
-  icon?: React.ReactNode;
-  title: string;
-  subtitle?: string;
-  price?: number;
-  qty?: number;
-}> = ({ url, swatch, icon, title, subtitle, price, qty }) => (
-  <div className='flex items-center gap-3 px-3 py-2.5'>
-    <Thumb url={url} swatch={swatch} fallbackIcon={icon} alt={title} />
-    <div className='min-w-0 flex-1'>
-      <p className='truncate text-sm font-medium text-[#333333] dark:text-white'>
-        {title}
-      </p>
-      {subtitle && (
-        <p className='truncate text-xs text-grey3 dark:text-gray-400'>{subtitle}</p>
-      )}
-    </div>
-    <div className='shrink-0 text-right'>
-      {typeof price === 'number' && price > 0 && (
-        <p className='text-sm font-semibold text-[#333333] dark:text-white'>
-          {formatNaira(price)}
-        </p>
-      )}
-      {typeof qty === 'number' && qty > 0 && (
-        <p className='text-[11px] text-grey3 dark:text-gray-400'>×{qty}</p>
-      )}
-    </div>
-  </div>
-);
-
-const Section: React.FC<{
-  title: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}> = ({ title, icon, children }) => (
-  <div className='space-y-2'>
-    <div className='flex items-center gap-1.5'>
-      {icon}
-      <h4 className='text-xs font-semibold uppercase tracking-wider text-grey3 dark:text-gray-400'>
-        {title}
-      </h4>
-    </div>
-    <div className='divide-y divide-[#F1F3F5] dark:divide-border rounded-xl border border-[#E5E7EB] dark:border-border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]'>
-      {children}
-    </div>
-  </div>
-);
+import {
+  allProductImages,
+  asProduct,
+  byId,
+  firstImg,
+  getProductImageUrl,
+  getProductName,
+} from '../lib/item-resolvers';
+import { SelectionRow, Section, Thumb } from '../molecules/selection-row';
+import { MediaPreviewModal } from './media-preview-modal';
 
 /* ------------------------------------------------------------------ */
 /*  Content                                                            */
@@ -155,6 +60,7 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
   const clothing = product?.clothing;
   const name = getProductName(product);
   const heroUrl = getProductImageUrl(product);
+  const gallery = allProductImages(product);
   const kind = product?.kind;
   const total = item.total_price ?? item.pricing?.final ?? 0;
 
@@ -176,15 +82,34 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
 
   return (
     <div className='space-y-5'>
-      {/* Hero */}
+      {/* Hero — tapping the image opens the full-size lightbox. */}
       <div className='flex items-start gap-3.5'>
-        <div className='relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-700'>
+        <button
+          type='button'
+          onClick={() =>
+            NiceModal.show(MediaPreviewModal, {
+              images: gallery.length > 0 ? gallery : heroUrl ? [heroUrl] : [],
+              title: name,
+            })
+          }
+          aria-label={`View ${name} media`}
+          className='group relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-700 cursor-pointer'
+        >
           {heroUrl ? (
-            <Image src={heroUrl} alt={name} fill className='object-cover' sizes='80px' />
+            <Image
+              src={heroUrl}
+              alt={name}
+              fill
+              className='object-cover transition-transform group-hover:scale-105'
+              sizes='80px'
+            />
           ) : (
             <Package className='size-7 text-gray-400' />
           )}
-        </div>
+          <span className='absolute inset-0 flex items-center justify-center bg-black/0 text-white/0 transition-colors group-hover:bg-black/30 group-hover:text-white'>
+            <Maximize2 className='size-4' />
+          </span>
+        </button>
         <div className='min-w-0 flex-1'>
           <p className='text-base font-semibold text-[#0C0C0D] dark:text-white'>
             {name}
