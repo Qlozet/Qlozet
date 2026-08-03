@@ -36,6 +36,7 @@ import {
 } from '@/components/ui/tabs';
 import { ReturnsPanel } from '../organisms/returns-panel';
 import { DisputesPanel } from '../organisms/disputes-panel';
+import { QuoteRequestsTemplate } from '@/pattern/bespoke/templates/quote-requests-template';
 
 const PAGE_SIZE = 7;
 
@@ -90,6 +91,7 @@ export const OrdersPageTemplate: React.FC = () => {
         <TabsList className='h-12 gap-1 rounded-2xl border border-border bg-card p-1.5 custom-card-shadow'>
           {[
             { value: 'orders', label: 'Orders' },
+            { value: 'quotes', label: 'Quote Requests' },
             { value: 'returns', label: 'Returns' },
             { value: 'disputes', label: 'Disputes' },
           ].map((tab) => (
@@ -143,6 +145,10 @@ export const OrdersPageTemplate: React.FC = () => {
               emptyMessage='Orders will show up here once a customer places an order.'
             />
           </div>
+        </TabsContent>
+
+        <TabsContent value='quotes'>
+          <QuoteRequestsTemplate />
         </TabsContent>
 
         <TabsContent value='returns'>
