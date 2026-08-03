@@ -32,6 +32,7 @@ export const Sidebar = () => {
     const menuItems = [
         { icon: DashboardNavIcon, label: "Dashboard", href: APP_ROUTES.dashboard },
         { icon: OrdersNavIcon, label: "Orders", href: APP_ROUTES.orders },
+        { icon: OrdersNavIcon, label: "Quote Requests", href: APP_ROUTES.quoteRequests },
         {
             icon: ProductsNavIcon, label: "Products", href: APP_ROUTES.products, subItems: [
                 { icon: ProductsClothsNavIcon, label: "Clothing", href: APP_ROUTES.productsCloth },
