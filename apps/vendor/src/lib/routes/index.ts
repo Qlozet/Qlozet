@@ -17,6 +17,7 @@ export const APP_ROUTES = {
   customers: '/customers',
   dashboard: '/dashboard',
   orders: '/orders',
+  quoteRequests: '/quote-requests',
   products: '/products',
   productsCloth: '/products/clothing',
   productsAccessories: '/products/accessories',
