@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { create, useModal } from '@ebay/nice-modal-react';
 import Image from 'next/image';
-import { ArrowLeft, Calculator, ImageIcon, Info } from 'lucide-react';
+import { Calculator, ImageIcon, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Sheet,
@@ -18,13 +18,7 @@ import {
   useSubmitQuoteMutation,
   type QuoteLineItem,
 } from '@/redux/services/bespoke/bespoke.api-slice';
-import {
-  formatLongDate,
-  readOrderId,
-  readQuoteId,
-  deliveryBadge,
-  readStatus,
-} from '../lib/order-fields';
+import { formatLongDate, readQuoteId } from '../lib/order-fields';
 import type { Order } from '@/redux/services/orders/orders.api-slice';
 import { SAMPLE_QUOTE, SAMPLE_GARMENT_SPEC } from '../lib/orders-sample';
 
@@ -126,58 +120,36 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
     }
   };
 
-  const status = SAMPLE_QUOTE.status;
-
   return (
     <Sheet open={visible} onOpenChange={handleClose}>
       <SheetContent
         side='right'
         className='flex w-full flex-col gap-0 !overflow-y-auto p-0 sm:max-w-md !top-6 !bottom-6 !right-6 !h-[calc(100vh-3rem)] rounded-2xl custom-card-shadow bg-white dark:bg-[#404040] dark:bg-card'
       >
-        {/* Header */}
-        <div className='flex shrink-0 items-start justify-between px-6 pb-3 pt-6'>
-          <button
-            type='button'
-            onClick={handleClose}
-            aria-label='Back'
-            className='flex size-8 items-center justify-center rounded-full border border-border text-grey3 dark:text-gray-300 hover:bg-gray-50'
-          >
-            <ArrowLeft className='size-4' />
-          </button>
-          {/* Sheet renders its own close button at top-right */}
-        </div>
-
-        <div className='flex shrink-0 items-center justify-between px-6'>
-          <div>
-            <h2 className='text-lg font-bold text-grey-black dark:text-white'>
-              Order #{readOrderId(order)}
-            </h2>
-            <p className='text-xs text-grey2 dark:text-gray-400'>
-              {formatLongDate(order.createdAt)}
-            </p>
-          </div>
-          {(() => {
-            const badge = deliveryBadge(readStatus(order));
-            return (
-              <span className={`inline-flex h-[26px] items-center rounded-[8px] px-3 text-xs font-medium ${badge.className}`}>
-                {badge.label}
-              </span>
-            );
-          })()}
+        {/* Header (the sheet renders its own close button top-right) */}
+        <div className='flex shrink-0 flex-col gap-0.5 px-6 pb-1 pr-14 pt-6'>
+          <h2 className='truncate text-lg font-bold text-grey-black dark:text-white'>
+            {design?.name ||
+              (order.reference ? `Order #${order.reference}` : 'Custom order')}
+          </h2>
+          <p className='text-xs text-grey2 dark:text-gray-400'>
+            {order.createdAt
+              ? formatLongDate(order.createdAt)
+              : 'Bespoke quote request'}
+          </p>
         </div>
 
         <div className='flex flex-col gap-5 px-6 py-5'>
           {/* Quote card */}
           <section className='space-y-4 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4'>
-            <div className='flex items-center justify-between'>
-              <h3 className='text-base font-semibold text-grey-black dark:text-white'>Quote</h3>
-              <span className='rounded-[8px] bg-[#EAECF0] px-3 py-1 text-xs font-medium text-[#475467]'>
-                {status}
-              </span>
+            <div>
+              <h3 className='text-base font-semibold text-grey-black dark:text-white'>
+                Your Quote
+              </h3>
+              <p className='mt-0.5 text-xs text-grey2 dark:text-gray-400'>
+                The customer reviews this before production starts.
+              </p>
             </div>
-            <p className='text-xs text-grey2 dark:text-gray-400'>
-              Build your quote — customer reviews before production starts
-            </p>
 
             {/* Line items */}
             <div className='rounded-xl border border-border bg-white dark:bg-[#404040] p-4'>
@@ -203,7 +175,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                           readOnly && 'bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]'
                         )}
                       >
-                        <span className='text-sm text-grey2 dark:text-gray-400'>$</span>
+                        <span className='text-sm text-grey2 dark:text-gray-400'>₦</span>
                         <input
                           type='number'
                           min={0}
@@ -228,7 +200,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                   Total:
                 </span>
                 <span className='text-sm font-bold text-grey-black dark:text-white'>
-                  N{total.toLocaleString()}
+                  ₦{total.toLocaleString()}
                 </span>
               </div>
             </div>
@@ -305,11 +277,11 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
               </Button>
             </div>
 
-            <div className='flex items-start gap-2 rounded-lg bg-[#F1F1F1] p-3'>
+            <div className='flex items-start gap-2 rounded-lg bg-[#F1F1F1] dark:bg-[#404040] p-3'>
               <Info className='mt-0.5 size-4 shrink-0 text-grey3 dark:text-gray-300' />
               <p className='text-xs text-grey3 dark:text-gray-300'>
-                Custom orders become non-cancellable after cutting begins. If
-                something feels off, message the vendor or escalate to Qlozet.
+                Once the customer accepts and pays, this becomes a confirmed
+                order you fulfil. Quotes expire after 7 days.
               </p>
             </div>
           </section>
