@@ -39,6 +39,27 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
   const { data } = useGetQuoteQuery(quoteId, { skip: !quoteId || !visible });
   const quote = data?.data;
 
+  // Real bespoke design — passed on the order from the Quote Requests list, or
+  // populated on the fetched quote (getQuoteDetail populates `design`).
+  const orderDesign = (order as any)?.bespoke_design;
+  const quoteDesign =
+    (quote as any)?.design ?? (quote as any)?.data?.design;
+  const design: any =
+    orderDesign && typeof orderDesign === 'object' ? orderDesign : quoteDesign;
+
+  // The design's `description` is a JSON blob of { notes, selections }.
+  const { designNotes, designSelections } = useMemo(() => {
+    try {
+      const parsed = JSON.parse(design?.description ?? '{}');
+      return {
+        designNotes: parsed?.notes ?? '',
+        designSelections: parsed?.selections ?? {},
+      };
+    } catch {
+      return { designNotes: design?.description ?? '', designSelections: {} };
+    }
+  }, [design]);
+
   const [lineItems, setLineItems] = useState<QuoteLineItem[]>(
     SAMPLE_QUOTE.line_items
   );
@@ -293,42 +314,96 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
             </div>
           </section>
 
-          {/* Garment specs */}
-          <section className='space-y-3'>
-            <h3 className='text-base font-semibold text-grey-black dark:text-white'>
-              Garment Specs
-            </h3>
-            <div className='flex items-center gap-3 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4'>
-              <div className='relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100'>
-                {SAMPLE_GARMENT_SPEC.image ? (
-                  <Image
-                    src={SAMPLE_GARMENT_SPEC.image}
-                    alt={SAMPLE_GARMENT_SPEC.name}
-                    fill
-                    className='object-cover'
-                    sizes='48px'
-                  />
-                ) : (
-                  <ImageIcon className='size-5 text-gray-400' />
-                )}
-              </div>
-              <div>
-                <p className='text-sm font-semibold text-grey-black dark:text-white'>
-                  {SAMPLE_GARMENT_SPEC.name}
-                </p>
-                <div className='mt-1 flex flex-wrap gap-2'>
-                  {SAMPLE_GARMENT_SPEC.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className='rounded-md bg-white dark:bg-[#404040] px-2 py-0.5 text-[11px] font-medium text-grey3 dark:text-gray-300'
-                    >
-                      {tag}
-                    </span>
-                  ))}
+          {/* Garment specs — the customer's real bespoke design */}
+          {(() => {
+            const images: string[] = design?.design_images ?? [];
+            const refImages: string[] = design?.reference_images ?? [];
+            const name = design?.name ?? SAMPLE_GARMENT_SPEC.name;
+            const tags = [
+              design?.category,
+              design?.gender,
+              designSelections?.silhouette,
+              designSelections?.neckline,
+              designSelections?.sleeve,
+              designSelections?.collar,
+              design?.fabric?.name,
+              designSelections?.fabric,
+            ].filter(Boolean) as string[];
+            return (
+              <section className='space-y-3'>
+                <h3 className='text-base font-semibold text-grey-black dark:text-white'>
+                  Design Details
+                </h3>
+                <div className='rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4 space-y-3'>
+                  <div className='flex items-center gap-3'>
+                    <div className='relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100'>
+                      {images[0] ? (
+                        <Image src={images[0]} alt={name} fill className='object-cover' sizes='56px' />
+                      ) : (
+                        <ImageIcon className='size-5 text-gray-400' />
+                      )}
+                    </div>
+                    <div className='min-w-0'>
+                      <p className='truncate text-sm font-semibold text-grey-black dark:text-white'>
+                        {name}
+                      </p>
+                      {tags.length > 0 && (
+                        <div className='mt-1 flex flex-wrap gap-2'>
+                          {tags.slice(0, 6).map((tag, i) => (
+                            <span
+                              key={`${tag}-${i}`}
+                              className='rounded-md bg-white dark:bg-[#404040] px-2 py-0.5 text-[11px] font-medium capitalize text-grey3 dark:text-gray-300'
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Design image gallery */}
+                  {images.length > 1 && (
+                    <div className='flex gap-2 overflow-x-auto'>
+                      {images.map((img, i) => (
+                        <div key={i} className='relative size-16 shrink-0 overflow-hidden rounded-lg bg-gray-100'>
+                          <Image src={img} alt={`Design ${i + 1}`} fill className='object-cover' sizes='64px' />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Customer notes */}
+                  {designNotes && (
+                    <div>
+                      <p className='text-[11px] font-semibold uppercase text-grey3 dark:text-gray-400'>
+                        Customer notes
+                      </p>
+                      <p className='mt-1 text-sm text-grey-black dark:text-gray-200'>
+                        {designNotes}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Reference images */}
+                  {refImages.length > 0 && (
+                    <div>
+                      <p className='mb-1 text-[11px] font-semibold uppercase text-grey3 dark:text-gray-400'>
+                        Reference images
+                      </p>
+                      <div className='flex gap-2 overflow-x-auto'>
+                        {refImages.map((img, i) => (
+                          <div key={i} className='relative size-16 shrink-0 overflow-hidden rounded-lg bg-gray-100'>
+                            <Image src={img} alt={`Reference ${i + 1}`} fill className='object-cover' sizes='64px' />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            </div>
-          </section>
+              </section>
+            );
+          })()}
         </div>
       </SheetContent>
     </Sheet>
