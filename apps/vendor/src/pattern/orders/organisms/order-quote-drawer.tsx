@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { create, useModal } from '@ebay/nice-modal-react';
+import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
 import Image from 'next/image';
-import { Calculator, ImageIcon, Info } from 'lucide-react';
+import { Calculator, ChevronRight, ImageIcon, Info } from 'lucide-react';
+import { DesignDetailModal } from './design-detail-modal';
 import { toast } from 'sonner';
 import {
   Sheet,
@@ -20,7 +21,7 @@ import {
 } from '@/redux/services/bespoke/bespoke.api-slice';
 import { formatLongDate, readQuoteId } from '../lib/order-fields';
 import type { Order } from '@/redux/services/orders/orders.api-slice';
-import { SAMPLE_QUOTE, SAMPLE_GARMENT_SPEC } from '../lib/orders-sample';
+import { SAMPLE_QUOTE } from '../lib/orders-sample';
 
 interface OrderQuoteDrawerProps {
   order: Order;
@@ -41,18 +42,29 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
   const design: any =
     orderDesign && typeof orderDesign === 'object' ? orderDesign : quoteDesign;
 
-  // The design's `description` is a JSON blob of { notes, selections }.
-  const { designNotes, designSelections } = useMemo(() => {
-    try {
-      const parsed = JSON.parse(design?.description ?? '{}');
-      return {
-        designNotes: parsed?.notes ?? '',
-        designSelections: parsed?.selections ?? {},
-      };
-    } catch {
-      return { designNotes: design?.description ?? '', designSelections: {} };
-    }
-  }, [design]);
+  // Quote state drives what the vendor can do. Editable only while the request
+  // is new / a draft / a revision was requested; once submitted or resolved the
+  // form is read-only.
+  const q: any = (quote as any)?.data ?? quote;
+  const quoteStatus = String(
+    (order as any)?.bespoke_quote_status ?? q?.status ?? 'pending',
+  ).toLowerCase();
+  const isEditable = ['pending', 'draft', 'revision_requested'].includes(
+    quoteStatus,
+  );
+  const STATUS_META: Record<string, { label: string; className: string }> = {
+    pending: { label: 'New request', className: 'bg-[#FEF6E7] text-[#DD900D]' },
+    draft: { label: 'Draft', className: 'bg-[#EAECF0] text-[#475467]' },
+    revision_requested: { label: 'Revision requested', className: 'bg-[#F4EBFF] text-[#7E22CE]' },
+    submitted: { label: 'Submitted', className: 'bg-[#E7F6EC] text-[#0F973D]' },
+    accepted: { label: 'Accepted', className: 'bg-[#E3EFFC] text-[#1671D9]' },
+    declined: { label: 'Declined', className: 'bg-[#FBEAE9] text-[#D42620]' },
+    expired: { label: 'Expired', className: 'bg-[#FBEAE9] text-[#D42620]' },
+  };
+  const statusMeta = STATUS_META[quoteStatus] ?? {
+    label: quoteStatus,
+    className: 'bg-[#EAECF0] text-[#475467]',
+  };
 
   const [lineItems, setLineItems] = useState<QuoteLineItem[]>(
     SAMPLE_QUOTE.line_items
@@ -142,13 +154,22 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
         <div className='flex flex-col gap-5 px-6 py-5'>
           {/* Quote card */}
           <section className='space-y-4 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4'>
-            <div>
-              <h3 className='text-base font-semibold text-grey-black dark:text-white'>
-                Your Quote
-              </h3>
-              <p className='mt-0.5 text-xs text-grey2 dark:text-gray-400'>
-                The customer reviews this before production starts.
-              </p>
+            <div className='flex items-start justify-between gap-2'>
+              <div>
+                <h3 className='text-base font-semibold text-grey-black dark:text-white'>
+                  Your Quote
+                </h3>
+                <p className='mt-0.5 text-xs text-grey2 dark:text-gray-400'>
+                  {isEditable
+                    ? 'The customer reviews this before production starts.'
+                    : 'This quote is locked.'}
+                </p>
+              </div>
+              <span
+                className={`shrink-0 rounded-lg px-2.5 py-1 text-[10px] font-semibold uppercase ${statusMeta.className}`}
+              >
+                {statusMeta.label}
+              </span>
             </div>
 
             {/* Line items */}
@@ -162,7 +183,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
 
               <div className='space-y-3'>
                 {lineItems.map((li, index) => {
-                  const readOnly = li.label.toLowerCase() === 'fabric';
+                  const readOnly = li.label.toLowerCase() === 'fabric' || !isEditable;
                   return (
                     <div
                       key={li.label}
@@ -215,8 +236,12 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                   type='number'
                   min={0}
                   value={fabricYards}
+                  readOnly={!isEditable}
                   onChange={(e) => setFabricYards(Number(e.target.value) || 0)}
-                  className='w-16 rounded-lg border border-border px-3 py-1.5 text-right text-sm text-grey-black dark:text-white focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none'
+                  className={cn(
+                    'w-16 rounded-lg border border-border px-3 py-1.5 text-right text-sm text-grey-black dark:text-white focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+                    !isEditable && 'bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] text-grey2 dark:text-gray-400'
+                  )}
                 />
                 <span className='text-sm text-grey3 dark:text-gray-300'>yards</span>
               </div>
@@ -235,10 +260,14 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                   type='number'
                   min={0}
                   value={completionDays}
+                  readOnly={!isEditable}
                   onChange={(e) =>
                     setCompletionDays(Number(e.target.value) || 0)
                   }
-                  className='w-20 rounded-lg border border-border px-3 py-1.5 text-right text-sm text-grey-black dark:text-white focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none'
+                  className={cn(
+                    'w-20 rounded-lg border border-border px-3 py-1.5 text-right text-sm text-grey-black dark:text-white focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+                    !isEditable && 'bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] text-grey2 dark:text-gray-400'
+                  )}
                 />
                 <span className='text-sm text-grey3 dark:text-gray-300'>days</span>
               </div>
@@ -251,31 +280,56 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
               </label>
               <Textarea
                 value={notes}
+                readOnly={!isEditable}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder='Any special notes, conditions or payment terms...'
-                className='min-h-[80px] resize-none bg-white dark:bg-[#404040]'
+                placeholder={
+                  isEditable
+                    ? 'Any special notes, conditions or payment terms...'
+                    : 'No notes'
+                }
+                className={cn(
+                  'min-h-[80px] resize-none bg-white dark:bg-[#404040]',
+                  !isEditable && 'bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]'
+                )}
               />
             </div>
 
-            <div className='space-y-3'>
-              <Button
-                type='button'
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className='w-full'
-              >
-                {isSubmitting ? 'Submitting...' : 'Submit quote'}
-              </Button>
-              <Button
-                type='button'
-                variant='outline'
-                onClick={handleSave}
-                disabled={isSaving}
-                className='w-full'
-              >
-                {isSaving ? 'Saving...' : 'Save quote'}
-              </Button>
-            </div>
+            {isEditable ? (
+              <div className='space-y-3'>
+                <Button
+                  type='button'
+                  onClick={handleSubmit}
+                  disabled={isSubmitting || total <= 0}
+                  className='w-full'
+                >
+                  {isSubmitting
+                    ? 'Submitting...'
+                    : quoteStatus === 'revision_requested'
+                      ? 'Resubmit quote'
+                      : 'Submit quote'}
+                </Button>
+                <Button
+                  type='button'
+                  variant='outline'
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className='w-full'
+                >
+                  {isSaving ? 'Saving...' : 'Save draft'}
+                </Button>
+              </div>
+            ) : (
+              <div className='rounded-lg bg-white dark:bg-[#404040] px-3 py-3 text-center text-xs text-grey3 dark:text-gray-300'>
+                {quoteStatus === 'submitted' &&
+                  'Quote submitted — waiting for the customer to accept or request changes.'}
+                {quoteStatus === 'accepted' &&
+                  'Accepted — this is now a confirmed order in your Orders.'}
+                {quoteStatus === 'declined' &&
+                  'The customer chose a different tailor for this design.'}
+                {quoteStatus === 'expired' &&
+                  'This quote expired before it was accepted.'}
+              </div>
+            )}
 
             <div className='flex items-start gap-2 rounded-lg bg-[#F1F1F1] dark:bg-[#404040] p-3'>
               <Info className='mt-0.5 size-4 shrink-0 text-grey3 dark:text-gray-300' />
@@ -286,96 +340,41 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
             </div>
           </section>
 
-          {/* Garment specs — the customer's real bespoke design */}
-          {(() => {
-            const images: string[] = design?.design_images ?? [];
-            const refImages: string[] = design?.reference_images ?? [];
-            const name = design?.name ?? SAMPLE_GARMENT_SPEC.name;
-            const tags = [
-              design?.category,
-              design?.gender,
-              designSelections?.silhouette,
-              designSelections?.neckline,
-              designSelections?.sleeve,
-              designSelections?.collar,
-              design?.fabric?.name,
-              designSelections?.fabric,
-            ].filter(Boolean) as string[];
-            return (
-              <section className='order-first space-y-3'>
-                <h3 className='text-base font-semibold text-grey-black dark:text-white'>
-                  Design Details
-                </h3>
-                <div className='rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4 space-y-3'>
-                  <div className='flex items-center gap-3'>
-                    <div className='relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100'>
-                      {images[0] ? (
-                        <Image src={images[0]} alt={name} fill className='object-cover' sizes='56px' />
-                      ) : (
-                        <ImageIcon className='size-5 text-gray-400' />
-                      )}
-                    </div>
-                    <div className='min-w-0'>
-                      <p className='truncate text-sm font-semibold text-grey-black dark:text-white'>
-                        {name}
-                      </p>
-                      {tags.length > 0 && (
-                        <div className='mt-1 flex flex-wrap gap-2'>
-                          {tags.slice(0, 6).map((tag, i) => (
-                            <span
-                              key={`${tag}-${i}`}
-                              className='rounded-md bg-white dark:bg-[#404040] px-2 py-0.5 text-[11px] font-medium capitalize text-grey3 dark:text-gray-300'
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Design image gallery */}
-                  {images.length > 1 && (
-                    <div className='flex gap-2 overflow-x-auto'>
-                      {images.map((img, i) => (
-                        <div key={i} className='relative size-16 shrink-0 overflow-hidden rounded-lg bg-gray-100'>
-                          <Image src={img} alt={`Design ${i + 1}`} fill className='object-cover' sizes='64px' />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Customer notes */}
-                  {designNotes && (
-                    <div>
-                      <p className='text-[11px] font-semibold uppercase text-grey3 dark:text-gray-400'>
-                        Customer notes
-                      </p>
-                      <p className='mt-1 text-sm text-grey-black dark:text-gray-200'>
-                        {designNotes}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Reference images */}
-                  {refImages.length > 0 && (
-                    <div>
-                      <p className='mb-1 text-[11px] font-semibold uppercase text-grey3 dark:text-gray-400'>
-                        Reference images
-                      </p>
-                      <div className='flex gap-2 overflow-x-auto'>
-                        {refImages.map((img, i) => (
-                          <div key={i} className='relative size-16 shrink-0 overflow-hidden rounded-lg bg-gray-100'>
-                            <Image src={img} alt={`Reference ${i + 1}`} fill className='object-cover' sizes='64px' />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </section>
-            );
-          })()}
+          {/* Design details — compact card that opens the full design modal */}
+          {design && (
+            <button
+              type='button'
+              onClick={() => NiceModal.show(DesignDetailModal, { design })}
+              className='order-first flex items-center gap-3 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-3 text-left transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'
+            >
+              <div className='relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100'>
+                {design.design_images?.[0] ? (
+                  <Image
+                    src={design.design_images[0]}
+                    alt={design.name ?? 'Design'}
+                    fill
+                    className='object-cover'
+                    sizes='56px'
+                  />
+                ) : (
+                  <ImageIcon className='size-5 text-gray-400' />
+                )}
+              </div>
+              <div className='min-w-0 flex-1'>
+                <p className='truncate text-sm font-semibold text-grey-black dark:text-white'>
+                  {design.name ?? 'Custom design'}
+                </p>
+                <p className='truncate text-xs capitalize text-grey3 dark:text-gray-400'>
+                  {[design.category, design.gender].filter(Boolean).join(' · ') ||
+                    'Bespoke design'}
+                </p>
+              </div>
+              <span className='shrink-0 text-xs font-medium text-primary'>
+                View details
+              </span>
+              <ChevronRight className='size-4 shrink-0 text-grey3' />
+            </button>
+          )}
         </div>
       </SheetContent>
     </Sheet>
