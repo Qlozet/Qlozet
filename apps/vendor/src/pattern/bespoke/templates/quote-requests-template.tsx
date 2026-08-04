@@ -56,9 +56,9 @@ export const QuoteRequestsTemplate = () => {
       </div>
 
       {isLoading ? (
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3'>
+        <div className='flex flex-wrap gap-4'>
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className='h-64 rounded-2xl' />
+            <Skeleton key={i} className='h-64 w-full rounded-2xl sm:w-[220px]' />
           ))}
         </div>
       ) : quotes.length === 0 ? (
@@ -69,7 +69,7 @@ export const QuoteRequestsTemplate = () => {
           </p>
         </div>
       ) : (
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3'>
+        <div className='flex flex-wrap gap-4'>
           {quotes.map((q) => {
             const design = q.design ?? {};
             const img = design.design_images?.[0];
@@ -89,7 +89,7 @@ export const QuoteRequestsTemplate = () => {
               <button
                 key={q._id}
                 onClick={() => open(q)}
-                className='flex flex-col overflow-hidden rounded-2xl border border-border bg-card text-left transition-shadow hover:shadow-md'
+                className='flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-card text-left transition-shadow hover:shadow-md sm:w-[220px]'
               >
                 <div className='relative h-40 w-full bg-muted'>
                   {img ? (
