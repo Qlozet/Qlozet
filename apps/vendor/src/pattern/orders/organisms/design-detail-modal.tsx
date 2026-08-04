@@ -34,9 +34,6 @@ const firstImg = (images?: any[]): string | null => {
   return null;
 };
 
-const cap = (s?: string) =>
-  s ? s.charAt(0).toUpperCase() + s.slice(1).replace(/[_-]/g, ' ') : s;
-
 /* ------------------------------------------------------------------ */
 /*  UI atoms                                                           */
 /* ------------------------------------------------------------------ */
@@ -105,18 +102,35 @@ const DesignDetailContent: React.FC<{ design: any }> = ({ design }) => {
   const fabricSwatch = fabricDoc?.colors?.[0]?.hex ?? selections?.color;
   const pricePerYard = fabricDoc?.price_per_yard;
 
-  // Style spec rows (only the ones that are set).
-  const specs: { label: string; value: string }[] = [
-    ['Silhouette', selections?.silhouette],
-    ['Neckline', selections?.neckline],
-    ['Sleeve', selections?.sleeve],
-    ['Collar', selections?.collar],
-    ['Skirt', selections?.skirt],
-    ['Trouser', selections?.trouser],
-    ['Fit', selections?.fit],
-  ]
-    .filter(([, v]) => v)
-    .map(([label, v]) => ({ label: label as string, value: cap(v as string)! }));
+  // Style rows — only selections that resolved to a name + (ideally) an image.
+  // Raw ids (unresolved strings) are skipped so we never show gibberish like "s2".
+  const styleRows = (
+    [
+      ['Silhouette', selections?.silhouette],
+      ['Neckline', selections?.neckline],
+      ['Sleeve', selections?.sleeve],
+      ['Collar', selections?.collar],
+      ['Skirt', selections?.skirt],
+      ['Trouser', selections?.trouser],
+      ['Fit', selections?.fit],
+    ] as [string, any][]
+  )
+    .map(([label, v]) =>
+      v && typeof v === 'object' && v.name
+        ? {
+            label,
+            name: v.name as string,
+            image: v.image as string | undefined,
+            emoji: v.emoji as string | undefined,
+          }
+        : null,
+    )
+    .filter(Boolean) as {
+    label: string;
+    name: string;
+    image?: string;
+    emoji?: string;
+  }[];
 
   return (
     <div className='space-y-5'>
@@ -199,12 +213,30 @@ const DesignDetailContent: React.FC<{ design: any }> = ({ design }) => {
         </Section>
       )}
 
-      {/* Style spec */}
-      {specs.length > 0 && (
+      {/* Style — each selection with its thumbnail + name */}
+      {(styleRows.length > 0 || selections?.color) && (
         <Section title='Style' icon={<Palette className='size-3.5 text-grey3' />}>
           <div className='divide-y divide-[#F1F3F5] dark:divide-border rounded-xl border border-[#E5E7EB] dark:border-border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]'>
-            {specs.map((s) => (
-              <SpecRow key={s.label} label={s.label} value={s.value} />
+            {styleRows.map((s) => (
+              <div key={s.label} className='flex items-center gap-3 px-3 py-2.5'>
+                <div className='relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#E5E7EB] dark:border-border bg-gray-100 dark:bg-gray-700 text-lg'>
+                  {s.image ? (
+                    <Image src={s.image} alt={s.name} fill className='object-cover' sizes='44px' />
+                  ) : s.emoji ? (
+                    <span>{s.emoji}</span>
+                  ) : (
+                    <Palette className='size-4 text-gray-400' />
+                  )}
+                </div>
+                <div className='min-w-0 flex-1'>
+                  <p className='truncate text-sm font-medium text-[#333333] dark:text-white'>
+                    {s.name}
+                  </p>
+                  <p className='truncate text-xs text-grey3 dark:text-gray-400'>
+                    {s.label}
+                  </p>
+                </div>
+              </div>
             ))}
             {selections?.color && (
               <SpecRow label='Colour' value={selections.color} swatch={selections.color} />

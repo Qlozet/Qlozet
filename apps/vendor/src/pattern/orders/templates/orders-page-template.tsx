@@ -22,12 +22,7 @@ import {
   type OrderStatusFilter,
 } from '../molecules/order-status-filter-menu';
 import { OrderDetailsDrawer } from '../organisms/order-details-drawer';
-import { OrderQuoteDrawer } from '../organisms/order-quote-drawer';
-import {
-  isCustomOrder,
-  readCustomerName,
-  readOrderId,
-} from '../lib/order-fields';
+import { readCustomerName, readOrderId } from '../lib/order-fields';
 import {
   Tabs,
   TabsList,
@@ -69,12 +64,11 @@ export const OrdersPageTemplate: React.FC = () => {
     );
   }, [orders, search]);
 
+  // Any order in this list is a real, accepted order (bespoke orders only exist
+  // after a quote is accepted), so open the details/fulfil drawer for all of
+  // them. The quote-builder drawer lives on the Quote Requests tab.
   const openDetails = (order: Order) => {
-    if (isCustomOrder(order)) {
-      NiceModal.show(OrderQuoteDrawer, { order });
-    } else {
-      NiceModal.show(OrderDetailsDrawer, { order });
-    }
+    NiceModal.show(OrderDetailsDrawer, { order });
   };
 
   const columns = useMemo(() => createOrdersColumns(openDetails), []);
