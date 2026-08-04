@@ -60,6 +60,7 @@ import { useAppSelector } from '@/redux/store';
 import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 import { CustomerDetailsModal } from '../../customers/organisms/customer-details-modal';
 import { OrderItemDetailModal } from './order-item-detail-modal';
+import { DesignDetailModal } from './design-detail-modal';
 import {
   deliveryBadge,
   formatDate,
@@ -712,6 +713,44 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     isLast
                   />
                 </Card>
+
+                {/* Bespoke design — what the tailor is making */}
+                {order.type === 'bespoke' &&
+                  (order as any).bespoke_design &&
+                  typeof (order as any).bespoke_design === 'object' && (
+                    <button
+                      type='button'
+                      onClick={() =>
+                        NiceModal.show(DesignDetailModal, {
+                          design: (order as any).bespoke_design,
+                        })
+                      }
+                      className='flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-3 text-left transition-colors hover:bg-muted/40'
+                    >
+                      <div className='relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100'>
+                        {(order as any).bespoke_design.design_images?.[0] ? (
+                          <Image
+                            src={(order as any).bespoke_design.design_images[0]}
+                            alt='Design'
+                            fill
+                            className='object-cover'
+                            sizes='56px'
+                          />
+                        ) : (
+                          <Tag className='size-5 text-gray-400' />
+                        )}
+                      </div>
+                      <div className='min-w-0 flex-1'>
+                        <p className='truncate text-sm font-semibold text-foreground'>
+                          {(order as any).bespoke_design.name ?? 'Custom design'}
+                        </p>
+                        <p className='text-xs text-muted-foreground'>
+                          Bespoke design · tap to view
+                        </p>
+                      </div>
+                      <ChevronRight className='size-4 shrink-0 text-muted-foreground' />
+                    </button>
+                  )}
               </section>
 
               {/* ── Confirmation Status ── */}
