@@ -38,18 +38,30 @@ const pickImg = (arr: any): string | null => {
     return null;
 };
 
-// Product image, with a fallback to the bespoke design for custom orders
-// (which have no catalog product).
-const readImage = (o: any): string | null => {
-    const p = o?.items?.[0]?.product;
-    if (p && typeof p === 'object') {
-        const kind = p.clothing?.images ?? p.fabric?.images ?? p.accessory?.images;
-        const img = pickImg(kind) ?? pickImg(p.images);
-        if (img) return img;
+const productImage = (item: any): string | null => {
+    const p = item?.product;
+    if (!p || typeof p !== 'object') return null;
+    const kind = p.clothing?.images ?? p.fabric?.images ?? p.accessory?.images;
+    return pickImg(kind) ?? pickImg(p.images);
+};
+
+// Up to `max` item thumbnails; falls back to the bespoke design image for
+// custom orders. Used for the overlapping stack on multi-item orders.
+const readImages = (o: any, max = 3): string[] => {
+    const imgs: string[] = [];
+    for (const item of Array.isArray(o?.items) ? o.items : []) {
+        const img = productImage(item);
+        if (img) imgs.push(img);
+        if (imgs.length >= max) break;
     }
-    const d = bespokeDesign(o);
-    if (d) return pickImg(d.design_images) ?? pickImg(d.reference_images);
-    return null;
+    if (imgs.length === 0) {
+        const d = bespokeDesign(o);
+        if (d) {
+            const img = pickImg(d.design_images) ?? pickImg(d.reference_images);
+            if (img) imgs.push(img);
+        }
+    }
+    return imgs;
 };
 
 const readName = (o: any): string => {
@@ -133,8 +145,9 @@ export const RecentOrders = () => {
                     </div>
                 ) : (
                     orders.map((order: any, idx: number) => {
-                        const img = readImage(order);
+                        const images = readImages(order, 3);
                         const name = readName(order);
+                        const itemsCount = Array.isArray(order?.items) ? order.items.length : 0;
                         const badge = readStatusBadge(order?.status);
                         return (
                             <div
@@ -142,16 +155,32 @@ export const RecentOrders = () => {
                                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
                             >
                                 <div className="flex items-center gap-3 min-w-0">
-                                    <div className="relative size-11 rounded-md shrink-0 overflow-hidden bg-gray-200 flex items-center justify-center">
-                                        {img ? (
-                                            // eslint-disable-next-line @next/next/no-img-element
-                                            <img src={img} alt={name} className="size-full object-cover" />
+                                    {/* Overlapping thumbnail stack for multi-item orders */}
+                                    <div className="flex shrink-0 items-center">
+                                        {images.length > 0 ? (
+                                            images.map((src, i) => (
+                                                <div
+                                                    key={i}
+                                                    className="size-11 rounded-md overflow-hidden bg-gray-200 ring-2 ring-gray-50"
+                                                    style={{ marginLeft: i === 0 ? 0 : -16, zIndex: images.length - i }}
+                                                >
+                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                    <img src={src} alt={name} className="size-full object-cover" />
+                                                </div>
+                                            ))
                                         ) : (
-                                            <Package className="size-4 text-gray-400" />
+                                            <div className="size-11 rounded-md overflow-hidden bg-gray-200 flex items-center justify-center">
+                                                <Package className="size-4 text-gray-400" />
+                                            </div>
                                         )}
                                     </div>
                                     <div className="flex flex-col gap-0.5 min-w-0">
-                                        <p className="text-sm font-medium text-gray-900 truncate max-w-[160px]">{name}</p>
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900 truncate max-w-[130px]">{name}</p>
+                                            {itemsCount > 1 && (
+                                                <span className="text-[10px] text-gray-400 shrink-0">+{itemsCount - 1} more</span>
+                                            )}
+                                        </div>
                                         <p className="text-xs text-gray-600 truncate max-w-[160px]">{readCustomer(order)}</p>
                                     </div>
                                 </div>

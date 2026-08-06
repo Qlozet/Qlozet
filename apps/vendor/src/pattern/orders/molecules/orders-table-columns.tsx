@@ -29,21 +29,29 @@ export const createOrdersColumns = (
     cell: ({ row }) => {
       const img = readOrderImage(row.original);
       const title = readOrderTitle(row.original);
+      const count = readItemsCount(row.original);
       return (
         <div className='flex items-center gap-2.5'>
-          <div className='relative size-9 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700'>
-            {img ? (
-              <Image
-                src={img}
-                alt={title}
-                fill
-                className='object-cover'
-                sizes='36px'
-              />
-            ) : (
-              <div className='flex size-full items-center justify-center text-gray-400'>
-                <Package className='size-4' />
-              </div>
+          <div className='relative shrink-0'>
+            <div className='relative size-9 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700'>
+              {img ? (
+                <Image
+                  src={img}
+                  alt={title}
+                  fill
+                  className='object-cover'
+                  sizes='36px'
+                />
+              ) : (
+                <div className='flex size-full items-center justify-center text-gray-400'>
+                  <Package className='size-4' />
+                </div>
+              )}
+            </div>
+            {count > 1 && (
+              <span className='absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold leading-none text-primary-foreground ring-2 ring-white dark:ring-card'>
+                {count}
+              </span>
             )}
           </div>
           <span className='max-w-[160px] truncate text-sm font-medium text-grey-black dark:text-foreground'>
