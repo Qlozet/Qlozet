@@ -362,7 +362,7 @@ export const SizeGuidesCreateTemplate = () => {
 
   // ─── Render ───────────────────────────────────────────────────
   return (
-    <div className='max-w-7xl mx-auto space-y-6 pb-20'>
+    <div className='max-w-7xl mx-auto space-y-6 pb-20 outline outline-2 outline-orange-500'>
       {/* Go Back */}
       <div className='mb-6'>
         <GoBackButton />
@@ -372,10 +372,10 @@ export const SizeGuidesCreateTemplate = () => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit as any)}
-            className='grid grid-cols-1 lg:grid-cols-3 gap-6 items-start'
+            className='grid grid-cols-1 lg:grid-cols-3 gap-6 items-start outline outline-2 outline-blue-500'
           >
             {/* LEFT COLUMN: Main Form */}
-            <div className='lg:col-span-2 space-y-6'>
+            <div className='lg:col-span-2 space-y-6 outline outline-2 outline-green-500'>
               {/* General Info Card */}
               <div className={cardClass}>
                 <h3 className='text-base font-medium mb-6'>
@@ -487,8 +487,8 @@ export const SizeGuidesCreateTemplate = () => {
             </div>
 
             {/* RIGHT COLUMN: Configuration */}
-            <div className='lg:col-span-1'>
-              <div className='sticky top-6 space-y-6'>
+            <div className='lg:col-span-1 outline outline-2 outline-red-500'>
+              <div className='sticky top-6 space-y-6 outline outline-2 outline-purple-500'>
                 <div className={cardClass}>
                 <h3 className='text-base font-medium mb-6 text-grey-black dark:text-gray-200'>
                   Configuration
