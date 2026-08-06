@@ -152,7 +152,7 @@ export const RecentOrders = () => {
                         return (
                             <div
                                 key={order?._id || order?.id || idx}
-                                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
+                                className="group flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
                             >
                                 <div className="flex items-center gap-3 min-w-0">
                                     {/* Overlapping thumbnail stack for multi-item orders */}
@@ -161,8 +161,8 @@ export const RecentOrders = () => {
                                             images.map((src, i) => (
                                                 <div
                                                     key={i}
-                                                    className="size-11 rounded-md overflow-hidden bg-gray-200 ring-2 ring-gray-50"
-                                                    style={{ marginLeft: i === 0 ? 0 : -16, zIndex: images.length - i }}
+                                                    className={`size-11 rounded-md overflow-hidden bg-gray-200 ring-2 ring-gray-50 transition-all duration-200 ease-out ${i !== 0 ? '-ml-8 group-hover:-ml-4' : ''}`}
+                                                    style={{ zIndex: images.length - i }}
                                                 >
                                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                                     <img src={src} alt={name} className="size-full object-cover" />

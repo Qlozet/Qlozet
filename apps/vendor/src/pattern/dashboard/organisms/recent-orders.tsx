@@ -124,8 +124,12 @@ export const RecentOrders = () => {
                                             images.map((src, i) => (
                                                 <div
                                                     key={i}
-                                                    className="relative size-11 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700 ring-2 ring-gray-50 dark:ring-muted"
-                                                    style={{ marginLeft: i === 0 ? 0 : -16, zIndex: images.length - i }}
+                                                    className={cn(
+                                                        'relative size-11 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700 ring-2 ring-gray-50 dark:ring-muted transition-all duration-200 ease-out',
+                                                        // Tight by default (just reads as a stack); fan out on card hover.
+                                                        i !== 0 && '-ml-8 group-hover:-ml-4'
+                                                    )}
+                                                    style={{ zIndex: images.length - i }}
                                                 >
                                                     <Image
                                                         src={src}
