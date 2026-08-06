@@ -276,7 +276,11 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
         </header>
 
         {/* Page Content */}
-        <main className="w-full overflow-auto pt-4 md:pt-6 px-4 md:px-8 pb-4 md:pb-8">{children}</main>
+        {/* flex-1 + min-h-0 bounds the scroll to this element so page content
+            scrolls here (keeping the sidebar/header fixed) instead of growing
+            the whole document — otherwise a tall/phantom child can push the
+            shell layout. */}
+        <main className="w-full flex-1 min-h-0 overflow-auto pt-4 md:pt-6 px-4 md:px-8 pb-4 md:pb-8">{children}</main>
       </div>
 
       {/* KYC Completion Popup */}
