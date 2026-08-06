@@ -25,7 +25,6 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Form,
   FormControl,
@@ -530,7 +529,7 @@ export const SizeGuidesCreateTemplate = () => {
                       name='body_parts'
                       render={() => (
                         <FormItem>
-                          <ScrollArea className='h-[320px] rounded-lg border border-border/60 dark:border-white/10'>
+                          <div className='h-[320px] overflow-y-auto rounded-lg border border-border/60 dark:border-white/10'>
                             <div className='p-3 space-y-1'>
                               {availableBodyParts.map((bp) => {
                                 const isChecked = (
@@ -573,7 +572,7 @@ export const SizeGuidesCreateTemplate = () => {
                                 )
                               })}
                             </div>
-                          </ScrollArea>
+                          </div>
                           <FormMessage />
                         </FormItem>
                       )}
