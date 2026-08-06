@@ -14,7 +14,6 @@ import {
   FormItem,
 } from '@/components/ui/form'
 import { cn } from '@/lib/utils'
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 
 const cardClass =
   'rounded-[10px] bg-card p-6 custom-card-shadow dark:border dark:border-white/10'
@@ -72,7 +71,7 @@ export const SizeChartBuilder = ({ bodyParts, unit }: SizeChartBuilderProps) => 
         Define measurement ranges for each size. Values are in {unit}.
       </p>
 
-      <ScrollArea className='w-full'>
+      <div className='w-full overflow-x-auto'>
         <div className='min-w-fit'>
           {/* Table Header */}
           <div className='flex items-end gap-0 border-b border-border/60 dark:border-white/10 pb-3 mb-1'>
@@ -211,8 +210,7 @@ export const SizeChartBuilder = ({ bodyParts, unit }: SizeChartBuilderProps) => 
             )
           })}
         </div>
-        <ScrollBar orientation='horizontal' />
-      </ScrollArea>
+      </div>
 
       {/* Add size */}
       <button
