@@ -372,7 +372,7 @@ export const SizeGuidesCreateTemplate = () => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit as any)}
-            className='grid grid-cols-1 lg:grid-cols-3 gap-6'
+            className='grid grid-cols-1 lg:grid-cols-3 gap-6 items-start'
           >
             {/* LEFT COLUMN: Main Form */}
             <div className='lg:col-span-2 space-y-6'>
