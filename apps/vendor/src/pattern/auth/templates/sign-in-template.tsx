@@ -27,7 +27,6 @@ import { useAppDispatch } from '@/redux/store';
 import { setCredentials, setActiveBusiness } from '@/redux/slices/auth-slice';
 import { BusinessPicker } from '../organisms/business-picker';
 
-
 export const SignInTemplate = () => {
   const { push } = useRouter();
   const searchParams = useSearchParams();
@@ -61,7 +60,11 @@ export const SignInTemplate = () => {
   /** Navigate to the intended destination */
   const goToDashboard = () => {
     const redirectTo = searchParams.get('redirect');
-    push(redirectTo && redirectTo.startsWith('/') ? redirectTo : APP_ROUTES.dashboard);
+    push(
+      redirectTo && redirectTo.startsWith('/')
+        ? redirectTo
+        : APP_ROUTES.dashboard
+    );
     toast.success('Sign in successful!');
   };
 
@@ -148,11 +151,13 @@ export const SignInTemplate = () => {
   return (
     <>
       <AuthLayout
-        title='Sign In'
-        subtitle='Please enter your login details below'
+        title="Sign In"
+        subtitle="Please enter your login details below"
         isError={isError}
         alertTitle="Sign In Error"
-        alertDescription={error && 'Invalid email or password. Please try again.'}
+        alertDescription={
+          error && 'Invalid email or password. Please try again.'
+        }
       >
         <div>
           <Form {...form}>
@@ -160,49 +165,55 @@ export const SignInTemplate = () => {
               onSubmit={form.handleSubmit(onSubmit)}
               className={cn('w-full lg:min-w-[424px] space-y-6')}
             >
-              <div className='space-y-6'>
+              <div className="space-y-6">
                 {/* Email Input */}
                 <AuthInput
                   control={form.control as any}
-                  name='email'
-                  label='Business email address'
-                  placeholder='Enter your business official email address'
+                  name="email"
+                  label="Business email address"
+                  placeholder="Enter your business official email address"
                 />
 
                 {/* Password Input */}
                 <PasswordInput
                   control={form.control as any}
-                  name='password'
-                  label='Password'
-                  placeholder='Enter your password'
+                  name="password"
+                  label="Password"
+                  placeholder="Enter your password"
                 />
               </div>
 
-              <div className='space-y-8'>
+              <div className="space-y-8">
                 {/* Forget Password */}
-                <div className='flex items-center justify-end'>
+                <div className="flex items-center justify-end">
                   <AuthLink
                     href={AUTH_ROUTES.forgotPassword}
                     icon={arrowRight}
-                    iconAlt='Arrow right'
-                    className='text-xs lg:text-sm'
+                    iconAlt="Arrow right"
+                    className="text-xs lg:text-sm"
                   >
                     Forgot password
                   </AuthLink>
                 </div>
 
-                <div className='space-y-5'>
+                <div className="space-y-5">
                   {/* Submit Button */}
-                  <SubmitButton size="lg" loading={isLoading} disabled={isLoading}>
+                  <SubmitButton
+                    size="lg"
+                    loading={isLoading}
+                    disabled={isLoading}
+                  >
                     Sign In
                   </SubmitButton>
 
                   {/* Sign up link */}
-                  <div className='flex items-center justify-center gap-1.5'>
-                    <p className='font-poppins font-medium text-primary dark:text-gray-300 text-sm'>New to Qlozet?</p>
+                  <div className="flex items-center justify-center gap-1.5">
+                    <p className="font-poppins font-medium text-primary dark:text-gray-300 text-sm">
+                      New to Qlozet?
+                    </p>
                     <AuthLink
                       href={AUTH_ROUTES.signup}
-                      className='text-base underline font-medium dark:text-white'
+                      className="text-base underline font-medium dark:text-white"
                     >
                       Sign Up
                     </AuthLink>

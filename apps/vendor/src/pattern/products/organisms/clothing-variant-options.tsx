@@ -5,10 +5,7 @@ import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { ChevronDown, ImagePlus, Plus, Trash2, X, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FieldLabel } from '../atoms/field-label';
-import {
-  SelectFabricModal,
-  type SelectedFabric,
-} from './select-fabric-modal';
+import { SelectFabricModal, type SelectedFabric } from './select-fabric-modal';
 import { cn } from '@/lib/utils';
 import { ColorMenuPopover } from '../molecules/color-menu-popover';
 import { PredefinedColor } from '../constants/predefined-colors';
@@ -169,12 +166,16 @@ export const VariantSelectOptions = ({
       setCustomColors((prev) => [...prev, colorOption]);
     }
     setSelectedColors((prev) =>
-      prev.includes(color.value) ? prev.filter((c) => c !== color.value) : [...prev, color.value]
+      prev.includes(color.value)
+        ? prev.filter((c) => c !== color.value)
+        : [...prev, color.value]
     );
   };
 
   const handleOpenCustomPicker = async () => {
-    const result = (await colorPickerModal.show({ initialColor: '#A855F7' })) as { hex: string; label: string } | null;
+    const result = (await colorPickerModal.show({
+      initialColor: '#A855F7',
+    })) as { hex: string; label: string } | null;
     if (result) {
       const customColor: ColorOption = {
         value: result.hex.replace('#', '').toLowerCase(),
@@ -191,7 +192,9 @@ export const VariantSelectOptions = ({
   const activeFabric = fabrics.find((f) => f.id === activeFabricId) ?? null;
   const canAdd =
     selectedSizes.length > 0 &&
-    (variantType === 'colour' ? selectedColors.length > 0 : Boolean(activeFabric));
+    (variantType === 'colour'
+      ? selectedColors.length > 0
+      : Boolean(activeFabric));
 
   const pickFabrics = async () => {
     const picked = (await NiceModal.show(SelectFabricModal)) as
@@ -218,14 +221,21 @@ export const VariantSelectOptions = ({
     const sizeKeys = selectedSizes.map((s) => SIZE_KEY[s] ?? s.toUpperCase());
     if (variantType === 'fabric' && activeFabric) {
       onAddVariant(
-        { imageUrl: activeFabric.imageUrl, label: activeFabric.name, colorHex: activeFabric.colorHex },
+        {
+          imageUrl: activeFabric.imageUrl,
+          label: activeFabric.name,
+          colorHex: activeFabric.colorHex,
+        },
         sizeKeys
       );
     } else if (variantType === 'colour') {
       selectedColors.forEach((colorValue) => {
         const colorObj = displayColors.find((c) => c.value === colorValue);
         if (colorObj) {
-          onAddVariant({ colorHex: colorObj.hex, label: colorObj.label }, sizeKeys);
+          onAddVariant(
+            { colorHex: colorObj.hex, label: colorObj.label },
+            sizeKeys
+          );
         }
       });
       setSelectedColors([]);
@@ -274,23 +284,34 @@ export const VariantSelectOptions = ({
           >
             <div className="min-h-[44px] flex items-center gap-2 flex-wrap px-3 py-2 border-2 border-border rounded-md cursor-pointer hover:border-border-input transition-colors bg-accent">
               {selectedColors.length === 0 ? (
-                <span className="text-sm text-muted-foreground">Select colors...</span>
+                <span className="text-sm text-muted-foreground">
+                  Select colors...
+                </span>
               ) : (
                 selectedColors.map((colorValue) => {
-                  const color = displayColors.find((c) => c.value === colorValue);
+                  const color = displayColors.find(
+                    (c) => c.value === colorValue
+                  );
                   if (!color) return null;
                   return (
                     <div
                       key={color.value}
                       className="flex items-center gap-1 bg-card border border-border rounded-md px-2 py-1"
                     >
-                      <div className="w-4 h-4 rounded-full border border-border" style={{ backgroundColor: color.hex }} />
-                      <span className="text-xs text-foreground">{color.label}</span>
+                      <div
+                        className="w-4 h-4 rounded-full border border-border"
+                        style={{ backgroundColor: color.hex }}
+                      />
+                      <span className="text-xs text-foreground">
+                        {color.label}
+                      </span>
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          setSelectedColors((prev) => prev.filter((c) => c !== color.value));
+                          setSelectedColors((prev) =>
+                            prev.filter((c) => c !== color.value)
+                          );
                         }}
                         className="ml-1 hover:bg-accent rounded-full p-0.5"
                       >
@@ -369,7 +390,11 @@ export const VariantSelectOptions = ({
         <SizeField value={selectedSizes} onChange={setSelectedSizes} />
       </div>
 
-      <Button onClick={addVariant} disabled={!canAdd} className="h-11 gap-2 px-5">
+      <Button
+        onClick={addVariant}
+        disabled={!canAdd}
+        className="h-11 gap-2 px-5"
+      >
         <span className="flex size-5 items-center justify-center rounded-[5px] border border-primary-foreground/50">
           <Plus className="size-3.5" />
         </span>

@@ -72,7 +72,5 @@ export const disputesApiSlice = baseAPI.injectEndpoints({
   }),
 });
 
-export const {
-  useGetVendorDisputesQuery,
-  useRespondToDisputeMutation,
-} = disputesApiSlice;
+export const { useGetVendorDisputesQuery, useRespondToDisputeMutation } =
+  disputesApiSlice;

@@ -13,9 +13,7 @@ import {
 import { formatCurrency } from '@/lib/utils';
 import type { VendorProduct } from '@/redux/services/vendor-details/vendor-details.api-slice';
 
-const statusVariant = (
-  status?: string
-): 'success' | 'warning' | 'error' => {
+const statusVariant = (status?: string): 'success' | 'warning' | 'error' => {
   const s = (status ?? '').toLowerCase();
   if (['approved', 'active'].includes(s)) return 'success';
   if (['not approved', 'rejected', 'inactive'].includes(s)) return 'error';
@@ -52,9 +50,7 @@ export const createTopProductsColumns = (): ColumnDef<VendorProduct>[] => [
     accessorKey: 'name',
     header: 'Product name',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-700">
-        {row.original.name ?? '—'}
-      </span>
+      <span className="text-sm text-gray-700">{row.original.name ?? '—'}</span>
     ),
     enableSorting: false,
   },

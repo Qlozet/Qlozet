@@ -23,12 +23,7 @@ import {
 } from '../molecules/order-status-filter-menu';
 import { OrderDetailsDrawer } from '../organisms/order-details-drawer';
 import { readCustomerName, readOrderId } from '../lib/order-fields';
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ReturnsPanel } from '../organisms/returns-panel';
 import { DisputesPanel } from '../organisms/disputes-panel';
 import { QuoteRequestsTemplate } from '@/pattern/bespoke/templates/quote-requests-template';
@@ -79,10 +74,10 @@ export const OrdersPageTemplate: React.FC = () => {
     toast.info(`${label} is coming soon.`);
 
   return (
-    <div className='w-full min-h-screen h-fit pb-10'>
-      <Tabs defaultValue='orders' className='space-y-6'>
+    <div className="w-full min-h-screen h-fit pb-10">
+      <Tabs defaultValue="orders" className="space-y-6">
         {/* Card-background tab bar; active tab uses the theme's primary colour. */}
-        <TabsList className='h-12 gap-1 rounded-2xl border border-border bg-card p-1.5 custom-card-shadow'>
+        <TabsList className="h-12 gap-1 rounded-2xl border border-border bg-card p-1.5 custom-card-shadow">
           {[
             { value: 'orders', label: 'Orders' },
             { value: 'quotes', label: 'Quote Requests' },
@@ -92,21 +87,21 @@ export const OrdersPageTemplate: React.FC = () => {
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className='rounded-xl px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm'
+              className="rounded-xl px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
             >
               {tab.label}
             </TabsTrigger>
           ))}
         </TabsList>
 
-        <TabsContent value='orders' className='space-y-6'>
+        <TabsContent value="orders" className="space-y-6">
           {/* Metrics */}
           <OrderStatsSection isLoading={isLoading} />
 
           {/* Orders table */}
-          <div className='bg-card w-full rounded-[10px] shadow-md'>
+          <div className="bg-card w-full rounded-[10px] shadow-md">
             <TableToolbar
-              title='Orders'
+              title="Orders"
               search={search}
               onSearchChange={(value) => {
                 setSearch(value);
@@ -136,20 +131,20 @@ export const OrdersPageTemplate: React.FC = () => {
               pageCount={pageCount}
               manualPagination
               onRowClick={openDetails}
-              emptyMessage='Orders will show up here once a customer places an order.'
+              emptyMessage="Orders will show up here once a customer places an order."
             />
           </div>
         </TabsContent>
 
-        <TabsContent value='quotes'>
+        <TabsContent value="quotes">
           <QuoteRequestsTemplate />
         </TabsContent>
 
-        <TabsContent value='returns'>
+        <TabsContent value="returns">
           <ReturnsPanel />
         </TabsContent>
 
-        <TabsContent value='disputes'>
+        <TabsContent value="disputes">
           <DisputesPanel />
         </TabsContent>
       </Tabs>

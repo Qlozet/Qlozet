@@ -74,9 +74,19 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
   const { data: categoriesResponse } = useGetCategoriesQuery();
   const [updateProduct] = useUpdateProductMutation();
 
-  const products = ((Array.isArray(productsResponse?.data) ? productsResponse.data : productsResponse?.data?.data) || productsResponse?.products || []) as any[];
-  const totalPages = productsResponse?.data?.total_pages || (productsResponse as any)?.totalPages || 1;
-  const totalCount = productsResponse?.data?.total_items || (productsResponse as any)?.totalCount || 0;
+  const products = ((Array.isArray(productsResponse?.data)
+    ? productsResponse.data
+    : productsResponse?.data?.data) ||
+    productsResponse?.products ||
+    []) as any[];
+  const totalPages =
+    productsResponse?.data?.total_pages ||
+    (productsResponse as any)?.totalPages ||
+    1;
+  const totalCount =
+    productsResponse?.data?.total_items ||
+    (productsResponse as any)?.totalCount ||
+    0;
   const categories = categoriesResponse || [];
 
   // Handle filter changes
@@ -109,22 +119,11 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
     field: keyof (typeof products)[0],
     direction: 'asc' | 'desc'
   ) => {
-    const validSortFields = [
-      'name',
-      'price',
-      'stock',
-      'createdAt',
-      'category',
-    ];
+    const validSortFields = ['name', 'price', 'stock', 'createdAt', 'category'];
     if (validSortFields.includes(field as string)) {
       setFilters((prev) => ({
         ...prev,
-        sortBy: field as
-          | 'name'
-          | 'price'
-          | 'stock'
-          | 'createdAt'
-          | 'category',
+        sortBy: field as 'name' | 'price' | 'stock' | 'createdAt' | 'category',
         order: direction, // API uses 'order' instead of 'sortOrder'
         page: 1,
       }));
@@ -238,49 +237,49 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
   };
 
   return (
-    <div className='min-h-screen bg-gray-50'>
-      <div className='max-w-7xl mx-auto p-6 space-y-6'>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Header */}
-        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <Typography
-              variant='h1'
-              className='text-2xl font-bold text-gray-900'
+              variant="h1"
+              className="text-2xl font-bold text-gray-900"
             >
               {title}
             </Typography>
-            <Typography variant='body' className='text-gray-600 mt-1'>
+            <Typography variant="body" className="text-gray-600 mt-1">
               Manage your product inventory and catalog
             </Typography>
           </div>
 
-          <div className='flex items-center space-x-2'>
+          <div className="flex items-center space-x-2">
             {showBulkActions && (
               <>
                 <Button
-                  variant='outline'
+                  variant="outline"
                   onClick={onGenerateReport}
-                  className='flex items-center space-x-2'
+                  className="flex items-center space-x-2"
                 >
-                  <FileText className='h-4 w-4' />
+                  <FileText className="h-4 w-4" />
                   <span>Report</span>
                 </Button>
 
                 <Button
-                  variant='outline'
+                  variant="outline"
                   onClick={onImportProducts}
-                  className='flex items-center space-x-2'
+                  className="flex items-center space-x-2"
                 >
-                  <Upload className='h-4 w-4' />
+                  <Upload className="h-4 w-4" />
                   <span>Import</span>
                 </Button>
 
                 <Button
-                  variant='outline'
+                  variant="outline"
                   onClick={onExportProducts}
-                  className='flex items-center space-x-2'
+                  className="flex items-center space-x-2"
                 >
-                  <Download className='h-4 w-4' />
+                  <Download className="h-4 w-4" />
                   <span>Export</span>
                 </Button>
               </>
@@ -289,9 +288,9 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
             {showCreateButton && (
               <Button
                 onClick={onCreateProduct}
-                className='flex items-center space-x-2'
+                className="flex items-center space-x-2"
               >
-                <Plus className='h-4 w-4' />
+                <Plus className="h-4 w-4" />
                 <span>New Product</span>
               </Button>
             )}
@@ -320,40 +319,40 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
         {/* Bulk Actions Bar */}
         {showBulkActions && selectedProducts?.length > 0 && (
           <Card>
-            <CardContent className='py-4'>
-              <div className='flex items-center justify-between'>
-                <span className='text-sm text-gray-600'>
+            <CardContent className="py-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">
                   {selectedProducts?.length} product
                   {selectedProducts?.length !== 1 ? 's' : ''} selected
                 </span>
 
-                <div className='flex items-center space-x-2'>
+                <div className="flex items-center space-x-2">
                   <Button
-                    variant='outline'
-                    size='sm'
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleBulkAction('activate')}
-                    className='flex items-center space-x-1'
+                    className="flex items-center space-x-1"
                   >
                     <span>Activate</span>
                   </Button>
                   <Button
-                    variant='outline'
-                    size='sm'
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleBulkAction('deactivate')}
-                    className='flex items-center space-x-1'
+                    className="flex items-center space-x-1"
                   >
                     <span>Deactivate</span>
                   </Button>
                   <Button
-                    variant='outline'
-                    size='sm'
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleBulkAction('export')}
                   >
                     Export Selected
                   </Button>
                   <Button
-                    variant='destructive'
-                    size='sm'
+                    variant="destructive"
+                    size="sm"
                     onClick={() => handleBulkAction('delete')}
                   >
                     Delete
@@ -366,7 +365,7 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
 
         {/* Products Table */}
         <Card>
-          <CardContent className='p-0'>
+          <CardContent className="p-0">
             <ProductsTable
               products={products}
               onViewDetails={handleViewDetails}
@@ -387,8 +386,8 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className='flex items-center justify-between'>
-            <div className='text-sm text-gray-600'>
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-600">
               Showing {(filters.page - 1) * filters.size + 1} to{' '}
               {Math.min(filters.page * filters.size, totalCount)} of{' '}
               {totalCount} products
@@ -421,7 +420,7 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
                         <PaginationLink
                           onClick={() => handlePageChange(page)}
                           isActive={filters.page === page}
-                          className='cursor-pointer'
+                          className="cursor-pointer"
                         >
                           {page}
                         </PaginationLink>
@@ -451,9 +450,9 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
         {/* Error handling */}
         {productsError && (
           <Card>
-            <CardContent className='p-6 text-center'>
-              <p className='text-red-600 mb-4'>Failed to load products</p>
-              <Button onClick={() => refetchProducts()} variant='outline'>
+            <CardContent className="p-6 text-center">
+              <p className="text-red-600 mb-4">Failed to load products</p>
+              <Button onClick={() => refetchProducts()} variant="outline">
                 Try Again
               </Button>
             </CardContent>

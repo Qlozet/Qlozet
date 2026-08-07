@@ -20,7 +20,7 @@ export const FormSectionHeader: React.FC<FormSectionHeaderProps> = ({
         className
       )}
     >
-      <h2 className='text-sm font-bold text-primary'>{title}</h2>
+      <h2 className="text-sm font-bold text-primary">{title}</h2>
     </div>
   );
 };

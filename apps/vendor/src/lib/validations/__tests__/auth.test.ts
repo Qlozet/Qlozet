@@ -18,16 +18,22 @@ import {
 
 const GOOD_PASSWORD = 'Passw0rd!';
 
-const errorFor = (result: { success: boolean; error?: unknown }, path: string) => {
+const errorFor = (
+  result: { success: boolean; error?: unknown },
+  path: string
+) => {
   if (result.success) return undefined;
-  const issues = (result.error as { issues: { path: (string | number)[]; message: string }[] })
-    .issues;
+  const issues = (
+    result.error as { issues: { path: (string | number)[]; message: string }[] }
+  ).issues;
   return issues.find((i) => i.path.join('.') === path)?.message;
 };
 
 describe('signInSchema', () => {
   it('accepts an email and any non-empty password', () => {
-    expect(signInSchema.safeParse({ email: 'a@b.co', password: 'x' }).success).toBe(true);
+    expect(
+      signInSchema.safeParse({ email: 'a@b.co', password: 'x' }).success
+    ).toBe(true);
   });
 
   it('lower-cases the email so casing never splits an account', () => {
@@ -36,8 +42,12 @@ describe('signInSchema', () => {
   });
 
   it('rejects a malformed email and a blank password', () => {
-    expect(signInSchema.safeParse({ email: 'nope', password: 'x' }).success).toBe(false);
-    expect(signInSchema.safeParse({ email: 'a@b.co', password: '' }).success).toBe(false);
+    expect(
+      signInSchema.safeParse({ email: 'nope', password: 'x' }).success
+    ).toBe(false);
+    expect(
+      signInSchema.safeParse({ email: 'a@b.co', password: '' }).success
+    ).toBe(false);
   });
 });
 
@@ -72,7 +82,11 @@ describe('registerSchema', () => {
     const weak = ['password', 'PASSWORD1!', 'Password!', 'Password1', 'Pa1!'];
     for (const password of weak) {
       expect(
-        registerSchema.safeParse({ ...valid, password, confirmPassword: password }).success
+        registerSchema.safeParse({
+          ...valid,
+          password,
+          confirmPassword: password,
+        }).success
       ).toBe(false);
     }
   });
@@ -86,14 +100,22 @@ describe('registerSchema', () => {
   });
 
   it('rejects a name containing digits or symbols', () => {
-    expect(registerSchema.safeParse({ ...valid, name: 'Ada2' }).success).toBe(false);
-    expect(registerSchema.safeParse({ ...valid, name: 'A' }).success).toBe(false);
+    expect(registerSchema.safeParse({ ...valid, name: 'Ada2' }).success).toBe(
+      false
+    );
+    expect(registerSchema.safeParse({ ...valid, name: 'A' }).success).toBe(
+      false
+    );
     // Dots and hyphens are legitimate in names.
-    expect(registerSchema.safeParse({ ...valid, name: "St. Ada-Obi" }).success).toBe(true);
+    expect(
+      registerSchema.safeParse({ ...valid, name: 'St. Ada-Obi' }).success
+    ).toBe(true);
   });
 
   it('rejects a malformed phone number', () => {
-    expect(registerSchema.safeParse({ ...valid, phone: '0801-234' }).success).toBe(false);
+    expect(
+      registerSchema.safeParse({ ...valid, phone: '0801-234' }).success
+    ).toBe(false);
   });
 
   it('requires the terms checkbox', () => {
@@ -145,29 +167,44 @@ describe('password reset + change', () => {
 
 describe('small auth schemas', () => {
   it('validates forgot-password and verify-email payloads', () => {
-    expect(forgotPasswordSchema.safeParse({ email: 'a@b.co' }).success).toBe(true);
-    expect(forgotPasswordSchema.safeParse({ email: 'nope' }).success).toBe(false);
+    expect(forgotPasswordSchema.safeParse({ email: 'a@b.co' }).success).toBe(
+      true
+    );
+    expect(forgotPasswordSchema.safeParse({ email: 'nope' }).success).toBe(
+      false
+    );
     expect(verifyEmailSchema.safeParse({ token: 't' }).success).toBe(true);
     expect(verifyEmailSchema.safeParse({ token: '' }).success).toBe(false);
   });
 
   it('requires a six-digit 2FA code', () => {
-    expect(twoFactorSetupSchema.safeParse({ code: '123456' }).success).toBe(true);
-    expect(twoFactorSetupSchema.safeParse({ code: '12345' }).success).toBe(false);
-    expect(twoFactorSetupSchema.safeParse({ code: '1234567' }).success).toBe(false);
-    expect(twoFactorSetupSchema.safeParse({ code: '12345a' }).success).toBe(false);
-    expect(disableTwoFactorSchema.safeParse({ password: 'x' }).success).toBe(true);
+    expect(twoFactorSetupSchema.safeParse({ code: '123456' }).success).toBe(
+      true
+    );
+    expect(twoFactorSetupSchema.safeParse({ code: '12345' }).success).toBe(
+      false
+    );
+    expect(twoFactorSetupSchema.safeParse({ code: '1234567' }).success).toBe(
+      false
+    );
+    expect(twoFactorSetupSchema.safeParse({ code: '12345a' }).success).toBe(
+      false
+    );
+    expect(disableTwoFactorSchema.safeParse({ password: 'x' }).success).toBe(
+      true
+    );
   });
 
   // Typing the exact word is the only guard on an irreversible action.
   it('requires the literal word DELETE to close an account', () => {
     expect(
-      deleteAccountSchema.safeParse({ password: 'x', confirmation: 'DELETE' }).success
+      deleteAccountSchema.safeParse({ password: 'x', confirmation: 'DELETE' })
+        .success
     ).toBe(true);
     for (const confirmation of ['delete', 'Delete', 'DELET', 'yes']) {
-      expect(deleteAccountSchema.safeParse({ password: 'x', confirmation }).success).toBe(
-        false
-      );
+      expect(
+        deleteAccountSchema.safeParse({ password: 'x', confirmation }).success
+      ).toBe(false);
     }
   });
 

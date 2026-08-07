@@ -1,6 +1,17 @@
 import { useState } from 'react';
 import { useMarkNotificationAsViewedMutation } from '@/redux/services/notifications/notifications.api-slice';
-import { Package, Truck, CreditCard, Scissors, ShoppingBag, Users, Settings, Bell, Layers, Check } from 'lucide-react';
+import {
+  Package,
+  Truck,
+  CreditCard,
+  Scissors,
+  ShoppingBag,
+  Users,
+  Settings,
+  Bell,
+  Layers,
+  Check,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
@@ -17,14 +28,19 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
 
 const CATEGORY_COLORS: Record<string, string> = {
   order: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
-  shipping: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
-  payment: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
-  bespoke: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
+  shipping:
+    'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
+  payment:
+    'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+  bespoke:
+    'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
   product: 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400',
   team: 'bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-400',
   system: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
-  fabric_transfer: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
-  fabric_transfer_incoming: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+  fabric_transfer:
+    'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+  fabric_transfer_incoming:
+    'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
 };
 
 function timeAgo(dateString: string): string {
@@ -50,7 +66,14 @@ interface NotificationProps {
   category?: string;
 }
 
-const Notification = ({ id, read, title, desc, date, category }: NotificationProps) => {
+const Notification = ({
+  id,
+  read,
+  title,
+  desc,
+  date,
+  category,
+}: NotificationProps) => {
   const [isRead, setIsRead] = useState(read);
   const [markAsViewed, { isLoading: isMarking }] =
     useMarkNotificationAsViewedMutation();
@@ -67,7 +90,8 @@ const Notification = ({ id, read, title, desc, date, category }: NotificationPro
   };
 
   const Icon = (category && CATEGORY_ICONS[category]) || Bell;
-  const colorClass = (category && CATEGORY_COLORS[category]) || CATEGORY_COLORS.system;
+  const colorClass =
+    (category && CATEGORY_COLORS[category]) || CATEGORY_COLORS.system;
 
   return (
     // A div rather than a button: the row is clickable, but it also contains
@@ -90,17 +114,24 @@ const Notification = ({ id, read, title, desc, date, category }: NotificationPro
       )}
     >
       {/* Category icon */}
-      <div className={cn('flex size-9 shrink-0 items-center justify-center rounded-lg mt-0.5', colorClass)}>
+      <div
+        className={cn(
+          'flex size-9 shrink-0 items-center justify-center rounded-lg mt-0.5',
+          colorClass
+        )}
+      >
         <Icon className="size-4" />
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
-          <p className={cn(
-            'text-sm text-foreground leading-snug',
-            !isRead ? 'font-semibold' : 'font-medium'
-          )}>
+          <p
+            className={cn(
+              'text-sm text-foreground leading-snug',
+              !isRead ? 'font-semibold' : 'font-medium'
+            )}
+          >
             {title}
           </p>
           {!isRead && (

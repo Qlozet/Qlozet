@@ -4,8 +4,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Sign in',
-  description:
-    'Sign in to your Qlozet vendor account.',
+  description: 'Sign in to your Qlozet vendor account.',
   path: '/auth/sign-in',
 });
 

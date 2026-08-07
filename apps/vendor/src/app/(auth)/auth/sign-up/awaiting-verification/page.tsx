@@ -4,11 +4,11 @@ import React from 'react';
 import AwaitingVerificationTemplate from '@/pattern/auth/templates/awaiting-verification-template';
 
 const Verification: React.FC = () => {
-    return (
-        <div className='w-full min-h-screen'>
-            <AwaitingVerificationTemplate />
-        </div>
-    )
+  return (
+    <div className="w-full min-h-screen">
+      <AwaitingVerificationTemplate />
+    </div>
+  );
 };
 
 export default Verification;

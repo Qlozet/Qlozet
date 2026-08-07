@@ -52,44 +52,44 @@
   --sidebar-border: hsl(0, 0%, 90%);
   --sidebar-ring: hsl(0, 0%, 63%);
   --chart-primary: #3d2817;
-  --chart-secondary: #9C857870;
+  --chart-secondary: #9c857870;
 }
 
 .dark {
   --background: hsl(240, 10%, 4%); /* Very dark background */
   --foreground: hsl(0, 0%, 98%);
-  
+
   --card: #303030; /* Elevated card */
   --card-foreground: hsl(0, 0%, 98%);
-  
+
   --popover: #303030;
   --popover-foreground: hsl(0, 0%, 98%);
-  
+
   --primary: hsl(0, 0%, 98%); /* White primary */
   --primary-foreground: hsl(240, 5.9%, 10%); /* Black text on primary */
-  
+
   --secondary: hsl(240, 4%, 16%);
   --secondary-foreground: hsl(0, 0%, 98%);
-  
+
   --muted: #404040;
   --muted-foreground: hsl(240, 5%, 65%);
-  
+
   --accent: hsl(240, 4%, 16%);
   --accent-foreground: hsl(0, 0%, 98%);
-  
+
   --destructive: hsl(0, 84.2%, 60.2%);
   --destructive-foreground: hsl(210, 40%, 98%);
-  
+
   --border: hsl(240, 4%, 16%);
   --input: hsl(240, 4%, 16%);
   --ring: hsl(0, 0%, 98%);
-  
+
   --chart-1: hsl(0, 0%, 98%);
   --chart-2: hsl(240, 5%, 75%);
   --chart-3: hsl(240, 5%, 55%);
   --chart-4: hsl(240, 5%, 35%);
   --chart-5: hsl(240, 5%, 20%);
-  
+
   --sidebar: #303030; /* Matches card */
   --sidebar-foreground: hsl(0, 0%, 98%);
   --sidebar-primary: hsl(0, 0%, 98%);
@@ -274,13 +274,21 @@
 }
 
 @keyframes overlay-fade-in {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes overlay-fade-out {
-  0% { opacity: 1; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 /* Hide number input spin buttons */
@@ -332,33 +340,32 @@ input[type='number'] {
 
   /* Fix for browser autofill styles (e.g., Chrome making inputs white) */
   input:-webkit-autofill,
-  input:-webkit-autofill:hover, 
-  input:-webkit-autofill:focus, 
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
   input:-webkit-autofill:active {
-      -webkit-box-shadow: 0 0 0 50px var(--background) inset !important;
-      -webkit-text-fill-color: var(--foreground) !important;
-      transition: background-color 5000s ease-in-out 0s;
+    -webkit-box-shadow: 0 0 0 50px var(--background) inset !important;
+    -webkit-text-fill-color: var(--foreground) !important;
+    transition: background-color 5000s ease-in-out 0s;
   }
 }
 
-
 ::-webkit-scrollbar {
-    width: 4px;
-    height: 3px;
-    margin-top: 4px;
-    margin-bottom: 4px;
-  }
+  width: 4px;
+  height: 3px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
 
-  ::-webkit-scrollbar-track {
-    background: hsl(0 0% 96%);
-    border-radius: 8px;
-    height: 3px;
-  }
+::-webkit-scrollbar-track {
+  background: hsl(0 0% 96%);
+  border-radius: 8px;
+  height: 3px;
+}
 
-  ::-webkit-scrollbar-thumb {
-    background: var(--secondary);
-    border-radius: 6px;
-  }
+::-webkit-scrollbar-thumb {
+  background: var(--secondary);
+  border-radius: 6px;
+}
 
 @utility sidebar-scrollbar {
   height: 100vh;

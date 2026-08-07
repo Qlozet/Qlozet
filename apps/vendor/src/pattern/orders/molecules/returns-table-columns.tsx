@@ -29,7 +29,7 @@ export const createReturnsColumns = (
     id: 'date',
     header: 'Date',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
+      <span className="whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground">
         {formatDate(row.original.createdAt)}
       </span>
     ),
@@ -39,7 +39,7 @@ export const createReturnsColumns = (
     id: 'order',
     header: 'Order',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm font-medium text-grey-black dark:text-foreground'>
+      <span className="whitespace-nowrap text-sm font-medium text-grey-black dark:text-foreground">
         {readReturnRef(row.original)}
       </span>
     ),
@@ -49,7 +49,7 @@ export const createReturnsColumns = (
     id: 'customer',
     header: 'Customer',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
+      <span className="whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground">
         {readReturnCustomer(row.original)}
       </span>
     ),
@@ -59,7 +59,7 @@ export const createReturnsColumns = (
     id: 'reason',
     header: 'Reason',
     cell: ({ row }) => (
-      <span className='block max-w-[220px] truncate text-sm text-gray-600 dark:text-muted-foreground'>
+      <span className="block max-w-[220px] truncate text-sm text-gray-600 dark:text-muted-foreground">
         {readReturnReason(row.original)}
       </span>
     ),
@@ -69,7 +69,7 @@ export const createReturnsColumns = (
     id: 'refund',
     header: 'Refund',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
+      <span className="whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground">
         {typeof row.original.refund_amount === 'number'
           ? formatNaira(row.original.refund_amount)
           : '—'}
@@ -106,19 +106,19 @@ export const createReturnsColumns = (
       // pending -> approve / reject ; approved -> mark received ; else nothing.
       if (status === 'pending') {
         return (
-          <div className='flex items-center gap-2'>
+          <div className="flex items-center gap-2">
             <Button
-              size='sm'
-              className='h-8 bg-[#0F973D] text-white hover:bg-[#0F973D]/90'
+              size="sm"
+              className="h-8 bg-[#0F973D] text-white hover:bg-[#0F973D]/90"
               disabled={busy}
               onClick={() => actions.onApprove(r)}
             >
-              {busy ? <Loader2 className='size-3.5 animate-spin' /> : 'Approve'}
+              {busy ? <Loader2 className="size-3.5 animate-spin" /> : 'Approve'}
             </Button>
             <Button
-              size='sm'
-              variant='outline'
-              className='h-8 text-[#D42620] border-[#D42620]/40 hover:bg-[#FBEAE9]'
+              size="sm"
+              variant="outline"
+              className="h-8 text-[#D42620] border-[#D42620]/40 hover:bg-[#FBEAE9]"
               disabled={busy}
               onClick={() => actions.onReject(r)}
             >
@@ -131,14 +131,14 @@ export const createReturnsColumns = (
       if (status === 'approved') {
         return (
           <Button
-            size='sm'
-            variant='outline'
-            className='h-8'
+            size="sm"
+            variant="outline"
+            className="h-8"
             disabled={busy}
             onClick={() => actions.onReceived(r)}
           >
             {busy ? (
-              <Loader2 className='size-3.5 animate-spin' />
+              <Loader2 className="size-3.5 animate-spin" />
             ) : (
               'Mark received'
             )}
@@ -146,7 +146,7 @@ export const createReturnsColumns = (
         );
       }
 
-      return <span className='text-sm text-gray-400'>—</span>;
+      return <span className="text-sm text-gray-400">—</span>;
     },
     enableSorting: false,
   },

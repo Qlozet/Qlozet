@@ -16,7 +16,7 @@ import {
   useLazyVerifyWalletPaymentQuery,
 } from '@/redux/services/wallet/wallet.api-slice';
 import { useGetTokenBalanceQuery } from '@/redux/services/tokens/tokens.api-slice';
-import { useGetBusinessProfileQuery } from '@/redux/services/business/business.api-slice';
+import { useGetBusinessProfileQuery } from '@/redux/services/settings/settings.api-slice';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
 import { WalletStatsSection } from '../molecules/wallet-stats-section';
@@ -48,7 +48,12 @@ const PAGE_SIZE = 6;
 const readBalance = (raw: unknown): number | undefined => {
   if (typeof raw === 'number') return raw;
   const d = (raw ?? {}) as Record<string, unknown>;
-  for (const key of ['balance', 'availableBalance', 'available_balance', 'amount']) {
+  for (const key of [
+    'balance',
+    'availableBalance',
+    'available_balance',
+    'amount',
+  ]) {
     if (typeof d[key] === 'number') return d[key] as number;
   }
   return undefined;
@@ -58,7 +63,12 @@ const readBalance = (raw: unknown): number | undefined => {
 // name is undocumented, so read the most likely variants tolerantly.
 const readPendingBalance = (raw: unknown): number | undefined => {
   const d = (raw ?? {}) as Record<string, unknown>;
-  for (const key of ['pending_balance', 'pendingBalance', 'pending_earnings', 'held_balance']) {
+  for (const key of [
+    'pending_balance',
+    'pendingBalance',
+    'pending_earnings',
+    'held_balance',
+  ]) {
     if (typeof d[key] === 'number') return d[key] as number;
   }
   return undefined;
@@ -130,10 +140,8 @@ export const WalletPageTemplate: React.FC = () => {
     refetch: refetchBalance,
   } = useGetWalletBalanceQuery();
 
-  const {
-    data: tokenData,
-    isLoading: isTokenLoading,
-  } = useGetTokenBalanceQuery();
+  const { data: tokenData, isLoading: isTokenLoading } =
+    useGetTokenBalanceQuery();
 
   // Business profile supplies the pending (held) earnings figure.
   const { data: businessData } = useGetBusinessProfileQuery();
@@ -188,7 +196,7 @@ export const WalletPageTemplate: React.FC = () => {
   // Real wallet balance (GET /wallets/balance). Undefined until it resolves, so
   // the card shows an honest "—" rather than a fabricated figure.
   const balance = readBalance(balanceData?.data);
-  const pendingBalance = readPendingBalance(businessData?.data);
+  const pendingBalance = readPendingBalance(businessData);
 
   const transactions = useMemo(
     () => readTransactionList(transactionsData?.data),
@@ -230,7 +238,7 @@ export const WalletPageTemplate: React.FC = () => {
   const columns = useMemo(() => createTransactionColumns(openDetails), []);
 
   return (
-    <div className='w-full min-h-screen h-fit space-y-6 pb-10'>
+    <div className="w-full min-h-screen h-fit space-y-6 pb-10">
       <WalletStatsSection
         balance={balance}
         pendingBalance={pendingBalance}
@@ -243,9 +251,12 @@ export const WalletPageTemplate: React.FC = () => {
       />
 
       {/* Recent transactions */}
-      <div id='recent-transactions' className='bg-card w-full rounded-[10px] shadow-md'>
+      <div
+        id="recent-transactions"
+        className="bg-card w-full rounded-[10px] shadow-md"
+      >
         <TableToolbar
-          title='Recent Transactions'
+          title="Recent Transactions"
           search={search}
           onSearchChange={setSearch}
           filterControl={
@@ -267,8 +278,8 @@ export const WalletPageTemplate: React.FC = () => {
           pagination={pagination}
           setPagination={setPagination}
           onRowClick={openDetails}
-          emptyMessage='No transactions yet.'
-          minWidth='980px'
+          emptyMessage="No transactions yet."
+          minWidth="980px"
         />
       </div>
     </div>

@@ -41,8 +41,7 @@ const toastClassNames: SonnerToasterProps['toastOptions'] = {
     success: '!bg-[#e4fdf1] !border-[#149e5e] items-start!',
     warning: '!bg-[#fdf2eb] !border-[#ee6002]',
     error: '!bg-[#feebee] !border-[#f23c57] items-start!',
-    title:
-      '!text-[#3f4650] !text-base !font-normal !pr-[28px] !leading-5',
+    title: '!text-[#3f4650] !text-base !font-normal !pr-[28px] !leading-5',
     description: '!text-[#697586] !text-sm !pr-[8px]',
     closeButton: 'top-6.5! size-4!',
   },

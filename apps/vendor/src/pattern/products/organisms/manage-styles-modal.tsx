@@ -158,9 +158,9 @@ export const ManageStylesModal = NiceModal.create(() => {
   };
 
   const handleAddStyle = async () => {
-    const created = (await NiceModal.show(AddStylesModal)) as
-      | CreatedStyle
-      | null;
+    const created = (await NiceModal.show(
+      AddStylesModal
+    )) as CreatedStyle | null;
     if (!created) return;
     toast.success(`"${created.name}" created`);
   };
@@ -346,7 +346,9 @@ export const ManageStylesModal = NiceModal.create(() => {
                             />
                             <textarea
                               value={editDescription}
-                              onChange={(e) => setEditDescription(e.target.value)}
+                              onChange={(e) =>
+                                setEditDescription(e.target.value)
+                              }
                               placeholder="Description (optional)"
                               rows={2}
                               className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-xs outline-none resize-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -407,8 +409,7 @@ export const ManageStylesModal = NiceModal.create(() => {
                               {style.priceSuggestion != null &&
                                 style.priceSuggestion > 0 && (
                                   <span className="text-[10px] text-muted-foreground">
-                                    ₦
-                                    {style.priceSuggestion.toLocaleString()}
+                                    ₦{style.priceSuggestion.toLocaleString()}
                                   </span>
                                 )}
                             </div>
@@ -428,9 +429,7 @@ export const ManageStylesModal = NiceModal.create(() => {
                           </button>
                           <button
                             type="button"
-                            onClick={() =>
-                              handleDelete(style.id, style.name)
-                            }
+                            onClick={() => handleDelete(style.id, style.name)}
                             disabled={isDeleting}
                             className="flex size-7 items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 transition-colors disabled:opacity-50"
                           >
@@ -454,7 +453,7 @@ export const ManageStylesModal = NiceModal.create(() => {
                 <Shirt className="size-8 text-muted-foreground/40" />
                 <p className="text-sm text-muted-foreground">
                   {viewFilter === 'custom'
-                    ? 'You haven\'t created any custom styles yet.'
+                    ? "You haven't created any custom styles yet."
                     : 'No styles found in this category.'}
                 </p>
                 {viewFilter === 'custom' && (

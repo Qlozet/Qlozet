@@ -85,9 +85,7 @@ interface ClothingView {
 }
 
 const NGN = (value?: number) =>
-  typeof value === 'number'
-    ? `NGN ${value.toLocaleString()}`
-    : '—';
+  typeof value === 'number' ? `NGN ${value.toLocaleString()}` : '—';
 
 const compImage = (c: ComponentView) => {
   const first = c.images?.[0];
@@ -148,42 +146,53 @@ export const ProductDetailsTemplate = ({
   });
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
   const [activeImage, setActiveImage] = useState(0);
-  const [selectedColorIndex, setSelectedColorIndex] = useState<number | null>(null);
+  const [selectedColorIndex, setSelectedColorIndex] = useState<number | null>(
+    null
+  );
 
   // Handle nested API response structures based on product kind
   const apiProduct = (data as any)?.data || data || {};
-  const itemData = apiProduct.clothing || apiProduct.accessory || apiProduct.fabric || apiProduct;
-  
+  const itemData =
+    apiProduct.clothing ||
+    apiProduct.accessory ||
+    apiProduct.fabric ||
+    apiProduct;
+
   const product: ClothingView = {
     ...apiProduct,
     ...itemData,
     price: apiProduct.base_price ?? itemData.price ?? 0,
     status: apiProduct.status ?? 'draft',
   };
-  
+
   const baseImages = (product.images ?? [])
     .map((i) => (typeof i === 'string' ? i : i?.url))
     .filter((u): u is string => Boolean(u));
 
-  const colorImages = selectedColorIndex !== null 
-    ? Array.from(new Set(
-        [
-          ...(product.color_variants?.[selectedColorIndex]?.images ?? []),
-          ...(product.color_variants?.[selectedColorIndex]?.variants?.flatMap((v: any) => v.images ?? []) ?? [])
-        ]
-        .map((i: any) => typeof i === 'string' ? i : i?.url)
-        .filter(Boolean)
-      )) as string[]
-    : [];
+  const colorImages =
+    selectedColorIndex !== null
+      ? (Array.from(
+          new Set(
+            [
+              ...(product.color_variants?.[selectedColorIndex]?.images ?? []),
+              ...(product.color_variants?.[
+                selectedColorIndex
+              ]?.variants?.flatMap((v: any) => v.images ?? []) ?? []),
+            ]
+              .map((i: any) => (typeof i === 'string' ? i : i?.url))
+              .filter(Boolean)
+          )
+        ) as string[])
+      : [];
 
   const images = colorImages.length > 0 ? colorImages : baseImages;
-  
+
   console.log('Product Details Debug:', {
     selectedColorIndex,
     colorVariants: product.color_variants,
     colorImages,
     baseImages,
-    images
+    images,
   });
 
   const businessName = product.business?.name ?? product.business_name;
@@ -279,11 +288,7 @@ export const ProductDetailsTemplate = ({
         {/* Header */}
         <div className="flex items-center justify-between">
           <GoBackButton />
-          <Button
-            variant="outline"
-            onClick={wip}
-            className="gap-2"
-          >
+          <Button variant="outline" onClick={wip} className="gap-2">
             <Monitor className="size-4" />
             Preview
           </Button>
@@ -312,7 +317,9 @@ export const ProductDetailsTemplate = ({
                   <button
                     type="button"
                     onClick={() =>
-                      setActiveImage((i) => (i - 1 + images.length) % images.length)
+                      setActiveImage(
+                        (i) => (i - 1 + images.length) % images.length
+                      )
                     }
                     className="absolute left-4 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-grey-black shadow-md hover:bg-gray-50 transition-colors"
                     aria-label="Previous image"
@@ -321,7 +328,9 @@ export const ProductDetailsTemplate = ({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setActiveImage((i) => (i + 1) % images.length)}
+                    onClick={() =>
+                      setActiveImage((i) => (i + 1) % images.length)
+                    }
                     className="absolute right-4 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-grey-black shadow-md hover:bg-gray-50 transition-colors"
                     aria-label="Next image"
                   >
@@ -338,8 +347,10 @@ export const ProductDetailsTemplate = ({
                     key={idx}
                     onClick={() => setActiveImage(idx)}
                     className={cn(
-                      "relative aspect-[4/5] w-full overflow-hidden rounded-xl border-2 transition-all",
-                      activeImage === idx ? "border-primary" : "border-transparent opacity-70 hover:opacity-100"
+                      'relative aspect-[4/5] w-full overflow-hidden rounded-xl border-2 transition-all',
+                      activeImage === idx
+                        ? 'border-primary'
+                        : 'border-transparent opacity-70 hover:opacity-100'
                     )}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -360,11 +371,21 @@ export const ProductDetailsTemplate = ({
             <div className="rounded-2xl bg-card p-6 custom-card-shadow">
               <div className="flex items-center justify-between gap-4">
                 <p className="text-sm font-medium uppercase text-grey-black/60 dark:text-white/60">
-                  SKU: <span className="opacity-70">{product.sku ?? product._id?.slice(-6).toUpperCase()}</span>
+                  SKU:{' '}
+                  <span className="opacity-70">
+                    {product.sku ?? product._id?.slice(-6).toUpperCase()}
+                  </span>
                 </p>
                 {product.status && (
                   <span className="flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-xs font-medium capitalize text-grey-black dark:text-white">
-                    <span className={cn("size-2 rounded-full", product.status === 'active' ? 'bg-success' : 'bg-destructive')} />
+                    <span
+                      className={cn(
+                        'size-2 rounded-full',
+                        product.status === 'active'
+                          ? 'bg-success'
+                          : 'bg-destructive'
+                      )}
+                    />
                     {product.status}
                   </span>
                 )}
@@ -410,7 +431,9 @@ export const ProductDetailsTemplate = ({
 
               {product.items_delivered !== undefined && (
                 <div className="mt-4 inline-flex items-center gap-2 rounded-[10px] bg-accent px-4 py-2 text-xs text-grey-black dark:text-white font-medium">
-                  <span className="font-semibold">Items delivered: {product.items_delivered.toLocaleString()}</span>
+                  <span className="font-semibold">
+                    Items delivered: {product.items_delivered.toLocaleString()}
+                  </span>
                 </div>
               )}
             </div>
@@ -502,82 +525,86 @@ export const ProductDetailsTemplate = ({
                 </>
               ) : (
                 <>
-              {customisation && (
-                <DetailRow label="Customisation">
-                  <Chip>{customisation}</Chip>
-                </DetailRow>
-              )}
-              {product.taxonomy?.categories?.length ? (
-                <DetailRow label="Category">
-                  {product.taxonomy.categories.map((c) => (
-                    <Chip key={c}>{c}</Chip>
-                  ))}
-                </DetailRow>
-              ) : null}
-              {product.taxonomy?.product_type ? (
-                <DetailRow label="Product Type">
-                  <Chip>{product.taxonomy.product_type}</Chip>
-                </DetailRow>
-              ) : null}
-              {tags.length ? (
-                <DetailRow label="Tags">
-                  {tags.map((t) => (
-                    <Chip key={t}>{t}</Chip>
-                  ))}
-                </DetailRow>
-              ) : null}
-              {colours.length ? (
-                <DetailRow label="Available colours">
-                  {colours.map((c) => (
-                    <button
-                      key={`${c.hex}-${c.index}`}
-                      type="button"
-                      onClick={() => {
-                        setSelectedColorIndex(c.index === selectedColorIndex ? null : c.index);
-                        setActiveImage(0);
-                      }}
-                      style={{ backgroundColor: c.hex }}
-                      className={cn(
-                        "size-6 rounded-full border transition-all",
-                        selectedColorIndex === c.index ? "ring-2 ring-primary ring-offset-1 border-transparent" : "border-border hover:scale-110"
-                      )}
-                    />
-                  ))}
-                </DetailRow>
-              ) : null}
-              {sizes.length ? (
-                <DetailRow label="Available Sizes">
-                  {sizes.map((s) => (
-                    <span key={s} className="font-bold text-sm mx-1">
-                      {s}
-                    </span>
-                  ))}
-                </DetailRow>
-              ) : null}
-              <DetailRow label="Stock">
-                {totalStock > 0 ? `${totalStock} Units` : '—'}
-              </DetailRow>
-              {product.styles?.length ? (
-                <DetailRow label="Style Options">
-                  {product.styles.map((s, i) => (
-                    <Thumb key={i} url={compImage(s)} />
-                  ))}
-                </DetailRow>
-              ) : null}
-              {product.fabrics?.length ? (
-                <DetailRow label="Fabric Options">
-                  {product.fabrics.map((f, i) => (
-                    <Thumb key={i} url={compImage(f)} />
-                  ))}
-                </DetailRow>
-              ) : null}
-              {product.accessories?.length ? (
-                <DetailRow label="Accessory Options">
-                  {product.accessories.map((a, i) => (
-                    <Thumb key={i} url={compImage(a)} />
-                  ))}
-                </DetailRow>
-              ) : null}
+                  {customisation && (
+                    <DetailRow label="Customisation">
+                      <Chip>{customisation}</Chip>
+                    </DetailRow>
+                  )}
+                  {product.taxonomy?.categories?.length ? (
+                    <DetailRow label="Category">
+                      {product.taxonomy.categories.map((c) => (
+                        <Chip key={c}>{c}</Chip>
+                      ))}
+                    </DetailRow>
+                  ) : null}
+                  {product.taxonomy?.product_type ? (
+                    <DetailRow label="Product Type">
+                      <Chip>{product.taxonomy.product_type}</Chip>
+                    </DetailRow>
+                  ) : null}
+                  {tags.length ? (
+                    <DetailRow label="Tags">
+                      {tags.map((t) => (
+                        <Chip key={t}>{t}</Chip>
+                      ))}
+                    </DetailRow>
+                  ) : null}
+                  {colours.length ? (
+                    <DetailRow label="Available colours">
+                      {colours.map((c) => (
+                        <button
+                          key={`${c.hex}-${c.index}`}
+                          type="button"
+                          onClick={() => {
+                            setSelectedColorIndex(
+                              c.index === selectedColorIndex ? null : c.index
+                            );
+                            setActiveImage(0);
+                          }}
+                          style={{ backgroundColor: c.hex }}
+                          className={cn(
+                            'size-6 rounded-full border transition-all',
+                            selectedColorIndex === c.index
+                              ? 'ring-2 ring-primary ring-offset-1 border-transparent'
+                              : 'border-border hover:scale-110'
+                          )}
+                        />
+                      ))}
+                    </DetailRow>
+                  ) : null}
+                  {sizes.length ? (
+                    <DetailRow label="Available Sizes">
+                      {sizes.map((s) => (
+                        <span key={s} className="font-bold text-sm mx-1">
+                          {s}
+                        </span>
+                      ))}
+                    </DetailRow>
+                  ) : null}
+                  <DetailRow label="Stock">
+                    {totalStock > 0 ? `${totalStock} Units` : '—'}
+                  </DetailRow>
+                  {product.styles?.length ? (
+                    <DetailRow label="Style Options">
+                      {product.styles.map((s, i) => (
+                        <Thumb key={i} url={compImage(s)} />
+                      ))}
+                    </DetailRow>
+                  ) : null}
+                  {product.fabrics?.length ? (
+                    <DetailRow label="Fabric Options">
+                      {product.fabrics.map((f, i) => (
+                        <Thumb key={i} url={compImage(f)} />
+                      ))}
+                    </DetailRow>
+                  ) : null}
+                  {product.accessories?.length ? (
+                    <DetailRow label="Accessory Options">
+                      {product.accessories.map((a, i) => (
+                        <Thumb key={i} url={compImage(a)} />
+                      ))}
+                    </DetailRow>
+                  ) : null}
                 </>
               )}
             </div>

@@ -18,13 +18,34 @@ export interface AddonVariantResult {
 
 // Preset swatches for quick colour selection
 const PRESET_COLORS = [
-  '#000000', '#FFFFFF', '#C0C0C0', '#808080',
-  '#D4AF37', '#B87333', '#CD7F32', '#E5C100',
-  '#FF0000', '#DC143C', '#8B0000', '#FF6347',
-  '#0000FF', '#1E90FF', '#000080', '#4169E1',
-  '#008000', '#2E8B57', '#006400', '#32CD32',
-  '#800080', '#9370DB', '#4B0082', '#DA70D6',
-  '#FF69B4', '#FFD700', '#FF8C00', '#FFA500',
+  '#000000',
+  '#FFFFFF',
+  '#C0C0C0',
+  '#808080',
+  '#D4AF37',
+  '#B87333',
+  '#CD7F32',
+  '#E5C100',
+  '#FF0000',
+  '#DC143C',
+  '#8B0000',
+  '#FF6347',
+  '#0000FF',
+  '#1E90FF',
+  '#000080',
+  '#4169E1',
+  '#008000',
+  '#2E8B57',
+  '#006400',
+  '#32CD32',
+  '#800080',
+  '#9370DB',
+  '#4B0082',
+  '#DA70D6',
+  '#FF69B4',
+  '#FFD700',
+  '#FF8C00',
+  '#FFA500',
 ];
 
 // Modal for adding a single variant to an add-on.
@@ -145,7 +166,9 @@ export const AddAddonVariantModal = NiceModal.create(
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={
-                    isColour ? 'e.g. Gold, Silver, Black...' : 'e.g. Silk, Cotton...'
+                    isColour
+                      ? 'e.g. Gold, Silver, Black...'
+                      : 'e.g. Silk, Cotton...'
                   }
                   className="bg-background"
                   autoFocus

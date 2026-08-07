@@ -21,7 +21,13 @@ const customer = (patch: Record<string, unknown> = {}) =>
 
 describe('getCustomerStatus', () => {
   it('marks the blocked-ish statuses inactive', () => {
-    for (const status of ['inactive', 'disabled', 'suspended', 'blocked', 'BLOCKED']) {
+    for (const status of [
+      'inactive',
+      'disabled',
+      'suspended',
+      'blocked',
+      'BLOCKED',
+    ]) {
       expect(getCustomerStatus(customer({ status })).variant).toBe('inactive');
     }
   });
@@ -40,9 +46,9 @@ describe('getCustomerStatus', () => {
 
 describe('customer identity', () => {
   it('reads the name, falling back to username then a placeholder', () => {
-    expect(getCustomerName(customer({ name: 'Ada Obi', username: 'ada' }))).toBe(
-      'Ada Obi'
-    );
+    expect(
+      getCustomerName(customer({ name: 'Ada Obi', username: 'ada' }))
+    ).toBe('Ada Obi');
     expect(getCustomerName(customer({ username: 'ada' }))).toBe('ada');
     expect(getCustomerName(customer({}))).toBe('Unnamed customer');
   });
@@ -69,7 +75,9 @@ describe('customer identity', () => {
   it('reads the avatar across the API spellings', () => {
     expect(getCustomerAvatar(customer({ avatar: 'a.png' }))).toBe('a.png');
     expect(getCustomerAvatar(customer({ image: 'b.png' }))).toBe('b.png');
-    expect(getCustomerAvatar(customer({ profile_picture: 'c.png' }))).toBe('c.png');
+    expect(getCustomerAvatar(customer({ profile_picture: 'c.png' }))).toBe(
+      'c.png'
+    );
     expect(getCustomerAvatar(customer({}))).toBeUndefined();
   });
 
@@ -83,7 +91,9 @@ describe('customer identity', () => {
     expect(getCustomerTotalOrders(customer({ ordersCount: 3 }))).toBe(3);
     expect(getCustomerTotalOrders(customer({ totalOrders: 0 }))).toBe(0);
     expect(getCustomerTotalOrders(customer({}))).toBeUndefined();
-    expect(getCustomerLastOrderDate(customer({ lastOrderDate: 'x' }))).toBe('x');
+    expect(getCustomerLastOrderDate(customer({ lastOrderDate: 'x' }))).toBe(
+      'x'
+    );
     expect(getCustomerLastOrderDate(customer({ lastOrderAt: 'y' }))).toBe('y');
   });
 });
@@ -125,16 +135,22 @@ describe('customer formatters', () => {
   it('formats the last login as "10:45am - DD/MM/YYYY"', () => {
     // Built from local components so the assertion holds in any timezone.
     const lastLoggedIn = new Date(2025, 1, 24, 10, 45).toISOString();
-    expect(formatLastLoggedIn(customer({ lastLoggedIn }))).toBe('10:45am - 24/02/2025');
+    expect(formatLastLoggedIn(customer({ lastLoggedIn }))).toBe(
+      '10:45am - 24/02/2025'
+    );
   });
 
   it('reads the alternate lastLoginAt key', () => {
     const lastLoginAt = new Date(2025, 1, 24, 22, 5).toISOString();
-    expect(formatLastLoggedIn(customer({ lastLoginAt }))).toBe('10:05pm - 24/02/2025');
+    expect(formatLastLoggedIn(customer({ lastLoginAt }))).toBe(
+      '10:05pm - 24/02/2025'
+    );
   });
 
   it('passes through a preformatted string and dashes a missing one', () => {
-    expect(formatLastLoggedIn(customer({ lastLoggedIn: 'Just now' }))).toBe('Just now');
+    expect(formatLastLoggedIn(customer({ lastLoggedIn: 'Just now' }))).toBe(
+      'Just now'
+    );
     expect(formatLastLoggedIn(customer({}))).toBe('—');
   });
 });

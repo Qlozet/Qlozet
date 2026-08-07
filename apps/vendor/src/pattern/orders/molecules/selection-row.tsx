@@ -16,13 +16,13 @@ export const Thumb: React.FC<{
   alt: string;
 }> = ({ url, swatch, fallbackIcon, alt }) => (
   <div
-    className='relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#E5E7EB] dark:border-border bg-gray-100 dark:bg-gray-700'
+    className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#E5E7EB] dark:border-border bg-gray-100 dark:bg-gray-700"
     style={swatch ? { backgroundColor: swatch } : undefined}
   >
     {url ? (
-      <Image src={url} alt={alt} fill className='object-cover' sizes='44px' />
+      <Image src={url} alt={alt} fill className="object-cover" sizes="44px" />
     ) : swatch ? null : (
-      fallbackIcon ?? <Package className='size-4 text-gray-400' />
+      (fallbackIcon ?? <Package className="size-4 text-gray-400" />)
     )}
   </div>
 );
@@ -56,32 +56,32 @@ export const SelectionRow: React.FC<{
 }) => {
   const hasPrice = typeof price === 'number' && price > 0;
   return (
-    <div className='flex items-center gap-3 px-3 py-2.5'>
+    <div className="flex items-center gap-3 px-3 py-2.5">
       <Thumb url={url} swatch={swatch} fallbackIcon={icon} alt={title} />
-      <div className='min-w-0 flex-1'>
-        <p className='truncate text-sm font-medium text-[#333333] dark:text-white'>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-[#333333] dark:text-white">
           {title}
         </p>
         {subtitle && (
-          <p className='truncate text-xs text-grey3 dark:text-gray-400'>
+          <p className="truncate text-xs text-grey3 dark:text-gray-400">
             {subtitle}
           </p>
         )}
         {priceBelow && hasPrice && (
-          <p className='text-sm font-semibold text-[#333333] dark:text-white'>
+          <p className="text-sm font-semibold text-[#333333] dark:text-white">
             {formatNaira(price)}
           </p>
         )}
       </div>
-      <div className='shrink-0 text-right'>
+      <div className="shrink-0 text-right">
         {badge}
         {!priceBelow && hasPrice && (
-          <p className='text-sm font-semibold text-[#333333] dark:text-white'>
+          <p className="text-sm font-semibold text-[#333333] dark:text-white">
             {formatNaira(price)}
           </p>
         )}
         {typeof qty === 'number' && qty > 0 && (
-          <p className='text-[11px] text-grey3 dark:text-gray-400'>×{qty}</p>
+          <p className="text-[11px] text-grey3 dark:text-gray-400">×{qty}</p>
         )}
       </div>
     </div>
@@ -93,14 +93,14 @@ export const Section: React.FC<{
   icon: React.ReactNode;
   children: React.ReactNode;
 }> = ({ title, icon, children }) => (
-  <div className='space-y-2'>
-    <div className='flex items-center gap-1.5'>
+  <div className="space-y-2">
+    <div className="flex items-center gap-1.5">
       {icon}
-      <h4 className='text-xs font-semibold uppercase tracking-wider text-grey3 dark:text-gray-400'>
+      <h4 className="text-xs font-semibold uppercase tracking-wider text-grey3 dark:text-gray-400">
         {title}
       </h4>
     </div>
-    <div className='divide-y divide-[#F1F3F5] dark:divide-border rounded-xl border border-[#E5E7EB] dark:border-border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]'>
+    <div className="divide-y divide-[#F1F3F5] dark:divide-border rounded-xl border border-[#E5E7EB] dark:border-border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]">
       {children}
     </div>
   </div>

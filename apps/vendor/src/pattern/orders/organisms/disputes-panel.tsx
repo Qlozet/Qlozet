@@ -9,7 +9,10 @@ import NiceModal from '@ebay/nice-modal-react';
 import type { PaginationState } from '@tanstack/react-table';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
-import { FilterMenu, type FilterOption } from '@/pattern/common/molecules/filter-menu';
+import {
+  FilterMenu,
+  type FilterOption,
+} from '@/pattern/common/molecules/filter-menu';
 import {
   useGetVendorDisputesQuery,
   type Dispute,
@@ -71,9 +74,9 @@ export const DisputesPanel: React.FC = () => {
   const totalPages = data?.data?.total_pages ?? data?.data?.totalPages ?? 1;
 
   return (
-    <div className='bg-card w-full rounded-[10px] shadow-md'>
+    <div className="bg-card w-full rounded-[10px] shadow-md">
       <TableToolbar
-        title='Disputes'
+        title="Disputes"
         search={search}
         onSearchChange={(value) => {
           setSearch(value);
@@ -102,9 +105,9 @@ export const DisputesPanel: React.FC = () => {
         setPagination={setPagination}
         pageCount={totalPages}
         manualPagination
-        emptyTitle='No disputes'
-        emptyMessage='Disputes raised by customers will show up here.'
-        minWidth='900px'
+        emptyTitle="No disputes"
+        emptyMessage="Disputes raised by customers will show up here."
+        minWidth="900px"
       />
     </div>
   );

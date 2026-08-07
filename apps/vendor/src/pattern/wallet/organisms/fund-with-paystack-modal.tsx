@@ -88,9 +88,7 @@ const readReference = (
 ): string | undefined => {
   if (!data) return undefined;
   const nested = (data.data ?? {}) as Record<string, unknown>;
-  const ref =
-    data.reference ??
-    (nested.reference as string | undefined);
+  const ref = data.reference ?? (nested.reference as string | undefined);
   return typeof ref === 'string' && ref ? ref : undefined;
 };
 
@@ -120,9 +118,9 @@ export const FundWithPaystackModal = create(() => {
 
   const onSubmit = async (values: FundFormData) => {
     try {
-      const response = await fundWallet({ 
+      const response = await fundWallet({
         amount: Number(values.amount),
-        callback_url: window.location.origin + '/wallet', 
+        callback_url: window.location.origin + '/wallet',
       }).unwrap();
       const checkoutUrl = readAuthorizationUrl(response?.data);
       const accessCode = readAccessCode(response?.data);
@@ -141,7 +139,9 @@ export const FundWithPaystackModal = create(() => {
                 // Redirect back to wallet page with reference so it verifies
                 window.location.href = `${window.location.origin}/wallet?reference=${ref}`;
               } else {
-                toast.error('Payment successful, but no reference returned. Please check your balance.');
+                toast.error(
+                  'Payment successful, but no reference returned. Please check your balance.'
+                );
               }
             },
             onCancel: () => {
@@ -155,8 +155,7 @@ export const FundWithPaystackModal = create(() => {
       // Fallback to hosted checkout if no access code or script failed to load
       if (!checkoutUrl) {
         toast.error(
-          response?.message ||
-            'Could not start the payment. Please try again.'
+          response?.message || 'Could not start the payment. Please try again.'
         );
         return;
       }
@@ -174,44 +173,44 @@ export const FundWithPaystackModal = create(() => {
 
   return (
     <Dialog open={visible} onOpenChange={handleClose}>
-      <DialogContent className='max-w-md p-6 bg-card'>
-        <DialogHeader className='border-b border-dashed dark:border-border pb-3 text-left mb-4'>
-          <DialogTitle className='flex items-center gap-3 text-base font-medium text-[#0C0C0D] dark:text-white'>
+      <DialogContent className="max-w-md p-6 bg-card">
+        <DialogHeader className="border-b border-dashed dark:border-border pb-3 text-left mb-4">
+          <DialogTitle className="flex items-center gap-3 text-base font-medium text-[#0C0C0D] dark:text-white">
             <Image
               src={paystackLogo}
-              alt=''
+              alt=""
               width={32}
               height={32}
-              className='size-8 rounded-md'
+              className="size-8 rounded-md"
             />
             Fund with Paystack
           </DialogTitle>
         </DialogHeader>
 
-        <p className='text-sm font-normal text-[#0C0C0D] dark:text-white mb-4'>
+        <p className="text-sm font-normal text-[#0C0C0D] dark:text-white mb-4">
           Enter the amount you want to add to your wallet. You’ll be redirected
           to Paystack to complete the payment.
         </p>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name='amount'
+              name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-[#333333] dark:text-gray-300'>
+                  <FormLabel className="text-sm font-medium text-[#333333] dark:text-gray-300">
                     Amount
                   </FormLabel>
                   <FormControl>
-                    <div className='relative'>
-                      <span className='pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#646A86] dark:text-gray-400'>
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#646A86] dark:text-gray-400">
                         ₦
                       </span>
                       <Input
-                        inputMode='numeric'
-                        placeholder='Enter amount'
-                        className='h-12 rounded-lg pl-8'
+                        inputMode="numeric"
+                        placeholder="Enter amount"
+                        className="h-12 rounded-lg pl-8"
                         {...field}
                         onChange={(e) =>
                           field.onChange(e.target.value.replace(/[^\d]/g, ''))
@@ -224,20 +223,20 @@ export const FundWithPaystackModal = create(() => {
               )}
             />
 
-            <div className='flex justify-end gap-3'>
+            <div className="flex justify-end gap-3">
               <Button
-                type='button'
-                variant='outline'
+                type="button"
+                variant="outline"
                 onClick={handleClose}
-                className='min-w-28'
+                className="min-w-28"
                 disabled={isLoading}
               >
                 Cancel
               </Button>
-              <Button type='submit' className='min-w-28' disabled={isLoading}>
+              <Button type="submit" className="min-w-28" disabled={isLoading}>
                 {isLoading ? (
                   <>
-                    <Loader2 className='size-4 animate-spin' />
+                    <Loader2 className="size-4 animate-spin" />
                     Processing…
                   </>
                 ) : (
@@ -251,4 +250,3 @@ export const FundWithPaystackModal = create(() => {
     </Dialog>
   );
 });
-

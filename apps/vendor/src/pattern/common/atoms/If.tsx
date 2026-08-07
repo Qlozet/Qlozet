@@ -1,9 +1,8 @@
-
 import { ReactNode } from 'react';
 
 type Props = {
-    isTrue: boolean;
-    children: ReactNode;
+  isTrue: boolean;
+  children: ReactNode;
 };
 
 /**

@@ -19,7 +19,9 @@ export const AddAddonModal = NiceModal.create(() => {
   const modal = useModal();
 
   const [name, setName] = useState('');
-  const [displayType, setDisplayType] = useState<'colour' | 'picture'>('colour');
+  const [displayType, setDisplayType] = useState<'colour' | 'picture'>(
+    'colour'
+  );
 
   if (!modal.visible) return null;
 
@@ -98,7 +100,9 @@ export const AddAddonModal = NiceModal.create(() => {
                     <Palette className="size-5" />
                   </div>
                   <div className="text-center">
-                    <p className="text-sm font-medium text-foreground">Colour</p>
+                    <p className="text-sm font-medium text-foreground">
+                      Colour
+                    </p>
                     <p className="mt-0.5 text-[11px] text-muted-foreground">
                       Pick a colour swatch for each variant
                     </p>
@@ -126,7 +130,9 @@ export const AddAddonModal = NiceModal.create(() => {
                     <ImageIcon className="size-5" />
                   </div>
                   <div className="text-center">
-                    <p className="text-sm font-medium text-foreground">Picture</p>
+                    <p className="text-sm font-medium text-foreground">
+                      Picture
+                    </p>
                     <p className="mt-0.5 text-[11px] text-muted-foreground">
                       Upload an image for each variant
                     </p>

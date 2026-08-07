@@ -5,11 +5,7 @@
 // when a field is absent.
 
 import { baseAPI } from '@/redux/api/base-api';
-import {
-  ApiResponse,
-  PaginatedData,
-  buildQueryString,
-} from '../types';
+import { ApiResponse, PaginatedData, buildQueryString } from '../types';
 
 export interface VendorProduct {
   _id: string;

@@ -2,17 +2,22 @@ import { describe, expect, it } from 'vitest';
 import type { CurrentUser } from '@/redux/services/users/users.api-slice';
 import { initialsFrom, readUserAvatar, readUserName } from '../current-user';
 
-const user = (patch: Record<string, unknown>) => patch as unknown as CurrentUser;
+const user = (patch: Record<string, unknown>) =>
+  patch as unknown as CurrentUser;
 
 describe('readUserName', () => {
   it('prefers full_name', () => {
     expect(
-      readUserName(user({ full_name: 'Ada Obi', username: 'ada', email: 'a@b.co' }))
+      readUserName(
+        user({ full_name: 'Ada Obi', username: 'ada', email: 'a@b.co' })
+      )
     ).toBe('Ada Obi');
   });
 
   it('composes first + last when full_name is absent', () => {
-    expect(readUserName(user({ first_name: 'Ada', last_name: 'Obi' }))).toBe('Ada Obi');
+    expect(readUserName(user({ first_name: 'Ada', last_name: 'Obi' }))).toBe(
+      'Ada Obi'
+    );
   });
 
   it('uses a lone first or last name', () => {

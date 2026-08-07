@@ -56,7 +56,9 @@ describe('field readers', () => {
 
   it('reads the type across the API spellings', () => {
     expect(readTransactionType(tx({ transType: 'credit' }))).toBe('credit');
-    expect(readTransactionType(tx({ transaction_type: 'debit' }))).toBe('debit');
+    expect(readTransactionType(tx({ transaction_type: 'debit' }))).toBe(
+      'debit'
+    );
     expect(readTransactionType(tx({ type: 'fund' }))).toBe('fund');
     expect(readTransactionType(tx({}))).toBe('—');
   });
@@ -100,7 +102,9 @@ describe('sender details', () => {
 
   it('combines account number and bank', () => {
     expect(
-      readSenderAccount(tx({ senderAccountNumber: '3109876543', senderBank: 'Firstbank' }))
+      readSenderAccount(
+        tx({ senderAccountNumber: '3109876543', senderBank: 'Firstbank' })
+      )
     ).toBe('3109876543 - Firstbank');
   });
 

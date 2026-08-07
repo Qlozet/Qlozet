@@ -66,15 +66,15 @@ export const MediaPreviewModal = create<MediaPreviewModalProps>(
         >
           {/* Title is required for dialog accessibility but the design shows
               the image alone, so it's visually hidden. */}
-          <DialogTitle className='sr-only'>{title}</DialogTitle>
+          <DialogTitle className="sr-only">{title}</DialogTitle>
 
           {/* 469 × 559 at full size, scaled down proportionally on narrow
               viewports. */}
-          <div className='relative aspect-[469/559] w-full rounded-2xl bg-[#F5F2EE] dark:bg-[#4A4949]'>
+          <div className="relative aspect-[469/559] w-full rounded-2xl bg-[#F5F2EE] dark:bg-[#4A4949]">
             {count === 0 ? (
-              <div className='flex size-full flex-col items-center justify-center gap-2 rounded-2xl bg-[#E5E7EB] dark:bg-[#4A4949]'>
-                <ImageOff className='size-8 text-gray-400' />
-                <p className='text-sm text-gray-500 dark:text-gray-400'>
+              <div className="flex size-full flex-col items-center justify-center gap-2 rounded-2xl bg-[#E5E7EB] dark:bg-[#4A4949]">
+                <ImageOff className="size-8 text-gray-400" />
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   No media for this item
                 </p>
               </div>
@@ -84,41 +84,41 @@ export const MediaPreviewModal = create<MediaPreviewModalProps>(
                 src={images[index]}
                 alt={title}
                 fill
-                className='rounded-2xl object-cover'
-                sizes='(max-width: 640px) 92vw, 469px'
+                className="rounded-2xl object-cover"
+                sizes="(max-width: 640px) 92vw, 469px"
                 priority
               />
             )}
 
             <button
-              type='button'
+              type="button"
               onClick={() => onOpenChange(false)}
-              aria-label='Close preview'
-              className='absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70 cursor-pointer'
+              aria-label="Close preview"
+              className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70 cursor-pointer"
             >
-              <X className='size-4' />
+              <X className="size-4" />
             </button>
 
             {hasMultiple && (
               <>
                 <button
-                  type='button'
+                  type="button"
                   onClick={() => step(-1)}
-                  aria-label='Previous image'
-                  className='absolute left-3 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70 cursor-pointer'
+                  aria-label="Previous image"
+                  className="absolute left-3 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70 cursor-pointer"
                 >
-                  <ChevronLeft className='size-5' />
+                  <ChevronLeft className="size-5" />
                 </button>
                 <button
-                  type='button'
+                  type="button"
                   onClick={() => step(1)}
-                  aria-label='Next image'
-                  className='absolute right-3 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70 cursor-pointer'
+                  aria-label="Next image"
+                  className="absolute right-3 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70 cursor-pointer"
                 >
-                  <ChevronRight className='size-5' />
+                  <ChevronRight className="size-5" />
                 </button>
 
-                <div className='absolute inset-x-0 bottom-3 flex justify-center gap-1.5'>
+                <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
                   {images.map((url, i) => (
                     <span
                       key={url}

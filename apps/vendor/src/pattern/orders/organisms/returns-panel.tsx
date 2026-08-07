@@ -10,7 +10,10 @@ import type { PaginationState } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
-import { FilterMenu, type FilterOption } from '@/pattern/common/molecules/filter-menu';
+import {
+  FilterMenu,
+  type FilterOption,
+} from '@/pattern/common/molecules/filter-menu';
 import {
   useGetVendorReturnsQuery,
   useApproveReturnMutation,
@@ -59,7 +62,10 @@ export const ReturnsPanel: React.FC = () => {
   const [rejectReturn] = useRejectReturnMutation();
   const [markReceived] = useMarkReturnReceivedMutation();
 
-  const returns = useMemo<ReturnRequest[]>(() => data?.data?.data ?? [], [data]);
+  const returns = useMemo<ReturnRequest[]>(
+    () => data?.data?.data ?? [],
+    [data]
+  );
 
   // Server has no text search, so filter client-side across the scannable fields.
   const filtered = useMemo(() => {
@@ -120,13 +126,12 @@ export const ReturnsPanel: React.FC = () => {
     [busyId]
   );
 
-  const totalPages =
-    data?.data?.total_pages ?? data?.data?.totalPages ?? 1;
+  const totalPages = data?.data?.total_pages ?? data?.data?.totalPages ?? 1;
 
   return (
-    <div className='bg-card w-full rounded-[10px] shadow-md'>
+    <div className="bg-card w-full rounded-[10px] shadow-md">
       <TableToolbar
-        title='Returns'
+        title="Returns"
         search={search}
         onSearchChange={(value) => {
           setSearch(value);
@@ -155,9 +160,9 @@ export const ReturnsPanel: React.FC = () => {
         setPagination={setPagination}
         pageCount={totalPages}
         manualPagination
-        emptyTitle='No returns yet'
-        emptyMessage='Return requests from customers will show up here.'
-        minWidth='900px'
+        emptyTitle="No returns yet"
+        emptyMessage="Return requests from customers will show up here."
+        minWidth="900px"
       />
     </div>
   );

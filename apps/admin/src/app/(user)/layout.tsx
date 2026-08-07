@@ -1,7 +1,7 @@
-import type { ReactNode } from "react";
-import { Sidebar } from "@/pattern/common/templates/sidebar";
-import { DashboardTopBar } from "@/pattern/common/organisms/dashboard-top-bar";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import type { ReactNode } from 'react';
+import { Sidebar } from '@/pattern/common/templates/sidebar';
+import { DashboardTopBar } from '@/pattern/common/organisms/dashboard-top-bar';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (

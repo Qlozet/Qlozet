@@ -95,7 +95,10 @@ export const discountsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // POST /discounts — create a discount
-    createDiscount: builder.mutation<ApiResponse<Discount>, CreateDiscountRequest>({
+    createDiscount: builder.mutation<
+      ApiResponse<Discount>,
+      CreateDiscountRequest
+    >({
       query: (body) => ({ url: '/discounts', method: 'POST', body }),
       invalidatesTags: ['Discounts'],
     }),
@@ -153,7 +156,10 @@ export const discountsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // GET /discounts/discounted-products
-    getDiscountedProducts: builder.query<ApiResponse<DiscountedProduct[]>, void>({
+    getDiscountedProducts: builder.query<
+      ApiResponse<DiscountedProduct[]>,
+      void
+    >({
       query: () => ({ url: '/discounts/discounted-products', method: 'GET' }),
       providesTags: ['Discounts'],
     }),
@@ -170,7 +176,10 @@ export const discountsApiSlice = baseAPI.injectEndpoints({
         if (p.size) searchParams.set('size', String(p.size));
         if (p.kind) searchParams.set('kind', p.kind);
         const qs = searchParams.toString();
-        return { url: `/discounts/vendor/products${qs ? `?${qs}` : ''}`, method: 'GET' };
+        return {
+          url: `/discounts/vendor/products${qs ? `?${qs}` : ''}`,
+          method: 'GET',
+        };
       },
       providesTags: ['Discounts'],
     }),

@@ -13,7 +13,7 @@ export const SupportTemplate: React.FC = () => {
   const router = useRouter();
 
   return (
-    <section className='w-full min-h-[80vh] bg-[#F8F9FA]'>
+    <section className="w-full min-h-[80vh] bg-[#F8F9FA]">
       <SupportTicketsList
         onAddTicket={() => router.push(APP_ROUTES.supportCreateTicket)}
         onViewDetails={(id) =>

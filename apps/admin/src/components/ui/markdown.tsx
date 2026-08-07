@@ -19,7 +19,9 @@ function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
     if (m.index > last) nodes.push(text.slice(last, m.index));
     const tok = m[0];
     if (tok.startsWith('**')) {
-      nodes.push(<strong key={`${keyPrefix}-b${i}`}>{tok.slice(2, -2)}</strong>);
+      nodes.push(
+        <strong key={`${keyPrefix}-b${i}`}>{tok.slice(2, -2)}</strong>
+      );
     } else {
       nodes.push(<em key={`${keyPrefix}-i${i}`}>{tok.slice(1, -1)}</em>);
     }
@@ -49,18 +51,18 @@ export function Markdown({
     const k = key++;
     blocks.push(
       ordered ? (
-        <ol key={k} className='list-decimal space-y-1 pl-5'>
+        <ol key={k} className="list-decimal space-y-1 pl-5">
           {items.map((it, j) => (
             <li key={j}>{renderInline(it, `o${k}-${j}`)}</li>
           ))}
         </ol>
       ) : (
-        <ul key={k} className='list-disc space-y-1 pl-5'>
+        <ul key={k} className="list-disc space-y-1 pl-5">
           {items.map((it, j) => (
             <li key={j}>{renderInline(it, `u${k}-${j}`)}</li>
           ))}
         </ul>
-      ),
+      )
     );
     list = null;
   };
@@ -87,9 +89,9 @@ export function Markdown({
       flushList();
       const k = key++;
       blocks.push(
-        <p key={k} className='leading-relaxed'>
+        <p key={k} className="leading-relaxed">
           {renderInline(line, `p${k}`)}
-        </p>,
+        </p>
       );
     }
   }

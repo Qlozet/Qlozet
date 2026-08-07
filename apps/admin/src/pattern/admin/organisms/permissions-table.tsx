@@ -34,21 +34,21 @@ export const PermissionsTable = ({
   onToggle,
 }: PermissionsTableProps) => {
   return (
-    <div className='overflow-hidden rounded-2xl border border-border bg-white'>
-      <div className='px-5 py-4'>
-        <h2 className='text-base font-bold text-grey-black'>Permission</h2>
+    <div className="overflow-hidden rounded-2xl border border-border bg-white">
+      <div className="px-5 py-4">
+        <h2 className="text-base font-bold text-grey-black">Permission</h2>
       </div>
 
       <Table>
-        <TableHeader className='bg-[#F9FAFB]'>
-          <TableRow className='hover:bg-transparent'>
-            <TableHead className='h-11 pl-5 text-xs font-medium text-gray-500'>
+        <TableHeader className="bg-[#F9FAFB]">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="h-11 pl-5 text-xs font-medium text-gray-500">
               Module
             </TableHead>
             {PERMISSION_ACTIONS.map((action) => (
               <TableHead
                 key={action}
-                className='h-11 text-xs font-medium text-gray-500'
+                className="h-11 text-xs font-medium text-gray-500"
               >
                 {ACTION_LABEL[action]}
               </TableHead>
@@ -58,7 +58,7 @@ export const PermissionsTable = ({
 
         <TableBody>
           {PERMISSION_RESOURCES.map((resource) => (
-            <TableRow key={resource.key} className='border-t border-border'>
+            <TableRow key={resource.key} className="border-t border-border">
               <TableCell
                 className={cn(
                   'py-3 pl-5 text-sm text-gray-600',
@@ -68,7 +68,7 @@ export const PermissionsTable = ({
                 {resource.label}
               </TableCell>
               {PERMISSION_ACTIONS.map((action) => (
-                <TableCell key={action} className='py-3'>
+                <TableCell key={action} className="py-3">
                   <Checkbox
                     checked={matrix[resource.key]?.[action] ?? false}
                     onCheckedChange={() => onToggle(resource.key, action)}

@@ -31,7 +31,13 @@ describe('getVendorStatus', () => {
 
   // Anything unrecognised is treated as "not yet verified" — never as active.
   it('treats pending, unknown and missing statuses as awaiting verification', () => {
-    for (const status of ['pending', 'in-review', 'something-new', '', undefined]) {
+    for (const status of [
+      'pending',
+      'in-review',
+      'something-new',
+      '',
+      undefined,
+    ]) {
       expect(getVendorStatus(vendor({ status }))).toEqual({
         variant: 'awaiting',
         label: 'Awaiting verification',
@@ -42,9 +48,9 @@ describe('getVendorStatus', () => {
 
 describe('vendor identity', () => {
   it('reads the name across the API spellings, in order', () => {
-    expect(getVendorName(vendor({ business_name: 'Qlozet', name: 'Other' }))).toBe(
-      'Qlozet'
-    );
+    expect(
+      getVendorName(vendor({ business_name: 'Qlozet', name: 'Other' }))
+    ).toBe('Qlozet');
     expect(getVendorName(vendor({ name: 'Other' }))).toBe('Other');
     expect(getVendorName(vendor({ personal_name: 'Ada' }))).toBe('Ada');
     expect(getVendorName(vendor({ full_name: 'Ada Obi' }))).toBe('Ada Obi');
@@ -52,7 +58,9 @@ describe('vendor identity', () => {
   });
 
   it('reads the email, dashing when absent', () => {
-    expect(getVendorEmail(vendor({ business_email: 'shop@q.co' }))).toBe('shop@q.co');
+    expect(getVendorEmail(vendor({ business_email: 'shop@q.co' }))).toBe(
+      'shop@q.co'
+    );
     expect(getVendorEmail(vendor({ email: 'a@b.co' }))).toBe('a@b.co');
     expect(getVendorEmail(vendor({}))).toBe('—');
   });

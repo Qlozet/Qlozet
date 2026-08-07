@@ -28,9 +28,14 @@ const VendorsPage = () => {
   const paginated = data?.data as any;
   const vendors = useMemo(() => paginated?.data ?? [], [paginated]);
   const totalCount =
-    paginated?.total_items ?? paginated?.totalCount ?? paginated?.total ?? vendors.length;
+    paginated?.total_items ??
+    paginated?.totalCount ??
+    paginated?.total ??
+    vendors.length;
   const pageCountFromApi = paginated?.total_pages ?? paginated?.totalPages;
-  const pageCount = pageCountFromApi || Math.max(Math.ceil(totalCount / pagination.pageSize), 1);
+  const pageCount =
+    pageCountFromApi ||
+    Math.max(Math.ceil(totalCount / pagination.pageSize), 1);
 
   const handleStatusChange = (next: string) => {
     setStatus(next);

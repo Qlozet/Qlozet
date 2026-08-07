@@ -9,7 +9,11 @@ const Wallet: React.FC = () => {
 
 export default function WalletPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center p-8">Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center p-8">Loading...</div>
+      }
+    >
       <Wallet />
     </Suspense>
   );

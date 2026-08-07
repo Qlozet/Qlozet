@@ -12,8 +12,8 @@ const UserAndPermission = () => {
   };
 
   return (
-    <div className=''>
-      <div className='flex items-center justify-end mb-4'>
+    <div className="">
+      <div className="flex items-center justify-end mb-4">
         <Button
           onClick={() => setShowAddModal(true)}
           variant="default"

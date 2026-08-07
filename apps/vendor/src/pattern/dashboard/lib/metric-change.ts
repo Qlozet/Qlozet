@@ -24,8 +24,7 @@ const directionOf = (value: number): ChangeDirection =>
   value > 0 ? 'up' : value < 0 ? 'down' : 'flat';
 
 // At most one decimal place, and never a trailing ".0".
-const trim = (value: number): string =>
-  String(Math.round(value * 10) / 10);
+const trim = (value: number): string => String(Math.round(value * 10) / 10);
 
 /** Turn a raw change value into a canonical label, or undefined if unusable. */
 export const formatMetricChange = (raw: unknown): MetricChange | undefined => {

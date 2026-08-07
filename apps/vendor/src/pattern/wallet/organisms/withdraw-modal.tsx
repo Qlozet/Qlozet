@@ -99,42 +99,42 @@ export const WithdrawModal = create<WithdrawModalProps>(({ balance }) => {
 
   return (
     <Dialog open={visible} onOpenChange={handleClose}>
-      <DialogContent className='max-w-md p-6 bg-card'>
-        <DialogHeader className='border-b border-dashed dark:border-border pb-3 text-left mb-4'>
-          <DialogTitle className='text-base font-medium text-[#0C0C0D] dark:text-white'>
+      <DialogContent className="max-w-md p-6 bg-card">
+        <DialogHeader className="border-b border-dashed dark:border-border pb-3 text-left mb-4">
+          <DialogTitle className="text-base font-medium text-[#0C0C0D] dark:text-white">
             Withdraw Earnings
           </DialogTitle>
         </DialogHeader>
 
-        <p className='text-sm font-normal text-[#0C0C0D] dark:text-white mb-2'>
+        <p className="text-sm font-normal text-[#0C0C0D] dark:text-white mb-2">
           Enter the amount you want to withdraw to your registered bank account.
           The minimum withdrawal is {formatNaira(MIN_WITHDRAWAL)}.
         </p>
         {hasBalance && (
-          <p className='text-sm font-medium text-[#646A86] dark:text-gray-400 mb-4'>
+          <p className="text-sm font-medium text-[#646A86] dark:text-gray-400 mb-4">
             Available balance: {formatNaira(balance as number)}
           </p>
         )}
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name='amount'
+              name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-[#333333] dark:text-gray-300'>
+                  <FormLabel className="text-sm font-medium text-[#333333] dark:text-gray-300">
                     Amount
                   </FormLabel>
                   <FormControl>
-                    <div className='relative'>
-                      <span className='pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#646A86] dark:text-gray-400'>
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#646A86] dark:text-gray-400">
                         ₦
                       </span>
                       <Input
-                        inputMode='numeric'
-                        placeholder='Enter amount'
-                        className='h-12 rounded-lg pl-8'
+                        inputMode="numeric"
+                        placeholder="Enter amount"
+                        className="h-12 rounded-lg pl-8"
                         {...field}
                         onChange={(e) =>
                           field.onChange(e.target.value.replace(/[^\d]/g, ''))
@@ -147,20 +147,20 @@ export const WithdrawModal = create<WithdrawModalProps>(({ balance }) => {
               )}
             />
 
-            <div className='flex justify-end gap-3'>
+            <div className="flex justify-end gap-3">
               <Button
-                type='button'
-                variant='outline'
+                type="button"
+                variant="outline"
                 onClick={handleClose}
-                className='min-w-28'
+                className="min-w-28"
                 disabled={isLoading}
               >
                 Cancel
               </Button>
-              <Button type='submit' className='min-w-28' disabled={isLoading}>
+              <Button type="submit" className="min-w-28" disabled={isLoading}>
                 {isLoading ? (
                   <>
-                    <Loader2 className='size-4 animate-spin' />
+                    <Loader2 className="size-4 animate-spin" />
                     Processing…
                   </>
                 ) : (

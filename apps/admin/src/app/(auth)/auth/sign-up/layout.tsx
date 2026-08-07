@@ -4,8 +4,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Create account',
-  description:
-    'Create a Qlozet admin account.',
+  description: 'Create a Qlozet admin account.',
   path: '/auth/sign-up',
 });
 

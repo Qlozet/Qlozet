@@ -3,9 +3,15 @@ import { downloadCsv, toCsv } from '../csv';
 
 describe('toCsv', () => {
   it('writes the header row followed by the data rows, CRLF-separated', () => {
-    expect(toCsv(['Order', 'Total'], [['QLZ-1', 1000], ['QLZ-2', 2000]])).toBe(
-      'Order,Total\r\nQLZ-1,1000\r\nQLZ-2,2000'
-    );
+    expect(
+      toCsv(
+        ['Order', 'Total'],
+        [
+          ['QLZ-1', 1000],
+          ['QLZ-2', 2000],
+        ]
+      )
+    ).toBe('Order,Total\r\nQLZ-1,1000\r\nQLZ-2,2000');
   });
 
   it('quotes cells containing a comma', () => {
@@ -13,7 +19,9 @@ describe('toCsv', () => {
   });
 
   it('doubles embedded quotes', () => {
-    expect(toCsv(['Note'], [['He said "hi"']])).toBe('Note\r\n"He said ""hi"""');
+    expect(toCsv(['Note'], [['He said "hi"']])).toBe(
+      'Note\r\n"He said ""hi"""'
+    );
   });
 
   it('quotes cells containing newlines', () => {
@@ -60,15 +68,16 @@ describe('downloadCsv', () => {
 
   it('prefixes a BOM so Excel reads non-ASCII correctly', async () => {
     downloadCsv('orders.csv', 'Naira,₦1,000');
-    const blob = (URL.createObjectURL as unknown as ReturnType<typeof vi.fn>).mock
-      .calls[0][0] as Blob;
+    const blob = (URL.createObjectURL as unknown as ReturnType<typeof vi.fn>)
+      .mock.calls[0][0] as Blob;
     expect(blob.type).toContain('text/csv');
     // Asserted on the raw bytes: reading the blob back as text would decode
     // away the very BOM this is checking for, and it's the EF BB BF prefix
     // that Excel keys off.
     const bytes = await new Promise<Uint8Array>((resolve) => {
       const reader = new FileReader();
-      reader.onload = () => resolve(new Uint8Array(reader.result as ArrayBuffer));
+      reader.onload = () =>
+        resolve(new Uint8Array(reader.result as ArrayBuffer));
       reader.readAsArrayBuffer(blob);
     });
     expect([bytes[0], bytes[1], bytes[2]]).toEqual([0xef, 0xbb, 0xbf]);

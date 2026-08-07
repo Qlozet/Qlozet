@@ -22,7 +22,10 @@ beforeEach(() => {
 
 describe('StatsCards', () => {
   it('renders skeletons while the chart query is in flight', () => {
-    useGetOrdersChartQuery.mockReturnValue({ data: undefined, isLoading: true });
+    useGetOrdersChartQuery.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+    });
     const { container } = render(<StatsCards />);
     expect(screen.queryByText('Total Orders')).not.toBeInTheDocument();
     expect(container.querySelectorAll('.animate-pulse')).toHaveLength(4);
@@ -63,17 +66,28 @@ describe('StatsCards', () => {
   });
 
   it('colours a rise green and a fall red', () => {
-    withSummary({ totalOrders: 10, totalOrdersChange: 5, totalEarnings: 1, totalEarningsChange: -5 });
+    withSummary({
+      totalOrders: 10,
+      totalOrdersChange: 5,
+      totalEarnings: 1,
+      totalEarningsChange: -5,
+    });
     render(<StatsCards />);
-    expect(screen.getByTestId('stat-change-1').className).toContain('text-green-600');
-    expect(screen.getByTestId('stat-change-2').className).toContain('text-destructive');
+    expect(screen.getByTestId('stat-change-1').className).toContain(
+      'text-green-600'
+    );
+    expect(screen.getByTestId('stat-change-2').className).toContain(
+      'text-destructive'
+    );
   });
 
   // More returns is bad news, so the colour is inverted for that card only.
   it('colours a rise in returns red', () => {
     withSummary({ totalReturns: 10, totalReturnsChange: '+8%' });
     render(<StatsCards />);
-    expect(screen.getByTestId('stat-change-4').className).toContain('text-destructive');
+    expect(screen.getByTestId('stat-change-4').className).toContain(
+      'text-destructive'
+    );
   });
 
   it('hides the indicator entirely when the summary carries no delta', () => {

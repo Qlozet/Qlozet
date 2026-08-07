@@ -1,7 +1,7 @@
 // eslint-config-next ships a flat config in Next 16, so it's spread directly.
 // The previous FlatCompat/eslintrc bridge crashed on load ("Converting circular
 // structure to JSON"), which meant `pnpm lint` never actually linted anything.
-import nextConfig from 'eslint-config-next'
+import nextConfig from 'eslint-config-next';
 
 const eslintConfig = [
   {
@@ -29,6 +29,6 @@ const eslintConfig = [
       'react-hooks/preserve-manual-memoization': 'warn',
     },
   },
-]
+];
 
-export default eslintConfig
+export default eslintConfig;

@@ -31,30 +31,30 @@ export const createOrdersColumns = (
       const title = readOrderTitle(row.original);
       const count = readItemsCount(row.original);
       return (
-        <div className='flex items-center gap-2.5'>
-          <div className='relative shrink-0'>
-            <div className='relative size-9 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700'>
+        <div className="flex items-center gap-2.5">
+          <div className="relative shrink-0">
+            <div className="relative size-9 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700">
               {img ? (
                 <Image
                   src={img}
                   alt={title}
                   fill
-                  className='object-cover'
-                  sizes='36px'
+                  className="object-cover"
+                  sizes="36px"
                 />
               ) : (
-                <div className='flex size-full items-center justify-center text-gray-400'>
-                  <Package className='size-4' />
+                <div className="flex size-full items-center justify-center text-gray-400">
+                  <Package className="size-4" />
                 </div>
               )}
             </div>
             {count > 1 && (
-              <span className='absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold leading-none text-primary-foreground ring-2 ring-white dark:ring-card'>
+              <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold leading-none text-primary-foreground ring-2 ring-white dark:ring-card">
                 {count}
               </span>
             )}
           </div>
-          <span className='max-w-[160px] truncate text-sm font-medium text-grey-black dark:text-foreground'>
+          <span className="max-w-[160px] truncate text-sm font-medium text-grey-black dark:text-foreground">
             {title}
           </span>
         </div>
@@ -66,7 +66,7 @@ export const createOrdersColumns = (
     id: 'date',
     header: 'Date',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
+      <span className="whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground">
         {formatDate(row.original.createdAt)}
       </span>
     ),
@@ -76,7 +76,7 @@ export const createOrdersColumns = (
     id: 'order_id',
     header: 'Order ID',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm font-medium text-grey-black dark:text-foreground'>
+      <span className="whitespace-nowrap text-sm font-medium text-grey-black dark:text-foreground">
         {readOrderId(row.original)}
       </span>
     ),
@@ -86,7 +86,7 @@ export const createOrdersColumns = (
     id: 'product_price',
     header: 'Product price',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
+      <span className="whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground">
         {formatNaira(readProductPrice(row.original))}
       </span>
     ),
@@ -96,7 +96,7 @@ export const createOrdersColumns = (
     id: 'customer',
     header: 'Customer name',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
+      <span className="whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground">
         {readCustomerName(row.original)}
       </span>
     ),
@@ -106,7 +106,7 @@ export const createOrdersColumns = (
     id: 'amount_paid',
     header: 'Amount paid',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
+      <span className="whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground">
         {formatNaira(readAmountPaid(row.original))}
       </span>
     ),
@@ -118,7 +118,7 @@ export const createOrdersColumns = (
     cell: ({ row }) => {
       const count = readItemsCount(row.original);
       return (
-        <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
+        <span className="whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground">
           {count} item{count === 1 ? '' : 's'}
         </span>
       );
@@ -148,11 +148,11 @@ export const createOrdersColumns = (
     header: '',
     cell: ({ row }) => (
       <Button
-        type='button'
-        variant='outline'
-        size='sm'
+        type="button"
+        variant="outline"
+        size="sm"
         onClick={() => onViewDetails(row.original)}
-        className='text-xs'
+        className="text-xs"
       >
         View Details
       </Button>

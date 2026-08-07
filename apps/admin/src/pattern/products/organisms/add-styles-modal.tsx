@@ -71,7 +71,14 @@ const TAG_GROUPS: TagGroup[] = [
   },
 ];
 
-const STYLE_TYPES = ['Neckline', 'Sleeve', 'Hemline', 'Collar', 'Fit', 'Waistline'];
+const STYLE_TYPES = [
+  'Neckline',
+  'Sleeve',
+  'Hemline',
+  'Collar',
+  'Fit',
+  'Waistline',
+];
 
 // "Add Styles" — two-panel modal (form + image preview). Resolves with the new
 // style, or null if cancelled.
@@ -247,8 +254,8 @@ export const AddStylesModal = NiceModal.create(() => {
               <Info className="size-4" />
             </span>
             <p className="text-sm text-grey-black dark:text-white">
-              Provide a clear visual example of the style (e.g. sketches, photos,
-              or diagrams)
+              Provide a clear visual example of the style (e.g. sketches,
+              photos, or diagrams)
             </p>
           </div>
 

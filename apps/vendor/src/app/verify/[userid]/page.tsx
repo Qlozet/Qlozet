@@ -23,7 +23,9 @@ const Verication: React.FC<VerificationProps> = ({ params }) => {
   const verifyAccount = async (): Promise<void> => {
     try {
       const resolvedParams = await params;
-      const response = await verifyVendorAccount(resolvedParams.userid).unwrap();
+      const response = await verifyVendorAccount(
+        resolvedParams.userid
+      ).unwrap();
       setLoading(false);
       if (response?.success) {
         toast.success(response?.message);
@@ -48,31 +50,31 @@ const Verication: React.FC<VerificationProps> = ({ params }) => {
         <Loader></Loader>
       ) : (
         <div className="max-w-[735px]">
-          <div className='py-16 flex justify-center'>
+          <div className="py-16 flex justify-center">
             <Logo brown={true} />
           </div>
           <div
             className="py-6 rounded-[16px] shadow-sm bg-contain bg-no-repeat"
             style={{
-              backgroundImage: "url('/assets/image/verificationbg.jpg')"
+              backgroundImage: "url('/assets/image/verificationbg.jpg')",
             }}
           >
-            <div className='pb-2'>
+            <div className="pb-2">
               <Typography
-                textColor='text-dark'
-                textWeight='font-bold'
-                textSize='text-[24px]'
-                align='text-center'
+                textColor="text-dark"
+                textWeight="font-bold"
+                textSize="text-[24px]"
+                align="text-center"
               >
                 Account created successfully
               </Typography>
             </div>
-            <div className='pt-6 pb-4 px-6 border-t-[1px] border-solid border-gray-200'>
+            <div className="pt-6 pb-4 px-6 border-t-[1px] border-solid border-gray-200">
               <Typography
-                textColor='text-dark'
-                textWeight='font-normal'
-                textSize=''
-                align='text-center'
+                textColor="text-dark"
+                textWeight="font-normal"
+                textSize=""
+                align="text-center"
               >
                 Your Altire account has been successfully set up, and we&apos;ve
                 received your information. Our team will thoroughly review the
@@ -82,7 +84,7 @@ const Verication: React.FC<VerificationProps> = ({ params }) => {
               </Typography>
               <div>
                 <p
-                  className='text-primary font-medium text-sm center cursor-pointer'
+                  className="text-primary font-medium text-sm center cursor-pointer"
                   onClick={() => {
                     router.push('/auth/signin');
                   }}

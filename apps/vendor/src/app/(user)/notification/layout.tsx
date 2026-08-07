@@ -4,8 +4,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Notifications',
-  description:
-    'Review updates about your orders, payouts and account.',
+  description: 'Review updates about your orders, payouts and account.',
   path: '/notification',
 });
 

@@ -11,8 +11,14 @@ describe('splitPhone', () => {
       code: '+234',
       national: '8012345673',
     });
-    expect(splitPhone('+15551234567')).toEqual({ code: '+1', national: '5551234567' });
-    expect(splitPhone('+447700900123')).toEqual({ code: '+44', national: '7700900123' });
+    expect(splitPhone('+15551234567')).toEqual({
+      code: '+1',
+      national: '5551234567',
+    });
+    expect(splitPhone('+447700900123')).toEqual({
+      code: '+44',
+      national: '7700900123',
+    });
   });
 
   it('defaults to the first dial code for a bare national number', () => {
@@ -31,7 +37,10 @@ describe('splitPhone', () => {
 
   it('handles an empty or missing value', () => {
     expect(splitPhone('')).toEqual({ code: DIAL_CODES[0], national: '' });
-    expect(splitPhone(undefined)).toEqual({ code: DIAL_CODES[0], national: '' });
+    expect(splitPhone(undefined)).toEqual({
+      code: DIAL_CODES[0],
+      national: '',
+    });
   });
 
   // An unsupported code must not be silently swallowed — it stays in the

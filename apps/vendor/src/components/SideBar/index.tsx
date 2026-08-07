@@ -56,14 +56,14 @@ const SideBar: React.FC<SideBarProps> = ({ active }) => {
 
   return (
     <div
-      className='hidden lg:block bg-white fixed top-0 left-0 w-[260px] max-w-[260px] lg:min-w-[250px] sidebar-scrollbar'
+      className="hidden lg:block bg-white fixed top-0 left-0 w-[260px] max-w-[260px] lg:min-w-[250px] sidebar-scrollbar"
       style={{ zIndex: 950 }}
     >
-      <div className='py-10 lg:px-16 md:px-4'>
+      <div className="py-10 lg:px-16 md:px-4">
         <Link href={APP_ROUTES.dashboard}>
           <Image
             src={brownLogo}
-            alt='Qlozet Logo'
+            alt="Qlozet Logo"
             style={{ width: '100px', height: 'auto' }}
             priority
           />

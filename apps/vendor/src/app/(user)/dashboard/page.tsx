@@ -6,7 +6,6 @@ import { ChartsSection } from '@/pattern/dashboard/templates/charts-section';
 import { LoadingWidget } from '@/pattern/common/organisms/loading-widget';
 
 const DashboardPage = () => {
-
   return (
     <>
       <Suspense fallback={<LoadingWidget />}>
@@ -16,7 +15,7 @@ const DashboardPage = () => {
         </div>
       </Suspense>
     </>
-  )
+  );
 };
 
 export default DashboardPage;

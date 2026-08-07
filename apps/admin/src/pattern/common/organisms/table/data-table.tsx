@@ -24,7 +24,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Pagination } from './pagination';
 
 export interface DataTableProps<TData> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<TData, any>[];
   data: TData[];
   isLoading?: boolean;
@@ -165,8 +164,7 @@ export function DataTable<TData>({
               >
                 {row.getVisibleCells().map((cell, cellIndex) => {
                   const isFirst = cellIndex === 0;
-                  const isLast =
-                    cellIndex === row.getVisibleCells().length - 1;
+                  const isLast = cellIndex === row.getVisibleCells().length - 1;
                   return (
                     <TableCell
                       key={cell.id}

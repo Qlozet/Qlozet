@@ -19,13 +19,26 @@ describe('formatMetricChange', () => {
   });
 
   it('adds the missing + and % to a bare number', () => {
-    expect(formatMetricChange(24)).toMatchObject({ label: '+24%', direction: 'up' });
-    expect(formatMetricChange(-2.6)).toMatchObject({ label: '-2.6%', direction: 'down' });
-    expect(formatMetricChange('2.5')).toMatchObject({ label: '+2.5%', direction: 'up' });
+    expect(formatMetricChange(24)).toMatchObject({
+      label: '+24%',
+      direction: 'up',
+    });
+    expect(formatMetricChange(-2.6)).toMatchObject({
+      label: '-2.6%',
+      direction: 'down',
+    });
+    expect(formatMetricChange('2.5')).toMatchObject({
+      label: '+2.5%',
+      direction: 'up',
+    });
   });
 
   it('treats zero as flat, not as a negative', () => {
-    expect(formatMetricChange(0)).toEqual({ label: '0%', value: 0, direction: 'flat' });
+    expect(formatMetricChange(0)).toEqual({
+      label: '0%',
+      value: 0,
+      direction: 'flat',
+    });
     expect(formatMetricChange('0%')).toMatchObject({ direction: 'flat' });
   });
 
@@ -47,7 +60,17 @@ describe('formatMetricChange', () => {
   // The bug this helper exists for: the card used to print these straight to
   // the screen, in red, as if they were a real negative delta.
   it('returns undefined for placeholders rather than a bogus indicator', () => {
-    for (const raw of ['—', '-', 'N/A', 'n/a', 'null', '', '   ', undefined, null]) {
+    for (const raw of [
+      '—',
+      '-',
+      'N/A',
+      'n/a',
+      'null',
+      '',
+      '   ',
+      undefined,
+      null,
+    ]) {
       expect(formatMetricChange(raw)).toBeUndefined();
     }
   });
@@ -74,7 +97,8 @@ describe('readMetricChange', () => {
 
   it('reads the percent-infix spellings', () => {
     expect(
-      readMetricChange({ totalEarningsPercentChange: 3 }, 'totalEarnings')?.label
+      readMetricChange({ totalEarningsPercentChange: 3 }, 'totalEarnings')
+        ?.label
     ).toBe('+3%');
     expect(
       readMetricChange({ total_returns_percentage_change: 1.5 }, 'totalReturns')
@@ -88,7 +112,9 @@ describe('readMetricChange', () => {
   });
 
   it('returns undefined when the summary has no change for the metric', () => {
-    expect(readMetricChange({ totalOrders: 10 }, 'totalOrders')).toBeUndefined();
+    expect(
+      readMetricChange({ totalOrders: 10 }, 'totalOrders')
+    ).toBeUndefined();
   });
 
   it('returns undefined for a missing or non-object summary', () => {

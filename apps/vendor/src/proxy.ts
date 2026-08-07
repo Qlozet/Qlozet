@@ -21,7 +21,7 @@ const PUBLIC_PREFIXES = [
 
 const isPublicRoute = (pathname: string): boolean =>
   PUBLIC_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
   );
 
 export function proxy(request: NextRequest) {
@@ -30,7 +30,10 @@ export function proxy(request: NextRequest) {
   const isPublic = isPublicRoute(pathname);
 
   // Signed-in users have no business on the sign-in / sign-up screens.
-  if (token && (pathname === AUTH_ROUTES.signIn || pathname === AUTH_ROUTES.signup)) {
+  if (
+    token &&
+    (pathname === AUTH_ROUTES.signIn || pathname === AUTH_ROUTES.signup)
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = APP_ROUTES.dashboard;
     url.search = '';

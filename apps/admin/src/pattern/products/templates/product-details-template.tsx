@@ -81,9 +81,7 @@ interface ClothingView {
 }
 
 const NGN = (value?: number) =>
-  typeof value === 'number'
-    ? `NGN ${value.toLocaleString()}`
-    : '—';
+  typeof value === 'number' ? `NGN ${value.toLocaleString()}` : '—';
 
 const compImage = (c: ComponentView) => c.images?.[0]?.url ?? c.image;
 
@@ -229,11 +227,7 @@ export const ProductDetailsTemplate = ({
         {/* Header */}
         <div className="flex items-center justify-between">
           <GoBackButton />
-          <Button
-            variant="outline"
-            onClick={wip}
-            className="gap-2"
-          >
+          <Button variant="outline" onClick={wip} className="gap-2">
             <Monitor className="size-4" />
             Preview
           </Button>
@@ -261,7 +255,9 @@ export const ProductDetailsTemplate = ({
                 <button
                   type="button"
                   onClick={() =>
-                    setActiveImage((i) => (i - 1 + images.length) % images.length)
+                    setActiveImage(
+                      (i) => (i - 1 + images.length) % images.length
+                    )
                   }
                   className="absolute left-3 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-grey-black shadow hover:bg-white"
                   aria-label="Previous image"
@@ -364,7 +360,11 @@ export const ProductDetailsTemplate = ({
                 >
                   <Flag className="size-4" />
                 </button>
-                <Button variant="outline" onClick={wip} className="text-destructive">
+                <Button
+                  variant="outline"
+                  onClick={wip}
+                  className="text-destructive"
+                >
                   Escalate to support
                 </Button>
               </div>
@@ -465,77 +465,77 @@ export const ProductDetailsTemplate = ({
                 </>
               ) : (
                 <>
-              {customisation && (
-                <DetailRow label="Customisation">
-                  <Chip>{customisation}</Chip>
-                </DetailRow>
-              )}
-              {product.taxonomy?.categories?.length ? (
-                <DetailRow label="Category">
-                  {product.taxonomy.categories.map((c) => (
-                    <Chip key={c}>{c}</Chip>
-                  ))}
-                </DetailRow>
-              ) : null}
-              {product.taxonomy?.product_type ? (
-                <DetailRow label="Product Type">
-                  <Chip>{product.taxonomy.product_type}</Chip>
-                </DetailRow>
-              ) : null}
-              {tags.length ? (
-                <DetailRow label="Tags">
-                  {tags.map((t) => (
-                    <Chip key={t}>{t}</Chip>
-                  ))}
-                </DetailRow>
-              ) : null}
-              {colours.length ? (
-                <DetailRow label="Available colours">
-                  {colours.map((hex, i) => (
-                    <span
-                      key={`${hex}-${i}`}
-                      style={{ backgroundColor: hex }}
-                      className="size-6 rounded-full border border-border"
-                    />
-                  ))}
-                </DetailRow>
-              ) : null}
-              {sizes.length ? (
-                <DetailRow label="Available Sizes">
-                  {sizes.map((s) => (
-                    <span
-                      key={s}
-                      className="flex min-w-9 items-center justify-center rounded-md bg-accent px-2 py-1 text-xs font-semibold"
-                    >
-                      {s}
-                    </span>
-                  ))}
-                </DetailRow>
-              ) : null}
-              <DetailRow label="Stock">
-                {totalStock > 0 ? `${totalStock} Units` : '—'}
-              </DetailRow>
-              {product.styles?.length ? (
-                <DetailRow label="Style Options">
-                  {product.styles.map((s, i) => (
-                    <Thumb key={i} url={compImage(s)} />
-                  ))}
-                </DetailRow>
-              ) : null}
-              {product.fabrics?.length ? (
-                <DetailRow label="Fabric Options">
-                  {product.fabrics.map((f, i) => (
-                    <Thumb key={i} url={compImage(f)} />
-                  ))}
-                </DetailRow>
-              ) : null}
-              {product.accessories?.length ? (
-                <DetailRow label="Accessory Options">
-                  {product.accessories.map((a, i) => (
-                    <Thumb key={i} url={compImage(a)} />
-                  ))}
-                </DetailRow>
-              ) : null}
+                  {customisation && (
+                    <DetailRow label="Customisation">
+                      <Chip>{customisation}</Chip>
+                    </DetailRow>
+                  )}
+                  {product.taxonomy?.categories?.length ? (
+                    <DetailRow label="Category">
+                      {product.taxonomy.categories.map((c) => (
+                        <Chip key={c}>{c}</Chip>
+                      ))}
+                    </DetailRow>
+                  ) : null}
+                  {product.taxonomy?.product_type ? (
+                    <DetailRow label="Product Type">
+                      <Chip>{product.taxonomy.product_type}</Chip>
+                    </DetailRow>
+                  ) : null}
+                  {tags.length ? (
+                    <DetailRow label="Tags">
+                      {tags.map((t) => (
+                        <Chip key={t}>{t}</Chip>
+                      ))}
+                    </DetailRow>
+                  ) : null}
+                  {colours.length ? (
+                    <DetailRow label="Available colours">
+                      {colours.map((hex, i) => (
+                        <span
+                          key={`${hex}-${i}`}
+                          style={{ backgroundColor: hex }}
+                          className="size-6 rounded-full border border-border"
+                        />
+                      ))}
+                    </DetailRow>
+                  ) : null}
+                  {sizes.length ? (
+                    <DetailRow label="Available Sizes">
+                      {sizes.map((s) => (
+                        <span
+                          key={s}
+                          className="flex min-w-9 items-center justify-center rounded-md bg-accent px-2 py-1 text-xs font-semibold"
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </DetailRow>
+                  ) : null}
+                  <DetailRow label="Stock">
+                    {totalStock > 0 ? `${totalStock} Units` : '—'}
+                  </DetailRow>
+                  {product.styles?.length ? (
+                    <DetailRow label="Style Options">
+                      {product.styles.map((s, i) => (
+                        <Thumb key={i} url={compImage(s)} />
+                      ))}
+                    </DetailRow>
+                  ) : null}
+                  {product.fabrics?.length ? (
+                    <DetailRow label="Fabric Options">
+                      {product.fabrics.map((f, i) => (
+                        <Thumb key={i} url={compImage(f)} />
+                      ))}
+                    </DetailRow>
+                  ) : null}
+                  {product.accessories?.length ? (
+                    <DetailRow label="Accessory Options">
+                      {product.accessories.map((a, i) => (
+                        <Thumb key={i} url={compImage(a)} />
+                      ))}
+                    </DetailRow>
+                  ) : null}
                 </>
               )}
             </div>

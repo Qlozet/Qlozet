@@ -52,9 +52,9 @@ const SelectInput: React.FC<SelectInputProps> = ({
       className={`bg-white w-full relative my-2`}
       style={{ zIndex: index ? index : 10 }}
     >
-      <div className='w-full relative border-solid'>
-        <div className='flex items-center justify-start gap-2'>
-          <label className='text-sm my-2 text-dark'>{label}</label>
+      <div className="w-full relative border-solid">
+        <div className="flex items-center justify-start gap-2">
+          <label className="text-sm my-2 text-dark">{label}</label>
           {tooltips && <ToolTip text={`${label} is required`} />}
         </div>
 
@@ -79,11 +79,11 @@ const SelectInput: React.FC<SelectInputProps> = ({
           />
         </div>
 
-        <div className='absolute top-[50px] right-2'>
+        <div className="absolute top-[50px] right-2">
           {showDropDown ? <ChevronUp /> : <ChevronDown />}
         </div>
         {error && (
-          <p className='text-danger text-xs font-[400]'>
+          <p className="text-danger text-xs font-[400]">
             {label} cannot be empty!
           </p>
         )}
@@ -91,7 +91,7 @@ const SelectInput: React.FC<SelectInputProps> = ({
 
       {showDropDown && (
         <div
-          className='cursor-pointer absolute top-[73px] bg-white rounded-lg max-h-[15rem] datalist-scroll shadow-md w-full'
+          className="cursor-pointer absolute top-[73px] bg-white rounded-lg max-h-[15rem] datalist-scroll shadow-md w-full"
           ref={dropDownRef}
         >
           {list.map((item, idx) => (
@@ -104,7 +104,7 @@ const SelectInput: React.FC<SelectInputProps> = ({
                 setShowDropDown(false);
               }}
             >
-              <p className='rounded-b-[12px] overflow-hidden text-xs pl-1'>
+              <p className="rounded-b-[12px] overflow-hidden text-xs pl-1">
                 {item.text}
               </p>
             </div>

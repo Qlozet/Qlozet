@@ -63,15 +63,15 @@ const prettyRole = (name?: string): string =>
   (name ?? '').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
 const ReadOnlyField = ({ label, value }: { label: string; value: string }) => (
-  <div className='space-y-2'>
-    <label className='text-sm font-normal text-gray-900 dark:text-gray-200'>
+  <div className="space-y-2">
+    <label className="text-sm font-normal text-gray-900 dark:text-gray-200">
       {label}
     </label>
     <Input
       value={value || '—'}
       readOnly
       disabled
-      className='bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400'
+      className="bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400"
     />
   </div>
 );
@@ -114,25 +114,28 @@ export const TeamMemberDetailsModal = create<{ member: TeamMemberDetails }>(
 
     return (
       <Dialog open={visible} onOpenChange={close}>
-        <DialogContent className='max-w-md max-h-[90vh] overflow-hidden'>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-hidden">
           <DialogHeader>
-            <DialogTitle className='text-lg font-semibold'>
+            <DialogTitle className="text-lg font-semibold">
               {member.is_owner ? 'Team member' : 'Edit team member'}
             </DialogTitle>
           </DialogHeader>
 
-          <div className='space-y-4 overflow-y-auto max-h-[70vh] px-1'>
+          <div className="space-y-4 overflow-y-auto max-h-[70vh] px-1">
             {member.is_owner ? (
               <>
-                <ReadOnlyField label='Full name' value={member.name} />
+                <ReadOnlyField label="Full name" value={member.name} />
                 <ReadOnlyField
-                  label='Email address'
+                  label="Email address"
                   value={member.emailAddress}
                 />
-                <ReadOnlyField label='Phone number' value={member.phoneNumber} />
-                <ReadOnlyField label='User role' value={member.role} />
-                <ReadOnlyField label='Status' value={member.status} />
-                <p className='text-xs text-gray-400'>
+                <ReadOnlyField
+                  label="Phone number"
+                  value={member.phoneNumber}
+                />
+                <ReadOnlyField label="User role" value={member.role} />
+                <ReadOnlyField label="Status" value={member.status} />
+                <p className="text-xs text-gray-400">
                   The business owner can&apos;t be edited or removed.
                 </p>
               </>
@@ -140,20 +143,20 @@ export const TeamMemberDetailsModal = create<{ member: TeamMemberDetails }>(
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className='space-y-4'
+                  className="space-y-4"
                 >
                   <FormField
                     control={form.control}
-                    name='full_name'
+                    name="full_name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className='text-sm font-normal text-gray-900 dark:text-gray-200'>
+                        <FormLabel className="text-sm font-normal text-gray-900 dark:text-gray-200">
                           Full name
                         </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder='Enter full name'
-                            className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
+                            placeholder="Enter full name"
+                            className="bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200"
                             {...field}
                           />
                         </FormControl>
@@ -165,23 +168,23 @@ export const TeamMemberDetailsModal = create<{ member: TeamMemberDetails }>(
                   {/* Email isn't part of UpdateTeamMemberDto — it identifies the
                       invite, so it stays read-only. */}
                   <ReadOnlyField
-                    label='Email address'
+                    label="Email address"
                     value={member.emailAddress}
                   />
 
                   <FormField
                     control={form.control}
-                    name='phone_number'
+                    name="phone_number"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className='text-sm font-normal text-gray-900 dark:text-gray-200'>
+                        <FormLabel className="text-sm font-normal text-gray-900 dark:text-gray-200">
                           Phone number
                         </FormLabel>
                         <FormControl>
                           <Input
-                            type='tel'
-                            placeholder='Enter phone number'
-                            className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
+                            type="tel"
+                            placeholder="Enter phone number"
+                            className="bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200"
                             {...field}
                           />
                         </FormControl>
@@ -192,10 +195,10 @@ export const TeamMemberDetailsModal = create<{ member: TeamMemberDetails }>(
 
                   <FormField
                     control={form.control}
-                    name='role'
+                    name="role"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className='text-sm font-normal text-gray-900 dark:text-gray-200'>
+                        <FormLabel className="text-sm font-normal text-gray-900 dark:text-gray-200">
                           User role
                         </FormLabel>
                         <Select
@@ -203,8 +206,8 @@ export const TeamMemberDetailsModal = create<{ member: TeamMemberDetails }>(
                           onValueChange={field.onChange}
                         >
                           <FormControl>
-                            <SelectTrigger className='bg-white dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'>
-                              <SelectValue placeholder='Select a role' />
+                            <SelectTrigger className="bg-white dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200">
+                              <SelectValue placeholder="Select a role" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -220,20 +223,20 @@ export const TeamMemberDetailsModal = create<{ member: TeamMemberDetails }>(
                     )}
                   />
 
-                  <div className='flex justify-end gap-3 pt-2'>
+                  <div className="flex justify-end gap-3 pt-2">
                     <Button
-                      type='button'
-                      variant='outline'
+                      type="button"
+                      variant="outline"
                       onClick={close}
                       disabled={submitting}
-                      className='min-w-28 cursor-pointer'
+                      className="min-w-28 cursor-pointer"
                     >
                       Cancel
                     </Button>
                     <Button
-                      type='submit'
+                      type="submit"
                       disabled={submitting}
-                      className='min-w-28 cursor-pointer'
+                      className="min-w-28 cursor-pointer"
                     >
                       {submitting ? 'Saving...' : 'Save changes'}
                     </Button>

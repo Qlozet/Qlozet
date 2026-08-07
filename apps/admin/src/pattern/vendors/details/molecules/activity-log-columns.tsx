@@ -5,9 +5,7 @@ import { ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { VendorActivity } from '@/redux/services/vendor-details/vendor-details.api-slice';
 
-const statusVariant = (
-  status?: string
-): 'success' | 'warning' | 'error' => {
+const statusVariant = (status?: string): 'success' | 'warning' | 'error' => {
   const s = (status ?? '').toLowerCase();
   if (['successful', 'success', 'completed'].includes(s)) return 'success';
   if (['failed', 'declined'].includes(s)) return 'error';
@@ -99,9 +97,7 @@ export const createActivityLogColumns = (): ColumnDef<VendorActivity>[] => [
   {
     id: 'actions',
     header: '',
-    cell: () => (
-      <ChevronRight className="size-5 text-gray-400" />
-    ),
+    cell: () => <ChevronRight className="size-5 text-gray-400" />,
     enableSorting: false,
   },
 ];

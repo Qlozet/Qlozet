@@ -6,13 +6,16 @@ import type { Dispute } from '@/redux/services/disputes/disputes.api-slice';
 import type { StatusBadge } from './order-fields';
 
 // Statuses that mean the dispute is settled (no vendor action, earnings unfrozen).
-const TERMINAL_STATUSES = ['resolved', 'closed', 'rejected', 'refunded', 'cancelled'];
+const TERMINAL_STATUSES = [
+  'resolved',
+  'closed',
+  'rejected',
+  'refunded',
+  'cancelled',
+];
 
 export const readDisputeRef = (d: Dispute): string =>
-  d.order_reference ||
-  (d.order_id ? String(d.order_id) : '') ||
-  d._id ||
-  '—';
+  d.order_reference || (d.order_id ? String(d.order_id) : '') || d._id || '—';
 
 export const readDisputeReason = (d: Dispute): string =>
   (d.reason ?? d.description ?? '').trim() || '—';
@@ -33,8 +36,14 @@ export const canRespond = (d: Dispute): boolean => {
 export const disputeStatusBadge = (status: string): StatusBadge => {
   const map: Record<string, StatusBadge> = {
     open: { label: 'Open', className: 'bg-[#FEF6E7] text-[#DD900D]' },
-    under_review: { label: 'Under Review', className: 'bg-[#E7F0FA] text-[#3387CC]' },
-    vendor_responded: { label: 'Responded', className: 'bg-[#F4EBFF] text-[#7E22CE]' },
+    under_review: {
+      label: 'Under Review',
+      className: 'bg-[#E7F0FA] text-[#3387CC]',
+    },
+    vendor_responded: {
+      label: 'Responded',
+      className: 'bg-[#F4EBFF] text-[#7E22CE]',
+    },
     resolved: { label: 'Resolved', className: 'bg-[#E7F6EC] text-[#0F973D]' },
     refunded: { label: 'Refunded', className: 'bg-[#E7F6EC] text-[#0F973D]' },
     rejected: { label: 'Rejected', className: 'bg-[#FBEAE9] text-[#D42620]' },
@@ -42,7 +51,9 @@ export const disputeStatusBadge = (status: string): StatusBadge => {
   };
   return (
     map[status] ?? {
-      label: status ? status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' ') : 'Unknown',
+      label: status
+        ? status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' ')
+        : 'Unknown',
       className: 'bg-[#EAECF0] text-[#475467]',
     }
   );

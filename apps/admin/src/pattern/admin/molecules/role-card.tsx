@@ -23,7 +23,7 @@ export const RoleCard = ({
 }: RoleCardProps) => {
   return (
     <button
-      type='button'
+      type="button"
       onClick={() => onSelect?.(role)}
       className={cn(
         'flex h-full w-full flex-col items-start gap-3 rounded-2xl border p-5 text-left transition-colors cursor-pointer',
@@ -32,7 +32,7 @@ export const RoleCard = ({
           : 'border-border bg-white text-grey-black hover:border-primary/40'
       )}
     >
-      <h3 className='text-lg font-bold'>{role.name}</h3>
+      <h3 className="text-lg font-bold">{role.name}</h3>
 
       <p
         className={cn(
@@ -44,7 +44,7 @@ export const RoleCard = ({
       </p>
 
       <span
-        role='button'
+        role="button"
         tabIndex={0}
         onClick={(e) => {
           e.stopPropagation();

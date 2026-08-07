@@ -59,9 +59,7 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
   const renderContent = () => {
     switch (activeTab) {
       case 'Profile':
-        return (
-          <ProfileContent />
-        );
+        return <ProfileContent />;
 
       case 'Shop details':
         return (
@@ -112,5 +110,5 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
     }
   };
 
-  return <div className='mt-6'>{renderContent()}</div>;
+  return <div className="mt-6">{renderContent()}</div>;
 };

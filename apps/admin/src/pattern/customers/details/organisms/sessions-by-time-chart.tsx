@@ -56,7 +56,11 @@ export const SessionsByTimeChart = ({ data }: SessionsByTimeChartProps) => {
                 <stop offset="100%" stopColor="#c4b5a0" stopOpacity={0.05} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="0" vertical={false} stroke="#e5e7eb" />
+            <CartesianGrid
+              strokeDasharray="0"
+              vertical={false}
+              stroke="#e5e7eb"
+            />
             <XAxis
               dataKey="time"
               tick={<CustomXAxisTick />}

@@ -24,18 +24,20 @@ const SearchInput: React.FC<SearchInputProps> = ({
   disabled = false,
 }) => {
   return (
-    <div className='block w-full'>
-      <div className='my-3 relative'>
+    <div className="block w-full">
+      <div className="my-3 relative">
         <Image
           src={searchIcon}
-          className='absolute top-[0.6rem] left-2.5'
-          alt='Search'
+          className="absolute top-[0.6rem] left-2.5"
+          alt="Search"
         />
         {label && (
-          <label className='text-sm font-light my-2 text-dark dark:text-foreground'>{label}</label>
+          <label className="text-sm font-light my-2 text-dark dark:text-foreground">
+            {label}
+          </label>
         )}
         <input
-          type='text'
+          type="text"
           className={`py-2 pl-10 pr-4 w-full border-solid border-[1.5px] text-dark dark:text-foreground placeholder-gray-200 dark:placeholder-muted-foreground bg-[#F8F9FA] dark:bg-muted
             focus:outline-none focus:bg-[#DDE2E5] dark:focus:bg-muted focus:border-primary-100 ${error && 'border-danger'}
             border-gray-2 dark:border-border rounded-[12px] overflow-hidden text-sm text-font-light placeholder:font-300 ${disabled && 'border-0 bg-gray-300 dark:bg-gray-800 cursor-not-allowed'}
@@ -49,7 +51,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
         />
         {rightIcon}
         {error && (
-          <p className='text-danger text-xs font-[400]'>
+          <p className="text-danger text-xs font-[400]">
             {label || 'Search'} cannot be empty!
           </p>
         )}

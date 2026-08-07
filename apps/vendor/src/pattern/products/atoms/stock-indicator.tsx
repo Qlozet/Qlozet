@@ -56,7 +56,7 @@ export const StockIndicator: React.FC<StockIndicatorProps> = ({
         >
           {stockStatus.text}
         </span>
-        <span className='text-sm text-gray-600'>
+        <span className="text-sm text-gray-600">
           ({stock} {stock === 1 ? 'item' : 'items'})
         </span>
       </div>
@@ -73,7 +73,7 @@ export const StockIndicator: React.FC<StockIndicatorProps> = ({
           stockStatus.status === 'in_stock' && 'bg-green-500'
         )}
       />
-      <span className='text-sm text-gray-600'>{stock} in stock</span>
+      <span className="text-sm text-gray-600">{stock} in stock</span>
     </div>
   );
 };

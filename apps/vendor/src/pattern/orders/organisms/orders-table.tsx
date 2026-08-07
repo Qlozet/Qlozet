@@ -85,16 +85,15 @@ export const OrdersTable = ({
 
   return (
     <>
-      <div className=''>
+      <div className="">
         <Table>
           {/* Header */}
-          <TableHeader className='bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] h-[52px] pt-7 pb-4'>
+          <TableHeader className="bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] h-[52px] pt-7 pb-4">
             {ordersTable.getHeaderGroups()?.map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers?.map((header, index) => {
                   const isFirst = index === 0;
-                  const isLast =
-                    index === headerGroup.headers?.length - 1;
+                  const isLast = index === headerGroup.headers?.length - 1;
                   return (
                     <TableHead
                       key={header.id}
@@ -121,48 +120,43 @@ export const OrdersTable = ({
           <TableBody>
             {/* Loading: skeleton rows that mirror the real table layout */}
             {showLoader &&
-              Array.from({ length: skeletonRowCount }).map(
-                (_, rowIndex) => (
-                  <TableRow
-                    key={`skeleton-${rowIndex}`}
-                    className='border-b hover:bg-transparent'
-                  >
-                    {columns.map((_, cellIndex) => {
-                      const isFirst = cellIndex === 0;
-                      const isLast = cellIndex === columns.length - 1;
-                      return (
-                        <TableCell
-                          key={cellIndex}
+              Array.from({ length: skeletonRowCount }).map((_, rowIndex) => (
+                <TableRow
+                  key={`skeleton-${rowIndex}`}
+                  className="border-b hover:bg-transparent"
+                >
+                  {columns.map((_, cellIndex) => {
+                    const isFirst = cellIndex === 0;
+                    const isLast = cellIndex === columns.length - 1;
+                    return (
+                      <TableCell
+                        key={cellIndex}
+                        className={cn(
+                          'py-4',
+                          isFirst && 'pl-6',
+                          isLast && 'pr-6'
+                        )}
+                      >
+                        <Skeleton
                           className={cn(
-                            'py-4',
-                            isFirst && 'pl-6',
-                            isLast && 'pr-6'
+                            'h-4 rounded-md',
+                            isFirst ? 'w-32' : isLast ? 'w-20' : 'w-24'
                           )}
-                        >
-                          <Skeleton
-                            className={cn(
-                              'h-4 rounded-md',
-                              isFirst
-                                ? 'w-32'
-                                : isLast
-                                  ? 'w-20'
-                                  : 'w-24'
-                            )}
-                          />
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                )
-              )}
+                        />
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
 
             {/* Display table rows when data is done loading */}
-            {!showLoader && ordersTable.getRowModel().rows?.length > 0 &&
+            {!showLoader &&
+              ordersTable.getRowModel().rows?.length > 0 &&
               ordersTable.getRowModel().rows?.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
-                  className='border-b cursor-pointer hover:bg-muted/50'
+                  className="border-b cursor-pointer hover:bg-muted/50"
                   onClick={() => onRowClick?.(row.original)}
                 >
                   {row.getVisibleCells()?.map((cell, cellIndex) => {
@@ -189,39 +183,42 @@ export const OrdersTable = ({
               ))}
 
             {/* Display Message when data is empty */}
-            {!showLoader && ordersTable.getRowModel().rows?.length === 0 && !isError && (
-              <TableRow>
-                <TableCell
-                  colSpan={columns?.length}
-                  className='h-64 text-center'
-                >
-                  <div className='flex flex-col items-center gap-4'>
-                    <BoldBoxRemoveIcon />
-                    <div className='flex flex-col items-center gap-2'>
-                      <p className='text-lg font-medium text-muted-foreground'>
-                        Nothing in here yet.
-                      </p>
-                      <p className='text-sm text-muted-foreground'>
-                        Orders will show up here once a customer places an order.
-                      </p>
+            {!showLoader &&
+              ordersTable.getRowModel().rows?.length === 0 &&
+              !isError && (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns?.length}
+                    className="h-64 text-center"
+                  >
+                    <div className="flex flex-col items-center gap-4">
+                      <BoldBoxRemoveIcon />
+                      <div className="flex flex-col items-center gap-2">
+                        <p className="text-lg font-medium text-muted-foreground">
+                          Nothing in here yet.
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Orders will show up here once a customer places an
+                          order.
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
+                  </TableCell>
+                </TableRow>
+              )}
 
             {/* Display error message */}
             {!showLoader && isError && (
               <TableRow>
                 <TableCell
                   colSpan={columns?.length}
-                  className='h-64 text-center'
+                  className="h-64 text-center"
                 >
-                  <div className='flex flex-col items-center gap-2'>
-                    <p className='text-lg font-medium text-destructive'>
+                  <div className="flex flex-col items-center gap-2">
+                    <p className="text-lg font-medium text-destructive">
                       Error loading orders
                     </p>
-                    <p className='text-sm text-muted-foreground'>
+                    <p className="text-sm text-muted-foreground">
                       {error?.data?.message || 'Something went wrong'}
                     </p>
                   </div>
@@ -236,7 +233,7 @@ export const OrdersTable = ({
       {!showLoader &&
         isSuccess &&
         ordersTable.getRowModel().rows?.length > 0 && (
-          <div className='py-4'>
+          <div className="py-4">
             <Pagination table={ordersTable} />
           </div>
         )}

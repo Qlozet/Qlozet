@@ -4,18 +4,21 @@
  * lint-staged runs this from apps/vendor, which is where eslint.config.mjs
  * lives — running eslint from the repo root would fail to resolve it.
  *
- * Deliberately NOT running `prettier --write` on ts/tsx. This codebase has
- * never been Prettier-formatted, and the two apps don't even agree on JSX quote
- * style, so formatting on commit rewrites entire files that a change merely
- * touched — burying the real diff. Normalise the repo once with `pnpm format`
- * in a dedicated commit, then add `'prettier --write'` to the array below.
+ * Every task goes through `chunked()` so a wide commit can't overflow the
+ * Windows command-line limit; see scripts/lint-staged-chunk.mjs.
  */
 
+import { chunked } from '../../scripts/lint-staged-chunk.mjs';
+
+const ESLINT =
+  'eslint --fix --cache --cache-location node_modules/.cache/eslint/';
+
 const lintStagedConfig = {
-  '*.{js,jsx,ts,tsx}': [
-    'eslint --fix --cache --cache-location node_modules/.cache/eslint/',
+  '*.{js,jsx,ts,tsx}': (files) => [
+    ...chunked(ESLINT, files),
+    ...chunked('prettier --write', files),
   ],
-  '*.{css,scss}': ['prettier --write'],
+  '*.{css,scss}': (files) => chunked('prettier --write', files),
 };
 
 export default lintStagedConfig;

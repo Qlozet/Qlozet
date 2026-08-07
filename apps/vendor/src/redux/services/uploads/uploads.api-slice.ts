@@ -34,11 +34,11 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
         if (response?.data?.imageUrl) {
           response.data = {
             url: response.data.imageUrl.replace(/^http:\/\//i, 'https://'),
-            public_id: response.data.publicId
+            public_id: response.data.publicId,
           };
         }
         return response;
-      }
+      },
     }),
 
     uploadProfileImage: builder.mutation<ApiResponse<UploadedImage>, File>({
@@ -57,11 +57,11 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
         if (response?.data?.imageUrl) {
           response.data = {
             url: response.data.imageUrl.replace(/^http:\/\//i, 'https://'),
-            public_id: response.data.publicId
+            public_id: response.data.publicId,
           };
         }
         return response;
-      }
+      },
     }),
 
     uploadOutfitImages: builder.mutation<ApiResponse<UploadedImage[]>, File[]>({
@@ -79,12 +79,15 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
       transformResponse: (response: any) => {
         if (Array.isArray(response?.data)) {
           response.data = response.data.map((item: any) => ({
-            url: (item.imageUrl || item.url || '').replace(/^http:\/\//i, 'https://'),
-            public_id: item.publicId || item.public_id
+            url: (item.imageUrl || item.url || '').replace(
+              /^http:\/\//i,
+              'https://'
+            ),
+            public_id: item.publicId || item.public_id,
           }));
         }
         return response;
-      }
+      },
     }),
   }),
 });

@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import type { Order, OrderItem } from '@/redux/services/orders/orders.api-slice';
+import type {
+  Order,
+  OrderItem,
+} from '@/redux/services/orders/orders.api-slice';
 import {
   allProductImages,
   asProduct,
@@ -12,7 +15,8 @@ import {
   yardsToMetres,
 } from '../item-resolvers';
 
-const item = (patch: Record<string, unknown> = {}) => patch as unknown as OrderItem;
+const item = (patch: Record<string, unknown> = {}) =>
+  patch as unknown as OrderItem;
 
 describe('firstImg', () => {
   it('handles both the string and { url } shapes', () => {
@@ -37,10 +41,12 @@ describe('asProduct', () => {
 
 describe('getProductName / getProductImageUrl', () => {
   it('prefers the kind sub-doc name over the generic one', () => {
-    expect(getProductName({ clothing: { name: 'Kaftan' }, name: 'Generic' } as never)).toBe(
-      'Kaftan'
+    expect(
+      getProductName({ clothing: { name: 'Kaftan' }, name: 'Generic' } as never)
+    ).toBe('Kaftan');
+    expect(getProductName({ fabric: { name: 'Ankara' } } as never)).toBe(
+      'Ankara'
     );
-    expect(getProductName({ fabric: { name: 'Ankara' } } as never)).toBe('Ankara');
     expect(getProductName({ accessory: { name: 'Cap' } } as never)).toBe('Cap');
     expect(getProductName({ name: 'Generic' } as never)).toBe('Generic');
     expect(getProductName(null)).toBe('Product');
@@ -53,7 +59,9 @@ describe('getProductName / getProductImageUrl', () => {
         images: ['top.png'],
       } as never)
     ).toBe('kind.png');
-    expect(getProductImageUrl({ images: ['top.png'] } as never)).toBe('top.png');
+    expect(getProductImageUrl({ images: ['top.png'] } as never)).toBe(
+      'top.png'
+    );
     expect(getProductImageUrl({} as never)).toBeNull();
     expect(getProductImageUrl(null)).toBeNull();
   });
@@ -81,14 +89,24 @@ describe('allProductImages', () => {
   });
 
   it('drops malformed entries and handles an absent product', () => {
-    expect(allProductImages({ images: [{}, 'ok.png'] } as never)).toEqual(['ok.png']);
+    expect(allProductImages({ images: [{}, 'ok.png'] } as never)).toEqual([
+      'ok.png',
+    ]);
     expect(allProductImages(null)).toEqual([]);
   });
 });
 
 describe('byId', () => {
   it('finds by id, comparing as strings', () => {
-    expect(byId([{ _id: '1', v: 'a' }, { _id: '2', v: 'b' }] as never, '2')).toMatchObject({
+    expect(
+      byId(
+        [
+          { _id: '1', v: 'a' },
+          { _id: '2', v: 'b' },
+        ] as never,
+        '2'
+      )
+    ).toMatchObject({
       v: 'b',
     });
   });
@@ -134,7 +152,9 @@ describe('readOrderFabric', () => {
 
   it('leaves sourceBusiness undefined when the business is an unpopulated id', () => {
     const fabric = readOrderFabric(
-      item({ applied_fabric: { fabric: { name: 'Ankara' }, business: 'biz-1' } })
+      item({
+        applied_fabric: { fabric: { name: 'Ankara' }, business: 'biz-1' },
+      })
     );
     expect(fabric?.sourceBusiness).toBeUndefined();
   });
@@ -143,10 +163,19 @@ describe('readOrderFabric', () => {
   it('reads a catalogue fabric selection as vendor-sourced', () => {
     const fabric = readOrderFabric(
       item({
-        fabric_selections: [{ fabric_id: 'f1', yardage: 3, quantity: 1, total_amount: 0 }],
+        fabric_selections: [
+          { fabric_id: 'f1', yardage: 3, quantity: 1, total_amount: 0 },
+        ],
         product: {
           clothing: {
-            fabrics: [{ _id: 'f1', name: 'Lace', price_per_yard: 1500, images: ['l.png'] }],
+            fabrics: [
+              {
+                _id: 'f1',
+                name: 'Lace',
+                price_per_yard: 1500,
+                images: ['l.png'],
+              },
+            ],
           },
         },
       })
@@ -162,7 +191,11 @@ describe('readOrderFabric', () => {
 
   it('accepts the legacy `yards` key on a selection', () => {
     const fabric = readOrderFabric(
-      item({ fabric_selections: [{ fabric_id: 'f1', yards: 5, quantity: 1, total_amount: 0 }] })
+      item({
+        fabric_selections: [
+          { fabric_id: 'f1', yards: 5, quantity: 1, total_amount: 0 },
+        ],
+      })
     );
     expect(fabric?.yards).toBe(5);
   });
@@ -177,7 +210,9 @@ describe('findFabricItem', () => {
 
   it('finds the first item carrying any fabric signal', () => {
     expect(
-      findFabricItem(order([{ _tag: 'plain' }, { _tag: 'fabric', fabric_selections: [{}] }]))
+      findFabricItem(
+        order([{ _tag: 'plain' }, { _tag: 'fabric', fabric_selections: [{}] }])
+      )
     ).toMatchObject({ _tag: 'fabric' });
     expect(findFabricItem(order([{ applied_fabric: {} }]))).toBeTruthy();
     expect(findFabricItem(order([{ applied_fabric_yards: 2 }]))).toBeTruthy();

@@ -53,7 +53,8 @@ const OPTIONS: FundingOption[] = [
     // real account details to show.
     id: 'bank',
     title: 'Fund Account with Bank',
-    description: 'You can fund your account by paying into the our bank account.',
+    description:
+      'You can fund your account by paying into the our bank account.',
     icon: bankIcon,
     available: false,
   },
@@ -76,22 +77,22 @@ export const FundWalletModal = create(() => {
 
   return (
     <Dialog open={visible} onOpenChange={handleClose}>
-      <DialogContent className='max-w-md p-6 bg-card'>
-        <DialogHeader className='text-left pb-4'>
-          <DialogTitle className='text-base font-medium text-[#0C0C0D] dark:text-white'>
+      <DialogContent className="max-w-md p-6 bg-card">
+        <DialogHeader className="text-left pb-4">
+          <DialogTitle className="text-base font-medium text-[#0C0C0D] dark:text-white">
             Fund your account
           </DialogTitle>
         </DialogHeader>
 
-        <p className='text-sm font-normal text-[#0C0C0D] dark:text-white mb-4 mt-4'>
+        <p className="text-sm font-normal text-[#0C0C0D] dark:text-white mb-4 mt-4">
           Choose preferred funding method
         </p>
 
-        <div className='space-y-4'>
+        <div className="space-y-4">
           {OPTIONS.map((option) => (
             <button
               key={option.id}
-              type='button'
+              type="button"
               onClick={() => handleSelect(option)}
               disabled={!option.available}
               className={cn(
@@ -103,21 +104,23 @@ export const FundWalletModal = create(() => {
             >
               <Image
                 src={option.icon}
-                alt=''
+                alt=""
                 width={40}
                 height={40}
-                className='size-10 shrink-0 rounded-md'
+                className="size-10 shrink-0 rounded-md"
               />
-              <div className='min-w-0 space-y-1'>
-                <span className='flex items-center gap-2 text-base font-normal text-[#333333] dark:text-gray-300'>
+              <div className="min-w-0 space-y-1">
+                <span className="flex items-center gap-2 text-base font-normal text-[#333333] dark:text-gray-300">
                   {option.title}
                   {!option.available && (
-                    <span className='rounded-full bg-[#EDEFF2] dark:bg-white/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[#646A86] dark:text-gray-400'>
+                    <span className="rounded-full bg-[#EDEFF2] dark:bg-white/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[#646A86] dark:text-gray-400">
                       Coming soon
                     </span>
                   )}
                 </span>
-                <span className='block text-xs text-[#646A86] dark:text-gray-400'>{option.description}</span>
+                <span className="block text-xs text-[#646A86] dark:text-gray-400">
+                  {option.description}
+                </span>
               </div>
             </button>
           ))}
@@ -126,4 +129,3 @@ export const FundWalletModal = create(() => {
     </Dialog>
   );
 });
-

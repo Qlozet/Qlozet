@@ -37,16 +37,16 @@ const AdminPage = () => {
   const goToManageRoles = () => router.push(APP_ROUTES.adminManageRoles);
 
   return (
-    <div className='w-full min-h-screen h-fit space-y-6 pb-10'>
+    <div className="w-full min-h-screen h-fit space-y-6 pb-10">
       {/* Header */}
-      <div className='flex items-center justify-between gap-4'>
-        <h1 className='text-xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white'>
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white">
           Administrators
         </h1>
 
-        <div className='flex items-center gap-3'>
-          <Button variant='outline' onClick={goToManageRoles}>
-            <KeyRound className='size-4' />
+        <div className="flex items-center gap-3">
+          <Button variant="outline" onClick={goToManageRoles}>
+            <KeyRound className="size-4" />
             Manage Roles
           </Button>
           <Button onClick={showAddAdmin}>Add Admin</Button>

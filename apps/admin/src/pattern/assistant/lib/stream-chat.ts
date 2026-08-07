@@ -18,7 +18,7 @@ export interface StreamHandlers {
 export async function streamChat(
   body: { message: string; conversation_id?: string },
   handlers: StreamHandlers,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ): Promise<void> {
   const token = getCookies({ key: SESSION_COOKIE_KEY });
 

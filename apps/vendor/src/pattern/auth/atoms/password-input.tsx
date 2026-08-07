@@ -37,7 +37,7 @@ export const PasswordInput = <
   placeholder = '************',
   disabled = false,
   className = '',
-  description
+  description,
 }: PasswordInputProps<TFieldValues, TName>) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -53,35 +53,35 @@ export const PasswordInput = <
         <FormItem className={cn('space-y-2', className)}>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <div className='relative'>
+            <div className="relative">
               <Input
                 type={showPassword ? 'text' : 'password'}
                 placeholder={placeholder}
                 disabled={disabled}
                 {...field}
-                className='pr-12 h-10 lg:h-[50px]'
+                className="pr-12 h-10 lg:h-[50px]"
               />
               <Button
-                type='button'
-                variant='ghost'
-                size='icon'
-                className='absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent'
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                 onClick={togglePasswordVisibility}
                 disabled={disabled}
               >
                 {showPassword ? (
-                  <EyeOff className='size-4 text-muted-foreground' />
+                  <EyeOff className="size-4 text-muted-foreground" />
                 ) : (
-                  <Eye className='size-4 text-muted-foreground' />
+                  <Eye className="size-4 text-muted-foreground" />
                 )}
-                <span className='sr-only'>
+                <span className="sr-only">
                   {showPassword ? 'Hide password' : 'Show password'}
                 </span>
               </Button>
             </div>
           </FormControl>
           {description && (
-            <p className='text-xs text-muted-foreground'>{description}</p>
+            <p className="text-xs text-muted-foreground">{description}</p>
           )}
           <FormMessage />
         </FormItem>

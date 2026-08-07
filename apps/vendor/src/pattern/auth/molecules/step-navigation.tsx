@@ -34,13 +34,15 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
   const isLastStep = currentStep === totalSteps;
 
   return (
-    <div className={`flex items-center justify-between ${canGoPrevious ? "gap-x-3.5" : ""} ${className}`}>
+    <div
+      className={`flex items-center justify-between ${canGoPrevious ? 'gap-x-3.5' : ''} ${className}`}
+    >
       {/* Previous Button */}
       {!isFirstStep && canGoPrevious ? (
         <Button
-          variant='outline'
+          variant="outline"
           onClick={onPrevious}
-          className='h-10 lg:[50px] flex items-center gap-2'
+          className="h-10 lg:[50px] flex items-center gap-2"
         >
           <ChevronLeft />
           {previousLabel}
@@ -64,11 +66,11 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
 
       {/* Next Button */}
       <SubmitButton
-        variant='default'
+        variant="default"
         onClick={onNext}
         loading={loading}
         disabled={!canGoNext || loading}
-        className='w-full h-10 lg:[50px] flex-1'
+        className="w-full h-10 lg:[50px] flex-1"
       >
         {isLastStep ? 'Complete' : nextLabel}
       </SubmitButton>

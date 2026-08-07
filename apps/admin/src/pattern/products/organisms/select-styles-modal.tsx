@@ -21,7 +21,14 @@ interface StyleDef {
   imageUrl?: string;
 }
 
-const CATEGORIES = ['Tops', 'Dresses', 'Bottoms', 'Neck', 'Sleeves', 'Full fit'];
+const CATEGORIES = [
+  'Tops',
+  'Dresses',
+  'Bottoms',
+  'Neck',
+  'Sleeves',
+  'Full fit',
+];
 
 const SUBTABS: Record<string, string[]> = {
   Neck: ['Round', 'V-shaped', 'High', 'Low', 'Collared', 'Strapped'],
@@ -78,9 +85,9 @@ export const SelectStylesModal = NiceModal.create(() => {
   // Open the Add Styles modal; on success, add the new style to the current
   // view and auto-select it.
   const handleAddStyle = async () => {
-    const created = (await NiceModal.show(AddStylesModal)) as
-      | CreatedStyle
-      | null;
+    const created = (await NiceModal.show(
+      AddStylesModal
+    )) as CreatedStyle | null;
     if (!created) return;
     const id = `custom-${styles.length}-${created.name}`;
     const def: StyleDef = {
@@ -277,7 +284,9 @@ export const SelectStylesModal = NiceModal.create(() => {
                         <Shirt className="size-8" />
                       )}
                     </div>
-                    <span className="text-xs text-foreground">{style.name}</span>
+                    <span className="text-xs text-foreground">
+                      {style.name}
+                    </span>
                   </button>
                 );
               })}
@@ -297,7 +306,8 @@ export const SelectStylesModal = NiceModal.create(() => {
             disabled={selectedList.length === 0}
             className="rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Use Styles{selectedList.length > 0 ? ` (${selectedList.length})` : ''}
+            Use Styles
+            {selectedList.length > 0 ? ` (${selectedList.length})` : ''}
           </button>
         </div>
       </div>

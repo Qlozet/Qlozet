@@ -44,8 +44,12 @@ describe('readBespokeDesign', () => {
   });
 
   it('names an unnamed design so the card never renders an empty title', () => {
-    expect(readBespokeDesign(order({ design_images: [] }))?.name).toBe('Custom design');
-    expect(readBespokeDesign(order({ name: '   ' }))?.name).toBe('Custom design');
+    expect(readBespokeDesign(order({ design_images: [] }))?.name).toBe(
+      'Custom design'
+    );
+    expect(readBespokeDesign(order({ name: '   ' }))?.name).toBe(
+      'Custom design'
+    );
   });
 
   it('still returns a summary when the design has no images at all', () => {

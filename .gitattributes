@@ -1,0 +1,27 @@
+# Normalise line endings.
+#
+# Without this, Windows clones run with core.autocrlf=true: the index holds LF
+# while the working tree holds CRLF. Most of the time that's invisible, but
+# lint-staged stashes unstaged work with `git diff` (LF) and restores it with
+# `git apply` against a CRLF tree, which fails — "Failed to restore unstaged
+# changes" — and rolls the whole commit back. It's also the source of the
+# constant "LF will be replaced by CRLF" warnings.
+#
+# LF everywhere keeps the index and the working tree in agreement on every OS.
+* text=auto eol=lf
+
+# Generated — never diffed by hand, and huge.
+pnpm-lock.yaml -diff linguist-generated
+
+# Binary assets: never touch these.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary

@@ -35,12 +35,16 @@ describe('getVendorItems', () => {
   });
 
   it('matches a populated business object by _id', () => {
-    const o = order({ items: [{ business: { _id: ME, business_name: 'Mine' } }] });
+    const o = order({
+      items: [{ business: { _id: ME, business_name: 'Mine' } }],
+    });
     expect(getVendorItems(o, ME)).toHaveLength(1);
   });
 
   it('returns nothing when none of the items are this vendor’s', () => {
-    expect(getVendorItems(order({ items: [{ business: THEM }] }), ME)).toHaveLength(0);
+    expect(
+      getVendorItems(order({ items: [{ business: THEM }] }), ME)
+    ).toHaveLength(0);
     expect(getVendorItems(order({ items: [{}] }), ME)).toHaveLength(0);
   });
 });
@@ -62,8 +66,12 @@ describe('getVendorShipment', () => {
   });
 
   it('returns undefined when there is none, or no shipments at all', () => {
-    expect(getVendorShipment(order({ shipments: [{ business: THEM }] }), ME)).toBeUndefined();
-    expect(getVendorShipment(order({ shipments: undefined }), ME)).toBeUndefined();
+    expect(
+      getVendorShipment(order({ shipments: [{ business: THEM }] }), ME)
+    ).toBeUndefined();
+    expect(
+      getVendorShipment(order({ shipments: undefined }), ME)
+    ).toBeUndefined();
   });
 });
 
@@ -109,7 +117,12 @@ describe('subtotals', () => {
   });
 
   it('is zero when the vendor has no items on the order', () => {
-    expect(getVendorSubtotal(order({ items: [{ business: THEM, total_price: 9000 }] }), ME)).toBe(0);
+    expect(
+      getVendorSubtotal(
+        order({ items: [{ business: THEM, total_price: 9000 }] }),
+        ME
+      )
+    ).toBe(0);
   });
 
   // This is the denominator used to allocate order-wide earnings to one vendor,
@@ -168,16 +181,15 @@ describe('fabric transfers', () => {
     });
 
   it('lists only the transfers this vendor is sending', () => {
-    expect(getFabricTransferShipments(withTransfers(), ME).map((s) => s._id)).toEqual([
-      'out',
-    ]);
+    expect(
+      getFabricTransferShipments(withTransfers(), ME).map((s) => s._id)
+    ).toEqual(['out']);
   });
 
   it('lists every incoming transfer regardless of status', () => {
-    expect(getIncomingFabricTransfers(withTransfers(), ME).map((s) => s._id)).toEqual([
-      'in-pending',
-      'in-delivered',
-    ]);
+    expect(
+      getIncomingFabricTransfers(withTransfers(), ME).map((s) => s._id)
+    ).toEqual(['in-pending', 'in-delivered']);
   });
 
   // Fulfillment is blocked while any of these are outstanding, so a delivered
@@ -198,7 +210,9 @@ describe('fabric transfers', () => {
 
 describe('relation name extractors', () => {
   it('reads a business name when populated', () => {
-    expect(extractBizName({ _id: THEM, business_name: 'Tailor Co' })).toBe('Tailor Co');
+    expect(extractBizName({ _id: THEM, business_name: 'Tailor Co' })).toBe(
+      'Tailor Co'
+    );
   });
 
   it('does not print a raw id as a business name', () => {
@@ -207,7 +221,9 @@ describe('relation name extractors', () => {
   });
 
   it('reads a fabric name when populated, and stays neutral otherwise', () => {
-    expect(extractFabricName({ fabric: { name: 'Ankara' } } as never)).toBe('Ankara');
+    expect(extractFabricName({ fabric: { name: 'Ankara' } } as never)).toBe(
+      'Ankara'
+    );
     expect(extractFabricName('fabric-1')).not.toBe('fabric-1');
     expect(extractFabricName(undefined)).toBeTruthy();
   });

@@ -99,13 +99,22 @@ ESLint's flat config only resolves when eslint runs from the app directory, so
 each app carries its own `.lintstagedrc.mjs`. lint-staged picks the closest
 config to each staged file and runs it with that directory as the cwd.
 
-### Two things deliberately left out
+Every task is wrapped in `chunked()` (`scripts/lint-staged-chunk.mjs`), which
+splits the file list across several invocations. lint-staged interpolates every
+path into one command string, and on Windows `eslint` resolves to `eslint.CMD`
+— launched through cmd.exe, which caps a command line at 8191 characters. A
+wide commit (a repo-wide format, a big rename) otherwise dies with "The command
+line is too long" before linting anything.
 
-- **`prettier --write` on ts/tsx.** This codebase has never been
-  Prettier-formatted and the two apps disagree on JSX quote style, so formatting
-  on commit rewrites whole files that a change merely touched. Normalise once
-  with `pnpm format` in a dedicated commit, then add `'prettier --write'` to the
-  per-app lint-staged arrays.
+### Line endings
+
+`.gitattributes` pins everything to `eol=lf`. Without it, Windows clones run
+`core.autocrlf=true`, leaving the index on LF and the working tree on CRLF —
+which makes lint-staged's stash/restore round-trip fail ("Failed to restore
+unstaged changes") and roll the commit back.
+
+### One thing deliberately left out
+
 - **`type-check` and `lint` in `pre-push`.** Both fail today on pre-existing
   issues: legacy components under `apps/vendor/src/components/**` don't compile,
   and there are ~415 lint warnings (mostly React Compiler rules that had never

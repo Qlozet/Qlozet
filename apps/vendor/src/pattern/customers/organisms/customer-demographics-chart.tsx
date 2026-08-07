@@ -29,15 +29,15 @@ const renderLegend = (props: any): JSX.Element => {
   const payload = props?.payload ?? [];
 
   return (
-    <ul className='w-full h-fit flex items-center gap-8 p-0 pl-2.5 pb-[1px] pt-[20px] m-0 text-left text-xs capitalize'>
+    <ul className="w-full h-fit flex items-center gap-8 p-0 pl-2.5 pb-[1px] pt-[20px] m-0 text-left text-xs capitalize">
       {payload?.map((entry: any, index: number) => {
         const { color } = entry;
         return (
-          <li key={`item-${index}`} className='flex items-center gap-x-2'>
+          <li key={`item-${index}`} className="flex items-center gap-x-2">
             <span>
               <ChartLegendIcon color={color} />
             </span>
-            <span className='text-black dark:text-foreground'>
+            <span className="text-black dark:text-foreground">
               {entry.value === 'customerCount' ? 'Customers' : entry.value}
             </span>
           </li>
@@ -59,7 +59,9 @@ export const CustomerDemographicsChart = ({
   }
 
   const topLocations = data?.topLocations ?? [];
-  const hasData = topLocations.length > 0 && topLocations.some((loc) => loc.customerCount > 0);
+  const hasData =
+    topLocations.length > 0 &&
+    topLocations.some((loc) => loc.customerCount > 0);
 
   const chartData = topLocations.map((loc) => ({
     location: loc.location?.toUpperCase() ?? 'UNKNOWN',
@@ -67,44 +69,50 @@ export const CustomerDemographicsChart = ({
   }));
 
   return (
-    <Card className={`w-full rounded-[12px] custom-card-shadow ${className ?? ''}`}>
-      <CardHeader className='px-6 pb-4'>
-        <CardTitle className='text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground'>
+    <Card
+      className={`w-full rounded-[12px] custom-card-shadow ${className ?? ''}`}
+    >
+      <CardHeader className="px-6 pb-4">
+        <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
           Customer Locations
         </CardTitle>
       </CardHeader>
-      <CardContent className='w-full font-poppins pl-3 pr-8 pt-0 pb-6'>
+      <CardContent className="w-full font-poppins pl-3 pr-8 pt-0 pb-6">
         <ChartEmptyState
           isEmpty={!hasData}
-          variant='bar'
-          description='Location insights will appear here as customers place orders'
+          variant="bar"
+          description="Location insights will appear here as customers place orders"
         >
-          <ResponsiveContainer width='100%' height={250}>
+          <ResponsiveContainer width="100%" height={250}>
             <BarChart
               data={chartData}
-              layout='vertical'
+              layout="vertical"
               barGap={2}
               margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
             >
-              <XAxis type='number' hide />
+              <XAxis type="number" hide />
               <YAxis
-                dataKey='location'
-                type='category'
+                dataKey="location"
+                type="category"
                 tickLine={false}
                 axisLine={false}
-                tick={{ fill: 'var(--foreground)', fontSize: 10, fontWeight: 500 }}
+                tick={{
+                  fill: 'var(--foreground)',
+                  fontSize: 10,
+                  fontWeight: 500,
+                }}
                 padding={{ top: 0, bottom: 0 }}
               />
               <Tooltip content={<CustomChartTooltip />} cursor={false} />
               <Legend
-                align='left'
-                iconType='circle'
+                align="left"
+                iconType="circle"
                 iconSize={9}
                 content={renderLegend}
               />
               <Bar
-                dataKey='customerCount'
-                fill='var(--chart-primary)'
+                dataKey="customerCount"
+                fill="var(--chart-primary)"
                 maxBarSize={24}
                 radius={[0, 2.26, 2.26, 0]}
               />
@@ -129,15 +137,15 @@ const renderAgeGenderLegend = (props: any): JSX.Element => {
   const payload = props?.payload ?? [];
 
   return (
-    <ul className='w-full h-fit flex items-center justify-center gap-8 p-0 pt-[20px] pb-[1px] m-0 text-center text-xs capitalize'>
+    <ul className="w-full h-fit flex items-center justify-center gap-8 p-0 pt-[20px] pb-[1px] m-0 text-center text-xs capitalize">
       {payload?.map((entry: any, index: number) => {
         const { color } = entry;
         return (
-          <li key={`item-${index}`} className='flex items-center gap-x-2'>
+          <li key={`item-${index}`} className="flex items-center gap-x-2">
             <span>
               <ChartLegendIcon color={color ?? '#000'} />
             </span>
-            <span className='text-black dark:text-foreground'>
+            <span className="text-black dark:text-foreground">
               {entry.value}
             </span>
           </li>
@@ -169,30 +177,30 @@ export const CustomerAgeGenderChart = ({
     <Card
       className={`w-full rounded-[12px] custom-card-shadow ${className ?? ''}`}
     >
-      <CardHeader className='px-6 pb-4'>
-        <CardTitle className='text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground'>
+      <CardHeader className="px-6 pb-4">
+        <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
           Demographics
         </CardTitle>
       </CardHeader>
-      <CardContent className='w-full font-poppins pl-3 pr-8 pt-0 pb-6'>
+      <CardContent className="w-full font-poppins pl-3 pr-8 pt-0 pb-6">
         <ChartEmptyState
           isEmpty={!hasData}
-          variant='bar'
-          description='Age &amp; gender data will appear when customers provide their date of birth'
+          variant="bar"
+          description="Age &amp; gender data will appear when customers provide their date of birth"
         >
-          <ResponsiveContainer width='100%' height={250}>
+          <ResponsiveContainer width="100%" height={250}>
             <BarChart
               data={chartData}
               margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
-              barCategoryGap='25%'
+              barCategoryGap="25%"
             >
-              <CartesianGrid vertical={false} stroke='#F0F0F0' />
+              <CartesianGrid vertical={false} stroke="#F0F0F0" />
               <XAxis
-                dataKey='age'
+                dataKey="age"
                 tickLine={false}
                 axisLine={false}
                 angle={-45}
-                textAnchor='end'
+                textAnchor="end"
                 height={50}
                 tick={{ fontSize: 10, fill: 'var(--foreground)' }}
               />
@@ -207,22 +215,22 @@ export const CustomerAgeGenderChart = ({
               />
               <Tooltip content={<CustomChartTooltip />} cursor={false} />
               <Bar
-                dataKey='male'
-                stackId='gender'
+                dataKey="male"
+                stackId="gender"
                 fill={MALE_COLOR}
                 radius={[0, 0, 0, 0]}
                 maxBarSize={28}
               />
               <Bar
-                dataKey='female'
-                stackId='gender'
+                dataKey="female"
+                stackId="gender"
                 fill={FEMALE_COLOR}
                 radius={[4, 4, 0, 0]}
                 maxBarSize={28}
               />
               <Legend
-                align='center'
-                iconType='circle'
+                align="center"
+                iconType="circle"
                 iconSize={9}
                 content={renderAgeGenderLegend}
               />

@@ -70,9 +70,13 @@ describe('orderFilterSchema', () => {
 describe('action schemas', () => {
   // The backend keys these off `reference`, not the mongo id.
   it('requires an order reference to cancel or fulfill', () => {
-    expect(cancelOrderSchema.safeParse({ reference: 'QLZ-1' }).success).toBe(true);
+    expect(cancelOrderSchema.safeParse({ reference: 'QLZ-1' }).success).toBe(
+      true
+    );
     expect(cancelOrderSchema.safeParse({ reference: '' }).success).toBe(false);
-    expect(fulfillOrderSchema.safeParse({ reference: 'QLZ-1' }).success).toBe(true);
+    expect(fulfillOrderSchema.safeParse({ reference: 'QLZ-1' }).success).toBe(
+      true
+    );
     expect(fulfillOrderSchema.safeParse({}).success).toBe(false);
   });
 

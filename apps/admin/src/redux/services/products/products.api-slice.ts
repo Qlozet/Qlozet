@@ -177,7 +177,10 @@ export const productsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // POST /products/clothing — create a clothing product from the admin panel
-    createClothing: builder.mutation<ApiResponse<unknown>, CreateClothingRequest>({
+    createClothing: builder.mutation<
+      ApiResponse<unknown>,
+      CreateClothingRequest
+    >({
       query: (body) => ({
         url: `/products/clothing`,
         method: 'POST',

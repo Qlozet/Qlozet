@@ -103,7 +103,12 @@ export interface ClothingAccessoryDoc {
   name?: string;
   price?: number;
   images?: ProductImage[];
-  variants?: { _id?: string; name?: string; price?: number; images?: ProductImage[] }[];
+  variants?: {
+    _id?: string;
+    name?: string;
+    price?: number;
+    images?: ProductImage[];
+  }[];
 }
 
 /** Embedded add-on sub-doc on a clothing product */
@@ -111,7 +116,13 @@ export interface ClothingAddonDoc {
   _id: string;
   name?: string;
   display_type?: 'colour' | 'picture';
-  variants?: { _id?: string; name?: string; price?: number; color_hex?: string; image_url?: string }[];
+  variants?: {
+    _id?: string;
+    name?: string;
+    price?: number;
+    color_hex?: string;
+    image_url?: string;
+  }[];
 }
 
 /** Embedded colour-variant sub-doc on a clothing product */
@@ -122,7 +133,12 @@ export interface ClothingColorVariantDoc {
   hex?: string;
   hex_code?: string;
   images?: ProductImage[];
-  variants?: { _id?: string; size?: string; price?: number; images?: ProductImage[] }[];
+  variants?: {
+    _id?: string;
+    size?: string;
+    price?: number;
+    images?: ProductImage[];
+  }[];
 }
 
 /** Populated fabric product applied to a custom outfit (cross-vendor) */
@@ -130,7 +146,9 @@ export interface AppliedFabricRef {
   _id: string;
   base_price?: number;
   fabric?: { name?: string; images?: ProductImage[] };
-  business?: string | { _id: string; business_name?: string; business_logo_url?: string };
+  business?:
+    | string
+    | { _id: string; business_name?: string; business_logo_url?: string };
 }
 
 /** Populated product with kind-specific sub-documents */
@@ -248,19 +266,25 @@ export interface VendorShipment {
 }
 
 /** Extract the business ID from a shipment's business field (string or populated object) */
-function extractBizId(biz: string | ShipmentBusinessRef | undefined): string | undefined {
+function extractBizId(
+  biz: string | ShipmentBusinessRef | undefined
+): string | undefined {
   if (!biz) return undefined;
   return typeof biz === 'string' ? biz : biz._id;
 }
 
 /** Extract the business name from a populated shipment field, with fallback */
-export function extractBizName(biz: string | ShipmentBusinessRef | undefined): string {
+export function extractBizName(
+  biz: string | ShipmentBusinessRef | undefined
+): string {
   if (!biz) return 'Vendor';
-  return typeof biz === 'string' ? 'Vendor' : (biz.business_name || 'Vendor');
+  return typeof biz === 'string' ? 'Vendor' : biz.business_name || 'Vendor';
 }
 
 /** Extract fabric product name from populated field */
-export function extractFabricName(fp: string | ShipmentFabricProductRef | undefined): string {
+export function extractFabricName(
+  fp: string | ShipmentFabricProductRef | undefined
+): string {
   if (!fp || typeof fp === 'string') return 'Fabric';
   return fp.fabric?.name || 'Fabric';
 }
@@ -339,10 +363,7 @@ export interface PaginatedOrdersResponse {
 // from other vendors. The frontend must filter locally.
 
 /** Filter order items to only show this vendor's products */
-export function getVendorItems(
-  order: Order,
-  businessId: string
-): OrderItem[] {
+export function getVendorItems(order: Order, businessId: string): OrderItem[] {
   return order.items.filter((item) => {
     const itemBiz =
       typeof item.business === 'string'
@@ -497,7 +518,10 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
     }),
 
     // POST /orders/:reference/confirm — vendor confirms their portion
-    confirmOrder: builder.mutation<{ message: string; data: unknown }, { reference: string }>({
+    confirmOrder: builder.mutation<
+      { message: string; data: unknown },
+      { reference: string }
+    >({
       query: ({ reference }) => ({
         url: `/orders/${reference}/confirm`,
         method: 'POST',

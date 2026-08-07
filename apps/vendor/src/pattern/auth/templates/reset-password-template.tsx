@@ -36,15 +36,15 @@ export const ResetPasswordTemplate = () => {
         const errorMessage =
           error?.data?.message || 'Failed to reset password. Please try again.';
         toast.error(errorMessage);
-      })
+      });
   };
 
   return (
     <AuthFormCard
-      title='Reset Password'
-      subtitle='Enter your new password below'
+      title="Reset Password"
+      subtitle="Enter your new password below"
       showLogo={true}
-      className='w-full md:min-w-[344px]'
+      className="w-full md:min-w-[344px]"
     >
       <ResetPasswordForm onSubmit={handleResetPassword} loading={isLoading} />
     </AuthFormCard>

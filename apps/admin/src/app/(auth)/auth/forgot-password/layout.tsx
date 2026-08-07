@@ -4,8 +4,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Forgot password',
-  description:
-    'Reset the password for your Qlozet admin account.',
+  description: 'Reset the password for your Qlozet admin account.',
   path: '/auth/forgot-password',
 });
 

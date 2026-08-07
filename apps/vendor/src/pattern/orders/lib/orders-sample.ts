@@ -2,7 +2,10 @@
 // endpoint (stats, "most purchased"). Uses the real Order schema so the table
 // renders correctly whether real data or fallback is shown.
 
-import type { Order, OrderStatus } from '@/redux/services/orders/orders.api-slice';
+import type {
+  Order,
+  OrderStatus,
+} from '@/redux/services/orders/orders.api-slice';
 
 // ---- Headline stats (no /orders/stats endpoint — use /orders/chart) ----
 export const SAMPLE_ORDER_STATS = {

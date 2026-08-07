@@ -4,8 +4,8 @@
 // evaluateOperator() switch cases.
 
 export interface Option {
-  value: string
-  label: string
+  value: string;
+  label: string;
 }
 
 // condition.field — product attribute paths used by the backend.
@@ -28,7 +28,7 @@ export const CONDITION_FIELD_OPTIONS: Option[] = [
   { value: 'accessory.taxonomy.product_type', label: 'Accessory Type' },
   { value: 'accessory.taxonomy.categories', label: 'Accessory Category' },
   { value: 'accessory.taxonomy.audience', label: 'Accessory Audience' },
-]
+];
 
 // condition.operator — mirrors the backend evaluateOperator() cases.
 export const CONDITION_OPERATOR_OPTIONS: Option[] = [
@@ -39,11 +39,17 @@ export const CONDITION_OPERATOR_OPTIONS: Option[] = [
   { value: 'contains', label: 'contains' },
   { value: 'starts_with', label: 'starts with' },
   { value: 'ends_with', label: 'ends with' },
-]
+];
 
 // Fields that need taxonomy-fetched values (dynamic dropdowns).
 // The value is the `kind` param for the taxonomy API.
-export const TAXONOMY_FIELD_CONFIG: Record<string, { kind: string; type: 'product_type' | 'categories' | 'audience' | 'attributes' }> = {
+export const TAXONOMY_FIELD_CONFIG: Record<
+  string,
+  {
+    kind: string;
+    type: 'product_type' | 'categories' | 'audience' | 'attributes';
+  }
+> = {
   'clothing.taxonomy.product_type': { kind: 'clothing', type: 'product_type' },
   'clothing.taxonomy.categories': { kind: 'clothing', type: 'categories' },
   'clothing.taxonomy.audience': { kind: 'clothing', type: 'audience' },
@@ -52,10 +58,13 @@ export const TAXONOMY_FIELD_CONFIG: Record<string, { kind: string; type: 'produc
   'fabric.product_type': { kind: 'fabric', type: 'product_type' },
   'fabric.pattern': { kind: 'fabric', type: 'categories' },
   // Accessory
-  'accessory.taxonomy.product_type': { kind: 'accessory', type: 'product_type' },
+  'accessory.taxonomy.product_type': {
+    kind: 'accessory',
+    type: 'product_type',
+  },
   'accessory.taxonomy.categories': { kind: 'accessory', type: 'categories' },
   'accessory.taxonomy.audience': { kind: 'accessory', type: 'audience' },
-}
+};
 
 // Static value options for non-taxonomy fields (free-text fields use an Input
 // instead of a Select, so these are only for fields with known enum values).
@@ -74,7 +83,7 @@ export const STATIC_VALUE_OPTIONS: Record<string, Option[]> = {
     { value: 'draft', label: 'Draft' },
     { value: 'archived', label: 'Archived' },
   ],
-}
+};
 
 // Fields that accept free-text input instead of a dropdown.
 export const FREE_TEXT_FIELDS = new Set([
@@ -82,4 +91,4 @@ export const FREE_TEXT_FIELDS = new Set([
   'base_price',
   'fabric.name',
   'fabric.price_per_yard',
-])
+]);

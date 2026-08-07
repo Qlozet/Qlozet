@@ -18,19 +18,16 @@ export const ReturnsRateChart = () => {
   const totalReturns = summary?.totalReturns || 0;
   const completed = Math.max(0, totalOrders - totalReturns);
 
-  const data: DonutDatum[] = totalOrders === 0 ? [
-    { name: 'Completed', value: 100 },
-    { name: 'Returned', value: 0 },
-  ] : [
-    { name: 'Completed', value: completed },
-    { name: 'Returned', value: totalReturns },
-  ];
+  const data: DonutDatum[] =
+    totalOrders === 0
+      ? [
+          { name: 'Completed', value: 100 },
+          { name: 'Returned', value: 0 },
+        ]
+      : [
+          { name: 'Completed', value: completed },
+          { name: 'Returned', value: totalReturns },
+        ];
 
-  return (
-    <DonutChart
-      title='Returns rate'
-      data={data}
-      colors={COLORS}
-    />
-  );
+  return <DonutChart title="Returns rate" data={data} colors={COLORS} />;
 };

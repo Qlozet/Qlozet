@@ -21,25 +21,25 @@ const GUIDELINES: { icon: 'shield' | 'check'; text: string }[] = [
 ];
 
 export const VendorGuidelinesCard = () => (
-  <section className='space-y-3 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4'>
+  <section className="space-y-3 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
     <div>
-      <h3 className='text-base font-semibold text-grey-black dark:text-white'>
+      <h3 className="text-base font-semibold text-grey-black dark:text-white">
         Guidelines
       </h3>
-      <p className='text-xs text-grey2 dark:text-gray-400'>
+      <p className="text-xs text-grey2 dark:text-gray-400">
         Qlozet vendor standards
       </p>
     </div>
 
-    <ul className='space-y-3'>
+    <ul className="space-y-3">
       {GUIDELINES.map((guideline) => (
-        <li key={guideline.text} className='flex items-start gap-2.5'>
+        <li key={guideline.text} className="flex items-start gap-2.5">
           {guideline.icon === 'shield' ? (
-            <ShieldCheck className='mt-0.5 size-4 shrink-0 text-grey3 dark:text-gray-300' />
+            <ShieldCheck className="mt-0.5 size-4 shrink-0 text-grey3 dark:text-gray-300" />
           ) : (
-            <BadgeCheck className='mt-0.5 size-4 shrink-0 text-grey3 dark:text-gray-300' />
+            <BadgeCheck className="mt-0.5 size-4 shrink-0 text-grey3 dark:text-gray-300" />
           )}
-          <p className='text-sm text-grey3 dark:text-gray-300'>
+          <p className="text-sm text-grey3 dark:text-gray-300">
             {guideline.text}
           </p>
         </li>

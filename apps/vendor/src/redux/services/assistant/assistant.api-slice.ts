@@ -86,7 +86,10 @@ export const assistantApiSlice = baseAPI.injectEndpoints({
         if (params?.page) sp.set('page', String(params.page));
         if (params?.size) sp.set('size', String(params.size));
         const qs = sp.toString();
-        return { url: `/assistant/conversations${qs ? `?${qs}` : ''}`, method: 'GET' };
+        return {
+          url: `/assistant/conversations${qs ? `?${qs}` : ''}`,
+          method: 'GET',
+        };
       },
       providesTags: ['AssistantConversations'],
     }),

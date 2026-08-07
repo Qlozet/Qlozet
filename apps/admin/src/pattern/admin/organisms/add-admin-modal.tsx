@@ -51,12 +51,12 @@ const RoleSelect = ({ value, options, onChange }: RoleSelectProps) => {
   };
 
   return (
-    <div className='relative' ref={ref}>
+    <div className="relative" ref={ref}>
       <button
         ref={triggerRef}
-        type='button'
+        type="button"
         onClick={handleToggle}
-        className='flex w-full items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer'
+        className="flex w-full items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
       >
         <span className={cn('truncate', !value && 'text-muted-foreground')}>
           {value || 'Select an option'}
@@ -80,15 +80,15 @@ const RoleSelect = ({ value, options, onChange }: RoleSelectProps) => {
           {options.map((option) => (
             <button
               key={option}
-              type='button'
+              type="button"
               onClick={() => {
                 onChange(option);
                 setOpen(false);
               }}
-              className='flex w-full items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50'
+              className="flex w-full items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
             >
               <span>{option}</span>
-              {option === value && <Check className='size-4 text-success' />}
+              {option === value && <Check className="size-4 text-success" />}
             </button>
           ))}
         </div>
@@ -144,80 +144,80 @@ export const AddAdminModal = NiceModal.create(() => {
   };
 
   return (
-    <div className='fixed inset-0 z-[100] flex items-center justify-center p-4'>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className='absolute inset-0 bg-black/40 backdrop-blur-sm'
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={handleClose}
       />
 
       {/* Dialog */}
       <div
-        role='dialog'
-        aria-modal='true'
-        aria-labelledby='add-admin-title'
-        className='relative z-10 w-full max-w-md rounded-2xl bg-card p-6 shadow-2xl'
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="add-admin-title"
+        className="relative z-10 w-full max-w-md rounded-2xl bg-card p-6 shadow-2xl"
       >
         <button
-          type='button'
+          type="button"
           onClick={handleClose}
-          aria-label='Close'
-          className='absolute right-4 top-4 flex size-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 transition'
+          aria-label="Close"
+          className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 transition"
         >
-          <X className='size-4' />
+          <X className="size-4" />
         </button>
 
         <h2
-          id='add-admin-title'
-          className='text-lg font-semibold text-foreground'
+          id="add-admin-title"
+          className="text-lg font-semibold text-foreground"
         >
           Add New Admin
         </h2>
 
-        <form onSubmit={handleSubmit} className='mt-6 space-y-4'>
-          <div className='space-y-1.5'>
-            <label className='text-sm font-medium text-gray-700'>
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-gray-700">
               Full name
             </label>
             <Input
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              placeholder='Enter full name'
+              placeholder="Enter full name"
             />
           </div>
 
-          <div className='space-y-1.5'>
-            <label className='text-sm font-medium text-gray-700'>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-gray-700">
               Email address
             </label>
             <Input
-              type='email'
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder='Enter email address'
+              placeholder="Enter email address"
             />
           </div>
 
-          <div className='space-y-1.5'>
-            <label className='text-sm font-medium text-gray-700'>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-gray-700">
               Phone number
             </label>
             <Input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder='Enter phone number'
+              placeholder="Enter phone number"
             />
           </div>
 
-          <div className='space-y-1.5'>
-            <label className='text-sm font-medium text-gray-700'>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-gray-700">
               Admin role
             </label>
             <RoleSelect value={role} options={roleOptions} onChange={setRole} />
           </div>
 
-          <div className='flex justify-end pt-2'>
-            <Button type='submit' disabled={isLoading || !isValid}>
+          <div className="flex justify-end pt-2">
+            <Button type="submit" disabled={isLoading || !isValid}>
               {isLoading ? 'Adding...' : 'Add admin'}
             </Button>
           </div>

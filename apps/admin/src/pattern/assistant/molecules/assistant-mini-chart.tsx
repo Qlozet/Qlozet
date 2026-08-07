@@ -30,23 +30,23 @@ export const AssistantMiniChart = ({ chart }: { chart: AssistantChart }) => {
   if (!data.length) return null;
 
   return (
-    <div className='mt-3 rounded-[12px] border border-border bg-background/60 p-3 dark:bg-[#4A4949]/40'>
-      <p className='mb-2 text-xs font-medium text-foreground'>{chart.title}</p>
-      <ResponsiveContainer width='100%' height={180}>
+    <div className="mt-3 rounded-[12px] border border-border bg-background/60 p-3 dark:bg-[#4A4949]/40">
+      <p className="mb-2 text-xs font-medium text-foreground">{chart.title}</p>
+      <ResponsiveContainer width="100%" height={180}>
         {chart.type === 'pie' ? (
           <PieChart>
             <Pie
               data={data}
-              dataKey='value'
-              nameKey='label'
-              cx='50%'
-              cy='50%'
+              dataKey="value"
+              nameKey="label"
+              cx="50%"
+              cy="50%"
               innerRadius={40}
               outerRadius={70}
               paddingAngle={2}
             >
               {data.map((_, i) => (
-                <Cell key={i} fill={COLORS[i % COLORS.length]} stroke='none' />
+                <Cell key={i} fill={COLORS[i % COLORS.length]} stroke="none" />
               ))}
             </Pie>
             <Tooltip />
@@ -54,7 +54,7 @@ export const AssistantMiniChart = ({ chart }: { chart: AssistantChart }) => {
         ) : chart.type === 'line' ? (
           <LineChart data={data} margin={{ left: -20, right: 8, top: 8 }}>
             <XAxis
-              dataKey='label'
+              dataKey="label"
               tick={{ fill: 'var(--foreground)', fontSize: 10 }}
               tickLine={false}
               axisLine={false}
@@ -67,9 +67,9 @@ export const AssistantMiniChart = ({ chart }: { chart: AssistantChart }) => {
             />
             <Tooltip />
             <Line
-              type='monotone'
-              dataKey='value'
-              stroke='var(--chart-primary)'
+              type="monotone"
+              dataKey="value"
+              stroke="var(--chart-primary)"
               strokeWidth={2}
               dot={false}
             />
@@ -77,7 +77,7 @@ export const AssistantMiniChart = ({ chart }: { chart: AssistantChart }) => {
         ) : (
           <BarChart data={data} margin={{ left: -20, right: 8, top: 8 }}>
             <XAxis
-              dataKey='label'
+              dataKey="label"
               tick={{ fill: 'var(--foreground)', fontSize: 10 }}
               tickLine={false}
               axisLine={false}
@@ -89,7 +89,7 @@ export const AssistantMiniChart = ({ chart }: { chart: AssistantChart }) => {
               width={48}
             />
             <Tooltip cursor={false} />
-            <Bar dataKey='value' radius={[4, 4, 0, 0]} maxBarSize={36}>
+            <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={36}>
               {data.map((_, i) => (
                 <Cell key={i} fill={COLORS[i % COLORS.length]} />
               ))}

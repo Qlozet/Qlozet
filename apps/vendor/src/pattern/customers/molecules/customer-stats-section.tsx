@@ -38,23 +38,23 @@ interface MetricCardProps {
 }
 
 const MetricCard = ({ title, value, icon, viewAllLink }: MetricCardProps) => (
-  <Card className='h-[120px] p-3 2xl:p-5 rounded-[12px] custom-card-shadow'>
-    <CardContent className='h-full p-0'>
-      <div className='flex items-start justify-start gap-x-4'>
-        <div className='shrink-0'>{icon}</div>
-        <div className='flex-1 space-y-2'>
-          <p className='text-[hsla(210,9%,31%,1)] dark:text-white text-xs font-normal'>
+  <Card className="h-[120px] p-3 2xl:p-5 rounded-[12px] custom-card-shadow">
+    <CardContent className="h-full p-0">
+      <div className="flex items-start justify-start gap-x-4">
+        <div className="shrink-0">{icon}</div>
+        <div className="flex-1 space-y-2">
+          <p className="text-[hsla(210,9%,31%,1)] dark:text-white text-xs font-normal">
             {title}
           </p>
-          <p className='text-2xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white truncate'>
+          <p className="text-2xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white truncate">
             {value}
           </p>
           <If isTrue={Boolean(viewAllLink)}>
             <Link
               href={viewAllLink ?? '#'}
-              className='flex items-center gap-x-1 text-success dark:text-gray-400 text-xs whitespace-nowrap'
+              className="flex items-center gap-x-1 text-success dark:text-gray-400 text-xs whitespace-nowrap"
             >
-              <Eye className='size-3.5' />
+              <Eye className="size-3.5" />
               <span>View All</span>
             </Link>
           </If>
@@ -82,7 +82,7 @@ export const CustomerStatsSection: React.FC<CustomerStatsSectionProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <StatsCardSkeleton key={i} />
         ))}
@@ -91,42 +91,42 @@ export const CustomerStatsSection: React.FC<CustomerStatsSectionProps> = ({
   }
 
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <MetricCard
-        title='Total Customers'
+        title="Total Customers"
         value={showNum(total)}
         icon={
-          <CardIcon bg='bg-[#57CAEB]'>
-            <Users className='size-6' />
+          <CardIcon bg="bg-[#57CAEB]">
+            <Users className="size-6" />
           </CardIcon>
         }
         viewAllLink={tableHref}
       />
       <MetricCard
-        title='Highest customer by location'
-        value='—'
+        title="Highest customer by location"
+        value="—"
         icon={
-          <CardIcon bg='bg-[#5DDAB4]'>
-            <MapPin className='size-6' />
+          <CardIcon bg="bg-[#5DDAB4]">
+            <MapPin className="size-6" />
           </CardIcon>
         }
       />
       <MetricCard
-        title='Unique Customers'
-        value='—'
+        title="Unique Customers"
+        value="—"
         icon={
-          <CardIcon bg='bg-[#FF8F6B]'>
-            <UserCheck className='size-6' />
+          <CardIcon bg="bg-[#FF8F6B]">
+            <UserCheck className="size-6" />
           </CardIcon>
         }
         viewAllLink={tableHref}
       />
       <MetricCard
-        title='Customer favorite'
-        value='—'
+        title="Customer favorite"
+        value="—"
         icon={
-          <CardIcon bg='bg-[#FFB200]'>
-            <Heart className='size-6' />
+          <CardIcon bg="bg-[#FFB200]">
+            <Heart className="size-6" />
           </CardIcon>
         }
       />

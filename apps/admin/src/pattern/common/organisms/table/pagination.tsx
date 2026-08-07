@@ -24,36 +24,36 @@ export function Pagination<TData>({
         className
       )}
     >
-      <div className='h-fit flex items-center gap-x-4'>
-        <div className='text-sm text-muted-foreground text-center'>
+      <div className="h-fit flex items-center gap-x-4">
+        <div className="text-sm text-muted-foreground text-center">
           Showing {totalRows === 0 ? 0 : pageIndex * pageSize + 1} -{' '}
           {Math.min((pageIndex + 1) * pageSize, totalRows)} of {pageCount}
         </div>
 
         {/* Previous Button */}
         <Button
-          className='w-6 h-6 text-sm rounded-full'
-          variant='outline'
-          size='icon'
+          className="w-6 h-6 text-sm rounded-full"
+          variant="outline"
+          size="icon"
           onClick={() => {
             table.previousPage();
           }}
           disabled={!table.getCanPreviousPage()}
         >
-          <ChevronLeft className='w-4 h-4' />
+          <ChevronLeft className="w-4 h-4" />
         </Button>
 
         {/* Next button */}
         <Button
-          className='w-6 h-6 text-sm rounded-full'
-          variant='outline'
-          size='icon'
+          className="w-6 h-6 text-sm rounded-full"
+          variant="outline"
+          size="icon"
           onClick={() => {
             table.nextPage();
           }}
           disabled={!table.getCanNextPage()}
         >
-          <ChevronRight className='w-4 h-4' />
+          <ChevronRight className="w-4 h-4" />
         </Button>
       </div>
     </div>

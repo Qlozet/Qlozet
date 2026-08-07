@@ -74,11 +74,17 @@ describe('field readers', () => {
   });
 
   it('resolves the customer name across the shapes the API sends', () => {
-    expect(readCustomerName(order({ customer: { username: 'ada' } }))).toBe('ada');
+    expect(readCustomerName(order({ customer: { username: 'ada' } }))).toBe(
+      'ada'
+    );
     expect(
-      readCustomerName(order({ customer: { firstName: 'Ada', lastName: 'Obi' } }))
+      readCustomerName(
+        order({ customer: { firstName: 'Ada', lastName: 'Obi' } })
+      )
     ).toBe('Ada Obi');
-    expect(readCustomerName(order({ customer: { email: 'a@b.co' } }))).toBe('a@b.co');
+    expect(readCustomerName(order({ customer: { email: 'a@b.co' } }))).toBe(
+      'a@b.co'
+    );
   });
 
   it('dashes an unpopulated customer reference', () => {
@@ -120,7 +126,9 @@ describe('field readers', () => {
   });
 
   it('derives a refund status from the boolean when the string is absent', () => {
-    expect(readRefundStatus(order({ refund_status: 'partial' }))).toBe('partial');
+    expect(readRefundStatus(order({ refund_status: 'partial' }))).toBe(
+      'partial'
+    );
     expect(readRefundStatus(order({ refunded: true }))).toBe('Refunded');
     expect(readRefundStatus(order({ refunded: false }))).toBe('Not refunded');
     expect(readRefundStatus(order())).toBeUndefined();
@@ -143,7 +151,11 @@ describe('readItemPricing', () => {
     const pricing = readItemPricing(
       item({ pricing: { final: 800, discount: 200, before_discount: 1000 } })
     );
-    expect(pricing).toMatchObject({ final: 800, discount: 200, original: 1000 });
+    expect(pricing).toMatchObject({
+      final: 800,
+      discount: 200,
+      original: 1000,
+    });
   });
 
   // A "discount" that leaves the price unchanged would render a struck-through
@@ -157,7 +169,9 @@ describe('readItemPricing', () => {
 
   it('ignores a zero or negative discount', () => {
     expect(
-      readItemPricing(item({ pricing: { final: 1000, discount: 0, before_discount: 1200 } }))
+      readItemPricing(
+        item({ pricing: { final: 1000, discount: 0, before_discount: 1200 } })
+      )
     ).toMatchObject({ discount: undefined, original: undefined });
   });
 
@@ -182,7 +196,9 @@ describe('readItemPricing', () => {
 
 describe('item name + image', () => {
   it('names an item from its kind sub-doc, then the product, then a default', () => {
-    expect(readItemName(item({ product: { fabric: { name: 'Ankara' } } }))).toBe('Ankara');
+    expect(
+      readItemName(item({ product: { fabric: { name: 'Ankara' } } }))
+    ).toBe('Ankara');
     expect(readItemName(item({ product: { name: 'Thing' } }))).toBe('Thing');
     expect(readItemName(item({ product: 'prod-1' }))).toBe('Product');
     expect(readItemName(item({}))).toBe('Product');
@@ -192,14 +208,19 @@ describe('item name + image', () => {
     expect(
       readItemImage(
         item({
-          product: { clothing: { images: [{ url: 'kind.png' }] }, images: ['top.png'] },
+          product: {
+            clothing: { images: [{ url: 'kind.png' }] },
+            images: ['top.png'],
+          },
         })
       )
     ).toBe('kind.png');
-    expect(readItemImage(item({ product: { images: ['top.png'] } }))).toBe('top.png');
-    expect(readItemImage(item({ product: { images: [{ url: 'top.png' }] } }))).toBe(
+    expect(readItemImage(item({ product: { images: ['top.png'] } }))).toBe(
       'top.png'
     );
+    expect(
+      readItemImage(item({ product: { images: [{ url: 'top.png' }] } }))
+    ).toBe('top.png');
     expect(readItemImage(item({ product: {} }))).toBeNull();
     expect(readItemImage(item({}))).toBeNull();
   });
@@ -268,8 +289,14 @@ describe('period filter', () => {
     vi.setSystemTime(now);
 
     const orders = [
-      order({ _id: 'this-month', createdAt: new Date(2026, 2, 10).toISOString() }),
-      order({ _id: 'last-month', createdAt: new Date(2026, 1, 10).toISOString() }),
+      order({
+        _id: 'this-month',
+        createdAt: new Date(2026, 2, 10).toISOString(),
+      }),
+      order({
+        _id: 'last-month',
+        createdAt: new Date(2026, 1, 10).toISOString(),
+      }),
     ];
 
     expect(filterOrdersByPeriod(orders, 'month').map((o) => o._id)).toEqual([
@@ -281,7 +308,10 @@ describe('period filter', () => {
   it('drops orders with a missing or unparseable date when a period is set', () => {
     vi.useFakeTimers();
     vi.setSystemTime(now);
-    const orders = [order({ createdAt: undefined }), order({ createdAt: 'soon' })];
+    const orders = [
+      order({ createdAt: undefined }),
+      order({ createdAt: 'soon' }),
+    ];
     expect(filterOrdersByPeriod(orders, 'year')).toHaveLength(0);
   });
 });
@@ -343,7 +373,9 @@ describe('computeOrderMetrics', () => {
   });
 
   it('leaves mostPurchased undefined when no product is populated', () => {
-    expect(computeOrderMetrics([order({ items: [] })]).mostPurchased).toBeUndefined();
+    expect(
+      computeOrderMetrics([order({ items: [] })]).mostPurchased
+    ).toBeUndefined();
   });
 
   it('handles an empty list', () => {

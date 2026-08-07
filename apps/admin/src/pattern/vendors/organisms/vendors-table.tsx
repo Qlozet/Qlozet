@@ -64,7 +64,7 @@ export const VendorsTable = ({
         onVerify: (id) => runMutation(verify, id, 'Vendor verified'),
         onReject: (id) => runMutation(reject, id, 'Vendor rejected'),
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [router, approve, verify, reject]
   );
 
@@ -80,7 +80,9 @@ export const VendorsTable = ({
       pagination={pagination}
       setPagination={setPagination}
       pageCount={pageCount}
-      onRowClick={(vendor) => router.push(`${APP_ROUTES.vendors}/${vendor._id}`)}
+      onRowClick={(vendor) =>
+        router.push(`${APP_ROUTES.vendors}/${vendor._id}`)
+      }
       emptyMessage="No vendors found."
       loadingMessage="Loading vendors..."
     />

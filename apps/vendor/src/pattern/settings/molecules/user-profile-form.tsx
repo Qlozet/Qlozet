@@ -28,7 +28,11 @@ import { DIAL_CODES, joinPhone, splitPhone } from '../lib/phone';
 const userProfileSchema = z.object({
   fullName: z.string().optional(),
   email: z.string().optional(),
-  username: z.string().min(3, 'Username must be at least 3 characters').optional().or(z.literal('')),
+  username: z
+    .string()
+    .min(3, 'Username must be at least 3 characters')
+    .optional()
+    .or(z.literal('')),
   phoneNumber: z.string().min(1, 'Phone number is required'),
   country: z.string().optional(),
   address: z.string().optional(),
@@ -76,26 +80,26 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
   return (
     <div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Full Name (read-only) */}
             <FormField
               control={form.control}
-              name='fullName'
+              name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Full Name
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className='bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400'
+                      className="bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400"
                       readOnly
                       disabled
                       {...field}
                     />
                   </FormControl>
-                  <p className='text-xs text-gray-400 mt-1'>
+                  <p className="text-xs text-gray-400 mt-1">
                     Name cannot be changed here
                   </p>
                   <FormMessage />
@@ -106,16 +110,16 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
             {/* Username */}
             <FormField
               control={form.control}
-              name='username'
+              name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Username
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='Choose a username'
-                      className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
+                      placeholder="Choose a username"
+                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
                       {...field}
                     />
                   </FormControl>
@@ -127,22 +131,22 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
             {/* Email Address (read-only) */}
             <FormField
               control={form.control}
-              name='email'
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Email Address
                   </FormLabel>
                   <FormControl>
                     <Input
-                      type='email'
-                      className='bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400'
+                      type="email"
+                      className="bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400"
                       readOnly
                       disabled
                       {...field}
                     />
                   </FormControl>
-                  <p className='text-xs text-gray-400 mt-1'>
+                  <p className="text-xs text-gray-400 mt-1">
                     Email cannot be changed here
                   </p>
                   <FormMessage />
@@ -154,23 +158,23 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                 single stored string, so the select isn't decorative. */}
             <FormField
               control={form.control}
-              name='phoneNumber'
+              name="phoneNumber"
               render={({ field }) => {
                 const { code, national } = splitPhone(field.value);
                 return (
                   <FormItem>
-                    <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                    <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Phone Number
                     </FormLabel>
                     <FormControl>
-                      <div className='flex gap-2'>
+                      <div className="flex gap-2">
                         <Select
                           value={code}
                           onValueChange={(next) =>
                             field.onChange(joinPhone(next, national))
                           }
                         >
-                          <SelectTrigger className='w-[100px] bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'>
+                          <SelectTrigger className="w-[100px] bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -182,8 +186,8 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                           </SelectContent>
                         </Select>
                         <Input
-                          placeholder='Phone number'
-                          className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 flex-1'
+                          placeholder="Phone number"
+                          className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 flex-1"
                           name={field.name}
                           ref={field.ref}
                           onBlur={field.onBlur}
@@ -203,22 +207,22 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
             {/* Country (display-only, from business) */}
             <FormField
               control={form.control}
-              name='country'
+              name="country"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1'>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                     Country
-                    <span className='text-gray-400'>ⓘ</span>
+                    <span className="text-gray-400">ⓘ</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className='bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400'
+                      className="bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400"
                       readOnly
                       disabled
                       {...field}
                     />
                   </FormControl>
-                  <p className='text-xs text-gray-400 mt-1'>
+                  <p className="text-xs text-gray-400 mt-1">
                     Set in Organization profile
                   </p>
                   <FormMessage />
@@ -229,21 +233,21 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
             {/* Address (display-only, from business) */}
             <FormField
               control={form.control}
-              name='address'
+              name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Address
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className='bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400'
+                      className="bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400"
                       readOnly
                       disabled
                       {...field}
                     />
                   </FormControl>
-                  <p className='text-xs text-gray-400 mt-1'>
+                  <p className="text-xs text-gray-400 mt-1">
                     Set in Organization profile
                   </p>
                   <FormMessage />
@@ -253,11 +257,11 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
           </div>
 
           {/* Save Button */}
-          <div className='flex justify-start'>
+          <div className="flex justify-start">
             <Button
-              type='submit'
+              type="submit"
               disabled={isLoading}
-              className='bg-[#3d2817] hover:bg-[#2e1e10] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black px-8 py-2 rounded-lg'
+              className="bg-[#3d2817] hover:bg-[#2e1e10] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black px-8 py-2 rounded-lg"
             >
               {isLoading ? 'Saving...' : 'Save'}
             </Button>

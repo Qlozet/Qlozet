@@ -17,8 +17,6 @@ import menuIcon from '@/public/assets/svg/menu-icon.svg';
 import mobileProfile from '@/public/assets/svg/mobile-oct-icon.svg';
 import { cn } from '@/lib/utils';
 
-
-
 interface DashboardNavWithOutSearchProps {
   name?: string;
   addSearch?: boolean;
@@ -43,7 +41,9 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
   const router = useRouter();
   const [showProfile, setShowProfile] = useState<boolean>(false);
   const [showAsk, setShowAsk] = useState<boolean>(false);
-  const { data: unreadData } = useGetUnreadCountQuery(undefined, { pollingInterval: 60_000 });
+  const { data: unreadData } = useGetUnreadCountQuery(undefined, {
+    pollingInterval: 60_000,
+  });
   const unreadCount = unreadData?.data?.total ?? 0;
   const { data: digestData } = useGetLatestDigestQuery();
   const digestUnread = digestData?.data?.unread ?? 0;
@@ -70,72 +70,73 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
     setShowProfile(true);
   };
   return (
-    <div className=''>
+    <div className="">
       <div
         className={cn(
-          !hideNav ? ' ' : 'pt-2', "rounded-2xl lg:m-0 shadow-[0px_4px_10px_#AEAEC026]"
+          !hideNav ? ' ' : 'pt-2',
+          'rounded-2xl lg:m-0 shadow-[0px_4px_10px_#AEAEC026]'
         )}
       >
         {/* Mobile navigation */}
-        <div className='block lg:hidden'>
-          <div className='items-center justify-between px-3 py-3 bg-gray-400 rounded-[12px] hidden'>
-            <Image src={transformText} alt='Text format' />
-            <Image src={altireicon} alt='Altire icon' />
-            <Image src={clockwise} alt='Clockwise icon' />
+        <div className="block lg:hidden">
+          <div className="items-center justify-between px-3 py-3 bg-gray-400 rounded-[12px] hidden">
+            <Image src={transformText} alt="Text format" />
+            <Image src={altireicon} alt="Altire icon" />
+            <Image src={clockwise} alt="Clockwise icon" />
           </div>
           {/* Mobile Navigation End */}
           {!hideNav && (
-            <div className='flex items-center justify-between bg-white dark:bg-card py-2 px-3 sm:px-4 rounded-[12px] border border-border shadow-sm transition-colors'>
-              <div className='flex items-center gap-3'>
+            <div className="flex items-center justify-between bg-white dark:bg-card py-2 px-3 sm:px-4 rounded-[12px] border border-border shadow-sm transition-colors">
+              <div className="flex items-center gap-3">
                 <div
-                  className='w-10 h-10 bg-primary hover:bg-primary/90 flex items-center justify-center rounded-[10px] cursor-pointer transition-colors shadow-sm'
+                  className="w-10 h-10 bg-primary hover:bg-primary/90 flex items-center justify-center rounded-[10px] cursor-pointer transition-colors shadow-sm"
                   onClick={showSideBar}
                 >
-                  <Menu className='size-5 text-primary-foreground' />
+                  <Menu className="size-5 text-primary-foreground" />
                 </div>
-                <div className='block'>
+                <div className="block">
                   <Typography
-                    textColor='text-dark dark:text-foreground'
-                    textWeight='font-semibold'
-                    textSize='text-[16px] sm:text-[18px]'
+                    textColor="text-dark dark:text-foreground"
+                    textWeight="font-semibold"
+                    textSize="text-[16px] sm:text-[18px]"
                   >
                     {capitalizedName}
                   </Typography>
                 </div>
               </div>
-              
-              <div className='flex items-center gap-2 sm:gap-3'>
+
+              <div className="flex items-center gap-2 sm:gap-3">
                 <div
-                  className='rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
+                  className="rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors"
                   onClick={() => setShowAsk(true)}
-                  aria-label='Ask assistant'
+                  aria-label="Ask assistant"
                 >
-                  <Sparkles className='size-5 text-primary' />
+                  <Sparkles className="size-5 text-primary" />
                 </div>
                 <div
-                  className='rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
+                  className="rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors"
                   onClick={handleNotificationClick}
                 >
-                  <div className='relative'>
-                    <Bell className='size-5 text-gray-800 dark:text-white' />
+                  <div className="relative">
+                    <Bell className="size-5 text-gray-800 dark:text-white" />
                     {unreadCount > 0 && (
-                      <span className='absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white'>
+                      <span className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
                         {unreadCount > 9 ? '9+' : unreadCount}
                       </span>
                     )}
                   </div>
                 </div>
                 <div
-                  className='relative rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
+                  className="relative rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors"
                   onClick={handleProfileClick}
                 >
                   <Image
-                    alt='Profile icon'
+                    alt="Profile icon"
                     src={userIcon}
-                    className='size-5 dark:brightness-200'
+                    className="size-5 dark:brightness-200"
                   />
                   {digestUnread > 0 && (
-                    <span className='absolute -top-1 -right-1 size-2.5 rounded-full bg-primary' />
+                    <span className="absolute -top-1 -right-1 size-2.5 rounded-full bg-primary" />
                   )}
                 </div>
               </div>
@@ -143,71 +144,71 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
           )}
         </div>
 
-        <div className='hidden lg:w-full lg:flex items-center gap-6 bg-white dark:bg-card py-2 px-6 rounded-[12px]'>
-          <div className='hidden md:block'>
+        <div className="hidden lg:w-full lg:flex items-center gap-6 bg-white dark:bg-card py-2 px-6 rounded-[12px]">
+          <div className="hidden md:block">
             <Typography
-              textColor='text-dark dark:text-foreground'
-              textWeight='font-medium'
-              textSize='text-[18px]'
+              textColor="text-dark dark:text-foreground"
+              textWeight="font-medium"
+              textSize="text-[18px]"
             >
               {capitalizedName}
             </Typography>
           </div>
           {addSearch && (
-            <div className='flex flex-1 justify-center'>
-              <div className='relative w-full max-w-xl'>
-                <div className='absolute left-4 top-1/2 -translate-y-1/2'>
-                  <Search className='text-gray-400 dark:text-muted-foreground size-5' />
+            <div className="flex flex-1 justify-center">
+              <div className="relative w-full max-w-xl">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                  <Search className="text-gray-400 dark:text-muted-foreground size-5" />
                 </div>
                 <input
                   value={value}
                   onChange={handleInputChange}
-                  placeholder='Search'
-                  className='py-2 pl-12 w-full border-solid border-[1.5px] placeholder-gray-4 dark:placeholder-muted-foreground text-dark dark:text-foreground focus:outline-none focus:border-none border-gray-2 dark:border-border rounded-[12px] overflow-hidden text-sm font-light placeholder:font-light bg-[#F8F9FA] dark:bg-muted'
+                  placeholder="Search"
+                  className="py-2 pl-12 w-full border-solid border-[1.5px] placeholder-gray-4 dark:placeholder-muted-foreground text-dark dark:text-foreground focus:outline-none focus:border-none border-gray-2 dark:border-border rounded-[12px] overflow-hidden text-sm font-light placeholder:font-light bg-[#F8F9FA] dark:bg-muted"
                 />
               </div>
             </div>
           )}
-          <div className='flex items-center justify-end gap-6 ml-auto'>
-            <div className='flex items-center justify-between gap-4'>
+          <div className="flex items-center justify-end gap-6 ml-auto">
+            <div className="flex items-center justify-between gap-4">
               <div
-                className='rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer flex items-center justify-center hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors'
+                className="rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer flex items-center justify-center hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors"
                 onClick={() => setShowAsk(true)}
-                aria-label='Ask assistant'
+                aria-label="Ask assistant"
               >
-                <Sparkles className='size-5 text-primary' />
+                <Sparkles className="size-5 text-primary" />
               </div>
               <div
-                className='rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer flex items-center justify-center'
+                className="rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer flex items-center justify-center"
                 onClick={handleNotificationClick}
               >
-                <div className='relative'>
-                  <Bell className='size-5 text-gray-800 dark:text-white' />
+                <div className="relative">
+                  <Bell className="size-5 text-gray-800 dark:text-white" />
                   {unreadCount > 0 && (
-                    <span className='absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white'>
+                    <span className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}
                 </div>
               </div>
               <Typography
-                textColor='text-dark dark:text-foreground'
-                textWeight='font-normal'
-                textSize=''
+                textColor="text-dark dark:text-foreground"
+                textWeight="font-normal"
+                textSize=""
               >
                 {userDetails && userDetails.personalName}
               </Typography>
               <div
-                className='relative rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer'
+                className="relative rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer"
                 onClick={handleProfileClick}
               >
                 <Image
-                  alt='User icon'
+                  alt="User icon"
                   src={userIcon}
-                  className='cursor-pointer'
+                  className="cursor-pointer"
                 />
                 {digestUnread > 0 && (
-                  <span className='absolute -top-1 -right-1 size-2.5 rounded-full bg-primary' />
+                  <span className="absolute -top-1 -right-1 size-2.5 rounded-full bg-primary" />
                 )}
               </div>
             </div>

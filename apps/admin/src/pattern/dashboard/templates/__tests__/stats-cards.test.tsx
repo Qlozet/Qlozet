@@ -22,10 +22,15 @@ const withMetrics = (metrics: Record<string, unknown> | undefined) => {
 
 describe('admin StatsCards', () => {
   it('renders skeletons while the dashboard query is in flight', () => {
-    useGetAdminDashboardQuery.mockReturnValue({ data: undefined, isLoading: true });
+    useGetAdminDashboardQuery.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+    });
     const { container } = render(<StatsCards />);
     expect(screen.queryByText('Total Vendors')).not.toBeInTheDocument();
-    expect(container.querySelectorAll('.animate-pulse').length).toBeGreaterThan(0);
+    expect(container.querySelectorAll('.animate-pulse').length).toBeGreaterThan(
+      0
+    );
   });
 
   it('renders every metric card', () => {

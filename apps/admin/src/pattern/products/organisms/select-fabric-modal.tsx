@@ -18,8 +18,14 @@ export interface SelectedFabric {
 // Fabric material families → their materials (sub-tabs). Used purely to filter
 // the real fabric catalogue by each fabric's `material`.
 const FAMILIES: { label: string; materials: string[] }[] = [
-  { label: 'Natural', materials: ['Cotton', 'Linen', 'Silk', 'Wool', 'Canvas', 'Sateen'] },
-  { label: 'Synthetic', materials: ['Polyester', 'Nylon', 'Acrylic', 'Spandex'] },
+  {
+    label: 'Natural',
+    materials: ['Cotton', 'Linen', 'Silk', 'Wool', 'Canvas', 'Sateen'],
+  },
+  {
+    label: 'Synthetic',
+    materials: ['Polyester', 'Nylon', 'Acrylic', 'Spandex'],
+  },
   { label: 'Blends', materials: ['Viscose', 'Rayon', 'Modal'] },
   { label: 'Knits', materials: ['Jersey', 'Rib', 'Interlock'] },
   { label: 'Woven', materials: ['Twill', 'Denim', 'Poplin'] },
@@ -54,7 +60,10 @@ export const SelectFabricModal = NiceModal.create(() => {
       const mat = String(fabric.material ?? '').toLowerCase();
       const matchesMaterial = !material || mat === material.toLowerCase();
       const matchesSearch =
-        !query || String(fabric.name ?? '').toLowerCase().includes(query);
+        !query ||
+        String(fabric.name ?? '')
+          .toLowerCase()
+          .includes(query);
       return matchesMaterial && matchesSearch;
     });
   }, [fabrics, material, search]);
@@ -269,7 +278,8 @@ export const SelectFabricModal = NiceModal.create(() => {
             disabled={selectedList.length === 0}
             className="rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Use Fabric{selectedList.length > 0 ? ` (${selectedList.length})` : ''}
+            Use Fabric
+            {selectedList.length > 0 ? ` (${selectedList.length})` : ''}
           </button>
         </div>
       </div>

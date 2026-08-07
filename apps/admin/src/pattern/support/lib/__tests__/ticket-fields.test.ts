@@ -59,7 +59,9 @@ describe('readAgent', () => {
 
 describe('readField', () => {
   it('returns the first key that carries a non-blank string', () => {
-    expect(readField({ a: '', b: '  ', c: 'value' }, 'a', 'b', 'c')).toBe('value');
+    expect(readField({ a: '', b: '  ', c: 'value' }, 'a', 'b', 'c')).toBe(
+      'value'
+    );
   });
 
   it('dashes when no key matches', () => {

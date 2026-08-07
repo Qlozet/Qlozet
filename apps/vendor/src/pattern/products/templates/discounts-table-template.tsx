@@ -1,25 +1,28 @@
-'use client'
+'use client';
 
-import { useMemo, useState } from 'react'
-import { PaginationState } from '@tanstack/react-table'
-import { show } from '@ebay/nice-modal-react'
+import { useMemo, useState } from 'react';
+import { PaginationState } from '@tanstack/react-table';
+import { show } from '@ebay/nice-modal-react';
 import {
   Discount,
   useGetDiscountsQuery,
   useDeleteDiscountMutation,
   useUpdateDiscountMutation,
-} from '@/redux/services/discounts/discounts.api-slice'
-import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
-import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-icon'
-import { TableToolbar } from '@/pattern/common/molecules/table-toolbar'
-import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal'
-import { DataTable } from '@/pattern/common/organisms/table/data-table'
-import { DiscountsTableColumns } from '../molecules/discounts-table-columns'
-import { useRouter } from 'next/navigation'
-import { APP_ROUTES } from '@/lib/routes'
-import { formatCondition } from '../molecules/discounts-table-columns'
-import { FilterMenu, type FilterOption } from '@/pattern/common/molecules/filter-menu'
+} from '@/redux/services/discounts/discounts.api-slice';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-icon';
+import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
+import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal';
+import { DataTable } from '@/pattern/common/organisms/table/data-table';
+import { DiscountsTableColumns } from '../molecules/discounts-table-columns';
+import { useRouter } from 'next/navigation';
+import { APP_ROUTES } from '@/lib/routes';
+import { formatCondition } from '../molecules/discounts-table-columns';
+import {
+  FilterMenu,
+  type FilterOption,
+} from '@/pattern/common/molecules/filter-menu';
 
 const TYPE_OPTIONS: FilterOption[] = [
   { value: 'all', label: 'All Types' },
@@ -28,17 +31,17 @@ const TYPE_OPTIONS: FilterOption[] = [
   { value: 'store_wide', label: 'Store-Wide' },
   { value: 'flash', label: 'Flash Sales' },
   { value: 'category_specific', label: 'Category' },
-]
+];
 
 const DiscountsTableTemplate = () => {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
-  })
-  const [searchQuery, setSearchQuery] = useState<string>('')
-  const [typeFilter, setTypeFilter] = useState<string>('all')
+  });
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
 
-  const router = useRouter()
+  const router = useRouter();
 
   // API
   const {
@@ -48,73 +51,77 @@ const DiscountsTableTemplate = () => {
     isError,
     isSuccess,
     isFetching,
-  } = useGetDiscountsQuery()
+  } = useGetDiscountsQuery();
 
-  const [deleteDiscount] = useDeleteDiscountMutation()
-  const [updateDiscount] = useUpdateDiscountMutation()
+  const [deleteDiscount] = useDeleteDiscountMutation();
+  const [updateDiscount] = useUpdateDiscountMutation();
 
   // Flatten the response — handle both array and paginated envelope shapes
   const allDiscounts = useMemo<Discount[]>(() => {
-    const d = discountsResponse?.data
-    if (!d) return []
-    if (Array.isArray(d)) return d
-    if (Array.isArray((d as any).data)) return (d as any).data
-    return []
-  }, [discountsResponse])
+    const d = discountsResponse?.data;
+    if (!d) return [];
+    if (Array.isArray(d)) return d;
+    if (Array.isArray((d as any).data)) return (d as any).data;
+    return [];
+  }, [discountsResponse]);
 
   // Client-side search + type filter
   const discounts = useMemo(() => {
-    let filtered = allDiscounts
+    let filtered = allDiscounts;
 
     // Type filter
     if (typeFilter !== 'all') {
       filtered = filtered.filter((d) => {
-        if (typeFilter === 'flash') return d.type?.startsWith('flash_')
-        return d.type === typeFilter
-      })
+        if (typeFilter === 'flash') return d.type?.startsWith('flash_');
+        return d.type === typeFilter;
+      });
     }
 
     // Search
-    const term = searchQuery.trim().toLowerCase()
+    const term = searchQuery.trim().toLowerCase();
     if (term) {
       filtered = filtered.filter((d) => {
-        const inTitle = (d.title ?? '').toLowerCase().includes(term)
+        const inTitle = (d.title ?? '').toLowerCase().includes(term);
         const inConditions = (d.conditions ?? []).some((c) =>
           formatCondition(c).toLowerCase().includes(term)
-        )
-        return inTitle || inConditions
-      })
+        );
+        return inTitle || inConditions;
+      });
     }
 
-    return filtered
-  }, [allDiscounts, searchQuery, typeFilter])
+    return filtered;
+  }, [allDiscounts, searchQuery, typeFilter]);
 
   // ─── Handlers ───────────────────────────────────────────────────
 
   const handleSearchChange = (value: string) => {
-    setSearchQuery(value)
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }))
-  }
+    setSearchQuery(value);
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  };
 
   const handleCreateDiscount = () => {
-    router.push(APP_ROUTES.productsDiscountsCreate)
-  }
+    router.push(APP_ROUTES.productsDiscountsCreate);
+  };
 
   const handleEditDiscount = (discountId: string) => {
-    router.push(`${APP_ROUTES.productsDiscountsEdit}?id=${discountId}`)
-  }
+    router.push(`${APP_ROUTES.productsDiscountsEdit}?id=${discountId}`);
+  };
 
   const setActive = async (discountId: string, is_active: boolean) => {
     try {
-      await updateDiscount({ id: discountId, is_active }).unwrap()
-      toast.success(is_active ? 'Discount activated.' : 'Discount deactivated.')
+      await updateDiscount({ id: discountId, is_active }).unwrap();
+      toast.success(
+        is_active ? 'Discount activated.' : 'Discount deactivated.'
+      );
     } catch (err) {
-      toast.error((err as any)?.data?.message || 'Could not update discount.')
+      toast.error((err as any)?.data?.message || 'Could not update discount.');
     }
-  }
+  };
 
-  const handleActivateDiscount = (discountId: string) => setActive(discountId, true)
-  const handleDeactivateDiscount = (discountId: string) => setActive(discountId, false)
+  const handleActivateDiscount = (discountId: string) =>
+    setActive(discountId, true);
+  const handleDeactivateDiscount = (discountId: string) =>
+    setActive(discountId, false);
 
   const handleDeleteDiscount = (discountId: string) => {
     show(DeleteProductConfirmationModal, {
@@ -126,13 +133,15 @@ const DiscountsTableTemplate = () => {
       deleteDiscount(discountId)
         .unwrap()
         .then(() => toast.success('Discount deleted successfully.'))
-        .catch((err) => toast.error(err?.data?.message || 'Failed to delete discount.'))
-    })
-  }
+        .catch((err) =>
+          toast.error(err?.data?.message || 'Failed to delete discount.')
+        );
+    });
+  };
 
   const handleExport = () => {
-    toast.info('Export feature coming soon')
-  }
+    toast.info('Export feature coming soon');
+  };
 
   const discountColumns = useMemo(
     () =>
@@ -142,33 +151,36 @@ const DiscountsTableTemplate = () => {
         onDeactivate: handleDeactivateDiscount,
         onDelete: handleDeleteDiscount,
       }),
-    [handleEditDiscount, handleActivateDiscount, handleDeactivateDiscount, handleDeleteDiscount]
-  )
+    [
+      handleEditDiscount,
+      handleActivateDiscount,
+      handleDeactivateDiscount,
+      handleDeleteDiscount,
+    ]
+  );
 
   return (
-    <div className='w-full bg-background'>
+    <div className="w-full bg-background">
       {/* Header */}
-      <div className='w-full flex justify-end gap-4 mb-[21px]'>
-        <div className='flex items-center gap-2 flex-wrap justify-end'>
-
-
+      <div className="w-full flex justify-end gap-4 mb-[21px]">
+        <div className="flex items-center gap-2 flex-wrap justify-end">
           {/* Create Discount */}
           <Button
-            variant='default'
-            size='default'
+            variant="default"
+            size="default"
             onClick={handleCreateDiscount}
-            className='gap-[10px] text-xs! font-medium'
+            className="gap-[10px] text-xs! font-medium"
           >
             <span>Create Discount</span>
-            <LinearAddSquareIcon className='size-[18px]' />
+            <LinearAddSquareIcon className="size-[18px]" />
           </Button>
         </div>
       </div>
 
       {/* Table Section */}
-      <div className='bg-card w-full rounded-[10px] shadow-md'>
+      <div className="bg-card w-full rounded-[10px] shadow-md">
         <TableToolbar
-          title='Discount'
+          title="Discount"
           search={searchQuery}
           onSearchChange={handleSearchChange}
           onExport={handleExport}
@@ -177,8 +189,8 @@ const DiscountsTableTemplate = () => {
               options={TYPE_OPTIONS}
               value={typeFilter}
               onChange={(val) => {
-                setTypeFilter(val)
-                setPagination((prev) => ({ ...prev, pageIndex: 0 }))
+                setTypeFilter(val);
+                setPagination((prev) => ({ ...prev, pageIndex: 0 }));
               }}
             />
           }
@@ -193,13 +205,13 @@ const DiscountsTableTemplate = () => {
           error={error}
           pagination={pagination}
           setPagination={setPagination}
-          emptyMessage='Discounts will show up here once you create one.'
+          emptyMessage="Discounts will show up here once you create one."
         />
       </div>
 
       {/* Sheet removed - now using page routing */}
     </div>
-  )
-}
+  );
+};
 
-export default DiscountsTableTemplate
+export default DiscountsTableTemplate;

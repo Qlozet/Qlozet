@@ -24,7 +24,7 @@ export const createTransactionColumns = (
     id: 'date',
     header: 'Date',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-gray-200'>
+      <span className="whitespace-nowrap text-sm text-gray-600 dark:text-gray-200">
         {formatDate(readTransactionDate(row.original))}
       </span>
     ),
@@ -34,7 +34,7 @@ export const createTransactionColumns = (
     id: 'transaction_id',
     header: 'Transaction ID',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-gray-200 font-normal'>
+      <span className="whitespace-nowrap text-sm text-gray-600 dark:text-gray-200 font-normal">
         {readTransactionId(row.original)}
       </span>
     ),
@@ -62,7 +62,7 @@ export const createTransactionColumns = (
     id: 'narration',
     header: 'Narration',
     cell: ({ row }) => (
-      <span className='block max-w-[200px] truncate text-sm text-gray-600 dark:text-gray-200'>
+      <span className="block max-w-[200px] truncate text-sm text-gray-600 dark:text-gray-200">
         {readNarration(row.original)}
       </span>
     ),
@@ -72,7 +72,7 @@ export const createTransactionColumns = (
     id: 'amount',
     header: 'Amount',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-gray-200'>
+      <span className="whitespace-nowrap text-sm text-gray-600 dark:text-gray-200">
         {formatNaira(readAmount(row.original))}
       </span>
     ),
@@ -101,15 +101,15 @@ export const createTransactionColumns = (
     header: '',
     cell: ({ row }) => (
       <Button
-        type='button'
-        variant='outline'
-        size='sm'
+        type="button"
+        variant="outline"
+        size="sm"
         onClick={(e) => {
           // The whole row opens the same modal — don't fire it twice.
           e.stopPropagation();
           onViewDetails(row.original);
         }}
-        className='cursor-pointer text-xs'
+        className="cursor-pointer text-xs"
       >
         View Details
       </Button>

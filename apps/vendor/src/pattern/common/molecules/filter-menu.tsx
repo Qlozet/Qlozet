@@ -55,24 +55,30 @@ export function FilterMenu<T extends string>({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          type='button'
-          variant='outline'
-          className={cn('h-10 w-10 sm:w-auto px-0 sm:px-4 gap-2 text-sm text-gray-600 dark:text-gray-300 shrink-0', triggerClassName)}
+          type="button"
+          variant="outline"
+          className={cn(
+            'h-10 w-10 sm:w-auto px-0 sm:px-4 gap-2 text-sm text-gray-600 dark:text-gray-300 shrink-0',
+            triggerClassName
+          )}
         >
-          <SlidersHorizontal className='size-4 sm:hidden' />
-          <span className='hidden sm:inline'>
+          <SlidersHorizontal className="size-4 sm:hidden" />
+          <span className="hidden sm:inline">
             {label}
             {selectedLabel ? ` ${selectedLabel}` : ''}
           </span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent align={align} className={cn('w-56 p-0', contentClassName)}>
-        <p className='px-4 py-3 text-xs text-muted-foreground'>{menuTitle}</p>
-        <ul className='border-t'>
+      <PopoverContent
+        align={align}
+        className={cn('w-56 p-0', contentClassName)}
+      >
+        <p className="px-4 py-3 text-xs text-muted-foreground">{menuTitle}</p>
+        <ul className="border-t">
           {options.map((option) => (
-            <li key={option.value} className='border-b last:border-b-0'>
+            <li key={option.value} className="border-b last:border-b-0">
               <button
-                type='button'
+                type="button"
                 onClick={() => handleSelect(option.value)}
                 className={cn(
                   'w-full cursor-pointer px-4 py-3 text-left text-sm text-grey-black dark:text-gray-200 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800',

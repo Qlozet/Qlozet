@@ -43,11 +43,7 @@ const accessoryPrice = (a: AccessoryLike): number | undefined => {
   return a.accessory?.price ?? a.base_price ?? undefined;
 };
 const accessoryType = (a: AccessoryLike): string => {
-  return (
-    a.taxonomy?.product_type ||
-    a.accessory?.taxonomy?.product_type ||
-    ''
-  );
+  return a.taxonomy?.product_type || a.accessory?.taxonomy?.product_type || '';
 };
 
 // Product type categories for accessory filtering
@@ -71,7 +67,9 @@ export const SelectAccessoriesModal = NiceModal.create(() => {
 
   const [typeFilter, setTypeFilter] = useState('All');
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<Record<string, SelectedAccessory>>({});
+  const [selected, setSelected] = useState<Record<string, SelectedAccessory>>(
+    {}
+  );
 
   const { data, isLoading, isFetching } = useGetProductsByVendorQuery({
     kind: 'accessory',
@@ -212,9 +210,7 @@ export const SelectAccessoriesModal = NiceModal.create(() => {
                     <button
                       key={id}
                       type="button"
-                      onClick={() =>
-                        toggle({ id, name, imageUrl, price })
-                      }
+                      onClick={() => toggle({ id, name, imageUrl, price })}
                       className={cn(
                         'flex flex-col gap-1.5 rounded-lg border bg-card p-2 text-left transition-colors',
                         isSelected
@@ -274,9 +270,7 @@ export const SelectAccessoriesModal = NiceModal.create(() => {
               className="rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Use Accessories
-              {selectedList.length > 0
-                ? ` (${selectedList.length})`
-                : ''}
+              {selectedList.length > 0 ? ` (${selectedList.length})` : ''}
             </button>
           </div>
         </div>

@@ -66,13 +66,13 @@ const FileInput: FC<FileInputProps> = ({
   };
 
   return (
-    <div className='my-3 w-full'>
-      <div className='flex items-center justify-start gap-2'>
-        <label className='text-sm my-2 text-dark'> {label}</label>
+    <div className="my-3 w-full">
+      <div className="flex items-center justify-start gap-2">
+        <label className="text-sm my-2 text-dark"> {label}</label>
         {tooltips && <ToolTip text={`${label} is required`} />}
       </div>{' '}
-      <div className='overflow-hidden'>
-        <div className='scrollbar-hide w-full h-[151px] flex items-center gap-4 px-4 border-[1.5px] border-solid border-primary rounded-[12px] py-4'>
+      <div className="overflow-hidden">
+        <div className="scrollbar-hide w-full h-[151px] flex items-center gap-4 px-4 border-[1.5px] border-solid border-primary rounded-[12px] py-4">
           {files?.map((item, index) => {
             return (
               <SelectedFile
@@ -87,33 +87,33 @@ const FileInput: FC<FileInputProps> = ({
           })}
           {!isloading ? (
             <label
-              className='block  h-full rounded-[12px] min-w-[127px]'
+              className="block  h-full rounded-[12px] min-w-[127px]"
               htmlFor={'files'}
               style={{
                 background: `url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%239A9CA3' stroke-width='2' stroke-dasharray='6%2c 18' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e")`,
               }}
             >
-              <div className='h-[100%] cursor-pointer rounded-[12px] flex justify-center  items-center flex-col bg-white gap-4 py-2 px-6'>
+              <div className="h-[100%] cursor-pointer rounded-[12px] flex justify-center  items-center flex-col bg-white gap-4 py-2 px-6">
                 <Upload height={24} width={24} />
-                <button className='bg-gray-300 rounded-md px-2 py-1 text-[10px]'>
+                <button className="bg-gray-300 rounded-md px-2 py-1 text-[10px]">
                   Add image
                 </button>
-                <p className='text-gray-100 font-medium text-xs'>
+                <p className="text-gray-100 font-medium text-xs">
                   Add from URL
                 </p>
               </div>
             </label>
           ) : (
-            <div className='border-[1px] border-solid border-primary-200 block w-[106px] h-[100%] rounded-[12px] relative'>
-              <div className='border-[1px] border-solid border-gray-200 cursor-pointer rounded-[12px] flex justify-center items-center  bg-[rgba-(0,0,0,1)] w-full h-[100%] '>
+            <div className="border-[1px] border-solid border-primary-200 block w-[106px] h-[100%] rounded-[12px] relative">
+              <div className="border-[1px] border-solid border-gray-200 cursor-pointer rounded-[12px] flex justify-center items-center  bg-[rgba-(0,0,0,1)] w-full h-[100%] ">
                 <Oval
                   visible={true}
                   height={24}
                   width={24}
-                  color='rgba(62, 28, 1, 1)'
-                  ariaLabel='oval-loading'
+                  color="rgba(62, 28, 1, 1)"
+                  ariaLabel="oval-loading"
                   wrapperStyle={{}}
-                  wrapperClass=''
+                  wrapperClass=""
                 />
               </div>
             </div>
@@ -121,9 +121,9 @@ const FileInput: FC<FileInputProps> = ({
         </div>
       </div>
       <input
-        type='file'
-        name='files'
-        multiple='multiple'
+        type="file"
+        name="files"
+        multiple="multiple"
         id={'files'}
         className={`py-3 px-4 w-full border-solid border-[1.5px] 
             focus:outline-none focus:border-primary-100 border-gray-2 rounded-[8px] overflow-hidden text-sm text-font-light placeholder:font-300 ${

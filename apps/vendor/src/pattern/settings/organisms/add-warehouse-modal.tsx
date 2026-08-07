@@ -30,8 +30,8 @@ import { Button } from '@/components/ui/button';
 import {
   useCreateBusinessWarehouseMutation,
   useUpdateBusinessWarehouseMutation,
-  type BusinessWarehouse,
-} from '@/redux/services/settings/settings.api-slice';
+  type Warehouse as BusinessWarehouse,
+} from '@/redux/services/business/business.api-slice';
 import { toast } from 'sonner';
 
 const warehouseSchema = z.object({
@@ -107,19 +107,19 @@ export const AddWarehouseModal = create<AddWarehouseModalProps>(
 
     return (
       <Dialog open={visible} onOpenChange={handleCloseModal}>
-        <DialogContent className='max-w-lg max-h-[90vh] overflow-hidden'>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-hidden">
           <DialogHeader>
             {/* No close button here — DialogContent renders its own. */}
-            <DialogTitle className='text-lg font-semibold'>
+            <DialogTitle className="text-lg font-semibold">
               {isEditing ? 'Edit Warehouse' : 'Add New Warehouse'}
             </DialogTitle>
           </DialogHeader>
 
-          <div className='overflow-y-auto max-h-[70vh] px-1'>
+          <div className="overflow-y-auto max-h-[70vh] px-1">
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(handleSubmit)}
-                className='space-y-4'
+                className="space-y-4"
               >
                 {FIELDS.map(({ name, label }) => (
                   <FormField
@@ -128,7 +128,7 @@ export const AddWarehouseModal = create<AddWarehouseModalProps>(
                     name={name}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className='text-sm font-normal text-gray-900 dark:text-gray-200'>
+                        <FormLabel className="text-sm font-normal text-gray-900 dark:text-gray-200">
                           {label}
                         </FormLabel>
                         <FormControl>
@@ -141,7 +141,7 @@ export const AddWarehouseModal = create<AddWarehouseModalProps>(
                                   : 'text'
                             }
                             placeholder={`Enter ${label.toLowerCase()}`}
-                            className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
+                            className="bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200"
                             {...field}
                           />
                         </FormControl>
@@ -151,10 +151,10 @@ export const AddWarehouseModal = create<AddWarehouseModalProps>(
                   />
                 ))}
 
-                <div className='flex pt-4'>
+                <div className="flex pt-4">
                   <Button
-                    type='submit'
-                    className='w-full text-white px-8'
+                    type="submit"
+                    className="w-full text-white px-8"
                     disabled={submitting}
                   >
                     {submitting

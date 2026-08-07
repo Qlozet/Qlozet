@@ -22,12 +22,15 @@ export const ExcelExportButton = ({
   className,
 }: ExcelExportButtonProps) => (
   <Button
-    type='button'
+    type="button"
     onClick={onClick}
     disabled={disabled}
-    className={cn('h-10 w-10 sm:w-auto px-0 sm:px-4 gap-2 text-sm font-semibold shrink-0', className)}
+    className={cn(
+      'h-10 w-10 sm:w-auto px-0 sm:px-4 gap-2 text-sm font-semibold shrink-0',
+      className
+    )}
   >
     <ExcelIcon />
-    <span className='hidden sm:inline'>{label}</span>
+    <span className="hidden sm:inline">{label}</span>
   </Button>
 );

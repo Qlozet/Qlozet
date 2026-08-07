@@ -107,8 +107,14 @@ export const VendorInfoGrid = ({
 
       {/* Info card grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        <VendorInfoCard label="Vendor name" value={getVendorName(vendor ?? ({} as Business))} />
-        <VendorInfoCard label="Address" value={str(v.address) ?? str(v.business_address)} />
+        <VendorInfoCard
+          label="Vendor name"
+          value={getVendorName(vendor ?? ({} as Business))}
+        />
+        <VendorInfoCard
+          label="Address"
+          value={str(v.address) ?? str(v.business_address)}
+        />
         <VendorInfoCard
           label="Total products"
           value={formatCount(num(m.totalProducts) ?? num(v.productsCount))}
@@ -129,14 +135,22 @@ export const VendorInfoGrid = ({
 
         <VendorInfoCard
           label="Official phone number"
-          value={str(v.business_phone_number) ?? str(v.phone_number) ?? str(v.phone)}
+          value={
+            str(v.business_phone_number) ?? str(v.phone_number) ?? str(v.phone)
+          }
         />
         <VendorInfoCard
           label="Official email address"
           value={str(v.business_email) ?? str(v.email)}
         />
-        <VendorInfoCard label="Admin" value={str(v.personal_name) ?? str(v.full_name)} />
-        <VendorInfoCard label="Admin phone number" value={str(v.personal_phone_number)} />
+        <VendorInfoCard
+          label="Admin"
+          value={str(v.personal_name) ?? str(v.full_name)}
+        />
+        <VendorInfoCard
+          label="Admin phone number"
+          value={str(v.personal_phone_number)}
+        />
         <VendorInfoCard
           label="Principal's email address"
           value={str(v.principal_email) ?? str(v.email)}

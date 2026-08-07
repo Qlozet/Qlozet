@@ -90,14 +90,18 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
         <div className="mx-1 h-6 w-px bg-border" />
 
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
+          }
           active={editor.isActive('heading', { level: 2 })}
           title="Heading 2"
         >
           <Heading2 className="size-4" />
         </ToolbarButton>
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 3 }).run()
+          }
           active={editor.isActive('heading', { level: 3 })}
           title="Heading 3"
         >

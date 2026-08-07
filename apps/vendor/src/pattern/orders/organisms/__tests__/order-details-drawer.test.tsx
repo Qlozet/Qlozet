@@ -1,5 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, act, waitFor, fireEvent } from '@testing-library/react';
+import {
+  render,
+  screen,
+  act,
+  waitFor,
+  fireEvent,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import NiceModal from '@ebay/nice-modal-react';
 
@@ -22,10 +28,13 @@ vi.mock('@/redux/services/orders/orders.api-slice', async (importOriginal) => {
   };
 });
 
-vi.mock('@/redux/services/business/business.api-slice', async (importOriginal) => ({
-  ...(await importOriginal<Record<string, unknown>>()),
-  useGetOrderEarningsQuery: () => ({ data: undefined, isLoading: false }),
-}));
+vi.mock(
+  '@/redux/services/business/business.api-slice',
+  async (importOriginal) => ({
+    ...(await importOriginal<Record<string, unknown>>()),
+    useGetOrderEarningsQuery: () => ({ data: undefined, isLoading: false }),
+  })
+);
 
 vi.mock('@/redux/store', () => ({
   useAppSelector: () => ({ _id: 'biz-1' }),
@@ -99,7 +108,10 @@ describe('OrderDetailsDrawer — bespoke design', () => {
       _id: 'design-1',
       name: 'Royal Agbada',
       category: 'agbada',
-      design_images: ['https://cdn.test/design-1.png', 'https://cdn.test/design-2.png'],
+      design_images: [
+        'https://cdn.test/design-1.png',
+        'https://cdn.test/design-2.png',
+      ],
       description: JSON.stringify({ notes: 'Loose sleeves', selections: {} }),
     },
   };
@@ -141,7 +153,11 @@ describe('OrderDetailsDrawer — bespoke design', () => {
   });
 
   it('does not render a design section when the design is an unpopulated id', async () => {
-    await renderDrawer({ ...baseOrder, type: 'bespoke', bespoke_design: 'design-1' });
+    await renderDrawer({
+      ...baseOrder,
+      type: 'bespoke',
+      bespoke_design: 'design-1',
+    });
     expect(screen.queryByText('Bespoke design')).not.toBeInTheDocument();
     // Falls back to the normal (empty) items section rather than showing nothing.
     expect(screen.getByText('Your items (0)')).toBeInTheDocument();
@@ -154,7 +170,10 @@ describe('OrderDetailsDrawer — large image preview', () => {
   const twoItemOrder = {
     ...baseOrder,
     items: [
-      item('Kaftan', ['https://cdn.test/kaftan-1.png', 'https://cdn.test/kaftan-2.png']),
+      item('Kaftan', [
+        'https://cdn.test/kaftan-1.png',
+        'https://cdn.test/kaftan-2.png',
+      ]),
       item('Cap', ['https://cdn.test/cap-1.png']),
     ],
   };
@@ -173,7 +192,10 @@ describe('OrderDetailsDrawer — large image preview', () => {
     await user.click(screen.getByRole('button', { name: 'View Kaftan media' }));
 
     await waitFor(() =>
-      expect(panelImage()).toHaveAttribute('src', 'https://cdn.test/kaftan-1.png')
+      expect(panelImage()).toHaveAttribute(
+        'src',
+        'https://cdn.test/kaftan-1.png'
+      )
     );
   });
 
@@ -183,7 +205,10 @@ describe('OrderDetailsDrawer — large image preview', () => {
 
     await user.click(screen.getByRole('button', { name: 'View Kaftan media' }));
     await waitFor(() =>
-      expect(panelImage()).toHaveAttribute('src', 'https://cdn.test/kaftan-1.png')
+      expect(panelImage()).toHaveAttribute(
+        'src',
+        'https://cdn.test/kaftan-1.png'
+      )
     );
 
     await user.click(screen.getByRole('button', { name: 'View Cap media' }));
@@ -204,7 +229,9 @@ describe('OrderDetailsDrawer — large image preview', () => {
     await waitFor(() => expect(panelImage()).toBeInTheDocument());
 
     // The lightbox modal titles itself with the item name in a dialog heading.
-    expect(screen.queryByRole('dialog', { name: 'Kaftan' })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('dialog', { name: 'Kaftan' })
+    ).not.toBeInTheDocument();
   });
 
   it('dismisses the preview without closing the drawer', async () => {
@@ -233,11 +260,16 @@ describe('OrderDetailsDrawer — large image preview', () => {
       ...baseOrder,
       type: 'bespoke',
       items: [],
-      bespoke_design: { name: 'Royal Agbada', design_images: ['https://cdn.test/d1.png'] },
+      bespoke_design: {
+        name: 'Royal Agbada',
+        design_images: ['https://cdn.test/d1.png'],
+      },
     });
 
     expect(panelImage()).not.toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'View Royal Agbada media' }));
+    await user.click(
+      screen.getByRole('button', { name: 'View Royal Agbada media' })
+    );
 
     await waitFor(() =>
       expect(panelImage()).toHaveAttribute('src', 'https://cdn.test/d1.png')

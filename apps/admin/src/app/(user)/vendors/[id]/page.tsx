@@ -19,8 +19,10 @@ const VendorDetailsPage = () => {
   const params = useParams<{ id: string }>();
   const id = params?.id ?? '';
 
-  const { data: businessRes, isLoading: isVendorLoading } =
-    useGetBusinessQuery(id, { skip: !id });
+  const { data: businessRes, isLoading: isVendorLoading } = useGetBusinessQuery(
+    id,
+    { skip: !id }
+  );
   const { data: dashboardRes } = useGetVendorDashboardQuery(
     { businessId: id },
     { skip: !id }

@@ -13,8 +13,16 @@ afterEach(() => {
 // original URL on the element, which is what the tests actually assert on.
 vi.mock('next/image', () => ({
   __esModule: true,
-  default: ({ src, alt, fill, priority, sizes, quality, loader, ...rest }: any) =>
-    React.createElement('img', { src, alt, ...rest }),
+  default: ({
+    src,
+    alt,
+    fill,
+    priority,
+    sizes,
+    quality,
+    loader,
+    ...rest
+  }: any) => React.createElement('img', { src, alt, ...rest }),
 }));
 
 // jsdom implements neither the Pointer Capture API nor scrollIntoView, both of

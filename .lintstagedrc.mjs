@@ -7,12 +7,14 @@
  * staged file and runs it with that directory as the cwd.
  *
  * This root config therefore only covers files OUTSIDE the apps — build config,
- * workspace manifests and docs. Nothing here reformats app source; see the
- * per-app configs for why.
+ * scripts and stylesheets.
  */
 
+import { chunked } from './scripts/lint-staged-chunk.mjs';
+
 const lintStagedConfig = {
-  '*.{css,scss}': ['prettier --write'],
+  '*.{js,jsx,ts,tsx,mjs,cjs}': (files) => chunked('prettier --write', files),
+  '*.{css,scss}': (files) => chunked('prettier --write', files),
 };
 
 export default lintStagedConfig;

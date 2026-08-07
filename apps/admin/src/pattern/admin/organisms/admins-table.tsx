@@ -55,8 +55,8 @@ export const AdminsTable = ({
       pagination={pagination}
       setPagination={setPagination}
       pageCount={pageCount}
-      emptyMessage='No administrators found.'
-      loadingMessage='Loading administrators...'
+      emptyMessage="No administrators found."
+      loadingMessage="Loading administrators..."
     />
   );
 };

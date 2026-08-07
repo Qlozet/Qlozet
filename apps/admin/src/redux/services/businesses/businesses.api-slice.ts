@@ -4,11 +4,7 @@
 // both the Vendors list page and the per-vendor detail view.
 
 import { baseAPI } from '@/redux/api/base-api';
-import {
-  ApiResponse,
-  PaginatedData,
-  buildQueryString,
-} from '../types';
+import { ApiResponse, PaginatedData, buildQueryString } from '../types';
 
 export type BusinessStatus =
   | 'pending'

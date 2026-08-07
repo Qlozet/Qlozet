@@ -7,7 +7,17 @@ import {
 } from '@/redux/services/notifications/notifications.api-slice';
 import Notification from '@/components/Notification/NotificationComponent';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bell, CheckCheck, Package, Truck, CreditCard, Scissors, ShoppingBag, Users, Settings } from 'lucide-react';
+import {
+  Bell,
+  CheckCheck,
+  Package,
+  Truck,
+  CreditCard,
+  Scissors,
+  ShoppingBag,
+  Users,
+  Settings,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const CATEGORIES = [
@@ -32,10 +42,13 @@ const NotificationPage: React.FC = () => {
   } = useGetNotificationsQuery({ page, limit: 20, category });
 
   const { data: unreadData } = useGetUnreadCountQuery();
-  const [markAllAsRead, { isLoading: isMarkingAll }] = useMarkAllAsReadMutation();
+  const [markAllAsRead, { isLoading: isMarkingAll }] =
+    useMarkAllAsReadMutation();
 
   const rawData = notificationsResponse?.data;
-  const notifications = (Array.isArray(rawData) ? rawData : (rawData ? Object.values(rawData) : [])) as any[];
+  const notifications = (
+    Array.isArray(rawData) ? rawData : rawData ? Object.values(rawData) : []
+  ) as any[];
   const meta = (notificationsResponse as any)?.meta;
   const totalPages = meta?.totalPages ?? 1;
   const unreadCount = unreadData?.data?.total ?? 0;
@@ -54,7 +67,9 @@ const NotificationPage: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <h1 className="text-xl font-semibold text-foreground">Notifications</h1>
+          <h1 className="text-xl font-semibold text-foreground">
+            Notifications
+          </h1>
           {unreadCount > 0 && (
             <span className="rounded-full bg-destructive px-2.5 py-0.5 text-xs font-medium text-white">
               {unreadCount} unread
@@ -85,12 +100,17 @@ const NotificationPage: React.FC = () => {
           {CATEGORIES.map((cat) => {
             const isActive = category === cat.key;
             const Icon = cat.icon;
-            const badge = cat.key ? (unreadByCategory[cat.key] ?? 0) : unreadCount;
+            const badge = cat.key
+              ? (unreadByCategory[cat.key] ?? 0)
+              : unreadCount;
             return (
               <button
                 key={cat.label}
                 type="button"
-                onClick={() => { setCategory(cat.key); setPage(1); }}
+                onClick={() => {
+                  setCategory(cat.key);
+                  setPage(1);
+                }}
                 className={cn(
                   'flex shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap border-b-2 px-1 pb-1.5 text-sm transition-colors',
                   isActive
@@ -129,15 +149,19 @@ const NotificationPage: React.FC = () => {
         ) : error ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <Bell className="size-10 text-muted-foreground mb-3" />
-            <p className="text-sm text-destructive font-medium">Error loading notifications</p>
-            <p className="text-xs text-muted-foreground mt-1">Please try again later</p>
+            <p className="text-sm text-destructive font-medium">
+              Error loading notifications
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Please try again later
+            </p>
           </div>
         ) : notifications.length > 0 ? (
           <div className="divide-y divide-border">
             {notifications.map((item, index) => (
               <Notification
                 key={item._id || item.id || index}
-                id={item._id || item.id || ""}
+                id={item._id || item.id || ''}
                 read={item.is_read}
                 title={item.title}
                 desc={item.body}
@@ -149,9 +173,13 @@ const NotificationPage: React.FC = () => {
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <Bell className="size-10 text-muted-foreground mb-3" />
-            <p className="text-sm font-medium text-foreground">No notifications</p>
+            <p className="text-sm font-medium text-foreground">
+              No notifications
+            </p>
             <p className="text-xs text-muted-foreground mt-1">
-              {category ? `No ${category} notifications yet` : "You're all caught up!"}
+              {category
+                ? `No ${category} notifications yet`
+                : "You're all caught up!"}
             </p>
           </div>
         )}

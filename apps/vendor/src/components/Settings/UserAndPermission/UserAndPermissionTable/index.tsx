@@ -2,7 +2,10 @@ import { useState, FC, useMemo, useCallback } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
-import { FilterMenu, type FilterOption } from '@/pattern/common/molecules/filter-menu';
+import {
+  FilterMenu,
+  type FilterOption,
+} from '@/pattern/common/molecules/filter-menu';
 import { MoreHorizontal } from 'lucide-react';
 import { show } from '@ebay/nice-modal-react';
 import { toast } from 'sonner';
@@ -42,7 +45,14 @@ const UserAndPermissionTable: FC = () => {
   const [roleFilter, setRoleFilter] = useState('all');
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
 
-  const { data: response, isLoading, isFetching, isSuccess, isError, error } = useGetTeamMembersQuery();
+  const {
+    data: response,
+    isLoading,
+    isFetching,
+    isSuccess,
+    isError,
+    error,
+  } = useGetTeamMembersQuery();
   const members = response?.data ?? [];
 
   const [updateMember] = useUpdateTeamMemberMutation();
@@ -126,10 +136,10 @@ const UserAndPermissionTable: FC = () => {
         accessorKey: 'name',
         header: 'Name',
         cell: ({ row }) => (
-          <div className='flex items-center gap-2'>
+          <div className="flex items-center gap-2">
             {row.original.name}
             {row.original.is_owner && (
-              <span className='text-[10px] font-medium bg-primary/10 text-primary dark:bg-white/10 dark:text-white px-1.5 py-0.5 rounded'>
+              <span className="text-[10px] font-medium bg-primary/10 text-primary dark:bg-white/10 dark:text-white px-1.5 py-0.5 rounded">
                 Owner
               </span>
             )}
@@ -162,7 +172,7 @@ const UserAndPermissionTable: FC = () => {
             Inactive: 'bg-[#FFF0F0] text-[#E02B2B]',
           };
           return (
-            <div className='flex items-center'>
+            <div className="flex items-center">
               <span
                 className={`px-3 py-1 rounded-[4px] text-xs font-medium ${colorMap[status] ?? ''}`}
               >
@@ -179,31 +189,29 @@ const UserAndPermissionTable: FC = () => {
         cell: ({ row }) => {
           const member = row.original;
           return (
-            <div className='relative flex w-full items-center justify-end'>
+            <div className="relative flex w-full items-center justify-end">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant='ghost'
-                    size='sm'
-                    className='h-8 w-8 cursor-pointer p-0'
-                    aria-label='Team member actions'
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 cursor-pointer p-0"
+                    aria-label="Team member actions"
                   >
-                    <MoreHorizontal className='h-4 w-4 text-gray-500' />
+                    <MoreHorizontal className="h-4 w-4 text-gray-500" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align='end'>
+                <DropdownMenuContent align="end">
                   <DropdownMenuItem
-                    className='cursor-pointer'
-                    onClick={() =>
-                      show(TeamMemberDetailsModal, { member })
-                    }
+                    className="cursor-pointer"
+                    onClick={() => show(TeamMemberDetailsModal, { member })}
                   >
                     {member.is_owner ? 'View details' : 'Edit user'}
                   </DropdownMenuItem>
 
                   {!member.is_owner && (
                     <DropdownMenuItem
-                      className='cursor-pointer text-red-600 focus:text-red-600'
+                      className="cursor-pointer text-red-600 focus:text-red-600"
                       onClick={() => onToggleActive(member)}
                     >
                       {member.is_active ? 'Deactivate user' : 'Reactivate user'}
@@ -220,9 +228,9 @@ const UserAndPermissionTable: FC = () => {
   );
 
   return (
-    <div className='bg-card w-full rounded-[10px] shadow-md'>
+    <div className="bg-card w-full rounded-[10px] shadow-md">
       <TableToolbar
-        title='Roles & Permissions'
+        title="Roles & Permissions"
         search={searchValue}
         onSearchChange={setSearchValue}
         filterControl={
@@ -243,7 +251,7 @@ const UserAndPermissionTable: FC = () => {
         error={error}
         pagination={pagination}
         setPagination={setPagination}
-        emptyMessage='Team members will show up here once you add them.'
+        emptyMessage="Team members will show up here once you add them."
       />
     </div>
   );

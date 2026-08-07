@@ -36,7 +36,7 @@ export const ProductImage: React.FC<ProductImageProps> = ({
         sizeClasses[size]
       )}
     >
-      <Package className='h-1/2 w-1/2 text-gray-400' />
+      <Package className="h-1/2 w-1/2 text-gray-400" />
     </div>
   );
 
@@ -56,7 +56,7 @@ export const ProductImage: React.FC<ProductImageProps> = ({
         src={src}
         alt={alt}
         fill
-        className='object-cover'
+        className="object-cover"
         sizes={
           size === 'xs'
             ? '32px'

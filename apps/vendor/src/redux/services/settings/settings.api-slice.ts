@@ -138,30 +138,6 @@ export interface UpdateUserProfilePayload {
   dob?: string;
 }
 
-// Warehouse as returned by GET /business/warehouse. The response isn't in
-// Swagger, so everything past the id is optional.
-export interface BusinessWarehouse {
-  _id: string;
-  name?: string;
-  address?: string;
-  contact_name?: string;
-  contact_phone?: string;
-  contact_email?: string;
-  is_active?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-  [key: string]: unknown;
-}
-
-// CreateWarehouseDto — also the body for PUT /business/{id}/warehouse
-export interface WarehousePayload {
-  name: string;
-  address: string;
-  contact_name: string;
-  contact_phone: string;
-  contact_email: string;
-}
-
 interface WarehouseResponse {
   id: string;
   name: string;
@@ -201,7 +177,10 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['VendorDetails'],
     }),
 
-    updateBusinessProfileDetails: builder.mutation<any, UpdateBusinessProfileDetailsPayload>({
+    updateBusinessProfileDetails: builder.mutation<
+      any,
+      UpdateBusinessProfileDetailsPayload
+    >({
       query: (data) => ({
         url: '/business/profile',
         method: 'PATCH',
@@ -226,16 +205,14 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
         | 'custom_order_options'
         | 'default_currency'
       > & { accepts_external_fabric?: boolean }
-    >(
-      {
-        query: (data) => ({
-          url: '/business/profile',
-          method: 'PATCH',
-          body: data,
-        }),
-        invalidatesTags: ['VendorDetails'],
-      }
-    ),
+    >({
+      query: (data) => ({
+        url: '/business/profile',
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: ['VendorDetails'],
+    }),
 
     // ─── User Profile ───
     getUserProfile: builder.query<UserProfileResponse, void>({
@@ -286,58 +263,9 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['VendorDetails'],
     }),
 
-    // ─── Warehouses (Business tag in Swagger) ───
-    // NOTE: the `/vendor/warehouse*` endpoints below this block don't exist on
-    // the backend. Use these.
-    getBusinessWarehouses: builder.query<BusinessWarehouse[], void>({
-      query: () => '/business/warehouse',
-      // The response envelope isn't documented, so unwrap the shapes the
-      // backend uses elsewhere and fall back to an empty list.
-      transformResponse: (res: any): BusinessWarehouse[] =>
-        Array.isArray(res)
-          ? res
-          : Array.isArray(res?.data)
-            ? res.data
-            : Array.isArray(res?.data?.data)
-              ? res.data.data
-              : [],
-      providesTags: ['Warehouse'],
-    }),
-
-    createBusinessWarehouse: builder.mutation<any, WarehousePayload>({
-      query: (body) => ({
-        url: '/business/warehouse',
-        method: 'POST',
-        body,
-      }),
-      invalidatesTags: ['Warehouse'],
-    }),
-
-    updateBusinessWarehouse: builder.mutation<
-      any,
-      { id: string; data: WarehousePayload }
-    >({
-      query: ({ id, data }) => ({
-        url: `/business/${id}/warehouse`,
-        method: 'PUT',
-        body: data,
-      }),
-      invalidatesTags: ['Warehouse'],
-    }),
-
-    deleteBusinessWarehouse: builder.mutation<any, string>({
-      query: (id) => ({ url: `/business/${id}/warehouse`, method: 'DELETE' }),
-      invalidatesTags: ['Warehouse'],
-    }),
-
-    // Only one warehouse is active at a time — activating one demotes the rest.
-    activateBusinessWarehouse: builder.mutation<any, string>({
-      query: (id) => ({
-        url: `/business/warehouse/${id}/activate`,
-        method: 'POST',
-      }),
-      invalidatesTags: ['Warehouse'],
-    }),
+    // NOTE: the real warehouse endpoints live in business.api-slice
+    // (getBusinessWarehouses / create / update / delete / activate). They were
+    // duplicated here, which collided on the endpoint names.
 
     // Legacy (fictional paths — kept only because older components import them)
     getWarehouses: builder.query<ApiResponse<WarehouseResponse[]>, void>({
@@ -350,18 +278,36 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       providesTags: ['Warehouse'],
     }),
 
-    createWarehouse: builder.mutation<ApiResponse<WarehouseResponse>, WarehouseData>({
-      query: (data) => ({ url: '/vendor/warehouses', method: 'POST', body: data }),
+    createWarehouse: builder.mutation<
+      ApiResponse<WarehouseResponse>,
+      WarehouseData
+    >({
+      query: (data) => ({
+        url: '/vendor/warehouses',
+        method: 'POST',
+        body: data,
+      }),
       invalidatesTags: ['Warehouse'],
     }),
 
     addWarehouse: builder.mutation<any, any>({
-      query: (data) => ({ url: '/vendor/warehouse/add', method: 'POST', body: data }),
+      query: (data) => ({
+        url: '/vendor/warehouse/add',
+        method: 'POST',
+        body: data,
+      }),
       invalidatesTags: ['Warehouse'],
     }),
 
-    updateWarehouse: builder.mutation<ApiResponse<WarehouseResponse>, { id: string; data: WarehouseData }>({
-      query: ({ id, data }) => ({ url: `/vendor/warehouses/${id}`, method: 'PUT', body: data }),
+    updateWarehouse: builder.mutation<
+      ApiResponse<WarehouseResponse>,
+      { id: string; data: WarehouseData }
+    >({
+      query: ({ id, data }) => ({
+        url: `/vendor/warehouses/${id}`,
+        method: 'PUT',
+        body: data,
+      }),
       invalidatesTags: ['Warehouse'],
     }),
 
@@ -376,13 +322,22 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       providesTags: ['User'],
     }),
 
-    createUser: builder.mutation<ApiResponse<UserResponse>, UserPermissionData>({
-      query: (data) => ({ url: '/vendor/users', method: 'POST', body: data }),
-      invalidatesTags: ['User'],
-    }),
+    createUser: builder.mutation<ApiResponse<UserResponse>, UserPermissionData>(
+      {
+        query: (data) => ({ url: '/vendor/users', method: 'POST', body: data }),
+        invalidatesTags: ['User'],
+      }
+    ),
 
-    updateUser: builder.mutation<ApiResponse<UserResponse>, { id: string; data: UserPermissionData }>({
-      query: ({ id, data }) => ({ url: `/vendor/users/${id}`, method: 'PUT', body: data }),
+    updateUser: builder.mutation<
+      ApiResponse<UserResponse>,
+      { id: string; data: UserPermissionData }
+    >({
+      query: ({ id, data }) => ({
+        url: `/vendor/users/${id}`,
+        method: 'PUT',
+        body: data,
+      }),
       invalidatesTags: ['User'],
     }),
 
@@ -418,11 +373,6 @@ export const {
   useUpdateUserProfileMutation,
   useGetVendorDetailsQuery,
   useUpdateVendorDetailsMutation,
-  useGetBusinessWarehousesQuery,
-  useCreateBusinessWarehouseMutation,
-  useUpdateBusinessWarehouseMutation,
-  useDeleteBusinessWarehouseMutation,
-  useActivateBusinessWarehouseMutation,
   useGetWarehousesQuery,
   useGetWarehouseQuery,
   useCreateWarehouseMutation,

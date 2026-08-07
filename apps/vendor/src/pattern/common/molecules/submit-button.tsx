@@ -1,8 +1,8 @@
-import { FC, useEffect } from "react";
-import { Button, ButtonProps } from "@/components/ui/button";
-import { If } from "@/pattern/common/atoms/If";
-import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { FC, useEffect } from 'react';
+import { Button, ButtonProps } from '@/components/ui/button';
+import { If } from '@/pattern/common/atoms/If';
+import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 /**
  * Props for the SubmitButton component
@@ -45,9 +45,9 @@ const SubmitButton: FC<ISubmitButtonprops> = ({
   // }, [loading]);
 
   return (
-    <Button className={cn('w-full', props.className)} {...props} type='submit'>
+    <Button className={cn('w-full', props.className)} {...props} type="submit">
       <If isTrue={loading}>
-        <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
       </If>
       {children}
     </Button>

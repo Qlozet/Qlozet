@@ -22,7 +22,11 @@ const toUrls = (value: unknown): string[] => {
   return value
     .map((entry) => {
       if (typeof entry === 'string') return entry.trim();
-      if (entry && typeof entry === 'object' && typeof (entry as { url?: unknown }).url === 'string')
+      if (
+        entry &&
+        typeof entry === 'object' &&
+        typeof (entry as { url?: unknown }).url === 'string'
+      )
         return (entry as { url: string }).url.trim();
       return '';
     })

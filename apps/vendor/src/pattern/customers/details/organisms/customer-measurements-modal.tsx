@@ -73,7 +73,11 @@ const formatDate = (iso?: string): string => {
   const d = new Date(iso);
   return isNaN(d.getTime())
     ? ''
-    : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    : d.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      });
 };
 
 const UnitToggle = ({
@@ -83,11 +87,11 @@ const UnitToggle = ({
   unit: Unit;
   onChange: (u: Unit) => void;
 }) => (
-  <div className='inline-flex items-center rounded-full bg-gray-100 dark:bg-gray-800 p-1 text-xs font-semibold'>
+  <div className="inline-flex items-center rounded-full bg-gray-100 dark:bg-gray-800 p-1 text-xs font-semibold">
     {(['cm', 'in'] as const).map((u) => (
       <button
         key={u}
-        type='button'
+        type="button"
         onClick={() => onChange(u)}
         className={cn(
           'cursor-pointer rounded-full px-3 py-1 uppercase transition-colors',
@@ -129,27 +133,27 @@ export const CustomerMeasurementsModal = create<CustomerMeasurementsModalProps>(
 
     return (
       <Dialog open={visible} onOpenChange={handleClose}>
-        <DialogContent className='max-w-lg p-0 gap-0 bg-white dark:bg-card'>
-          <DialogHeader className='border-b border-border px-6 py-4'>
-            <DialogTitle className='flex items-center gap-2 text-base font-semibold text-[#0C0C0D] dark:text-white'>
-              <span className='flex size-8 items-center justify-center rounded-lg bg-primary/10'>
-                <Ruler className='size-4 text-primary' />
+        <DialogContent className="max-w-lg p-0 gap-0 bg-white dark:bg-card">
+          <DialogHeader className="border-b border-border px-6 py-4">
+            <DialogTitle className="flex items-center gap-2 text-base font-semibold text-[#0C0C0D] dark:text-white">
+              <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
+                <Ruler className="size-4 text-primary" />
               </span>
               Body Measurement
             </DialogTitle>
           </DialogHeader>
 
-          <div className='max-h-[70vh] overflow-y-auto px-6 py-5'>
+          <div className="max-h-[70vh] overflow-y-auto px-6 py-5">
             {/* Set meta + unit toggle */}
-            <div className='mb-4 flex items-center justify-between gap-3'>
-              <div className='min-w-0'>
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <div className="min-w-0">
                 {measurementSet?.name && (
-                  <p className='truncate text-sm font-medium text-[#333] dark:text-white'>
+                  <p className="truncate text-sm font-medium text-[#333] dark:text-white">
                     {measurementSet.name}
                   </p>
                 )}
                 {setDate && (
-                  <p className='text-xs text-grey3 dark:text-gray-400'>
+                  <p className="text-xs text-grey3 dark:text-gray-400">
                     Updated {setDate}
                   </p>
                 )}
@@ -158,20 +162,20 @@ export const CustomerMeasurementsModal = create<CustomerMeasurementsModalProps>(
             </div>
 
             {rows.length > 0 ? (
-              <div className='grid grid-cols-1 gap-2 sm:grid-cols-2'>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {rows.map((row) => (
                   <div
                     key={row.key}
-                    className='flex items-center justify-between gap-2 rounded-xl border border-[#EEF0F2] dark:border-border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] px-3.5 py-3'
+                    className="flex items-center justify-between gap-2 rounded-xl border border-[#EEF0F2] dark:border-border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] px-3.5 py-3"
                   >
-                    <span className='truncate text-sm text-gray-600 dark:text-gray-300'>
+                    <span className="truncate text-sm text-gray-600 dark:text-gray-300">
                       {row.label}
                     </span>
-                    <span className='shrink-0 text-sm font-semibold text-[#0C0C0D] dark:text-white'>
+                    <span className="shrink-0 text-sm font-semibold text-[#0C0C0D] dark:text-white">
                       {formatValue(
                         convert(row.value, measurementSet?.unit ?? 'cm', unit)
                       )}
-                      <span className='ml-0.5 text-xs font-normal text-grey3'>
+                      <span className="ml-0.5 text-xs font-normal text-grey3">
                         {unit}
                       </span>
                     </span>
@@ -179,12 +183,12 @@ export const CustomerMeasurementsModal = create<CustomerMeasurementsModalProps>(
                 ))}
               </div>
             ) : (
-              <div className='flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[#E5E7EB] dark:border-border px-6 py-12 text-center'>
-                <Ruler className='size-7 text-gray-300' />
-                <p className='text-sm font-medium text-[#333] dark:text-white'>
+              <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[#E5E7EB] dark:border-border px-6 py-12 text-center">
+                <Ruler className="size-7 text-gray-300" />
+                <p className="text-sm font-medium text-[#333] dark:text-white">
                   No measurements yet
                 </p>
-                <p className='text-xs text-grey3 dark:text-gray-400'>
+                <p className="text-xs text-grey3 dark:text-gray-400">
                   This customer hasn&apos;t recorded any body measurements.
                 </p>
               </div>

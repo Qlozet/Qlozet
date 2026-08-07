@@ -33,9 +33,13 @@ describe('MetricCard', () => {
   // Omitting `change` must leave the row empty rather than printing a
   // placeholder that reads as a real (negative) delta.
   it('renders no change indicator when none is given', () => {
-    const { container } = render(<MetricCard title="Orders" value="10" icon={icon} />);
+    const { container } = render(
+      <MetricCard title="Orders" value="10" icon={icon} />
+    );
     expect(container.querySelector('.lucide-arrow-up')).not.toBeInTheDocument();
-    expect(container.querySelector('.lucide-arrow-down')).not.toBeInTheDocument();
+    expect(
+      container.querySelector('.lucide-arrow-down')
+    ).not.toBeInTheDocument();
     expect(screen.queryByText('—')).not.toBeInTheDocument();
   });
 
@@ -59,7 +63,9 @@ describe('MetricCard', () => {
     );
 
     rerender(<MetricCard title="Orders" value="10" icon={icon} />);
-    expect(screen.queryByRole('link', { name: /view all/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: /view all/i })
+    ).not.toBeInTheDocument();
   });
 
   it('renders an honest dash value without pretending it is a number', () => {

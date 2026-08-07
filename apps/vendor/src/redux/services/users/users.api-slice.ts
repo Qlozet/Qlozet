@@ -152,7 +152,10 @@ export const usersApiSlice = baseAPI.injectEndpoints({
     }),
 
     // PATCH /users/me/profile — update the current user's profile
-    updateMyProfile: builder.mutation<ApiResponse<CurrentUser>, UpdateUserRequest>({
+    updateMyProfile: builder.mutation<
+      ApiResponse<CurrentUser>,
+      UpdateUserRequest
+    >({
       query: (body) => ({ url: '/users/me/profile', method: 'PATCH', body }),
       invalidatesTags: ['Me'],
     }),

@@ -25,12 +25,16 @@ const CardIcon = ({ bg, children }: { bg: string; children: ReactNode }) => (
 export const OrderStatsSection: React.FC<{ isLoading?: boolean }> = ({
   isLoading = false,
 }) => {
-  const { data: metricsResponse, isLoading: isMetricsLoading, isFetching } = useGetVendorDashboardMetricsQuery();
+  const {
+    data: metricsResponse,
+    isLoading: isMetricsLoading,
+    isFetching,
+  } = useGetVendorDashboardMetricsQuery();
   const showLoading = isLoading || isMetricsLoading || isFetching;
 
   if (showLoading) {
     return (
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <StatsCardSkeleton key={i} />
         ))}
@@ -45,40 +49,40 @@ export const OrderStatsSection: React.FC<{ isLoading?: boolean }> = ({
   };
 
   return (
-    <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
       <MetricCard
-        title='Total Orders'
+        title="Total Orders"
         value={stats.total_orders.toLocaleString()}
         icon={
-          <CardIcon bg='bg-[#57CAEB]'>
-            <ShoppingCart className='size-6' />
+          <CardIcon bg="bg-[#57CAEB]">
+            <ShoppingCart className="size-6" />
           </CardIcon>
         }
       />
       <MetricCard
-        title='Orders Delivered'
+        title="Orders Delivered"
         value={stats.orders_delivered.toLocaleString()}
         icon={
-          <CardIcon bg='bg-[#5DDAB4]'>
-            <Send className='size-6' />
+          <CardIcon bg="bg-[#5DDAB4]">
+            <Send className="size-6" />
           </CardIcon>
         }
       />
       <MetricCard
-        title='Orders in Transit'
+        title="Orders in Transit"
         value={stats.orders_in_transit.toLocaleString()}
         icon={
-          <CardIcon bg='bg-[#FF8F6B]'>
-            <Truck className='size-6' />
+          <CardIcon bg="bg-[#FF8F6B]">
+            <Truck className="size-6" />
           </CardIcon>
         }
       />
       <MetricCard
-        title='Most purchased order'
+        title="Most purchased order"
         value={'N/A'}
         icon={
-          <CardIcon bg='bg-[#FFB200]'>
-            <Lock className='size-6' />
+          <CardIcon bg="bg-[#FFB200]">
+            <Lock className="size-6" />
           </CardIcon>
         }
       />

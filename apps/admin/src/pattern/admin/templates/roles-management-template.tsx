@@ -27,13 +27,13 @@ export const RolesManagementTemplate = ({
   onCreateRole,
 }: RolesManagementTemplateProps) => {
   return (
-    <div className='w-full min-h-screen h-fit space-y-6 pb-10'>
+    <div className="w-full min-h-screen h-fit space-y-6 pb-10">
       {/* Header row */}
-      <div className='flex items-center justify-between gap-4'>
+      <div className="flex items-center justify-between gap-4">
         <GoBackButton href={APP_ROUTES.admin} />
 
-        <Button variant='outline' onClick={onCreateRole}>
-          <UserPlus className='size-4' />
+        <Button variant="outline" onClick={onCreateRole}>
+          <UserPlus className="size-4" />
           Create New Role
         </Button>
       </div>

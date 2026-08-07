@@ -83,7 +83,7 @@ export const createOrderHistoryColumns = (
     id: 'order_id',
     header: 'Order ID',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm font-medium text-grey-black dark:text-foreground'>
+      <span className="whitespace-nowrap text-sm font-medium text-grey-black dark:text-foreground">
         {shortRef(row.original.reference)}
       </span>
     ),
@@ -93,7 +93,7 @@ export const createOrderHistoryColumns = (
     id: 'date',
     header: 'Date',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
+      <span className="whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground">
         {formatDate(row.original.createdAt)}
       </span>
     ),
@@ -103,7 +103,7 @@ export const createOrderHistoryColumns = (
     id: 'amount_paid',
     header: 'Amount paid',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
+      <span className="whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground">
         {formatNaira(row.original.total)}
       </span>
     ),
@@ -132,11 +132,11 @@ export const createOrderHistoryColumns = (
     header: '',
     cell: ({ row }) => (
       <Button
-        type='button'
-        variant='outline'
-        size='sm'
+        type="button"
+        variant="outline"
+        size="sm"
         onClick={() => onViewOrder(row.original)}
-        className='text-xs'
+        className="text-xs"
       >
         View Details
       </Button>

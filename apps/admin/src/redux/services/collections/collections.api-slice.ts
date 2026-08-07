@@ -71,10 +71,12 @@ export interface GetPlatformCollectionParams {
 export const collectionsApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // GET /collections/admin/platform — all platform collections (incl inactive)
-    getPlatformCollectionsAdmin: builder.query<ApiResponse<Collection[]>, void>({
-      query: () => ({ url: '/collections/admin/platform', method: 'GET' }),
-      providesTags: ['Collections'],
-    }),
+    getPlatformCollectionsAdmin: builder.query<ApiResponse<Collection[]>, void>(
+      {
+        query: () => ({ url: '/collections/admin/platform', method: 'GET' }),
+        providesTags: ['Collections'],
+      }
+    ),
 
     // POST /collections/admin/platform — create a platform-wide collection
     createPlatformCollection: builder.mutation<
@@ -112,7 +114,10 @@ export const collectionsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // GET /collections/platform — active platform collections (public storefront)
-    getActivePlatformCollections: builder.query<ApiResponse<Collection[]>, void>({
+    getActivePlatformCollections: builder.query<
+      ApiResponse<Collection[]>,
+      void
+    >({
       query: () => ({ url: '/collections/platform', method: 'GET' }),
       providesTags: ['Collections'],
     }),

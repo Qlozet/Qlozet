@@ -73,17 +73,27 @@ describe('order field readers', () => {
   });
 
   it('resolves a customer name from username, then names, then email', () => {
-    expect(readCustomerName(order({ customer: { username: 'ada' } }))).toBe('ada');
+    expect(readCustomerName(order({ customer: { username: 'ada' } }))).toBe(
+      'ada'
+    );
     expect(
-      readCustomerName(order({ customer: { firstName: 'Ada', lastName: 'Obi' } }))
+      readCustomerName(
+        order({ customer: { firstName: 'Ada', lastName: 'Obi' } })
+      )
     ).toBe('Ada Obi');
-    expect(readCustomerName(order({ customer: { email: 'a@b.co' } }))).toBe('a@b.co');
+    expect(readCustomerName(order({ customer: { email: 'a@b.co' } }))).toBe(
+      'a@b.co'
+    );
     expect(readCustomerName(order())).toBe('—');
   });
 
   it('prefixes the handle with @ exactly once', () => {
-    expect(readCustomerHandle(order({ customer: { username: 'ada' } }))).toBe('@ada');
-    expect(readCustomerHandle(order({ customer: { username: '@ada' } }))).toBe('@ada');
+    expect(readCustomerHandle(order({ customer: { username: 'ada' } }))).toBe(
+      '@ada'
+    );
+    expect(readCustomerHandle(order({ customer: { username: '@ada' } }))).toBe(
+      '@ada'
+    );
   });
 
   it('counts items defensively when the array is missing', () => {
@@ -100,7 +110,9 @@ describe('order field readers', () => {
 describe('isCustomOrder', () => {
   it('is true for any of the three bespoke signals', () => {
     expect(isCustomOrder(order({ type: 'bespoke' }))).toBe(true);
-    expect(isCustomOrder(order({ bespoke_design: { name: 'Agbada' } }))).toBe(true);
+    expect(isCustomOrder(order({ bespoke_design: { name: 'Agbada' } }))).toBe(
+      true
+    );
     expect(isCustomOrder(order({ bespoke_quote: 'q1' }))).toBe(true);
   });
 

@@ -14,7 +14,14 @@ interface Notification {
   _id: string;
   id?: string;
   recipient: string;
-  category: 'order' | 'shipping' | 'payment' | 'bespoke' | 'product' | 'team' | 'system';
+  category:
+    | 'order'
+    | 'shipping'
+    | 'payment'
+    | 'bespoke'
+    | 'product'
+    | 'team'
+    | 'system';
   type: string;
   title: string;
   body: string;
