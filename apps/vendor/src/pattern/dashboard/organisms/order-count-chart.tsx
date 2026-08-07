@@ -36,7 +36,7 @@ export const OrderCountChart = () => {
   const maxEarnings = Math.max(...chartData.map((d: any) => d.earnings), 0);
 
   return (
-    <Card className="w-full max-h-[450px] rounded-[12px] custom-card-shadow">
+    <Card className="w-full max-h-fit rounded-[12px] custom-card-shadow">
       <CardHeader>
         <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
           Order Count

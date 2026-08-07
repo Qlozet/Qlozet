@@ -1,6 +1,5 @@
 'use client';
 
-import { Pencil } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Business } from '@/redux/services/businesses/businesses.api-slice';
 import { getVendorInitial } from '@/lib/vendors';
@@ -8,14 +7,12 @@ import { getVendorInitial } from '@/lib/vendors';
 interface VendorDetailHeaderProps {
   vendor?: Business;
   isLoading?: boolean;
-  onEditCover?: () => void;
 }
 
 // Cover banner with the vendor avatar overlapping the bottom-left.
 export const VendorDetailHeader = ({
   vendor,
   isLoading,
-  onEditCover,
 }: VendorDetailHeaderProps) => {
   const cover =
     (vendor?.cover_image as string | undefined) ??
@@ -40,14 +37,9 @@ export const VendorDetailHeader = ({
             : undefined
         }
       >
-        <button
-          type="button"
-          aria-label="Edit cover image"
-          onClick={onEditCover}
-          className="absolute right-4 top-4 flex size-9 items-center justify-center rounded-lg bg-white/80 text-gray-700 backdrop-blur hover:bg-white transition-colors cursor-pointer"
-        >
-          <Pencil className="size-4" />
-        </button>
+        {/* TODO(api): editing a vendor's cover needs an admin-scoped write —
+            PATCH /business/profile only ever updates the caller's own
+            business, so the control is omitted rather than left inert. */}
       </div>
 
       {/* Avatar */}

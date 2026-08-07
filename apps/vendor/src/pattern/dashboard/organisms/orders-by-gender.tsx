@@ -64,19 +64,26 @@ export const OrdersByGender = () => {
   const sortedData = [...chartData].sort((a: any, b: any) => b.value - a.value);
 
   return (
-    <Card className="w-full max-h-[330px] rounded-[12px] custom-card-shadow">
+    <Card className="w-full max-h-fit rounded-[12px] custom-card-shadow">
       <CardHeader className="px-6 pb-4">
         <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
           Sales by audience
         </CardTitle>
       </CardHeader>
       <CardContent className="w-full font-poppins px-3 pt-0 pb-6">
+        {/* Same height as the populated chart, so the card doesn't resize
+            when data arrives. */}
         <ChartEmptyState
           isEmpty={!hasData}
           variant="pie"
+          height={320}
           description="Your sales split by audience (men / women / unisex) will show once orders come in"
         >
-          <ResponsiveContainer width="100%" height={250}>
+          {/* 320, not 250: recharts carves the legend out of this height, and
+              the pie is a fixed 200px across (outerRadius 100). At 250 a legend
+              that wraps to two rows left too little room and clipped the top of
+              the donut. */}
+          <ResponsiveContainer width="100%" height={320}>
             <PieChart>
               <Pie
                 data={sortedData}

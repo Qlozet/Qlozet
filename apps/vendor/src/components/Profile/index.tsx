@@ -14,6 +14,16 @@ import {
 } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import WeeklyDigestSection from '@/pattern/common/organisms/weekly-digest-section';
+import { useGetProfileQuery } from '@/redux/services/auth/auth.api-slice';
+
+// Bands rendered in the reviews breakdown, in display order.
+const RATING_BANDS = [
+  { key: 'excellent', name: 'Excellent' },
+  { key: 'good', name: 'Good' },
+  { key: 'average', name: 'Average' },
+  { key: 'belowAverage', name: 'Avg. Below' },
+  { key: 'poor', name: 'Poor' },
+] as const;
 
 const Profile = ({
   userDetails,
@@ -21,6 +31,20 @@ const Profile = ({
   showProfileHandler,
   isLoading,
 }: ProfileProps) => {
+  const ratings = userDetails?.ratings;
+  const totalReviews = RATING_BANDS.reduce(
+    (sum, band) => sum + (ratings?.[band.key] ?? 0),
+    0
+  );
+  const hasReviews = totalReviews > 0;
+
+  // The signed-in user's email isn't part of UserDetails, so read it from
+  // /users/me directly. Skipped until the sheet is actually opened.
+  const { data: profileData } = useGetProfileQuery(undefined, {
+    skip: !showProfile,
+  });
+  const email = profileData?.data?.email;
+
   return (
     <Sheet
       open={showProfile}
@@ -87,26 +111,28 @@ const Profile = ({
                 </>
               ) : (
                 <>
-                  {/* Box 1: Profile Info */}
-                  <div className="rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] overflow-hidden p-6">
+                  {/* Box 1: Profile Info.
+                      Per the design the card itself is white — it's the avatar
+                      that sits on a grey circle, not the whole panel. */}
+                  <div className="rounded-[20px] bg-white dark:bg-card overflow-hidden p-6">
                     <div className="flex flex-col items-center">
                       {/* Avatar */}
-                      <div className="w-24 h-24 rounded-full overflow-hidden bg-white dark:bg-muted mb-4 border-2 border-white dark:border-border shadow-sm">
+                      <div className="size-40 rounded-full overflow-hidden bg-[hsla(0,0%,92%,1)] dark:bg-muted mb-4">
                         {/* No <Image> without a src — next/image treats "" as a
                             missing prop and re-requests the page. Fall back to
                             the initial instead. */}
                         {userDetails?.profileImage ? (
                           <Image
                             src={userDetails.profileImage}
-                            width={96}
-                            height={96}
+                            width={160}
+                            height={160}
                             alt="Profile Image"
                             className="w-full h-full object-cover"
                             unoptimized
                           />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-white dark:bg-muted">
-                            <span className="text-3xl font-bold text-gray-800 dark:text-gray-200">
+                          <div className="flex h-full w-full items-center justify-center">
+                            <span className="text-5xl font-bold text-gray-500 dark:text-gray-300">
                               {(
                                 userDetails?.personalName ||
                                 userDetails?.businessName ||
@@ -136,6 +162,18 @@ const Profile = ({
                       >
                         {userDetails?.businessName}
                       </Typography>
+                      {/* Email comes straight from /users/me — it isn't part of
+                          the UserDetails the layout threads down. */}
+                      {email && (
+                        <Typography
+                          textColor="text-[#8E8E93] dark:text-gray-400"
+                          textWeight="font-normal"
+                          textSize="text-[13px]"
+                          className="mt-1 text-center break-all"
+                        >
+                          {email}
+                        </Typography>
+                      )}
                     </div>
 
                     {/* Items & Profit */}
@@ -195,9 +233,9 @@ const Profile = ({
                     </div>
 
                     <div className="flex items-center gap-3 mb-1">
-                      <Rating
-                        newRating={Math.round(userDetails?.averageRating || 0)}
-                      />
+                      {/* Not rounded to a whole star — react-stars renders
+                          halves, which is how the design shows e.g. 4.8. */}
+                      <Rating newRating={userDetails?.averageRating || 0} />
                       <div className="flex items-baseline gap-1.5">
                         <Typography
                           textColor="text-[#1C1C1E] dark:text-white"
@@ -217,42 +255,31 @@ const Profile = ({
                     </div>
 
                     <div className="mb-5">
-                      <span className="text-[13px] text-[#A67B5B] dark:text-[#E0D5CB] font-medium hover:opacity-80 cursor-pointer transition-opacity flex items-center gap-1">
-                        Overall rating of 100 customer's reviews{' '}
-                        <span className="text-[16px] leading-none mb-0.5">
-                          ›
-                        </span>
+                      <span className="text-[13px] text-[#A67B5B] dark:text-[#E0D5CB] font-medium flex items-center gap-1">
+                        Overall rating of {totalReviews} customer
+                        {totalReviews === 1 ? '' : 's'}&apos; reviews
                       </span>
                     </div>
 
-                    {/* Performance Bars */}
-                    <div className="space-y-1">
-                      <Performance
-                        name="Excellent"
-                        value={(userDetails?.ratings?.excellent || 35) * 10}
-                        color="bg-[#1C1C1E] dark:bg-white"
-                      />
-                      <Performance
-                        name="Good"
-                        value={(userDetails?.ratings?.good || 25) * 10}
-                        color="bg-[#1C1C1E] dark:bg-white"
-                      />
-                      <Performance
-                        name="Average"
-                        value={(userDetails?.ratings?.average || 20) * 10}
-                        color="bg-[#1C1C1E] dark:bg-white"
-                      />
-                      <Performance
-                        name="Avg. Below"
-                        value={(userDetails?.ratings?.belowAverage || 15) * 10}
-                        color="bg-[#1C1C1E] dark:bg-white"
-                      />
-                      <Performance
-                        name="Poor"
-                        value={(userDetails?.ratings?.poor || 5) * 10}
-                        color="bg-[#1C1C1E] dark:bg-white"
-                      />
-                    </div>
+                    {/* Performance bars. The counts are shown as-is: an absent
+                        or all-zero breakdown renders the empty note below
+                        rather than a fabricated 35/25/20/15/5 split. */}
+                    {hasReviews ? (
+                      <div className="space-y-1">
+                        {RATING_BANDS.map((band) => (
+                          <Performance
+                            key={band.name}
+                            name={band.name}
+                            value={ratings?.[band.key] ?? 0}
+                            color="bg-[#1C1C1E] dark:bg-white"
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="py-4 text-center text-[13px] text-[#8E8E93] dark:text-gray-400">
+                        No customer reviews yet.
+                      </p>
+                    )}
                   </div>
 
                   {/* Box 3: Weekly Digest (AI) — replaces the old static tasks */}

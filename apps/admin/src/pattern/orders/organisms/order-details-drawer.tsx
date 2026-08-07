@@ -7,7 +7,7 @@
 // query, and none of the vendor-side workflow (confirm / reject / fulfil /
 // shipping labels) belongs here.
 
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
 import { ChevronRight, Package, Printer } from 'lucide-react';
 import {
@@ -18,7 +18,13 @@ import {
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import { WorkInProgressModal } from '@/pattern/common/organisms/work-in-progress-modal';
+import {
+  OrderMediaPanel,
+  ignoreMediaPanelInteraction,
+} from '../molecules/order-media-panel';
+import { allProductImages, bespokeDesignImages } from '../lib/item-resolvers';
 import {
   formatNaira,
   formatOrderDate,
@@ -183,10 +189,36 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     const paymentStatus = readPaymentStatus(order);
     const refundStatus = readRefundStatus(order);
 
+    // Companion media panel — mirrors the vendor drawer: it opens alongside the
+    // drawer showing the order's garments, and the handle closes both.
+    // Below `sm` there's no room beside a full-width drawer.
+    const canShowPanel = useMediaQuery('(min-width: 640px)', false);
+    const [panelOpen, setPanelOpen] = useState(false);
+
+    const media = useMemo(() => {
+      const fromDesign = bespokeDesignImages(order);
+      const fromItems = items.flatMap((item) => allProductImages(item.product));
+      return Array.from(new Set([...fromDesign, ...fromItems]));
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [order]);
+
+    useEffect(() => {
+      setPanelOpen(canShowPanel && media.length > 0);
+    }, [order, canShowPanel, media.length]);
+
     return (
       <Sheet open={visible} onOpenChange={handleClose}>
+        {panelOpen && (
+          <OrderMediaPanel
+            images={media}
+            title={`Order ${readOrderId(order)}`}
+            drawerOpen={visible}
+            onClose={handleClose}
+          />
+        )}
         <SheetContent
           side="right"
+          onInteractOutside={ignoreMediaPanelInteraction}
           className="flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white"
           style={{
             height: 'calc(100vh - 3rem)',

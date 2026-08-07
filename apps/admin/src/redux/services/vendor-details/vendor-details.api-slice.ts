@@ -93,9 +93,18 @@ export const vendorDetailsApiSlice = baseAPI.injectEndpoints({
       ApiResponse<PaginatedData<VendorComplaint>>,
       VendorTableParams
     >({
-      query: ({ businessId, page, size, search }) => ({
+      // TODO(api): /admin/tickets has no business/vendor filter — its params
+      // are search, status, assigned_to, start_date, end_date, page, size. The
+      // best available scoping is a text search for the business id, so results
+      // are at worst empty; they are never another vendor's.
+      //
+      // `search ?? businessId` used to leave this UNSCOPED: the caller passes
+      // '' for an empty search box, and `??` only catches null/undefined, so an
+      // empty string went through, buildQueryString dropped it, and the request
+      // returned EVERY ticket on the platform under one vendor's page.
+      query: ({ businessId, page, size }) => ({
         url: `/admin/tickets${buildQueryString({
-          search: search ?? businessId,
+          search: businessId,
           page,
           size,
         })}`,

@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import {
   Bar,
   BarChart,
@@ -11,73 +12,91 @@ import {
 } from 'recharts';
 import { BarChart3 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { formatNaira } from '@/lib/orders';
+import { hasAnyValue, monthlyRevenueSeries } from '@/lib/dashboard-series';
+import { useGetAdminOrdersQuery } from '@/redux/services/orders/orders.api-slice';
 import { CustomXAxisTick } from '../molecules/custom-x-axis-tick';
-
-const chartData = [
-  { month: 'Jan', value: 280 },
-  { month: 'Feb', value: 760 },
-  { month: 'Mar', value: 470 },
-  { month: 'Apr', value: 540 },
-  { month: 'May', value: 450 },
-  { month: 'Jun', value: 890 },
-  { month: 'Jul', value: 360 },
-  { month: 'Aug', value: 720 },
-  { month: 'Sep', value: 180 },
-  { month: 'Oct', value: 560 },
-  { month: 'Nov', value: 320 },
-  { month: 'Dec', value: 470 },
-];
-
-// Highlight the peak month (Jun)
-const MAX_VALUE = Math.max(...chartData.map((d) => d.value));
+import { ChartEmptyState } from '../molecules/chart-empty-state';
+import { ChartSkeleton } from '../molecules/chart-skeleton';
 
 export const MonthlyRevenueChart = () => {
+  const { data, isLoading } = useGetAdminOrdersQuery();
+  const orders = useMemo(() => data?.data ?? [], [data]);
+
+  const series = useMemo(() => monthlyRevenueSeries(orders), [orders]);
+  const isEmpty = !hasAnyValue(series);
+
+  const total = useMemo(
+    () => series.reduce((sum, point) => sum + point.value, 0),
+    [series]
+  );
+  const maxValue = useMemo(
+    () => Math.max(...series.map((point) => point.value), 0),
+    [series]
+  );
+
+  if (isLoading) return <ChartSkeleton />;
+
   return (
     <Card className="relative w-full h-[450px] overflow-hidden rounded-[12px] custom-card-shadow">
-      {/* Chart type toggle */}
-      <button className="absolute top-5 right-5 z-10 flex items-center justify-center size-9 rounded-lg bg-gray-100 hover:bg-gray-200 transition">
+      <span className="absolute top-5 right-5 z-10 flex size-9 items-center justify-center rounded-lg bg-gray-100">
         <BarChart3 className="size-4 text-gray-700" />
-      </button>
+      </span>
 
-      <CardContent className="pt-7 px-6 h-full flex flex-col">
-        <p className="text-3xl font-bold text-[hsla(210,9%,31%,1)]">N890.93</p>
+      <CardContent className="flex h-full flex-col px-6 pt-7">
+        <p className="text-3xl font-bold text-[hsla(210,9%,31%,1)]">
+          {isEmpty ? formatNaira(0) : formatNaira(total)}
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Revenue this year, by month
+        </p>
 
-        <div className="flex-1 mt-8">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              margin={{ top: 20, right: 40, left: 0, bottom: 0 }}
-            >
-              <XAxis
-                dataKey="month"
-                tick={<CustomXAxisTick />}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis hide domain={[0, MAX_VALUE * 1.1]} />
-              <ReferenceLine
-                y={MAX_VALUE}
-                stroke="#3d2817"
-                strokeDasharray="6 4"
-                strokeWidth={1.5}
-                label={{
-                  value: 'MAX',
-                  position: 'right',
-                  fill: '#3d2817',
-                  fontSize: 11,
-                  fontWeight: 700,
-                }}
-              />
-              <Bar dataKey="value" maxBarSize={28} radius={[4, 4, 0, 0]}>
-                {chartData?.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={entry.value === MAX_VALUE ? '#3d2817' : '#d4c5b9'}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="mt-8 flex-1">
+          <ChartEmptyState
+            isEmpty={isEmpty}
+            height={280}
+            description="Monthly revenue will chart here once orders are paid for."
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={series}
+                margin={{ top: 20, right: 40, left: 0, bottom: 0 }}
+              >
+                <XAxis
+                  dataKey="name"
+                  tick={<CustomXAxisTick />}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis hide domain={[0, maxValue * 1.1]} />
+                <ReferenceLine
+                  y={maxValue}
+                  stroke="#3d2817"
+                  strokeDasharray="6 4"
+                  strokeWidth={1.5}
+                  label={{
+                    value: 'MAX',
+                    position: 'right',
+                    fill: '#3d2817',
+                    fontSize: 11,
+                    fontWeight: 700,
+                  }}
+                />
+                <Bar dataKey="value" maxBarSize={28} radius={[4, 4, 0, 0]}>
+                  {series.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={
+                        entry.value === maxValue && maxValue > 0
+                          ? '#3d2817'
+                          : '#d4c5b9'
+                      }
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartEmptyState>
         </div>
       </CardContent>
     </Card>

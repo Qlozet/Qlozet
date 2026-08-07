@@ -104,9 +104,15 @@ const SheetContent = React.forwardRef<
           100% { opacity: 0; translate: 0 100%; }
         }
         /* Desktop: undo mobile-only bottom-sheet overrides */
+        /* Desktop: undo mobile-only bottom-sheet overrides.
+           NOTE: no width reset here. The mobile block above is already scoped
+           to max-width:639px, so there is nothing to undo — and forcing
+           width:auto made the panel size to its CONTENT, overriding w-full.
+           That let two drawers with the same classes render at different
+           widths, and any element positioned off the drawer edge (e.g. the
+           order media panel handle) drifted away from it. */
         @media (min-width: 640px) {
           .sheet-mobile-bottom {
-            width: auto !important;
             left: auto !important;
           }
         }

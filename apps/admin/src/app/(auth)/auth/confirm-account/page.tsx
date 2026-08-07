@@ -1,11 +1,16 @@
+import { AuthLayout } from '@/pattern/auth/organisms/auth-layout';
+
 export default function ConfirmAccountPage() {
   return (
-    <div>
-      <h1 className="text-xl font-semibold text-gray-900">Confirm account</h1>
-      <p className="mt-1 text-sm text-gray-500">
-        Mirror of vendor /auth/confirm-account. Replace with admin account
+    <AuthLayout
+      title="Confirm account"
+      subtitle="Finish setting up your admin account"
+    >
+      {/* TODO: build this screen — see the vendor app's equivalent template. */}
+      <p className="text-sm text-grey3">
+        Mirror of vendor /auth/confirm-account. Replace with the admin account
         confirmation flow.
       </p>
-    </div>
+    </AuthLayout>
   );
 }

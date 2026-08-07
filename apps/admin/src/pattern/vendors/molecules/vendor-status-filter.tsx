@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useClickOutside } from '@/lib/hooks/useClickOutside';
@@ -10,8 +10,9 @@ export interface StatusOption {
   value: string;
 }
 
+// `value: ''` clears the filter. Values match the backend's BusinessStatus.
 const OPTIONS: StatusOption[] = [
-  { label: "Vendor's status", value: '' },
+  { label: 'All statuses', value: '' },
   { label: 'Active', value: 'active' },
   { label: 'Awaiting verification', value: 'pending' },
   { label: 'Inactive', value: 'inactive' },
@@ -22,23 +23,52 @@ interface VendorStatusFilterProps {
   onChange: (value: string) => void;
 }
 
+/**
+ * Status filter for the Vendors table, matching the OrderStatusFilter pattern.
+ *
+ * `select-none` on the trigger and the list is deliberate: without it, clicking
+ * the control drops a text caret into the label (the same artefact that showed
+ * up on the rating stars) and dragging selects the option text.
+ */
 export const VendorStatusFilter = ({
   value,
   onChange,
 }: VendorStatusFilterProps) => {
   const [open, setOpen] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpen(false));
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
-  const selected = OPTIONS.find((o) => o.value === value) ?? OPTIONS[0];
+  // Escape closes and returns focus to the trigger.
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [open]);
+
+  const selected = OPTIONS.find((option) => option.value === value);
+  // The trigger reads as a label until something is chosen.
+  const triggerLabel = selected?.value ? selected.label : "Vendor's status";
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative select-none" ref={ref}>
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex w-[180px] items-center justify-between gap-2 rounded-lg border border-border bg-white px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className={cn(
+          'flex h-10 w-[180px] items-center justify-between gap-2 rounded-lg border border-border bg-white px-4 text-sm transition-colors hover:bg-gray-50 cursor-pointer',
+          selected?.value ? 'text-grey-black' : 'text-gray-500'
+        )}
       >
-        <span className="truncate">{selected.label}</span>
+        <span className="truncate">{triggerLabel}</span>
         <ChevronDown
           className={cn(
             'size-4 shrink-0 text-gray-500 transition-transform',
@@ -48,24 +78,39 @@ export const VendorStatusFilter = ({
       </button>
 
       {open && (
-        <div className="absolute right-0 z-20 mt-1 w-[180px] overflow-hidden rounded-lg border border-border bg-white py-1 shadow-lg">
-          {OPTIONS.map((option) => (
-            <button
-              key={option.value || 'all'}
-              type="button"
-              onClick={() => {
-                onChange(option.value);
-                setOpen(false);
-              }}
-              className="flex w-full items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-            >
-              <span>{option.label}</span>
-              {option.value === value && (
-                <Check className="size-4 text-success" />
-              )}
-            </button>
-          ))}
-        </div>
+        <ul
+          role="listbox"
+          aria-label="Filter by vendor status"
+          className="absolute right-0 z-20 mt-1 w-[180px] overflow-hidden rounded-lg border border-border bg-white py-1 shadow-lg"
+        >
+          {OPTIONS.map((option) => {
+            const isSelected = option.value === value;
+            return (
+              <li
+                key={option.value || 'all'}
+                role="option"
+                aria-selected={isSelected}
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    onChange(option.value);
+                    setOpen(false);
+                  }}
+                  className={cn(
+                    'flex w-full cursor-pointer items-center justify-between gap-2 px-4 py-2 text-left text-sm transition-colors hover:bg-gray-50',
+                    isSelected ? 'font-medium text-grey-black' : 'text-gray-700'
+                  )}
+                >
+                  <span className="truncate">{option.label}</span>
+                  {isSelected && (
+                    <Check className="size-4 shrink-0 text-success" />
+                  )}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       )}
     </div>
   );

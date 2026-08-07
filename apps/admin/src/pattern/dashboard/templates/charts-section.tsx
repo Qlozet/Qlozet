@@ -4,6 +4,7 @@ import { ExpectedEarningsChart } from '../organisms/expected-earnings-chart';
 import { MonthlyRevenueChart } from '../organisms/monthly-revenue-chart';
 import { OrdersByGender } from '../organisms/orders-by-gender';
 import { OrdersByLocation } from '../organisms/orders-by-location';
+import { OrdersByStatus } from '../organisms/orders-by-status';
 import { EarningsChart } from '../organisms/earnings-chart';
 import { OrderCountChart } from '../organisms/order-count-chart';
 import { RecentOrders } from '../organisms/recent-orders';
@@ -21,11 +22,12 @@ export function ChartsSection() {
         </div>
       </div>
 
-      {/* Orders breakdowns */}
+      {/* Orders breakdowns. The third slot used to be a second copy of
+          OrdersByLocation — replaced with the status split, which is real. */}
       <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
         <OrdersByGender />
         <OrdersByLocation />
-        <OrdersByLocation />
+        <OrdersByStatus />
       </div>
 
       {/* Earnings, order count, recent orders */}

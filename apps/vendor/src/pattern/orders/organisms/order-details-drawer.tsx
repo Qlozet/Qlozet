@@ -6,7 +6,7 @@
 // There is NO single-order detail endpoint — the order data is passed from the
 // cached list query.
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
 import {
@@ -64,7 +64,7 @@ import { CustomerDetailsModal } from '../../customers/organisms/customer-details
 import { OrderItemDetailModal } from './order-item-detail-modal';
 import { DesignDetailModal } from './design-detail-modal';
 import { MediaPreviewModal } from './media-preview-modal';
-import { allProductImages } from '../lib/item-resolvers';
+import { allProductImages, asProduct } from '../lib/item-resolvers';
 import { readBespokeDesign } from '../lib/bespoke-design';
 import {
   OrderMediaPanel,
@@ -730,9 +730,9 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
         : true;
     });
 
-    // The large preview is opt-in: nothing is shown until the vendor clicks a
-    // thumbnail, and a second click swaps the panel's contents rather than
-    // stacking another lightbox on top.
+    // The companion panel opens with the drawer showing the order's garments,
+    // so the vendor sees what was ordered without an extra click. Clicking a
+    // thumbnail swaps the panel's contents rather than stacking a lightbox.
     const [preview, setPreview] = useState<{
       images: string[];
       title: string;
@@ -750,13 +750,31 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       }
     };
 
-    // Reset when the drawer is reopened on a different order.
-    useEffect(() => {
-      setPreview(null);
-    }, [orderProp]);
-
     // Bespoke orders have no catalogue items — the design IS the garment.
     const bespokeDesign = readBespokeDesign(order);
+
+    // What the panel shows before any thumbnail is clicked: the design for a
+    // bespoke order, otherwise every image across the vendor's own items.
+    const defaultMedia = useMemo(() => {
+      const fromDesign = bespokeDesign?.images ?? [];
+      const fromItems = (vendorItems ?? []).flatMap((item) =>
+        allProductImages(asProduct(item.product))
+      );
+      return Array.from(new Set([...fromDesign, ...fromItems])).filter(Boolean);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [orderProp]);
+
+    // Open the panel with the drawer, and re-seed it when the drawer is
+    // reopened on a different order. Below `sm` there's no room beside a
+    // full-width drawer, so it stays closed until a thumbnail is tapped.
+    useEffect(() => {
+      setPreview(
+        canShowPanel && defaultMedia.length > 0
+          ? { images: defaultMedia, title: `Order ${displayOrderId}` }
+          : null
+      );
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [orderProp, canShowPanel]);
 
     return (
       <Sheet open={visible} onOpenChange={handleClose}>
@@ -768,8 +786,10 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
             images={preview.images}
             title={preview.title}
             drawerOpen={visible}
-            onClose={() => setPreview(null)}
-            closeLabel="Close image preview"
+            // The handle dismisses the whole thing — drawer and panel — which
+            // is what it did before it was scoped to just the preview.
+            onClose={handleClose}
+            closeLabel="Close order details"
           />
         )}
         <SheetContent

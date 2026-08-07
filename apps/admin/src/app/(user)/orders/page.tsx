@@ -31,12 +31,19 @@ export default function OrdersPage() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  // `/admin/vendor/orders` only accepts a status filter — period, search and
-  // pagination are applied client-side over the full result set.
+  // `page`/`size` are sent regardless: the backend ignores them until
+  // server-side paging ships, and `serverPaginated` below reports which mode we
+  // actually got back. Period, search and date range remain client-side —
+  // the backend has deferred `search`/`startDate`/`endDate`.
   const { data, isLoading, isFetching, isSuccess, isError, error } =
-    useGetAdminOrdersQuery({ status: status || undefined });
+    useGetAdminOrdersQuery({
+      status: status || undefined,
+      page: pagination.pageIndex + 1,
+      size: pagination.pageSize,
+    });
 
   const orders = useMemo(() => data?.data ?? [], [data]);
+  const serverPaginated = data?.serverPaginated ?? false;
 
   const periodOrders = useMemo(
     () => filterOrdersByPeriod(orders, period),
@@ -55,22 +62,31 @@ export default function OrdersPage() {
     [periodOrders]
   );
 
-  const pageCount = Math.max(
-    Math.ceil(filteredOrders.length / pagination.pageSize),
-    1
-  );
+  const pageCount = serverPaginated
+    ? Math.max(data?.total_pages ?? 1, 1)
+    : Math.max(Math.ceil(filteredOrders.length / pagination.pageSize), 1);
 
   // Keep the current page in range when the filters shrink the result set.
+  // Server-side paging owns the page bounds, so this only guards the local one.
   useEffect(() => {
+    if (serverPaginated) return;
     setPagination((prev) =>
       prev.pageIndex > pageCount - 1 ? { ...prev, pageIndex: 0 } : prev
     );
-  }, [pageCount]);
+  }, [pageCount, serverPaginated]);
 
+  // When the backend paginates, it has already returned exactly one page —
+  // slicing again would show a page of a page.
   const pageOrders = useMemo(() => {
+    if (serverPaginated) return filteredOrders;
     const start = pagination.pageIndex * pagination.pageSize;
     return filteredOrders.slice(start, start + pagination.pageSize);
-  }, [filteredOrders, pagination.pageIndex, pagination.pageSize]);
+  }, [
+    filteredOrders,
+    serverPaginated,
+    pagination.pageIndex,
+    pagination.pageSize,
+  ]);
 
   const resetToFirstPage = () =>
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));

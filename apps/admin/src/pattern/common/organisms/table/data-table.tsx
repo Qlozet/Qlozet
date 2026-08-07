@@ -159,7 +159,10 @@ export function DataTable<TData>({
                 }
                 className={cn(
                   'border-t border-border',
-                  onRowClick && 'cursor-pointer'
+                  // Hover feedback so a clickable row reads as clickable —
+                  // cursor-pointer alone isn't discoverable enough.
+                  onRowClick &&
+                    'cursor-pointer transition-colors hover:bg-[#F9FAFB]'
                 )}
               >
                 {row.getVisibleCells().map((cell, cellIndex) => {

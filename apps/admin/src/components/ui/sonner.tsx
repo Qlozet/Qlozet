@@ -38,9 +38,9 @@ const toastClassNames: SonnerToasterProps['toastOptions'] = {
     toast:
       '!border !rounded-[8px] !shadow-none !py-[8px] !pl-[16px] !pr-[4px] !space-2 !items-center !justify-start !min-w-[490px] !w-fit !max-w-[520px]',
     info: '!bg-[#e8f0fe] !border-[#1e6ef4]',
-    success: '!bg-[#e4fdf1] !border-[#149e5e] items-start!',
+    success: '!bg-[#e4fdf1] !border-[#149e5e]',
     warning: '!bg-[#fdf2eb] !border-[#ee6002]',
-    error: '!bg-[#feebee] !border-[#f23c57] items-start!',
+    error: '!bg-[#feebee] !border-[#f23c57]',
     title: '!text-[#3f4650] !text-base !font-normal !pr-[28px] !leading-5',
     description: '!text-[#697586] !text-sm !pr-[8px]',
     closeButton: 'top-6.5! size-4!',

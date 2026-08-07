@@ -5,21 +5,34 @@ import { ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { Ticket } from '@/redux/services/tickets/tickets.api-slice';
 import {
+  EM_DASH,
+  assigneeId,
   formatDate,
-  readAssigned,
-  readField,
-  readName,
+  shortTicketId,
   statusLabel,
   statusVariant,
+  ticketCategory,
+  ticketSubject,
 } from '../lib/ticket-fields';
 
-export const createSupportTicketsColumns = (): ColumnDef<Ticket>[] => [
+interface SupportTicketsColumnsOptions {
+  /** Resolves a ticket's `business` id to a vendor name. */
+  businessName: (id?: string | null) => string;
+}
+
+export const createSupportTicketsColumns = ({
+  businessName,
+}: SupportTicketsColumnsOptions): ColumnDef<Ticket>[] => [
   {
     id: 'ticket_id',
     header: 'Ticket ID',
     cell: ({ row }) => (
-      <span className="whitespace-nowrap text-sm font-medium text-grey-black">
-        {readField(row.original, 'reference', 'ticket_id')}
+      // `title` exposes the full ObjectId, since the cell only shows its tail.
+      <span
+        title={row.original._id}
+        className="whitespace-nowrap text-sm font-medium text-grey-black"
+      >
+        {shortTicketId(row.original._id)}
       </span>
     ),
     enableSorting: false,
@@ -28,8 +41,8 @@ export const createSupportTicketsColumns = (): ColumnDef<Ticket>[] => [
     id: 'subject',
     header: 'Subject',
     cell: ({ row }) => (
-      <span className="text-sm text-grey3">
-        {readField(row.original, 'subject', 'title', 'description')}
+      <span className="line-clamp-2 max-w-[320px] text-sm text-grey3">
+        {ticketSubject(row.original)}
       </span>
     ),
     enableSorting: false,
@@ -39,7 +52,7 @@ export const createSupportTicketsColumns = (): ColumnDef<Ticket>[] => [
     header: 'User/Vendor Name',
     cell: ({ row }) => (
       <span className="whitespace-nowrap text-sm font-medium text-[#3387CC]">
-        {readName(row.original)}
+        {businessName(row.original.business)}
       </span>
     ),
     enableSorting: false,
@@ -49,7 +62,7 @@ export const createSupportTicketsColumns = (): ColumnDef<Ticket>[] => [
     header: 'Category',
     cell: ({ row }) => (
       <span className="whitespace-nowrap text-sm text-grey3">
-        {readField(row.original, 'category', 'issue_type')}
+        {ticketCategory(row.original)}
       </span>
     ),
     enableSorting: false,
@@ -58,9 +71,15 @@ export const createSupportTicketsColumns = (): ColumnDef<Ticket>[] => [
     id: 'assigned_to',
     header: 'Assigned To',
     cell: ({ row }) => {
-      const assigned = readAssigned(row.original);
-      return assigned ? (
-        <span className="whitespace-nowrap text-sm text-grey3">{assigned}</span>
+      // `assigned_to` is a bare support-team id and GET /users/team/members
+      // currently 500s, so there is no name to show — surface the id rather
+      // than inventing a person.
+      const id = assigneeId(row.original);
+      return id ? (
+        <span
+          title={id}
+          className="whitespace-nowrap text-sm text-grey3"
+        >{`#${id.slice(-6).toUpperCase()}`}</span>
       ) : (
         <span className="whitespace-nowrap text-sm text-error">Unassigned</span>
       );
@@ -82,11 +101,24 @@ export const createSupportTicketsColumns = (): ColumnDef<Ticket>[] => [
     enableSorting: false,
   },
   {
+    id: 'replies',
+    header: 'Replies',
+    cell: ({ row }) => {
+      const count = row.original.replies?.length ?? 0;
+      return (
+        <span className="whitespace-nowrap text-sm text-grey3">
+          {count > 0 ? count : EM_DASH}
+        </span>
+      );
+    },
+    enableSorting: false,
+  },
+  {
     id: 'created_at',
     header: 'Created At',
     cell: ({ row }) => (
       <span className="whitespace-nowrap text-sm text-grey3">
-        {formatDate(row.original.createdAt ?? row.original.date)}
+        {formatDate(row.original.createdAt)}
       </span>
     ),
     enableSorting: false,

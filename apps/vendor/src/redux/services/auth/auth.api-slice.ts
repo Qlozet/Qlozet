@@ -94,6 +94,7 @@ export interface ForgotPasswordRequest {
 export interface ResetPasswordRequest {
   token: string;
   password: string;
+  /** Checked client-side only — the backend takes just token + newPassword. */
   confirmPassword: string;
 }
 
@@ -190,7 +191,10 @@ export const authApiSlice = baseAPI.injectEndpoints({
       query: (data) => ({
         url: '/auth/reset-password',
         method: 'POST',
-        body: data,
+        // PasswordResetDto is { token, newPassword }. Posting the raw form
+        // (password / confirmPassword) fails validation — `newPassword` is
+        // required and would arrive empty.
+        body: { token: data.token, newPassword: data.password },
       }),
     }),
 
@@ -225,7 +229,8 @@ export const authApiSlice = baseAPI.injectEndpoints({
       query: (data) => ({
         url: '/auth/reset-password',
         method: 'POST',
-        body: data,
+        // Same DTO as above: { token, newPassword }.
+        body: { token: data.token, newPassword: data.password },
       }),
     }),
 

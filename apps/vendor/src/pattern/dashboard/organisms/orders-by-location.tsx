@@ -38,7 +38,7 @@ export const OrdersByLocation = () => {
 
   return (
     <>
-      <Card className="w-full max-h-[330px] rounded-[12px] custom-card-shadow">
+      <Card className="w-full max-h-fit rounded-[12px] custom-card-shadow">
         <CardHeader className="px-6 pb-4">
           <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
             Sales by top location
