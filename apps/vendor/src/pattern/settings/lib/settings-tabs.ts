@@ -14,8 +14,11 @@ export const SETTINGS_TABS: SettingsTab[] = [
   { label: 'Warehouses', slug: 'warehouses' },
   { label: 'Users and permissions', slug: 'users-and-permissions' },
   { label: 'Order Settings', slug: 'order-settings' },
-  { label: 'Security', slug: 'security' },
-  { label: 'Billing', slug: 'billing' },
+  // TODO(api): hidden until the backend supports them. Security had no content
+  // beyond a "coming soon" placeholder, and Billing was a form whose inputs
+  // were wired to empty handlers — neither reads or writes anything.
+  // { label: 'Security', slug: 'security' },
+  // { label: 'Billing', slug: 'billing' },
 ];
 
 export const SETTINGS_TAB_PARAM = 'tab';

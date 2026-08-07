@@ -1,22 +1,21 @@
 'use client';
 
 // Fund Wallet Modal - Organism
-// "Fund your account" — lets the vendor pick a funding method (Paystack, Kora,
-// or Bank transfer). Opened from the Fund wallet button on the wallet page.
-// Paystack opens the amount-entry step (POST /wallets/fund → hosted checkout);
-// Kora has no backend endpoint yet, so it stays a stub.
+// "Fund your account" — lets the vendor pick a funding method. Only Paystack is
+// backed by an endpoint (POST /wallets/fund → hosted checkout); the others are
+// listed but disabled, since a funding method that can't take money is worse
+// than one that isn't offered.
 
 import React from 'react';
 import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
 import Image, { type StaticImageData } from 'next/image';
-import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { FundWithBankModal } from './fund-with-bank-modal';
+import { cn } from '@/lib/utils';
 import { FundWithPaystackModal } from './fund-with-paystack-modal';
 import paystackLogo from '@/public/assets/image/paystack-logo.png';
 import koraLogo from '@/public/assets/image/kora-logo.png';
@@ -29,6 +28,8 @@ interface FundingOption {
   title: string;
   description: string;
   icon: StaticImageData | string;
+  /** False when no endpoint backs the method — the row renders disabled. */
+  available: boolean;
 }
 
 const OPTIONS: FundingOption[] = [
@@ -37,18 +38,24 @@ const OPTIONS: FundingOption[] = [
     title: 'Fund with Paystack',
     description: 'You can fund your wallet using a Mastercard or Visa card',
     icon: paystackLogo,
+    available: true,
   },
   {
+    // TODO(api): no Kora funding endpoint exists.
     id: 'kora',
     title: 'Fund with Kora',
     description: 'You can fund your wallet using a Mastercard or Visa card',
     icon: koraLogo,
+    available: false,
   },
   {
+    // TODO(api): no deposit/virtual-account endpoint exists, so there are no
+    // real account details to show.
     id: 'bank',
     title: 'Fund Account with Bank',
     description: 'You can fund your account by paying into the our bank account.',
     icon: bankIcon,
+    available: false,
   },
 ];
 
@@ -61,18 +68,10 @@ export const FundWalletModal = create(() => {
   };
 
   const handleSelect = (option: FundingOption) => {
-    if (option.id === 'bank') {
-      handleClose();
-      NiceModal.show(FundWithBankModal);
-      return;
-    }
     if (option.id === 'paystack') {
       handleClose();
       NiceModal.show(FundWithPaystackModal);
-      return;
     }
-    // TODO(api): Kora funding has no backend endpoint yet.
-    toast.info(`${option.title} is coming soon.`);
   };
 
   return (
@@ -94,7 +93,13 @@ export const FundWalletModal = create(() => {
               key={option.id}
               type='button'
               onClick={() => handleSelect(option)}
-              className='flex w-full items-center gap-4 rounded-[10px] focus:border focus:border-secondary focus-visible:border focus-visible:border-secondary bg-white dark:bg-[#404040] py-4 px-2 text-left transition hover:border hover:border-border focus:outline-none cursor-pointer'
+              disabled={!option.available}
+              className={cn(
+                'flex w-full items-center gap-4 rounded-[10px] bg-white dark:bg-[#404040] py-4 px-2 text-left transition focus:outline-none',
+                option.available
+                  ? 'cursor-pointer hover:border hover:border-border focus:border focus:border-secondary focus-visible:border focus-visible:border-secondary'
+                  : 'cursor-not-allowed opacity-50'
+              )}
             >
               <Image
                 src={option.icon}
@@ -103,9 +108,14 @@ export const FundWalletModal = create(() => {
                 height={40}
                 className='size-10 shrink-0 rounded-md'
               />
-              <div className='space-y-1'>
-                <span className='block text-base font-normal text-[#333333] dark:text-gray-300'>
+              <div className='min-w-0 space-y-1'>
+                <span className='flex items-center gap-2 text-base font-normal text-[#333333] dark:text-gray-300'>
                   {option.title}
+                  {!option.available && (
+                    <span className='rounded-full bg-[#EDEFF2] dark:bg-white/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[#646A86] dark:text-gray-400'>
+                      Coming soon
+                    </span>
+                  )}
                 </span>
                 <span className='block text-xs text-[#646A86] dark:text-gray-400'>{option.description}</span>
               </div>

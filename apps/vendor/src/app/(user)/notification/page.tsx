@@ -74,37 +74,41 @@ const NotificationPage: React.FC = () => {
         )}
       </div>
 
-      {/* Category filter tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-none mb-2">
-        {CATEGORIES.map((cat) => {
-          const isActive = category === cat.key;
-          const Icon = cat.icon;
-          const badge = cat.key ? (unreadByCategory[cat.key] ?? 0) : unreadCount;
-          return (
-            <button
-              key={cat.label}
-              type="button"
-              onClick={() => { setCategory(cat.key); setPage(1); }}
-              className={cn(
-                'flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors shrink-0',
-                isActive
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-accent dark:bg-muted text-foreground hover:bg-primary/10'
-              )}
-            >
-              <Icon className="size-3.5" />
-              {cat.label}
-              {badge > 0 && (
-                <span className={cn(
-                  'ml-1 rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none',
-                  isActive ? 'bg-white/20 text-white' : 'bg-destructive text-white'
-                )}>
-                  {badge}
-                </span>
-              )}
-            </button>
-          );
-        })}
+      {/* Category filter tabs — underline style, matching Settings */}
+      <div className="mb-4 border-b border-border">
+        {/* -mb-px sits on the scroller, not the tabs: it pulls the whole row
+            1px down so the active tab's border covers the container's rule.
+            On the tabs it would overhang the scroller and be clipped by
+            overflow-y-hidden (needed because a lone overflow-x computes
+            overflow-y to auto, which would show a vertical scrollbar). */}
+        <div className="-mb-px flex gap-6 overflow-x-auto overflow-y-hidden scrollbar-none">
+          {CATEGORIES.map((cat) => {
+            const isActive = category === cat.key;
+            const Icon = cat.icon;
+            const badge = cat.key ? (unreadByCategory[cat.key] ?? 0) : unreadCount;
+            return (
+              <button
+                key={cat.label}
+                type="button"
+                onClick={() => { setCategory(cat.key); setPage(1); }}
+                className={cn(
+                  'flex shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap border-b-2 px-1 pb-1.5 text-sm transition-colors',
+                  isActive
+                    ? 'border-primary text-primary font-semibold'
+                    : 'border-transparent text-grey3 hover:text-foreground'
+                )}
+              >
+                <Icon className="size-3.5" />
+                {cat.label}
+                {badge > 0 && (
+                  <span className="ml-1 rounded-full bg-destructive px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+                    {badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Notification list */}

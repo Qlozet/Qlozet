@@ -266,6 +266,7 @@ export const WalletPageTemplate: React.FC = () => {
           error={error}
           pagination={pagination}
           setPagination={setPagination}
+          onRowClick={openDetails}
           emptyMessage='No transactions yet.'
           minWidth='980px'
         />

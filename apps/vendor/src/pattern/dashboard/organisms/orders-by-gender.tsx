@@ -37,12 +37,6 @@ const renderLegend = (props: any): JSX.Element => {
 // each get a clearly different colour.
 const COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)"]
 
-const PLACEHOLDER_DATA = [
-    { name: "Women", value: 58 },
-    { name: "Men", value: 34 },
-    { name: "Unisex", value: 8 },
-];
-
 export const OrdersByGender = () => {
     const { data: chartResponse, isLoading } = useGetOrdersChartQuery();
 
@@ -53,12 +47,10 @@ export const OrdersByGender = () => {
     const rawGenderData = chartResponse?.data?.charts?.ordersByGender?.series?.[0]?.data;
     const hasData = rawGenderData && rawGenderData.length > 0 && rawGenderData.some((d: any) => d.value > 0);
 
-    const chartData = hasData
-        ? rawGenderData.map((item: any) => ({
+    const chartData = rawGenderData.map((item: any) => ({
             name: item.label,
             value: item.value,
-        }))
-        : PLACEHOLDER_DATA;
+        }));
 
     const sortedData = [...chartData].sort((a: any, b: any) => b.value - a.value);
 

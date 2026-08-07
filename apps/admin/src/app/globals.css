@@ -31,6 +31,7 @@
   --grey1: hsla(203, 13%, 88%, 1);
   --grey2: hsla(208, 11%, 71%, 1);
   --grey3: hsla(210, 9%, 31%, 1);
+  --grey4: #495057;
   --grey-black: hsla(0, 0%, 7%, 1);
   --border: hsla(214.3, 31.8%, 91.4%);
   --border-input: hsla(208, 11%, 71%, 1);
@@ -112,6 +113,7 @@
   --color-grey1: var(--grey1);
   --color-grey2: var(--grey2);
   --color-grey3: var(--grey3);
+  --color-grey4: var(--grey4);
   --color-grey-black: var(--grey-black);
   --color-border: var(--border);
   --color-border-input: var(--border-input);

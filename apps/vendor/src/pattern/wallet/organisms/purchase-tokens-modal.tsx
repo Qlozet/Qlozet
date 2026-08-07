@@ -253,7 +253,7 @@ export const PurchaseTokensModal = NiceModal.create(() => {
         )}
 
         {activeSection === 'token-purchase-success' && (
-          <div className='py-6 flex flex-col items-center text-center'>
+          <div className='pt-6 flex flex-col items-center text-center'>
             <div className='size-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-6'>
               <CircleCheck className='size-8 text-green-600 dark:text-green-500' />
             </div>

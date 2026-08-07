@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { MetricCard } from '@/pattern/common/molecules/metric-card';
 import { useAppSelector } from '@/redux/store';
 import { selectActiveBusiness } from '@/redux/slices/auth-slice';
+import { useHasHydrated } from '@/lib/hooks/use-has-hydrated';
 import { StatsCardSkeleton } from '@/pattern/dashboard/molecules/stats-card-skeleton';
 import { LinearMoneySendIcon } from '@/pattern/common/atoms/linear-money-send-icon';
 import { LinearReceiveMoneyIcon } from '@/pattern/common/atoms/linear-money-receive-icon';
@@ -59,7 +60,11 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
   historyHref = '#recent-transactions',
 }) => {
   const activeBusiness = useAppSelector(selectActiveBusiness);
-  const isOwner = activeBusiness?.role === 'owner';
+  // `activeBusiness` comes from the redux-persist'd auth slice, which is empty
+  // on the server. Owner-only controls therefore have to wait for hydration —
+  // rendering them during the first pass mismatches the server's markup.
+  const hasHydrated = useHasHydrated();
+  const isOwner = hasHydrated && activeBusiness?.role === 'owner';
 
   return (
     <div className='flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between'>
@@ -75,7 +80,6 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
             <MetricCard
               title='Wallet Balance'
               value={formatBalance(balance)}
-              change='0%'
               viewAllLink={historyHref}
               viewAllLabel='History'
               icon={
@@ -89,7 +93,6 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
             <MetricCard
               title='Pending Earnings'
               value={formatBalance(pendingBalance)}
-              change='0%'
               icon={
                 <CardIcon bg='bg-[#5DDAB4]'>
                   <Hourglass className='size-6' />
@@ -105,7 +108,6 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
           <MetricCard
             title='Token Balance'
             value={typeof tokenBalance === 'number' ? tokenBalance.toLocaleString() : '—'}
-            change='0%'
             icon={
               <CardIcon bg='bg-[#EBB857]'>
                 <HandCoins className='size-6' /> {/* Reusing HandCoins or use another if needed, will use a similar one */}

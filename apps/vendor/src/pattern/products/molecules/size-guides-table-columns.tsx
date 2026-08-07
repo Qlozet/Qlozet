@@ -12,7 +12,7 @@ import {
   SizeGuide,
   SizeGuideCondition,
 } from '@/redux/services/size-guides/size-guides.api-slice'
-import { MoreHorizontal, Pencil, Zap } from 'lucide-react'
+import { Ban, CircleCheck, MoreHorizontal, Pencil, Trash2, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 // ─── Helpers ─────────────────────────────────────────────────────────
@@ -209,13 +209,17 @@ export const SizeGuidesTableColumns = ({
               <Pencil className='mr-2 size-4 text-primary' />
               Edit
             </DropdownMenuItem>
+            {/* Every item carries an icon — one without leaves its label
+                sitting at a different left edge to the rest of the menu. */}
             {isActive && onDeactivate && (
               <DropdownMenuItem onClick={() => onDeactivate(guide._id)}>
+                <Ban className='mr-2 size-4 text-muted-foreground' />
                 Deactivate
               </DropdownMenuItem>
             )}
             {!isActive && onActivate && (
               <DropdownMenuItem onClick={() => onActivate(guide._id)}>
+                <CircleCheck className='mr-2 size-4 text-muted-foreground' />
                 Activate
               </DropdownMenuItem>
             )}
@@ -230,6 +234,7 @@ export const SizeGuidesTableColumns = ({
                 onClick={() => onDelete(guide._id)}
                 className='text-red-600 focus:text-red-600'
               >
+                <Trash2 className='mr-2 size-4' />
                 Delete Size Guide
               </DropdownMenuItem>
             )}

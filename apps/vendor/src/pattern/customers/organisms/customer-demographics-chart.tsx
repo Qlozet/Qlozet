@@ -25,15 +25,6 @@ import ChartLegendIcon from '@/pattern/dashboard/atoms/chart-legend-icon';
 // for when `dob` and `gender` are collected during customer onboarding.
 // ─────────────────────────────────────────────────────────────────────
 
-// Placeholder data rendered as a ghost behind the empty-state overlay
-const PLACEHOLDER_DATA = [
-  { location: 'LAGOS', customerCount: 18 },
-  { location: 'ABUJA', customerCount: 12 },
-  { location: 'RIVERS', customerCount: 8 },
-  { location: 'KANO', customerCount: 5 },
-  { location: 'OYO', customerCount: 4 },
-];
-
 const renderLegend = (props: any): JSX.Element => {
   const payload = props?.payload ?? [];
 
@@ -70,12 +61,10 @@ export const CustomerDemographicsChart = ({
   const topLocations = data?.topLocations ?? [];
   const hasData = topLocations.length > 0 && topLocations.some((loc) => loc.customerCount > 0);
 
-  const chartData = hasData
-    ? topLocations.map((loc) => ({
-        location: loc.location?.toUpperCase() ?? 'UNKNOWN',
-        customerCount: loc.customerCount,
-      }))
-    : PLACEHOLDER_DATA;
+  const chartData = topLocations.map((loc) => ({
+    location: loc.location?.toUpperCase() ?? 'UNKNOWN',
+    customerCount: loc.customerCount,
+  }));
 
   return (
     <Card className={`w-full rounded-[12px] custom-card-shadow ${className ?? ''}`}>
@@ -130,26 +119,11 @@ export const CustomerDemographicsChart = ({
 // ═══════════════════════════════════════════════════════════════════════
 //  Age × Gender Demographics Bar Chart
 //  Wired to GET /business/customers/demographics → ageGenderDistribution.
-//  Shows ChartEmptyState with ghost chart when no dob/gender data exists.
+//  Shows ChartEmptyState when no dob/gender data exists.
 // ═══════════════════════════════════════════════════════════════════════
 
 const MALE_COLOR = 'var(--chart-primary)';
 const FEMALE_COLOR = 'var(--chart-secondary)';
-
-const AGE_GENDER_PLACEHOLDER = [
-  { age: '0 - 5', male: 25, female: 55 },
-  { age: '6 - 12', male: 25, female: 55 },
-  { age: '13 - 18', male: 25, female: 55 },
-  { age: '19 - 23', male: 25, female: 55 },
-  { age: '24 - 28', male: 25, female: 55 },
-  { age: '29 - 33', male: 25, female: 55 },
-  { age: '34 - 39', male: 25, female: 55 },
-  { age: '40 - 45', male: 25, female: 55 },
-  { age: '46 - 50', male: 25, female: 55 },
-  { age: '51 - 55', male: 25, female: 55 },
-  { age: '56 - 60', male: 25, female: 55 },
-  { age: '60 - 70+', male: 0, female: 55 },
-];
 
 const renderAgeGenderLegend = (props: any): JSX.Element => {
   const payload = props?.payload ?? [];
@@ -189,7 +163,7 @@ export const CustomerAgeGenderChart = ({
     ageGenderData.length > 0 &&
     ageGenderData.some((d) => d.male > 0 || d.female > 0);
 
-  const chartData = hasData ? ageGenderData : AGE_GENDER_PLACEHOLDER;
+  const chartData = ageGenderData;
 
   return (
     <Card

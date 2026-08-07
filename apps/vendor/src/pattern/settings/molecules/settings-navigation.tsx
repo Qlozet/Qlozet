@@ -45,10 +45,12 @@ export const SettingsNavigation: React.FC<SettingsNavigationProps> = ({
 }) => {
   return (
     <div className={cn('mt-4 border-b border-border', className)}>
-      {/* overflow-y-hidden: with only overflow-x set, CSS computes overflow-y
-          to auto, and the tabs' -mb-px overhang is enough to show a vertical
-          scrollbar. */}
-      <div className="flex gap-6 overflow-x-auto overflow-y-hidden scrollbar-none">
+      {/* -mb-px sits on the scroller, not the tabs: it pulls the whole row
+          1px down so the active tab's border covers the container's rule.
+          On the tabs it would overhang the scroller and be clipped by
+          overflow-y-hidden (needed because a lone overflow-x computes
+          overflow-y to auto, which would show a vertical scrollbar). */}
+      <div className="-mb-px flex gap-6 overflow-x-auto overflow-y-hidden scrollbar-none">
         {navigationItems?.map((navItem, index) => {
           const isActive = activeTab === navItem.item;
           const Icon = TAB_ICONS[navItem.item] || User;
@@ -60,7 +62,7 @@ export const SettingsNavigation: React.FC<SettingsNavigationProps> = ({
               // The active tab's border sits on the container's own bottom
               // border, so the underline reads as part of one continuous rule.
               className={cn(
-                'flex shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap border-b-2 px-1 pb-1.5 text-sm transition-colors -mb-px',
+                'flex shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap border-b-2 px-1 pb-1.5 text-sm transition-colors',
                 isActive
                   ? 'border-primary text-primary font-semibold'
                   : 'border-transparent text-grey3 hover:text-foreground'

@@ -138,14 +138,24 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
   const isDraft = isDraftStatus(quote?.status);
   const status = humanizeStatus(quote?.status);
 
-  // Garment media for the companion panel. Falls back to the order's product
-  // images until the bespoke design's reference images are wired up.
-  const orderMedia = Array.from(
-    new Set(
-      (order.items ?? []).flatMap((item) =>
-        allProductImages(asProduct(item.product))
+  // Garment media for the companion panel. A bespoke quote request carries the
+  // customer's reference images on `bespoke_design` and has no order items at
+  // all, so those come first; standard orders fall back to product images.
+  const designImages: string[] = Array.isArray(
+    (order as any).bespoke_design?.design_images
+  )
+    ? (order as any).bespoke_design.design_images.filter(
+        (url: unknown): url is string => typeof url === 'string' && !!url
       )
-    )
+    : [];
+
+  const orderMedia = Array.from(
+    new Set([
+      ...designImages,
+      ...(order.items ?? []).flatMap((item) =>
+        allProductImages(asProduct(item.product))
+      ),
+    ])
   );
 
   return (
@@ -159,7 +169,10 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
       <SheetContent
         side='right'
         onInteractOutside={ignoreMediaPanelInteraction}
-        className='flex w-full flex-col gap-0 overflow-y-auto p-0 sm:max-w-md !top-6 !bottom-6 !right-6 !h-[calc(100vh-3rem)] rounded-2xl custom-card-shadow bg-white dark:bg-[#404040] dark:bg-card'
+        // overflow-hidden here + a scrolling body below: SheetContent's own
+        // `sm:overflow-hidden` beats an `overflow-y-auto` passed in, so at
+        // desktop widths the drawer clipped its content instead of scrolling.
+        className='flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-md !top-6 !bottom-6 !right-6 !h-[calc(100vh-3rem)] rounded-2xl custom-card-shadow bg-white dark:bg-[#404040] dark:bg-card'
       >
         {/* Header */}
         <div className='flex items-start justify-between px-6 pb-3 pt-6'>
@@ -193,7 +206,8 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
           })()}
         </div>
 
-        <div className='space-y-5 px-6 py-5'>
+        {/* Scrollable body */}
+        <div className='flex-1 min-h-0 space-y-5 overflow-y-auto px-6 py-5'>
           {/* Quote card */}
           <section className='space-y-4 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4'>
             <div className='flex items-center justify-between'>

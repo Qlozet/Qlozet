@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,10 +7,10 @@ import type { VendorCustomer } from '@/redux/services/customers/customers.api-sl
 import {
   getCustomerStatus,
   getCustomerIdentifier,
-  getCustomerInitial,
   formatCount,
   type CustomerStatusVariant,
 } from '@/lib/customers';
+import { CustomerAvatar } from '../atoms/customer-avatar';
 
 // Map the customer status to the shared Badge variants.
 const STATUS_BADGE_VARIANT: Record<
@@ -21,27 +20,6 @@ const STATUS_BADGE_VARIANT: Record<
   active: 'success',
   inactive: 'error',
   suspended: 'warning',
-};
-
-const CustomerAvatar = ({ customer }: { customer: VendorCustomer }) => {
-  if (customer.profile_picture) {
-    return (
-      <div className='relative size-9 overflow-hidden rounded-full bg-gray-100'>
-        <Image
-          src={customer.profile_picture}
-          alt={getCustomerIdentifier(customer)}
-          fill
-          className='object-cover'
-          sizes='36px'
-        />
-      </div>
-    );
-  }
-  return (
-    <span className='flex size-9 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary'>
-      {getCustomerInitial(customer)}
-    </span>
-  );
 };
 
 export interface CustomersTableActions {
