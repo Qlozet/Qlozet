@@ -44,8 +44,11 @@ export const SettingsNavigation: React.FC<SettingsNavigationProps> = ({
   className,
 }) => {
   return (
-    <div className={cn('mt-4', className)}>
-      <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-none">
+    <div className={cn('mt-4 border-b border-border', className)}>
+      {/* overflow-y-hidden: with only overflow-x set, CSS computes overflow-y
+          to auto, and the tabs' -mb-px overhang is enough to show a vertical
+          scrollbar. */}
+      <div className="flex gap-6 overflow-x-auto overflow-y-hidden scrollbar-none">
         {navigationItems?.map((navItem, index) => {
           const isActive = activeTab === navItem.item;
           const Icon = TAB_ICONS[navItem.item] || User;
@@ -54,11 +57,13 @@ export const SettingsNavigation: React.FC<SettingsNavigationProps> = ({
               key={index}
               type="button"
               onClick={() => navItem.handleFunction(navItem.item)}
+              // The active tab's border sits on the container's own bottom
+              // border, so the underline reads as part of one continuous rule.
               className={cn(
-                'flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors shrink-0',
+                'flex shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap border-b-2 px-1 pb-1.5 text-sm transition-colors -mb-px',
                 isActive
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-accent dark:bg-muted text-foreground hover:bg-primary/10'
+                  ? 'border-primary text-primary font-semibold'
+                  : 'border-transparent text-grey3 hover:text-foreground'
               )}
             >
               <Icon className="size-3.5" />

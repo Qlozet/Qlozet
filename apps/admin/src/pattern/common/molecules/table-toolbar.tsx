@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Calendar, Search, Sheet } from 'lucide-react';
+import { Calendar, Search, Sheet, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -23,6 +23,10 @@ interface TableToolbarProps {
   filterControl?: ReactNode;
   /** Optional extra control rendered at the far right (e.g. a status filter). */
   rightExtra?: ReactNode;
+  /** Hide the filter control entirely (nothing to filter on). */
+  showFilter?: boolean;
+  /** Hide the export button entirely (nothing to export). */
+  showExport?: boolean;
   className?: string;
 }
 
@@ -38,6 +42,8 @@ export const TableToolbar = ({
   filterIcon = <Calendar className="size-4" />,
   filterControl,
   rightExtra,
+  showFilter = true,
+  showExport = true,
   className,
 }: TableToolbarProps) => {
   return (
@@ -51,37 +57,47 @@ export const TableToolbar = ({
         {title}
       </h2>
 
-      <div className="flex flex-wrap items-center gap-3">
-        {filterControl ?? (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onFilterDate}
-            className="h-10 gap-2 text-sm text-gray-600"
-          >
-            {filterIcon}
-            {filterLabel}
-          </Button>
-        )}
+      {/* On mobile the controls collapse to one row: icon-only filter, a
+          flexible search field, icon-only export (matching the vendor app). */}
+      <div className="flex w-full items-stretch gap-2 sm:gap-3 md:w-auto">
+        {showFilter &&
+          (filterControl ?? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onFilterDate}
+              aria-label={filterLabel}
+              className="h-10 w-10 shrink-0 gap-2 px-0 text-sm text-gray-600 sm:w-auto sm:px-4"
+            >
+              <SlidersHorizontal className="size-4 sm:hidden" />
+              <span className="hidden items-center gap-2 sm:flex">
+                {filterIcon}
+                {filterLabel}
+              </span>
+            </Button>
+          ))}
 
-        <div className="relative">
+        <div className="relative flex-1 sm:flex-none">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
           <Input
             value={search ?? ''}
             onChange={(e) => onSearchChange?.(e.target.value)}
             placeholder="Search"
-            className="h-10 w-[240px] rounded-lg pl-9"
+            className="h-10 w-full rounded-lg pl-9 sm:w-60"
           />
         </div>
 
-        <Button
-          type="button"
-          onClick={onExport}
-          className="h-10 gap-2 text-sm"
-        >
-          <Sheet className="size-4" />
-          Export
-        </Button>
+        {showExport && (
+          <Button
+            type="button"
+            onClick={onExport}
+            aria-label="Export"
+            className="h-10 w-10 shrink-0 gap-2 px-0 text-sm sm:w-auto sm:px-4"
+          >
+            <Sheet className="size-4" />
+            <span className="hidden sm:inline">Export</span>
+          </Button>
+        )}
 
         {rightExtra}
       </div>

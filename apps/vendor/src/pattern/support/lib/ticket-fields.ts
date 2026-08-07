@@ -81,6 +81,24 @@ export const formatDateTime = (value: unknown): string => {
   return `${datePart} . ${timePart}`;
 };
 
+// Issue types offered by the vendor "Get support" form. The backend stores the
+// raw value it was sent, so this map is what turns it back into display copy.
+export const ISSUE_TYPES = [
+  { value: 'general', label: 'General Inquiry' },
+  { value: 'pricing', label: 'Pricing' },
+  { value: 'feature', label: 'Feature Request' },
+  { value: 'bugs', label: 'Bugs and Issues' },
+  { value: 'others', label: 'Others' },
+];
+
+// Tickets can also be created outside this form (the Swagger example is free
+// text, e.g. "Delivery Delay"), so unknown values pass through untouched.
+export const issueTypeLabel = (value: unknown): string => {
+  const s = str(value);
+  if (!s) return '—';
+  return ISSUE_TYPES.find((t) => t.value === s.toLowerCase())?.label ?? s;
+};
+
 export const statusVariant = (status?: string): BadgeProps['variant'] => {
   const s = (status ?? '').toLowerCase();
   if (['resolved', 'closed', 'completed'].includes(s)) return 'success';

@@ -91,6 +91,9 @@ export function DataTable<TData>({
     onPaginationChange: setPagination,
     manualPagination,
     ...(manualPagination ? { pageCount } : {}),
+    // Server-paginated tables only hold one page of rows, so the footer's
+    // total has to come from the caller.
+    ...(totalCount !== undefined ? { rowCount: totalCount } : {}),
   });
 
   const errorMessage =

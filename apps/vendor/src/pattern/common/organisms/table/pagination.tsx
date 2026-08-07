@@ -13,15 +13,16 @@ export function Pagination<TData>({
   table,
   className,
 }: DataTablePaginationProps<TData>) {
-  const pageCount = table.getPageCount()
   const { pageIndex, pageSize } = table.getState().pagination;
-  const totalProducts = table.getRowCount();
+  const totalRows = table.getRowCount();
 
   return (
     <div className={cn('w-full flex items-center justify-end py-4 pr-6', className)}>
       <div className='h-fit flex items-center gap-x-4'>
         <div className='text-sm text-muted-foreground text-center'>
-          Showing {pageIndex * pageSize + 1} - {Math.min((pageIndex + 1) * pageSize, totalProducts)} of {pageCount}
+          {/* "of" is the row total, not the page count — the latter read as
+              "Showing 1 - 5 of 1". */}
+          Showing {totalRows === 0 ? 0 : pageIndex * pageSize + 1} - {Math.min((pageIndex + 1) * pageSize, totalRows)} of {totalRows}
         </div>
 
         {/* Previous Button */}

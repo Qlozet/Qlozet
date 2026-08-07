@@ -210,6 +210,10 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
       else if (actionPage === 'edit') computedPageName = 'Edit Collection';
     } else if (subPage === 'add-product') {
       computedPageName = isEditing ? 'Edit Product' : 'Add Product';
+    } else if (basePage === 'support') {
+      // /support/create-ticket and /support/{id} stay under the "Support" title
+      // rather than showing the raw segment (or a ticket id).
+      computedPageName = 'Support';
     }
 
     return {

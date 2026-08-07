@@ -10,7 +10,7 @@
 // Hidden below `sm`, where the drawer itself goes full-width and there is no
 // room alongside it.
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { ArrowLeftRight, ChevronLeft, ChevronRight, ImageOff } from 'lucide-react';
 import { cn } from '@/lib/utils';

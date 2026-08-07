@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { APP_ROUTES } from '@/lib/routes';
 import { Switch } from '@/components/ui/switch';
 import {
   Select,
@@ -62,6 +64,8 @@ interface LinkSettingItem {
   id: string;
   label: string;
   description: string;
+  /** Where the row navigates to. */
+  href: string;
 }
 
 type SettingItem =
@@ -76,32 +80,47 @@ interface SettingsSection {
   items: SettingItem[];
 }
 
-// ─── Default settings (fallback if API hasn't returned yet) ─────────
-const DEFAULT_SETTINGS: OrderSettingsData = {
-  orderConfirmation: true,
-  orderNotifications: true,
+// Starting point for the controls *only once real settings have loaded* — the
+// API may omit individual fields. These are never shown as saved values when
+// the settings request fails; see the unavailable notice below.
+const BLANK_SETTINGS: OrderSettingsData = {
+  orderConfirmation: false,
+  orderNotifications: false,
   orderTracking: false,
-  dailyOrderLimit: 50,
+  dailyOrderLimit: 0,
   automaticRefunds: false,
-  returnWindow: 14,
-  customOrderOptions: true,
+  returnWindow: 0,
+  customOrderOptions: false,
   defaultCurrency: 'NGN',
 };
 
 // ─── Setting Row Component ──────────────────────────────────────────
 const SettingRow = ({
   item,
+  disabled = false,
   onToggle,
   onSelectChange,
   onInputChange,
 }: {
   item: SettingItem;
+  /** True when the backing endpoint is unavailable — link rows stay usable. */
+  disabled?: boolean;
   onToggle?: (id: string, value: boolean) => void;
   onSelectChange?: (id: string, value: string) => void;
   onInputChange?: (id: string, value: string) => void;
 }) => {
-  return (
-    <div className='flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0'>
+  // Link rows never depend on the settings endpoint, so they stay live.
+  const rowDisabled = disabled && item.type !== 'link';
+
+  // Sits on the row element itself, whichever tag that ends up being — on an
+  // inner wrapper, `first:`/`last:` would match every row and zero the padding.
+  const rowClass = cn(
+    'flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0',
+    rowDisabled && 'opacity-60'
+  );
+
+  const content = (
+    <>
       <div className='flex-1 min-w-0'>
         <p className='text-sm font-medium text-foreground'>{item.label}</p>
         <p className='text-xs text-muted-foreground mt-0.5'>
@@ -113,6 +132,7 @@ const SettingRow = ({
         {item.type === 'toggle' && (
           <Switch
             checked={item.value}
+            disabled={rowDisabled}
             onCheckedChange={(checked) => onToggle?.(item.id, checked)}
           />
         )}
@@ -120,6 +140,7 @@ const SettingRow = ({
         {item.type === 'select' && (
           <Select
             value={item.value}
+            disabled={rowDisabled}
             onValueChange={(val) => onSelectChange?.(item.id, val)}
           >
             <SelectTrigger className='w-[130px] h-9 text-xs bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'>
@@ -139,6 +160,7 @@ const SettingRow = ({
           <Input
             type={item.inputType || 'text'}
             value={item.value}
+            disabled={rowDisabled}
             onChange={(e) => onInputChange?.(item.id, e.target.value)}
             placeholder={item.placeholder}
             className='w-[80px] h-9 text-center text-sm bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
@@ -149,18 +171,32 @@ const SettingRow = ({
           <ChevronRight className='size-5 text-muted-foreground' />
         )}
       </div>
-    </div>
+    </>
+  );
+
+  // Link rows navigate to the page that actually owns the setting.
+  return item.type === 'link' ? (
+    <Link
+      href={item.href}
+      className={cn(rowClass, 'cursor-pointer transition-opacity hover:opacity-80')}
+    >
+      {content}
+    </Link>
+  ) : (
+    <div className={rowClass}>{content}</div>
   );
 };
 
 // ─── Settings Card Component ────────────────────────────────────────
 const SettingsCard = ({
   section,
+  disabled = false,
   onToggle,
   onSelectChange,
   onInputChange,
 }: {
   section: SettingsSection;
+  disabled?: boolean;
   onToggle: (id: string, value: boolean) => void;
   onSelectChange: (id: string, value: string) => void;
   onInputChange: (id: string, value: string) => void;
@@ -183,6 +219,7 @@ const SettingsCard = ({
           <SettingRow
             key={item.id}
             item={item}
+            disabled={disabled}
             onToggle={onToggle}
             onSelectChange={onSelectChange}
             onInputChange={onInputChange}
@@ -196,11 +233,15 @@ const SettingsCard = ({
 // ─── Main Order Settings Component ──────────────────────────────────
 export const OrderSettingsContent = () => {
   // ─── API Integration ────────────────────────────────────────────
-  const { data: apiData, isLoading: isLoadingSettings } = useGetOrderSettingsQuery();
+  const {
+    data: apiData,
+    isLoading: isLoadingSettings,
+    isError: settingsUnavailable,
+  } = useGetOrderSettingsQuery();
   const [updateOrderSettings, { isLoading: isSaving }] = useUpdateOrderSettingsMutation();
 
   // ─── Local State (seeded from API) ──────────────────────────────
-  const [settings, setSettings] = useState<OrderSettingsData>(DEFAULT_SETTINGS);
+  const [settings, setSettings] = useState<OrderSettingsData>(BLANK_SETTINGS);
   const [hasChanges, setHasChanges] = useState(false);
 
   // ─── External Fabric (from Business Profile API) ─────────────────
@@ -222,6 +263,17 @@ export const OrderSettingsContent = () => {
       setSettings(apiData.data);
     }
   }, [apiData]);
+
+  // A missing settings endpoint is a deployment matter, not something the
+  // vendor can act on — the controls simply render disabled. Developers get
+  // the detail in the console.
+  useEffect(() => {
+    if (settingsUnavailable) {
+      console.warn(
+        '[OrderSettings] order settings endpoint unavailable — controls are disabled until it exists.'
+      );
+    }
+  }, [settingsUnavailable]);
 
   // ─── Handlers ───────────────────────────────────────────────────
   const handleToggle = (id: string, value: boolean) => {
@@ -366,12 +418,14 @@ export const OrderSettingsContent = () => {
           id: 'pricingRules',
           label: 'Pricing Rules',
           description: 'Configure discounts & promotions',
+          href: APP_ROUTES.productsDiscounts,
         },
         {
           type: 'link',
           id: 'measurementSettings',
           label: 'Measurement Settings',
           description: 'Manage measuring size guides',
+          href: APP_ROUTES.productsSizeGuides,
         },
       ],
     },
@@ -385,6 +439,7 @@ export const OrderSettingsContent = () => {
           <SettingsCard
             key={section.title}
             section={section}
+            disabled={settingsUnavailable}
             onToggle={handleToggle}
             onSelectChange={handleSelectChange}
             onInputChange={handleInputChange}
@@ -425,7 +480,7 @@ export const OrderSettingsContent = () => {
       <div className='pt-2'>
         <Button
           onClick={handleSave}
-          disabled={isSaving || !hasChanges}
+          disabled={isSaving || !hasChanges || settingsUnavailable}
           className='min-w-[160px] bg-[#3d2817] hover:bg-[#2e1e10] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black'
         >
           {isSaving && <Loader2 className='mr-2 size-4 animate-spin' />}

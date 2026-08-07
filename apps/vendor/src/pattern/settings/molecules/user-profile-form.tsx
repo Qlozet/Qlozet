@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { DIAL_CODES, joinPhone, splitPhone } from '../lib/phone';
 
 const userProfileSchema = z.object({
   fullName: z.string().optional(),
@@ -113,7 +114,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='johndoe'
+                      placeholder='Choose a username'
                       className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
@@ -149,37 +150,54 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
               )}
             />
 
-            {/* Phone Number */}
+            {/* Phone Number — dial code and national part are two views of the
+                single stored string, so the select isn't decorative. */}
             <FormField
               control={form.control}
               name='phoneNumber'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                    Phone Number
-                  </FormLabel>
-                  <FormControl>
-                    <div className='flex gap-2'>
-                      <Select defaultValue='+234'>
-                        <SelectTrigger className='w-[100px] bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value='+234'>+234</SelectItem>
-                          <SelectItem value='+1'>+1</SelectItem>
-                          <SelectItem value='+44'>+44</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Input
-                        placeholder='8132205304'
-                        className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 flex-1'
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                const { code, national } = splitPhone(field.value);
+                return (
+                  <FormItem>
+                    <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                      Phone Number
+                    </FormLabel>
+                    <FormControl>
+                      <div className='flex gap-2'>
+                        <Select
+                          value={code}
+                          onValueChange={(next) =>
+                            field.onChange(joinPhone(next, national))
+                          }
+                        >
+                          <SelectTrigger className='w-[100px] bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {DIAL_CODES.map((dial) => (
+                              <SelectItem key={dial} value={dial}>
+                                {dial}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Input
+                          placeholder='Phone number'
+                          className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 flex-1'
+                          name={field.name}
+                          ref={field.ref}
+                          onBlur={field.onBlur}
+                          value={national}
+                          onChange={(e) =>
+                            field.onChange(joinPhone(code, e.target.value))
+                          }
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
 
             {/* Country (display-only, from business) */}

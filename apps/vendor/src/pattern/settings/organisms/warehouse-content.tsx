@@ -1,20 +1,27 @@
 // Warehouse Content - Organism
-// Warehouse section with table and actions
+// Warehouse section: list, add, edit, delete and set-default, all backed by
+// the real /business/warehouse endpoints.
 
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useMemo } from 'react'
+import { show } from '@ebay/nice-modal-react'
+import { toast } from 'sonner'
 import WarehouseTableTemplate from '../templates/warehouse-table-template'
 import { Warehouse } from '../molecules/warehouse-table-columns'
-import { useGetWarehouseQuery } from '@/redux/services/settings/settings.api-slice'
-import { toast } from 'sonner'
-import { show } from '@ebay/nice-modal-react'
+import {
+  useActivateBusinessWarehouseMutation,
+  useDeleteBusinessWarehouseMutation,
+  useGetBusinessProfileQuery,
+  useGetBusinessWarehousesQuery,
+  type BusinessWarehouse,
+} from '@/redux/services/settings/settings.api-slice'
 import { AddWarehouseModal } from './add-warehouse-modal'
-import { mockWarehouses } from '@/lib/mocks'
+
+const text = (value: unknown): string =>
+  typeof value === 'string' && value.trim() ? value.trim() : '—'
 
 export const WarehouseContent: React.FC = () => {
-  const [warehouses, setWarehouses] = useState<Warehouse[]>([])
-
   const {
     data: warehouseData,
     isLoading,
@@ -23,51 +30,54 @@ export const WarehouseContent: React.FC = () => {
     isError,
     error,
     refetch,
-  } = useGetWarehouseQuery()
+  } = useGetBusinessWarehousesQuery()
 
-  // Transform API data to match Warehouse interface
-  useEffect(() => {
-    if (warehouseData?.data?.data?.formattedWarehouses) {
-      const transformedWarehouses: Warehouse[] =
-        warehouseData.data.data.formattedWarehouses?.map((item: any) => ({
-          _id: item._id || item.warehouseName,
-          warehouseName: item.warehouseName,
-          vendorName: item.vendorName,
-          warehouseAddress: item.warehouseAddress,
-          contactName: item.contactName,
-          phoneNumber: item.contactPhoneNumber || '+234 8123456789',
-          email: item.contactEmail,
-          status: item.warehouseStatus === 'default' ? 'default' : 'alternate',
-        }))
-      setWarehouses(transformedWarehouses)
-    } else if (!isLoading && !isFetching) {
-      // Use mock data if API returns no data or fails
-      setWarehouses(mockWarehouses)
-    }
-  }, [warehouseData, isLoading, isFetching])
+  // Warehouses belong to the signed-in business, so the "Vendor's name" column
+  // is that business — the warehouse record itself doesn't carry a name.
+  const { data: business } = useGetBusinessProfileQuery()
 
-  const handleAddWarehouse = () => {
-    show(AddWarehouseModal, {
-      onWarehouseAdded: () => {
-        refetch()
-      },
-    })
-  }
+  const [deleteWarehouse] = useDeleteBusinessWarehouseMutation()
+  const [activateWarehouse] = useActivateBusinessWarehouseMutation()
+
+  const warehouses: Warehouse[] = useMemo(
+    () =>
+      (warehouseData ?? []).map((item: BusinessWarehouse) => ({
+        _id: item._id,
+        warehouseName: text(item.name),
+        vendorName: text(business?.business_name),
+        warehouseAddress: text(item.address),
+        contactName: text(item.contact_name),
+        phoneNumber: text(item.contact_phone),
+        email: text(item.contact_email),
+        status: item.is_active ? 'default' : 'alternate',
+      })),
+    [warehouseData, business?.business_name]
+  )
+
+  const handleAddWarehouse = () => show(AddWarehouseModal)
 
   const handleEditWarehouse = (warehouseId: string) => {
-    toast.info('Edit warehouse feature coming soon')
+    const warehouse = warehouseData?.find((item) => item._id === warehouseId)
+    if (!warehouse) return
+    show(AddWarehouseModal, { warehouse })
   }
 
-  const handleDeleteWarehouse = (warehouseId: string) => {
-    toast.info('Delete warehouse feature coming soon')
+  const handleDeleteWarehouse = async (warehouseId: string) => {
+    try {
+      await deleteWarehouse(warehouseId).unwrap()
+      toast.success('Warehouse deleted')
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Failed to delete warehouse')
+    }
   }
 
-  const handleSetDefaultWarehouse = (warehouseId: string) => {
-    toast.info('Set default warehouse feature coming soon')
-  }
-
-  const handleExport = () => {
-    toast.info('Export warehouses feature coming soon')
+  const handleSetDefaultWarehouse = async (warehouseId: string) => {
+    try {
+      await activateWarehouse(warehouseId).unwrap()
+      toast.success('Default warehouse updated')
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Failed to set default warehouse')
+    }
   }
 
   return (
@@ -82,7 +92,6 @@ export const WarehouseContent: React.FC = () => {
       onEditWarehouse={handleEditWarehouse}
       onDeleteWarehouse={handleDeleteWarehouse}
       onSetDefaultWarehouse={handleSetDefaultWarehouse}
-      onExport={handleExport}
       refetch={refetch}
     />
   )

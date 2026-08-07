@@ -68,6 +68,16 @@ export const AddressAutocompleteInput: React.FC<
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
+  // Surface a missing key to developers only — the input degrades to plain
+  // manual entry, which needs no explanation to the vendor.
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY) {
+      console.warn(
+        '[AddressAutocompleteInput] NEXT_PUBLIC_GOOGLE_PLACES_API_KEY is not set — address autocomplete is disabled.'
+      )
+    }
+  }, [])
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
     onChange(val)
@@ -139,12 +149,11 @@ export const AddressAutocompleteInput: React.FC<
         )}
       </div>
 
-      {/* Google Places notice */}
-      {!isLoaded && !process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY && (
-        <p className='text-xs text-amber-600 dark:text-amber-400 mt-1'>
-          Google Places API key not configured. Enter address manually.
-        </p>
-      )}
+      {/*
+        A missing NEXT_PUBLIC_GOOGLE_PLACES_API_KEY is a deployment problem the
+        vendor can't act on, and the field still works as plain text — so it's
+        warned about in the console (see the effect above), not on screen.
+      */}
 
       {/* Predictions dropdown */}
       {showDropdown && (

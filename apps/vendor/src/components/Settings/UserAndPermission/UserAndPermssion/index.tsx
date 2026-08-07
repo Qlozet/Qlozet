@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import UserAndPermissionTable from '../UserAndPermissionTable';
 import AddNewUserAndPermissionForm from '../AddUserAndPermissionForm';
 
@@ -11,9 +11,6 @@ const UserAndPermission = () => {
     setShowAddModal(false);
   };
 
-  const handleEdit = () => {
-    setShowAddModal(true);
-  };
   return (
     <div className=''>
       <div className='flex items-center justify-end mb-4'>
@@ -26,10 +23,13 @@ const UserAndPermission = () => {
           <span>Invite New Member</span>
         </Button>
       </div>
-      <UserAndPermissionTable handleEdit={handleEdit} />
+      <UserAndPermissionTable />
 
       <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
         <DialogContent className="max-w-[700px] p-0 border-none bg-transparent shadow-none [&>button]:hidden">
+          {/* The form renders its own heading, so the dialog's accessible name
+              is hidden rather than duplicated. */}
+          <DialogTitle className="sr-only">Invite new member</DialogTitle>
           <AddNewUserAndPermissionForm closeModal={closeAddModal} />
         </DialogContent>
       </Dialog>

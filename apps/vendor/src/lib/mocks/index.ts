@@ -6,4 +6,3 @@
  */
 
 export * from './products.mock'
-export * from './warehouses.mock'

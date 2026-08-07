@@ -1,43 +1,53 @@
 'use client';
 
-import { useState } from 'react';
-import NiceModal from '@ebay/nice-modal-react';
-import { WorkInProgressModal } from '@/pattern/common/organisms/work-in-progress-modal';
+import { useMemo, useState } from 'react';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
 import { ActivityItem } from '../molecules/activity-item';
 import type { TicketActivity } from '../lib/activity-types';
-import { USE_SUPPORT_MOCKS, MOCK_ACTIVITIES } from '../../lib/mock-data';
 
 // Ticket activity timeline.
+//
+// TODO(api): the backend has no ticket-activity endpoint. Replace `activities`
+// with `useGetTicketActivitiesQuery(ticketId)` once it ships — the timeline and
+// ActivityItem rendering below are already built against TicketActivity.
 export const TicketActivities = () => {
   const [search, setSearch] = useState('');
-  const showWip = () => NiceModal.show(WorkInProgressModal);
 
-  // TODO(api): the backend has no ticket-activity endpoint yet. Replace with
-  // `useGetTicketActivitiesQuery(ticketId)` once it ships; the timeline +
-  // ActivityItem rendering are ready. (Mock rows shown while USE_SUPPORT_MOCKS.)
-  const activities: TicketActivity[] = USE_SUPPORT_MOCKS ? MOCK_ACTIVITIES : [];
+  const activities: TicketActivity[] = useMemo(() => [], []);
+
+  const visible = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return activities;
+    return activities.filter((activity) =>
+      `${activity.actor} ${activity.action} ${activity.highlight ?? ''}`
+        .toLowerCase()
+        .includes(term)
+    );
+  }, [activities, search]);
 
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-white custom-card-shadow">
+      {/* No date filter or export: there is no activity data source to act on. */}
       <TableToolbar
         title="Activities"
         search={search}
         onSearchChange={setSearch}
-        onFilterDate={showWip}
-        onExport={showWip}
+        showFilter={false}
+        showExport={false}
       />
 
       <div className="px-6 pb-6">
-        {activities.length > 0 ? (
+        {visible.length > 0 ? (
           <div className="space-y-4">
-            {activities.map((activity) => (
+            {visible.map((activity) => (
               <ActivityItem key={activity.id} activity={activity} />
             ))}
           </div>
         ) : (
-          <div className="flex min-h-[160px] items-center justify-center text-center text-sm text-grey3">
-            No activity recorded for this ticket yet.
+          <div className="flex min-h-40 items-center justify-center text-center text-sm text-grey3">
+            {activities.length === 0
+              ? 'No activity recorded for this ticket yet.'
+              : 'No activity matches your search.'}
           </div>
         )}
       </div>

@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { AddressAutocompleteInput } from './address-autocomplete-input';
+import { DIAL_CODES, joinPhone, splitPhone } from '../lib/phone';
 import type { PlaceDetails } from '@/hooks/use-google-places';
 
 const organizationProfileSchema = z.object({
@@ -121,7 +122,7 @@ export const OrganizationProfileForm: React.FC<
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='Qlozet Store'
+                      placeholder='Enter your business name'
                       className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
@@ -180,7 +181,7 @@ export const OrganizationProfileForm: React.FC<
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='Lagos'
+                      placeholder='Enter state'
                       className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
@@ -201,7 +202,7 @@ export const OrganizationProfileForm: React.FC<
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='Ikeja'
+                      placeholder='Enter city'
                       className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
@@ -252,7 +253,7 @@ export const OrganizationProfileForm: React.FC<
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='2020'
+                      placeholder='Enter year founded'
                       className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
@@ -274,7 +275,7 @@ export const OrganizationProfileForm: React.FC<
                   <FormControl>
                     <Input
                       type='email'
-                      placeholder='admin@garmisland.com'
+                      placeholder='Enter business email'
                       className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
@@ -284,37 +285,54 @@ export const OrganizationProfileForm: React.FC<
               )}
             />
 
-            {/* Phone Number */}
+            {/* Phone Number — dial code and national part are two views of the
+                single stored string, so the select isn't decorative. */}
             <FormField
               control={form.control}
               name='phoneNumber'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                    Phone Number
-                  </FormLabel>
-                  <FormControl>
-                    <div className='flex gap-2'>
-                      <Select defaultValue='+234'>
-                        <SelectTrigger className='w-[100px] bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value='+234'>+234</SelectItem>
-                          <SelectItem value='+1'>+1</SelectItem>
-                          <SelectItem value='+44'>+44</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Input
-                        placeholder='8132205304'
-                        className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 flex-1'
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                const { code, national } = splitPhone(field.value);
+                return (
+                  <FormItem>
+                    <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                      Phone Number
+                    </FormLabel>
+                    <FormControl>
+                      <div className='flex gap-2'>
+                        <Select
+                          value={code}
+                          onValueChange={(next) =>
+                            field.onChange(joinPhone(next, national))
+                          }
+                        >
+                          <SelectTrigger className='w-[100px] bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {DIAL_CODES.map((dial) => (
+                              <SelectItem key={dial} value={dial}>
+                                {dial}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Input
+                          placeholder='Phone number'
+                          className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 flex-1'
+                          name={field.name}
+                          ref={field.ref}
+                          onBlur={field.onBlur}
+                          value={national}
+                          onChange={(e) =>
+                            field.onChange(joinPhone(code, e.target.value))
+                          }
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
 
             {/* Website */}
@@ -328,7 +346,7 @@ export const OrganizationProfileForm: React.FC<
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='https://www.garmisland.com'
+                      placeholder='Enter website URL'
                       className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
@@ -350,7 +368,7 @@ export const OrganizationProfileForm: React.FC<
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='1234567890'
+                      placeholder='Enter your 11-digit NIN'
                       className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
@@ -372,7 +390,7 @@ export const OrganizationProfileForm: React.FC<
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='22123456789'
+                      placeholder='Enter your 11-digit BVN'
                       className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
                       {...field}
                     />
