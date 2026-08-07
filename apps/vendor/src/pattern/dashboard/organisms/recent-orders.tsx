@@ -10,7 +10,6 @@ import { APP_ROUTES } from '@/lib/routes';
 import {
     useGetVendorOrdersQuery,
     type Order,
-    type PopulatedProduct,
 } from '@/redux/services/orders/orders.api-slice';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
 import { BoldBoxRemoveIcon } from '@/pattern/common/atoms/bold-box-remove-icon';
@@ -18,6 +17,8 @@ import { OrderDetailsDrawer } from '@/pattern/orders/organisms/order-details-dra
 import {
     readCustomerName,
     readOrderId,
+    readOrderItemImages,
+    readOrderTitle,
     readStatus,
     orderStatusBadge,
     formatNaira,
@@ -25,47 +26,6 @@ import {
 import { cn } from '@/lib/utils';
 
 /* ── Helpers ── */
-
-/** Get product name from an order's first item */
-function getFirstProductName(order: Order): string {
-    const item = order.items?.[0];
-    if (!item) return 'Order';
-    const product = typeof item.product === 'object' && item.product !== null
-        ? (item.product as PopulatedProduct)
-        : null;
-    if (!product) return 'Order';
-    return product.clothing?.name
-        ?? product.fabric?.name
-        ?? product.accessory?.name
-        ?? product.name
-        ?? 'Order';
-}
-
-/** Get first product image URL from an order */
-function getFirstProductImage(order: Order): string | null {
-    const item = order.items?.[0];
-    if (!item) return null;
-    const product = typeof item.product === 'object' && item.product !== null
-        ? (item.product as PopulatedProduct)
-        : null;
-    if (!product) return null;
-
-    const kindImages =
-        product.clothing?.images ??
-        product.fabric?.images ??
-        product.accessory?.images;
-    if (kindImages?.length) {
-        const first = kindImages[0];
-        if (typeof first === 'object' && first?.url) return first.url;
-    }
-
-    if (product.images?.length) {
-        const first = product.images[0];
-        if (typeof first === 'string') return first;
-        if (typeof first === 'object' && first?.url) return first.url;
-    }
-    return null;
-}
 
 /** Relative time string (e.g. "2h ago", "3d ago") */
 function timeAgo(dateStr?: string): string {
@@ -141,8 +101,8 @@ export const RecentOrders = () => {
                     </div>
                 ) : (
                     orders.map((order: Order, idx: number) => {
-                        const productName = getFirstProductName(order);
-                        const imageUrl = getFirstProductImage(order);
+                        const productName = readOrderTitle(order);
+                        const images = readOrderItemImages(order, 3);
                         const customerName = readCustomerName(order);
                         const total = order.total ?? order.subtotal ?? 0;
                         const status = readStatus(order);
@@ -158,18 +118,32 @@ export const RecentOrders = () => {
                                 className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 dark:bg-muted dark:hover:bg-muted/80 rounded-xl transition group text-left cursor-pointer"
                             >
                                 <div className="flex items-center gap-3 min-w-0 flex-1">
-                                    {/* Product thumbnail */}
-                                    <div className="relative size-11 rounded-lg shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                        {imageUrl ? (
-                                            <Image
-                                                src={imageUrl}
-                                                alt={productName}
-                                                fill
-                                                className="object-cover"
-                                                sizes="44px"
-                                            />
+                                    {/* Product thumbnail stack (overlapping for multi-item orders) */}
+                                    <div className="flex shrink-0 items-center">
+                                        {images.length > 0 ? (
+                                            images.map((src, i) => (
+                                                <div
+                                                    key={i}
+                                                    className={cn(
+                                                        'relative size-11 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700 ring-2 ring-gray-50 dark:ring-muted transition-all duration-200 ease-out',
+                                                        // Tight by default (just reads as a stack); fan out on card hover.
+                                                        i !== 0 && '-ml-8 group-hover:-ml-4'
+                                                    )}
+                                                    style={{ zIndex: images.length - i }}
+                                                >
+                                                    <Image
+                                                        src={src}
+                                                        alt={productName}
+                                                        fill
+                                                        className="object-cover"
+                                                        sizes="44px"
+                                                    />
+                                                </div>
+                                            ))
                                         ) : (
-                                            <Package className="size-4 text-gray-400" />
+                                            <div className="relative size-11 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                                <Package className="size-4 text-gray-400" />
+                                            </div>
                                         )}
                                     </div>
 

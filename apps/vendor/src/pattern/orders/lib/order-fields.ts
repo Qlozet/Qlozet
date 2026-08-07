@@ -73,6 +73,101 @@ export const isCustomOrder = (o: Order): boolean =>
 export const readQuoteId = (o: Order): string =>
   o.bespoke_quote ?? o._id;
 
+// ──────────────── Product image + title (bespoke-aware) ────────────────
+
+const asPopulatedProduct = (item: any): any | null =>
+  item && typeof item.product === 'object' && item.product !== null
+    ? item.product
+    : null;
+
+const readBespokeDesign = (o: Order): any | null => {
+  const d = (o as any).bespoke_design;
+  return d && typeof d === 'object' ? d : null;
+};
+
+// First image for the order's first item; falls back to the bespoke design's
+// image for custom orders (which have no catalog product).
+export const readOrderImage = (o: Order): string | null => {
+  const product = asPopulatedProduct(o.items?.[0]);
+  if (product) {
+    const kindImages =
+      product.clothing?.images ??
+      product.fabric?.images ??
+      product.accessory?.images;
+    if (Array.isArray(kindImages) && kindImages.length) {
+      const first = kindImages[0];
+      if (typeof first === 'object' && first?.url) return first.url;
+      if (typeof first === 'string') return first;
+    }
+    if (Array.isArray(product.images) && product.images.length) {
+      const first = product.images[0];
+      if (typeof first === 'string') return first;
+      if (typeof first === 'object' && first?.url) return first.url;
+    }
+  }
+  const design = readBespokeDesign(o);
+  if (design) {
+    const imgs = design.design_images ?? design.reference_images;
+    if (Array.isArray(imgs) && imgs.length) {
+      const first = imgs[0];
+      if (typeof first === 'string') return first;
+      if (typeof first === 'object' && first?.url) return first.url;
+    }
+  }
+  return null;
+};
+
+// Extract the first usable image URL from an images array (strings or {url}).
+const firstImageOf = (arr: any): string | null => {
+  if (Array.isArray(arr) && arr.length) {
+    const first = arr[0];
+    if (typeof first === 'string') return first;
+    if (first && typeof first === 'object' && first.url) return first.url;
+  }
+  return null;
+};
+
+const productImage = (item: any): string | null => {
+  const p = asPopulatedProduct(item);
+  if (!p) return null;
+  const kind = p.clothing?.images ?? p.fabric?.images ?? p.accessory?.images;
+  return firstImageOf(kind) ?? firstImageOf(p.images);
+};
+
+// Up to `max` thumbnails for the order — one per item that has a product image,
+// falling back to the bespoke design image for custom orders. Used to render the
+// overlapping thumbnail stack for multi-item orders.
+export const readOrderItemImages = (o: Order, max = 3): string[] => {
+  const imgs: string[] = [];
+  for (const item of Array.isArray(o.items) ? o.items : []) {
+    const img = productImage(item);
+    if (img) imgs.push(img);
+    if (imgs.length >= max) break;
+  }
+  if (imgs.length === 0) {
+    const d = readBespokeDesign(o);
+    if (d) {
+      const img = firstImageOf(d.design_images) ?? firstImageOf(d.reference_images);
+      if (img) imgs.push(img);
+    }
+  }
+  return imgs;
+};
+
+// Display title for the order's first item; bespoke design name for custom orders.
+export const readOrderTitle = (o: Order): string => {
+  const product = asPopulatedProduct(o.items?.[0]);
+  const name =
+    product?.clothing?.name ??
+    product?.fabric?.name ??
+    product?.accessory?.name ??
+    product?.name;
+  if (name) return name;
+  const design = readBespokeDesign(o);
+  if (design) return design.name ?? 'Custom design';
+  return 'Order';
+};
+
 // ──────────────── Order-Status Badge ────────────────
 
 export interface StatusBadge {
