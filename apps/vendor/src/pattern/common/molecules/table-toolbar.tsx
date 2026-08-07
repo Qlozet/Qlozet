@@ -37,7 +37,7 @@ export const TableToolbar = ({
   onFilterDate,
   onExport,
   filterLabel = 'Filter By Date',
-  filterIcon = <Calendar className='size-4' />,
+  filterIcon = <Calendar className="size-4" />,
   filterControl,
   rightExtra,
   className,
@@ -49,33 +49,33 @@ export const TableToolbar = ({
         className
       )}
     >
-      <h2 className='text-lg font-semibold text-[hsla(210,9%,31%,1)] dark:text-foreground'>
+      <h2 className="text-lg font-semibold text-[hsla(210,9%,31%,1)] dark:text-foreground">
         {title}
       </h2>
 
-      <div className='flex items-stretch gap-2 sm:gap-3 w-full md:w-auto'>
+      <div className="flex items-stretch gap-2 sm:gap-3 w-full md:w-auto">
         {filterControl ?? (
           <Button
-            type='button'
-            variant='outline'
+            type="button"
+            variant="outline"
             onClick={onFilterDate}
-            className='h-10 w-10 sm:w-auto px-0 sm:px-4 gap-2 text-sm text-gray-600 dark:text-muted-foreground bg-transparent hover:bg-transparent dark:border-gray-500 shrink-0'
+            className="h-10 w-10 sm:w-auto px-0 sm:px-4 gap-2 text-sm text-gray-600 dark:text-muted-foreground bg-transparent hover:bg-transparent dark:border-gray-500 shrink-0"
           >
-            <SlidersHorizontal className='size-4 sm:hidden' />
-            <div className='hidden sm:flex items-center gap-2'>
+            <SlidersHorizontal className="size-4 sm:hidden" />
+            <div className="hidden sm:flex items-center gap-2">
               {filterIcon}
               <span>{filterLabel}</span>
             </div>
           </Button>
         )}
 
-        <div className='relative flex-1 sm:flex-none'>
-          <Search className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400 dark:text-muted-foreground' />
+        <div className="relative flex-1 sm:flex-none">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400 dark:text-muted-foreground" />
           <Input
             value={search ?? ''}
             onChange={(e) => onSearchChange?.(e.target.value)}
-            placeholder='Search'
-            className='h-10 w-full sm:w-[240px] rounded-lg pl-9 bg-[#F8F9FA] dark:bg-muted dark:border-border dark:text-foreground'
+            placeholder="Search"
+            className="h-10 w-full sm:w-[240px] rounded-lg pl-9 bg-[#F8F9FA] dark:bg-muted dark:border-border dark:text-foreground"
           />
         </div>
 

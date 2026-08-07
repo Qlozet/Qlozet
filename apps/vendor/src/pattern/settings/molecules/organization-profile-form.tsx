@@ -109,21 +109,21 @@ export const OrganizationProfileForm: React.FC<
   return (
     <div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Business Name */}
             <FormField
               control={form.control}
-              name='businessName'
+              name="businessName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Business Name
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='Enter your business name'
-                      className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
+                      placeholder="Enter your business name"
+                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
                       {...field}
                     />
                   </FormControl>
@@ -135,33 +135,30 @@ export const OrganizationProfileForm: React.FC<
             {/* Country */}
             <FormField
               control={form.control}
-              name='country'
+              name="country"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1'>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                     Country
-                    <span className='text-gray-400'>ⓘ</span>
+                    <span className="text-gray-400">ⓘ</span>
                   </FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'>
-                        <SelectValue placeholder='Select country' />
+                      <SelectTrigger className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200">
+                        <SelectValue placeholder="Select country" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value='Nigeria'>Nigeria</SelectItem>
-                      <SelectItem value='United States'>
+                      <SelectItem value="Nigeria">Nigeria</SelectItem>
+                      <SelectItem value="United States">
                         United States
                       </SelectItem>
-                      <SelectItem value='United Kingdom'>
+                      <SelectItem value="United Kingdom">
                         United Kingdom
                       </SelectItem>
-                      <SelectItem value='Canada'>Canada</SelectItem>
-                      <SelectItem value='Ghana'>Ghana</SelectItem>
-                      <SelectItem value='South Africa'>South Africa</SelectItem>
+                      <SelectItem value="Canada">Canada</SelectItem>
+                      <SelectItem value="Ghana">Ghana</SelectItem>
+                      <SelectItem value="South Africa">South Africa</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -172,17 +169,17 @@ export const OrganizationProfileForm: React.FC<
             {/* State */}
             <FormField
               control={form.control}
-              name='state'
+              name="state"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1'>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                     State
-                    <span className='text-gray-400'>ⓘ</span>
+                    <span className="text-gray-400">ⓘ</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='Enter state'
-                      className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
+                      placeholder="Enter state"
+                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
                       {...field}
                     />
                   </FormControl>
@@ -194,16 +191,16 @@ export const OrganizationProfileForm: React.FC<
             {/* City */}
             <FormField
               control={form.control}
-              name='city'
+              name="city"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     City
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='Enter city'
-                      className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
+                      placeholder="Enter city"
+                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
                       {...field}
                     />
                   </FormControl>
@@ -215,10 +212,10 @@ export const OrganizationProfileForm: React.FC<
             {/* Address (Google Places Autocomplete) */}
             <FormField
               control={form.control}
-              name='address'
+              name="address"
               render={({ field }) => (
-                <FormItem className='md:col-span-2'>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                <FormItem className="md:col-span-2">
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Business Address
                   </FormLabel>
                   <FormControl>
@@ -226,15 +223,15 @@ export const OrganizationProfileForm: React.FC<
                       value={field.value}
                       onChange={field.onChange}
                       onSelect={(details: PlaceDetails) => {
-                        field.onChange(details.address)
-                        form.setValue('city', details.city)
-                        form.setValue('state', details.state)
-                        form.setValue('country', details.country || 'Nigeria')
-                        form.setValue('zipCode', details.postalCode)
-                        form.setValue('latitude', details.lat)
-                        form.setValue('longitude', details.lng)
+                        field.onChange(details.address);
+                        form.setValue('city', details.city);
+                        form.setValue('state', details.state);
+                        form.setValue('country', details.country || 'Nigeria');
+                        form.setValue('zipCode', details.postalCode);
+                        form.setValue('latitude', details.lat);
+                        form.setValue('longitude', details.lng);
                       }}
-                      placeholder='Search for your business address...'
+                      placeholder="Search for your business address..."
                     />
                   </FormControl>
                   <FormMessage />
@@ -245,16 +242,16 @@ export const OrganizationProfileForm: React.FC<
             {/* Year Founded */}
             <FormField
               control={form.control}
-              name='yearFounded'
+              name="yearFounded"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Year Founded
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='Enter year founded'
-                      className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
+                      placeholder="Enter year founded"
+                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
                       {...field}
                     />
                   </FormControl>
@@ -266,17 +263,17 @@ export const OrganizationProfileForm: React.FC<
             {/* Email Address */}
             <FormField
               control={form.control}
-              name='email'
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Email Address
                   </FormLabel>
                   <FormControl>
                     <Input
-                      type='email'
-                      placeholder='Enter business email'
-                      className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
+                      type="email"
+                      placeholder="Enter business email"
+                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
                       {...field}
                     />
                   </FormControl>
@@ -289,23 +286,23 @@ export const OrganizationProfileForm: React.FC<
                 single stored string, so the select isn't decorative. */}
             <FormField
               control={form.control}
-              name='phoneNumber'
+              name="phoneNumber"
               render={({ field }) => {
                 const { code, national } = splitPhone(field.value);
                 return (
                   <FormItem>
-                    <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                    <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Phone Number
                     </FormLabel>
                     <FormControl>
-                      <div className='flex gap-2'>
+                      <div className="flex gap-2">
                         <Select
                           value={code}
                           onValueChange={(next) =>
                             field.onChange(joinPhone(next, national))
                           }
                         >
-                          <SelectTrigger className='w-[100px] bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'>
+                          <SelectTrigger className="w-[100px] bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -317,8 +314,8 @@ export const OrganizationProfileForm: React.FC<
                           </SelectContent>
                         </Select>
                         <Input
-                          placeholder='Phone number'
-                          className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 flex-1'
+                          placeholder="Phone number"
+                          className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 flex-1"
                           name={field.name}
                           ref={field.ref}
                           onBlur={field.onBlur}
@@ -338,16 +335,16 @@ export const OrganizationProfileForm: React.FC<
             {/* Website */}
             <FormField
               control={form.control}
-              name='website'
+              name="website"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Website
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='Enter website URL'
-                      className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
+                      placeholder="Enter website URL"
+                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
                       {...field}
                     />
                   </FormControl>
@@ -359,17 +356,17 @@ export const OrganizationProfileForm: React.FC<
             {/* NIN */}
             <FormField
               control={form.control}
-              name='nin'
+              name="nin"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1'>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                     National Identity Number (NIN)
-                    <span className='text-orange-500'>ⓘ</span>
+                    <span className="text-orange-500">ⓘ</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='Enter your 11-digit NIN'
-                      className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
+                      placeholder="Enter your 11-digit NIN"
+                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
                       {...field}
                     />
                   </FormControl>
@@ -381,17 +378,17 @@ export const OrganizationProfileForm: React.FC<
             {/* BVN */}
             <FormField
               control={form.control}
-              name='bvn'
+              name="bvn"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1'>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                     Bank Verification Number (BVN)
-                    <span className='text-orange-500'>ⓘ</span>
+                    <span className="text-orange-500">ⓘ</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder='Enter your 11-digit BVN'
-                      className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'
+                      placeholder="Enter your 11-digit BVN"
+                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
                       {...field}
                     />
                   </FormControl>
@@ -403,15 +400,15 @@ export const OrganizationProfileForm: React.FC<
             {/* Registration ID (read-only) */}
             <FormField
               control={form.control}
-              name='registrationId'
+              name="registrationId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Registration ID
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className='bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400'
+                      className="bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400"
                       readOnly
                       disabled
                       {...field}
@@ -426,16 +423,16 @@ export const OrganizationProfileForm: React.FC<
           {/* About */}
           <FormField
             control={form.control}
-            name='about'
+            name="about"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   About
                 </FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder='Tell customers about your business...'
-                    className='bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 min-h-[100px] resize-none'
+                    placeholder="Tell customers about your business..."
+                    className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 min-h-[100px] resize-none"
                     {...field}
                   />
                 </FormControl>
@@ -445,11 +442,11 @@ export const OrganizationProfileForm: React.FC<
           />
 
           {/* Save Button */}
-          <div className='flex justify-start'>
+          <div className="flex justify-start">
             <Button
-              type='submit'
+              type="submit"
               disabled={isLoading}
-              className='bg-[#3d2817] hover:bg-[#2e1e10] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black px-8 py-2 rounded-lg'
+              className="bg-[#3d2817] hover:bg-[#2e1e10] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black px-8 py-2 rounded-lg"
             >
               {isLoading ? 'Saving...' : 'Save'}
             </Button>

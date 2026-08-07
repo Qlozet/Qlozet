@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -8,38 +8,41 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from '@/components/ui/table';
 import {
   PaginationState,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
-} from '@tanstack/react-table'
-import { Pagination } from '@/pattern/common/organisms/table/pagination'
-import { createFabricTableColumns } from '../molecules/fabric-table-columns'
-import { Product } from '@/redux/services/products/products.api-slice'
-import { Loader2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { BoldBoxRemoveIcon } from '@/pattern/common/atoms/bold-box-remove-icon'
-import { Skeleton } from '@/components/ui/skeleton'
+} from '@tanstack/react-table';
+import { Pagination } from '@/pattern/common/organisms/table/pagination';
+import { createFabricTableColumns } from '../molecules/fabric-table-columns';
+import { Product } from '@/redux/services/products/products.api-slice';
+import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { BoldBoxRemoveIcon } from '@/pattern/common/atoms/bold-box-remove-icon';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface IFabricsTableProps {
-  data: Product[]
-  pageCount?: number
-  pagination?: PaginationState
-  setPagination?: any
-  isLoading: boolean
-  isFetching: boolean
-  isSuccess: boolean
-  error: any
-  isError: boolean
-  onViewDetails: (productId: string) => void
-  onEdit: (productId: string) => void
-  onDuplicate?: (productId: string) => void
-  onDelete?: (productId: string) => void
-  onStatusChange?: (productId: string, status: "active" | "draft" | "inactive" | "scheduled") => void
-  showSelect?: boolean
+  data: Product[];
+  pageCount?: number;
+  pagination?: PaginationState;
+  setPagination?: any;
+  isLoading: boolean;
+  isFetching: boolean;
+  isSuccess: boolean;
+  error: any;
+  isError: boolean;
+  onViewDetails: (productId: string) => void;
+  onEdit: (productId: string) => void;
+  onDuplicate?: (productId: string) => void;
+  onDelete?: (productId: string) => void;
+  onStatusChange?: (
+    productId: string,
+    status: 'active' | 'draft' | 'inactive' | 'scheduled'
+  ) => void;
+  showSelect?: boolean;
 }
 
 export const FabricsTable = ({
@@ -59,13 +62,13 @@ export const FabricsTable = ({
   onStatusChange,
   showSelect = false,
 }: IFabricsTableProps) => {
-  const [rowSelection, setRowSelection] = useState({})
+  const [rowSelection, setRowSelection] = useState({});
 
   if (!pagination) {
-    pagination = { pageIndex: 0, pageSize: 10 }
+    pagination = { pageIndex: 0, pageSize: 10 };
   }
 
-  const defaultData = useMemo(() => [], [])
+  const defaultData = useMemo(() => [], []);
 
   const columns = useMemo(
     () =>
@@ -78,7 +81,7 @@ export const FabricsTable = ({
         showSelect,
       }),
     [onViewDetails, onEdit, onDuplicate, onDelete, onStatusChange, showSelect]
-  )
+  );
 
   const fabricTable = useReactTable({
     data: data ?? defaultData,
@@ -95,22 +98,22 @@ export const FabricsTable = ({
     onPaginationChange: setPagination,
     manualPagination: true,
     debugTable: true,
-  })
+  });
 
   const showLoader = isLoading || isFetching;
   const skeletonRowCount = pagination?.pageSize || 10;
 
   return (
     <>
-      <div className=''>
+      <div className="">
         <Table>
           {/* Header */}
-          <TableHeader className='bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] h-[52px] pt-7 pb-4'>
-            {fabricTable.getHeaderGroups()?.map(headerGroup => (
+          <TableHeader className="bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] h-[52px] pt-7 pb-4">
+            {fabricTable.getHeaderGroups()?.map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers?.map((header, index) => {
-                  const isFirst = index === 0
-                  const isLast = index === headerGroup.headers?.length - 1
+                  const isFirst = index === 0;
+                  const isLast = index === headerGroup.headers?.length - 1;
                   return (
                     <TableHead
                       key={header.id}
@@ -123,11 +126,11 @@ export const FabricsTable = ({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -140,7 +143,7 @@ export const FabricsTable = ({
               Array.from({ length: skeletonRowCount }).map((_, rowIndex) => (
                 <TableRow
                   key={`skeleton-${rowIndex}`}
-                  className='border-b hover:bg-transparent'
+                  className="border-b hover:bg-transparent"
                 >
                   {columns.map((_, cellIndex) => {
                     const isFirst = cellIndex === 0;
@@ -148,7 +151,11 @@ export const FabricsTable = ({
                     return (
                       <TableCell
                         key={cellIndex}
-                        className={cn('py-4', isFirst && 'pl-6', isLast && 'pr-6')}
+                        className={cn(
+                          'py-4',
+                          isFirst && 'pl-6',
+                          isLast && 'pr-6'
+                        )}
                       >
                         <Skeleton
                           className={cn(
@@ -166,34 +173,37 @@ export const FabricsTable = ({
             {!showLoader && isSuccess && (
               <>
                 {fabricTable.getRowModel().rows?.length
-                  ? fabricTable.getRowModel().rows?.map(row => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
-                      className='border-b cursor-pointer hover:bg-muted/50'
-                      onClick={() => onViewDetails(row.original._id as string)}
-                    >
-                      {row.getVisibleCells()?.map((cell, cellIndex) => {
-                        const isFirst = cellIndex === 0
-                        const isLast = cellIndex === row.getVisibleCells()?.length - 1
-                        return (
-                          <TableCell
-                            key={cell.id}
-                            className={cn(
-                              'whitespace-nowrap',
-                              isFirst && 'pl-6',
-                              isLast && 'pr-6'
-                            )}
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
-                        )
-                      })}
-                    </TableRow>
-                  ))
+                  ? fabricTable.getRowModel().rows?.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && 'selected'}
+                        className="border-b cursor-pointer hover:bg-muted/50"
+                        onClick={() =>
+                          onViewDetails(row.original._id as string)
+                        }
+                      >
+                        {row.getVisibleCells()?.map((cell, cellIndex) => {
+                          const isFirst = cellIndex === 0;
+                          const isLast =
+                            cellIndex === row.getVisibleCells()?.length - 1;
+                          return (
+                            <TableCell
+                              key={cell.id}
+                              className={cn(
+                                'whitespace-nowrap',
+                                isFirst && 'pl-6',
+                                isLast && 'pr-6'
+                              )}
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    ))
                   : null}
               </>
             )}
@@ -203,15 +213,15 @@ export const FabricsTable = ({
               <TableRow>
                 <TableCell
                   colSpan={columns?.length}
-                  className='h-64 text-center'
+                  className="h-64 text-center"
                 >
-                  <div className='flex flex-col items-center gap-4'>
+                  <div className="flex flex-col items-center gap-4">
                     <BoldBoxRemoveIcon />
-                    <div className='flex flex-col items-center gap-2'>
-                      <p className='text-lg font-medium text-muted-foreground'>
+                    <div className="flex flex-col items-center gap-2">
+                      <p className="text-lg font-medium text-muted-foreground">
                         Nothing in here yet.
                       </p>
-                      <p className='text-sm text-muted-foreground'>
+                      <p className="text-sm text-muted-foreground">
                         Products will show up here once you add a product.
                       </p>
                     </div>
@@ -225,13 +235,13 @@ export const FabricsTable = ({
               <TableRow>
                 <TableCell
                   colSpan={columns?.length}
-                  className='h-64 text-center'
+                  className="h-64 text-center"
                 >
-                  <div className='flex flex-col items-center gap-2'>
-                    <p className='text-lg font-medium text-destructive'>
+                  <div className="flex flex-col items-center gap-2">
+                    <p className="text-lg font-medium text-destructive">
                       Error loading products
                     </p>
-                    <p className='text-sm text-muted-foreground'>
+                    <p className="text-sm text-muted-foreground">
                       {error?.data?.message || 'Something went wrong'}
                     </p>
                   </div>
@@ -243,11 +253,13 @@ export const FabricsTable = ({
       </div>
 
       {/* Pagination */}
-      {!showLoader && isSuccess && fabricTable.getRowModel().rows?.length > 0 && (
-        <div className='py-4'>
-          <Pagination table={fabricTable} />
-        </div>
-      )}
+      {!showLoader &&
+        isSuccess &&
+        fabricTable.getRowModel().rows?.length > 0 && (
+          <div className="py-4">
+            <Pagination table={fabricTable} />
+          </div>
+        )}
     </>
-  )
-}
+  );
+};

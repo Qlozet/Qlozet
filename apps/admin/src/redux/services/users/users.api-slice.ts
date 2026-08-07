@@ -63,10 +63,40 @@ export interface Vendor {
   [key: string]: unknown;
 }
 
+/**
+ * The signed-in platform user (GET /users/me).
+ *
+ * The response shape isn't documented in Swagger, so the known keys are all
+ * optional and the index signature keeps anything extra. Read display values
+ * through the helpers in src/lib/current-user.ts rather than reaching for a
+ * specific key here.
+ */
+export interface CurrentUser {
+  _id?: string;
+  full_name?: string;
+  first_name?: string;
+  last_name?: string;
+  username?: string;
+  email?: string;
+  phone_number?: string;
+  role?: string | { name?: string };
+  profile_image?: string;
+  profileImage?: string;
+  avatar?: string;
+  image?: string;
+  [key: string]: unknown;
+}
+
 // API Slice
 export const usersApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // ---- Roles & permissions ----
+
+    // The signed-in user — drives the top bar's name + avatar.
+    getCurrentUser: builder.query<ApiResponse<CurrentUser>, void>({
+      query: () => ({ url: '/users/me', method: 'GET' }),
+      providesTags: ['CurrentUser'],
+    }),
 
     getRoles: builder.query<ApiResponse<Role[]>, void>({
       query: () => ({ url: '/users/roles', method: 'GET' }),
@@ -177,6 +207,7 @@ export const usersApiSlice = baseAPI.injectEndpoints({
 
 // Export hooks
 export const {
+  useGetCurrentUserQuery,
   useGetRolesQuery,
   useGetVendorRolesQuery,
   useGetRoleQuery,

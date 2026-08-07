@@ -32,7 +32,6 @@ import { BoldBoxRemoveIcon } from '@/pattern/common/atoms/bold-box-remove-icon';
 import { Pagination } from '@/pattern/common/organisms/table/pagination';
 
 export interface DataTableProps<TData> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColumnDef<TData, any>[];
   data: TData[];
   isLoading?: boolean;
@@ -107,9 +106,9 @@ export function DataTable<TData>({
   return (
     <>
       <Table style={{ minWidth }}>
-        <TableHeader className='bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]'>
+        <TableHeader className="bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]">
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className='hover:bg-transparent'>
+            <TableRow key={headerGroup.id} className="hover:bg-transparent">
               {headerGroup.headers.map((header, index) => {
                 const isFirst = index === 0;
                 const isLast = index === headerGroup.headers.length - 1;
@@ -141,7 +140,7 @@ export function DataTable<TData>({
             Array.from({ length: skeletonRowCount }).map((_, rowIndex) => (
               <TableRow
                 key={`skeleton-${rowIndex}`}
-                className='border-b hover:bg-transparent'
+                className="border-b hover:bg-transparent"
               >
                 {columns.map((_, cellIndex) => {
                   const isFirst = cellIndex === 0;
@@ -184,8 +183,7 @@ export function DataTable<TData>({
               >
                 {row.getVisibleCells().map((cell, cellIndex) => {
                   const isFirst = cellIndex === 0;
-                  const isLast =
-                    cellIndex === row.getVisibleCells().length - 1;
+                  const isLast = cellIndex === row.getVisibleCells().length - 1;
                   return (
                     <TableCell
                       key={cell.id}
@@ -213,18 +211,15 @@ export function DataTable<TData>({
           {/* Empty state */}
           {!showLoader && rows.length === 0 && !isError && (
             <TableRow>
-              <TableCell
-                colSpan={columns.length}
-                className='h-64 text-center'
-              >
-                <div className='flex flex-col items-center gap-4'>
+              <TableCell colSpan={columns.length} className="h-64 text-center">
+                <div className="flex flex-col items-center gap-4">
                   <BoldBoxRemoveIcon />
-                  <div className='flex flex-col items-center gap-2'>
-                    <p className='text-lg font-medium text-muted-foreground'>
+                  <div className="flex flex-col items-center gap-2">
+                    <p className="text-lg font-medium text-muted-foreground">
                       {emptyTitle}
                     </p>
                     {emptyMessage && (
-                      <p className='text-sm text-muted-foreground'>
+                      <p className="text-sm text-muted-foreground">
                         {emptyMessage}
                       </p>
                     )}
@@ -237,15 +232,12 @@ export function DataTable<TData>({
           {/* Error state */}
           {!showLoader && isError && (
             <TableRow>
-              <TableCell
-                colSpan={columns.length}
-                className='h-64 text-center'
-              >
-                <div className='flex flex-col items-center gap-2'>
-                  <p className='text-lg font-medium text-destructive'>
+              <TableCell colSpan={columns.length} className="h-64 text-center">
+                <div className="flex flex-col items-center gap-2">
+                  <p className="text-lg font-medium text-destructive">
                     Error loading data
                   </p>
-                  <p className='text-sm text-muted-foreground'>
+                  <p className="text-sm text-muted-foreground">
                     {errorMessage}
                   </p>
                 </div>
@@ -258,7 +250,7 @@ export function DataTable<TData>({
       {/* Pagination — mt-auto pins it to the bottom when the table sits in a
           flex-column container taller than its rows (no-op otherwise). */}
       {!showLoader && rows.length > 0 && (
-        <div className='mt-auto py-4'>
+        <div className="mt-auto py-4">
           <Pagination table={table} />
         </div>
       )}

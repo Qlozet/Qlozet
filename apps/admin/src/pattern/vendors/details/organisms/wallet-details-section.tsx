@@ -6,7 +6,10 @@ import { MetricCard } from '@/pattern/common/molecules/metric-card';
 import type { Business } from '@/redux/services/businesses/businesses.api-slice';
 import type { VendorDashboardMetrics } from '@/redux/services/dashboard/dashboard.api-slice';
 import { formatNaira } from '@/lib/vendors';
-import { BankDetailsCard, type BankDetailRow } from '../molecules/bank-details-card';
+import {
+  BankDetailsCard,
+  type BankDetailRow,
+} from '../molecules/bank-details-card';
 
 interface WalletDetailsSectionProps {
   vendor?: Business;
@@ -37,7 +40,10 @@ export const WalletDetailsSection = ({
   onEditBank,
 }: WalletDetailsSectionProps) => {
   const m = (metrics ?? {}) as Record<string, unknown>;
-  const bank = ((vendor?.bank ?? vendor?.bank_details ?? {}) as Record<string, unknown>);
+  const bank = (vendor?.bank ?? vendor?.bank_details ?? {}) as Record<
+    string,
+    unknown
+  >;
 
   const bankRows: BankDetailRow[] = [
     {

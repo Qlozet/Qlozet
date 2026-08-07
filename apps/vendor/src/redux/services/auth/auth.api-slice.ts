@@ -79,11 +79,11 @@ export interface SwitchBusinessResponse {
 }
 
 export interface RegisterRequest {
-  business_name: string,
-  personal_name: string,
-  personal_email: string,
-  personal_phone_number: string,
-  password: string
+  business_name: string;
+  personal_name: string;
+  personal_email: string;
+  personal_phone_number: string;
+  password: string;
 }
 
 export interface ForgotPasswordRequest {
@@ -142,7 +142,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
         method: 'POST',
         body: {
           email: email,
-          password: password
+          password: password,
           // ...(credentials.rememberMe && { rememberMe: credentials.rememberMe }),
         },
       }),
@@ -295,18 +295,9 @@ export const authApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Profile'],
     }),
 
-    // Upload Profile Image
-    uploadProfileImage: builder.mutation<
-      { data: { profileImage: string } },
-      FormData
-    >({
-      query: (formData) => ({
-        url: '/uploads/profile',
-        method: 'POST',
-        body: formData,
-      }),
-      invalidatesTags: ['Profile'],
-    }),
+    // NOTE: POST /uploads/profile is owned by uploads.api-slice
+    // (`uploadProfileImage`, which takes a File and builds the FormData).
+    // Declaring it here too collided on the endpoint name.
 
     // Delete Account (backend: DELETE /users/delete)
     deleteAccount: builder.mutation<{ message: string }, { password: string }>({
@@ -384,7 +375,10 @@ export const authApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Switch Business (multi-business users)
-    switchBusiness: builder.mutation<SwitchBusinessResponse, SwitchBusinessRequest>({
+    switchBusiness: builder.mutation<
+      SwitchBusinessResponse,
+      SwitchBusinessRequest
+    >({
       query: (body) => ({
         url: '/auth/switch-business',
         method: 'POST',
@@ -410,7 +404,6 @@ export const {
   useRefreshTokenMutation,
   useGetProfileQuery,
   useUpdateProfileMutation,
-  useUploadProfileImageMutation,
   useDeleteAccountMutation,
   useCheckEmailAvailabilityQuery,
   useGetTwoFactorSettingsQuery,

@@ -20,7 +20,8 @@ export const formatNaira = (value?: unknown): string =>
 
 // DD/MM/YYYY, matching the Orders table design.
 export const formatOrderDate = (value?: unknown): string => {
-  const raw = typeof value === 'string' && value.trim() ? value.trim() : undefined;
+  const raw =
+    typeof value === 'string' && value.trim() ? value.trim() : undefined;
   if (!raw) return DASH;
   const date = new Date(raw);
   if (Number.isNaN(date.getTime())) return raw;
@@ -146,7 +147,11 @@ export const readItemName = (item: AdminOrderItem): string => {
   if (!product || typeof product !== 'object') return 'Product';
   const p = product as Record<string, any>;
   return (
-    p.clothing?.name ?? p.fabric?.name ?? p.accessory?.name ?? p.name ?? 'Product'
+    p.clothing?.name ??
+    p.fabric?.name ??
+    p.accessory?.name ??
+    p.name ??
+    'Product'
   );
 };
 

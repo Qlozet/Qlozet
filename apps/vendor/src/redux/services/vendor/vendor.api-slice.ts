@@ -45,7 +45,9 @@ export const vendorApiSlice = baseAPI.injectEndpoints({
         // KYC counts as complete once the vendor has submitted it — i.e. the
         // business has moved past `pending`/`rejected`. (Admin approval is a
         // separate step; the nudge is only about the vendor finishing KYC.)
-        const kycComplete = ['in_review', 'approved', 'verified'].includes(status);
+        const kycComplete = ['in_review', 'approved', 'verified'].includes(
+          status
+        );
         return {
           success: true,
           message: 'OK',

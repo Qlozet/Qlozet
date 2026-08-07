@@ -33,9 +33,9 @@ export const VendorsTableTemplate = ({
   pageCount,
 }: VendorsTableTemplateProps) => {
   return (
-    <div className='space-y-4'>
-      <div className='flex items-center justify-between'>
-        <h2 className='text-xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white'>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white">
           Vendors
         </h2>
         <VendorStatusFilter value={status} onChange={onStatusChange} />

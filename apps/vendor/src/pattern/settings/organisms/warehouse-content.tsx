@@ -2,24 +2,24 @@
 // Warehouse section: list, add, edit, delete and set-default, all backed by
 // the real /business/warehouse endpoints.
 
-'use client'
+'use client';
 
-import React, { useMemo } from 'react'
-import { show } from '@ebay/nice-modal-react'
-import { toast } from 'sonner'
-import WarehouseTableTemplate from '../templates/warehouse-table-template'
-import { Warehouse } from '../molecules/warehouse-table-columns'
+import React, { useMemo } from 'react';
+import { show } from '@ebay/nice-modal-react';
+import { toast } from 'sonner';
+import WarehouseTableTemplate from '../templates/warehouse-table-template';
+import { Warehouse } from '../molecules/warehouse-table-columns';
+import { useGetBusinessProfileQuery } from '@/redux/services/settings/settings.api-slice';
 import {
   useActivateBusinessWarehouseMutation,
   useDeleteBusinessWarehouseMutation,
-  useGetBusinessProfileQuery,
   useGetBusinessWarehousesQuery,
-  type BusinessWarehouse,
-} from '@/redux/services/settings/settings.api-slice'
-import { AddWarehouseModal } from './add-warehouse-modal'
+  type Warehouse as BusinessWarehouse,
+} from '@/redux/services/business/business.api-slice';
+import { AddWarehouseModal } from './add-warehouse-modal';
 
 const text = (value: unknown): string =>
-  typeof value === 'string' && value.trim() ? value.trim() : '—'
+  typeof value === 'string' && value.trim() ? value.trim() : '—';
 
 export const WarehouseContent: React.FC = () => {
   const {
@@ -30,14 +30,14 @@ export const WarehouseContent: React.FC = () => {
     isError,
     error,
     refetch,
-  } = useGetBusinessWarehousesQuery()
+  } = useGetBusinessWarehousesQuery();
 
   // Warehouses belong to the signed-in business, so the "Vendor's name" column
   // is that business — the warehouse record itself doesn't carry a name.
-  const { data: business } = useGetBusinessProfileQuery()
+  const { data: business } = useGetBusinessProfileQuery();
 
-  const [deleteWarehouse] = useDeleteBusinessWarehouseMutation()
-  const [activateWarehouse] = useActivateBusinessWarehouseMutation()
+  const [deleteWarehouse] = useDeleteBusinessWarehouseMutation();
+  const [activateWarehouse] = useActivateBusinessWarehouseMutation();
 
   const warehouses: Warehouse[] = useMemo(
     () =>
@@ -52,33 +52,33 @@ export const WarehouseContent: React.FC = () => {
         status: item.is_active ? 'default' : 'alternate',
       })),
     [warehouseData, business?.business_name]
-  )
+  );
 
-  const handleAddWarehouse = () => show(AddWarehouseModal)
+  const handleAddWarehouse = () => show(AddWarehouseModal);
 
   const handleEditWarehouse = (warehouseId: string) => {
-    const warehouse = warehouseData?.find((item) => item._id === warehouseId)
-    if (!warehouse) return
-    show(AddWarehouseModal, { warehouse })
-  }
+    const warehouse = warehouseData?.find((item) => item._id === warehouseId);
+    if (!warehouse) return;
+    show(AddWarehouseModal, { warehouse });
+  };
 
   const handleDeleteWarehouse = async (warehouseId: string) => {
     try {
-      await deleteWarehouse(warehouseId).unwrap()
-      toast.success('Warehouse deleted')
+      await deleteWarehouse(warehouseId).unwrap();
+      toast.success('Warehouse deleted');
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to delete warehouse')
+      toast.error(error?.data?.message || 'Failed to delete warehouse');
     }
-  }
+  };
 
   const handleSetDefaultWarehouse = async (warehouseId: string) => {
     try {
-      await activateWarehouse(warehouseId).unwrap()
-      toast.success('Default warehouse updated')
+      await activateWarehouse(warehouseId).unwrap();
+      toast.success('Default warehouse updated');
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to set default warehouse')
+      toast.error(error?.data?.message || 'Failed to set default warehouse');
     }
-  }
+  };
 
   return (
     <WarehouseTableTemplate
@@ -94,5 +94,5 @@ export const WarehouseContent: React.FC = () => {
       onSetDefaultWarehouse={handleSetDefaultWarehouse}
       refetch={refetch}
     />
-  )
-}
+  );
+};

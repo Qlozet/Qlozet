@@ -1,74 +1,77 @@
-"use client"
+'use client';
 
-import { APP_ROUTES } from "@/lib/routes"
-import { StatCartIcon } from "../atoms/stat-cart-icon"
-import { StatTruckIcon } from "../atoms/stat-truck-icon"
-import { StatsCardsSkeleton } from "../molecules/stats-card-skeleton"
-import { MetricCard } from "@/pattern/common/molecules/metric-card"
-import { useGetAdminDashboardQuery } from "@/redux/services/dashboard/dashboard.api-slice"
+import { APP_ROUTES } from '@/lib/routes';
+import { StatCartIcon } from '../atoms/stat-cart-icon';
+import { StatTruckIcon } from '../atoms/stat-truck-icon';
+import { StatsCardsSkeleton } from '../molecules/stats-card-skeleton';
+import { MetricCard } from '@/pattern/common/molecules/metric-card';
+import { useGetAdminDashboardQuery } from '@/redux/services/dashboard/dashboard.api-slice';
 
 // Format a numeric metric, falling back to a placeholder when absent
 const formatValue = (
   value: number | undefined,
   fallback: string,
-  { currency = false, percent = false }: { currency?: boolean; percent?: boolean } = {}
+  {
+    currency = false,
+    percent = false,
+  }: { currency?: boolean; percent?: boolean } = {}
 ): string => {
-  if (typeof value !== "number") return fallback
-  if (percent) return `${value}%`
-  const formatted = value.toLocaleString()
-  return currency ? `N ${formatted}` : formatted
-}
+  if (typeof value !== 'number') return fallback;
+  if (percent) return `${value}%`;
+  const formatted = value.toLocaleString();
+  return currency ? `N ${formatted}` : formatted;
+};
 
 export const StatsCards = () => {
   // Admin dashboard metrics
-  const { data, isLoading } = useGetAdminDashboardQuery()
-  const metrics = data?.data
+  const { data, isLoading } = useGetAdminDashboardQuery();
+  const metrics = data?.data;
 
   if (isLoading) {
-    return <StatsCardsSkeleton />
+    return <StatsCardsSkeleton />;
   }
 
   const stats = [
     {
       id: 1,
-      title: "Total Vendors",
-      value: formatValue(metrics?.totalVendors, "—"),
+      title: 'Total Vendors',
+      value: formatValue(metrics?.totalVendors, '—'),
       icon: <StatCartIcon fill="#57CAEB" />,
       viewAllLink: APP_ROUTES.vendors,
     },
     {
       id: 2,
-      title: "Verified Vendors",
-      value: formatValue(metrics?.verifiedVendors, "—"),
+      title: 'Verified Vendors',
+      value: formatValue(metrics?.verifiedVendors, '—'),
       icon: <StatCartIcon fill="#57CAEB" />,
       viewAllLink: APP_ROUTES.vendors,
     },
     {
       id: 3,
-      title: "Total Customers",
-      value: formatValue(metrics?.totalCustomers, "—", { currency: true }),
+      title: 'Total Customers',
+      value: formatValue(metrics?.totalCustomers, '—', { currency: true }),
       icon: <StatTruckIcon fill="#5DDAB4" />,
     },
     {
       id: 4,
-      title: "Total Orders",
-      value: formatValue(metrics?.totalOrders, "—"),
+      title: 'Total Orders',
+      value: formatValue(metrics?.totalOrders, '—'),
       icon: <StatCartIcon fill="#57CAEB" />,
       viewAllLink: APP_ROUTES.orders,
     },
     {
       id: 5,
-      title: "Gross Sales",
-      value: formatValue(metrics?.grossSales, "—", { currency: true }),
+      title: 'Gross Sales',
+      value: formatValue(metrics?.grossSales, '—', { currency: true }),
       icon: <StatTruckIcon fill="#5DDAB4" />,
     },
     {
       id: 6,
-      title: "Measurement Accuracy",
-      value: formatValue(metrics?.measurementAccuracy, "—", { percent: true }),
+      title: 'Measurement Accuracy',
+      value: formatValue(metrics?.measurementAccuracy, '—', { percent: true }),
       icon: <StatCartIcon fill="#FF7976" />,
     },
-  ]
+  ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -82,5 +85,5 @@ export const StatsCards = () => {
         />
       ))}
     </div>
-  )
-}
+  );
+};

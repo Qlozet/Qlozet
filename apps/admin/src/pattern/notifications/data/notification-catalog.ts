@@ -26,20 +26,22 @@ export const TARGET_OPTIONS: { label: string; value: NotificationTarget }[] = [
 
 // Audience options for the "Add Notifications" composer. A single audience maps
 // directly onto a NotificationTarget (no "both" here — matching the design).
-export const AUDIENCE_OPTIONS: { label: string; value: NotificationTarget }[] = [
-  { label: 'Customer', value: 'customer' },
-  { label: 'Vendor', value: 'vendor' },
-  { label: 'Admin', value: 'admin' },
-];
+export const AUDIENCE_OPTIONS: { label: string; value: NotificationTarget }[] =
+  [
+    { label: 'Customer', value: 'customer' },
+    { label: 'Vendor', value: 'vendor' },
+    { label: 'Admin', value: 'admin' },
+  ];
 
 // How a composed notification fires.
 export type NotificationTrigger = 'event-based' | 'manual' | 'scheduled';
 
-export const TRIGGER_OPTIONS: { label: string; value: NotificationTrigger }[] = [
-  { label: 'Event-based', value: 'event-based' },
-  { label: 'Manual', value: 'manual' },
-  { label: 'Scheduled', value: 'scheduled' },
-];
+export const TRIGGER_OPTIONS: { label: string; value: NotificationTrigger }[] =
+  [
+    { label: 'Event-based', value: 'event-based' },
+    { label: 'Manual', value: 'manual' },
+    { label: 'Scheduled', value: 'scheduled' },
+  ];
 
 // Payload produced by the Add Notifications composer.
 export interface NotificationDraft {

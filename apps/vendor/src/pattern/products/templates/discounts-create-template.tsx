@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
 // Create Discount page — a rule-based discount builder. Title/Type/Value +
 // "Conditions must match" rules (field / operator / value) map to the backend
 // CreateDiscountRequest. Value dropdowns are populated dynamically from taxonomy.
 // Features a live product preview and manual include/exclude lists.
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useForm, useFieldArray, useWatch } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import Image from 'next/image'
-import { toast } from 'sonner'
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import Image from 'next/image';
+import { toast } from 'sonner';
 import {
   GripVertical,
   Loader2,
@@ -21,49 +21,49 @@ import {
   X,
   Undo2,
   UserPlus,
-} from 'lucide-react'
-import { GoBackButton } from '@/pattern/common/atoms/go-back-button'
-import { useProductConditions } from '../hooks/use-product-conditions'
-import { ConditionsCard } from '../organisms/conditions-card'
-import { ProductPreviewCard } from '../organisms/product-preview-card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { ScrollArea } from '@/components/ui/scroll-area'
+} from 'lucide-react';
+import { GoBackButton } from '@/pattern/common/atoms/go-back-button';
+import { useProductConditions } from '../hooks/use-product-conditions';
+import { ConditionsCard } from '../organisms/conditions-card';
+import { ProductPreviewCard } from '../organisms/product-preview-card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/ui/select';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '@/components/ui/form'
-import { cn } from '@/lib/utils'
-import { APP_ROUTES } from '@/lib/routes'
+} from '@/components/ui/form';
+import { cn } from '@/lib/utils';
+import { APP_ROUTES } from '@/lib/routes';
 import {
   useCreateDiscountMutation,
   useUpdateDiscountMutation,
   useDeleteDiscountMutation,
   useGetDiscountQuery,
   type DiscountType,
-} from '@/redux/services/discounts/discounts.api-slice'
-import { useGetProductsByVendorQuery } from '@/redux/services/products/products.api-slice'
-import { useGetTaxonomyTreeQuery } from '@/redux/services/taxonomy/taxonomy.api-slice'
+} from '@/redux/services/discounts/discounts.api-slice';
+import { useGetProductsByVendorQuery } from '@/redux/services/products/products.api-slice';
+import { useGetTaxonomyTreeQuery } from '@/redux/services/taxonomy/taxonomy.api-slice';
 import {
   CONDITION_FIELD_OPTIONS,
   CONDITION_OPERATOR_OPTIONS,
   TAXONOMY_FIELD_CONFIG,
   STATIC_VALUE_OPTIONS,
   FREE_TEXT_FIELDS,
-} from '../lib/collection-condition-options'
+} from '../lib/collection-condition-options';
 
 // ─── Schema ──────────────────────────────────────────────────────────
 
@@ -71,7 +71,7 @@ const conditionSchema = z.object({
   field: z.string().min(1, 'Select a field'),
   operator: z.string().min(1, 'Select an operator'),
   value: z.string().min(1, 'Enter or select a value'),
-})
+});
 
 const discountFormSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -92,11 +92,12 @@ const discountFormSchema = z.object({
   is_flash: z.boolean(),
   start_date: z.string().optional(),
   end_date: z.string().optional(),
-})
+});
 
-type DiscountForm = z.infer<typeof discountFormSchema>
+type DiscountForm = z.infer<typeof discountFormSchema>;
 
-const cardClass = 'rounded-[10px] bg-card p-6 custom-card-shadow dark:border dark:border-white/10'
+const cardClass =
+  'rounded-[10px] bg-card p-6 custom-card-shadow dark:border dark:border-white/10';
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 
@@ -105,33 +106,33 @@ const DISCOUNT_TYPE_OPTIONS: { value: DiscountType; label: string }[] = [
   { value: 'fixed', label: 'Fixed Amount Off' },
   { value: 'store_wide', label: 'Store-Wide' },
   { value: 'category_specific', label: 'Category Specific' },
-]
+];
 
 // Client-side condition evaluation logic has been moved to useProductConditions hook
 
 // ─── Component ───────────────────────────────────────────────────────
 
 export const DiscountsCreateTemplate = () => {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const editId = searchParams.get('id') // We expect ?id=... when editing
-  const isEditing = Boolean(editId)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('id'); // We expect ?id=... when editing
+  const isEditing = Boolean(editId);
 
   // ─── API hooks ────────────────────────────────────────────────
   const [createDiscount, { isLoading: isCreating }] =
-    useCreateDiscountMutation()
+    useCreateDiscountMutation();
   const [updateDiscount, { isLoading: isUpdating }] =
-    useUpdateDiscountMutation()
+    useUpdateDiscountMutation();
   const [deleteDiscount, { isLoading: isDeleting }] =
-    useDeleteDiscountMutation()
+    useDeleteDiscountMutation();
   const { data: discountResponse, isLoading: isLoadingDiscount } =
-    useGetDiscountQuery(editId as string, { skip: !editId })
-  const { data: taxonomyTree } = useGetTaxonomyTreeQuery()
+    useGetDiscountQuery(editId as string, { skip: !editId });
+  const { data: taxonomyTree } = useGetTaxonomyTreeQuery();
   const { data: vendorProductsResponse } = useGetProductsByVendorQuery({
     size: 200,
-  })
+  });
 
-  const isSaving = isCreating || isUpdating
+  const isSaving = isCreating || isUpdating;
 
   // Local state for product preview has been moved to useProductConditions
 
@@ -157,62 +158,62 @@ export const DiscountsCreateTemplate = () => {
       start_date: '',
       end_date: '',
     },
-  })
+  });
 
   const { fields, append, remove, move } = useFieldArray({
     control: form.control as any,
     name: 'conditions',
-  })
+  });
 
   // ─── Drag-and-drop state ──────────────────────────────────────
-  const [dragIndex, setDragIndex] = useState<number | null>(null)
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const handleDragStart = useCallback((index: number) => {
-    setDragIndex(index)
-  }, [])
+    setDragIndex(index);
+  }, []);
   const handleDragOver = useCallback((e: React.DragEvent, index: number) => {
-    e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
-    setDragOverIndex(index)
-  }, [])
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverIndex(index);
+  }, []);
   const handleDrop = useCallback(
     (e: React.DragEvent, targetIndex: number) => {
-      e.preventDefault()
+      e.preventDefault();
       if (dragIndex !== null && dragIndex !== targetIndex)
-        move(dragIndex, targetIndex)
-      setDragIndex(null)
-      setDragOverIndex(null)
+        move(dragIndex, targetIndex);
+      setDragIndex(null);
+      setDragOverIndex(null);
     },
     [dragIndex, move]
-  )
+  );
   const handleDragEnd = useCallback(() => {
-    setDragIndex(null)
-    setDragOverIndex(null)
-  }, [])
+    setDragIndex(null);
+    setDragOverIndex(null);
+  }, []);
 
   // ─── Taxonomy-driven value dropdowns ──────────────────────────
   const getTaxonomyValues = useMemo(() => {
-    if (!taxonomyTree) return () => []
+    if (!taxonomyTree) return () => [];
     return (fieldPath: string): { value: string; label: string }[] => {
-      const config = TAXONOMY_FIELD_CONFIG[fieldPath]
-      if (!config) return []
-      const kindData = taxonomyTree[config.kind]
-      if (!kindData?.product_types) return []
+      const config = TAXONOMY_FIELD_CONFIG[fieldPath];
+      if (!config) return [];
+      const kindData = taxonomyTree[config.kind];
+      if (!kindData?.product_types) return [];
       switch (config.type) {
         case 'product_type':
           return kindData.product_types.map((pt: any) => ({
             value: pt.name,
             label: pt.name,
-          }))
+          }));
         case 'categories': {
-          const all = new Set<string>()
+          const all = new Set<string>();
           kindData.product_types.forEach((pt: any) =>
             pt.categories?.forEach((c: string) => all.add(c))
-          )
+          );
           return Array.from(all)
             .sort()
-            .map((c) => ({ value: c, label: c }))
+            .map((c) => ({ value: c, label: c }));
         }
         case 'audience':
           return [
@@ -220,32 +221,32 @@ export const DiscountsCreateTemplate = () => {
             { value: 'women', label: 'Women' },
             { value: 'unisex', label: 'Unisex' },
             { value: 'kids', label: 'Kids' },
-          ]
+          ];
         case 'attributes': {
-          const all = new Set<string>()
+          const all = new Set<string>();
           kindData.product_types.forEach((pt: any) =>
             pt.attributes?.forEach((a: string) => all.add(a))
-          )
+          );
           return Array.from(all)
             .sort()
-            .map((a) => ({ value: a, label: a }))
+            .map((a) => ({ value: a, label: a }));
         }
         default:
-          return []
+          return [];
       }
-    }
-  }, [taxonomyTree])
+    };
+  }, [taxonomyTree]);
 
   // ─── Pre-fill on edit ─────────────────────────────────────────
   useEffect(() => {
-    const d = discountResponse?.data
-    if (!d || !isEditing) return
-    const isFlash = d.type?.startsWith('flash_') ?? false
+    const d = discountResponse?.data;
+    if (!d || !isEditing) return;
+    const isFlash = d.type?.startsWith('flash_') ?? false;
     const baseType = isFlash
       ? d.type === 'flash_percentage'
         ? 'percentage'
         : 'fixed'
-      : (d.type ?? 'percentage')
+      : (d.type ?? 'percentage');
     form.reset({
       title: d.title ?? '',
       type: baseType as any,
@@ -274,41 +275,41 @@ export const DiscountsCreateTemplate = () => {
       end_date: d.end_date
         ? new Date(d.end_date).toISOString().slice(0, 16)
         : '',
-    })
+    });
     if (d.manual_includes?.length || d.manual_excludes?.length) {
       conditionState.syncInitialState(
         d.manual_includes || [],
         d.manual_excludes || []
-      )
+      );
     }
-  }, [discountResponse, isEditing, form])
+  }, [discountResponse, isEditing, form]);
 
   // ─── Watched values ───────────────────────────────────────────
-  const watchedType = useWatch({ control: form.control as any, name: 'type' })
+  const watchedType = useWatch({ control: form.control as any, name: 'type' });
   const watchedIsFlash = useWatch({
     control: form.control as any,
     name: 'is_flash',
-  })
+  });
   const watchedConditions = useWatch({
     control: form.control as any,
     name: 'conditions',
-  })
+  });
   const watchedConditionMatch = useWatch({
     control: form.control as any,
     name: 'condition_match',
-  })
+  });
 
   const showValueType =
-    watchedType === 'store_wide' || watchedType === 'category_specific'
+    watchedType === 'store_wide' || watchedType === 'category_specific';
   const isPercentType =
-    watchedType === 'percentage' || watchedType === 'flash_percentage'
+    watchedType === 'percentage' || watchedType === 'flash_percentage';
   const watchedValueType = useWatch({
     control: form.control as any,
     name: 'value_type',
-  })
+  });
   const isPercentValue = showValueType
     ? watchedValueType === 'percentage'
-    : isPercentType
+    : isPercentType;
 
   // ─── Product preview ──────────────────────────────────────────
   const conditionState = useProductConditions({
@@ -318,13 +319,13 @@ export const DiscountsCreateTemplate = () => {
       watchedType === 'store_wide' &&
       (!watchedConditions?.length ||
         watchedConditions.every((c: any) => !c.field && !c.value)),
-  })
+  });
   // ─── Submit ───────────────────────────────────────────────────
   const onSubmit = async (values: DiscountForm) => {
     try {
-      let apiType: DiscountType = values.type
+      let apiType: DiscountType = values.type;
       if (values.is_flash) {
-        apiType = values.type === 'fixed' ? 'flash_fixed' : 'flash_percentage'
+        apiType = values.type === 'fixed' ? 'flash_fixed' : 'flash_percentage';
       }
 
       const payload = {
@@ -354,47 +355,51 @@ export const DiscountsCreateTemplate = () => {
           values.is_flash && values.end_date
             ? new Date(values.end_date).toISOString()
             : undefined,
-        manual_includes: Array.from(conditionState.manualIncludes as Set<string>),
-        manual_excludes: Array.from(conditionState.manualExcludes as Set<string>),
-      }
+        manual_includes: Array.from(
+          conditionState.manualIncludes as Set<string>
+        ),
+        manual_excludes: Array.from(
+          conditionState.manualExcludes as Set<string>
+        ),
+      };
 
       if (isEditing && editId) {
-        await updateDiscount({ id: editId, ...payload }).unwrap()
-        toast.success('Discount updated successfully.')
+        await updateDiscount({ id: editId, ...payload }).unwrap();
+        toast.success('Discount updated successfully.');
       } else {
-        await createDiscount(payload).unwrap()
-        toast.success('Discount created successfully.')
+        await createDiscount(payload).unwrap();
+        toast.success('Discount created successfully.');
       }
-      router.push(APP_ROUTES.productsDiscounts)
+      router.push(APP_ROUTES.productsDiscounts);
     } catch (err) {
-      console.error('Submit error:', err)
-      const data = (err as any)?.data
+      console.error('Submit error:', err);
+      const data = (err as any)?.data;
       const message = Array.isArray(data?.message)
         ? data.message.join(', ')
         : data?.message ||
           JSON.stringify(data) ||
-          `Could not ${isEditing ? 'update' : 'create'} the discount.`
-      toast.error(message)
+          `Could not ${isEditing ? 'update' : 'create'} the discount.`;
+      toast.error(message);
     }
-  }
+  };
 
   const handleDelete = async () => {
-    if (!editId) return
+    if (!editId) return;
     try {
-      await deleteDiscount(editId).unwrap()
-      toast.success('Discount deleted.')
-      router.push(APP_ROUTES.productsDiscounts)
+      await deleteDiscount(editId).unwrap();
+      toast.success('Discount deleted.');
+      router.push(APP_ROUTES.productsDiscounts);
     } catch (err) {
-      toast.error((err as any)?.data?.message || 'Failed to delete discount.')
+      toast.error((err as any)?.data?.message || 'Failed to delete discount.');
     }
-  }
+  };
 
   if (isEditing && isLoadingDiscount) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Loader2 className="size-8 animate-spin text-primary" />
       </div>
-    )
+    );
   }
 
   // ─── Render ───────────────────────────────────────────────────
@@ -556,111 +561,123 @@ export const DiscountsCreateTemplate = () => {
             <div className="sticky top-6 space-y-6">
               {/* Timings & Status Card */}
               <div className={cardClass}>
-              <h3 className="text-base font-medium mb-6 text-grey-black dark:text-gray-200">Configuration</h3>
-              <div className="space-y-6">
-                <div className="flex items-center justify-between rounded-lg border border-border/60 dark:border-white/10 p-4">
-                  <div>
-                    <p className="text-sm font-medium text-grey-black dark:text-gray-200">Flash Sale</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Time-limited discount with auto start/end
-                    </p>
+                <h3 className="text-base font-medium mb-6 text-grey-black dark:text-gray-200">
+                  Configuration
+                </h3>
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between rounded-lg border border-border/60 dark:border-white/10 p-4">
+                    <div>
+                      <p className="text-sm font-medium text-grey-black dark:text-gray-200">
+                        Flash Sale
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Time-limited discount with auto start/end
+                      </p>
+                    </div>
+                    <FormField
+                      control={form.control as any}
+                      name="is_flash"
+                      render={({ field }) => (
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      )}
+                    />
                   </div>
-                  <FormField
-                    control={form.control as any}
-                    name="is_flash"
-                    render={({ field }) => (
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
+
+                  {watchedIsFlash && (
+                    <div className="flex flex-col gap-4 bg-muted/30 p-4 rounded-lg">
+                      <FormField
+                        control={form.control as any}
+                        name="start_date"
+                        render={({ field }) => (
+                          <FormItem>
+                            <Label className="text-xs font-medium text-grey-black dark:text-gray-200">
+                              Start Date
+                            </Label>
+                            <FormControl>
+                              <Input
+                                type="datetime-local"
+                                className="h-10 text-sm bg-muted/40 dark:border-white/10"
+                                {...field}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
                       />
-                    )}
-                  />
-                </div>
-
-                {watchedIsFlash && (
-                  <div className="flex flex-col gap-4 bg-muted/30 p-4 rounded-lg">
-                    <FormField
-                      control={form.control as any}
-                      name="start_date"
-                      render={({ field }) => (
-                        <FormItem>
-                          <Label className="text-xs font-medium text-grey-black dark:text-gray-200">
-                            Start Date
-                          </Label>
-                          <FormControl>
-                            <Input
-                              type="datetime-local"
-                              className="h-10 text-sm bg-muted/40 dark:border-white/10"
-                              {...field}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control as any}
-                      name="end_date"
-                      render={({ field }) => (
-                        <FormItem>
-                          <Label className="text-xs font-medium text-grey-black dark:text-gray-200">
-                            End Date
-                          </Label>
-                          <FormControl>
-                            <Input
-                              type="datetime-local"
-                              className="h-10 text-sm bg-muted/40 dark:border-white/10"
-                              {...field}
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
-
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center justify-between rounded-lg border border-border/60 dark:border-white/10 p-4">
-                    <div>
-                      <p className="text-sm font-medium text-grey-black dark:text-gray-200">Required Discount</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Must be applied if conditions match
-                      </p>
+                      <FormField
+                        control={form.control as any}
+                        name="end_date"
+                        render={({ field }) => (
+                          <FormItem>
+                            <Label className="text-xs font-medium text-grey-black dark:text-gray-200">
+                              End Date
+                            </Label>
+                            <FormControl>
+                              <Input
+                                type="datetime-local"
+                                className="h-10 text-sm bg-muted/40 dark:border-white/10"
+                                {...field}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
                     </div>
-                    <FormField
-                      control={form.control as any}
-                      name="required_discount"
-                      render={({ field }) => (
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      )}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between rounded-lg border border-border/60 dark:border-white/10 p-4">
-                    <div>
-                      <p className="text-sm font-medium text-grey-black dark:text-gray-200">Active Status</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Discount is live and applied
-                      </p>
+                  )}
+
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center justify-between rounded-lg border border-border/60 dark:border-white/10 p-4">
+                      <div>
+                        <p className="text-sm font-medium text-grey-black dark:text-gray-200">
+                          Required Discount
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Must be applied if conditions match
+                        </p>
+                      </div>
+                      <FormField
+                        control={form.control as any}
+                        name="required_discount"
+                        render={({ field }) => (
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        )}
+                      />
                     </div>
-                    <FormField
-                      control={form.control as any}
-                      name="is_active"
-                      render={({ field }) => (
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      )}
-                    />
+                    <div className="flex items-center justify-between rounded-lg border border-border/60 dark:border-white/10 p-4">
+                      <div>
+                        <p className="text-sm font-medium text-grey-black dark:text-gray-200">
+                          Active Status
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Discount is live and applied
+                        </p>
+                      </div>
+                      <FormField
+                        control={form.control as any}
+                        name="is_active"
+                        render={({ field }) => (
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        )}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-              </div>
-              
+
               <div className="flex flex-col gap-3">
-                <Button type="submit" disabled={isSaving} className="h-12 w-full">
+                <Button
+                  type="submit"
+                  disabled={isSaving}
+                  className="h-12 w-full"
+                >
                   {isSaving && <Loader2 className="mr-2 size-4 animate-spin" />}
                   {isEditing ? 'Save Changes' : 'Create Discount'}
                 </Button>
@@ -691,10 +708,8 @@ export const DiscountsCreateTemplate = () => {
               </div>
             </div>
           </div>
-
-
         </form>
       </Form>
     </div>
-  )
-}
+  );
+};

@@ -1,42 +1,52 @@
-'use client'
+'use client';
 
-import { Badge } from '@/components/ui/badge'
-import { ColumnDef } from '@tanstack/react-table'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Badge } from '@/components/ui/badge';
+import { ColumnDef } from '@tanstack/react-table';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Product } from '@/redux/services/products/products.api-slice'
-import { MoreHorizontal, AlertTriangle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import Image from 'next/image'
-import { formatCurrency } from '@/lib/utils'
-import { ScrollArea } from '@/components/ui/scroll-area'
+} from '@/components/ui/dropdown-menu';
+import { Product } from '@/redux/services/products/products.api-slice';
+import { MoreHorizontal, AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import { formatCurrency } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Helper function to get status variant
-const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "error" | "blue" => {
+const getStatusVariant = (
+  status: string
+):
+  | 'default'
+  | 'secondary'
+  | 'destructive'
+  | 'outline'
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'blue' => {
   switch (status) {
     case 'active':
-      return 'success'
+      return 'success';
     case 'inactive':
-      return 'error'
+      return 'error';
     case 'draft':
-      return 'warning'
+      return 'warning';
     case 'scheduled':
-      return 'blue'
+      return 'blue';
     default:
-      return 'secondary'
+      return 'secondary';
   }
-}
+};
 
 // Helper function to get status label
 const getStatusLabel = (status: string): string => {
-  return status.charAt(0).toUpperCase() + status.slice(1)
-}
+  return status.charAt(0).toUpperCase() + status.slice(1);
+};
 
 // Helper to get customization label
 const getCustomizationLabel = (product: Product): React.ReactNode => {
@@ -52,24 +62,27 @@ const getCustomizationLabel = (product: Product): React.ReactNode => {
     return 'Customisable';
   }
   return 'Non Customisable';
-}
+};
 
 // Helper to get audience from tags
 const getAudience = (tags?: string[]): string => {
-  if (!tags || tags?.length === 0) return '-'
-  if (tags.includes('women') || tags.includes('female')) return 'Women'
-  if (tags.includes('men') || tags.includes('male')) return 'Men'
-  if (tags.includes('unisex')) return 'Unisex'
-  return tags[0] || '-'
-}
+  if (!tags || tags?.length === 0) return '-';
+  if (tags.includes('women') || tags.includes('female')) return 'Women';
+  if (tags.includes('men') || tags.includes('male')) return 'Men';
+  if (tags.includes('unisex')) return 'Unisex';
+  return tags[0] || '-';
+};
 
 interface ClothingTableColumnsProps {
-  onViewDetails: (productId: string) => void
-  onEdit: (productId: string) => void
-  onDuplicate?: (productId: string) => void
-  onDelete?: (productId: string) => void
-  onStatusChange?: (productId: string, status: "active" | "draft" | "inactive" | "scheduled") => void
-  showSelect?: boolean
+  onViewDetails: (productId: string) => void;
+  onEdit: (productId: string) => void;
+  onDuplicate?: (productId: string) => void;
+  onDelete?: (productId: string) => void;
+  onStatusChange?: (
+    productId: string,
+    status: 'active' | 'draft' | 'inactive' | 'scheduled'
+  ) => void;
+  showSelect?: boolean;
 }
 
 export const createFabricTableColumns = ({
@@ -84,26 +97,26 @@ export const createFabricTableColumns = ({
     accessorKey: 'images',
     header: 'Picture',
     cell: ({ row }) => {
-      const images = row.getValue('images') as string[]
-      const productName = row.original.name
+      const images = row.getValue('images') as string[];
+      const productName = row.original.name;
       return (
-        <div className='relative bg-white w-[51px] h-[31px] border-[0.5px] rounded-[8px] overflow-hidden'>
+        <div className="relative bg-white w-[51px] h-[31px] border-[0.5px] rounded-[8px] overflow-hidden">
           {images && images?.length > 0 ? (
             <Image
               src={images[0]}
               alt={productName}
               fill
-              className='object-cover'
-              sizes='150px'
+              className="object-cover"
+              sizes="150px"
               quality={100}
             />
           ) : (
-            <div className='w-full h-full flex items-center justify-center text-gray-400'>
-              <span className='text-xs'>No img</span>
+            <div className="w-full h-full flex items-center justify-center text-gray-400">
+              <span className="text-xs">No img</span>
             </div>
           )}
         </div>
-      )
+      );
     },
     enableSorting: false,
   },
@@ -111,26 +124,28 @@ export const createFabricTableColumns = ({
     accessorKey: 'name',
     header: 'Product name',
     cell: ({ row }) => {
-      return <div className='font-normal'>{row.getValue('name')}</div>
+      return <div className="font-normal">{row.getValue('name')}</div>;
     },
   },
   {
     id: 'pricePerYard',
     header: 'Price per yard',
     cell: ({ row }) => {
-      const price = parseFloat((row.original as any).pricePerYard || row.original.price || 0)
-      return (
-        <div className='font-normal'>
-          {formatCurrency(price, 'NGN')}
-        </div>
-      )
+      const price = parseFloat(
+        (row.original as any).pricePerYard || row.original.price || 0
+      );
+      return <div className="font-normal">{formatCurrency(price, 'NGN')}</div>;
     },
   },
   {
     id: 'pattern',
     header: 'Pattern',
     cell: ({ row }) => {
-      return <div className='capitalize text-sm'>{(row.original as any).pattern || '-'}</div>
+      return (
+        <div className="capitalize text-sm">
+          {(row.original as any).pattern || '-'}
+        </div>
+      );
     },
     enableSorting: false,
   },
@@ -138,7 +153,11 @@ export const createFabricTableColumns = ({
     id: 'material',
     header: 'Material',
     cell: ({ row }) => {
-      return <div className='capitalize text-sm'>{(row.original as any).material || '-'}</div>
+      return (
+        <div className="capitalize text-sm">
+          {(row.original as any).material || '-'}
+        </div>
+      );
     },
     enableSorting: false,
   },
@@ -146,7 +165,11 @@ export const createFabricTableColumns = ({
     id: 'colour',
     header: 'Colour',
     cell: ({ row }) => {
-      return <div className='capitalize text-sm'>{(row.original as any).colour || '-'}</div>
+      return (
+        <div className="capitalize text-sm">
+          {(row.original as any).colour || '-'}
+        </div>
+      );
     },
     enableSorting: false,
   },
@@ -154,12 +177,8 @@ export const createFabricTableColumns = ({
     id: 'quantity',
     header: 'Quantity',
     cell: ({ row }) => {
-      const stock = row.original.stock || 0
-      return (
-        <span className="text-sm">
-          {stock.toLocaleString()} Yards
-        </span>
-      )
+      const stock = row.original.stock || 0;
+      return <span className="text-sm">{stock.toLocaleString()} Yards</span>;
     },
     enableSorting: false,
   },
@@ -167,12 +186,16 @@ export const createFabricTableColumns = ({
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => {
-      const status: string = row.getValue('status')
+      const status: string = row.getValue('status');
       return (
-        <Badge variant={getStatusVariant(status)} shape="square" className='capitalize h-[26px] w-[93px] flex items-center justify-center px-2 text-xs font-normal'>
+        <Badge
+          variant={getStatusVariant(status)}
+          shape="square"
+          className="capitalize h-[26px] w-[93px] flex items-center justify-center px-2 text-xs font-normal"
+        >
           {getStatusLabel(status)}
         </Badge>
-      )
+      );
     },
   },
   {
@@ -183,40 +206,32 @@ export const createFabricTableColumns = ({
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant='ghost' size='sm' className='h-8 w-8 p-0'>
-                <MoreHorizontal className='h-4 w-4 text-gray-500' />
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4 text-gray-500" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
-              <DropdownMenuItem>
-                View product
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                Edit product
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                Select Product
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                Activate product
-              </DropdownMenuItem>
-              <DropdownMenuItem className='text-red-600 focus:text-red-600'>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>View product</DropdownMenuItem>
+              <DropdownMenuItem>Edit product</DropdownMenuItem>
+              <DropdownMenuItem>Select Product</DropdownMenuItem>
+              <DropdownMenuItem>Activate product</DropdownMenuItem>
+              <DropdownMenuItem className="text-red-600 focus:text-red-600">
                 Archive product
               </DropdownMenuItem>
-              <DropdownMenuItem className='text-red-600 focus:text-red-600'>
+              <DropdownMenuItem className="text-red-600 focus:text-red-600">
                 Deactivate product
               </DropdownMenuItem>
-              <DropdownMenuItem className='text-red-600 focus:text-red-600'>
+              <DropdownMenuItem className="text-red-600 focus:text-red-600">
                 Delete product
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        )
+        );
       }
-      return null
+      return null;
     },
     cell: ({ row, table }) => {
-      const product = row.original
+      const product = row.original;
 
       // Show checkbox when in select mode
       if (showSelect) {
@@ -224,11 +239,11 @@ export const createFabricTableColumns = ({
           <div onClick={(e) => e.stopPropagation()}>
             <Checkbox
               checked={row.getIsSelected()}
-              onCheckedChange={value => row.toggleSelected(!!value)}
-              aria-label='Select row'
+              onCheckedChange={(value) => row.toggleSelected(!!value)}
+              aria-label="Select row"
             />
           </div>
-        )
+        );
       }
 
       // Show actions dropdown by default
@@ -236,11 +251,11 @@ export const createFabricTableColumns = ({
         <div onClick={(e) => e.stopPropagation()}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant='ghost' size='sm' className='h-8 w-8 p-0'>
-                <MoreHorizontal className='h-4 w-4 text-gray-500' />
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4 text-gray-500" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
+            <DropdownMenuContent align="end">
               <DropdownMenuItem
                 onClick={() => onViewDetails(product._id as string)}
               >
@@ -256,25 +271,33 @@ export const createFabricTableColumns = ({
                   Select Product
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem onClick={() => onStatusChange?.(product._id as string, 'active')}>
+              <DropdownMenuItem
+                onClick={() =>
+                  onStatusChange?.(product._id as string, 'active')
+                }
+              >
                 Activate product
               </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => onStatusChange?.(product._id as string, 'inactive')}
-                className='text-red-600 focus:text-red-600'
+              <DropdownMenuItem
+                onClick={() =>
+                  onStatusChange?.(product._id as string, 'inactive')
+                }
+                className="text-red-600 focus:text-red-600"
               >
                 Archive product
               </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => onStatusChange?.(product._id as string, 'inactive')}
-                className='text-red-600 focus:text-red-600'
+              <DropdownMenuItem
+                onClick={() =>
+                  onStatusChange?.(product._id as string, 'inactive')
+                }
+                className="text-red-600 focus:text-red-600"
               >
                 Deactivate product
               </DropdownMenuItem>
               {onDelete && (
                 <DropdownMenuItem
                   onClick={() => onDelete(product._id as string)}
-                  className='text-red-600 focus:text-red-600'
+                  className="text-red-600 focus:text-red-600"
                 >
                   Delete product
                 </DropdownMenuItem>
@@ -282,8 +305,8 @@ export const createFabricTableColumns = ({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      )
+      );
     },
     enableSorting: false,
   },
-]
+];

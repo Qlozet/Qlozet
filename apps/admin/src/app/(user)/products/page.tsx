@@ -1,9 +1,9 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 const CATEGORIES = [
-  { href: "/products/clothing", label: "Clothing" },
-  { href: "/products/accessories", label: "Accessories" },
-  { href: "/products/fabrics", label: "Fabrics" },
+  { href: '/products/clothing', label: 'Clothing' },
+  { href: '/products/accessories', label: 'Accessories' },
+  { href: '/products/fabrics', label: 'Fabrics' },
 ];
 
 export default function ProductsPage() {
@@ -13,7 +13,8 @@ export default function ProductsPage() {
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Products</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Admin mirror of vendor /products. Replace with admin product catalog.
+            Admin mirror of vendor /products. Replace with admin product
+            catalog.
           </p>
         </div>
         <Link
@@ -32,7 +33,9 @@ export default function ProductsPage() {
             className="rounded-lg border border-gray-200 bg-white p-5 hover:border-gray-300"
           >
             <div className="text-sm text-gray-500">Category</div>
-            <div className="mt-1 text-lg font-medium text-gray-900">{c.label}</div>
+            <div className="mt-1 text-lg font-medium text-gray-900">
+              {c.label}
+            </div>
           </Link>
         ))}
       </div>

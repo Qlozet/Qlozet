@@ -16,11 +16,14 @@ export interface CheckboxProps {
 // Lightweight controlled checkbox styled to match the Figma (brown when checked).
 // Kept dependency-free rather than pulling in @radix-ui/react-checkbox for one screen.
 const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
-  ({ checked = false, onCheckedChange, disabled, className, ...props }, ref) => (
+  (
+    { checked = false, onCheckedChange, disabled, className, ...props },
+    ref
+  ) => (
     <button
       ref={ref}
-      type='button'
-      role='checkbox'
+      type="button"
+      role="checkbox"
       aria-checked={checked}
       disabled={disabled}
       onClick={() => onCheckedChange?.(!checked)}
@@ -33,7 +36,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
       )}
       {...props}
     >
-      {checked && <Check className='size-3.5' strokeWidth={3} />}
+      {checked && <Check className="size-3.5" strokeWidth={3} />}
     </button>
   )
 );

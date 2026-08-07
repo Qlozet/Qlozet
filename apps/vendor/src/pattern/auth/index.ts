@@ -28,4 +28,3 @@ export { VerificationTemplate } from './templates/verification-template';
 // Types
 export type { ForgotPasswordFormData } from './molecules/forgot-password-form';
 export type { ResetPasswordFormData } from './molecules/reset-password-form';
-

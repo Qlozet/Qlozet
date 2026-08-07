@@ -9,7 +9,7 @@ export default function NotFound() {
         <div className="relative w-screen h-fit flex flex-col items-center gap-y-8">
           <h2>Not Found</h2>
           <p>Could not find requested resource</p>
-          <Link href='/' className='text-primary'>
+          <Link href="/" className="text-primary">
             Return Home
           </Link>
         </div>

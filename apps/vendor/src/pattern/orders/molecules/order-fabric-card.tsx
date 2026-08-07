@@ -39,8 +39,8 @@ const Row = ({
       !isLast && 'border-b border-[#E5E7EB] dark:border-border'
     )}
   >
-    <span className='text-sm text-grey3 dark:text-gray-400'>{label}</span>
-    <span className='text-right text-sm font-semibold text-grey-black dark:text-white'>
+    <span className="text-sm text-grey3 dark:text-gray-400">{label}</span>
+    <span className="text-right text-sm font-semibold text-grey-black dark:text-white">
       {value}
     </span>
   </div>
@@ -75,36 +75,36 @@ export const OrderFabricCard = ({
     typeof fabric.yards === 'number' ? yardsToMetres(fabric.yards) : undefined;
 
   return (
-    <section className='space-y-3 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4'>
-      <h3 className='text-sm font-bold uppercase tracking-wide text-grey-black dark:text-white'>
+    <section className="space-y-3 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
+      <h3 className="text-sm font-bold uppercase tracking-wide text-grey-black dark:text-white">
         Fabric
       </h3>
 
       {/* Yardage header */}
-      <div className='flex items-center gap-3'>
-        <div className='relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700'>
+      <div className="flex items-center gap-3">
+        <div className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700">
           {fabric.imageUrl ? (
             <Image
               src={fabric.imageUrl}
               alt={fabric.name ?? 'Fabric'}
               fill
-              className='object-cover'
-              sizes='56px'
+              className="object-cover"
+              sizes="56px"
             />
           ) : (
-            <ImageIcon className='size-5 text-gray-400' />
+            <ImageIcon className="size-5 text-gray-400" />
           )}
         </div>
-        <div className='min-w-0'>
-          <p className='text-lg font-bold text-grey-black dark:text-white'>
+        <div className="min-w-0">
+          <p className="text-lg font-bold text-grey-black dark:text-white">
             {fabric.yards ?? '—'} yards{' '}
             {metres !== undefined && (
-              <span className='text-sm font-normal text-grey3 dark:text-gray-400'>
+              <span className="text-sm font-normal text-grey3 dark:text-gray-400">
                 ({metres}m)
               </span>
             )}
           </p>
-          <p className='text-xs text-grey3 dark:text-gray-400'>
+          <p className="text-xs text-grey3 dark:text-gray-400">
             Includes shrinkage &amp; cutting allowances
           </p>
         </div>
@@ -113,20 +113,20 @@ export const OrderFabricCard = ({
       {/* Detail rows. Material and ETA are omitted — the backend has no field
           for either (see TODO(api) below), and inventing them would misstate a
           delivery promise. */}
-      <div className='rounded-xl border border-border bg-white dark:bg-[#404040]'>
-        <Row label='Name:' value={fabric.name ?? '—'} />
+      <div className="rounded-xl border border-border bg-white dark:bg-[#404040]">
+        <Row label="Name:" value={fabric.name ?? '—'} />
         <Row
-          label='Source:'
+          label="Source:"
           value={
             fabric.vendorSources ? (
               'Your catalogue'
             ) : (
               <>
-                <span className='text-grey-black dark:text-white'>
+                <span className="text-grey-black dark:text-white">
                   Marketplace
                 </span>
                 {fabric.sourceBusiness ? (
-                  <span className='font-normal text-grey3 dark:text-gray-400'>
+                  <span className="font-normal text-grey3 dark:text-gray-400">
                     {' '}
                     - {fabric.sourceBusiness}
                   </span>
@@ -136,7 +136,7 @@ export const OrderFabricCard = ({
           }
         />
         <Row
-          label='Price per yard:'
+          label="Price per yard:"
           value={
             typeof fabric.pricePerYard === 'number'
               ? formatNaira(fabric.pricePerYard)
@@ -149,7 +149,7 @@ export const OrderFabricCard = ({
             -turnaround warning banner also depends on ETA. */}
         {statusBadge && (
           <Row
-            label='Status:'
+            label="Status:"
             value={
               <span
                 className={cn(
@@ -166,15 +166,15 @@ export const OrderFabricCard = ({
       </div>
 
       {fabric.vendorSources ? (
-        <p className='text-xs text-grey3 dark:text-gray-400'>
+        <p className="text-xs text-grey3 dark:text-gray-400">
           You are sourcing this fabric — include cost in your quote.
         </p>
       ) : (
         <Button
-          type='button'
-          variant='outline'
+          type="button"
+          variant="outline"
           onClick={onViewFabric}
-          className='w-full text-xs font-semibold uppercase tracking-wide'
+          className="w-full text-xs font-semibold uppercase tracking-wide"
         >
           View fabric
         </Button>

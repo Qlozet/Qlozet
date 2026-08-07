@@ -24,7 +24,7 @@ export const ChatMessageBubble = ({
             : 'rounded-bl-md bg-[#F1F1F1] text-grey-black'
         )}
       >
-        <p className='whitespace-pre-wrap break-words'>{text}</p>
+        <p className="whitespace-pre-wrap break-words">{text}</p>
         <span
           className={cn(
             'mt-1 block text-right text-[10px]',

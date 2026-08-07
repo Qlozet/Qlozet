@@ -91,21 +91,21 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
-        <div className='flex flex-col sm:flex-row gap-4'>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <div className="flex flex-col sm:flex-row gap-4">
           {/* Search Field */}
           <FormField
             control={form.control}
-            name='search'
+            name="search"
             render={({ field }) => (
-              <FormItem className='flex-1'>
+              <FormItem className="flex-1">
                 <FormControl>
-                  <div className='relative'>
-                    <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <Input
                       {...field}
-                      placeholder='Search products by name, category, or tag...'
-                      className='pl-10'
+                      placeholder="Search products by name, category, or tag..."
+                      className="pl-10"
                       disabled={isLoading}
                     />
                   </div>
@@ -117,9 +117,9 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
           {/* Status Filter */}
           <FormField
             control={form.control}
-            name='status'
+            name="status"
             render={({ field }) => (
-              <FormItem className='w-full sm:w-48'>
+              <FormItem className="w-full sm:w-48">
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
@@ -127,15 +127,15 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder='Status' />
+                      <SelectValue placeholder="Status" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value='all'>All Status</SelectItem>
-                    <SelectItem value='active'>Active</SelectItem>
-                    <SelectItem value='inactive'>Inactive</SelectItem>
-                    <SelectItem value='draft'>Draft</SelectItem>
-                    <SelectItem value='out_of_stock'>Out of Stock</SelectItem>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="out_of_stock">Out of Stock</SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>
@@ -145,9 +145,9 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
           {/* Category Filter */}
           <FormField
             control={form.control}
-            name='category'
+            name="category"
             render={({ field }) => (
-              <FormItem className='w-full sm:w-48'>
+              <FormItem className="w-full sm:w-48">
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
@@ -155,11 +155,11 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder='Category' />
+                      <SelectValue placeholder="Category" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value='all'>All Categories</SelectItem>
+                    <SelectItem value="all">All Categories</SelectItem>
                     {categories?.map((category) => (
                       <SelectItem key={category?._id} value={category?._id}>
                         {category.name}
@@ -174,9 +174,9 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
           {/* Tag Filter */}
           <FormField
             control={form.control}
-            name='tag'
+            name="tag"
             render={({ field }) => (
-              <FormItem className='w-full sm:w-32'>
+              <FormItem className="w-full sm:w-32">
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
@@ -184,14 +184,14 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder='Tag' />
+                      <SelectValue placeholder="Tag" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value='all'>All Tags</SelectItem>
-                    <SelectItem value='male'>Male</SelectItem>
-                    <SelectItem value='female'>Female</SelectItem>
-                    <SelectItem value='unisex'>Unisex</SelectItem>
+                    <SelectItem value="all">All Tags</SelectItem>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="unisex">Unisex</SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>
@@ -199,13 +199,13 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
           />
         </div>
 
-        <div className='flex flex-col sm:flex-row gap-4'>
+        <div className="flex flex-col sm:flex-row gap-4">
           {/* Sort By */}
           <FormField
             control={form.control}
-            name='sortBy'
+            name="sortBy"
             render={({ field }) => (
-              <FormItem className='w-full sm:w-48'>
+              <FormItem className="w-full sm:w-48">
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
@@ -213,15 +213,15 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder='Sort by' />
+                      <SelectValue placeholder="Sort by" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value='name'>Name</SelectItem>
-                    <SelectItem value='price'>Price</SelectItem>
-                    <SelectItem value='stock'>Stock</SelectItem>
-                    <SelectItem value='createdAt'>Date Created</SelectItem>
-                    <SelectItem value='category'>Category</SelectItem>
+                    <SelectItem value="name">Name</SelectItem>
+                    <SelectItem value="price">Price</SelectItem>
+                    <SelectItem value="stock">Stock</SelectItem>
+                    <SelectItem value="createdAt">Date Created</SelectItem>
+                    <SelectItem value="category">Category</SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>
@@ -231,9 +231,9 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
           {/* Sort Order */}
           <FormField
             control={form.control}
-            name='order'
+            name="order"
             render={({ field }) => (
-              <FormItem className='w-full sm:w-32'>
+              <FormItem className="w-full sm:w-32">
                 <Select
                   value={field.value}
                   onValueChange={field.onChange}
@@ -245,8 +245,8 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value='asc'>A-Z</SelectItem>
-                    <SelectItem value='desc'>Z-A</SelectItem>
+                    <SelectItem value="asc">A-Z</SelectItem>
+                    <SelectItem value="desc">Z-A</SelectItem>
                   </SelectContent>
                 </Select>
               </FormItem>
@@ -254,25 +254,25 @@ export const ProductSearchFilter: React.FC<ProductSearchFilterProps> = ({
           />
 
           {/* Action Buttons */}
-          <div className='flex gap-2'>
+          <div className="flex gap-2">
             <Button
-              type='submit'
+              type="submit"
               disabled={isLoading}
-              className='flex items-center gap-2'
+              className="flex items-center gap-2"
             >
-              <Filter className='h-4 w-4' />
+              <Filter className="h-4 w-4" />
               Filter
             </Button>
 
             {hasActiveFilters && (
               <Button
-                type='button'
-                variant='outline'
+                type="button"
+                variant="outline"
                 onClick={handleReset}
                 disabled={isLoading}
-                className='flex items-center gap-2'
+                className="flex items-center gap-2"
               >
-                <X className='h-4 w-4' />
+                <X className="h-4 w-4" />
                 Reset
               </Button>
             )}

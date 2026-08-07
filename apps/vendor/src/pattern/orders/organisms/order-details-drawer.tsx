@@ -59,10 +59,13 @@ import {
 } from '@/redux/services/business/business.api-slice';
 import { useAppSelector } from '@/redux/store';
 import { selectActiveBusiness } from '@/redux/slices/auth-slice';
+import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import { CustomerDetailsModal } from '../../customers/organisms/customer-details-modal';
 import { OrderItemDetailModal } from './order-item-detail-modal';
+import { DesignDetailModal } from './design-detail-modal';
 import { MediaPreviewModal } from './media-preview-modal';
-import { allProductImages, asProduct } from '../lib/item-resolvers';
+import { allProductImages } from '../lib/item-resolvers';
+import { readBespokeDesign } from '../lib/bespoke-design';
 import {
   OrderMediaPanel,
   ignoreMediaPanelInteraction,
@@ -102,8 +105,8 @@ const DetailRow = ({
       !isLast && 'border-b border-[#DDE2E5] dark:border-border'
     )}
   >
-    <span className='text-sm text-grey3 dark:text-gray-400'>{label}</span>
-    <span className='text-right text-sm font-medium text-[#333333] dark:text-white'>
+    <span className="text-sm text-grey3 dark:text-gray-400">{label}</span>
+    <span className="text-right text-sm font-medium text-[#333333] dark:text-white">
       {value}
     </span>
   </div>
@@ -116,8 +119,8 @@ const SectionTitle = ({
   children: React.ReactNode;
   trailing?: React.ReactNode;
 }) => (
-  <div className='flex items-center justify-between'>
-    <h3 className='text-sm font-semibold text-[#0C0C0D] dark:text-white'>
+  <div className="flex items-center justify-between">
+    <h3 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
       {children}
     </h3>
     {trailing}
@@ -125,7 +128,7 @@ const SectionTitle = ({
 );
 
 const Card = ({ children }: { children: React.ReactNode }) => (
-  <div className='rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] dark:border dark:border-border overflow-hidden'>
+  <div className="rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] dark:border dark:border-border overflow-hidden">
     {children}
   </div>
 );
@@ -182,7 +185,7 @@ const EarningsMilestones = ({ orderId }: { orderId: string }) => {
   if (isLoading || records.length === 0) return null;
 
   return (
-    <section className='space-y-3'>
+    <section className="space-y-3">
       <SectionTitle>Earnings Breakdown</SectionTitle>
       <Card>
         {records.map((rec, i) => {
@@ -194,11 +197,13 @@ const EarningsMilestones = ({ orderId }: { orderId: string }) => {
               label={`${milestoneLabel(rec)}${pct}`}
               isLast={i === records.length - 1}
               value={
-                <div className='flex flex-col items-end'>
-                  <span className='text-[#0F973D] font-semibold'>
-                    {typeof rec.amount === 'number' ? formatNaira(rec.amount) : ''}
+                <div className="flex flex-col items-end">
+                  <span className="text-[#0F973D] font-semibold">
+                    {typeof rec.amount === 'number'
+                      ? formatNaira(rec.amount)
+                      : ''}
                   </span>
-                  <span className='text-xs text-grey3 dark:text-gray-400'>
+                  <span className="text-xs text-grey3 dark:text-gray-400">
                     {readReleaseText(rec)}
                   </span>
                 </div>
@@ -250,9 +255,21 @@ function getProductImageUrl(product: PopulatedProduct | null): string | null {
 
 /** Kind badge config */
 const KIND_BADGE: Record<string, { label: string; className: string }> = {
-  clothing: { label: 'Clothing', className: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' },
-  fabric:   { label: 'Fabric',   className: 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' },
-  accessory:{ label: 'Accessory',className: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' },
+  clothing: {
+    label: 'Clothing',
+    className:
+      'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300',
+  },
+  fabric: {
+    label: 'Fabric',
+    className:
+      'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
+  },
+  accessory: {
+    label: 'Accessory',
+    className:
+      'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
+  },
 };
 
 /* ------------------------------------------------------------------ */
@@ -263,7 +280,9 @@ const OrderItemRow: React.FC<{
   item: OrderItem;
   order?: Order;
   isLast?: boolean;
-}> = ({ item, order, isLast = false }) => {
+  /** Hands this item's images to the drawer's single large preview. */
+  onPreview: (images: string[], title: string) => void;
+}> = ({ item, order, isLast = false, onPreview }) => {
   const product =
     typeof item.product === 'object' && item.product !== null
       ? (item.product as PopulatedProduct)
@@ -279,11 +298,26 @@ const OrderItemRow: React.FC<{
   let totalAmount = item.total_price ?? 0;
   let totalQty = 0;
   if (totalAmount === 0) {
-    item.color_variant_selections?.forEach((v) => { totalAmount += v.total_amount; totalQty += v.quantity; });
-    item.fabric_selections?.forEach((f) => { totalAmount += f.total_amount; totalQty += f.quantity; });
-    item.style_selections?.forEach((s) => { totalAmount += s.total_amount; totalQty += s.quantity; });
-    item.accessory_selections?.forEach((a) => { totalAmount += a.total_amount; totalQty += a.quantity; });
-    item.addon_selections?.forEach((ad) => { totalAmount += ad.total_amount; totalQty += ad.quantity; });
+    item.color_variant_selections?.forEach((v) => {
+      totalAmount += v.total_amount;
+      totalQty += v.quantity;
+    });
+    item.fabric_selections?.forEach((f) => {
+      totalAmount += f.total_amount;
+      totalQty += f.quantity;
+    });
+    item.style_selections?.forEach((s) => {
+      totalAmount += s.total_amount;
+      totalQty += s.quantity;
+    });
+    item.accessory_selections?.forEach((a) => {
+      totalAmount += a.total_amount;
+      totalQty += a.quantity;
+    });
+    item.addon_selections?.forEach((ad) => {
+      totalAmount += ad.total_amount;
+      totalQty += ad.quantity;
+    });
   } else {
     item.color_variant_selections?.forEach((v) => (totalQty += v.quantity));
     item.fabric_selections?.forEach((f) => (totalQty += f.quantity));
@@ -308,11 +342,17 @@ const OrderItemRow: React.FC<{
 
   // One-line summary of what's inside (drives the "View details" affordance).
   const summaryBits: string[] = [];
-  const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
-  if (item.style_selections?.length) summaryBits.push(plural(item.style_selections.length, 'style', 'styles'));
+  const plural = (n: number, one: string, many: string) =>
+    `${n} ${n === 1 ? one : many}`;
+  if (item.style_selections?.length)
+    summaryBits.push(plural(item.style_selections.length, 'style', 'styles'));
   if (item.fabric_selections?.length) summaryBits.push('fabric');
-  if (item.accessory_selections?.length) summaryBits.push(plural(item.accessory_selections.length, 'accessory', 'accessories'));
-  if (item.addon_selections?.length) summaryBits.push(plural(item.addon_selections.length, 'add-on', 'add-ons'));
+  if (item.accessory_selections?.length)
+    summaryBits.push(
+      plural(item.accessory_selections.length, 'accessory', 'accessories')
+    );
+  if (item.addon_selections?.length)
+    summaryBits.push(plural(item.addon_selections.length, 'add-on', 'add-ons'));
   if (item.applied_fabric) summaryBits.push('external fabric');
 
   const hasDetails = !!(
@@ -330,16 +370,16 @@ const OrderItemRow: React.FC<{
     if (hasDetails) NiceModal.show(OrderItemDetailModal, { item, order });
   };
 
-  // Always opens — with no image the preview shows a placeholder rather than
+  // Always fires — with no image the preview shows a placeholder rather than
   // the click doing nothing.
   const openMedia = () => {
     const images = gallery.length > 0 ? gallery : imageUrl ? [imageUrl] : [];
-    NiceModal.show(MediaPreviewModal, { images, title: name });
+    onPreview(images, name);
   };
 
   // The thumbnail and the rest of the row are sibling buttons rather than one
-  // nested inside the other — the image opens the lightbox, the row opens the
-  // item breakdown.
+  // nested inside the other — the image drives the large preview, the row opens
+  // the item breakdown.
   return (
     <div
       className={cn(
@@ -350,30 +390,30 @@ const OrderItemRow: React.FC<{
     >
       {/* Thumbnail — opens the media preview, with or without an image. */}
       <button
-        type='button'
+        type="button"
         onClick={openMedia}
         aria-label={`View ${name} media`}
-        className='relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700 cursor-pointer'
+        className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700 cursor-pointer"
       >
         {imageUrl ? (
           <Image
             src={imageUrl}
             alt={name}
             fill
-            className='object-cover'
-            sizes='48px'
+            className="object-cover"
+            sizes="48px"
           />
         ) : (
-          <Package className='size-5 text-gray-400' />
+          <Package className="size-5 text-gray-400" />
         )}
-        <span className='absolute inset-0 flex items-center justify-center bg-black/0 text-white/0 transition-colors hover:bg-black/35 hover:text-white'>
-          <Maximize2 className='size-3.5' />
+        <span className="absolute inset-0 flex items-center justify-center bg-black/0 text-white/0 transition-colors hover:bg-black/35 hover:text-white">
+          <Maximize2 className="size-3.5" />
         </span>
       </button>
 
       {/* Info */}
       <button
-        type='button'
+        type="button"
         onClick={openModal}
         disabled={!hasDetails}
         className={cn(
@@ -381,51 +421,56 @@ const OrderItemRow: React.FC<{
           hasDetails && 'cursor-pointer'
         )}
       >
-        <p className='truncate text-sm font-medium text-[#333333] dark:text-white group-hover:text-primary transition-colors'>
+        <p className="truncate text-sm font-medium text-[#333333] dark:text-white group-hover:text-primary transition-colors">
           {name}
         </p>
-        <div className='mt-1 flex flex-wrap items-center gap-2'>
+        <div className="mt-1 flex flex-wrap items-center gap-2">
           {kindBadge && (
-            <span className={cn('inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold', kindBadge.className)}>
+            <span
+              className={cn(
+                'inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold',
+                kindBadge.className
+              )}
+            >
               {kindBadge.label}
             </span>
           )}
           {basePrice !== undefined && (
-            <span className='text-[11px] text-grey3 dark:text-gray-400'>
+            <span className="text-[11px] text-grey3 dark:text-gray-400">
               Base: {formatNaira(basePrice)}
             </span>
           )}
         </div>
         {summaryBits.length > 0 && (
-          <p className='mt-1 truncate text-xs text-grey3 dark:text-gray-400'>
+          <p className="mt-1 truncate text-xs text-grey3 dark:text-gray-400">
             {summaryBits.join(' · ')}
           </p>
         )}
         {hasDetails && (
-          <span className='mt-1.5 inline-flex items-center gap-0.5 text-xs font-medium text-primary'>
+          <span className="mt-1.5 inline-flex items-center gap-0.5 text-xs font-medium text-primary">
             View details
-            <ChevronRight className='size-3.5 transition-transform group-hover:translate-x-0.5' />
+            <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
           </span>
         )}
       </button>
 
       {/* Total */}
-      <div className='shrink-0 text-right'>
-        <p className='text-sm font-semibold text-[#0C0C0D] dark:text-white'>
+      <div className="shrink-0 text-right">
+        <p className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
           {formatNaira(totalAmount)}
         </p>
         {beforeDiscount !== undefined && (
-          <p className='text-[11px] text-grey3 dark:text-gray-400 line-through'>
+          <p className="text-[11px] text-grey3 dark:text-gray-400 line-through">
             {formatNaira(beforeDiscount)}
           </p>
         )}
         {totalQty > 0 && (
-          <p className='mt-0.5 text-[11px] text-grey3 dark:text-gray-400'>
+          <p className="mt-0.5 text-[11px] text-grey3 dark:text-gray-400">
             QTY: {totalQty}
           </p>
         )}
         {discount !== undefined && (
-          <span className='mt-1 inline-flex items-center rounded-md bg-[#D42620] px-1.5 py-0.5 text-[10px] font-semibold text-white'>
+          <span className="mt-1 inline-flex items-center rounded-md bg-[#D42620] px-1.5 py-0.5 text-[10px] font-semibold text-white">
             {formatNaira(discount)} off
           </span>
         )}
@@ -516,8 +561,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       useFulfillOrderMutation();
     const [confirmOrder, { isLoading: isConfirming }] =
       useConfirmOrderMutation();
-    const [rejectOrder, { isLoading: isRejecting }] =
-      useRejectOrderMutation();
+    const [rejectOrder, { isLoading: isRejecting }] = useRejectOrderMutation();
 
     // Reject dialog state
     const [showRejectDialog, setShowRejectDialog] = useState(false);
@@ -587,7 +631,9 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   ...s,
                   status: 'shipped' as VendorShipment['status'],
                   ...(labelUrl ? { label_url: labelUrl } : {}),
-                  ...(trackingNumber ? { tracking_number: trackingNumber } : {}),
+                  ...(trackingNumber
+                    ? { tracking_number: trackingNumber }
+                    : {}),
                   ...(shipmentId ? { shipment_id: shipmentId } : {}),
                   shipped_at: s.shipped_at ?? new Date().toISOString(),
                 }
@@ -621,7 +667,9 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     const handleConfirm = async () => {
       try {
         await confirmOrder({ reference: order.reference }).unwrap();
-        toast.success('Order confirmed! You can now prepare it for fulfillment.');
+        toast.success(
+          'Order confirmed! You can now prepare it for fulfillment.'
+        );
       } catch {
         toast.error('Could not confirm order. Please try again.');
       }
@@ -633,7 +681,9 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
           reference: order.reference,
           reason: rejectReason.trim() || undefined,
         }).unwrap();
-        toast.success('Order rejected. The customer will be refunded for your items.');
+        toast.success(
+          'Order rejected. The customer will be refunded for your items.'
+        );
         setShowRejectDialog(false);
         setRejectReason('');
       } catch {
@@ -652,8 +702,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     // Customer link
     const customerId = order.customer?._id ?? '';
     const openCustomer = () => {
-      if (customerId)
-        NiceModal.show(CustomerDetailsModal, { customerId });
+      if (customerId) NiceModal.show(CustomerDetailsModal, { customerId });
     };
 
     // Badge
@@ -681,37 +730,69 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
         : true;
     });
 
-    // Every image across this vendor's items, feeding the companion panel.
-    const orderMedia = vendorItems.flatMap((item) =>
-      allProductImages(asProduct(item.product))
-    );
+    // The large preview is opt-in: nothing is shown until the vendor clicks a
+    // thumbnail, and a second click swaps the panel's contents rather than
+    // stacking another lightbox on top.
+    const [preview, setPreview] = useState<{
+      images: string[];
+      title: string;
+    } | null>(null);
+
+    // Below `sm` the companion panel has nowhere to sit next to a full-width
+    // drawer, so the thumbnail falls back to the lightbox modal there.
+    const canShowPanel = useMediaQuery('(min-width: 640px)', false);
+
+    const showPreview = (images: string[], title: string) => {
+      if (canShowPanel) {
+        setPreview({ images, title });
+      } else {
+        NiceModal.show(MediaPreviewModal, { images, title });
+      }
+    };
+
+    // Reset when the drawer is reopened on a different order.
+    useEffect(() => {
+      setPreview(null);
+    }, [orderProp]);
+
+    // Bespoke orders have no catalogue items — the design IS the garment.
+    const bespokeDesign = readBespokeDesign(order);
 
     return (
       <Sheet open={visible} onOpenChange={handleClose}>
-        <OrderMediaPanel
-          images={Array.from(new Set(orderMedia))}
-          title={`Order ${displayOrderId}`}
-          drawerOpen={visible}
-          onClose={() => handleClose()}
-        />
+        {preview && (
+          <OrderMediaPanel
+            // Re-keying resets the panel's carousel index when a different
+            // thumbnail takes it over.
+            key={`${preview.title}:${preview.images[0] ?? ''}`}
+            images={preview.images}
+            title={preview.title}
+            drawerOpen={visible}
+            onClose={() => setPreview(null)}
+            closeLabel="Close image preview"
+          />
+        )}
         <SheetContent
-          side='right'
+          side="right"
           onInteractOutside={ignoreMediaPanelInteraction}
-          className='flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white dark:bg-card'
-          style={{ height: 'calc(100vh - 3rem)', maxHeight: 'calc(100vh - 3rem)' }}
+          className="flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white dark:bg-card"
+          style={{
+            height: 'calc(100vh - 3rem)',
+            maxHeight: 'calc(100vh - 3rem)',
+          }}
         >
           {/* Header */}
           {/* pr-12 reserves room on the right for the Sheet's built-in close (X)
               at right-4, so the status badge no longer sits under it. */}
-          <SheetHeader className='shrink-0 border-b border-border py-5 pl-6 pr-12'>
-            <div className='flex items-center justify-between gap-3'>
-              <SheetTitle className='text-lg font-semibold text-[#0C0C0D] dark:text-white'>
+          <SheetHeader className="shrink-0 border-b border-border py-5 pl-6 pr-12">
+            <div className="flex items-center justify-between gap-3">
+              <SheetTitle className="text-lg font-semibold text-[#0C0C0D] dark:text-white">
                 Order details
               </SheetTitle>
-              <div className='flex flex-wrap items-center justify-end gap-2'>
+              <div className="flex flex-wrap items-center justify-end gap-2">
                 {isEarningsFrozen(order) && (
-                  <span className='inline-flex h-[26px] items-center gap-1 whitespace-nowrap rounded-lg bg-[#FEF6E7] px-3 text-xs font-medium text-[#DD900D]'>
-                    <ShieldAlert className='size-3.5' />
+                  <span className="inline-flex h-[26px] items-center gap-1 whitespace-nowrap rounded-lg bg-[#FEF6E7] px-3 text-xs font-medium text-[#DD900D]">
+                    <ShieldAlert className="size-3.5" />
                     Earnings Frozen
                   </span>
                 )}
@@ -728,44 +809,44 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
           </SheetHeader>
 
           {/* Scrollable body */}
-          <div className='flex-1 min-h-0 overflow-y-auto'>
-            <div className='space-y-5 px-6 py-5'>
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className="space-y-5 px-6 py-5">
               {/* ── Order Summary ── */}
-              <section className='space-y-3'>
+              <section className="space-y-3">
                 <SectionTitle>Order Summary</SectionTitle>
                 <Card>
                   <DetailRow
-                    label='Order ID'
+                    label="Order ID"
                     value={
                       <button
-                        type='button'
+                        type="button"
                         onClick={() => copy(displayOrderId)}
-                        className='inline-flex items-center gap-1.5 text-sm font-medium text-[#333333] dark:text-white hover:text-primary transition-colors'
+                        className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-[#333333] dark:text-white hover:text-primary transition-colors"
                       >
                         {displayOrderId}
                         {copied ? (
-                          <Check className='size-3.5 text-green-600' />
+                          <Check className="size-3.5 text-green-600" />
                         ) : (
-                          <Copy className='size-3.5 text-grey3' />
+                          <Copy className="size-3.5 text-grey3" />
                         )}
                       </button>
                     }
                   />
                   <DetailRow
-                    label='Order date'
+                    label="Order date"
                     value={formatDate(order.createdAt)}
                   />
                   <DetailRow
-                    label='Customer'
+                    label="Customer"
                     value={
                       customerId ? (
                         <button
-                          type='button'
+                          type="button"
                           onClick={openCustomer}
-                          className='inline-flex items-center gap-1 text-[#3387CC] hover:underline underline-offset-2 transition-colors'
+                          className="inline-flex cursor-pointer items-center gap-1 text-[#3387CC] hover:underline underline-offset-2 transition-colors"
                         >
                           {readCustomerHandle(order)}
-                          <ExternalLink className='size-3' />
+                          <ExternalLink className="size-3" />
                         </button>
                       ) : (
                         readCustomerName(order)
@@ -773,24 +854,24 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     }
                   />
                   <DetailRow
-                    label='Items'
+                    label="Items"
                     value={`${vendorItems.length} item${vendorItems.length === 1 ? '' : 's'}`}
                   />
                   {order.type === 'bespoke' && (
                     <DetailRow
-                      label='Type'
+                      label="Type"
                       value={
-                        <span className='inline-flex items-center gap-1'>
-                          <Tag className='size-3' />
+                        <span className="inline-flex items-center gap-1">
+                          <Tag className="size-3" />
                           Bespoke
                         </span>
                       }
                     />
                   )}
                   <DetailRow
-                    label='Total'
+                    label="Total"
                     value={
-                      <span className='text-base font-semibold text-[#0C0C0D] dark:text-white'>
+                      <span className="text-base font-semibold text-[#0C0C0D] dark:text-white">
                         {formatNaira(order.total)}
                       </span>
                     }
@@ -799,59 +880,121 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                 </Card>
               </section>
 
+              {/* ── Bespoke design ──
+                  A bespoke order has no catalogue items, so the design is the
+                  only picture of what the tailor has to make. The thumbnail
+                  drives the large preview; the rest of the card opens the full
+                  design breakdown. */}
+              {bespokeDesign && (
+                <section className="space-y-3">
+                  <SectionTitle>Design</SectionTitle>
+                  <Card>
+                    <div className="flex w-full items-center gap-3 px-5 py-4">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          showPreview(bespokeDesign.images, bespokeDesign.name)
+                        }
+                        aria-label={`View ${bespokeDesign.name} media`}
+                        className="relative flex size-14 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700"
+                      >
+                        {bespokeDesign.images[0] ? (
+                          <Image
+                            src={bespokeDesign.images[0]}
+                            alt={bespokeDesign.name}
+                            fill
+                            className="object-cover"
+                            sizes="56px"
+                          />
+                        ) : (
+                          <Tag className="size-5 text-gray-400" />
+                        )}
+                        <span className="absolute inset-0 flex items-center justify-center bg-black/0 text-white/0 transition-colors hover:bg-black/35 hover:text-white">
+                          <Maximize2 className="size-3.5" />
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          NiceModal.show(DesignDetailModal, {
+                            design: bespokeDesign.design,
+                          })
+                        }
+                        className="min-w-0 flex-1 cursor-pointer text-left"
+                      >
+                        <p className="truncate text-sm font-medium text-[#333333] dark:text-white">
+                          {bespokeDesign.name}
+                        </p>
+                        <p className="mt-1 text-xs text-grey3 dark:text-gray-400">
+                          Bespoke design
+                        </p>
+                        <span className="mt-1.5 inline-flex items-center gap-0.5 text-xs font-medium text-primary">
+                          View design
+                          <ChevronRight className="size-3.5" />
+                        </span>
+                      </button>
+                    </div>
+                  </Card>
+                </section>
+              )}
+
               {/* ── Vendor Items ──
                   Sits directly under Order Summary, as in the design — the
                   item media is the first thing the vendor should see, so the
-                  Confirmation block must not push it below the fold. */}
-              <section className='space-y-3'>
-                <SectionTitle>
-                  Your items ({vendorItems.length})
-                </SectionTitle>
+                  Confirmation block must not push it below the fold.
+                  Skipped entirely on a bespoke order, where the design card
+                  above is the item. */}
+              {!(bespokeDesign && vendorItems.length === 0) && (
+                <section className="space-y-3">
+                  <SectionTitle>Your items ({vendorItems.length})</SectionTitle>
 
-                {vendorItems.length > 0 ? (
-                  <Card>
-                    {vendorItems.map((item, index) => (
-                      <OrderItemRow
-                        key={index}
-                        item={item}
-                        order={order}
-                        isLast={index === vendorItems.length - 1}
-                      />
-                    ))}
-                  </Card>
-                ) : (
-                  <Card>
-                    <div className='flex flex-col items-center justify-center gap-2 px-5 py-8 text-center'>
-                      <Package className='size-8 text-grey3 dark:text-gray-500' />
-                      <p className='text-sm text-grey3 dark:text-gray-400'>
-                        No items from your store in this order.
-                      </p>
-                    </div>
-                  </Card>
-                )}
-              </section>
+                  {vendorItems.length > 0 ? (
+                    <Card>
+                      {vendorItems.map((item, index) => (
+                        <OrderItemRow
+                          key={index}
+                          item={item}
+                          order={order}
+                          isLast={index === vendorItems.length - 1}
+                          onPreview={showPreview}
+                        />
+                      ))}
+                    </Card>
+                  ) : (
+                    <Card>
+                      <div className="flex flex-col items-center justify-center gap-2 px-5 py-8 text-center">
+                        <Package className="size-8 text-grey3 dark:text-gray-500" />
+                        <p className="text-sm text-grey3 dark:text-gray-400">
+                          No items from your store in this order.
+                        </p>
+                      </div>
+                    </Card>
+                  )}
+                </section>
+              )}
 
               {/* ── Confirmation Status ── */}
               {vendorShipment && (
-                <section className='space-y-3'>
+                <section className="space-y-3">
                   <SectionTitle>Confirmation</SectionTitle>
                   <Card>
                     <DetailRow
-                      label='Status'
+                      label="Status"
                       value={
                         isRejected ? (
-                          <span className='inline-flex items-center gap-1.5 text-sm font-medium text-[#D42620]'>
-                            <XCircle className='size-3.5' />
+                          <span className="inline-flex items-center gap-1.5 text-sm font-medium text-[#D42620]">
+                            <XCircle className="size-3.5" />
                             Rejected
                           </span>
                         ) : isConfirmed ? (
-                          <span className='inline-flex items-center gap-1.5 text-sm font-medium text-[#0F973D]'>
-                            <CheckCircle className='size-3.5' />
+                          <span className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0F973D]">
+                            <CheckCircle className="size-3.5" />
                             Confirmed
                           </span>
                         ) : (
-                          <span className='inline-flex items-center gap-1.5 text-sm font-medium text-[#DD900D]'>
-                            <Clock className='size-3.5' />
+                          <span className="inline-flex items-center gap-1.5 text-sm font-medium text-[#DD900D]">
+                            <Clock className="size-3.5" />
                             Awaiting Confirmation
                           </span>
                         )
@@ -859,20 +1002,23 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     />
                     {isConfirmed && vendorShipment.confirmed_at && (
                       <DetailRow
-                        label='Confirmed on'
+                        label="Confirmed on"
                         value={formatDate(vendorShipment.confirmed_at)}
                       />
                     )}
                     {isConfirmed && vendorShipment.fulfillment_deadline && (
                       <DetailRow
-                        label='Fulfill by'
+                        label="Fulfill by"
                         value={
-                          <span className={cn(
-                            'text-sm font-medium',
-                            new Date(vendorShipment.fulfillment_deadline) < new Date()
-                              ? 'text-[#D42620]'
-                              : 'text-[#333333] dark:text-white'
-                          )}>
+                          <span
+                            className={cn(
+                              'text-sm font-medium',
+                              new Date(vendorShipment.fulfillment_deadline) <
+                                new Date()
+                                ? 'text-[#D42620]'
+                                : 'text-[#333333] dark:text-white'
+                            )}
+                          >
                             {formatDate(vendorShipment.fulfillment_deadline)}
                           </span>
                         }
@@ -880,15 +1026,15 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     )}
                     {isRejected && vendorShipment.rejected_at && (
                       <DetailRow
-                        label='Rejected on'
+                        label="Rejected on"
                         value={formatDate(vendorShipment.rejected_at)}
                       />
                     )}
                     {isRejected && vendorShipment.rejection_reason && (
                       <DetailRow
-                        label='Reason'
+                        label="Reason"
                         value={
-                          <span className='text-sm text-grey3 dark:text-gray-400 italic'>
+                          <span className="text-sm text-grey3 dark:text-gray-400 italic">
                             {vendorShipment.rejection_reason}
                           </span>
                         }
@@ -896,11 +1042,19 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                       />
                     )}
                     {vendorShipment.late_penalty_applied && (
-                      <div className='px-5 py-3 bg-red-50 dark:bg-red-900/20 border-t border-red-200 dark:border-red-800/50'>
-                        <div className='flex items-start gap-2'>
-                          <ShieldAlert className='size-4 text-red-600 dark:text-red-400 shrink-0 mt-0.5' />
-                          <p className='text-xs text-red-700 dark:text-red-300'>
-                            Late penalty applied: {formatNaira(vendorShipment.late_penalty_amount ?? 0)} ({vendorShipment.late_penalty_days ?? 0} day{(vendorShipment.late_penalty_days ?? 0) !== 1 ? 's' : ''} late)
+                      <div className="px-5 py-3 bg-red-50 dark:bg-red-900/20 border-t border-red-200 dark:border-red-800/50">
+                        <div className="flex items-start gap-2">
+                          <ShieldAlert className="size-4 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+                          <p className="text-xs text-red-700 dark:text-red-300">
+                            Late penalty applied:{' '}
+                            {formatNaira(
+                              vendorShipment.late_penalty_amount ?? 0
+                            )}{' '}
+                            ({vendorShipment.late_penalty_days ?? 0} day
+                            {(vendorShipment.late_penalty_days ?? 0) !== 1
+                              ? 's'
+                              : ''}{' '}
+                            late)
                           </p>
                         </div>
                       </div>
@@ -911,40 +1065,52 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
 
               {/* ── Fabric Transfer (Outgoing — You are the fabric vendor) ── */}
               {outgoingFabricTransfers.length > 0 && (
-                <section className='space-y-3'>
+                <section className="space-y-3">
                   <SectionTitle>📦 Fabric Transfer</SectionTitle>
                   {outgoingFabricTransfers.map((transfer) => {
-                    const destName = extractBizName(transfer.destination_business);
-                    const fabricName = extractFabricName(transfer.fabric_product);
+                    const destName = extractBizName(
+                      transfer.destination_business
+                    );
+                    const fabricName = extractFabricName(
+                      transfer.fabric_product
+                    );
                     const sBadge = shipmentStatusBadge(transfer.status);
                     return (
                       <Card key={transfer._id}>
                         <DetailRow
-                          label='Ship to'
+                          label="Ship to"
                           value={
-                            <span className='text-sm font-medium'>
-                              {destName} <span className='text-xs text-muted-foreground'>(Tailor)</span>
+                            <span className="text-sm font-medium">
+                              {destName}{' '}
+                              <span className="text-xs text-muted-foreground">
+                                (Tailor)
+                              </span>
                             </span>
                           }
                         />
                         <DetailRow
-                          label='Item'
+                          label="Item"
                           value={`${transfer.fabric_yards ?? '—'} yards of ${fabricName}`}
                         />
                         {transfer.courier_name && (
-                          <DetailRow label='Courier' value={transfer.courier_name} />
+                          <DetailRow
+                            label="Courier"
+                            value={transfer.courier_name}
+                          />
                         )}
                         <DetailRow
-                          label='Fee'
+                          label="Fee"
                           value={
                             <span>
                               {formatNaira(transfer.shipping_fee)}{' '}
-                              <span className='text-xs text-muted-foreground'>(paid by customer)</span>
+                              <span className="text-xs text-muted-foreground">
+                                (paid by customer)
+                              </span>
                             </span>
                           }
                         />
                         <DetailRow
-                          label='Status'
+                          label="Status"
                           value={
                             <span
                               className={cn(
@@ -965,24 +1131,28 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
 
               {/* ── Incoming Fabric (You are the tailor/receiver) ── */}
               {incomingFabricTransfers.length > 0 && (
-                <section className='space-y-3'>
+                <section className="space-y-3">
                   <SectionTitle>
-                    {pendingIncomingFabric.length > 0 ? '🧵 Incoming Fabric' : '🧵 Fabric Received ✓'}
+                    {pendingIncomingFabric.length > 0
+                      ? '🧵 Incoming Fabric'
+                      : '🧵 Fabric Received ✓'}
                   </SectionTitle>
                   {incomingFabricTransfers.map((transfer) => {
                     const sourceName = extractBizName(transfer.business);
-                    const fabricName = extractFabricName(transfer.fabric_product);
+                    const fabricName = extractFabricName(
+                      transfer.fabric_product
+                    );
                     const isDelivered = transfer.status === 'delivered';
                     const sBadge = shipmentStatusBadge(transfer.status);
                     return (
                       <Card key={transfer._id}>
-                        <DetailRow label='From' value={sourceName} />
+                        <DetailRow label="From" value={sourceName} />
                         <DetailRow
-                          label='Item'
+                          label="Item"
                           value={`${transfer.fabric_yards ?? '—'} yards of ${fabricName}`}
                         />
                         <DetailRow
-                          label='Status'
+                          label="Status"
                           value={
                             <span
                               className={cn(
@@ -996,19 +1166,21 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                           isLast={isDelivered}
                         />
                         {!isDelivered && (
-                          <div className='px-5 py-3 bg-amber-50 dark:bg-amber-900/20 border-t border-amber-200 dark:border-amber-800/50'>
-                            <div className='flex items-start gap-2'>
-                              <AlertTriangle className='size-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5' />
-                              <p className='text-xs text-amber-700 dark:text-amber-300'>
-                                You cannot fulfill this order until the fabric arrives and is marked as delivered.
+                          <div className="px-5 py-3 bg-amber-50 dark:bg-amber-900/20 border-t border-amber-200 dark:border-amber-800/50">
+                            <div className="flex items-start gap-2">
+                              <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                              <p className="text-xs text-amber-700 dark:text-amber-300">
+                                You cannot fulfill this order until the fabric
+                                arrives and is marked as delivered.
                               </p>
                             </div>
                           </div>
                         )}
                         {isDelivered && (
-                          <div className='px-5 py-3 bg-emerald-50 dark:bg-emerald-900/20 border-t border-emerald-200 dark:border-emerald-800/50'>
-                            <p className='text-xs text-emerald-700 dark:text-emerald-300'>
-                              ✓ Fabric received — you can now start working on this order!
+                          <div className="px-5 py-3 bg-emerald-50 dark:bg-emerald-900/20 border-t border-emerald-200 dark:border-emerald-800/50">
+                            <p className="text-xs text-emerald-700 dark:text-emerald-300">
+                              ✓ Fabric received — you can now start working on
+                              this order!
                             </p>
                           </div>
                         )}
@@ -1023,11 +1195,11 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   platform commission = their net earnings. Shipping is NOT the
                   vendor's money (customer-paid, goes to logistics), so it sits
                   below as a muted footnote — never next to the payout. */}
-              <section className='space-y-3'>
+              <section className="space-y-3">
                 <SectionTitle>Payment</SectionTitle>
                 <Card>
                   <DetailRow
-                    label='Items subtotal'
+                    label="Items subtotal"
                     value={formatNaira(vendorSubtotal)}
                     isLast={
                       vendorEarnings === undefined && !order.payout_status
@@ -1035,9 +1207,9 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   />
                   {vendorCommission !== undefined && (
                     <DetailRow
-                      label='Platform commission'
+                      label="Platform commission"
                       value={
-                        <span className='text-[#D42620]'>
+                        <span className="text-[#D42620]">
                           -{formatNaira(vendorCommission)}
                         </span>
                       }
@@ -1045,9 +1217,9 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   )}
                   {vendorEarnings !== undefined && (
                     <DetailRow
-                      label='Your earnings'
+                      label="Your earnings"
                       value={
-                        <span className='text-base font-semibold text-[#0F973D]'>
+                        <span className="text-base font-semibold text-[#0F973D]">
                           {formatNaira(vendorEarnings)}
                         </span>
                       }
@@ -1056,9 +1228,9 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   )}
                   {order.payout_status && (
                     <DetailRow
-                      label='Payout'
+                      label="Payout"
                       value={
-                        <span className='capitalize'>
+                        <span className="capitalize">
                           {order.payout_status}
                         </span>
                       }
@@ -1066,7 +1238,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     />
                   )}
                 </Card>
-                <p className='px-1 text-xs text-grey3 dark:text-gray-400'>
+                <p className="px-1 text-xs text-grey3 dark:text-gray-400">
                   Delivery (paid by customer):{' '}
                   {formatNaira(
                     vendorShipment?.shipping_fee ?? order.shipping_fee
@@ -1079,48 +1251,46 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
 
               {/* ── Shipment ── */}
               {vendorShipment && vendorShipment.status !== 'pending' && (
-                <section className='space-y-3'>
+                <section className="space-y-3">
                   <SectionTitle>Shipment</SectionTitle>
                   <Card>
                     <DetailRow
-                      label='Status'
-                      value={
-                        (() => {
-                          const sBadge = shipmentStatusBadge(
-                            vendorShipment.status
-                          );
-                          return (
-                            <span
-                              className={cn(
-                                'inline-flex h-[26px] items-center justify-center whitespace-nowrap rounded-lg px-3 text-xs font-medium',
-                                sBadge.className
-                              )}
-                            >
-                              {sBadge.label}
-                            </span>
-                          );
-                        })()
-                      }
+                      label="Status"
+                      value={(() => {
+                        const sBadge = shipmentStatusBadge(
+                          vendorShipment.status
+                        );
+                        return (
+                          <span
+                            className={cn(
+                              'inline-flex h-[26px] items-center justify-center whitespace-nowrap rounded-lg px-3 text-xs font-medium',
+                              sBadge.className
+                            )}
+                          >
+                            {sBadge.label}
+                          </span>
+                        );
+                      })()}
                     />
                     {vendorShipment.courier_name && (
                       <DetailRow
-                        label='Courier'
+                        label="Courier"
                         value={vendorShipment.courier_name}
                       />
                     )}
                     {vendorShipment.tracking_number && (
                       <DetailRow
-                        label='Tracking #'
+                        label="Tracking #"
                         value={
                           <button
-                            type='button'
+                            type="button"
                             onClick={() =>
                               copy(vendorShipment.tracking_number!)
                             }
-                            className='inline-flex items-center gap-1.5 text-sm font-medium text-[#333333] dark:text-white hover:text-primary transition-colors'
+                            className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-[#333333] dark:text-white hover:text-primary transition-colors"
                           >
                             {vendorShipment.tracking_number}
-                            <Copy className='size-3.5 text-grey3' />
+                            <Copy className="size-3.5 text-grey3" />
                           </button>
                         }
                         isLast
@@ -1132,20 +1302,20 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
 
               {/* ── Delivery Address ── */}
               {addressParts.length > 0 && (
-                <section className='space-y-3'>
+                <section className="space-y-3">
                   <SectionTitle>Delivery address</SectionTitle>
                   <Card>
-                    <div className='px-5 py-4'>
+                    <div className="px-5 py-4">
                       {typeof addr.full_name === 'string' && addr.full_name && (
-                        <p className='text-sm font-medium text-[#333333] dark:text-white'>
+                        <p className="text-sm font-medium text-[#333333] dark:text-white">
                           {addr.full_name}
                         </p>
                       )}
-                      <p className='text-sm text-[#333333] dark:text-white leading-relaxed'>
+                      <p className="text-sm text-[#333333] dark:text-white leading-relaxed">
                         {addressParts.join(', ')}
                       </p>
                       {typeof addressPhone === 'string' && addressPhone && (
-                        <p className='mt-1 text-xs text-grey3 dark:text-gray-400'>
+                        <p className="mt-1 text-xs text-grey3 dark:text-gray-400">
                           {addressPhone}
                         </p>
                       )}
@@ -1158,46 +1328,46 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
 
           {/* Reject Confirmation Dialog */}
           {showRejectDialog && (
-            <div className='absolute inset-0 z-50 flex items-center justify-center bg-black/40 rounded-2xl'>
-              <div className='mx-6 w-full max-w-sm rounded-2xl bg-white dark:bg-card p-6 space-y-4 shadow-xl'>
-                <div className='flex items-start gap-3'>
-                  <div className='flex size-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 shrink-0'>
-                    <XCircle className='size-5 text-red-600 dark:text-red-400' />
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 rounded-2xl">
+              <div className="mx-6 w-full max-w-sm rounded-2xl bg-white dark:bg-card p-6 space-y-4 shadow-xl">
+                <div className="flex items-start gap-3">
+                  <div className="flex size-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 shrink-0">
+                    <XCircle className="size-5 text-red-600 dark:text-red-400" />
                   </div>
                   <div>
-                    <h4 className='text-sm font-semibold text-[#0C0C0D] dark:text-white'>
+                    <h4 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
                       Reject this order?
                     </h4>
-                    <p className='mt-1 text-xs text-grey3 dark:text-gray-400 leading-relaxed'>
+                    <p className="mt-1 text-xs text-grey3 dark:text-gray-400 leading-relaxed">
                       The customer will be refunded for your items and shipping.
                       This action cannot be undone.
                     </p>
                   </div>
                 </div>
                 <textarea
-                  placeholder='Reason (optional)'
+                  placeholder="Reason (optional)"
                   value={rejectReason}
                   onChange={(e) => setRejectReason(e.target.value)}
                   rows={2}
-                  className='w-full rounded-lg border border-[#DDE2E5] dark:border-border bg-transparent px-3 py-2 text-sm text-[#333333] dark:text-white placeholder:text-grey3 focus:outline-none focus:ring-2 focus:ring-red-500/30 resize-none'
+                  className="w-full rounded-lg border border-[#DDE2E5] dark:border-border bg-transparent px-3 py-2 text-sm text-[#333333] dark:text-white placeholder:text-grey3 focus:outline-none focus:ring-2 focus:ring-red-500/30 resize-none"
                 />
-                <div className='flex gap-3'>
+                <div className="flex gap-3">
                   <Button
-                    type='button'
-                    variant='outline'
+                    type="button"
+                    variant="outline"
                     onClick={() => {
                       setShowRejectDialog(false);
                       setRejectReason('');
                     }}
-                    className='flex-1 h-10 text-sm'
+                    className="flex-1 h-10 text-sm"
                   >
                     Cancel
                   </Button>
                   <Button
-                    type='button'
+                    type="button"
                     onClick={handleReject}
                     disabled={isRejecting}
-                    className='flex-1 h-10 text-sm bg-red-600 hover:bg-red-700 text-white'
+                    className="flex-1 h-10 text-sm bg-red-600 hover:bg-red-700 text-white"
                   >
                     {isRejecting ? 'Rejecting...' : 'Reject Order'}
                   </Button>
@@ -1207,37 +1377,37 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
           )}
 
           {/* Footer */}
-          <div className='shrink-0 border-t border-border px-6 py-4'>
+          <div className="shrink-0 border-t border-border px-6 py-4">
             {isRetryFulfill && canFulfill && (
-              <div className='mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-800/50 dark:bg-amber-900/20'>
-                <AlertTriangle className='mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400' />
-                <p className='text-xs text-amber-700 dark:text-amber-300'>
-                  A previous fulfillment attempt didn&apos;t complete — no shipping
-                  label was created. You can retry below.
+              <div className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-800/50 dark:bg-amber-900/20">
+                <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                <p className="text-xs text-amber-700 dark:text-amber-300">
+                  A previous fulfillment attempt didn&apos;t complete — no
+                  shipping label was created. You can retry below.
                 </p>
               </div>
             )}
-            <div className='flex items-center gap-3'>
+            <div className="flex items-center gap-3">
               {/* Confirm / Reject — shown when order needs confirmation */}
               {needsConfirmation && (
                 <>
                   <Button
-                    type='button'
+                    type="button"
                     onClick={handleConfirm}
                     disabled={isConfirming}
-                    className='flex-1 h-11 gap-2 text-sm bg-[#0F973D] hover:bg-[#0D8534] text-white'
+                    className="flex-1 h-11 gap-2 text-sm bg-[#0F973D] hover:bg-[#0D8534] text-white"
                   >
-                    <CheckCircle className='size-4' />
+                    <CheckCircle className="size-4" />
                     {isConfirming ? 'Confirming...' : 'Confirm Order'}
                   </Button>
                   <Button
-                    type='button'
-                    variant='outline'
+                    type="button"
+                    variant="outline"
                     onClick={() => setShowRejectDialog(true)}
                     disabled={isRejecting}
-                    className='flex-1 h-11 gap-2 text-sm border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20'
+                    className="flex-1 h-11 gap-2 text-sm border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
                   >
-                    <XCircle className='size-4' />
+                    <XCircle className="size-4" />
                     Reject
                   </Button>
                 </>
@@ -1245,12 +1415,12 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               {/* Fulfill — shown after confirmation */}
               {canFulfill && (
                 <Button
-                  type='button'
+                  type="button"
                   onClick={handleFulfill}
                   disabled={isFulfilling}
-                  className='flex-1 h-11 gap-2 text-sm'
+                  className="flex-1 h-11 gap-2 text-sm"
                 >
-                  <Truck className='size-4' />
+                  <Truck className="size-4" />
                   {isFulfilling
                     ? 'Creating label...'
                     : isRetryFulfill
@@ -1262,54 +1432,60 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               )}
               {pendingIncomingFabric.length > 0 && canFulfillBase && (
                 <Button
-                  type='button'
+                  type="button"
                   disabled
-                  variant='outline'
-                  className='flex-1 h-11 gap-2 text-sm opacity-60'
+                  variant="outline"
+                  className="flex-1 h-11 gap-2 text-sm opacity-60"
                 >
-                  <AlertTriangle className='size-4 text-amber-500' />
-                  Waiting for fabric from {extractBizName(pendingIncomingFabric[0].business)}
+                  <AlertTriangle className="size-4 text-amber-500" />
+                  Waiting for fabric from{' '}
+                  {extractBizName(pendingIncomingFabric[0].business)}
                 </Button>
               )}
               {hasLabel && (
                 <Button
-                  type='button'
-                  variant='outline'
+                  type="button"
+                  variant="outline"
                   onClick={() =>
                     window.open(vendorShipment!.label_url!, '_blank')
                   }
-                  className='flex-1 h-11 gap-2 text-sm'
+                  className="flex-1 h-11 gap-2 text-sm"
                 >
-                  <Printer className='size-4' />
+                  <Printer className="size-4" />
                   Print Label
                 </Button>
               )}
               {/* Rejected badge — no actions available */}
               {isRejected && (
-                <div className='flex-1 flex items-center justify-center h-11 gap-2 text-sm font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800'>
-                  <XCircle className='size-4' />
+                <div className="flex-1 flex items-center justify-center h-11 gap-2 text-sm font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                  <XCircle className="size-4" />
                   Order Rejected
                 </div>
               )}
               {/* Print invoice fallback */}
-              {!needsConfirmation && !canFulfill && !hasLabel && !isRejected && (
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={() =>
-                    toast.info('Print invoice is coming soon.')
-                  }
-                  className='flex-1 h-11 gap-2 text-sm'
-                >
-                  <Printer className='size-4' />
-                  Print invoice
-                </Button>
-              )}
+              {!needsConfirmation &&
+                !canFulfill &&
+                !hasLabel &&
+                !isRejected && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => toast.info('Print invoice is coming soon.')}
+                    className="flex-1 h-11 gap-2 text-sm"
+                  >
+                    <Printer className="size-4" />
+                    Print invoice
+                  </Button>
+                )}
               <Button
-                type='button'
-                variant={needsConfirmation || canFulfill || hasLabel ? 'outline' : 'default'}
+                type="button"
+                variant={
+                  needsConfirmation || canFulfill || hasLabel
+                    ? 'outline'
+                    : 'default'
+                }
                 onClick={handleClose}
-                className='flex-1 h-11 text-sm'
+                className="flex-1 h-11 text-sm"
               >
                 Close
               </Button>

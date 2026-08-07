@@ -31,16 +31,16 @@ export const EditRoleAccessTemplate = ({
   onSave,
 }: EditRoleAccessTemplateProps) => {
   return (
-    <div className='w-full min-h-screen h-fit space-y-5 pb-10'>
+    <div className="w-full min-h-screen h-fit space-y-5 pb-10">
       {/* Header */}
-      <div className='space-y-3'>
+      <div className="space-y-3">
         <GoBackButton href={APP_ROUTES.adminManageRoles} />
-        <h1 className='text-xl font-bold text-grey-black'>{title}</h1>
+        <h1 className="text-xl font-bold text-grey-black">{title}</h1>
       </div>
 
       {/* Two-column body */}
-      <div className='grid grid-cols-1 gap-5 lg:grid-cols-3'>
-        <div className='lg:col-span-1'>
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+        <div className="lg:col-span-1">
           <RoleDetailsForm
             name={name}
             description={description}
@@ -49,14 +49,14 @@ export const EditRoleAccessTemplate = ({
           />
         </div>
 
-        <div className='lg:col-span-2'>
+        <div className="lg:col-span-2">
           <PermissionsTable matrix={matrix} onToggle={onToggle} />
         </div>
       </div>
 
       {/* Save */}
-      <div className='flex justify-end'>
-        <Button onClick={onSave} disabled={isSaving} className='px-10'>
+      <div className="flex justify-end">
+        <Button onClick={onSave} disabled={isSaving} className="px-10">
           {isSaving ? 'Saving...' : 'Save'}
         </Button>
       </div>

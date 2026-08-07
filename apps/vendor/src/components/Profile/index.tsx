@@ -6,7 +6,12 @@ import Image from 'next/image';
 import Performance from '../Performance';
 import Rating from '../Rating';
 import { ProfileProps } from '../../types';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import WeeklyDigestSection from '@/pattern/common/organisms/weekly-digest-section';
 
@@ -17,7 +22,10 @@ const Profile = ({
   isLoading,
 }: ProfileProps) => {
   return (
-    <Sheet open={showProfile} onOpenChange={(open) => !open && showProfileHandler()}>
+    <Sheet
+      open={showProfile}
+      onOpenChange={(open) => !open && showProfileHandler()}
+    >
       <SheetContent
         side="right"
         className="flex w-full flex-col overflow-hidden p-0 sm:max-w-md sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] sm:rounded-[15px] custom-card-shadow !bg-white dark:!bg-card border border-gray-100 dark:border-border"
@@ -29,11 +37,10 @@ const Profile = ({
               Profile
             </SheetTitle>
           </SheetHeader>
-          
+
           {/* Scrollable body */}
           <div className="flex-1 overflow-y-auto sidebar-scrollbar">
             <div className="space-y-5 px-4 py-5">
-              
               {isLoading ? (
                 <>
                   {/* Box 1 Skeleton */}
@@ -100,21 +107,33 @@ const Profile = ({
                         ) : (
                           <div className="flex h-full w-full items-center justify-center bg-white dark:bg-muted">
                             <span className="text-3xl font-bold text-gray-800 dark:text-gray-200">
-                              {(userDetails?.personalName ||
+                              {(
+                                userDetails?.personalName ||
                                 userDetails?.businessName ||
-                                '')
+                                ''
+                              )
                                 .charAt(0)
                                 .toUpperCase()}
                             </span>
                           </div>
                         )}
                       </div>
-                      
+
                       {/* Names */}
-                      <Typography textColor="text-[#1C1C1E] dark:text-white" textWeight="font-semibold" textSize="text-[20px]" className="tracking-tight text-center">
+                      <Typography
+                        textColor="text-[#1C1C1E] dark:text-white"
+                        textWeight="font-semibold"
+                        textSize="text-[20px]"
+                        className="tracking-tight text-center"
+                      >
                         {userDetails?.personalName}
                       </Typography>
-                      <Typography textColor="text-[#8E8E93] dark:text-gray-300" textWeight="font-medium" textSize="text-[15px]" className="mt-0.5 text-center">
+                      <Typography
+                        textColor="text-[#8E8E93] dark:text-gray-300"
+                        textWeight="font-medium"
+                        textSize="text-[15px]"
+                        className="mt-0.5 text-center"
+                      >
                         {userDetails?.businessName}
                       </Typography>
                     </div>
@@ -122,21 +141,41 @@ const Profile = ({
                     {/* Items & Profit */}
                     <div className="flex justify-center items-center mt-8">
                       <div className="flex flex-col items-center flex-1">
-                        <Typography textColor="text-[#1C1C1E] dark:text-white" textWeight="font-bold" textSize="text-[22px]" className="tracking-tight">
+                        <Typography
+                          textColor="text-[#1C1C1E] dark:text-white"
+                          textWeight="font-bold"
+                          textSize="text-[22px]"
+                          className="tracking-tight"
+                        >
                           {userDetails?.items?.toLocaleString() || '0'}
                         </Typography>
-                        <Typography textColor="text-[#8E8E93] dark:text-gray-400" textWeight="font-semibold" textSize="text-[10px]" className="tracking-widest uppercase mt-1">
+                        <Typography
+                          textColor="text-[#8E8E93] dark:text-gray-400"
+                          textWeight="font-semibold"
+                          textSize="text-[10px]"
+                          className="tracking-widest uppercase mt-1"
+                        >
                           Items
                         </Typography>
                       </div>
-                      
+
                       <div className="w-px h-10 bg-[#DDE2E5] dark:bg-border mx-4" />
-                      
+
                       <div className="flex flex-col items-center flex-1">
-                        <Typography textColor="text-[#1C1C1E] dark:text-white" textWeight="font-bold" textSize="text-[22px]" className="tracking-tight">
+                        <Typography
+                          textColor="text-[#1C1C1E] dark:text-white"
+                          textWeight="font-bold"
+                          textSize="text-[22px]"
+                          className="tracking-tight"
+                        >
                           ${userDetails?.profit?.toLocaleString() || '0'}
                         </Typography>
-                        <Typography textColor="text-[#8E8E93] dark:text-gray-400" textWeight="font-semibold" textSize="text-[10px]" className="tracking-widest uppercase mt-1">
+                        <Typography
+                          textColor="text-[#8E8E93] dark:text-gray-400"
+                          textWeight="font-semibold"
+                          textSize="text-[10px]"
+                          className="tracking-widest uppercase mt-1"
+                        >
                           Profit
                         </Typography>
                       </div>
@@ -146,18 +185,32 @@ const Profile = ({
                   {/* Box 2: Customers Reviews */}
                   <div className="rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] overflow-hidden p-5">
                     <div className="flex items-center justify-between mb-4">
-                      <Typography textColor="text-[#1C1C1E] dark:text-white" textWeight="font-semibold" textSize="text-[15px]">
+                      <Typography
+                        textColor="text-[#1C1C1E] dark:text-white"
+                        textWeight="font-semibold"
+                        textSize="text-[15px]"
+                      >
                         Customers Reviews
                       </Typography>
                     </div>
 
                     <div className="flex items-center gap-3 mb-1">
-                      <Rating newRating={Math.round(userDetails?.averageRating || 0)} />
+                      <Rating
+                        newRating={Math.round(userDetails?.averageRating || 0)}
+                      />
                       <div className="flex items-baseline gap-1.5">
-                        <Typography textColor="text-[#1C1C1E] dark:text-white" textWeight="font-bold" textSize="text-[18px]">
+                        <Typography
+                          textColor="text-[#1C1C1E] dark:text-white"
+                          textWeight="font-bold"
+                          textSize="text-[18px]"
+                        >
                           {userDetails?.averageRating || '0'}
                         </Typography>
-                        <Typography textColor="text-[#8E8E93] dark:text-gray-300" textWeight="font-medium" textSize="text-[13px]">
+                        <Typography
+                          textColor="text-[#8E8E93] dark:text-gray-300"
+                          textWeight="font-medium"
+                          textSize="text-[13px]"
+                        >
                           Out of 5 Stars
                         </Typography>
                       </div>
@@ -165,17 +218,40 @@ const Profile = ({
 
                     <div className="mb-5">
                       <span className="text-[13px] text-[#A67B5B] dark:text-[#E0D5CB] font-medium hover:opacity-80 cursor-pointer transition-opacity flex items-center gap-1">
-                        Overall rating of 100 customer's reviews <span className="text-[16px] leading-none mb-0.5">›</span>
+                        Overall rating of 100 customer's reviews{' '}
+                        <span className="text-[16px] leading-none mb-0.5">
+                          ›
+                        </span>
                       </span>
                     </div>
 
                     {/* Performance Bars */}
                     <div className="space-y-1">
-                      <Performance name="Excellent" value={(userDetails?.ratings?.excellent || 35) * 10} color="bg-[#1C1C1E] dark:bg-white" />
-                      <Performance name="Good" value={(userDetails?.ratings?.good || 25) * 10} color="bg-[#1C1C1E] dark:bg-white" />
-                      <Performance name="Average" value={(userDetails?.ratings?.average || 20) * 10} color="bg-[#1C1C1E] dark:bg-white" />
-                      <Performance name="Avg. Below" value={(userDetails?.ratings?.belowAverage || 15) * 10} color="bg-[#1C1C1E] dark:bg-white" />
-                      <Performance name="Poor" value={(userDetails?.ratings?.poor || 5) * 10} color="bg-[#1C1C1E] dark:bg-white" />
+                      <Performance
+                        name="Excellent"
+                        value={(userDetails?.ratings?.excellent || 35) * 10}
+                        color="bg-[#1C1C1E] dark:bg-white"
+                      />
+                      <Performance
+                        name="Good"
+                        value={(userDetails?.ratings?.good || 25) * 10}
+                        color="bg-[#1C1C1E] dark:bg-white"
+                      />
+                      <Performance
+                        name="Average"
+                        value={(userDetails?.ratings?.average || 20) * 10}
+                        color="bg-[#1C1C1E] dark:bg-white"
+                      />
+                      <Performance
+                        name="Avg. Below"
+                        value={(userDetails?.ratings?.belowAverage || 15) * 10}
+                        color="bg-[#1C1C1E] dark:bg-white"
+                      />
+                      <Performance
+                        name="Poor"
+                        value={(userDetails?.ratings?.poor || 5) * 10}
+                        color="bg-[#1C1C1E] dark:bg-white"
+                      />
                     </div>
                   </div>
 
@@ -183,7 +259,6 @@ const Profile = ({
                   <WeeklyDigestSection />
                 </>
               )}
-
             </div>
           </div>
         </div>

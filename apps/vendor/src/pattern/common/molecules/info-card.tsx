@@ -38,8 +38,8 @@ export const InfoCard = ({
         className
       )}
     >
-      <p className='text-xs text-gray-500'>{label}</p>
-      <div className='flex items-center justify-between gap-2'>
+      <p className="text-xs text-gray-500">{label}</p>
+      <div className="flex items-center justify-between gap-2">
         {href ? (
           <a
             href={href}
@@ -63,20 +63,20 @@ export const InfoCard = ({
 
         {linkLabel ? (
           <button
-            type='button'
+            type="button"
             onClick={onLinkClick}
-            className='shrink-0 text-xs font-medium text-primary underline underline-offset-2 hover:opacity-80 cursor-pointer'
+            className="shrink-0 text-xs font-medium text-primary underline underline-offset-2 hover:opacity-80 cursor-pointer"
           >
             {linkLabel}
           </button>
         ) : onEdit ? (
           <button
-            type='button'
+            type="button"
             aria-label={`Edit ${label}`}
             onClick={onEdit}
-            className='shrink-0 text-gray-500 hover:text-gray-700 cursor-pointer'
+            className="shrink-0 text-gray-500 hover:text-gray-700 cursor-pointer"
           >
-            <Pencil className='size-4' />
+            <Pencil className="size-4" />
           </button>
         ) : null}
       </div>

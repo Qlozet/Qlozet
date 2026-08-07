@@ -42,10 +42,7 @@ const EditRoleAccessPage = () => {
     }
   }, [isSuccess, role]);
 
-  const title = useMemo(
-    () => name || role?.name || 'Role',
-    [name, role]
-  );
+  const title = useMemo(() => name || role?.name || 'Role', [name, role]);
 
   const handleToggle = (resourceKey: string, action: PermissionAction) => {
     setMatrix((prev) => ({

@@ -1,33 +1,30 @@
-'use client'
+'use client';
 
 // Address Autocomplete Input — Google Places powered address search
 // Renders a text input with a prediction dropdown. On selection, calls
 // getPlaceDetails() and fires onSelect() with structured address data.
 
-import React, { useState, useRef, useEffect } from 'react'
-import { MapPin, Search, Loader2, X } from 'lucide-react'
-import { Input } from '@/components/ui/input'
-import {
-  useGooglePlaces,
-  type PlaceDetails,
-} from '@/hooks/use-google-places'
-import { cn } from '@/lib/utils'
+import React, { useState, useRef, useEffect } from 'react';
+import { MapPin, Search, Loader2, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { useGooglePlaces, type PlaceDetails } from '@/hooks/use-google-places';
+import { cn } from '@/lib/utils';
 
 interface AddressAutocompleteInputProps {
   /** Current address string (controlled) */
-  value: string
+  value: string;
   /** Called when the user types (for manual fallback) */
-  onChange: (value: string) => void
+  onChange: (value: string) => void;
   /** Called when the user selects a Google Place prediction */
-  onSelect: (details: PlaceDetails) => void
+  onSelect: (details: PlaceDetails) => void;
   /** Input placeholder */
-  placeholder?: string
+  placeholder?: string;
   /** Additional className for the input */
-  className?: string
+  className?: string;
   /** Restrict results to this country code (default: 'ng') */
-  countryCode?: string
+  countryCode?: string;
   /** Disable the input */
-  disabled?: boolean
+  disabled?: boolean;
 }
 
 export const AddressAutocompleteInput: React.FC<
@@ -48,11 +45,11 @@ export const AddressAutocompleteInput: React.FC<
     search,
     getPlaceDetails,
     clearPredictions,
-  } = useGooglePlaces(countryCode)
+  } = useGooglePlaces(countryCode);
 
-  const [isOpen, setIsOpen] = useState(false)
-  const [isResolving, setIsResolving] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const [isResolving, setIsResolving] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -61,12 +58,12 @@ export const AddressAutocompleteInput: React.FC<
         containerRef.current &&
         !containerRef.current.contains(e.target as Node)
       ) {
-        setIsOpen(false)
+        setIsOpen(false);
       }
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [])
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   // Surface a missing key to developers only — the input degrades to plain
   // manual entry, which needs no explanation to the vendor.
@@ -74,77 +71,77 @@ export const AddressAutocompleteInput: React.FC<
     if (!process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY) {
       console.warn(
         '[AddressAutocompleteInput] NEXT_PUBLIC_GOOGLE_PLACES_API_KEY is not set — address autocomplete is disabled.'
-      )
+      );
     }
-  }, [])
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value
-    onChange(val)
+    const val = e.target.value;
+    onChange(val);
 
     if (isLoaded && val.trim().length > 2) {
-      search(val)
-      setIsOpen(true)
+      search(val);
+      setIsOpen(true);
     } else {
-      clearPredictions()
-      setIsOpen(false)
+      clearPredictions();
+      setIsOpen(false);
     }
-  }
+  };
 
   const handleSelect = async (placeId: string, description: string) => {
-    setIsResolving(true)
-    onChange(description)
-    setIsOpen(false)
-    clearPredictions()
+    setIsResolving(true);
+    onChange(description);
+    setIsOpen(false);
+    clearPredictions();
 
     try {
-      const details = await getPlaceDetails(placeId)
-      onSelect(details)
+      const details = await getPlaceDetails(placeId);
+      onSelect(details);
     } catch (err) {
-      console.error('Failed to resolve place details:', err)
+      console.error('Failed to resolve place details:', err);
     } finally {
-      setIsResolving(false)
+      setIsResolving(false);
     }
-  }
+  };
 
   const handleClear = () => {
-    onChange('')
-    clearPredictions()
-    setIsOpen(false)
-  }
+    onChange('');
+    clearPredictions();
+    setIsOpen(false);
+  };
 
-  const showDropdown = isOpen && (predictions.length > 0 || isSearching)
+  const showDropdown = isOpen && (predictions.length > 0 || isSearching);
 
   return (
-    <div ref={containerRef} className='relative'>
-      <div className='relative'>
-        <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none' />
+    <div ref={containerRef} className="relative">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         <Input
           value={value}
           onChange={handleInputChange}
           onFocus={() => {
-            if (predictions.length > 0) setIsOpen(true)
+            if (predictions.length > 0) setIsOpen(true);
           }}
           placeholder={
             isLoaded ? placeholder : 'Enter your business address...'
           }
           className={cn(
             'pl-9 pr-9 bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200',
-            className,
+            className
           )}
           disabled={disabled || isResolving}
-          autoComplete='off'
+          autoComplete="off"
         />
         {(isSearching || isResolving) && (
-          <Loader2 className='absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground animate-spin' />
+          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground animate-spin" />
         )}
         {!isSearching && !isResolving && value && (
           <button
-            type='button'
+            type="button"
             onClick={handleClear}
-            className='absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground'
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
           >
-            <X className='h-4 w-4' />
+            <X className="h-4 w-4" />
           </button>
         )}
       </div>
@@ -157,32 +154,30 @@ export const AddressAutocompleteInput: React.FC<
 
       {/* Predictions dropdown */}
       {showDropdown && (
-        <div className='absolute z-50 w-full mt-1 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 shadow-lg overflow-hidden'>
+        <div className="absolute z-50 w-full mt-1 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 shadow-lg overflow-hidden">
           {isSearching && predictions.length === 0 ? (
-            <div className='flex items-center gap-2 px-4 py-3 text-sm text-muted-foreground'>
-              <Loader2 className='h-4 w-4 animate-spin' />
+            <div className="flex items-center gap-2 px-4 py-3 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
               Searching...
             </div>
           ) : (
             predictions.map((pred, i) => (
               <button
                 key={pred.placeId}
-                type='button'
-                onClick={() =>
-                  handleSelect(pred.placeId, pred.fullDescription)
-                }
+                type="button"
+                onClick={() => handleSelect(pred.placeId, pred.fullDescription)}
                 className={cn(
                   'w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors',
                   i < predictions.length - 1 &&
-                    'border-b border-gray-100 dark:border-white/5',
+                    'border-b border-gray-100 dark:border-white/5'
                 )}
               >
-                <MapPin className='h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5' />
-                <div className='flex flex-col min-w-0'>
-                  <span className='text-sm font-medium text-foreground truncate'>
+                <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                <div className="flex flex-col min-w-0">
+                  <span className="text-sm font-medium text-foreground truncate">
                     {pred.main}
                   </span>
-                  <span className='text-xs text-muted-foreground truncate'>
+                  <span className="text-xs text-muted-foreground truncate">
                     {pred.sub}
                   </span>
                 </div>
@@ -192,5 +187,5 @@ export const AddressAutocompleteInput: React.FC<
         </div>
       )}
     </div>
-  )
-}
+  );
+};

@@ -78,7 +78,10 @@ export const logisticsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // POST /logistics/address — validate/register an address
-    validateLogisticsAddress: builder.mutation<ApiResponse<unknown>, AddressDetails>({
+    validateLogisticsAddress: builder.mutation<
+      ApiResponse<unknown>,
+      AddressDetails
+    >({
       query: (body) => ({ url: '/logistics/address', method: 'POST', body }),
     }),
 
@@ -95,7 +98,10 @@ export const logisticsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // POST /logistics/shipment — create a shipment
-    createShipment: builder.mutation<ApiResponse<ShipmentResponse>, ShipmentRequest>({
+    createShipment: builder.mutation<
+      ApiResponse<ShipmentResponse>,
+      ShipmentRequest
+    >({
       query: (body) => ({ url: '/logistics/shipment', method: 'POST', body }),
       invalidatesTags: ['Shipment'],
     }),

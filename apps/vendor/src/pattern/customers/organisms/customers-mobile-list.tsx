@@ -74,26 +74,26 @@ export const CustomersMobileList: React.FC<CustomersMobileListProps> = ({
     setPagination((prev) => ({ ...prev, pageIndex: next }));
 
   return (
-    <div className='flex flex-1 flex-col md:hidden'>
-      <div className='flex flex-col gap-2.5 px-3 pb-2 pt-3'>
+    <div className="flex flex-1 flex-col md:hidden">
+      <div className="flex flex-col gap-2.5 px-3 pb-2 pt-3">
         {/* Loading — mirrors the card layout rather than a spinner */}
         {showLoader &&
           Array.from({ length: pageSize || 5 }).map((_, index) => (
             <div
               key={`skeleton-${index}`}
-              className='flex overflow-hidden rounded-lg border border-border bg-card'
+              className="flex overflow-hidden rounded-lg border border-border bg-card"
             >
-              <span className='w-1 shrink-0 bg-muted' />
-              <div className='flex-1 space-y-3 p-4'>
-                <div className='flex items-center gap-3'>
-                  <Skeleton className='size-8 shrink-0 rounded-full' />
-                  <Skeleton className='h-4 w-36' />
+              <span className="w-1 shrink-0 bg-muted" />
+              <div className="flex-1 space-y-3 p-4">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="size-8 shrink-0 rounded-full" />
+                  <Skeleton className="h-4 w-36" />
                 </div>
-                <div className='flex items-center justify-between'>
-                  <Skeleton className='h-4 w-24' />
-                  <Skeleton className='h-4 w-8' />
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-8" />
                 </div>
-                <Skeleton className='h-10 w-full rounded-md' />
+                <Skeleton className="h-10 w-full rounded-md" />
               </div>
             </div>
           ))}
@@ -106,7 +106,7 @@ export const CustomersMobileList: React.FC<CustomersMobileListProps> = ({
               <div
                 key={customer._id}
                 onClick={() => onViewDetails(customer)}
-                className='flex cursor-pointer overflow-hidden rounded-lg border border-border bg-card'
+                className="flex cursor-pointer overflow-hidden rounded-lg border border-border bg-card"
               >
                 <span
                   aria-hidden
@@ -115,33 +115,33 @@ export const CustomersMobileList: React.FC<CustomersMobileListProps> = ({
                     ACCENT_BY_STATUS[status.variant]
                   )}
                 />
-                <div className='flex-1 space-y-3 p-4'>
-                  <div className='flex items-center gap-3'>
-                    <CustomerAvatar customer={customer} size='sm' />
-                    <p className='truncate text-sm font-medium text-gray-900 dark:text-white'>
+                <div className="flex-1 space-y-3 p-4">
+                  <div className="flex items-center gap-3">
+                    <CustomerAvatar customer={customer} size="sm" />
+                    <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
                       {getCustomerIdentifier(customer)}
                     </p>
                     {/* The accent bar carries the status visually; give screen
                         readers the same information in words. */}
-                    <span className='sr-only'>Status: {status.label}</span>
+                    <span className="sr-only">Status: {status.label}</span>
                   </div>
 
-                  <div className='flex items-center justify-between gap-3'>
-                    <span className='text-sm text-grey3'>Total Orders</span>
-                    <span className='text-sm font-medium text-gray-900 dark:text-white'>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-sm text-grey3">Total Orders</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">
                       {formatCount(customer.total_orders)}
                     </span>
                   </div>
 
                   <Button
-                    type='button'
-                    variant='outline'
+                    type="button"
+                    variant="outline"
                     onClick={(e) => {
                       // The card itself is tappable — don't open twice.
                       e.stopPropagation();
                       onViewDetails(customer);
                     }}
-                    className='h-11 w-full cursor-pointer text-sm font-normal dark:border-gray-500'
+                    className="h-11 w-full cursor-pointer text-sm font-normal dark:border-gray-500"
                   >
                     View Customer
                   </Button>
@@ -152,56 +152,56 @@ export const CustomersMobileList: React.FC<CustomersMobileListProps> = ({
 
         {/* Empty state — same copy and icon as the DataTable's */}
         {!showLoader && !isError && total === 0 && (
-          <div className='flex flex-col items-center gap-4 py-16 text-center'>
+          <div className="flex flex-col items-center gap-4 py-16 text-center">
             <BoldBoxRemoveIcon />
-            <div className='flex flex-col items-center gap-2'>
-              <p className='text-base font-medium text-muted-foreground'>
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-base font-medium text-muted-foreground">
                 {emptyTitle}
               </p>
               {emptyMessage && (
-                <p className='text-sm text-muted-foreground'>{emptyMessage}</p>
+                <p className="text-sm text-muted-foreground">{emptyMessage}</p>
               )}
             </div>
           </div>
         )}
 
         {!showLoader && isError && (
-          <div className='flex flex-col items-center gap-2 py-16 text-center'>
-            <p className='text-base font-medium text-destructive'>
+          <div className="flex flex-col items-center gap-2 py-16 text-center">
+            <p className="text-base font-medium text-destructive">
               Error loading customers
             </p>
-            <p className='text-sm text-muted-foreground'>{errorMessage}</p>
+            <p className="text-sm text-muted-foreground">{errorMessage}</p>
           </div>
         )}
       </div>
 
       {/* Pagination — matches the table footer's wording, centred on mobile */}
       {!showLoader && !isError && total > 0 && (
-        <div className='mt-auto flex w-full items-center justify-center gap-x-4 py-4'>
-          <div className='text-sm text-muted-foreground'>
+        <div className="mt-auto flex w-full items-center justify-center gap-x-4 py-4">
+          <div className="text-sm text-muted-foreground">
             Showing {start + 1} - {Math.min(start + pageSize, total)} of {total}
           </div>
 
           <Button
-            className='h-6 w-6 cursor-pointer rounded-full dark:border-gray-500'
-            variant='outline'
-            size='icon'
-            aria-label='Previous page'
+            className="h-6 w-6 cursor-pointer rounded-full dark:border-gray-500"
+            variant="outline"
+            size="icon"
+            aria-label="Previous page"
             onClick={() => goToPage(safeIndex - 1)}
             disabled={safeIndex <= 0}
           >
-            <ChevronLeft className='h-4 w-4' />
+            <ChevronLeft className="h-4 w-4" />
           </Button>
 
           <Button
-            className='h-6 w-6 cursor-pointer rounded-full dark:border-gray-500'
-            variant='outline'
-            size='icon'
-            aria-label='Next page'
+            className="h-6 w-6 cursor-pointer rounded-full dark:border-gray-500"
+            variant="outline"
+            size="icon"
+            aria-label="Next page"
             onClick={() => goToPage(safeIndex + 1)}
             disabled={safeIndex >= pageCount - 1}
           >
-            <ChevronRight className='h-4 w-4' />
+            <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       )}

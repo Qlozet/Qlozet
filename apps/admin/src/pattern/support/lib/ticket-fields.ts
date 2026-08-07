@@ -39,7 +39,10 @@ export const readName = (t: Row): string =>
 
 // "Assigned To" (tickets) — null when unassigned so the UI can flag it.
 export const readAssigned = (t: Row): string | null =>
-  str(t.assigned_to_name) ?? nestedName(t.assigned_to) ?? str(t.assigned_to) ?? null;
+  str(t.assigned_to_name) ??
+  nestedName(t.assigned_to) ??
+  str(t.assigned_to) ??
+  null;
 
 // "Chat Agent / Bot" (live chat).
 export const readAgent = (t: Row): string =>

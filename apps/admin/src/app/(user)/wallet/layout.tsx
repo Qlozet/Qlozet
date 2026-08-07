@@ -4,8 +4,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Wallet',
-  description:
-    'Monitor marketplace balances, payouts and transaction history.',
+  description: 'Monitor marketplace balances, payouts and transaction history.',
   path: '/wallet',
 });
 

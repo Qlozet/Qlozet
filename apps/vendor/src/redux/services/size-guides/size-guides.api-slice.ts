@@ -140,19 +140,13 @@ export const sizeGuidesApiSlice = baseAPI.injectEndpoints({
     }),
 
     // POST /size-guides/apply/:id — manually trigger re-evaluation
-    applySizeGuide: builder.mutation<
-      ApiResponse<{ message: string }>,
-      string
-    >({
+    applySizeGuide: builder.mutation<ApiResponse<{ message: string }>, string>({
       query: (id) => ({ url: `/size-guides/apply/${id}`, method: 'POST' }),
       invalidatesTags: ['SizeGuides'],
     }),
 
     // GET /size-guides/body-parts — supported body parts
-    getBodyParts: builder.query<
-      ApiResponse<{ body_parts: string[] }>,
-      void
-    >({
+    getBodyParts: builder.query<ApiResponse<{ body_parts: string[] }>, void>({
       query: () => ({ url: '/size-guides/body-parts', method: 'GET' }),
     }),
   }),

@@ -80,15 +80,20 @@ export default function AddClothingTemplate() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get('edit');
-  
-  const { data: productData, isLoading: isLoadingProduct } = useGetProductQuery(editId as string, {
-    skip: !editId,
-  });
-  
-  const [createClothing, { isLoading: isCreating }] = useCreateClothingMutation();
+
+  const { data: productData, isLoading: isLoadingProduct } = useGetProductQuery(
+    editId as string,
+    {
+      skip: !editId,
+    }
+  );
+
+  const [createClothing, { isLoading: isCreating }] =
+    useCreateClothingMutation();
   const [getProduct] = useLazyGetProductQuery();
   const [getStyleLibrary] = useLazyGetStyleLibraryQuery();
-  const [uploadImage, { isLoading: isUploading }] = useUploadProductImageMutation();
+  const [uploadImage, { isLoading: isUploading }] =
+    useUploadProductImageMutation();
   const isSaving = isCreating || isUploading;
 
   const [showAlert, setShowAlert] = useState(true);
@@ -101,7 +106,9 @@ export default function AddClothingTemplate() {
   const [customizationEnabled, setCustomizationEnabled] = useState(false);
   // Garment fabric requirement: yards this garment uses per size (bill of
   // materials). Drives fabric pricing, cross-vendor fabric, and inventory.
-  const [yardagePerSize, setYardagePerSize] = useState<Record<string, number>>({});
+  const [yardagePerSize, setYardagePerSize] = useState<Record<string, number>>(
+    {}
+  );
   const [measurementRequired, setMeasurementRequired] = useState(false);
   const [turnaroundDays, setTurnaroundDays] = useState('2');
   const [customizationSections, setCustomizationSections] = useState<
@@ -109,7 +116,9 @@ export default function AddClothingTemplate() {
   >(DEFAULT_CUSTOMIZATION_SECTIONS);
 
   // External fabric override: null = inherit, true = always, false = never
-  const [externalFabricOverride, setExternalFabricOverride] = useState<boolean | null>(null);
+  const [externalFabricOverride, setExternalFabricOverride] = useState<
+    boolean | null
+  >(null);
   const { data: businessProfile } = useGetBusinessProfileQuery();
 
   const [organization, setOrganization] = useState<ProductOrganizationValue>({
@@ -138,19 +147,28 @@ export default function AddClothingTemplate() {
       const pName = inner?.name || rawProduct?.name || '';
       const pDesc = inner?.description || rawProduct?.description || '';
       const pStatus = rawProduct?.status || 'active';
-      const pPrice = rawProduct?.base_price || rawProduct?.metafields?.base_price || rawProduct?.price || '';
+      const pPrice =
+        rawProduct?.base_price ||
+        rawProduct?.metafields?.base_price ||
+        rawProduct?.price ||
+        '';
       const pType = inner?.type || rawProduct?.type || '';
       const pAttributes = inner?.taxonomy?.attributes || rawProduct?.tags || [];
-      const pCategory = inner?.taxonomy?.categories?.[0] || rawProduct?.category || '';
+      const pCategory =
+        inner?.taxonomy?.categories?.[0] || rawProduct?.category || '';
       const pImages = inner?.images || rawProduct?.images || [];
-      const pProductType = inner?.taxonomy?.product_type || rawProduct?.taxonomy?.product_type || '';
-      const pAudience = inner?.taxonomy?.audience || rawProduct?.taxonomy?.audience || '';
+      const pProductType =
+        inner?.taxonomy?.product_type ||
+        rawProduct?.taxonomy?.product_type ||
+        '';
+      const pAudience =
+        inner?.taxonomy?.audience || rawProduct?.taxonomy?.audience || '';
 
       setTitle(pName);
       setDescription(pDesc);
       setStatus(pStatus as ProductStatus);
       setPrice(pPrice ? String(pPrice) : '');
-      
+
       if (pType === 'customize') {
         setCustomizationEnabled(true);
       }
@@ -165,16 +183,25 @@ export default function AddClothingTemplate() {
       const rawTags = rawProduct?.tags || [];
       const loadedTags = rawTags.map((t: any) => ({
         name: t.name || t,
-        slug: t.slug || (typeof t === 'string' ? t.toLowerCase().replace(/\s+/g, '-') : ''),
+        slug:
+          t.slug ||
+          (typeof t === 'string' ? t.toLowerCase().replace(/\s+/g, '-') : ''),
         type: (t.type as 'system' | 'custom') || 'system',
       }));
 
       // Legacy products may have product_type='customisable' or 'ready-made'
       // which don't exist in the taxonomy. Clear them so the vendor re-selects.
-      const legacyTypes = ['customisable', 'ready-made', 'ready_made', 'customize', 'non_customize'];
-      const validProductType = pProductType && !legacyTypes.includes(pProductType.toLowerCase())
-        ? pProductType
-        : '';
+      const legacyTypes = [
+        'customisable',
+        'ready-made',
+        'ready_made',
+        'customize',
+        'non_customize',
+      ];
+      const validProductType =
+        pProductType && !legacyTypes.includes(pProductType.toLowerCase())
+          ? pProductType
+          : '';
 
       setOrganization({
         productType: validProductType,
@@ -199,103 +226,127 @@ export default function AddClothingTemplate() {
 
       // Restore variants
       if (inner?.color_variants && inner.color_variants.length > 0) {
-        const loadedVariants = inner.color_variants.map((cv: any, idx: number) => {
-          const sizes = cv.variants?.map((v: any) => v.size || 'M') || [];
-          const details: Record<string, SizeDetail> = {};
-          cv.variants?.forEach((v: any) => {
-            details[v.size || 'M'] = {
-              stock: v.stock || 0,
-              price: v.price || 0,
-              sku: v.sku || '',
-              yardsPerOrder: v.yard_per_order || 0,
+        const loadedVariants = inner.color_variants.map(
+          (cv: any, idx: number) => {
+            const sizes = cv.variants?.map((v: any) => v.size || 'M') || [];
+            const details: Record<string, SizeDetail> = {};
+            cv.variants?.forEach((v: any) => {
+              details[v.size || 'M'] = {
+                stock: v.stock || 0,
+                price: v.price || 0,
+                sku: v.sku || '',
+                yardsPerOrder: v.yard_per_order || 0,
+                selected: false,
+              };
+            });
+
+            const matchingFabric = inner?.fabrics?.find(
+              (f: any) => f.name === cv.name
+            );
+
+            let imgUrl = undefined;
+            if (
+              matchingFabric &&
+              matchingFabric.images &&
+              matchingFabric.images.length > 0
+            ) {
+              imgUrl =
+                typeof matchingFabric.images[0] === 'string'
+                  ? matchingFabric.images[0]
+                  : matchingFabric.images[0].url;
+            }
+
+            const fallbackImages = cv.variants?.[0]?.images || [];
+            const sourceImages =
+              cv.images && cv.images.length > 0 ? cv.images : fallbackImages;
+
+            if (!imgUrl && sourceImages && sourceImages.length > 0) {
+              imgUrl =
+                typeof sourceImages[0] === 'string'
+                  ? sourceImages[0]
+                  : sourceImages[0].url;
+            }
+
+            return {
+              id: `loaded-var-${idx}`,
+              colorHex: cv.hex || '',
+              label: cv.name || '',
+              imageUrl: imgUrl,
+              availableSizes: sizes,
+              details,
+              images:
+                sourceImages?.map((i: any) =>
+                  typeof i === 'string' ? i : i.url
+                ) || [],
+              expanded: false,
               selected: false,
             };
-          });
-          
-          const matchingFabric = inner?.fabrics?.find((f: any) => f.name === cv.name);
-          
-          let imgUrl = undefined;
-          if (matchingFabric && matchingFabric.images && matchingFabric.images.length > 0) {
-            imgUrl = typeof matchingFabric.images[0] === 'string' ? matchingFabric.images[0] : matchingFabric.images[0].url;
           }
-
-          const fallbackImages = cv.variants?.[0]?.images || [];
-          const sourceImages = (cv.images && cv.images.length > 0) ? cv.images : fallbackImages;
-          
-          if (!imgUrl && sourceImages && sourceImages.length > 0) {
-            imgUrl = typeof sourceImages[0] === 'string' ? sourceImages[0] : sourceImages[0].url;
-          }
-          
-          return {
-            id: `loaded-var-${idx}`,
-            colorHex: cv.hex || '',
-            label: cv.name || '',
-            imageUrl: imgUrl,
-            availableSizes: sizes,
-            details,
-            images: sourceImages?.map((i: any) => typeof i === 'string' ? i : i.url) || [],
-            expanded: false,
-            selected: false,
-          };
-        });
+        );
         setVariants(loadedVariants);
       }
 
       // Restore customizations (styles, fabrics, accessories)
-      const newSections = DEFAULT_CUSTOMIZATION_SECTIONS.map(s => ({
+      const newSections = DEFAULT_CUSTOMIZATION_SECTIONS.map((s) => ({
         ...s,
         items: s.items ? [...s.items] : undefined,
-        subGroups: s.subGroups ? s.subGroups.map(sg => ({ ...sg, items: [...sg.items] })) : [],
+        subGroups: s.subGroups
+          ? s.subGroups.map((sg) => ({ ...sg, items: [...sg.items] }))
+          : [],
       }));
-      
-      const mapCustomItems = (backendItems: any[] | undefined): CustomComponentItem[] => {
+
+      const mapCustomItems = (
+        backendItems: any[] | undefined
+      ): CustomComponentItem[] => {
         return (backendItems || []).map((bItem: any, idx: number) => {
-           const img = bItem.images?.[0];
-           const imgUrl = typeof img === 'string' ? img : img?.url;
-           return {
-             id: `loaded-item-${Math.random()}`,
-             // eslint-disable-next-line no-underscore-dangle
-             productId: bItem._id || bItem.id, // Store original ID if needed later
-             label: bItem.name,
-             imageUrl: imgUrl,
-             price: Number(bItem.price || bItem.base_price || 0),
-             category: bItem.categories?.[0] || bItem.category || '',
-             originalData: bItem,
-           };
+          const img = bItem.images?.[0];
+          const imgUrl = typeof img === 'string' ? img : img?.url;
+          return {
+            id: `loaded-item-${Math.random()}`,
+
+            productId: bItem._id || bItem.id, // Store original ID if needed later
+            label: bItem.name,
+            imageUrl: imgUrl,
+            price: Number(bItem.price || bItem.base_price || 0),
+            category: bItem.categories?.[0] || bItem.category || '',
+            originalData: bItem,
+          };
         });
       };
 
       if (inner?.styles && inner.styles.length > 0) {
-        const styleSec = newSections.find(s => s.key === 'style');
+        const styleSec = newSections.find((s) => s.key === 'style');
         if (styleSec) styleSec.items = mapCustomItems(inner.styles);
       }
       if (inner?.accessories && inner.accessories.length > 0) {
-        const accSec = newSections.find(s => s.key === 'accessory');
+        const accSec = newSections.find((s) => s.key === 'accessory');
         if (accSec) accSec.items = mapCustomItems(inner.accessories);
       }
       if (inner?.fabrics && inner.fabrics.length > 0) {
-        const fabSec = newSections.find(s => s.key === 'fabric');
+        const fabSec = newSections.find((s) => s.key === 'fabric');
         if (fabSec) {
-          fabSec.items = (inner.fabrics || []).map((bItem: any, idx: number) => {
-            const img = bItem.images?.[0];
-            const imgUrl = typeof img === 'string' ? img : img?.url;
-            const firstVariant = bItem.variants?.[0];
-            return {
-              id: `loaded-fabric-${Math.random()}`,
-              productId: bItem._id || bItem.id,
-              label: bItem.name,
-              imageUrl: imgUrl,
-              price: Number(bItem.price || bItem.price_per_yard || 0),
-              yardsPerOrder: firstVariant?.yard_per_order,
-              originalData: bItem,
-            };
-          });
+          fabSec.items = (inner.fabrics || []).map(
+            (bItem: any, idx: number) => {
+              const img = bItem.images?.[0];
+              const imgUrl = typeof img === 'string' ? img : img?.url;
+              const firstVariant = bItem.variants?.[0];
+              return {
+                id: `loaded-fabric-${Math.random()}`,
+                productId: bItem._id || bItem.id,
+                label: bItem.name,
+                imageUrl: imgUrl,
+                price: Number(bItem.price || bItem.price_per_yard || 0),
+                yardsPerOrder: firstVariant?.yard_per_order,
+                originalData: bItem,
+              };
+            }
+          );
         }
       }
 
       // Restore addons sub-groups
       if (inner?.addons && inner.addons.length > 0) {
-        const addonsSec = newSections.find(s => s.key === 'addons');
+        const addonsSec = newSections.find((s) => s.key === 'addons');
         if (addonsSec) {
           addonsSec.subGroups = inner.addons.map((addon: any, idx: number) => ({
             key: `addon-${addon.name?.toLowerCase().replace(/\s+/g, '-')}-${idx}`,
@@ -313,7 +364,6 @@ export default function AddClothingTemplate() {
       }
 
       setCustomizationSections(newSections);
-
     }
   }, [productData]);
 
@@ -348,11 +398,15 @@ export default function AddClothingTemplate() {
     }
 
     const hasCustomItems = customizationSections.some(
-      (sec) => (sec.items && sec.items.length > 0) || sec.subGroups?.some((sg) => sg.items && sg.items.length > 0)
+      (sec) =>
+        (sec.items && sec.items.length > 0) ||
+        sec.subGroups?.some((sg) => sg.items && sg.items.length > 0)
     );
 
     if (!isDraft && customizationEnabled && !hasCustomItems) {
-      toast.error('You must add at least one style or customization option to publish a customisable product. Save as a draft instead.');
+      toast.error(
+        'You must add at least one style or customization option to publish a customisable product. Save as a draft instead.'
+      );
       return;
     }
 
@@ -369,21 +423,35 @@ export default function AddClothingTemplate() {
       return;
     }
 
-    const colorVariants: ColorVariantDto[] = await Promise.all(variants.map(async (v) => {
-      const name = v.label || v.colorHex || 'Unknown';
-      
-      let uploadedVariantImages: { url: string; public_id: string }[] = [];
-      if (v.imageFiles && v.imageFiles.length > 0) {
-        const res = await uploadSequentially(v.imageFiles, file => uploadImage(file).unwrap());
-        uploadedVariantImages = res.map(r => ({ url: r.data?.url || '', public_id: r.data?.public_id || 'unknown' })).filter(img => Boolean(img.url));
-      }
+    const colorVariants: ColorVariantDto[] = await Promise.all(
+      variants.map(async (v) => {
+        const name = v.label || v.colorHex || 'Unknown';
+
+        let uploadedVariantImages: { url: string; public_id: string }[] = [];
+        if (v.imageFiles && v.imageFiles.length > 0) {
+          const res = await uploadSequentially(v.imageFiles, (file) =>
+            uploadImage(file).unwrap()
+          );
+          uploadedVariantImages = res
+            .map((r) => ({
+              url: r.data?.url || '',
+              public_id: r.data?.public_id || 'unknown',
+            }))
+            .filter((img) => Boolean(img.url));
+        }
 
         const finalVariantImages = [
-          ...v.images.filter(url => !url.startsWith('blob:')).map((url) => ({ url, public_id: 'unknown' })),
+          ...v.images
+            .filter((url) => !url.startsWith('blob:'))
+            .map((url) => ({ url, public_id: 'unknown' })),
           ...uploadedVariantImages,
         ].map((img, idx) => ({
           ...img,
-          hotspots: defaultImages[idx]?.hotspots && defaultImages[idx].hotspots!.length > 0 ? defaultImages[idx].hotspots : undefined,
+          hotspots:
+            defaultImages[idx]?.hotspots &&
+            defaultImages[idx].hotspots!.length > 0
+              ? defaultImages[idx].hotspots
+              : undefined,
         }));
 
         return {
@@ -402,34 +470,61 @@ export default function AddClothingTemplate() {
               images: finalVariantImages,
             };
           }),
-      };
-    }));
+        };
+      })
+    );
 
     try {
-      const localDefaultImages = defaultImages.filter((img) => img.isLocal && img.file);
+      const localDefaultImages = defaultImages.filter(
+        (img) => img.isLocal && img.file
+      );
       const uploadedDefaults = await uploadSequentially(
         localDefaultImages,
         async (img) => {
           const res = await uploadImage(img.file!).unwrap();
-          return { url: res.data?.url || '', public_id: res.data?.public_id || 'unknown' };
+          return {
+            url: res.data?.url || '',
+            public_id: res.data?.public_id || 'unknown',
+          };
         }
       );
-      
+
       const defaultImageUrls = [
-        ...defaultImages.filter(img => !img.isLocal).map(img => ({ url: img.url, public_id: 'unknown', hotspots: img.hotspots && img.hotspots.length > 0 ? img.hotspots : undefined })),
-        ...uploadedDefaults.filter(img => !!img.url).map((img, idx) => ({ ...img, hotspots: localDefaultImages[idx].hotspots && localDefaultImages[idx].hotspots.length > 0 ? localDefaultImages[idx].hotspots : undefined }))
+        ...defaultImages
+          .filter((img) => !img.isLocal)
+          .map((img) => ({
+            url: img.url,
+            public_id: 'unknown',
+            hotspots:
+              img.hotspots && img.hotspots.length > 0
+                ? img.hotspots
+                : undefined,
+          })),
+        ...uploadedDefaults
+          .filter((img) => !!img.url)
+          .map((img, idx) => ({
+            ...img,
+            hotspots:
+              localDefaultImages[idx].hotspots &&
+              localDefaultImages[idx].hotspots.length > 0
+                ? localDefaultImages[idx].hotspots
+                : undefined,
+          })),
       ];
 
       const uploadedExtras = await uploadSequentially(
         extraFiles,
         async (file) => {
           const res = await uploadImage(file).unwrap();
-          return { url: res.data?.url || '', public_id: res.data?.public_id || 'unknown' };
+          return {
+            url: res.data?.url || '',
+            public_id: res.data?.public_id || 'unknown',
+          };
         }
       );
-      
-      const extraImageUrls = uploadedExtras.filter(img => !!img.url);
-      
+
+      const extraImageUrls = uploadedExtras.filter((img) => !!img.url);
+
       const finalImages: any[] = [...defaultImageUrls, ...extraImageUrls];
 
       // Prepare customization objects
@@ -437,94 +532,121 @@ export default function AddClothingTemplate() {
       const accessories: any[] = [];
       const fabrics: any[] = [];
 
-      await Promise.all(customizationSections.map(async (sec) => {
-        const allItems = [...(sec.items || []), ...(sec.subGroups?.flatMap(sg => sg.items) || [])];
-        const fullObjects = await Promise.all(allItems.map(async (it) => {
-          if (it.originalData) {
-            let updatedImages = it.originalData.images || [];
-            return {
-              ...it.originalData,
-              price: Math.max(1, Number(it.price) || 1),
-              images: updatedImages,
-            };
-          }
-          
-          if (!it.productId) return null; // If no backend ID, we skip for now
-          
-          if (sec.key === 'style') {
-            try {
-              const res = await getStyleLibrary().unwrap();
-              const styleItem = res.styles.find(s => s._id === it.productId);
-              if (styleItem) {
+      await Promise.all(
+        customizationSections.map(async (sec) => {
+          const allItems = [
+            ...(sec.items || []),
+            ...(sec.subGroups?.flatMap((sg) => sg.items) || []),
+          ];
+          const fullObjects = await Promise.all(
+            allItems.map(async (it) => {
+              if (it.originalData) {
+                let updatedImages = it.originalData.images || [];
                 return {
-                  name: styleItem.name,
-                  style_code: styleItem.style_code || '',
-                  categories: styleItem.category ? [styleItem.category] : [],
-                  images: styleItem.image_url ? [{ url: styleItem.image_url, public_id: 'unknown' }] : [],
-                  attributes: styleItem.attributes || [],
-                  description: styleItem.description || '',
-                  aliases: styleItem.aliases || [],
+                  ...it.originalData,
                   price: Math.max(1, Number(it.price) || 1),
-                  min_width_cm: 1,
-                  type: styleItem.type || 'style',
+                  images: updatedImages,
                 };
               }
-              return null;
-            } catch (e) {
-              console.error("Failed to fetch style for custom section", e);
-              return null;
-            }
-          }
 
-          // Fabric items: fetch full product data, ensure variants is an array
-          if (sec.key === 'fabric') {
-            try {
-              const res = await getProduct(it.productId).unwrap();
-              const prodData = (res as any)?.data || res;
-              const finalData = prodData?.kind ? prodData[prodData.kind] : prodData;
-              return {
-                ...finalData,
-                // Ensure variants is always an array (yard_per_order is set per-size in SetVariantsTable)
-                variants: Array.isArray(finalData.variants) ? finalData.variants : [],
-              };
-            } catch (e) {
-              console.error("Failed to fetch fabric for custom section", e);
-              return null;
-            }
-          }
+              if (!it.productId) return null; // If no backend ID, we skip for now
 
-          try {
-            const res = await getProduct(it.productId).unwrap();
-            const prodData = (res as any)?.data || res;
-            const finalData = prodData?.kind ? prodData[prodData.kind] : prodData;
-            return {
-              ...finalData,
-              price: Math.max(1, Number(it.price) || 1),
-            };
-          } catch (e) {
-            console.error("Failed to fetch product for custom section", e);
-            return null;
-          }
-        }));
+              if (sec.key === 'style') {
+                try {
+                  const res = await getStyleLibrary().unwrap();
+                  const styleItem = res.styles.find(
+                    (s) => s._id === it.productId
+                  );
+                  if (styleItem) {
+                    return {
+                      name: styleItem.name,
+                      style_code: styleItem.style_code || '',
+                      categories: styleItem.category
+                        ? [styleItem.category]
+                        : [],
+                      images: styleItem.image_url
+                        ? [{ url: styleItem.image_url, public_id: 'unknown' }]
+                        : [],
+                      attributes: styleItem.attributes || [],
+                      description: styleItem.description || '',
+                      aliases: styleItem.aliases || [],
+                      price: Math.max(1, Number(it.price) || 1),
+                      min_width_cm: 1,
+                      type: styleItem.type || 'style',
+                    };
+                  }
+                  return null;
+                } catch (e) {
+                  console.error('Failed to fetch style for custom section', e);
+                  return null;
+                }
+              }
 
-        const validObjects = fullObjects.filter(Boolean);
-        if (sec.key === 'style') validObjects.forEach(o => styles.push(o));
-        if (sec.key === 'accessory') validObjects.forEach(o => accessories.push(o));
-        if (sec.key === 'fabric') validObjects.forEach(o => fabrics.push(o));
-      }));
+              // Fabric items: fetch full product data, ensure variants is an array
+              if (sec.key === 'fabric') {
+                try {
+                  const res = await getProduct(it.productId).unwrap();
+                  const prodData = (res as any)?.data || res;
+                  const finalData = prodData?.kind
+                    ? prodData[prodData.kind]
+                    : prodData;
+                  return {
+                    ...finalData,
+                    // Ensure variants is always an array (yard_per_order is set per-size in SetVariantsTable)
+                    variants: Array.isArray(finalData.variants)
+                      ? finalData.variants
+                      : [],
+                  };
+                } catch (e) {
+                  console.error('Failed to fetch fabric for custom section', e);
+                  return null;
+                }
+              }
+
+              try {
+                const res = await getProduct(it.productId).unwrap();
+                const prodData = (res as any)?.data || res;
+                const finalData = prodData?.kind
+                  ? prodData[prodData.kind]
+                  : prodData;
+                return {
+                  ...finalData,
+                  price: Math.max(1, Number(it.price) || 1),
+                };
+              } catch (e) {
+                console.error('Failed to fetch product for custom section', e);
+                return null;
+              }
+            })
+          );
+
+          const validObjects = fullObjects.filter(Boolean);
+          if (sec.key === 'style') validObjects.forEach((o) => styles.push(o));
+          if (sec.key === 'accessory')
+            validObjects.forEach((o) => accessories.push(o));
+          if (sec.key === 'fabric')
+            validObjects.forEach((o) => fabrics.push(o));
+        })
+      );
 
       // Build addons from the addons section's sub-groups
-      const addonsSection = customizationSections.find(s => s.key === 'addons');
+      const addonsSection = customizationSections.find(
+        (s) => s.key === 'addons'
+      );
       const addons = (addonsSection?.subGroups ?? [])
-        .filter(sg => sg.displayType && sg.items.length > 0)
-        .map(sg => ({
+        .filter((sg) => sg.displayType && sg.items.length > 0)
+        .map((sg) => ({
           name: sg.title,
           display_type: sg.displayType as 'colour' | 'picture',
-          variants: sg.items.map(item => ({
+          variants: sg.items.map((item) => ({
             name: item.label || 'Variant',
             price: item.price || 0,
-            ...(sg.displayType === 'colour' && item.colorHex ? { color_hex: item.colorHex } : {}),
-            ...(sg.displayType === 'picture' && item.imageUrl ? { image_url: item.imageUrl } : {}),
+            ...(sg.displayType === 'colour' && item.colorHex
+              ? { color_hex: item.colorHex }
+              : {}),
+            ...(sg.displayType === 'picture' && item.imageUrl
+              ? { image_url: item.imageUrl }
+              : {}),
           })),
         }));
 
@@ -565,7 +687,10 @@ export default function AddClothingTemplate() {
         },
       };
 
-      console.log("SENDING PAYLOAD TO BACKEND:", JSON.stringify(payload.clothing.color_variants, null, 2));
+      console.log(
+        'SENDING PAYLOAD TO BACKEND:',
+        JSON.stringify(payload.clothing.color_variants, null, 2)
+      );
 
       await createClothing(payload).unwrap();
 
@@ -588,284 +713,313 @@ export default function AddClothingTemplate() {
             {/* Back */}
             <GoBackButton />
 
-        {showAlert && (
-          <ProductAlertBanner
-            message="Upload picture products with close to white background in high resolution and quality"
-            onDismiss={() => setShowAlert(false)}
-          />
-        )}
-
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* Left column */}
-          <div className="space-y-6 lg:col-span-2">
-            <div className="rounded-lg bg-card p-6 custom-card-shadow">
-              <FieldLabel htmlFor="product-title">Title</FieldLabel>
-              <Input
-                id="product-title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="https://www.garmisland.com"
-                className="bg-background"
+            {showAlert && (
+              <ProductAlertBanner
+                message="Upload picture products with close to white background in high resolution and quality"
+                onDismiss={() => setShowAlert(false)}
               />
-            </div>
-
-            <div className="rounded-lg bg-card p-6 custom-card-shadow">
-              <FieldLabel tooltip="Enter product description">
-                Description
-              </FieldLabel>
-              <RichTextEditor value={description} onChange={setDescription} />
-              <p className="mt-2 text-xs text-muted-foreground">
-                {wordCount} words
-              </p>
-            </div>
-
-            <div className="rounded-lg bg-card p-6 custom-card-shadow">
-              <FieldLabel>Upload Media</FieldLabel>
-              <FileUploadWidget value={extraFiles} onChange={setExtraFiles} />
-            </div>
-
-            <div className="rounded-lg bg-card p-6 custom-card-shadow">
-              <h3 className="mb-4 text-sm font-semibold text-grey-black dark:text-white">
-                Upload Default Images
-              </h3>
-              <DefaultImagesUploader
-                images={defaultImages}
-                onChange={setDefaultImages}
-                onConfigureHotspots={async (index) => {
-                  const image = defaultImages[index];
-                  if (!image) return;
-                  const result = await NiceModal.show(HotspotEditorModal, {
-                    imageUrl: image.url,
-                    hotspots: image.hotspots || [],
-                    sections: customizationSections,
-                  });
-                  if (result !== undefined) {
-                    const newImages = [...defaultImages];
-                    newImages[index] = { ...image, hotspots: result as StyleHotspotDto[] };
-                    setDefaultImages(newImages);
-                  }
-                }}
-              />
-            </div>
-
-            <div className="rounded-lg bg-card p-6 custom-card-shadow">
-              <h3 className="mb-4 text-sm font-semibold text-grey-black dark:text-white">
-                Customization
-              </h3>
-              <CustomizationBuilder
-                sections={customizationSections}
-                onChange={setCustomizationSections}
-              />
-            </div>
-
-            <VariantSelectOptions onAddVariant={addVariant} />
-
-            {variants.length > 0 && (
-              <SetVariantsTable variants={variants} onChange={setVariants} />
             )}
-          </div>
 
-          {/* Right column */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-6 space-y-6">
-            <div className="rounded-lg bg-card p-6 custom-card-shadow">
-              <div className="mb-3 flex items-center justify-between">
-                <span className="text-sm font-semibold text-grey-black dark:text-white">
-                  Status
-                </span>
-                <StatusPill status={status} />
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              {/* Left column */}
+              <div className="space-y-6 lg:col-span-2">
+                <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                  <FieldLabel htmlFor="product-title">Title</FieldLabel>
+                  <Input
+                    id="product-title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="https://www.garmisland.com"
+                    className="bg-background"
+                  />
+                </div>
+
+                <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                  <FieldLabel tooltip="Enter product description">
+                    Description
+                  </FieldLabel>
+                  <RichTextEditor
+                    value={description}
+                    onChange={setDescription}
+                  />
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    {wordCount} words
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                  <FieldLabel>Upload Media</FieldLabel>
+                  <FileUploadWidget
+                    value={extraFiles}
+                    onChange={setExtraFiles}
+                  />
+                </div>
+
+                <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                  <h3 className="mb-4 text-sm font-semibold text-grey-black dark:text-white">
+                    Upload Default Images
+                  </h3>
+                  <DefaultImagesUploader
+                    images={defaultImages}
+                    onChange={setDefaultImages}
+                    onConfigureHotspots={async (index) => {
+                      const image = defaultImages[index];
+                      if (!image) return;
+                      const result = await NiceModal.show(HotspotEditorModal, {
+                        imageUrl: image.url,
+                        hotspots: image.hotspots || [],
+                        sections: customizationSections,
+                      });
+                      if (result !== undefined) {
+                        const newImages = [...defaultImages];
+                        newImages[index] = {
+                          ...image,
+                          hotspots: result as StyleHotspotDto[],
+                        };
+                        setDefaultImages(newImages);
+                      }
+                    }}
+                  />
+                </div>
+
+                <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                  <h3 className="mb-4 text-sm font-semibold text-grey-black dark:text-white">
+                    Customization
+                  </h3>
+                  <CustomizationBuilder
+                    sections={customizationSections}
+                    onChange={setCustomizationSections}
+                  />
+                </div>
+
+                <VariantSelectOptions onAddVariant={addVariant} />
+
+                {variants.length > 0 && (
+                  <SetVariantsTable
+                    variants={variants}
+                    onChange={setVariants}
+                  />
+                )}
               </div>
-              <Select
-                value={status}
-                onValueChange={(v) => setStatus(v as ProductStatus)}
-              >
-                <SelectTrigger className="w-full bg-background dark:bg-muted dark:border-white/10 capitalize">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="archived">Archived</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
 
-            <div className="rounded-lg bg-card p-6 custom-card-shadow">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-grey-black dark:text-white">
-                  Customization
-                </span>
-                <Switch
-                  checked={customizationEnabled}
-                  onCheckedChange={setCustomizationEnabled}
-                />
-              </div>
-
-              {customizationEnabled && (
-                <div className="mt-4 space-y-4 border-t border-border pt-4">
-                  <div className="flex items-center justify-between">
-                    <FieldLabel
-                      tooltip="Indicate if measurements are required"
-                      className="mb-0 font-normal"
+              {/* Right column */}
+              <div className="lg:col-span-1">
+                <div className="sticky top-6 space-y-6">
+                  <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="text-sm font-semibold text-grey-black dark:text-white">
+                        Status
+                      </span>
+                      <StatusPill status={status} />
+                    </div>
+                    <Select
+                      value={status}
+                      onValueChange={(v) => setStatus(v as ProductStatus)}
                     >
-                      Measurement Required
-                    </FieldLabel>
-                    <Switch
-                      checked={measurementRequired}
-                      onCheckedChange={setMeasurementRequired}
-                    />
-                  </div>
-                  <div>
-                    <FieldLabel
-                      htmlFor="turnaround-days"
-                      tooltip="Days required to complete customization"
-                      className="font-normal"
-                    >
-                      Turnaround Days
-                    </FieldLabel>
-                    <Input
-                      id="turnaround-days"
-                      type="number"
-                      min={1}
-                      value={turnaroundDays}
-                      onChange={(e) => setTurnaroundDays(e.target.value)}
-                      className="bg-background"
-                    />
+                      <SelectTrigger className="w-full bg-background dark:bg-muted dark:border-white/10 capitalize">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="draft">Draft</SelectItem>
+                        <SelectItem value="archived">Archived</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
-                  {/* Fabric yardage per size — garment bill of materials */}
-                  {(() => {
-                    const garmentSizes = Array.from(
-                      new Set(variants.flatMap((v) => v.availableSizes || [])),
-                    );
-                    if (garmentSizes.length === 0) return null;
-                    return (
-                      <div>
-                        <FieldLabel
-                          tooltip="Yards of fabric this garment uses per size. Drives fabric pricing and cross-vendor fabric mapping."
-                          className="font-normal"
-                        >
-                          Fabric yardage per size
-                        </FieldLabel>
-                        <div className="grid grid-cols-3 gap-2">
-                          {garmentSizes.map((size) => (
-                            <div key={size}>
-                              <span className="text-xs text-muted-foreground">{size}</span>
-                              <Input
-                                type="number"
-                                min={0}
-                                step={0.5}
-                                placeholder="yds"
-                                value={yardagePerSize[size] ?? ''}
-                                onChange={(e) =>
-                                  setYardagePerSize((prev) => ({
-                                    ...prev,
-                                    [size]: Number(e.target.value) || 0,
-                                  }))
-                                }
-                                className="bg-background"
-                              />
-                            </div>
-                          ))}
+                  <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold text-grey-black dark:text-white">
+                        Customization
+                      </span>
+                      <Switch
+                        checked={customizationEnabled}
+                        onCheckedChange={setCustomizationEnabled}
+                      />
+                    </div>
+
+                    {customizationEnabled && (
+                      <div className="mt-4 space-y-4 border-t border-border pt-4">
+                        <div className="flex items-center justify-between">
+                          <FieldLabel
+                            tooltip="Indicate if measurements are required"
+                            className="mb-0 font-normal"
+                          >
+                            Measurement Required
+                          </FieldLabel>
+                          <Switch
+                            checked={measurementRequired}
+                            onCheckedChange={setMeasurementRequired}
+                          />
                         </div>
+                        <div>
+                          <FieldLabel
+                            htmlFor="turnaround-days"
+                            tooltip="Days required to complete customization"
+                            className="font-normal"
+                          >
+                            Turnaround Days
+                          </FieldLabel>
+                          <Input
+                            id="turnaround-days"
+                            type="number"
+                            min={1}
+                            value={turnaroundDays}
+                            onChange={(e) => setTurnaroundDays(e.target.value)}
+                            className="bg-background"
+                          />
+                        </div>
+
+                        {/* Fabric yardage per size — garment bill of materials */}
+                        {(() => {
+                          const garmentSizes = Array.from(
+                            new Set(
+                              variants.flatMap((v) => v.availableSizes || [])
+                            )
+                          );
+                          if (garmentSizes.length === 0) return null;
+                          return (
+                            <div>
+                              <FieldLabel
+                                tooltip="Yards of fabric this garment uses per size. Drives fabric pricing and cross-vendor fabric mapping."
+                                className="font-normal"
+                              >
+                                Fabric yardage per size
+                              </FieldLabel>
+                              <div className="grid grid-cols-3 gap-2">
+                                {garmentSizes.map((size) => (
+                                  <div key={size}>
+                                    <span className="text-xs text-muted-foreground">
+                                      {size}
+                                    </span>
+                                    <Input
+                                      type="number"
+                                      min={0}
+                                      step={0.5}
+                                      placeholder="yds"
+                                      value={yardagePerSize[size] ?? ''}
+                                      onChange={(e) =>
+                                        setYardagePerSize((prev) => ({
+                                          ...prev,
+                                          [size]: Number(e.target.value) || 0,
+                                        }))
+                                      }
+                                      className="bg-background"
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </div>
-                    );
-                  })()}
-                </div>
-              )}
-            </div>
+                    )}
+                  </div>
 
-            {/* External Fabric Override */}
-            <div className="rounded-lg bg-card p-6 custom-card-shadow">
-              <div className="mb-3">
-                <span className="text-sm font-semibold text-grey-black dark:text-white">
-                  External Fabric
-                </span>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Override your store-wide setting for this product only.
-                </p>
+                  {/* External Fabric Override */}
+                  <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                    <div className="mb-3">
+                      <span className="text-sm font-semibold text-grey-black dark:text-white">
+                        External Fabric
+                      </span>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Override your store-wide setting for this product only.
+                      </p>
+                    </div>
+                    <RadioGroup
+                      value={
+                        externalFabricOverride === null
+                          ? 'inherit'
+                          : externalFabricOverride
+                            ? 'always'
+                            : 'never'
+                      }
+                      onValueChange={(val) => {
+                        if (val === 'inherit') setExternalFabricOverride(null);
+                        else if (val === 'always')
+                          setExternalFabricOverride(true);
+                        else setExternalFabricOverride(false);
+                      }}
+                      className="space-y-2.5"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="inherit" id="ef-inherit" />
+                        <Label
+                          htmlFor="ef-inherit"
+                          className="text-sm font-normal cursor-pointer"
+                        >
+                          Inherit from store settings{' '}
+                          <span className="text-xs text-muted-foreground">
+                            (currently:{' '}
+                            {businessProfile?.accepts_external_fabric !== false
+                              ? 'ON'
+                              : 'OFF'}
+                            )
+                          </span>
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="always" id="ef-always" />
+                        <Label
+                          htmlFor="ef-always"
+                          className="text-sm font-normal cursor-pointer"
+                        >
+                          Always accept
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="never" id="ef-never" />
+                        <Label
+                          htmlFor="ef-never"
+                          className="text-sm font-normal cursor-pointer"
+                        >
+                          Never accept
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                    <div className="flex items-start gap-2 mt-3 p-2.5 rounded-md bg-muted/50">
+                      <Info className="size-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                      <p className="text-xs text-muted-foreground">
+                        This overrides your store-wide setting for this specific
+                        product only.
+                      </p>
+                    </div>
+                  </div>
+
+                  <ProductOrganizationSection
+                    value={organization}
+                    onChange={setOrganization}
+                  />
+
+                  <ProductPricingSection
+                    price={price}
+                    onPriceChange={setPrice}
+                    discount={discount}
+                    onDiscountChange={setDiscount}
+                  />
+
+                  <div className="flex flex-col gap-3">
+                    <Button
+                      type="button"
+                      onClick={() => handleSave(false)}
+                      disabled={isSaving}
+                      className="h-12 w-full"
+                    >
+                      {isSaving ? 'Publishing…' : 'Publish Now'}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => handleSave(true)}
+                      disabled={isSaving}
+                      className="h-12 w-full bg-transparent"
+                    >
+                      {isSaving ? 'Saving…' : 'Save as Draft'}
+                    </Button>
+                  </div>
+                </div>
               </div>
-              <RadioGroup
-                value={
-                  externalFabricOverride === null
-                    ? 'inherit'
-                    : externalFabricOverride
-                      ? 'always'
-                      : 'never'
-                }
-                onValueChange={(val) => {
-                  if (val === 'inherit') setExternalFabricOverride(null);
-                  else if (val === 'always') setExternalFabricOverride(true);
-                  else setExternalFabricOverride(false);
-                }}
-                className="space-y-2.5"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="inherit" id="ef-inherit" />
-                  <Label htmlFor="ef-inherit" className="text-sm font-normal cursor-pointer">
-                    Inherit from store settings{' '}
-                    <span className="text-xs text-muted-foreground">
-                      (currently: {businessProfile?.accepts_external_fabric !== false ? 'ON' : 'OFF'})
-                    </span>
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="always" id="ef-always" />
-                  <Label htmlFor="ef-always" className="text-sm font-normal cursor-pointer">
-                    Always accept
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="never" id="ef-never" />
-                  <Label htmlFor="ef-never" className="text-sm font-normal cursor-pointer">
-                    Never accept
-                  </Label>
-                </div>
-              </RadioGroup>
-              <div className="flex items-start gap-2 mt-3 p-2.5 rounded-md bg-muted/50">
-                <Info className="size-3.5 text-muted-foreground shrink-0 mt-0.5" />
-                <p className="text-xs text-muted-foreground">
-                  This overrides your store-wide setting for this specific product only.
-                </p>
-              </div>
             </div>
-
-            <ProductOrganizationSection
-              value={organization}
-              onChange={setOrganization}
-              
-            />
-
-            <ProductPricingSection
-              price={price}
-              onPriceChange={setPrice}
-              discount={discount}
-              onDiscountChange={setDiscount}
-            />
-
-            <div className="flex flex-col gap-3">
-              <Button 
-                type="button" 
-                onClick={() => handleSave(false)} 
-                disabled={isSaving} 
-                className="h-12 w-full"
-              >
-                {isSaving ? 'Publishing…' : 'Publish Now'}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => handleSave(true)}
-                disabled={isSaving}
-                className="h-12 w-full bg-transparent"
-              >
-                {isSaving ? 'Saving…' : 'Save as Draft'}
-              </Button>
-            </div>
-            </div>
-          </div>
-        </div>
-
           </>
         )}
       </div>

@@ -18,12 +18,12 @@ const AwaitingVerificationTemplate = () => {
 
   return (
     <AuthFormCard
-      title='Redirecting...'
-      subtitle='Taking you back to complete your verification'
+      title="Redirecting..."
+      subtitle="Taking you back to complete your verification"
       showLogo={true}
     >
-      <div className='flex justify-center py-8'>
-        <div className='size-6 animate-spin rounded-full border-2 border-primary border-t-transparent' />
+      <div className="flex justify-center py-8">
+        <div className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       </div>
     </AuthFormCard>
   );

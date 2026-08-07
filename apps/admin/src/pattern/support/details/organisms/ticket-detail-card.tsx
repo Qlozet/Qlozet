@@ -116,7 +116,10 @@ export const TicketDetailCard = ({
       {/* Customer / Category */}
       <div className="flex gap-12">
         <Meta label="Customer" value={readName(ticket)} />
-        <Meta label="Category" value={readField(ticket, 'category', 'issue_type')} />
+        <Meta
+          label="Category"
+          value={readField(ticket, 'category', 'issue_type')}
+        />
       </div>
 
       {/* Original message */}

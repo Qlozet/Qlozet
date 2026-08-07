@@ -117,11 +117,10 @@ export interface OrderEarningRecord {
 // ---- API Slice ----
 export const businessApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
-    // GET /business — current vendor's business profile
-    getBusinessProfile: builder.query<ApiResponse<BusinessProfile>, void>({
-      query: () => ({ url: '/business', method: 'GET' }),
-      providesTags: ['BusinessProfile'],
-    }),
+    // NOTE: GET /business lives in settings.api-slice as `getBusinessProfile`,
+    // which unwraps the envelope (`res.data`). Defining it here too collided on
+    // the endpoint name — RTK Query kept whichever module evaluated last, so
+    // one side's consumers silently received the wrong shape.
 
     // PATCH /business/address — add or update (and validate) the business address
     updateBusinessAddress: builder.mutation<
@@ -148,11 +147,11 @@ export const businessApiSlice = baseAPI.injectEndpoints({
     // (net_amount / release_date) into a flat amount / date list for the UI.
     getUpcomingEarnings: builder.query<UpcomingEarning[], void>({
       query: () => ({ url: '/business/earnings/upcoming', method: 'GET' }),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       transformResponse: (res: any): UpcomingEarning[] => {
         const rows = res?.data?.data ?? res?.data ?? res ?? [];
         const list = Array.isArray(rows) ? rows : [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         return list.map((r: any) => ({
           ...r,
           amount: typeof r?.net_amount === 'number' ? r.net_amount : r?.amount,
@@ -171,9 +170,20 @@ export const businessApiSlice = baseAPI.injectEndpoints({
       providesTags: ['Earnings'],
     }),
 
-    // GET /business/warehouse — all warehouses
-    getBusinessWarehouses: builder.query<ApiResponse<Warehouse[]>, void>({
+    // GET /business/warehouse — all warehouses. The response envelope isn't in
+    // Swagger, so unwrap the shapes the backend uses elsewhere and fall back to
+    // an empty list.
+    getBusinessWarehouses: builder.query<Warehouse[], void>({
       query: () => ({ url: '/business/warehouse', method: 'GET' }),
+
+      transformResponse: (res: any): Warehouse[] =>
+        Array.isArray(res)
+          ? res
+          : Array.isArray(res?.data)
+            ? res.data
+            : Array.isArray(res?.data?.data)
+              ? res.data.data
+              : [],
       providesTags: ['Warehouses'],
     }),
 
@@ -212,19 +222,20 @@ export const businessApiSlice = baseAPI.injectEndpoints({
     }),
 
     // POST /business/warehouse/{id}/activate — set the single active warehouse
-    activateBusinessWarehouse: builder.mutation<ApiResponse<Warehouse>, string>({
-      query: (id) => ({
-        url: `/business/warehouse/${id}/activate`,
-        method: 'POST',
-      }),
-      invalidatesTags: ['Warehouse', 'Warehouses'],
-    }),
+    activateBusinessWarehouse: builder.mutation<ApiResponse<Warehouse>, string>(
+      {
+        query: (id) => ({
+          url: `/business/warehouse/${id}/activate`,
+          method: 'POST',
+        }),
+        invalidatesTags: ['Warehouse', 'Warehouses'],
+      }
+    ),
   }),
 });
 
 // ---- Hooks ----
 export const {
-  useGetBusinessProfileQuery,
   useUpdateBusinessAddressMutation,
   useGetEarningsChartQuery,
   useGetUpcomingEarningsQuery,

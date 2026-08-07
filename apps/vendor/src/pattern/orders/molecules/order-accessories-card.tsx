@@ -18,7 +18,7 @@ import { asProduct, byId, firstImg } from '../lib/item-resolvers';
 import { SelectionRow } from './selection-row';
 
 const IncludedBadge = () => (
-  <span className='inline-flex h-[26px] items-center rounded-lg bg-[#EAECF0] px-3 text-xs font-medium text-[#475467]'>
+  <span className="inline-flex h-[26px] items-center rounded-lg bg-[#EAECF0] px-3 text-xs font-medium text-[#475467]">
     Included
   </span>
 );
@@ -53,9 +53,10 @@ export const OrderAccessoriesCard = ({
         clothing?.accessories,
         a.accessory_id
       );
-      const variant = byId(acc?.variants as { _id?: string }[], a.variant_id) as
-        | { name?: string; images?: ProductImage[] }
-        | undefined;
+      const variant = byId(
+        acc?.variants as { _id?: string }[],
+        a.variant_id
+      ) as { name?: string; images?: ProductImage[] } | undefined;
       accessories.push({
         key: `${itemIndex}-acc-${i}`,
         title: acc?.name ?? 'Accessory',
@@ -95,15 +96,15 @@ export const OrderAccessoriesCard = ({
     icon: React.ReactNode
   ) =>
     rows.length > 0 && (
-      <div className='space-y-2'>
-        <h4 className='text-sm font-medium text-grey-black dark:text-white'>
+      <div className="space-y-2">
+        <h4 className="text-sm font-medium text-grey-black dark:text-white">
           {label}
         </h4>
-        <div className='space-y-2'>
+        <div className="space-y-2">
           {rows.map((row) => (
             <div
               key={row.key}
-              className='rounded-xl border border-[#E5E7EB] dark:border-border bg-white dark:bg-[#404040]'
+              className="rounded-xl border border-[#E5E7EB] dark:border-border bg-white dark:bg-[#404040]"
             >
               <SelectionRow
                 url={row.url}
@@ -123,17 +124,17 @@ export const OrderAccessoriesCard = ({
     );
 
   return (
-    <section className='space-y-4 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4'>
-      <div className='flex items-center justify-between gap-3'>
-        <h3 className='text-base font-semibold text-grey-black dark:text-white'>
+    <section className="space-y-4 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="text-base font-semibold text-grey-black dark:text-white">
           Accessories &amp; add-ons
         </h3>
         {onViewAll && (
           <Button
-            type='button'
-            variant='outline'
+            type="button"
+            variant="outline"
             onClick={onViewAll}
-            className='h-8 rounded-full px-3 text-xs font-normal'
+            className="h-8 rounded-full px-3 text-xs font-normal"
           >
             View ›
           </Button>
@@ -143,12 +144,12 @@ export const OrderAccessoriesCard = ({
       {renderGroup(
         'Accessories',
         accessories,
-        <Gem className='size-4 text-gray-400' />
+        <Gem className="size-4 text-gray-400" />
       )}
       {renderGroup(
         'Add-ons',
         addons,
-        <PlusCircle className='size-4 text-gray-400' />
+        <PlusCircle className="size-4 text-gray-400" />
       )}
     </section>
   );

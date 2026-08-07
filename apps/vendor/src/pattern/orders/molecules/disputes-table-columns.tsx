@@ -25,7 +25,7 @@ export const createDisputesColumns = (
     id: 'date',
     header: 'Date',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
+      <span className="whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground">
         {formatDate(row.original.createdAt)}
       </span>
     ),
@@ -35,7 +35,7 @@ export const createDisputesColumns = (
     id: 'order',
     header: 'Order',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm font-medium text-grey-black dark:text-foreground'>
+      <span className="whitespace-nowrap text-sm font-medium text-grey-black dark:text-foreground">
         {readDisputeRef(row.original)}
       </span>
     ),
@@ -45,7 +45,7 @@ export const createDisputesColumns = (
     id: 'customer',
     header: 'Customer',
     cell: ({ row }) => (
-      <span className='whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground'>
+      <span className="whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground">
         {readDisputeCustomer(row.original)}
       </span>
     ),
@@ -55,7 +55,7 @@ export const createDisputesColumns = (
     id: 'reason',
     header: 'Reason',
     cell: ({ row }) => (
-      <span className='block max-w-[240px] truncate text-sm text-gray-600 dark:text-muted-foreground'>
+      <span className="block max-w-[240px] truncate text-sm text-gray-600 dark:text-muted-foreground">
         {readDisputeReason(row.original)}
       </span>
     ),
@@ -85,15 +85,11 @@ export const createDisputesColumns = (
     cell: ({ row }) => {
       const d = row.original;
       if (!canRespond(d)) {
-        return <span className='text-sm text-gray-400'>—</span>;
+        return <span className="text-sm text-gray-400">—</span>;
       }
       const label = d.vendor_response ? 'Update response' : 'Respond';
       return (
-        <Button
-          size='sm'
-          className='h-8'
-          onClick={() => actions.onRespond(d)}
-        >
+        <Button size="sm" className="h-8" onClick={() => actions.onRespond(d)}>
           {label}
         </Button>
       );

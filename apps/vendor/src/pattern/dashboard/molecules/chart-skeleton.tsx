@@ -1,15 +1,15 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 export const ChartSkeleton = () => {
-    return (
-        <Card className="animate-pulse">
-            <CardHeader>
-                <div className="h-6 bg-gray-300 dark:bg-muted rounded w-40 mb-2"></div>
-                <div className="h-4 bg-gray-200 dark:bg-muted/50 rounded w-56"></div>
-            </CardHeader>
-            <CardContent>
-                <div className="h-64 bg-gray-200 dark:bg-muted rounded"></div>
-            </CardContent>
-        </Card>
-    )
-}
+  return (
+    <Card className="animate-pulse">
+      <CardHeader>
+        <div className="h-6 bg-gray-300 dark:bg-muted rounded w-40 mb-2"></div>
+        <div className="h-4 bg-gray-200 dark:bg-muted/50 rounded w-56"></div>
+      </CardHeader>
+      <CardContent>
+        <div className="h-64 bg-gray-200 dark:bg-muted rounded"></div>
+      </CardContent>
+    </Card>
+  );
+};

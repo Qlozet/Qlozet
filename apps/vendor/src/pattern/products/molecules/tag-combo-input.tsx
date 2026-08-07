@@ -3,7 +3,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { X, ChevronDown, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { SystemTagItem, ProductTag } from '@/redux/services/taxonomy/taxonomy.api-slice';
+import type {
+  SystemTagItem,
+  ProductTag,
+} from '@/redux/services/taxonomy/taxonomy.api-slice';
 
 interface TagComboInputProps {
   /** Currently selected tags */
@@ -38,7 +41,10 @@ export const TagComboInput = ({
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -53,10 +59,7 @@ export const TagComboInput = ({
       // Remove if already selected
       onChange(value.filter((t) => t.slug !== tag.slug));
     } else {
-      onChange([
-        ...value,
-        { name: tag.name, slug: tag.slug, type: 'system' },
-      ]);
+      onChange([...value, { name: tag.name, slug: tag.slug, type: 'system' }]);
     }
   };
 
@@ -101,7 +104,9 @@ export const TagComboInput = ({
   };
 
   // Filter out already-selected system tags from the dropdown
-  const availableSystemTags = systemTags.filter((t) => !selectedSlugs.has(t.slug));
+  const availableSystemTags = systemTags.filter(
+    (t) => !selectedSlugs.has(t.slug)
+  );
 
   return (
     <div ref={containerRef} className={cn('relative', className)}>
@@ -185,9 +190,12 @@ export const TagComboInput = ({
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {availableSystemTags
-                      .filter((t) =>
-                        !customInput.trim() ||
-                        t.name.toLowerCase().includes(customInput.toLowerCase())
+                      .filter(
+                        (t) =>
+                          !customInput.trim() ||
+                          t.name
+                            .toLowerCase()
+                            .includes(customInput.toLowerCase())
                       )
                       .map((tag) => (
                         <button

@@ -58,6 +58,20 @@ export interface BusinessProfileResponse {
   /** Storefront accent colour (hex). */
   theme_color?: string;
   accepts_external_fabric?: boolean;
+  // ─── Order settings ───
+  // Flat fields, exactly like accepts_external_fabric. The backend also returns
+  // a nested `order_settings` object with similarly-named fields — read these
+  // flat ones, per the API team, so there's only one source of truth.
+  order_confirmation?: boolean;
+  order_notifications?: boolean;
+  order_tracking?: boolean;
+  /** 0 = no limit. */
+  daily_order_limit?: number;
+  automatic_refunds?: boolean;
+  /** 0 | 7 | 14 | 30 | 60 — 0 means returns are not accepted. */
+  return_window_days?: number;
+  custom_order_options?: boolean;
+  default_currency?: string;
   email_verified: boolean;
   address_completed: boolean;
   createdAt?: string;
@@ -105,6 +119,15 @@ export interface UpdateBusinessProfileDetailsPayload {
   bvn?: string;
   /** Storefront accent colour (hex, e.g. '#8D7F72'). */
   theme_color?: string;
+  // ─── Order settings (see BusinessProfileResponse) ───
+  order_confirmation?: boolean;
+  order_notifications?: boolean;
+  order_tracking?: boolean;
+  daily_order_limit?: number;
+  automatic_refunds?: boolean;
+  return_window_days?: number;
+  custom_order_options?: boolean;
+  default_currency?: string;
 }
 
 export interface UpdateUserProfilePayload {
@@ -113,30 +136,6 @@ export interface UpdateUserProfilePayload {
   profile_picture?: string;
   gender?: string;
   dob?: string;
-}
-
-// Warehouse as returned by GET /business/warehouse. The response isn't in
-// Swagger, so everything past the id is optional.
-export interface BusinessWarehouse {
-  _id: string;
-  name?: string;
-  address?: string;
-  contact_name?: string;
-  contact_phone?: string;
-  contact_email?: string;
-  is_active?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-  [key: string]: unknown;
-}
-
-// CreateWarehouseDto — also the body for PUT /business/{id}/warehouse
-export interface WarehousePayload {
-  name: string;
-  address: string;
-  contact_name: string;
-  contact_phone: string;
-  contact_email: string;
 }
 
 interface WarehouseResponse {
@@ -178,7 +177,10 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['VendorDetails'],
     }),
 
-    updateBusinessProfileDetails: builder.mutation<any, UpdateBusinessProfileDetailsPayload>({
+    updateBusinessProfileDetails: builder.mutation<
+      any,
+      UpdateBusinessProfileDetailsPayload
+    >({
       query: (data) => ({
         url: '/business/profile',
         method: 'PATCH',
@@ -188,16 +190,29 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Update business settings (e.g. external fabric policy)
-    updateBusinessSettings: builder.mutation<any, { accepts_external_fabric?: boolean }>(
-      {
-        query: (data) => ({
-          url: '/business/profile',
-          method: 'PATCH',
-          body: data,
-        }),
-        invalidatesTags: ['VendorDetails'],
-      }
-    ),
+    // Business-level toggles: the external-fabric policy and the flat order
+    // settings, all on PATCH /business/profile.
+    updateBusinessSettings: builder.mutation<
+      any,
+      Pick<
+        UpdateBusinessProfileDetailsPayload,
+        | 'order_confirmation'
+        | 'order_notifications'
+        | 'order_tracking'
+        | 'daily_order_limit'
+        | 'automatic_refunds'
+        | 'return_window_days'
+        | 'custom_order_options'
+        | 'default_currency'
+      > & { accepts_external_fabric?: boolean }
+    >({
+      query: (data) => ({
+        url: '/business/profile',
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: ['VendorDetails'],
+    }),
 
     // ─── User Profile ───
     getUserProfile: builder.query<UserProfileResponse, void>({
@@ -248,58 +263,9 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['VendorDetails'],
     }),
 
-    // ─── Warehouses (Business tag in Swagger) ───
-    // NOTE: the `/vendor/warehouse*` endpoints below this block don't exist on
-    // the backend. Use these.
-    getBusinessWarehouses: builder.query<BusinessWarehouse[], void>({
-      query: () => '/business/warehouse',
-      // The response envelope isn't documented, so unwrap the shapes the
-      // backend uses elsewhere and fall back to an empty list.
-      transformResponse: (res: any): BusinessWarehouse[] =>
-        Array.isArray(res)
-          ? res
-          : Array.isArray(res?.data)
-            ? res.data
-            : Array.isArray(res?.data?.data)
-              ? res.data.data
-              : [],
-      providesTags: ['Warehouse'],
-    }),
-
-    createBusinessWarehouse: builder.mutation<any, WarehousePayload>({
-      query: (body) => ({
-        url: '/business/warehouse',
-        method: 'POST',
-        body,
-      }),
-      invalidatesTags: ['Warehouse'],
-    }),
-
-    updateBusinessWarehouse: builder.mutation<
-      any,
-      { id: string; data: WarehousePayload }
-    >({
-      query: ({ id, data }) => ({
-        url: `/business/${id}/warehouse`,
-        method: 'PUT',
-        body: data,
-      }),
-      invalidatesTags: ['Warehouse'],
-    }),
-
-    deleteBusinessWarehouse: builder.mutation<any, string>({
-      query: (id) => ({ url: `/business/${id}/warehouse`, method: 'DELETE' }),
-      invalidatesTags: ['Warehouse'],
-    }),
-
-    // Only one warehouse is active at a time — activating one demotes the rest.
-    activateBusinessWarehouse: builder.mutation<any, string>({
-      query: (id) => ({
-        url: `/business/warehouse/${id}/activate`,
-        method: 'POST',
-      }),
-      invalidatesTags: ['Warehouse'],
-    }),
+    // NOTE: the real warehouse endpoints live in business.api-slice
+    // (getBusinessWarehouses / create / update / delete / activate). They were
+    // duplicated here, which collided on the endpoint names.
 
     // Legacy (fictional paths — kept only because older components import them)
     getWarehouses: builder.query<ApiResponse<WarehouseResponse[]>, void>({
@@ -312,18 +278,36 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       providesTags: ['Warehouse'],
     }),
 
-    createWarehouse: builder.mutation<ApiResponse<WarehouseResponse>, WarehouseData>({
-      query: (data) => ({ url: '/vendor/warehouses', method: 'POST', body: data }),
+    createWarehouse: builder.mutation<
+      ApiResponse<WarehouseResponse>,
+      WarehouseData
+    >({
+      query: (data) => ({
+        url: '/vendor/warehouses',
+        method: 'POST',
+        body: data,
+      }),
       invalidatesTags: ['Warehouse'],
     }),
 
     addWarehouse: builder.mutation<any, any>({
-      query: (data) => ({ url: '/vendor/warehouse/add', method: 'POST', body: data }),
+      query: (data) => ({
+        url: '/vendor/warehouse/add',
+        method: 'POST',
+        body: data,
+      }),
       invalidatesTags: ['Warehouse'],
     }),
 
-    updateWarehouse: builder.mutation<ApiResponse<WarehouseResponse>, { id: string; data: WarehouseData }>({
-      query: ({ id, data }) => ({ url: `/vendor/warehouses/${id}`, method: 'PUT', body: data }),
+    updateWarehouse: builder.mutation<
+      ApiResponse<WarehouseResponse>,
+      { id: string; data: WarehouseData }
+    >({
+      query: ({ id, data }) => ({
+        url: `/vendor/warehouses/${id}`,
+        method: 'PUT',
+        body: data,
+      }),
       invalidatesTags: ['Warehouse'],
     }),
 
@@ -338,13 +322,22 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       providesTags: ['User'],
     }),
 
-    createUser: builder.mutation<ApiResponse<UserResponse>, UserPermissionData>({
-      query: (data) => ({ url: '/vendor/users', method: 'POST', body: data }),
-      invalidatesTags: ['User'],
-    }),
+    createUser: builder.mutation<ApiResponse<UserResponse>, UserPermissionData>(
+      {
+        query: (data) => ({ url: '/vendor/users', method: 'POST', body: data }),
+        invalidatesTags: ['User'],
+      }
+    ),
 
-    updateUser: builder.mutation<ApiResponse<UserResponse>, { id: string; data: UserPermissionData }>({
-      query: ({ id, data }) => ({ url: `/vendor/users/${id}`, method: 'PUT', body: data }),
+    updateUser: builder.mutation<
+      ApiResponse<UserResponse>,
+      { id: string; data: UserPermissionData }
+    >({
+      query: ({ id, data }) => ({
+        url: `/vendor/users/${id}`,
+        method: 'PUT',
+        body: data,
+      }),
       invalidatesTags: ['User'],
     }),
 
@@ -359,16 +352,10 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
     // products one — RTK Query warned about the duplicate endpoint name and
     // whichever module evaluated last silently won.
 
-    // Order Settings
-    getOrderSettings: builder.query<ApiResponse<OrderSettingsData>, void>({
-      query: () => '/vendor/settings/order-settings',
-      providesTags: ['OrderSettings'],
-    }),
-
-    updateOrderSettings: builder.mutation<ApiResponse<OrderSettingsData>, OrderSettingsData>({
-      query: (data) => ({ url: '/vendor/settings/order-settings', method: 'PUT', body: data }),
-      invalidatesTags: ['OrderSettings'],
-    }),
+    // NOTE: order settings are flat fields on the business profile — read them
+    // from `getBusinessProfile` and write them with `updateBusinessSettings`.
+    // The old `/vendor/settings/order-settings` pair never existed on the
+    // backend and always 404'd.
 
     // Verify vendor account
     verifyVendorAccount: builder.query<ApiResponse<any>, string>({
@@ -386,11 +373,6 @@ export const {
   useUpdateUserProfileMutation,
   useGetVendorDetailsQuery,
   useUpdateVendorDetailsMutation,
-  useGetBusinessWarehousesQuery,
-  useCreateBusinessWarehouseMutation,
-  useUpdateBusinessWarehouseMutation,
-  useDeleteBusinessWarehouseMutation,
-  useActivateBusinessWarehouseMutation,
   useGetWarehousesQuery,
   useGetWarehouseQuery,
   useCreateWarehouseMutation,
@@ -401,8 +383,6 @@ export const {
   useCreateUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
-  useGetOrderSettingsQuery,
-  useUpdateOrderSettingsMutation,
   useLazyVerifyVendorAccountQuery,
   useUpdateBusinessSettingsMutation,
 } = settingsApiSlice;

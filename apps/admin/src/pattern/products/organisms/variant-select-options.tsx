@@ -5,10 +5,7 @@ import NiceModal from '@ebay/nice-modal-react';
 import { ChevronDown, ImagePlus, Plus, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FieldLabel } from '../atoms/field-label';
-import {
-  SelectFabricModal,
-  type SelectedFabric,
-} from './select-fabric-modal';
+import { SelectFabricModal, type SelectedFabric } from './select-fabric-modal';
 import { cn } from '@/lib/utils';
 
 const SIZE_OPTIONS = [
@@ -307,7 +304,11 @@ export const VariantSelectOptions = ({
         <SizeField value={selectedSizes} onChange={setSelectedSizes} />
       </div>
 
-      <Button onClick={addVariant} disabled={!canAdd} className="h-11 gap-2 px-5">
+      <Button
+        onClick={addVariant}
+        disabled={!canAdd}
+        className="h-11 gap-2 px-5"
+      >
         <span className="flex size-5 items-center justify-center rounded-[5px] border border-primary-foreground/50">
           <Plus className="size-3.5" />
         </span>

@@ -81,7 +81,8 @@ export const DefaultImagesUploader = ({
             )}
             {image.hotspots && image.hotspots.length > 0 && (
               <div className="absolute bottom-1 left-1 flex items-center justify-center rounded-md bg-primary/90 px-1.5 py-0.5 text-[9px] font-medium text-primary-foreground shadow-sm">
-                {image.hotspots.length} {image.hotspots.length === 1 ? 'hotspot' : 'hotspots'}
+                {image.hotspots.length}{' '}
+                {image.hotspots.length === 1 ? 'hotspot' : 'hotspots'}
               </div>
             )}
           </div>
@@ -103,7 +104,9 @@ export const DefaultImagesUploader = ({
             className="flex flex-col items-center gap-1.5 text-muted-foreground hover:text-foreground"
           >
             <Upload className="size-5" />
-            <span className="text-sm font-medium text-foreground">Add image</span>
+            <span className="text-sm font-medium text-foreground">
+              Add image
+            </span>
           </button>
           <button
             type="button"

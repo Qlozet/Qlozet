@@ -39,15 +39,18 @@ const phoneSchema = z
   .or(z.literal(''));
 
 /**
-* Phone number with extension schema
-* Supports phone numbers with optional extensions
-* Example: +1234567890 ext. 123 or +1234567890x123
-*/
+ * Phone number with extension schema
+ * Supports phone numbers with optional extensions
+ * Example: +1234567890 ext. 123 or +1234567890x123
+ */
 export const phoneWithExtensionSchema = z
   .string()
-  .min(1, "Phone number is required")
-  .regex(/^\+?[1-9]\d{1,14}(\s?(ext|x|extension)\.?\s?\d{1,6})?$/i, "Invalid phone number format with extension")
-  .describe("Phone number with optional extension")
+  .min(1, 'Phone number is required')
+  .regex(
+    /^\+?[1-9]\d{1,14}(\s?(ext|x|extension)\.?\s?\d{1,6})?$/i,
+    'Invalid phone number format with extension'
+  )
+  .describe('Phone number with optional extension');
 
 // Login Schema (no password complexity — backend validates credentials)
 export const signInSchema = z.object({
@@ -250,7 +253,7 @@ export type PushSubscriptionData = z.infer<typeof pushSubscriptionSchema>;
 export type LoginTwoFactorData = z.infer<typeof loginTwoFactorSchema>;
 export type ChangeEmailData = z.infer<typeof changeEmailSchema>;
 export type AccountRecoveryData = z.infer<typeof accountRecoverySchema>;
-export type PhoneWithExtension = z.infer<typeof phoneWithExtensionSchema>
+export type PhoneWithExtension = z.infer<typeof phoneWithExtensionSchema>;
 
 // Default values
 export const createDefaultLoginData = (): LoginData => ({

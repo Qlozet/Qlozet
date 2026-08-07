@@ -2,7 +2,16 @@
 
 import { useRef, useState } from 'react';
 import NiceModal from '@ebay/nice-modal-react';
-import { ChevronDown, MoreVertical, Palette, Image as ImageIcon, Pencil, Plus, Trash2, X } from 'lucide-react';
+import {
+  ChevronDown,
+  MoreVertical,
+  Palette,
+  Image as ImageIcon,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import {
@@ -12,20 +21,17 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { FieldLabel } from '../atoms/field-label';
-import {
-  SelectStylesModal,
-  type SelectedStyle,
-} from './select-styles-modal';
+import { SelectStylesModal, type SelectedStyle } from './select-styles-modal';
 import {
   SelectAccessoriesModal,
   type SelectedAccessory,
 } from './select-accessories-modal';
-import {
-  SelectFabricModal,
-  type SelectedFabric,
-} from './select-fabric-modal';
+import { SelectFabricModal, type SelectedFabric } from './select-fabric-modal';
 import { AddAddonModal, type AddonDefinition } from './add-addon-modal';
-import { AddAddonVariantModal, type AddonVariantResult } from './add-addon-variant-modal';
+import {
+  AddAddonVariantModal,
+  type AddonVariantResult,
+} from './add-addon-variant-modal';
 import { cn } from '@/lib/utils';
 
 export interface CustomComponentItem {
@@ -407,9 +413,9 @@ export const CustomizationBuilder = ({
     }
     // Add-Ons section top-level "+" → create a new add-on sub-group
     if (sectionKey === 'addons' && !subKey) {
-      const definition = (await NiceModal.show(AddAddonModal)) as
-        | AddonDefinition
-        | null;
+      const definition = (await NiceModal.show(
+        AddAddonModal
+      )) as AddonDefinition | null;
       if (!definition) return;
       const sgKey = `addon-${definition.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
       onChange(
@@ -459,7 +465,11 @@ export const CustomizationBuilder = ({
     ]);
   };
 
-  const removeItem = (sectionKey: string, subKey: string | undefined, itemId: string) =>
+  const removeItem = (
+    sectionKey: string,
+    subKey: string | undefined,
+    itemId: string
+  ) =>
     updateItems(sectionKey, subKey, (items) =>
       items.filter((it) => it.id !== itemId)
     );
@@ -492,8 +502,12 @@ export const CustomizationBuilder = ({
           key={section.key}
           section={section}
           onAddItem={addItem}
-          onRemoveItem={(subKey, itemId) => removeItem(section.key, subKey, itemId)}
-          onPriceChange={(subKey, itemId, price) => setPrice(section.key, subKey, itemId, price)}
+          onRemoveItem={(subKey, itemId) =>
+            removeItem(section.key, subKey, itemId)
+          }
+          onPriceChange={(subKey, itemId, price) =>
+            setPrice(section.key, subKey, itemId, price)
+          }
           onRemoveSubGroup={(subKey) => removeSubGroup(section.key, subKey)}
         />
       ))}
@@ -513,7 +527,11 @@ const Section = ({
   section: CustomSection;
   onAddItem: (sectionKey: string, subKey?: string) => void;
   onRemoveItem: (subKey: string | undefined, itemId: string) => void;
-  onPriceChange: (subKey: string | undefined, itemId: string, price: number) => void;
+  onPriceChange: (
+    subKey: string | undefined,
+    itemId: string,
+    price: number
+  ) => void;
   onEditHotspots?: (item: CustomComponentItem) => void;
   onRemoveSubGroup?: (subKey: string) => void;
 }) => {
@@ -549,9 +567,7 @@ const Section = ({
             <FabricRow
               items={section.items}
               onAddItem={() => onAddItem(section.key)}
-              onRemoveItem={(itemId) =>
-                onRemoveItem(undefined, itemId)
-              }
+              onRemoveItem={(itemId) => onRemoveItem(undefined, itemId)}
             />
           )}
 
@@ -561,9 +577,7 @@ const Section = ({
               items={section.items}
               hasHotspots={section.hasHotspots}
               onAddItem={() => onAddItem(section.key)}
-              onRemoveItem={(itemId) =>
-                onRemoveItem(undefined, itemId)
-              }
+              onRemoveItem={(itemId) => onRemoveItem(undefined, itemId)}
               onPriceChange={(itemId, price) =>
                 onPriceChange(undefined, itemId, price)
               }
@@ -572,7 +586,10 @@ const Section = ({
 
           {/* Add-on sub-groups */}
           {section.subGroups?.map((sg) => (
-            <div key={sg.key} className="rounded-lg border border-input bg-accent/30 p-3">
+            <div
+              key={sg.key}
+              className="rounded-lg border border-input bg-accent/30 p-3"
+            >
               <div className="mb-2 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {sg.displayType === 'colour' ? (
@@ -607,17 +624,13 @@ const Section = ({
                   items={sg.items}
                   displayType={sg.displayType}
                   onAddItem={() => onAddItem(section.key, sg.key)}
-                  onRemoveItem={(itemId) =>
-                    onRemoveItem(sg.key, itemId)
-                  }
+                  onRemoveItem={(itemId) => onRemoveItem(sg.key, itemId)}
                 />
               ) : (
                 <ItemRow
                   items={sg.items}
                   onAddItem={() => onAddItem(section.key, sg.key)}
-                  onRemoveItem={(itemId) =>
-                    onRemoveItem(sg.key, itemId)
-                  }
+                  onRemoveItem={(itemId) => onRemoveItem(sg.key, itemId)}
                   onPriceChange={(itemId, price) =>
                     onPriceChange(sg.key, itemId, price)
                   }

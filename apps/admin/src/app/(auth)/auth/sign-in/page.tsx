@@ -11,7 +11,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 export default function SignInPage() {
-
   const [adminLogin, { isLoading, isError }] = useAdminLoginMutation();
 
   const [email, setEmail] = useState('');
@@ -36,7 +35,9 @@ export default function SignInPage() {
         }, 500);
       })
       .catch((error) => {
-        toast.error(error?.data?.message || 'Sign in failed. Please try again.');
+        toast.error(
+          error?.data?.message || 'Sign in failed. Please try again.'
+        );
       });
   };
 
@@ -58,7 +59,10 @@ export default function SignInPage() {
       <form onSubmit={onSubmit} className="space-y-5">
         {/* Email */}
         <div className="space-y-1.5">
-          <label htmlFor="admin-email" className="text-sm font-medium text-gray-700">
+          <label
+            htmlFor="admin-email"
+            className="text-sm font-medium text-gray-700"
+          >
             Email address
           </label>
           <Input
@@ -73,7 +77,10 @@ export default function SignInPage() {
 
         {/* Password */}
         <div className="space-y-1.5">
-          <label htmlFor="admin-password" className="text-sm font-medium text-gray-700">
+          <label
+            htmlFor="admin-password"
+            className="text-sm font-medium text-gray-700"
+          >
             Password
           </label>
           <div className="relative">
@@ -98,12 +105,7 @@ export default function SignInPage() {
         </div>
 
         {/* Submit */}
-        <Button
-          type="submit"
-          size="lg"
-          disabled={isLoading}
-          className="w-full"
-        >
+        <Button type="submit" size="lg" disabled={isLoading} className="w-full">
           {isLoading ? 'Signing in...' : 'Sign In'}
         </Button>
       </form>

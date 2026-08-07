@@ -30,25 +30,24 @@ const SheetOverlay = React.forwardRef<
 ));
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
-const sheetVariants = cva(
-  'fixed z-50 gap-4 bg-background p-6 shadow-lg',
-  {
-    variants: {
-      side: {
-        top: 'inset-x-0 top-0 border-b sheet-gentle-top',
-        bottom: 'inset-x-0 bottom-0 border-t sheet-gentle-bottom',
-        left: 'inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm sheet-gentle-left',
-        right: 'inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm sheet-gentle-right',
-      },
+const sheetVariants = cva('fixed z-50 gap-4 bg-background p-6 shadow-lg', {
+  variants: {
+    side: {
+      top: 'inset-x-0 top-0 border-b sheet-gentle-top',
+      bottom: 'inset-x-0 bottom-0 border-t sheet-gentle-bottom',
+      left: 'inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm sheet-gentle-left',
+      right:
+        'inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm sheet-gentle-right',
     },
-    defaultVariants: {
-      side: 'right',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    side: 'right',
+  },
+});
 
 interface SheetContentProps
-  extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
+  extends
+    React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
     VariantProps<typeof sheetVariants> {}
 
 const SheetContent = React.forwardRef<
@@ -61,11 +60,11 @@ const SheetContent = React.forwardRef<
       ref={ref}
       className={cn(
         // Mobile: floating bottom sheet
-        "fixed z-50 gap-4 bg-background p-6 shadow-lg",
-        "inset-x-4 bottom-4 rounded-[16px] max-h-[85vh] overflow-y-auto",
-        "sheet-mobile-bottom",
+        'fixed z-50 gap-4 bg-background p-6 shadow-lg',
+        'inset-x-4 bottom-4 rounded-[16px] max-h-[85vh] overflow-y-auto',
+        'sheet-mobile-bottom',
         // sm+: normal sheet behavior
-        "sm:left-auto sm:right-auto sm:bottom-auto sm:max-h-full sm:overflow-hidden",
+        'sm:left-auto sm:right-auto sm:bottom-auto sm:max-h-full sm:overflow-hidden',
         // No display utility here: callers set their own (`flex flex-col` for
         // a header + scrolling body). Forcing `sm:block` won the cascade over
         // the caller's `flex`, which killed `flex-1 min-h-0` on their scroll

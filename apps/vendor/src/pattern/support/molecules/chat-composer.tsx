@@ -27,22 +27,22 @@ export const ChatComposer = ({
   };
 
   return (
-    <div className='flex items-center gap-2 border-t border-border bg-white px-4 py-3'>
+    <div className="flex items-center gap-2 border-t border-border bg-white px-4 py-3">
       <button
-        type='button'
+        type="button"
         onClick={onAttach}
-        aria-label='Attach file'
-        className='flex size-9 shrink-0 items-center justify-center rounded-full text-grey3 hover:bg-gray-100 transition-colors cursor-pointer'
+        aria-label="Attach file"
+        className="flex size-9 shrink-0 items-center justify-center rounded-full text-grey3 hover:bg-gray-100 transition-colors cursor-pointer"
       >
-        <Link2 className='size-5' />
+        <Link2 className="size-5" />
       </button>
       <button
-        type='button'
+        type="button"
         onClick={onEmoji}
-        aria-label='Add emoji'
-        className='flex size-9 shrink-0 items-center justify-center rounded-full text-grey3 hover:bg-gray-100 transition-colors cursor-pointer'
+        aria-label="Add emoji"
+        className="flex size-9 shrink-0 items-center justify-center rounded-full text-grey3 hover:bg-gray-100 transition-colors cursor-pointer"
       >
-        <Smile className='size-5' />
+        <Smile className="size-5" />
       </button>
 
       <input
@@ -54,28 +54,28 @@ export const ChatComposer = ({
             handleSend();
           }
         }}
-        placeholder='Type a message'
-        className='h-10 flex-1 rounded-full bg-[#F1F1F1] px-4 text-sm text-grey-black placeholder:text-grey2 focus:outline-none focus:ring-2 focus:ring-ring'
+        placeholder="Type a message"
+        className="h-10 flex-1 rounded-full bg-[#F1F1F1] px-4 text-sm text-grey-black placeholder:text-grey2 focus:outline-none focus:ring-2 focus:ring-ring"
       />
 
       {/* Send when there's text, otherwise the mic affordance. */}
       {trimmed ? (
         <button
-          type='button'
+          type="button"
           onClick={handleSend}
-          aria-label='Send message'
-          className='flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer'
+          aria-label="Send message"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer"
         >
-          <Send className='size-4' />
+          <Send className="size-4" />
         </button>
       ) : (
         <button
-          type='button'
+          type="button"
           onClick={onMic}
-          aria-label='Record voice message'
-          className='flex size-9 shrink-0 items-center justify-center rounded-full text-grey3 hover:bg-gray-100 transition-colors cursor-pointer'
+          aria-label="Record voice message"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full text-grey3 hover:bg-gray-100 transition-colors cursor-pointer"
         >
-          <Mic className='size-5' />
+          <Mic className="size-5" />
         </button>
       )}
     </div>

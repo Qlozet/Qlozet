@@ -63,11 +63,7 @@ export const SetVariantsTable = ({
   const patchVariant = (id: string, patch: Partial<VariantRow>) =>
     onChange(variants.map((v) => (v.id === id ? { ...v, ...patch } : v)));
 
-  const patchDetail = (
-    id: string,
-    size: string,
-    patch: Partial<SizeDetail>
-  ) =>
+  const patchDetail = (id: string, size: string, patch: Partial<SizeDetail>) =>
     onChange(
       variants.map((v) =>
         v.id === id
@@ -172,16 +168,16 @@ export const SetVariantsTable = ({
               {/* Available sizes are read-only here — set when the variant was
                   added in Select Options. */}
               <div className="flex flex-1 flex-wrap gap-2">
-                {ALL_SIZES.filter((s) => variant.availableSizes.includes(s)).map(
-                  (size) => (
-                    <span
-                      key={size}
-                      className="min-w-[44px] rounded-md border border-input px-3 py-1.5 text-center text-sm text-foreground"
-                    >
-                      {size}
-                    </span>
-                  )
-                )}
+                {ALL_SIZES.filter((s) =>
+                  variant.availableSizes.includes(s)
+                ).map((size) => (
+                  <span
+                    key={size}
+                    className="min-w-[44px] rounded-md border border-input px-3 py-1.5 text-center text-sm text-foreground"
+                  >
+                    {size}
+                  </span>
+                ))}
               </div>
 
               <div className="flex w-[260px] items-center gap-1.5">
@@ -248,72 +244,72 @@ export const SetVariantsTable = ({
                 </div>
 
                 <div className="space-y-3 pt-3">
-                  {ALL_SIZES.filter((s) => variant.availableSizes.includes(s)).map(
-                    (size) => {
-                      const detail = variant.details[size] ?? makeSizeDetail();
-                      return (
-                        <div
-                          key={size}
-                          className="grid grid-cols-[90px_1fr_1fr_1fr_1.3fr_40px] items-center gap-3"
-                        >
-                          <span className="rounded-md border border-input px-3 py-1.5 text-center text-sm text-foreground">
-                            {size}
+                  {ALL_SIZES.filter((s) =>
+                    variant.availableSizes.includes(s)
+                  ).map((size) => {
+                    const detail = variant.details[size] ?? makeSizeDetail();
+                    return (
+                      <div
+                        key={size}
+                        className="grid grid-cols-[90px_1fr_1fr_1fr_1.3fr_40px] items-center gap-3"
+                      >
+                        <span className="rounded-md border border-input px-3 py-1.5 text-center text-sm text-foreground">
+                          {size}
+                        </span>
+                        <NumberStepper
+                          value={detail.stock}
+                          onChange={(v) =>
+                            patchDetail(variant.id, size, { stock: v })
+                          }
+                        />
+                        <NumberStepper
+                          value={detail.yardsPerOrder}
+                          onChange={(v) =>
+                            patchDetail(variant.id, size, { yardsPerOrder: v })
+                          }
+                        />
+                        <div className="relative">
+                          <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                            $
                           </span>
-                          <NumberStepper
-                            value={detail.stock}
-                            onChange={(v) =>
-                              patchDetail(variant.id, size, { stock: v })
-                            }
-                          />
-                          <NumberStepper
-                            value={detail.yardsPerOrder}
-                            onChange={(v) =>
-                              patchDetail(variant.id, size, { yardsPerOrder: v })
-                            }
-                          />
-                          <div className="relative">
-                            <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                              $
-                            </span>
-                            <Input
-                              type="number"
-                              min={0}
-                              value={detail.price === 0 ? '' : detail.price}
-                              onChange={(e) =>
-                                patchDetail(variant.id, size, {
-                                  price:
-                                    e.target.value === ''
-                                      ? 0
-                                      : Number(e.target.value),
-                                })
-                              }
-                              placeholder="0"
-                              className="h-9 bg-background pl-5 text-sm"
-                            />
-                          </div>
                           <Input
-                            value={detail.sku}
+                            type="number"
+                            min={0}
+                            value={detail.price === 0 ? '' : detail.price}
                             onChange={(e) =>
                               patchDetail(variant.id, size, {
-                                sku: e.target.value,
+                                price:
+                                  e.target.value === ''
+                                    ? 0
+                                    : Number(e.target.value),
                               })
                             }
-                            placeholder="SKU"
-                            className="h-9 bg-background text-sm"
+                            placeholder="0"
+                            className="h-9 bg-background pl-5 text-sm"
                           />
-                          <div className="flex justify-center">
-                            <Checkbox
-                              checked={detail.selected}
-                              onCheckedChange={(c) =>
-                                patchDetail(variant.id, size, { selected: c })
-                              }
-                              aria-label={`Select ${size}`}
-                            />
-                          </div>
                         </div>
-                      );
-                    }
-                  )}
+                        <Input
+                          value={detail.sku}
+                          onChange={(e) =>
+                            patchDetail(variant.id, size, {
+                              sku: e.target.value,
+                            })
+                          }
+                          placeholder="SKU"
+                          className="h-9 bg-background text-sm"
+                        />
+                        <div className="flex justify-center">
+                          <Checkbox
+                            checked={detail.selected}
+                            onCheckedChange={(c) =>
+                              patchDetail(variant.id, size, { selected: c })
+                            }
+                            aria-label={`Select ${size}`}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}

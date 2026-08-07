@@ -40,9 +40,7 @@ export const createCustomerTicketsColumns = ({
     header: 'Complaint',
     cell: ({ row, table }) => {
       const t = row.original;
-      const index = table
-        .getRowModel()
-        .rows.findIndex((r) => r.id === row.id);
+      const index = table.getRowModel().rows.findIndex((r) => r.id === row.id);
       return (
         <div className="flex items-start gap-3">
           <div

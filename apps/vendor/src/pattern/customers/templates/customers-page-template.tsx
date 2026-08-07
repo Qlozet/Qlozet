@@ -48,16 +48,22 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
   });
 
   const { data, isLoading, isFetching, isSuccess, isError, error } =
-    useGetVendorCustomersQuery({ page: 1, limit: FETCH_LIMIT, orders_limit: 5 });
+    useGetVendorCustomersQuery({
+      page: 1,
+      limit: FETCH_LIMIT,
+      orders_limit: 5,
+    });
 
   const allCustomers = useMemo((): VendorCustomer[] => {
     if (!data) return [];
     if (Array.isArray(data)) return data;
     if (Array.isArray(data.data)) return data.data;
-    if (data.data && Array.isArray((data.data as any).data)) return (data.data as any).data;
+    if (data.data && Array.isArray((data.data as any).data))
+      return (data.data as any).data;
     return [];
   }, [data]);
-  const total = data?.total ?? (data?.data as any)?.total ?? allCustomers.length;
+  const total =
+    data?.total ?? (data?.data as any)?.total ?? allCustomers.length;
 
   // Client-side search across the identifier and full name.
   const customers = useMemo(() => {
@@ -96,36 +102,36 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
   );
 
   return (
-    <div className='w-full min-h-screen h-fit space-y-6 pb-10'>
+    <div className="w-full min-h-screen h-fit space-y-6 pb-10">
       {/* Customer metrics */}
       <CustomerStatsSection total={total} isLoading={isLoading} />
 
       {/* Table + demographics */}
-      <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Wrapper so the mobile toolbar can sit *above* the card, as the
             mobile design has it, while the card still fills the grid cell. */}
-        <div className='flex flex-col'>
+        <div className="flex flex-col">
           {/* Mobile toolbar — search, filter and export above the card */}
-          <div className='mb-4 flex items-center gap-3 md:hidden'>
-            <div className='relative flex-1'>
-              <Search className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400' />
+          <div className="mb-4 flex items-center gap-3 md:hidden">
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder='Search'
-                className='h-11 w-full rounded-lg pl-9 bg-[#F8F9FA] dark:bg-muted dark:border-border dark:text-foreground'
+                placeholder="Search"
+                className="h-11 w-full rounded-lg pl-9 bg-[#F8F9FA] dark:bg-muted dark:border-border dark:text-foreground"
               />
             </div>
 
             <Button
-              type='button'
-              variant='outline'
-              size='icon'
+              type="button"
+              variant="outline"
+              size="icon"
               onClick={notReady('Filter')}
-              aria-label='Filter'
-              className='h-11 w-11 shrink-0 cursor-pointer text-gray-600 dark:text-gray-400 dark:border-gray-500'
+              aria-label="Filter"
+              className="h-11 w-11 shrink-0 cursor-pointer text-gray-600 dark:text-gray-400 dark:border-gray-500"
             >
-              <SlidersHorizontal className='size-4' />
+              <SlidersHorizontal className="size-4" />
             </Button>
 
             <ExcelExportButton onClick={handleExport} />
@@ -135,41 +141,41 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
               bottom of the card (auto gap) when the card stretches taller than
               the table (e.g. matching the demographics column height). */}
           <div
-            id='customers-table'
-            className='flex flex-1 flex-col overflow-hidden rounded-xl border bg-card custom-card-shadow scroll-mt-24'
+            id="customers-table"
+            className="flex flex-1 flex-col overflow-hidden rounded-xl border bg-card custom-card-shadow scroll-mt-24"
           >
             {/* Mobile card header band */}
-            <div className='bg-[#F8F9FA] px-4 py-4 dark:bg-muted md:hidden'>
-              <h2 className='text-base font-semibold text-[hsla(210,9%,31%,1)] dark:text-white'>
+            <div className="bg-[#F8F9FA] px-4 py-4 dark:bg-muted md:hidden">
+              <h2 className="text-base font-semibold text-[hsla(210,9%,31%,1)] dark:text-white">
                 {title}
               </h2>
             </div>
 
             {/* Toolbar — desktop only; below `md` it moves above the card */}
-            <div className='hidden gap-4 px-6 py-5 md:flex md:items-center md:justify-between'>
-              <h2 className='text-lg font-semibold text-[hsla(210,9%,31%,1)] dark:text-white'>
+            <div className="hidden gap-4 px-6 py-5 md:flex md:items-center md:justify-between">
+              <h2 className="text-lg font-semibold text-[hsla(210,9%,31%,1)] dark:text-white">
                 {title}
               </h2>
 
-              <div className='flex items-center gap-3'>
+              <div className="flex items-center gap-3">
                 <Button
-                  type='button'
-                  variant='outline'
-                  size='icon'
+                  type="button"
+                  variant="outline"
+                  size="icon"
                   onClick={notReady('Filter')}
-                  aria-label='Filter'
-                  className='h-10 w-10 shrink-0 text-gray-600 dark:text-gray-400 dark:border-gray-500'
+                  aria-label="Filter"
+                  className="h-10 w-10 shrink-0 text-gray-600 dark:text-gray-400 dark:border-gray-500"
                 >
-                  <SlidersHorizontal className='size-4' />
+                  <SlidersHorizontal className="size-4" />
                 </Button>
 
-                <div className='relative flex-1'>
-                  <Search className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400' />
+                <div className="relative flex-1">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
                   <Input
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder='Search'
-                    className='h-10 w-full rounded-lg pl-9 sm:w-[200px] bg-[#F8F9FA] dark:bg-muted dark:border-border dark:text-foreground'
+                    placeholder="Search"
+                    className="h-10 w-full rounded-lg pl-9 sm:w-[200px] bg-[#F8F9FA] dark:bg-muted dark:border-border dark:text-foreground"
                   />
                 </div>
 
@@ -181,7 +187,7 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
 
             {/* The table's five columns don't fit a phone, so below `md` the
                 list renders as cards instead. Both share `pagination`. */}
-            <div className='flex flex-1 flex-col max-md:hidden'>
+            <div className="flex flex-1 flex-col max-md:hidden">
               <DataTable
                 columns={customerColumns}
                 data={customers}
@@ -193,7 +199,7 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
                 pagination={pagination}
                 setPagination={setPagination}
                 onRowClick={openDetails}
-                emptyMessage='Customers will show up here once they make a purchase.'
+                emptyMessage="Customers will show up here once they make a purchase."
               />
             </div>
 
@@ -206,13 +212,13 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
               pagination={pagination}
               setPagination={setPagination}
               onViewDetails={openDetails}
-              emptyMessage='Customers will show up here once they make a purchase.'
+              emptyMessage="Customers will show up here once they make a purchase."
             />
           </div>
         </div>
 
         {/* Customer Locations + Demographics */}
-        <div className='flex flex-col gap-6'>
+        <div className="flex flex-col gap-6">
           <CustomerDemographicsChart />
           <CustomerAgeGenderChart />
         </div>

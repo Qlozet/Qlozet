@@ -5,4 +5,4 @@
  * for use in development and testing.
  */
 
-export * from './products.mock'
+export * from './products.mock';

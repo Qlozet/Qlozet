@@ -39,7 +39,7 @@ export const createCustomersTableColumns = ({
     id: 'username',
     header: 'Username',
     cell: ({ row }) => (
-      <span className='text-sm font-medium text-gray-900 dark:text-white'>
+      <span className="text-sm font-medium text-gray-900 dark:text-white">
         {getCustomerIdentifier(row.original)}
       </span>
     ),
@@ -49,7 +49,7 @@ export const createCustomersTableColumns = ({
     id: 'totalOrders',
     header: 'Total orders',
     cell: ({ row }) => (
-      <div className='text-sm text-gray-600 dark:text-gray-300'>
+      <div className="text-sm text-gray-600 dark:text-gray-300">
         {formatCount(row.original.total_orders)}
       </div>
     ),
@@ -63,8 +63,8 @@ export const createCustomersTableColumns = ({
       return (
         <Badge
           variant={STATUS_BADGE_VARIANT[status.variant]}
-          shape='square'
-          className='h-[26px] flex w-fit items-center justify-center px-3 text-xs font-normal'
+          shape="square"
+          className="h-[26px] flex w-fit items-center justify-center px-3 text-xs font-normal"
         >
           {status.label}
         </Badge>
@@ -77,11 +77,11 @@ export const createCustomersTableColumns = ({
     header: '',
     cell: ({ row }) => (
       <Button
-        type='button'
-        variant='outline'
-        size='sm'
+        type="button"
+        variant="outline"
+        size="sm"
         onClick={() => onViewDetails(row.original)}
-        className='h-9 text-sm'
+        className="h-9 text-sm"
       >
         View
       </Button>

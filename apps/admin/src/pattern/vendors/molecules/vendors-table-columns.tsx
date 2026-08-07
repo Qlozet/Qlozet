@@ -1,7 +1,13 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal, Eye, CheckCircle2, BadgeCheck, XCircle } from 'lucide-react';
+import {
+  MoreHorizontal,
+  Eye,
+  CheckCircle2,
+  BadgeCheck,
+  XCircle,
+} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -54,11 +60,11 @@ export const createVendorsTableColumns = ({
     cell: ({ row }) => {
       const vendor = row.original;
       return (
-        <div className='flex items-center gap-3'>
-          <span className='flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary'>
+        <div className="flex items-center gap-3">
+          <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
             {getVendorInitial(vendor)}
           </span>
-          <span className='text-sm font-medium text-gray-900'>
+          <span className="text-sm font-medium text-gray-900">
             {getVendorName(vendor)}
           </span>
         </div>
@@ -70,7 +76,9 @@ export const createVendorsTableColumns = ({
     id: 'email',
     header: 'Email Address',
     cell: ({ row }) => (
-      <div className='text-sm text-gray-600'>{getVendorEmail(row.original)}</div>
+      <div className="text-sm text-gray-600">
+        {getVendorEmail(row.original)}
+      </div>
     ),
     enableSorting: false,
   },
@@ -78,7 +86,7 @@ export const createVendorsTableColumns = ({
     accessorKey: 'createdAt',
     header: 'Date onboarded',
     cell: ({ row }) => (
-      <div className='text-sm text-gray-600'>
+      <div className="text-sm text-gray-600">
         {formatOnboardedDate(row.original.createdAt)}
       </div>
     ),
@@ -88,7 +96,7 @@ export const createVendorsTableColumns = ({
     id: 'products',
     header: 'Products',
     cell: ({ row }) => (
-      <div className='text-sm text-gray-600'>
+      <div className="text-sm text-gray-600">
         {formatCount(row.original.total_products)}
       </div>
     ),
@@ -98,7 +106,7 @@ export const createVendorsTableColumns = ({
     id: 'orders',
     header: 'Orders',
     cell: ({ row }) => (
-      <div className='text-sm text-gray-600'>
+      <div className="text-sm text-gray-600">
         {formatCount(row.original.total_orders)}
       </div>
     ),
@@ -108,7 +116,7 @@ export const createVendorsTableColumns = ({
     id: 'revenue',
     header: 'Revenue',
     cell: ({ row }) => (
-      <div className='text-sm text-gray-600'>
+      <div className="text-sm text-gray-600">
         {formatNaira(row.original.total_revenue)}
       </div>
     ),
@@ -122,8 +130,8 @@ export const createVendorsTableColumns = ({
       return (
         <Badge
           variant={STATUS_BADGE_VARIANT[status.variant]}
-          shape='square'
-          className='h-[26px] flex w-fit items-center justify-center px-3 text-xs font-normal'
+          shape="square"
+          className="h-[26px] flex w-fit items-center justify-center px-3 text-xs font-normal"
         >
           {status.label}
         </Badge>
@@ -139,29 +147,29 @@ export const createVendorsTableColumns = ({
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='h-8 w-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <MoreHorizontal className='h-5 w-5' />
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align='end' className='w-48'>
+          <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuLabel>Vendor actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => onViewDetails(vendorId)}>
-              <Eye className='size-4' /> View details
+              <Eye className="size-4" /> View details
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onApprove(vendorId)}>
-              <CheckCircle2 className='size-4' /> Approve
+              <CheckCircle2 className="size-4" /> Approve
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onVerify(vendorId)}>
-              <BadgeCheck className='size-4' /> Verify
+              <BadgeCheck className="size-4" /> Verify
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => onReject(vendorId)}
-              className='text-destructive'
+              className="text-destructive"
             >
-              <XCircle className='size-4' /> Reject
+              <XCircle className="size-4" /> Reject
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -43,11 +43,11 @@ export const createAdminsTableColumns = ({
     cell: ({ row }) => {
       const member = row.original;
       return (
-        <div className='flex items-center gap-3'>
-          <span className='flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary'>
+        <div className="flex items-center gap-3">
+          <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
             {getAdminInitial(member)}
           </span>
-          <span className='text-sm font-medium text-gray-900'>
+          <span className="text-sm font-medium text-gray-900">
             {getAdminName(member)}
           </span>
         </div>
@@ -59,7 +59,7 @@ export const createAdminsTableColumns = ({
     id: 'email',
     header: 'Email address',
     cell: ({ row }) => (
-      <div className='text-sm text-gray-600'>{getAdminEmail(row.original)}</div>
+      <div className="text-sm text-gray-600">{getAdminEmail(row.original)}</div>
     ),
     enableSorting: false,
   },
@@ -67,7 +67,7 @@ export const createAdminsTableColumns = ({
     id: 'phone',
     header: 'Phone number',
     cell: ({ row }) => (
-      <div className='text-sm text-gray-600'>{getAdminPhone(row.original)}</div>
+      <div className="text-sm text-gray-600">{getAdminPhone(row.original)}</div>
     ),
     enableSorting: false,
   },
@@ -75,7 +75,7 @@ export const createAdminsTableColumns = ({
     id: 'role',
     header: 'Role',
     cell: ({ row }) => (
-      <div className='text-sm text-gray-600'>{getAdminRole(row.original)}</div>
+      <div className="text-sm text-gray-600">{getAdminRole(row.original)}</div>
     ),
     enableSorting: false,
   },
@@ -83,7 +83,7 @@ export const createAdminsTableColumns = ({
     accessorKey: 'createdAt',
     header: 'Date registered',
     cell: ({ row }) => (
-      <div className='text-sm text-gray-600'>
+      <div className="text-sm text-gray-600">
         {formatRegisteredDate(row.original.createdAt as string | undefined)}
       </div>
     ),
@@ -97,8 +97,8 @@ export const createAdminsTableColumns = ({
       return (
         <Badge
           variant={STATUS_BADGE_VARIANT[status.variant]}
-          shape='square'
-          className='h-[26px] flex w-fit items-center justify-center px-3 text-xs font-normal'
+          shape="square"
+          className="h-[26px] flex w-fit items-center justify-center px-3 text-xs font-normal"
         >
           {status.label}
         </Badge>
@@ -114,17 +114,17 @@ export const createAdminsTableColumns = ({
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='h-8 w-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <MoreHorizontal className='h-5 w-5' />
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align='end' className='w-44'>
+          <DropdownMenuContent align="end" className="w-44">
             <DropdownMenuItem onClick={() => onEdit(member)}>
-              <Pencil className='size-4' /> Edit admin
+              <Pencil className="size-4" /> Edit admin
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onDeactivate(member)}>
-              <UserX className='size-4' /> Deactivate admin
+              <UserX className="size-4" /> Deactivate admin
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

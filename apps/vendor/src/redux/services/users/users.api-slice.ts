@@ -93,6 +93,17 @@ export interface InviteTeamMemberRequest {
   phone_number?: string;
 }
 
+// PATCH /users/team/members/{id}. Owner-role guarded server-side — the
+// business owner can't be edited or removed.
+export interface UpdateTeamMemberRequest {
+  full_name?: string;
+  phone_number?: string;
+  /** Role id, as returned by GET /users/roles/vendor. */
+  role?: string;
+  /** Soft-disable: PATCH { is_active: false } instead of deleting. */
+  is_active?: boolean;
+}
+
 export interface TeamMember {
   _id: string;
   full_name?: string;
@@ -141,7 +152,10 @@ export const usersApiSlice = baseAPI.injectEndpoints({
     }),
 
     // PATCH /users/me/profile — update the current user's profile
-    updateMyProfile: builder.mutation<ApiResponse<CurrentUser>, UpdateUserRequest>({
+    updateMyProfile: builder.mutation<
+      ApiResponse<CurrentUser>,
+      UpdateUserRequest
+    >({
       query: (body) => ({ url: '/users/me/profile', method: 'PATCH', body }),
       invalidatesTags: ['Me'],
     }),
@@ -279,6 +293,29 @@ export const usersApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['TeamMembers'],
     }),
 
+    // PATCH /users/team/members/{id} — edit a member, or soft-disable with
+    // { is_active: false }.
+    updateTeamMember: builder.mutation<
+      ApiResponse<TeamMember>,
+      { id: string; data: UpdateTeamMemberRequest }
+    >({
+      query: ({ id, data }) => ({
+        url: `/users/team/members/${id}`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: ['TeamMembers'],
+    }),
+
+    // DELETE /users/team/members/{id} — hard delete.
+    deleteTeamMember: builder.mutation<ApiResponse<null>, string>({
+      query: (id) => ({
+        url: `/users/team/members/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['TeamMembers'],
+    }),
+
     // ---- Vendors discovery ----
 
     // GET /users/vendors
@@ -371,6 +408,8 @@ export const {
   useRemoveRolePermissionsMutation,
   useGetTeamMembersQuery,
   useInviteTeamMemberMutation,
+  useUpdateTeamMemberMutation,
+  useDeleteTeamMemberMutation,
   useGetVendorsQuery,
   useGetNewVendorsThisWeekQuery,
   useGetTopVendorsThisWeekQuery,

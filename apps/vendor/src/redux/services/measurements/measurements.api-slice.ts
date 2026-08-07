@@ -138,7 +138,10 @@ export const measurementsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // PATCH /measurements/users/sets/{name}/activate
-    activateMeasurementSet: builder.mutation<ApiResponse<MeasurementSet>, string>({
+    activateMeasurementSet: builder.mutation<
+      ApiResponse<MeasurementSet>,
+      string
+    >({
       query: (name) => ({
         url: `/measurements/users/sets/${encodeURIComponent(name)}/activate`,
         method: 'PATCH',
@@ -161,7 +164,10 @@ export const measurementsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // POST /measurements/auto-mask-prediction
-    runAutoMaskPrediction: builder.mutation<ApiResponse<JobStatus>, AutoMaskRequest>({
+    runAutoMaskPrediction: builder.mutation<
+      ApiResponse<JobStatus>,
+      AutoMaskRequest
+    >({
       query: (body) => ({
         url: '/measurements/auto-mask-prediction',
         method: 'POST',
@@ -170,12 +176,18 @@ export const measurementsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // POST /measurements/avatar
-    generateAvatar: builder.mutation<ApiResponse<JobStatus>, Record<string, unknown>>({
+    generateAvatar: builder.mutation<
+      ApiResponse<JobStatus>,
+      Record<string, unknown>
+    >({
       query: (body) => ({ url: '/measurements/avatar', method: 'POST', body }),
     }),
 
     // POST /measurements/edit-garment-image
-    editGarmentImage: builder.mutation<ApiResponse<JobStatus>, EditGarmentRequest>({
+    editGarmentImage: builder.mutation<
+      ApiResponse<JobStatus>,
+      EditGarmentRequest
+    >({
       query: (body) => ({
         url: '/measurements/edit-garment-image',
         method: 'POST',
@@ -196,7 +208,10 @@ export const measurementsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // POST /measurements/video-pipeline
-    runVideoPipeline: builder.mutation<ApiResponse<JobStatus>, VideoPipelineRequest>({
+    runVideoPipeline: builder.mutation<
+      ApiResponse<JobStatus>,
+      VideoPipelineRequest
+    >({
       query: (body) => ({
         url: '/measurements/video-pipeline',
         method: 'POST',

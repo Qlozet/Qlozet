@@ -82,9 +82,9 @@ export const CustomersTable = ({
   return (
     <div>
       <Table>
-        <TableHeader className='bg-[hsla(0,0%,96%,1)] dark:bg-muted'>
+        <TableHeader className="bg-[hsla(0,0%,96%,1)] dark:bg-muted">
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className='hover:bg-transparent'>
+            <TableRow key={headerGroup.id} className="hover:bg-transparent">
               {headerGroup.headers.map((header, index) => {
                 const isFirst = index === 0;
                 const isLast = index === headerGroup.headers.length - 1;
@@ -116,7 +116,7 @@ export const CustomersTable = ({
             Array.from({ length: pageSize || 5 }).map((_, rowIndex) => (
               <TableRow
                 key={`skeleton-${rowIndex}`}
-                className='border-b hover:bg-transparent'
+                className="border-b hover:bg-transparent"
               >
                 {columns.map((_, cellIndex) => {
                   const isFirst = cellIndex === 0;
@@ -149,7 +149,7 @@ export const CustomersTable = ({
               <TableRow
                 key={row.id}
                 onClick={() => onRowClick(row.original)}
-                className='border-b cursor-pointer'
+                className="border-b cursor-pointer"
               >
                 {row.getVisibleCells().map((cell, cellIndex) => {
                   const isFirst = cellIndex === 0;
@@ -181,14 +181,14 @@ export const CustomersTable = ({
           {/* Empty state */}
           {!showLoader && isSuccess && totalRows === 0 && (
             <TableRow>
-              <TableCell colSpan={columns.length} className='h-64 text-center'>
-                <div className='flex flex-col items-center gap-4'>
+              <TableCell colSpan={columns.length} className="h-64 text-center">
+                <div className="flex flex-col items-center gap-4">
                   <BoldBoxRemoveIcon />
-                  <div className='flex flex-col items-center gap-2'>
-                    <p className='text-lg font-medium text-muted-foreground'>
+                  <div className="flex flex-col items-center gap-2">
+                    <p className="text-lg font-medium text-muted-foreground">
                       No customers yet.
                     </p>
-                    <p className='text-sm text-muted-foreground'>
+                    <p className="text-sm text-muted-foreground">
                       Customers will show up here once you receive orders.
                     </p>
                   </div>
@@ -200,12 +200,14 @@ export const CustomersTable = ({
           {/* Error state */}
           {!showLoader && isError && (
             <TableRow>
-              <TableCell colSpan={columns.length} className='h-64 text-center'>
-                <div className='flex flex-col items-center gap-2'>
-                  <p className='text-lg font-medium text-destructive'>
+              <TableCell colSpan={columns.length} className="h-64 text-center">
+                <div className="flex flex-col items-center gap-2">
+                  <p className="text-lg font-medium text-destructive">
                     Error loading customers
                   </p>
-                  <p className='text-sm text-muted-foreground'>{errorMessage}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {errorMessage}
+                  </p>
                 </div>
               </TableCell>
             </TableRow>
@@ -215,31 +217,31 @@ export const CustomersTable = ({
 
       {/* Pagination — "Showing X - Y of {total}" to match the design */}
       {!showLoader && isSuccess && totalRows > 0 && (
-        <div className='w-full flex items-center justify-end py-4 pr-6'>
-          <div className='h-fit flex items-center gap-x-4'>
-            <div className='text-sm text-muted-foreground text-center'>
+        <div className="w-full flex items-center justify-end py-4 pr-6">
+          <div className="h-fit flex items-center gap-x-4">
+            <div className="text-sm text-muted-foreground text-center">
               Showing {pageIndex * pageSize + 1} -{' '}
               {Math.min((pageIndex + 1) * pageSize, totalRows)} of {totalRows}
             </div>
 
             <Button
-              className='w-6 h-6 text-sm rounded-full dark:border-gray-500'
-              variant='outline'
-              size='icon'
+              className="w-6 h-6 text-sm rounded-full dark:border-gray-500"
+              variant="outline"
+              size="icon"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
-              <ChevronLeft className='w-4 h-4' />
+              <ChevronLeft className="w-4 h-4" />
             </Button>
 
             <Button
-              className='w-6 h-6 text-sm rounded-full dark:border-gray-500'
-              variant='outline'
-              size='icon'
+              className="w-6 h-6 text-sm rounded-full dark:border-gray-500"
+              variant="outline"
+              size="icon"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
-              <ChevronRight className='w-4 h-4' />
+              <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         </div>

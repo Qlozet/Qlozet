@@ -28,7 +28,8 @@ export const ReassignTicketModal = NiceModal.create(
     const [assignee, setAssignee] = useState(currentAssigneeId ?? '');
 
     const { data, isLoading: isLoadingMembers } = useGetTeamMembersQuery();
-    const [assignTicket, { isLoading: isAssigning }] = useAssignTicketMutation();
+    const [assignTicket, { isLoading: isAssigning }] =
+      useAssignTicketMutation();
 
     const members = useMemo(
       () =>

@@ -54,7 +54,10 @@ export const PERMISSION_RESOURCES: PermissionResource[] = [
 ];
 
 // A permission id is encoded as `resource:action` (e.g. `vendors:create`).
-export type PermissionMatrix = Record<string, Record<PermissionAction, boolean>>;
+export type PermissionMatrix = Record<
+  string,
+  Record<PermissionAction, boolean>
+>;
 
 export const buildPermissionId = (
   resourceKey: string,
@@ -72,7 +75,8 @@ export const buildPermissionMatrix = (
   return PERMISSION_RESOURCES.reduce<PermissionMatrix>((matrix, resource) => {
     matrix[resource.key] = PERMISSION_ACTIONS.reduce(
       (row, action) => {
-        const isDefault = seedDefault && (action === 'view' || action === 'create');
+        const isDefault =
+          seedDefault && (action === 'view' || action === 'create');
         row[action] =
           granted.has(buildPermissionId(resource.key, action)) || isDefault;
         return row;
@@ -107,20 +111,15 @@ export const getAdminStatus = (member: TeamMember): AdminStatusInfo => {
 };
 
 export const getAdminName = (member: TeamMember): string =>
-  member.full_name ||
-  (member.name as string | undefined) ||
-  'Unnamed admin';
+  member.full_name || (member.name as string | undefined) || 'Unnamed admin';
 
 export const getAdminEmail = (member: TeamMember): string =>
   member.email || '—';
 
 export const getAdminPhone = (member: TeamMember): string =>
-  member.phone_number ||
-  (member.phone as string | undefined) ||
-  '—';
+  member.phone_number || (member.phone as string | undefined) || '—';
 
-export const getAdminRole = (member: TeamMember): string =>
-  member.role || '—';
+export const getAdminRole = (member: TeamMember): string => member.role || '—';
 
 export const getAdminInitial = (member: TeamMember): string =>
   getAdminName(member).charAt(0).toUpperCase() || 'A';

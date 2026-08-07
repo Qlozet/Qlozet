@@ -34,9 +34,9 @@ export const AUDIENCE_OPTIONS = [
 export type Audience = (typeof AUDIENCE_OPTIONS)[number]['value'];
 
 export interface ProductOrganizationValue {
-  productType: string;       // Single value (e.g. 'Dress')
-  category: string[];        // Categories from cascading API
-  tags: ProductTag[];         // System + custom tags
+  productType: string; // Single value (e.g. 'Dress')
+  category: string[]; // Categories from cascading API
+  tags: ProductTag[]; // System + custom tags
   audience: Audience | '';
 }
 
@@ -56,25 +56,19 @@ export const ProductOrganizationSection = ({
   hideProductType = false,
 }: ProductOrganizationSectionProps) => {
   // 1. Fetch product types for the given kind
-  const {
-    data: productTypes,
-    isLoading: isLoadingTypes,
-  } = useGetProductTypesQuery(kind);
+  const { data: productTypes, isLoading: isLoadingTypes } =
+    useGetProductTypesQuery(kind);
 
   // 2. Fetch categories cascading from the selected product type
-  const {
-    data: categoryData,
-    isLoading: isLoadingCategories,
-  } = useGetCategoriesForTypeQuery(
-    { kind, product_type: value.productType },
-    { skip: !value.productType }
-  );
+  const { data: categoryData, isLoading: isLoadingCategories } =
+    useGetCategoriesForTypeQuery(
+      { kind, product_type: value.productType },
+      { skip: !value.productType }
+    );
 
   // 3. Fetch vendor-selectable tags
-  const {
-    data: vendorTags,
-    isLoading: isLoadingTags,
-  } = useGetVendorTagsQuery();
+  const { data: vendorTags, isLoading: isLoadingTags } =
+    useGetVendorTagsQuery();
 
   // Build category options for the multi-select
   const categoryGroups: TagGroup[] = categoryData?.categories
@@ -114,7 +108,9 @@ export const ProductOrganizationSection = ({
         {/* Product Type — single select */}
         {!hideProductType && (
           <div>
-            <FieldLabel tooltip="Select the product type">Product type</FieldLabel>
+            <FieldLabel tooltip="Select the product type">
+              Product type
+            </FieldLabel>
             {isLoadingTypes ? (
               <Skeleton className="h-10 w-full" />
             ) : (

@@ -48,7 +48,9 @@ export const getCustomerInitial = (customer: VendorCustomer): string =>
   getCustomerName(customer).replace(/^@/, '').charAt(0).toUpperCase() || 'C';
 
 // Most recent order date across the customer's (recent) orders.
-export const getLastOrderDate = (customer: VendorCustomer): string | undefined => {
+export const getLastOrderDate = (
+  customer: VendorCustomer
+): string | undefined => {
   let latest: string | undefined;
   for (const order of customer.orders ?? []) {
     if (order.createdAt && (!latest || order.createdAt > latest)) {
@@ -87,12 +89,7 @@ export const exportCustomersToCsv = (
   customers: VendorCustomer[],
   fileName = 'customers.csv'
 ): void => {
-  const header = [
-    'Customer name',
-    'Total orders',
-    'Last Order date',
-    'Status',
-  ];
+  const header = ['Customer name', 'Total orders', 'Last Order date', 'Status'];
   const rows = customers.map((c) => [
     csvCell(getCustomerIdentifier(c)),
     csvCell(c.total_orders),

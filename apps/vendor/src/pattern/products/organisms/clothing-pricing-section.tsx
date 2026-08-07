@@ -46,7 +46,10 @@ export const ProductPricingSection = ({
         </div>
 
         <div>
-          <FieldLabel htmlFor="product-discount" tooltip="Optional discount amount">
+          <FieldLabel
+            htmlFor="product-discount"
+            tooltip="Optional discount amount"
+          >
             Available discount?
           </FieldLabel>
           <Input

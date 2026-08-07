@@ -148,18 +148,18 @@ export const MultiStepSignupForm: React.FC<MultiStepSignupFormProps> = ({
     <Form {...form}>
       <div className={cn('w-full space-y-8', className)}>
         {/* Progress Bar */}
-        <div className='space-y-2'>
-          <div className='flex justify-between text-sm text-muted-foreground'>
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm text-muted-foreground">
             <span>
               Step {currentStep} of {STEPS?.length}
             </span>
             <span>{STEPS[currentStep - 1]?.title}</span>
           </div>
-          <Progress value={progress} className='h-2' />
+          <Progress value={progress} className="h-2" />
         </div>
 
         {/* Step Content */}
-        <div className='min-h-[400px]'>{renderStep()}</div>
+        <div className="min-h-[400px]">{renderStep()}</div>
 
         {/* Navigation */}
         <StepNavigation

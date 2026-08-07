@@ -18,7 +18,12 @@ export const StatusIndicator = ({
 }: StatusIndicatorProps) => {
   const { label, dot } = CONFIG[status] ?? CONFIG.active;
   return (
-    <span className={cn('flex items-center gap-2 text-sm text-grey-black dark:text-white', className)}>
+    <span
+      className={cn(
+        'flex items-center gap-2 text-sm text-grey-black dark:text-white',
+        className
+      )}
+    >
       {label}
       <span className={cn('size-2.5 rounded-full', dot)} />
     </span>

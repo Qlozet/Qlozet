@@ -12,7 +12,11 @@ import {
 } from 'redux-persist';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import rootReducer, { rootPersistConfig } from './root-reducer';
-import { baseAPI, custom401Middleware, custom403Middleware } from './api/base-api';
+import {
+  baseAPI,
+  custom401Middleware,
+  custom403Middleware,
+} from './api/base-api';
 import env from '@/env';
 
 const reducer = persistReducer<ReturnType<typeof rootReducer>>(

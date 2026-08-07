@@ -48,7 +48,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
     },
   });
 
-  const password = form.watch("password")
+  const password = form.watch('password');
 
   return (
     <Form {...form}>
@@ -58,17 +58,17 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
       >
         <PasswordInput
           control={form.control}
-          name='password'
-          label='New Password'
-          placeholder='Enter your new password'
+          name="password"
+          label="New Password"
+          placeholder="Enter your new password"
         />
 
         {/* Confirm Password */}
         <PasswordInput
           control={form.control}
-          name='confirmPassword'
-          label='Confirm Password'
-          placeholder='Confirm your new password'
+          name="confirmPassword"
+          label="Confirm Password"
+          placeholder="Confirm your new password"
         />
 
         <PasswordStrength password={password} />

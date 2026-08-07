@@ -13,19 +13,19 @@ const Logo: React.FC<LogoProps> = ({ brown, white }) => {
   return (
     <div>
       {white ? (
-        <div className='items-center justify-center lg:justify-start flex'>
+        <div className="items-center justify-center lg:justify-start flex">
           <Image
             src={whiteLogo}
-            alt='Qlozet Logo'
+            alt="Qlozet Logo"
             style={{ width: '100px', height: 'auto' }}
             priority
           />
         </div>
       ) : brown ? (
-        <div className='items-center justify-center lg:justify-start flex'>
+        <div className="items-center justify-center lg:justify-start flex">
           <Image
             src={brownLogo}
-            alt='Qlozet Logo'
+            alt="Qlozet Logo"
             style={{
               width: '100px',
               height: 'auto',
@@ -35,10 +35,10 @@ const Logo: React.FC<LogoProps> = ({ brown, white }) => {
         </div>
       ) : (
         <div>
-          <div className='items-center justify-center lg:justify-start hidden lg:flex'>
+          <div className="items-center justify-center lg:justify-start hidden lg:flex">
             <Image
               src={brownLogo}
-              alt='Qlozet Logo'
+              alt="Qlozet Logo"
               style={{
                 width: '100px',
                 height: 'auto',
@@ -46,10 +46,10 @@ const Logo: React.FC<LogoProps> = ({ brown, white }) => {
               priority
             />
           </div>
-          <div className='items-center justify-center lg:justify-start flex lg:hidden'>
+          <div className="items-center justify-center lg:justify-start flex lg:hidden">
             <Image
               src={whiteLogo}
-              alt='Qlozet Logo'
+              alt="Qlozet Logo"
               style={{
                 width: '100px',
                 height: 'auto',

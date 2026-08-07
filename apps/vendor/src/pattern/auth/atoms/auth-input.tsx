@@ -56,7 +56,7 @@ export const AuthInput = <
             />
           </FormControl>
           {description && (
-            <p className='text-sm text-muted-foreground'>{description}</p>
+            <p className="text-sm text-muted-foreground">{description}</p>
           )}
           <FormMessage />
         </FormItem>

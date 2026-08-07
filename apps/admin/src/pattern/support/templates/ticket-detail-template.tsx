@@ -59,7 +59,9 @@ export const TicketDetailTemplate = () => {
   };
 
   const handleCopyId = async () => {
-    const ref = ticket ? readField(ticket, 'reference', 'ticket_id', '_id') : '';
+    const ref = ticket
+      ? readField(ticket, 'reference', 'ticket_id', '_id')
+      : '';
     if (!ref || ref === '—') return;
     try {
       await navigator.clipboard.writeText(ref);
@@ -80,7 +82,8 @@ export const TicketDetailTemplate = () => {
   const handleEdit = () =>
     NiceModal.show(EditTicketDrawer, {
       ticketId: id,
-      issueType: typeof ticket?.issue_type === 'string' ? ticket.issue_type : '',
+      issueType:
+        typeof ticket?.issue_type === 'string' ? ticket.issue_type : '',
       description: ticket?.description ?? ticket?.message ?? '',
     });
 

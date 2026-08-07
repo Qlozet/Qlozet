@@ -32,16 +32,16 @@ export const OrderStatCard: React.FC<OrderStatCardProps> = ({
         className
       )}
     >
-      {icon && <div className='absolute top-4 right-4 opacity-80'>{icon}</div>}
+      {icon && <div className="absolute top-4 right-4 opacity-80">{icon}</div>}
 
-      <div className='space-y-2'>
-        <p className='text-sm font-medium opacity-90'>{title}</p>
-        <p className='text-2xl font-bold'>
+      <div className="space-y-2">
+        <p className="text-sm font-medium opacity-90">{title}</p>
+        <p className="text-2xl font-bold">
           {typeof value === 'number' ? value.toLocaleString() : value}
         </p>
 
         {trend && (
-          <div className='flex items-center space-x-1 text-xs opacity-90'>
+          <div className="flex items-center space-x-1 text-xs opacity-90">
             <span
               className={trend.isPositive ? 'text-green-200' : 'text-red-200'}
             >

@@ -92,42 +92,42 @@ export const RespondDisputeModal = create<RespondDisputeModalProps>(
 
     return (
       <Dialog open={visible} onOpenChange={handleClose}>
-        <DialogContent className='max-w-lg p-6 bg-card'>
-          <DialogHeader className='border-b border-dashed dark:border-border pb-3 text-left mb-4'>
-            <DialogTitle className='text-base font-medium text-[#0C0C0D] dark:text-white'>
+        <DialogContent className="max-w-lg p-6 bg-card">
+          <DialogHeader className="border-b border-dashed dark:border-border pb-3 text-left mb-4">
+            <DialogTitle className="text-base font-medium text-[#0C0C0D] dark:text-white">
               Respond to Dispute
             </DialogTitle>
           </DialogHeader>
 
-          <div className='mb-4 space-y-1 text-sm'>
-            <p className='text-[#646A86] dark:text-gray-400'>
+          <div className="mb-4 space-y-1 text-sm">
+            <p className="text-[#646A86] dark:text-gray-400">
               Order{' '}
-              <span className='font-medium text-[#0C0C0D] dark:text-white'>
+              <span className="font-medium text-[#0C0C0D] dark:text-white">
                 {readDisputeRef(dispute)}
               </span>
             </p>
-            <p className='text-[#646A86] dark:text-gray-400'>
+            <p className="text-[#646A86] dark:text-gray-400">
               Reason:{' '}
-              <span className='text-[#0C0C0D] dark:text-white'>
+              <span className="text-[#0C0C0D] dark:text-white">
                 {readDisputeReason(dispute)}
               </span>
             </p>
           </div>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <FormField
                 control={form.control}
-                name='vendor_response'
+                name="vendor_response"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className='text-sm font-medium text-[#333333] dark:text-gray-300'>
+                    <FormLabel className="text-sm font-medium text-[#333333] dark:text-gray-300">
                       Your response
                     </FormLabel>
                     <FormControl>
                       <Textarea
                         rows={5}
-                        placeholder='Explain your side of the dispute…'
+                        placeholder="Explain your side of the dispute…"
                         {...field}
                       />
                     </FormControl>
@@ -138,41 +138,37 @@ export const RespondDisputeModal = create<RespondDisputeModalProps>(
 
               <FormField
                 control={form.control}
-                name='evidence_urls'
+                name="evidence_urls"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className='text-sm font-medium text-[#333333] dark:text-gray-300'>
+                    <FormLabel className="text-sm font-medium text-[#333333] dark:text-gray-300">
                       Evidence links{' '}
-                      <span className='font-normal text-[#646A86]'>
+                      <span className="font-normal text-[#646A86]">
                         (optional, one URL per line)
                       </span>
                     </FormLabel>
                     <FormControl>
-                      <Textarea
-                        rows={3}
-                        placeholder='https://…'
-                        {...field}
-                      />
+                      <Textarea rows={3} placeholder="https://…" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <div className='flex justify-end gap-3'>
+              <div className="flex justify-end gap-3">
                 <Button
-                  type='button'
-                  variant='outline'
+                  type="button"
+                  variant="outline"
                   onClick={handleClose}
-                  className='min-w-28'
+                  className="min-w-28"
                   disabled={isLoading}
                 >
                   Cancel
                 </Button>
-                <Button type='submit' className='min-w-28' disabled={isLoading}>
+                <Button type="submit" className="min-w-28" disabled={isLoading}>
                   {isLoading ? (
                     <>
-                      <Loader2 className='size-4 animate-spin' />
+                      <Loader2 className="size-4 animate-spin" />
                       Submitting…
                     </>
                   ) : (

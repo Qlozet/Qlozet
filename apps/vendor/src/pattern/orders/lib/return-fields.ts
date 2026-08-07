@@ -6,10 +6,7 @@ import type { ReturnRequest } from '@/redux/services/returns/returns.api-slice';
 import type { StatusBadge } from './order-fields';
 
 export const readReturnRef = (r: ReturnRequest): string =>
-  r.order_reference ||
-  (r.order_id ? String(r.order_id) : '') ||
-  r._id ||
-  '—';
+  r.order_reference || (r.order_id ? String(r.order_id) : '') || r._id || '—';
 
 export const readReturnReason = (r: ReturnRequest): string =>
   (r.reason ?? '').trim() || '—';
@@ -30,7 +27,9 @@ export const returnStatusBadge = (status: string): StatusBadge => {
   };
   return (
     map[status] ?? {
-      label: status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unknown',
+      label: status
+        ? status.charAt(0).toUpperCase() + status.slice(1)
+        : 'Unknown',
       className: 'bg-[#EAECF0] text-[#475467]',
     }
   );

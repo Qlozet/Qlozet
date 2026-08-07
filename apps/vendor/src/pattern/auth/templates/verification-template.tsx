@@ -15,7 +15,10 @@ import { useCountdown } from '@/lib/hooks/useCountdown';
 import { Button } from '@/components/ui/button';
 import { If } from '@/pattern/common/atoms/If';
 import { AuthFormCard } from '../molecules/auth-form-card';
-import { useResendVerificationEmailMutation, useVerifyEmailMutation } from '@/redux/services/auth/auth.api-slice';
+import {
+  useResendVerificationEmailMutation,
+  useVerifyEmailMutation,
+} from '@/redux/services/auth/auth.api-slice';
 import useCreateSearchQuery from '@/lib/hooks/useCreateSearchQuery';
 
 const verificationSchema = z.object({
@@ -31,13 +34,15 @@ export const VerificationTemplate = () => {
   const { push } = useRouter();
 
   const { searchParams } = useCreateSearchQuery();
-  const email = searchParams.get("email");
+  const email = searchParams.get('email');
 
   // Verify API mutation
-  const [verifyEmail, { isLoading: isVerifyingEmail }] = useVerifyEmailMutation()
+  const [verifyEmail, { isLoading: isVerifyingEmail }] =
+    useVerifyEmailMutation();
 
   // Resend Verification Email API mutation
-  const [resendVerificationEmail, { isLoading }] = useResendVerificationEmailMutation()
+  const [resendVerificationEmail, { isLoading }] =
+    useResendVerificationEmailMutation();
 
   const [canResend, setCanResend] = useState(false);
 
@@ -68,7 +73,6 @@ export const VerificationTemplate = () => {
     start();
   }, [start]);
 
-
   const form = useForm<VerificationFormData>({
     resolver: zodResolver(verificationSchema),
     defaultValues: {
@@ -84,8 +88,10 @@ export const VerificationTemplate = () => {
         push(AUTH_ROUTES.signIn);
       })
       .catch((error) => {
-        toast.error(error?.message ?? 'Error verifying email. Please try again.');
-      })
+        toast.error(
+          error?.message ?? 'Error verifying email. Please try again.'
+        );
+      });
   };
 
   const handleResend = async () => {
@@ -108,48 +114,48 @@ export const VerificationTemplate = () => {
           error?.data?.message || 'Failed to resend code. Please try again.';
 
         toast.error(errorMessage);
-      })
+      });
   };
 
   return (
     <AuthFormCard
-      title='Verify Your Email'
-      subtitle='Please enter the verification code sent to your email'
+      title="Verify Your Email"
+      subtitle="Please enter the verification code sent to your email"
       showLogo={true}
     >
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleVerification)}
-          className='space-y-6'
+          className="space-y-6"
         >
           <AuthInput
             control={form.control}
-            name='verificationCode'
-            label='Verification Code'
-            placeholder='Enter 6-digit code'
+            name="verificationCode"
+            label="Verification Code"
+            placeholder="Enter 6-digit code"
           />
 
           <SubmitButton disabled={isVerifyingEmail} loading={isVerifyingEmail}>
             Verify Email
           </SubmitButton>
 
-          <div className='text-center'>
-            <p className='text-sm text-muted-foreground mb-2'>
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground mb-2">
               Didn't receive the code?
             </p>
 
             <If isTrue={canResend ? true : false}>
               <Button
-                variant='ghost'
+                variant="ghost"
                 onClick={handleResend}
-                className='text-primary hover:text-primary/80'
+                className="text-primary hover:text-primary/80"
               >
                 {isLoading ? 'Resending...' : 'Resend Code'}
               </Button>
             </If>
 
             <If isTrue={!canResend && count > 0 ? true : false}>
-              <p className='text-sm text-muted-foreground'>
+              <p className="text-sm text-muted-foreground">
                 Resend available in {formatTime(count)}
               </p>
             </If>

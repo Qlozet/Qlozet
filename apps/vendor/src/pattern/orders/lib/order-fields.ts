@@ -18,7 +18,8 @@ export const formatNaira = (value?: number): string =>
 
 // DD/MM/YYYY — used in the Orders table.
 export const formatDate = (value?: unknown): string => {
-  const s = typeof value === 'string' && value.trim() ? value.trim() : undefined;
+  const s =
+    typeof value === 'string' && value.trim() ? value.trim() : undefined;
   if (!s) return '—';
   const date = new Date(s);
   if (Number.isNaN(date.getTime())) return s;
@@ -29,7 +30,8 @@ export const formatDate = (value?: unknown): string => {
 
 // "12 Oct. 2023" — used in the quote drawer header.
 export const formatLongDate = (value?: unknown): string => {
-  const s = typeof value === 'string' && value.trim() ? value.trim() : undefined;
+  const s =
+    typeof value === 'string' && value.trim() ? value.trim() : undefined;
   if (!s) return '—';
   const date = new Date(s);
   if (Number.isNaN(date.getTime())) return s;
@@ -49,7 +51,7 @@ export const readCustomerName = (o: Order): string => {
   if (!c) return '—';
   if (c.username) return c.username;
   const parts = [c.firstName, c.lastName].filter(Boolean);
-  return parts.length > 0 ? parts.join(' ') : c.email ?? '—';
+  return parts.length > 0 ? parts.join(' ') : (c.email ?? '—');
 };
 
 export const readCustomerHandle = (o: Order): string => {
@@ -70,8 +72,7 @@ export const readStatus = (o: Order): OrderStatus => o.status ?? 'pending';
 export const isCustomOrder = (o: Order): boolean =>
   o.type === 'bespoke' || Boolean(o.bespoke_design) || Boolean(o.bespoke_quote);
 
-export const readQuoteId = (o: Order): string =>
-  o.bespoke_quote ?? o._id;
+export const readQuoteId = (o: Order): string => o.bespoke_quote ?? o._id;
 
 // ──────────────── Product image + title (bespoke-aware) ────────────────
 
@@ -147,7 +148,8 @@ export const readOrderItemImages = (o: Order, max = 3): string[] => {
   if (imgs.length === 0) {
     const d = readBespokeDesign(o);
     if (d) {
-      const img = firstImageOf(d.design_images) ?? firstImageOf(d.reference_images);
+      const img =
+        firstImageOf(d.design_images) ?? firstImageOf(d.reference_images);
       if (img) imgs.push(img);
     }
   }

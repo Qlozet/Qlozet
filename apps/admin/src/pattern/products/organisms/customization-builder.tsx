@@ -12,10 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { FieldLabel } from '../atoms/field-label';
-import {
-  SelectStylesModal,
-  type SelectedStyle,
-} from './select-styles-modal';
+import { SelectStylesModal, type SelectedStyle } from './select-styles-modal';
 import { cn } from '@/lib/utils';
 
 export interface CustomComponentItem {
@@ -227,7 +224,11 @@ export const CustomizationBuilder = ({
     ]);
   };
 
-  const removeItem = (sectionKey: string, subKey: string | undefined, itemId: string) =>
+  const removeItem = (
+    sectionKey: string,
+    subKey: string | undefined,
+    itemId: string
+  ) =>
     updateItems(sectionKey, subKey, (items) =>
       items.filter((it) => it.id !== itemId)
     );
@@ -242,8 +243,7 @@ export const CustomizationBuilder = ({
       items.map((it) => (it.id === itemId ? { ...it, price } : it))
     );
 
-  const editHotspots = () =>
-    toast.info('Hotspot editor is coming soon.');
+  const editHotspots = () => toast.info('Hotspot editor is coming soon.');
 
   const addComponentSection = () =>
     onChange([
@@ -289,7 +289,11 @@ const Section = ({
 }: {
   section: CustomSection;
   onAddItem: (sectionKey: string, subKey?: string) => void;
-  onRemoveItem: (sectionKey: string, subKey: string | undefined, itemId: string) => void;
+  onRemoveItem: (
+    sectionKey: string,
+    subKey: string | undefined,
+    itemId: string
+  ) => void;
   onPriceChange: (
     sectionKey: string,
     subKey: string | undefined,

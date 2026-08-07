@@ -28,7 +28,7 @@ export const RolesGrid = ({
     return (
       <div className={GRID_CLASS}>
         {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton key={i} className='h-44 w-full rounded-2xl' />
+          <Skeleton key={i} className="h-44 w-full rounded-2xl" />
         ))}
       </div>
     );
@@ -36,9 +36,9 @@ export const RolesGrid = ({
 
   if (isError) {
     return (
-      <div className='flex h-64 flex-col items-center justify-center gap-2 text-center'>
-        <Loader2 className='size-6 text-muted-foreground' />
-        <p className='text-sm text-muted-foreground'>
+      <div className="flex h-64 flex-col items-center justify-center gap-2 text-center">
+        <Loader2 className="size-6 text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">
           Couldn&apos;t load roles. Please try again.
         </p>
       </div>
@@ -47,8 +47,8 @@ export const RolesGrid = ({
 
   if (roles.length === 0) {
     return (
-      <div className='flex h-64 items-center justify-center'>
-        <p className='text-sm text-muted-foreground'>No roles yet.</p>
+      <div className="flex h-64 items-center justify-center">
+        <p className="text-sm text-muted-foreground">No roles yet.</p>
       </div>
     );
   }

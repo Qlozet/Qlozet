@@ -150,7 +150,9 @@ export const collectionsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // POST /collections/{collectionId}/include/{productId} — manual include
-    includeProduct: builder.mutation<
+    // Named for the resource: `includeProduct` collided with the identically
+    // named discounts endpoint, which points at a different URL entirely.
+    includeProductInCollection: builder.mutation<
       ApiResponse<unknown>,
       { collectionId: string; productId: string }
     >({
@@ -162,7 +164,7 @@ export const collectionsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // POST /collections/{collectionId}/exclude/{productId} — manual exclude
-    excludeProduct: builder.mutation<
+    excludeProductFromCollection: builder.mutation<
       ApiResponse<unknown>,
       { collectionId: string; productId: string }
     >({
@@ -185,6 +187,6 @@ export const {
   useCreateCollectionMutation,
   useUpdateCollectionMutation,
   useDeleteCollectionMutation,
-  useIncludeProductMutation,
-  useExcludeProductMutation,
+  useIncludeProductInCollectionMutation,
+  useExcludeProductFromCollectionMutation,
 } = collectionsApiSlice;

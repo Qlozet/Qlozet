@@ -432,26 +432,30 @@ export const productsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Create clothing product
-    createClothing: builder.mutation<CreateClothingResponse, CreateClothingDto>({
-      query: (clothingData) => ({
-        url: '/products/clothing',
-        method: 'POST',
-        body: clothingData,
-      }),
-      invalidatesTags: ['Products'],
-    }),
+    createClothing: builder.mutation<CreateClothingResponse, CreateClothingDto>(
+      {
+        query: (clothingData) => ({
+          url: '/products/clothing',
+          method: 'POST',
+          body: clothingData,
+        }),
+        invalidatesTags: ['Products'],
+      }
+    ),
 
     // ---- Reconciled Qlozet "Products" endpoints ----
 
     // POST /products/fabric — create a fabric product
-    createFabric: builder.mutation<CreateClothingResponse, CreateFabricRequest>({
-      query: (fabricData) => ({
-        url: '/products/fabric',
-        method: 'POST',
-        body: fabricData,
-      }),
-      invalidatesTags: ['Products'],
-    }),
+    createFabric: builder.mutation<CreateClothingResponse, CreateFabricRequest>(
+      {
+        query: (fabricData) => ({
+          url: '/products/fabric',
+          method: 'POST',
+          body: fabricData,
+        }),
+        invalidatesTags: ['Products'],
+      }
+    ),
 
     // GET /products/by-vendor — products owned by the current vendor
     getProductsByVendor: builder.query<
@@ -466,7 +470,10 @@ export const productsApiSlice = baseAPI.injectEndpoints({
           }
         });
         const qs = searchParams.toString();
-        return { url: `/products/by-vendor${qs ? `?${qs}` : ''}`, method: 'GET' };
+        return {
+          url: `/products/by-vendor${qs ? `?${qs}` : ''}`,
+          method: 'GET',
+        };
       },
       transformResponse: (response: any) => {
         if (response?.data?.data) {
@@ -475,13 +482,13 @@ export const productsApiSlice = baseAPI.injectEndpoints({
             if (inner) {
               let variants: any[] = [];
               if (item.kind === 'clothing' && inner.color_variants) {
-                variants = inner.color_variants.flatMap((cv: any) => 
+                variants = inner.color_variants.flatMap((cv: any) =>
                   (cv.variants || []).map((v: any) => ({
                     _id: v._id,
                     size: v.size,
                     color: cv.name,
                     additionalPrice: v.price || 0,
-                    stock: v.stock || 0
+                    stock: v.stock || 0,
                   }))
                 );
               } else if (inner.variants) {
@@ -490,11 +497,14 @@ export const productsApiSlice = baseAPI.injectEndpoints({
                   size: v.size,
                   color: v.color?.name,
                   additionalPrice: v.price || 0,
-                  stock: v.stock || 0
+                  stock: v.stock || 0,
                 }));
               }
 
-              const stock = variants.reduce((acc, v) => acc + (v.stock || 0), 0);
+              const stock = variants.reduce(
+                (acc, v) => acc + (v.stock || 0),
+                0
+              );
 
               return {
                 ...item,
@@ -505,11 +515,12 @@ export const productsApiSlice = baseAPI.injectEndpoints({
                 status: item.status,
                 category: inner.taxonomy?.categories?.[0] || '',
                 tags: inner.taxonomy?.attributes || [],
-                images: inner.images?.map((img: any) => {
-                  const url = typeof img === 'string' ? img : img.url;
-                  return url ? url.replace(/^http:\/\//i, 'https://') : url;
-                }) || [],
-                variants
+                images:
+                  inner.images?.map((img: any) => {
+                    const url = typeof img === 'string' ? img : img.url;
+                    return url ? url.replace(/^http:\/\//i, 'https://') : url;
+                  }) || [],
+                variants,
               };
             }
             return item;
@@ -568,7 +579,12 @@ export const productsApiSlice = baseAPI.injectEndpoints({
     // PATCH /products/{product_id}/accessories/{accessoryId}/variants
     updateAccessoryVariantStock: builder.mutation<
       any,
-      { productId: string; accessoryId: string; variant_id: string; new_stock: number }
+      {
+        productId: string;
+        accessoryId: string;
+        variant_id: string;
+        new_stock: number;
+      }
     >({
       query: ({ productId, accessoryId, variant_id, new_stock }) => ({
         url: `/products/${productId}/accessories/${accessoryId}/variants`,

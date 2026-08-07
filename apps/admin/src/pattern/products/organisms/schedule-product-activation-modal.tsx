@@ -11,7 +11,11 @@ import { getProductName } from '@/lib/products';
 
 interface ScheduleProductActivationModalProps {
   product?: Product;
-  onSchedule?: (args: { product?: Product; date: string; time: string }) => void;
+  onSchedule?: (args: {
+    product?: Product;
+    date: string;
+    time: string;
+  }) => void;
 }
 
 export const ScheduleProductActivationModal =
@@ -74,7 +78,9 @@ export const ScheduleProductActivationModal =
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">Date</label>
+                <label className="text-sm font-medium text-gray-700">
+                  Date
+                </label>
                 <div className="relative">
                   <Input
                     type="date"
@@ -87,7 +93,9 @@ export const ScheduleProductActivationModal =
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">Time</label>
+                <label className="text-sm font-medium text-gray-700">
+                  Time
+                </label>
                 <div className="relative">
                   <Input
                     type="time"

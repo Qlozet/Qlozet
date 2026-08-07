@@ -16,12 +16,12 @@ const Category = () => {
   };
   return (
     <div>
-      <div className='flex items-center justify-end mb-4'>
+      <div className="flex items-center justify-end mb-4">
         <Button
-          children='Request new category'
-          btnSize='small'
-          minWidth='min-w-[14rem]'
-          variant='primary'
+          children="Request new category"
+          btnSize="small"
+          minWidth="min-w-[14rem]"
+          variant="primary"
           clickHandler={() => {
             setShowAddModal(true);
           }}

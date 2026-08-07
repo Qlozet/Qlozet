@@ -92,12 +92,12 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
 
   const getSortIcon = (field: keyof Product) => {
     if (currentSortField !== field) {
-      return <ChevronsUpDown className='ml-2 h-4 w-4' />;
+      return <ChevronsUpDown className="ml-2 h-4 w-4" />;
     }
     return currentSortDirection === 'asc' ? (
-      <ChevronUp className='ml-2 h-4 w-4' />
+      <ChevronUp className="ml-2 h-4 w-4" />
     ) : (
-      <ChevronDown className='ml-2 h-4 w-4' />
+      <ChevronDown className="ml-2 h-4 w-4" />
     );
   };
 
@@ -112,13 +112,13 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
 
   if (isLoading) {
     return (
-      <div className='bg-white rounded-lg shadow overflow-hidden'>
-        <div className='animate-pulse'>
-          <div className='h-12 bg-gray-100 border-b' />
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="animate-pulse">
+          <div className="h-12 bg-gray-100 border-b" />
           {[...Array(5)]?.map((_, index) => (
             <div
               key={index}
-              className='h-20 bg-gray-50 border-b border-gray-100'
+              className="h-20 bg-gray-50 border-b border-gray-100"
             />
           ))}
         </div>
@@ -128,9 +128,9 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
 
   if (products?.length === 0) {
     return (
-      <div className='bg-white rounded-lg shadow p-12 text-center'>
-        <p className='text-gray-500 text-lg'>No products found</p>
-        <p className='text-gray-400 text-sm mt-2'>
+      <div className="bg-white rounded-lg shadow p-12 text-center">
+        <p className="text-gray-500 text-lg">No products found</p>
+        <p className="text-gray-400 text-sm mt-2">
           Try adjusting your search or filter criteria
         </p>
       </div>
@@ -138,86 +138,86 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
   }
 
   return (
-    <div className='bg-white rounded-lg shadow overflow-hidden'>
+    <div className="bg-white rounded-lg shadow overflow-hidden">
       <Table>
-        <TableHeader className='bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]'>
+        <TableHeader className="bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]">
           <TableRow>
             {showSelection && (
-              <TableHead className='w-12'>
+              <TableHead className="w-12">
                 <input
-                  type='checkbox'
+                  type="checkbox"
                   checked={allSelected}
                   ref={(el) => {
                     if (el) el.indeterminate = someSelected;
                   }}
                   onChange={handleSelectAll}
-                  className='h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded'
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
               </TableHead>
             )}
 
-            <TableHead className='dark:text-white'>
+            <TableHead className="dark:text-white">
               <Button
-                variant='ghost'
+                variant="ghost"
                 onClick={() => handleSort('name')}
-                className='h-auto p-0 font-medium text-left justify-start hover:bg-transparent dark:text-white'
+                className="h-auto p-0 font-medium text-left justify-start hover:bg-transparent dark:text-white"
               >
                 Product
                 {getSortIcon('name')}
               </Button>
             </TableHead>
 
-            <TableHead className='dark:text-white'>
+            <TableHead className="dark:text-white">
               <Button
-                variant='ghost'
+                variant="ghost"
                 onClick={() => handleSort('price')}
-                className='h-auto p-0 font-medium text-left justify-start hover:bg-transparent dark:text-white'
+                className="h-auto p-0 font-medium text-left justify-start hover:bg-transparent dark:text-white"
               >
                 Price
                 {getSortIcon('price')}
               </Button>
             </TableHead>
 
-            <TableHead className='dark:text-white'>
+            <TableHead className="dark:text-white">
               <Button
-                variant='ghost'
+                variant="ghost"
                 onClick={() => handleSort('stock')}
-                className='h-auto p-0 font-medium text-left justify-start hover:bg-transparent dark:text-white'
+                className="h-auto p-0 font-medium text-left justify-start hover:bg-transparent dark:text-white"
               >
                 Stock
                 {getSortIcon('stock')}
               </Button>
             </TableHead>
 
-            <TableHead className='dark:text-white'>
+            <TableHead className="dark:text-white">
               <Button
-                variant='ghost'
+                variant="ghost"
                 onClick={() => handleSort('status')}
-                className='h-auto p-0 font-medium text-left justify-start hover:bg-transparent dark:text-white'
+                className="h-auto p-0 font-medium text-left justify-start hover:bg-transparent dark:text-white"
               >
                 Status
                 {getSortIcon('status')}
               </Button>
             </TableHead>
 
-            <TableHead className='dark:text-white'>Tags</TableHead>
+            <TableHead className="dark:text-white">Tags</TableHead>
 
-            <TableHead className='dark:text-white'>Variants</TableHead>
+            <TableHead className="dark:text-white">Variants</TableHead>
 
-            <TableHead className='dark:text-white'>
+            <TableHead className="dark:text-white">
               <Button
-                variant='ghost'
+                variant="ghost"
                 onClick={() => handleSort('createdAt')}
-                className='h-auto p-0 font-medium text-left justify-start hover:bg-transparent dark:text-white'
+                className="h-auto p-0 font-medium text-left justify-start hover:bg-transparent dark:text-white"
               >
                 Created
                 {getSortIcon('createdAt')}
               </Button>
             </TableHead>
 
-            <TableHead className='dark:text-white'>Active</TableHead>
+            <TableHead className="dark:text-white">Active</TableHead>
 
-            <TableHead className='dark:text-white'>Actions</TableHead>
+            <TableHead className="dark:text-white">Actions</TableHead>
           </TableRow>
         </TableHeader>
 

@@ -1,66 +1,66 @@
-"use client"
+'use client';
 
-import type React from "react"
-import { useCallback } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
+import type React from 'react';
+import { useCallback } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 interface INavLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
-    href: string
-    exact?: boolean
-    isActive?: boolean
-    children: React.ReactNode
-    className?: string
-    innerRef?: React.LegacyRef<HTMLAnchorElement>
-    onToggle?: () => void
+  href: string;
+  exact?: boolean;
+  isActive?: boolean;
+  children: React.ReactNode;
+  className?: string;
+  innerRef?: React.LegacyRef<HTMLAnchorElement>;
+  onToggle?: () => void;
 }
 
 // The nav icons draw with `currentColor`, so the icon shade is set on the link
 // rather than inside each SVG. Inactive icons stay lighter than the label
 // (NAV_ICON_INACTIVE), matching the admin app.
-const activeStyle = `font-semibold text-primary dark:text-white font-normal [&_svg]:text-primary dark:[&_svg]:text-white`
+const activeStyle = `font-semibold text-primary dark:text-white font-normal [&_svg]:text-primary dark:[&_svg]:text-white`;
 
 const NavLink = ({
-    href,
-    exact,
-    children,
-    isActive = false,
-    innerRef,
-    className,
-    onToggle,
-    ...props
+  href,
+  exact,
+  children,
+  isActive = false,
+  innerRef,
+  className,
+  onToggle,
+  ...props
 }: INavLinkProps) => {
-    const pathname = usePathname()
+  const pathname = usePathname();
 
-    const handleToggle = () => {
-        if (onToggle) {
-            onToggle()
-        }
+  const handleToggle = () => {
+    if (onToggle) {
+      onToggle();
     }
+  };
 
-    const isActiveState = useCallback(() => {
-        const activeStatus = exact ? pathname === href : pathname.startsWith(href)
-        return activeStatus
-    }, [exact, href, pathname])
+  const isActiveState = useCallback(() => {
+    const activeStatus = exact ? pathname === href : pathname.startsWith(href);
+    return activeStatus;
+  }, [exact, href, pathname]);
 
-    return (
-        <>
-            <Link
-                href={href}
-                className={cn(
-                    "w-fit 2xl:w-full flex items-center gap-3 px-2 2xl:px-4 py-2 2xl:py-3 text-grey4 dark:text-gray-400 [&_svg]:text-[#ACB5BD] hover:text-secondary dark:hover:text-white hover:[&_svg]:text-secondary dark:hover:[&_svg]:text-white transition-colors text-sm font-normal duration-300",
-                    (isActiveState() || isActive) && activeStyle,
-                    className,
-                )}
-                onClick={handleToggle}
-                ref={innerRef}
-                {...props}
-            >
-                {children}
-            </Link>
-        </>
-    )
-}
+  return (
+    <>
+      <Link
+        href={href}
+        className={cn(
+          'w-fit 2xl:w-full flex items-center gap-3 px-2 2xl:px-4 py-2 2xl:py-3 text-grey4 dark:text-gray-400 [&_svg]:text-[#ACB5BD] hover:text-secondary dark:hover:text-white hover:[&_svg]:text-secondary dark:hover:[&_svg]:text-white transition-colors text-sm font-normal duration-300',
+          (isActiveState() || isActive) && activeStyle,
+          className
+        )}
+        onClick={handleToggle}
+        ref={innerRef}
+        {...props}
+      >
+        {children}
+      </Link>
+    </>
+  );
+};
 
-export default NavLink
+export default NavLink;

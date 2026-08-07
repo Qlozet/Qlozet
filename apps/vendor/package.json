@@ -6,11 +6,14 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
-    "lint:strict": "next lint --max-warnings 0",
+    "lint": "eslint . --cache --cache-location node_modules/.cache/eslint/",
+    "lint:fix": "eslint . --fix --cache --cache-location node_modules/.cache/eslint/",
+    "lint:strict": "eslint . --max-warnings 0",
     "type-check": "tsc --noEmit",
-    "check-all": "pnpm run type-check && pnpm run lint:strict"
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:changed": "vitest run --changed",
+    "check-all": "pnpm run type-check && pnpm run lint:strict && pnpm run test:run"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -98,20 +101,28 @@
     "@eslint/eslintrc": "^3",
     "@faker-js/faker": "^10.1.0",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.3",
     "@types/node": "^24.3.1",
     "@types/react": "^19.2.16",
     "@types/react-dom": "^19.2.3",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.50.0",
     "@typescript-eslint/parser": "^8.50.0",
+    "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.0.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "jsdom": "^26.1.0",
     "postcss": "^8",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.5",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.7"
   }
 }

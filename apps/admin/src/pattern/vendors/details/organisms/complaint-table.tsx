@@ -34,8 +34,7 @@ export const ComplaintTable = ({ businessId }: { businessId: string }) => {
   );
 
   const rows = data?.data?.data ?? [];
-  const totalCount =
-    data?.data?.totalCount ?? data?.data?.total ?? rows.length;
+  const totalCount = data?.data?.totalCount ?? data?.data?.total ?? rows.length;
   const pageCount = Math.max(Math.ceil(totalCount / pagination.pageSize), 1);
 
   return (

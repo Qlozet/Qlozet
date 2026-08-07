@@ -6,10 +6,7 @@ import { cn } from '@/lib/utils';
 import { useClickOutside } from '@/lib/hooks/useClickOutside';
 import { ORDER_STATUS_OPTIONS } from '@/lib/orders';
 
-const OPTIONS = [
-  { label: 'Filter By :', value: '' },
-  ...ORDER_STATUS_OPTIONS,
-];
+const OPTIONS = [{ label: 'Filter By :', value: '' }, ...ORDER_STATUS_OPTIONS];
 
 interface OrderStatusFilterProps {
   value: string;

@@ -34,9 +34,9 @@ const DetailRow = ({
   value: string | null;
 }) =>
   value === null ? null : (
-    <div className='flex items-center justify-between gap-4 text-left'>
-      <span className='text-xs text-grey3'>{label}</span>
-      <span className='text-xs font-medium text-grey-black'>{value}</span>
+    <div className="flex items-center justify-between gap-4 text-left">
+      <span className="text-xs text-grey3">{label}</span>
+      <span className="text-xs font-medium text-grey-black">{value}</span>
     </div>
   );
 
@@ -59,8 +59,7 @@ export const SupportSuccess = ({
   const loading = Boolean(id) && (isLoading || isFetching);
 
   const rawRef = detail ? readField(detail, 'reference', 'ticket_id') : '—';
-  const reference =
-    rawRef !== '—' ? withHash(rawRef) : id ? withHash(id) : '';
+  const reference = rawRef !== '—' ? withHash(rawRef) : id ? withHash(id) : '';
 
   const rawIssue = detail ? readField(detail, 'issue_type', 'category') : '—';
   const issue = rawIssue === '—' ? null : issueTypeLabel(rawIssue);
@@ -73,45 +72,49 @@ export const SupportSuccess = ({
       : null;
 
   return (
-    <div className='mx-auto mt-6 w-full max-w-137 rounded-2xl bg-white p-8 text-center shadow-sm'>
-      <div className='flex justify-center'>
-        <span className='flex size-16 items-center justify-center rounded-full border-success text-success'>
-          <CheckCircleIcon className='size-15' strokeWidth={1.5} color='#056921' />
+    <div className="mx-auto mt-6 w-full max-w-137 rounded-2xl bg-white p-8 text-center shadow-sm">
+      <div className="flex justify-center">
+        <span className="flex size-16 items-center justify-center rounded-full border-success text-success">
+          <CheckCircleIcon
+            className="size-15"
+            strokeWidth={1.5}
+            color="#056921"
+          />
         </span>
       </div>
 
-      <h2 className='mt-5 text-lg font-semibold text-grey-black'>
+      <h2 className="mt-5 text-lg font-semibold text-grey-black">
         Support Ticket Submitted
       </h2>
-      <p className='mt-2 text-sm text-grey3'>
+      <p className="mt-2 text-sm text-grey3">
         {reference
           ? `Your support ticket has been received and has been assigned ticket ${reference}`
           : 'Your support ticket has been received.'}
       </p>
 
-      <div className='bg-[#F8F8F8F8] px-4 py-5 mt-6 rounded-xl'>
+      <div className="bg-[#F8F8F8F8] px-4 py-5 mt-6 rounded-xl">
         {loading ? (
-          <div className='space-y-3'>
-            <Skeleton className='mx-auto h-5 w-44' />
-            <Skeleton className='h-4 w-full' />
-            <Skeleton className='h-4 w-2/3' />
+          <div className="space-y-3">
+            <Skeleton className="mx-auto h-5 w-44" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-2/3" />
           </div>
         ) : (
           <>
-            <div className='flex max-md:flex-col md:flex-row items-center justify-center gap-2'>
+            <div className="flex max-md:flex-col md:flex-row items-center justify-center gap-2">
               {reference && (
-                <div className='flex max-md:flex-col md:flex-row items-center justify-center gap-2 text-sm text-grey-black text-wrap'>
-                  <Ticket className='size-6' />
-                    <p className="font-semibold">
+                <div className="flex max-md:flex-col md:flex-row items-center justify-center gap-2 text-sm text-grey-black text-wrap">
+                  <Ticket className="size-6" />
+                  <p className="font-semibold">
                     Ticket ID: <span className="font-medium">{reference}</span>
-                    </p>
+                  </p>
                 </div>
               )}
               {status && (
                 <Badge
                   variant={statusVariant(status)}
-                  shape='square'
-                  className='flex h-[26px] w-fit items-center px-3 text-xs font-normal'
+                  shape="square"
+                  className="flex h-[26px] w-fit items-center px-3 text-xs font-normal"
                 >
                   {statusLabel(status)}
                 </Badge>
@@ -119,14 +122,14 @@ export const SupportSuccess = ({
             </div>
 
             {(issue || submitted) && (
-              <div className='mt-4 space-y-3 border-t border-black/5 pt-4'>
-                <DetailRow label='Issue type' value={issue} />
-                <DetailRow label='Submitted' value={submitted} />
+              <div className="mt-4 space-y-3 border-t border-black/5 pt-4">
+                <DetailRow label="Issue type" value={issue} />
+                <DetailRow label="Submitted" value={submitted} />
               </div>
             )}
 
             {reference && (
-              <p className='mx-auto mt-5 max-w-85 text-xs text-grey3'>
+              <p className="mx-auto mt-5 max-w-85 text-xs text-grey3">
                 You can reference this ID in any follow up conversation
               </p>
             )}
@@ -134,15 +137,15 @@ export const SupportSuccess = ({
         )}
       </div>
 
-      <div className='mt-6 space-y-3'>
-        <Button type='button' onClick={onSubmitAnother} className='w-full'>
+      <div className="mt-6 space-y-3">
+        <Button type="button" onClick={onSubmitAnother} className="w-full">
           Submit Another Request
         </Button>
         <Button
-          type='button'
-          variant='outline'
+          type="button"
+          variant="outline"
           onClick={onViewTickets}
-          className='w-full'
+          className="w-full"
         >
           View My Tickets
         </Button>

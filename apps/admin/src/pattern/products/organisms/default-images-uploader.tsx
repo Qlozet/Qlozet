@@ -83,7 +83,9 @@ export const DefaultImagesUploader = ({
             className="flex flex-col items-center gap-1.5 text-muted-foreground hover:text-foreground"
           >
             <Upload className="size-5" />
-            <span className="text-sm font-medium text-foreground">Add image</span>
+            <span className="text-sm font-medium text-foreground">
+              Add image
+            </span>
           </button>
           <button
             type="button"

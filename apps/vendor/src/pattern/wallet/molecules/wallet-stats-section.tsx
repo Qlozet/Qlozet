@@ -67,9 +67,9 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
   const isOwner = hasHydrated && activeBusiness?.role === 'owner';
 
   return (
-    <div className='flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between'>
+    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       {/* Metric cards */}
-      <div className='grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:min-w-[850px]'>
+      <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:min-w-[850px]">
         {isLoading ? (
           <>
             <StatsCardSkeleton />
@@ -78,50 +78,55 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
         ) : (
           <>
             <MetricCard
-              title='Wallet Balance'
+              title="Wallet Balance"
               value={formatBalance(balance)}
               viewAllLink={historyHref}
-              viewAllLabel='History'
+              viewAllLabel="History"
               icon={
-                <CardIcon bg='bg-[#57CAEB]'>
-                  <Wallet className='size-6' />
+                <CardIcon bg="bg-[#57CAEB]">
+                  <Wallet className="size-6" />
                 </CardIcon>
               }
             />
             {/* Pending (held) earnings - funds not yet released to the
                 available balance (GET /business, pending_balance). */}
             <MetricCard
-              title='Pending Earnings'
+              title="Pending Earnings"
               value={formatBalance(pendingBalance)}
               icon={
-                <CardIcon bg='bg-[#5DDAB4]'>
-                  <Hourglass className='size-6' />
+                <CardIcon bg="bg-[#5DDAB4]">
+                  <Hourglass className="size-6" />
                 </CardIcon>
               }
             />
           </>
         )}
-        
+
         {isTokenLoading ? (
           <StatsCardSkeleton />
         ) : (
           <MetricCard
-            title='Token Balance'
-            value={typeof tokenBalance === 'number' ? tokenBalance.toLocaleString() : '—'}
+            title="Token Balance"
+            value={
+              typeof tokenBalance === 'number'
+                ? tokenBalance.toLocaleString()
+                : '—'
+            }
             icon={
-              <CardIcon bg='bg-[#EBB857]'>
-                <HandCoins className='size-6' /> {/* Reusing HandCoins or use another if needed, will use a similar one */}
+              <CardIcon bg="bg-[#EBB857]">
+                <HandCoins className="size-6" />{' '}
+                {/* Reusing HandCoins or use another if needed, will use a similar one */}
               </CardIcon>
             }
             actionButton={
               isOwner ? (
                 <Button
-                  variant='outline'
-                  size='sm'
+                  variant="outline"
+                  size="sm"
                   onClick={onPurchaseTokens}
-                  className='h-6 px-2.5 py-0 text-[11px] flex items-center gap-1.5 mt-0.5'
+                  className="h-6 px-2.5 py-0 text-[11px] flex items-center gap-1.5 mt-0.5"
                 >
-                  <Sparkles className='size-3' />
+                  <Sparkles className="size-3" />
                   Buy Tokens
                 </Button>
               ) : undefined
@@ -131,22 +136,22 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
       </div>
 
       {/* Actions */}
-      <div className='flex items-center gap-4 lg:pt-2'>
+      <div className="flex items-center gap-4 lg:pt-2">
         {isOwner && (
           <Button
-            type='button'
-            variant='outline'
+            type="button"
+            variant="outline"
             onClick={onWithdraw}
-            className='h-11 gap-2'
+            className="h-11 gap-2"
           >
             <LinearMoneySendIcon />
             Withdraw
           </Button>
         )}
         <Button
-          type='button'
+          type="button"
           onClick={onFundWallet}
-          className='bg-[#056921] text-white dark:text-white hover:bg-[#056921]/90 h-11 gap-2'
+          className="bg-[#056921] text-white dark:text-white hover:bg-[#056921]/90 h-11 gap-2"
         >
           <LinearReceiveMoneyIcon />
           Fund wallet

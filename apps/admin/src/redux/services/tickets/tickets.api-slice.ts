@@ -116,7 +116,10 @@ export const ticketsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Get all tickets assigned to a support team
-    getAssignedTickets: builder.query<ApiResponse<PaginatedData<Ticket>>, string>({
+    getAssignedTickets: builder.query<
+      ApiResponse<PaginatedData<Ticket>>,
+      string
+    >({
       query: (teamId) => ({
         url: `/admin/assigned/${teamId}`,
         method: 'GET',

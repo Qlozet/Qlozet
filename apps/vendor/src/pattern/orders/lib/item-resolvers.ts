@@ -14,9 +14,7 @@ import type {
   ClothingFabricDoc,
 } from '@/redux/services/orders/orders.api-slice';
 
-export const firstImg = (
-  images?: (string | ProductImage)[]
-): string | null => {
+export const firstImg = (images?: (string | ProductImage)[]): string | null => {
   if (!images?.length) return null;
   const first = images[0];
   if (typeof first === 'string') return first;

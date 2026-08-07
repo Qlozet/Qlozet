@@ -83,7 +83,9 @@ export const getProductImage = (product: Product): string | undefined =>
   product.images?.[0]?.url;
 
 export const formatProductPrice = (product: Product): string =>
-  typeof product.price === 'number' ? formatCurrency(product.price, 'NGN') : '—';
+  typeof product.price === 'number'
+    ? formatCurrency(product.price, 'NGN')
+    : '—';
 
 export interface ProductQuantityInfo {
   stock: number;

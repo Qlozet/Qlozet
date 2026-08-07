@@ -17,8 +17,6 @@ import Image from 'next/image';
 import DasboardNavWithOutSearch from '@/components/DashboardNavBarWithoutSearch';
 import MobileSideBar from '@/components/MobileSideBar';
 import SideBar from '@/components/SideBar';
-import Modal from '@/components/Modal';
-import Logout from '@/components/Logout';
 
 import { useGetVendorProfileQuery } from '@/redux/services/vendor/vendor.api-slice';
 import { setUserData } from '@/lib/utils';
@@ -96,7 +94,7 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
   useEffect(() => {
     try {
       setKycSnoozedUntil(
-        Number(localStorage.getItem('qlozet_kyc_snooze_until')) || 0,
+        Number(localStorage.getItem('qlozet_kyc_snooze_until')) || 0
       );
     } catch {
       /* storage unavailable — no snooze */
@@ -122,7 +120,6 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
     setKycSnoozedUntil(until);
   };
 
-
   useEffect(() => {
     if (vendorProfileData?.data) {
       const apiData = vendorProfileData?.data;
@@ -133,15 +130,16 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
         averageRating: Number(apiData?.averageRating ?? 0),
         profit: Number(apiData?.profit ?? 0),
         items: Number(apiData?.items ?? 0),
-        ratings: typeof apiData?.ratings === 'object' && apiData?.ratings !== null
-          ? apiData.ratings
-          : {
-              excellent: 0,
-              good: 0,
-              average: 0,
-              belowAverage: 0,
-              poor: 0,
-            },
+        ratings:
+          typeof apiData?.ratings === 'object' && apiData?.ratings !== null
+            ? apiData.ratings
+            : {
+                excellent: 0,
+                good: 0,
+                average: 0,
+                belowAverage: 0,
+                poor: 0,
+              },
       };
 
       setUserDetails(details);
@@ -186,7 +184,10 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
   );
 
   const searchParams = useSearchParams();
-  const isEditing = !!searchParams.get('edit');
+  // Create pages signal edit mode inconsistently: add-product and collections
+  // use `?edit=`, discounts and size guides use `?id=`. Accept either, so the
+  // header doesn't say "Add …" while the form is editing an existing record.
+  const isEditing = !!searchParams.get('edit') || !!searchParams.get('id');
 
   // Memoized computed values
   const { addSearch, currentPage } = useMemo(() => {
@@ -201,13 +202,21 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
     let computedPageName = subPage || basePage;
 
     if (subPage === 'discounts') {
-      if (actionPage === 'create' && isEditing) computedPageName = 'Edit Discount';
+      if (actionPage === 'create' && isEditing)
+        computedPageName = 'Edit Discount';
       else if (actionPage === 'create') computedPageName = 'Add Discount';
       else if (actionPage === 'edit') computedPageName = 'Edit Discount';
     } else if (subPage === 'collections') {
-      if (actionPage === 'create' && isEditing) computedPageName = 'Edit Collection';
+      if (actionPage === 'create' && isEditing)
+        computedPageName = 'Edit Collection';
       else if (actionPage === 'create') computedPageName = 'Add Collection';
       else if (actionPage === 'edit') computedPageName = 'Edit Collection';
+    } else if (subPage === 'size-guides') {
+      if (actionPage === 'create' && isEditing)
+        computedPageName = 'Edit Size Guide';
+      else if (actionPage === 'create') computedPageName = 'Add Size Guide';
+      else if (actionPage === 'edit') computedPageName = 'Edit Size Guide';
+      else computedPageName = 'Size Guides';
     } else if (subPage === 'add-product') {
       computedPageName = isEditing ? 'Edit Product' : 'Add Product';
     } else if (basePage === 'support') {
@@ -235,16 +244,16 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
 
   if (loadingState.error) {
     return (
-      <div className='min-h-screen bg-gray-100 flex items-center justify-center'>
-        <div className='text-center max-w-md'>
-          <div className='text-red-500 text-xl mb-4'>⚠️</div>
-          <h2 className='text-xl font-semibold text-gray-900 mb-2'>
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <div className="text-red-500 text-xl mb-4">⚠️</div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
             Something went wrong
           </h2>
-          <p className='text-gray-600 mb-4'>{loadingState.error}</p>
+          <p className="text-gray-600 mb-4">{loadingState.error}</p>
           <button
             onClick={() => window.location.reload()}
-            className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors'
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
             Retry
           </button>
@@ -254,7 +263,7 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className='relative bg-background w-full flex h-screen'>
+    <div className="relative bg-background w-full flex h-screen">
       {/* Sidebar Components */}
       <Sidebar />
 
@@ -267,7 +276,7 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
       {/* Main Content Area */}
       <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Sticky Navigation Header */}
-        <header className='sticky top-0 bg-background w-full px-4 md:px-8 pt-4 md:pt-6'>
+        <header className="sticky top-0 bg-background w-full px-4 md:px-8 pt-4 md:pt-6">
           <DasboardNavWithOutSearch
             userDetails={userDetails}
             value={stateData.state}
@@ -280,14 +289,15 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
         </header>
 
         {/* Page Content */}
-        <main className="w-full overflow-auto pt-4 md:pt-6 px-4 md:px-8 pb-4 md:pb-8">{children}</main>
+        <main className="w-full overflow-auto pt-4 md:pt-6 px-4 md:px-8 pb-4 md:pb-8">
+          {children}
+        </main>
       </div>
 
       {/* KYC Completion Popup */}
       <If isTrue={showKycPopUp}>
         <CompleteKycPopover onDismiss={dismissKyc} />
       </If>
-
     </div>
   );
 };
@@ -301,4 +311,3 @@ const UserLayout: React.FC<UserLayoutProps> = ({ children }) => {
 };
 
 export default UserLayout;
-

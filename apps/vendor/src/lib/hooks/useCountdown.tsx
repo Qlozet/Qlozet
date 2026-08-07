@@ -1,13 +1,10 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import {
-    CountdownHelpers,
-    CountdownOption,
-} from "../types";
-import { useCounter } from "./useCounter";
-import { useBoolean } from "./useBoolean";
-import useInterval from "./useInterval";
+import { useCallback } from 'react';
+import { CountdownHelpers, CountdownOption } from '../types';
+import { useCounter } from './useCounter';
+import { useBoolean } from './useBoolean';
+import useInterval from './useInterval';
 
 /**
  *
@@ -20,81 +17,81 @@ import useInterval from "./useInterval";
  */
 
 export const useCountdown = (
-    countdownOption: CountdownOption
+  countdownOption: CountdownOption
 ): [number, CountdownHelpers] => {
-    /**
-     * Use to determine the the API call is a deprecated version.
-     */
-    let isDeprecated = false;
+  /**
+   * Use to determine the the API call is a deprecated version.
+   */
+  let isDeprecated = false;
 
-    let countStart,
-        intervalMs,
-        isIncrement: boolean | undefined,
-        countStop: number | undefined;
+  let countStart,
+    intervalMs,
+    isIncrement: boolean | undefined,
+    countStop: number | undefined;
 
-    if (countdownOption) {
-        countStart = countdownOption.countStart;
-        intervalMs = countdownOption.intervalMs;
-        countStop = countdownOption.countStop;
-        isIncrement = countdownOption.isIncrement;
+  if (countdownOption) {
+    countStart = countdownOption.countStart;
+    intervalMs = countdownOption.intervalMs;
+    countStop = countdownOption.countStop;
+    isIncrement = countdownOption.isIncrement;
+  }
+
+  // default values
+  intervalMs = intervalMs ?? 1000;
+  isIncrement = isIncrement ?? false;
+  countStop = countStop ?? 0;
+
+  const {
+    count,
+    increment,
+    decrement,
+    reset: resetCounter,
+  } = useCounter(countStart);
+
+  /**
+   * Note: used to control the useInterval
+   * running: If true, the interval is running
+   * start: Should set running true to trigger interval
+   * stop: Should set running false to remove interval
+   */
+  const {
+    value: isCountdownRunning,
+    setTrue: startCountdown,
+    setFalse: stopCountdown,
+  } = useBoolean(false);
+
+  /**
+   * Will set running false and reset the seconds to initial value
+   */
+  const resetCountdown = () => {
+    stopCountdown();
+    resetCounter();
+  };
+
+  const countdownCallback = useCallback(() => {
+    if (count === countStop) {
+      stopCountdown();
+      return;
     }
 
-    // default values
-    intervalMs = intervalMs ?? 1000;
-    isIncrement = isIncrement ?? false;
-    countStop = countStop ?? 0;
+    if (isIncrement) {
+      increment();
+    } else {
+      decrement();
+    }
+  }, [count, countStop, decrement, increment, isIncrement, stopCountdown]);
 
-    const {
-        count,
-        increment,
-        decrement,
-        reset: resetCounter,
-    } = useCounter(countStart);
+  useInterval({
+    callback: countdownCallback,
+    delay: isCountdownRunning ? intervalMs : null,
+  });
 
-    /**
-     * Note: used to control the useInterval
-     * running: If true, the interval is running
-     * start: Should set running true to trigger interval
-     * stop: Should set running false to remove interval
-     */
-    const {
-        value: isCountdownRunning,
-        setTrue: startCountdown,
-        setFalse: stopCountdown,
-    } = useBoolean(false);
-
-    /**
-     * Will set running false and reset the seconds to initial value
-     */
-    const resetCountdown = () => {
-        stopCountdown();
-        resetCounter();
-    };
-
-    const countdownCallback = useCallback(() => {
-        if (count === countStop) {
-            stopCountdown();
-            return;
-        }
-
-        if (isIncrement) {
-            increment();
-        } else {
-            decrement();
-        }
-    }, [count, countStop, decrement, increment, isIncrement, stopCountdown]);
-
-    useInterval({
-        callback: countdownCallback,
-        delay: isCountdownRunning ? intervalMs : null,
-    });
-
-    return [
-        count,
-        {
-            start: startCountdown,
-            stop: stopCountdown,
-            reset: resetCountdown,
-        } as CountdownHelpers,
-    ];
+  return [
+    count,
+    {
+      start: startCountdown,
+      stop: stopCountdown,
+      reset: resetCountdown,
+    } as CountdownHelpers,
+  ];
 };

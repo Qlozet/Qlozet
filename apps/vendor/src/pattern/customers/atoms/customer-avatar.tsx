@@ -49,7 +49,7 @@ export const CustomerAvatar: React.FC<CustomerAvatarProps> = ({
           alt={getCustomerName(customer)}
           fill
           sizes={px}
-          className='object-cover'
+          className="object-cover"
           // Customer pictures live on whichever host the backend stored them
           // on. The image optimizer rejects any host missing from
           // next.config's remotePatterns — and silently renders nothing — so

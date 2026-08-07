@@ -11,7 +11,12 @@ const FALLBACK: DonutDatum[] = [
   { name: 'Accessories', value: 20 },
 ];
 
-const COLORS = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)'];
+const COLORS = [
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)',
+];
 
 interface OrdersByProductTypeChartProps {
   data?: DonutDatum[];
@@ -22,7 +27,7 @@ export const OrdersByProductTypeChart = ({
 }: OrdersByProductTypeChartProps) => {
   return (
     <DonutChart
-      title='Sales by product type'
+      title="Sales by product type"
       data={data?.length ? data : FALLBACK}
       colors={COLORS}
     />

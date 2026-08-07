@@ -106,22 +106,67 @@ export interface TransactionBadge {
 export const transactionBadge = (status: string): TransactionBadge => {
   const s = status.toLowerCase().replace(/[\s-]+/g, '_');
   const map: Record<string, TransactionBadge> = {
-    pending: { label: 'Pending', className: 'bg-[#FEF6E7] dark:bg-[#DD900D]/10 text-[#DD900D] dark:text-[#FBBF24]' },
-    processing: { label: 'Pending', className: 'bg-[#FEF6E7] dark:bg-[#DD900D]/10 text-[#DD900D] dark:text-[#FBBF24]' },
-    in_review: { label: 'Pending', className: 'bg-[#FEF6E7] dark:bg-[#DD900D]/10 text-[#DD900D] dark:text-[#FBBF24]' },
-    successful: { label: 'Successful', className: 'bg-[#E7F6EC] dark:bg-[#0F973D]/10 text-[#0F973D] dark:text-[#4ADE80]' },
-    success: { label: 'Successful', className: 'bg-[#E7F6EC] dark:bg-[#0F973D]/10 text-[#0F973D] dark:text-[#4ADE80]' },
-    completed: { label: 'Successful', className: 'bg-[#E7F6EC] dark:bg-[#0F973D]/10 text-[#0F973D] dark:text-[#4ADE80]' },
-    failed: { label: 'Failed', className: 'bg-[#FBEAE9] dark:bg-[#D42620]/10 text-[#D42620] dark:text-[#F87171]' },
-    cancelled: { label: 'Failed', className: 'bg-[#FBEAE9] dark:bg-[#D42620]/10 text-[#D42620] dark:text-[#F87171]' },
-    refund: { label: 'Refund', className: 'bg-[#F4EBFF] dark:bg-[#7E22CE]/10 text-[#7E22CE] dark:text-[#C084FC]' },
-    refunded: { label: 'Refund', className: 'bg-[#F4EBFF] dark:bg-[#7E22CE]/10 text-[#7E22CE] dark:text-[#C084FC]' },
-    reversed: { label: 'Refund', className: 'bg-[#F4EBFF] dark:bg-[#7E22CE]/10 text-[#7E22CE] dark:text-[#C084FC]' },
+    pending: {
+      label: 'Pending',
+      className:
+        'bg-[#FEF6E7] dark:bg-[#DD900D]/10 text-[#DD900D] dark:text-[#FBBF24]',
+    },
+    processing: {
+      label: 'Pending',
+      className:
+        'bg-[#FEF6E7] dark:bg-[#DD900D]/10 text-[#DD900D] dark:text-[#FBBF24]',
+    },
+    in_review: {
+      label: 'Pending',
+      className:
+        'bg-[#FEF6E7] dark:bg-[#DD900D]/10 text-[#DD900D] dark:text-[#FBBF24]',
+    },
+    successful: {
+      label: 'Successful',
+      className:
+        'bg-[#E7F6EC] dark:bg-[#0F973D]/10 text-[#0F973D] dark:text-[#4ADE80]',
+    },
+    success: {
+      label: 'Successful',
+      className:
+        'bg-[#E7F6EC] dark:bg-[#0F973D]/10 text-[#0F973D] dark:text-[#4ADE80]',
+    },
+    completed: {
+      label: 'Successful',
+      className:
+        'bg-[#E7F6EC] dark:bg-[#0F973D]/10 text-[#0F973D] dark:text-[#4ADE80]',
+    },
+    failed: {
+      label: 'Failed',
+      className:
+        'bg-[#FBEAE9] dark:bg-[#D42620]/10 text-[#D42620] dark:text-[#F87171]',
+    },
+    cancelled: {
+      label: 'Failed',
+      className:
+        'bg-[#FBEAE9] dark:bg-[#D42620]/10 text-[#D42620] dark:text-[#F87171]',
+    },
+    refund: {
+      label: 'Refund',
+      className:
+        'bg-[#F4EBFF] dark:bg-[#7E22CE]/10 text-[#7E22CE] dark:text-[#C084FC]',
+    },
+    refunded: {
+      label: 'Refund',
+      className:
+        'bg-[#F4EBFF] dark:bg-[#7E22CE]/10 text-[#7E22CE] dark:text-[#C084FC]',
+    },
+    reversed: {
+      label: 'Refund',
+      className:
+        'bg-[#F4EBFF] dark:bg-[#7E22CE]/10 text-[#7E22CE] dark:text-[#C084FC]',
+    },
   };
   return (
     map[s] ?? {
       label: status.charAt(0).toUpperCase() + status.slice(1),
-      className: 'bg-[#EAECF0] dark:bg-gray-800 text-[#475467] dark:text-gray-300',
+      className:
+        'bg-[#EAECF0] dark:bg-gray-800 text-[#475467] dark:text-gray-300',
     }
   );
 };
@@ -133,21 +178,53 @@ export const transactionTypeBadge = (type: string): TransactionBadge => {
   const t = type.toLowerCase().replace(/[\s-]+/g, '_');
   const map: Record<string, TransactionBadge> = {
     // Earnings released into the wallet — money in.
-    credit: { label: 'Credit', className: 'bg-[#E7F6EC] dark:bg-[#0F973D]/10 text-[#0F973D] dark:text-[#4ADE80]' },
-    earning: { label: 'Credit', className: 'bg-[#E7F6EC] dark:bg-[#0F973D]/10 text-[#0F973D] dark:text-[#4ADE80]' },
+    credit: {
+      label: 'Credit',
+      className:
+        'bg-[#E7F6EC] dark:bg-[#0F973D]/10 text-[#0F973D] dark:text-[#4ADE80]',
+    },
+    earning: {
+      label: 'Credit',
+      className:
+        'bg-[#E7F6EC] dark:bg-[#0F973D]/10 text-[#0F973D] dark:text-[#4ADE80]',
+    },
     // Wallet top-up — money in, but distinct from earnings.
-    fund: { label: 'Funding', className: 'bg-[#E3EFFC] dark:bg-[#1671D9]/10 text-[#1671D9] dark:text-[#60A5FA]' },
-    funding: { label: 'Funding', className: 'bg-[#E3EFFC] dark:bg-[#1671D9]/10 text-[#1671D9] dark:text-[#60A5FA]' },
+    fund: {
+      label: 'Funding',
+      className:
+        'bg-[#E3EFFC] dark:bg-[#1671D9]/10 text-[#1671D9] dark:text-[#60A5FA]',
+    },
+    funding: {
+      label: 'Funding',
+      className:
+        'bg-[#E3EFFC] dark:bg-[#1671D9]/10 text-[#1671D9] dark:text-[#60A5FA]',
+    },
     // Payout / withdrawal — money out.
-    debit: { label: 'Debit', className: 'bg-[#FBEAE9] dark:bg-[#D42620]/10 text-[#D42620] dark:text-[#F87171]' },
+    debit: {
+      label: 'Debit',
+      className:
+        'bg-[#FBEAE9] dark:bg-[#D42620]/10 text-[#D42620] dark:text-[#F87171]',
+    },
     // Reversed earning — money out, flagged distinctly.
-    refund: { label: 'Refund', className: 'bg-[#F4EBFF] dark:bg-[#7E22CE]/10 text-[#7E22CE] dark:text-[#C084FC]' },
-    reversed: { label: 'Refund', className: 'bg-[#F4EBFF] dark:bg-[#7E22CE]/10 text-[#7E22CE] dark:text-[#C084FC]' },
+    refund: {
+      label: 'Refund',
+      className:
+        'bg-[#F4EBFF] dark:bg-[#7E22CE]/10 text-[#7E22CE] dark:text-[#C084FC]',
+    },
+    reversed: {
+      label: 'Refund',
+      className:
+        'bg-[#F4EBFF] dark:bg-[#7E22CE]/10 text-[#7E22CE] dark:text-[#C084FC]',
+    },
   };
   return (
     map[t] ?? {
-      label: type && type !== '—' ? type.charAt(0).toUpperCase() + type.slice(1) : '—',
-      className: 'bg-[#EAECF0] dark:bg-gray-800 text-[#475467] dark:text-gray-300',
+      label:
+        type && type !== '—'
+          ? type.charAt(0).toUpperCase() + type.slice(1)
+          : '—',
+      className:
+        'bg-[#EAECF0] dark:bg-gray-800 text-[#475467] dark:text-gray-300',
     }
   );
 };

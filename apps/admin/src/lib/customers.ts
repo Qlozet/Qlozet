@@ -44,13 +44,16 @@ export const getCustomerAvatar = (customer: Customer): string | undefined =>
 export const getCustomerInitial = (customer: Customer): string =>
   getCustomerName(customer).replace(/^@/, '').charAt(0).toUpperCase() || 'C';
 
-export const getCustomerTotalOrders = (customer: Customer): number | undefined =>
+export const getCustomerTotalOrders = (
+  customer: Customer
+): number | undefined =>
   typeof customer.totalOrders === 'number'
     ? customer.totalOrders
     : customer.ordersCount;
 
-export const getCustomerLastOrderDate = (customer: Customer): string | undefined =>
-  customer.lastOrderDate || customer.lastOrderAt;
+export const getCustomerLastOrderDate = (
+  customer: Customer
+): string | undefined => customer.lastOrderDate || customer.lastOrderAt;
 
 export const formatCount = (value?: number): string => {
   if (typeof value !== 'number' || Number.isNaN(value)) return '—';

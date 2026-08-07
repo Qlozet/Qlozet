@@ -14,10 +14,7 @@ import {
   stockBadgeVariant,
 } from '@/lib/products';
 import { ProductStatusBadge } from './product-status-badge';
-import {
-  ProductActionsCell,
-  type ProductAction,
-} from './product-actions-cell';
+import { ProductActionsCell, type ProductAction } from './product-actions-cell';
 import type { Product } from '@/redux/services/products/products.api-slice';
 
 interface FabricProductsColumnsProps {

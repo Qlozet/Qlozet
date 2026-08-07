@@ -67,7 +67,10 @@ export const MultiSelectTagsDropdown = ({
         className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground hover:bg-accent/60 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
       >
         <span
-          className={cn('truncate', selectedLabels.length === 0 && 'text-muted-foreground')}
+          className={cn(
+            'truncate',
+            selectedLabels.length === 0 && 'text-muted-foreground'
+          )}
         >
           {selectedLabels.length ? selectedLabels.join(', ') : placeholder}
         </span>

@@ -13,7 +13,7 @@ export const PasswordResetCodeSentTemplate = () => {
   const [canResend, setCanResend] = useState(false);
 
   const { searchParams } = useCreateSearchQuery();
-  const email = searchParams.get("email");
+  const email = searchParams.get('email');
 
   // Forgot password API mutation
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
@@ -60,7 +60,7 @@ export const PasswordResetCodeSentTemplate = () => {
           error?.data?.message || 'Failed to resend code. Please try again.';
 
         toast.error(errorMessage);
-      })
+      });
   };
 
   // Start countdown on component mount
@@ -69,22 +69,19 @@ export const PasswordResetCodeSentTemplate = () => {
   }, [start]);
 
   return (
-    <AuthFormCard
-      title='Reset code sent to email'
-      showLogo={true}
-    >
-      <div className='space-y-6'>
+    <AuthFormCard title="Reset code sent to email" showLogo={true}>
+      <div className="space-y-6">
         {/* Email message */}
-        <p className='text-center text-[hsla(0,0%,7%,1)] dark:text-gray-300 text-sm leading-relaxed'>
+        <p className="text-center text-[hsla(0,0%,7%,1)] dark:text-gray-300 text-sm leading-relaxed">
           We've sent a code to the email associated with your business account (
-          <span className='font-medium underline'>{email}</span>). Please check
+          <span className="font-medium underline">{email}</span>). Please check
           your email inbox and utilize the code provided to create a new
           password.
         </p>
 
         {/* Resend button with countdown */}
-        <div className='flex items-center justify-center gap-2'>
-          <p className='text-sm text-muted-foreground'>
+        <div className="flex items-center justify-center gap-2">
+          <p className="text-sm text-muted-foreground">
             Didn't receive any code?
           </p>
 
@@ -92,15 +89,15 @@ export const PasswordResetCodeSentTemplate = () => {
             <Button
               onClick={handleResendCode}
               disabled={!canResend || isLoading}
-              variant='ghost'
-              className='text-primary hover:text-primary/80 disabled:opacity-50 p-1 py-1 disabled:cursor-not-allowed'
+              variant="ghost"
+              className="text-primary hover:text-primary/80 disabled:opacity-50 p-1 py-1 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Resending...' : 'Resend Code'}
             </Button>
           </If>
 
           <If isTrue={!canResend && count > 0 ? true : false}>
-            <p className='text-sm text-muted-foreground'>
+            <p className="text-sm text-muted-foreground">
               Resend available in {formatTime(count)}
             </p>
           </If>
