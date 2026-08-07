@@ -6,7 +6,6 @@ import type {
   BillingInvoiceData,
   WarehouseData,
   UserPermissionData,
-  CategoryData,
   OrderSettingsData,
 } from '@/lib/validations/settings';
 import { baseAPI } from '@/redux/api/base-api';
@@ -116,6 +115,30 @@ export interface UpdateUserProfilePayload {
   dob?: string;
 }
 
+// Warehouse as returned by GET /business/warehouse. The response isn't in
+// Swagger, so everything past the id is optional.
+export interface BusinessWarehouse {
+  _id: string;
+  name?: string;
+  address?: string;
+  contact_name?: string;
+  contact_phone?: string;
+  contact_email?: string;
+  is_active?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  [key: string]: unknown;
+}
+
+// CreateWarehouseDto — also the body for PUT /business/{id}/warehouse
+export interface WarehousePayload {
+  name: string;
+  address: string;
+  contact_name: string;
+  contact_phone: string;
+  contact_email: string;
+}
+
 interface WarehouseResponse {
   id: string;
   name: string;
@@ -134,15 +157,6 @@ interface UserResponse {
   role: string;
   permissions: string[];
   isActive: boolean;
-}
-
-interface CategoryResponse {
-  id: string;
-  name: string;
-  description?: string;
-  parentCategory?: string;
-  isActive: boolean;
-  sortOrder?: number;
 }
 
 // API Slice
@@ -234,7 +248,60 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['VendorDetails'],
     }),
 
-    // Warehouses
+    // ─── Warehouses (Business tag in Swagger) ───
+    // NOTE: the `/vendor/warehouse*` endpoints below this block don't exist on
+    // the backend. Use these.
+    getBusinessWarehouses: builder.query<BusinessWarehouse[], void>({
+      query: () => '/business/warehouse',
+      // The response envelope isn't documented, so unwrap the shapes the
+      // backend uses elsewhere and fall back to an empty list.
+      transformResponse: (res: any): BusinessWarehouse[] =>
+        Array.isArray(res)
+          ? res
+          : Array.isArray(res?.data)
+            ? res.data
+            : Array.isArray(res?.data?.data)
+              ? res.data.data
+              : [],
+      providesTags: ['Warehouse'],
+    }),
+
+    createBusinessWarehouse: builder.mutation<any, WarehousePayload>({
+      query: (body) => ({
+        url: '/business/warehouse',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Warehouse'],
+    }),
+
+    updateBusinessWarehouse: builder.mutation<
+      any,
+      { id: string; data: WarehousePayload }
+    >({
+      query: ({ id, data }) => ({
+        url: `/business/${id}/warehouse`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Warehouse'],
+    }),
+
+    deleteBusinessWarehouse: builder.mutation<any, string>({
+      query: (id) => ({ url: `/business/${id}/warehouse`, method: 'DELETE' }),
+      invalidatesTags: ['Warehouse'],
+    }),
+
+    // Only one warehouse is active at a time — activating one demotes the rest.
+    activateBusinessWarehouse: builder.mutation<any, string>({
+      query: (id) => ({
+        url: `/business/warehouse/${id}/activate`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Warehouse'],
+    }),
+
+    // Legacy (fictional paths — kept only because older components import them)
     getWarehouses: builder.query<ApiResponse<WarehouseResponse[]>, void>({
       query: () => '/vendor/warehouses',
       providesTags: ['Warehouse'],
@@ -286,26 +353,11 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['User'],
     }),
 
-    // Categories
-    getCategories: builder.query<ApiResponse<CategoryResponse[]>, void>({
-      query: () => '/vendor/categories',
-      providesTags: ['Category'],
-    }),
-
-    createCategory: builder.mutation<ApiResponse<CategoryResponse>, CategoryData>({
-      query: (data) => ({ url: '/vendor/categories', method: 'POST', body: data }),
-      invalidatesTags: ['Category'],
-    }),
-
-    updateCategory: builder.mutation<ApiResponse<CategoryResponse>, { id: string; data: CategoryData }>({
-      query: ({ id, data }) => ({ url: `/vendor/categories/${id}`, method: 'PUT', body: data }),
-      invalidatesTags: ['Category'],
-    }),
-
-    deleteCategory: builder.mutation<ApiResponse<null>, string>({
-      query: (id) => ({ url: `/vendor/categories/${id}`, method: 'DELETE' }),
-      invalidatesTags: ['Category'],
-    }),
+    // NOTE: categories live in products.api-slice (`getCategories`). The
+    // `/vendor/categories` endpoints that used to sit here didn't exist on the
+    // backend, had no consumers, and their `getCategories` collided with the
+    // products one — RTK Query warned about the duplicate endpoint name and
+    // whichever module evaluated last silently won.
 
     // Order Settings
     getOrderSettings: builder.query<ApiResponse<OrderSettingsData>, void>({
@@ -334,6 +386,11 @@ export const {
   useUpdateUserProfileMutation,
   useGetVendorDetailsQuery,
   useUpdateVendorDetailsMutation,
+  useGetBusinessWarehousesQuery,
+  useCreateBusinessWarehouseMutation,
+  useUpdateBusinessWarehouseMutation,
+  useDeleteBusinessWarehouseMutation,
+  useActivateBusinessWarehouseMutation,
   useGetWarehousesQuery,
   useGetWarehouseQuery,
   useCreateWarehouseMutation,
@@ -344,10 +401,6 @@ export const {
   useCreateUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
-  useGetCategoriesQuery,
-  useCreateCategoryMutation,
-  useUpdateCategoryMutation,
-  useDeleteCategoryMutation,
   useGetOrderSettingsQuery,
   useUpdateOrderSettingsMutation,
   useLazyVerifyVendorAccountQuery,

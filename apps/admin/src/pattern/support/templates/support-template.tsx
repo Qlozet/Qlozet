@@ -3,24 +3,18 @@
 import { useState } from 'react';
 import NiceModal from '@ebay/nice-modal-react';
 import { CirclePlus } from 'lucide-react';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { SupportTabs, type SupportTab } from '../molecules/support-tabs';
 import { TicketsTable } from '../organisms/tickets-table';
 import { LiveChatTable } from '../organisms/live-chat-table';
-import { AddTicketDrawer, type TicketDraft } from '../organisms/add-ticket-drawer';
+import { AddTicketDrawer } from '../organisms/add-ticket-drawer';
 
 export const SupportTemplate = () => {
   const [tab, setTab] = useState<SupportTab>('tickets');
 
-  const showAddTicket = async () => {
-    const draft = (await NiceModal.show(AddTicketDrawer)) as
-      | TicketDraft
-      | undefined;
-    // TODO(api): POST the draft to a create-ticket endpoint once it exists, then
-    // refetch the tickets list. For now confirm capture optimistically.
-    if (draft) toast.success('Ticket created');
-  };
+  // The drawer POSTs the ticket itself and invalidates the Tickets tag, so the
+  // list refetches on its own once one is created.
+  const showAddTicket = () => NiceModal.show(AddTicketDrawer);
 
   return (
     <div className="w-full min-h-screen h-fit space-y-6 pb-10">

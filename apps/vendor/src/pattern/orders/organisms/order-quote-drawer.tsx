@@ -1,14 +1,15 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
+import { create, useModal } from '@ebay/nice-modal-react';
 import Image from 'next/image';
-import { Calculator, ChevronRight, ImageIcon, Info } from 'lucide-react';
-import { DesignDetailModal } from './design-detail-modal';
+import { ArrowLeft, Calculator, ImageIcon, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
+  SheetTitle,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,62 +20,62 @@ import {
   useSubmitQuoteMutation,
   type QuoteLineItem,
 } from '@/redux/services/bespoke/bespoke.api-slice';
-import { formatLongDate, readQuoteId } from '../lib/order-fields';
+import {
+  formatLongDate,
+  readOrderId,
+  readQuoteId,
+  deliveryBadge,
+  readStatus,
+} from '../lib/order-fields';
 import type { Order } from '@/redux/services/orders/orders.api-slice';
-import { SAMPLE_QUOTE } from '../lib/orders-sample';
+import { useAppSelector } from '@/redux/store';
+import { selectActiveBusiness } from '@/redux/slices/auth-slice';
+import {
+  OrderMediaPanel,
+  ignoreMediaPanelInteraction,
+} from '../molecules/order-media-panel';
+import { allProductImages, asProduct } from '../lib/item-resolvers';
+import { OrderFabricCard } from '../molecules/order-fabric-card';
+import { OrderAccessoriesCard } from '../molecules/order-accessories-card';
+import { OrderEarningsCard } from '../molecules/order-earnings-card';
+import { VendorGuidelinesCard } from '../molecules/vendor-guidelines-card';
+import { SAMPLE_GARMENT_SPEC } from '../lib/orders-sample';
 
 interface OrderQuoteDrawerProps {
   order: Order;
 }
 
+// The line-item labels are the form's structure, not data — the amounts start
+// at zero and are either typed by the vendor or prefilled from a saved quote.
+const EMPTY_LINE_ITEMS: QuoteLineItem[] = [
+  { label: 'Base Tailoring', amount: 0 },
+  { label: 'Fabric', amount: 0 },
+  { label: 'Accessories', amount: 0 },
+  { label: 'Add-ons', amount: 0 },
+];
+
+/** A quote is editable only while it is still a draft. */
+const isDraftStatus = (status?: string): boolean =>
+  !status || /draft/i.test(status);
+
+const humanizeStatus = (status?: string): string =>
+  status
+    ? status.replace(/[_-]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+    : 'Draft';
+
 export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
   const { visible, resolve, remove } = useModal();
   const quoteId = readQuoteId(order);
+  const activeBusiness = useAppSelector(selectActiveBusiness);
+  const businessId = activeBusiness?._id;
 
   const { data } = useGetQuoteQuery(quoteId, { skip: !quoteId || !visible });
   const quote = data?.data;
 
-  // Real bespoke design — passed on the order from the Quote Requests list, or
-  // populated on the fetched quote (getQuoteDetail populates `design`).
-  const orderDesign = (order as any)?.bespoke_design;
-  const quoteDesign =
-    (quote as any)?.design ?? (quote as any)?.data?.design;
-  const design: any =
-    orderDesign && typeof orderDesign === 'object' ? orderDesign : quoteDesign;
-
-  // Quote state drives what the vendor can do. Editable only while the request
-  // is new / a draft / a revision was requested; once submitted or resolved the
-  // form is read-only.
-  const q: any = (quote as any)?.data ?? quote;
-  const quoteStatus = String(
-    (order as any)?.bespoke_quote_status ?? q?.status ?? 'pending',
-  ).toLowerCase();
-  const isEditable = ['pending', 'draft', 'revision_requested'].includes(
-    quoteStatus,
-  );
-  const STATUS_META: Record<string, { label: string; className: string }> = {
-    pending: { label: 'New request', className: 'bg-[#FEF6E7] text-[#DD900D]' },
-    draft: { label: 'Draft', className: 'bg-[#EAECF0] text-[#475467]' },
-    revision_requested: { label: 'Revision requested', className: 'bg-[#F4EBFF] text-[#7E22CE]' },
-    submitted: { label: 'Submitted', className: 'bg-[#E7F6EC] text-[#0F973D]' },
-    accepted: { label: 'Accepted', className: 'bg-[#E3EFFC] text-[#1671D9]' },
-    declined: { label: 'Declined', className: 'bg-[#FBEAE9] text-[#D42620]' },
-    expired: { label: 'Expired', className: 'bg-[#FBEAE9] text-[#D42620]' },
-  };
-  const statusMeta = STATUS_META[quoteStatus] ?? {
-    label: quoteStatus,
-    className: 'bg-[#EAECF0] text-[#475467]',
-  };
-
-  const [lineItems, setLineItems] = useState<QuoteLineItem[]>(
-    SAMPLE_QUOTE.line_items
-  );
-  const [fabricYards, setFabricYards] = useState(
-    SAMPLE_QUOTE.required_fabric_yards
-  );
-  const [completionDays, setCompletionDays] = useState(
-    SAMPLE_QUOTE.estimated_completion_days
-  );
+  const [lineItems, setLineItems] =
+    useState<QuoteLineItem[]>(EMPTY_LINE_ITEMS);
+  const [fabricYards, setFabricYards] = useState(0);
+  const [completionDays, setCompletionDays] = useState(0);
   const [notes, setNotes] = useState('');
 
   // Prefill from the real quote when it loads.
@@ -132,85 +133,127 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
     }
   };
 
+  // Editable while the quote is a draft; once submitted the vendor can only
+  // read it back while the customer reviews.
+  const isDraft = isDraftStatus(quote?.status);
+  const status = humanizeStatus(quote?.status);
+
+  // Garment media for the companion panel. Falls back to the order's product
+  // images until the bespoke design's reference images are wired up.
+  const orderMedia = Array.from(
+    new Set(
+      (order.items ?? []).flatMap((item) =>
+        allProductImages(asProduct(item.product))
+      )
+    )
+  );
+
   return (
     <Sheet open={visible} onOpenChange={handleClose}>
+      <OrderMediaPanel
+        images={orderMedia}
+        title={`Order ${readOrderId(order)}`}
+        drawerOpen={visible}
+        onClose={handleClose}
+      />
       <SheetContent
         side='right'
-        className='flex w-full flex-col gap-0 !overflow-y-auto p-0 sm:max-w-md !top-6 !bottom-6 !right-6 !h-[calc(100vh-3rem)] rounded-2xl custom-card-shadow bg-white dark:bg-[#404040] dark:bg-card'
+        onInteractOutside={ignoreMediaPanelInteraction}
+        className='flex w-full flex-col gap-0 overflow-y-auto p-0 sm:max-w-md !top-6 !bottom-6 !right-6 !h-[calc(100vh-3rem)] rounded-2xl custom-card-shadow bg-white dark:bg-[#404040] dark:bg-card'
       >
-        {/* Header (the sheet renders its own close button top-right) */}
-        <div className='flex shrink-0 flex-col gap-0.5 px-6 pb-1 pr-14 pt-6'>
-          <h2 className='truncate text-lg font-bold text-grey-black dark:text-white'>
-            {design?.name ||
-              (order.reference ? `Order #${order.reference}` : 'Custom order')}
-          </h2>
-          <p className='text-xs text-grey2 dark:text-gray-400'>
-            {order.createdAt
-              ? formatLongDate(order.createdAt)
-              : 'Bespoke quote request'}
-          </p>
+        {/* Header */}
+        <div className='flex items-start justify-between px-6 pb-3 pt-6'>
+          <button
+            type='button'
+            onClick={handleClose}
+            aria-label='Back'
+            className='flex size-8 items-center justify-center rounded-full border border-border text-grey3 dark:text-gray-300 hover:bg-gray-50'
+          >
+            <ArrowLeft className='size-4' />
+          </button>
+          {/* Sheet renders its own close button at top-right */}
         </div>
 
-        <div className='flex flex-col gap-5 px-6 py-5'>
+        <div className='flex items-center justify-between px-6'>
+          <div>
+            <SheetTitle className='text-lg font-bold text-grey-black dark:text-white'>
+              Order #{readOrderId(order)}
+            </SheetTitle>
+            <SheetDescription className='text-xs text-grey2 dark:text-gray-400'>
+              {formatLongDate(order.createdAt)}
+            </SheetDescription>
+          </div>
+          {(() => {
+            const badge = deliveryBadge(readStatus(order));
+            return (
+              <span className={`inline-flex h-[26px] items-center rounded-[8px] px-3 text-xs font-medium ${badge.className}`}>
+                {badge.label}
+              </span>
+            );
+          })()}
+        </div>
+
+        <div className='space-y-5 px-6 py-5'>
           {/* Quote card */}
           <section className='space-y-4 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4'>
-            <div className='flex items-start justify-between gap-2'>
-              <div>
-                <h3 className='text-base font-semibold text-grey-black dark:text-white'>
-                  Your Quote
-                </h3>
-                <p className='mt-0.5 text-xs text-grey2 dark:text-gray-400'>
-                  {isEditable
-                    ? 'The customer reviews this before production starts.'
-                    : 'This quote is locked.'}
-                </p>
-              </div>
-              <span
-                className={`shrink-0 rounded-lg px-2.5 py-1 text-[10px] font-semibold uppercase ${statusMeta.className}`}
-              >
-                {statusMeta.label}
+            <div className='flex items-center justify-between'>
+              <h3 className='text-base font-semibold text-grey-black dark:text-white'>Quote</h3>
+              <span className='rounded-[8px] bg-[#EAECF0] px-3 py-1 text-xs font-medium text-[#475467]'>
+                {status}
               </span>
             </div>
+            <p className='text-xs text-grey2 dark:text-gray-400'>
+              Build your quote — customer reviews before production starts
+            </p>
 
-            {/* Line items */}
+            {/* Line items — editable while drafting, a read-only breakdown once
+                the quote has been submitted. */}
             <div className='rounded-xl border border-border bg-white dark:bg-[#404040] p-4'>
               <div className='mb-3 flex items-center justify-between'>
                 <span className='text-sm font-semibold text-grey-black dark:text-white'>
-                  Line Items
+                  {isDraft ? 'Line Items' : 'Quote break down'}
                 </span>
                 <Calculator className='size-4 text-grey3 dark:text-gray-300' />
               </div>
 
               <div className='space-y-3'>
                 {lineItems.map((li, index) => {
-                  const readOnly = li.label.toLowerCase() === 'fabric' || !isEditable;
+                  // Fabric is priced from the customer's chosen fabric, so the
+                  // vendor never types it.
+                  const readOnly = !isDraft || li.label.toLowerCase() === 'fabric';
                   return (
                     <div
                       key={li.label}
                       className='flex items-center justify-between gap-3'
                     >
                       <span className='text-sm text-grey3 dark:text-gray-300'>{li.label}</span>
-                      <div
-                        className={cn(
-                          'flex w-32 items-center gap-1 rounded-lg border border-border px-3 py-2',
-                          readOnly && 'bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]'
-                        )}
-                      >
-                        <span className='text-sm text-grey2 dark:text-gray-400'>₦</span>
-                        <input
-                          type='number'
-                          min={0}
-                          value={li.amount}
-                          readOnly={readOnly}
-                          onChange={(e) =>
-                            setAmount(index, Number(e.target.value) || 0)
-                          }
+                      {isDraft ? (
+                        <div
                           className={cn(
-                            'w-full bg-transparent text-right text-sm text-grey-black dark:text-white focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
-                            readOnly && 'text-grey2 dark:text-gray-400'
+                            'flex w-32 items-center gap-1 rounded-lg border border-border px-3 py-2',
+                            readOnly && 'bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]'
                           )}
-                        />
-                      </div>
+                        >
+                          <span className='text-sm text-grey2 dark:text-gray-400'>$</span>
+                          <input
+                            type='number'
+                            min={0}
+                            value={li.amount}
+                            readOnly={readOnly}
+                            onChange={(e) =>
+                              setAmount(index, Number(e.target.value) || 0)
+                            }
+                            className={cn(
+                              'w-full bg-transparent text-right text-sm text-grey-black dark:text-white focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+                              readOnly && 'text-grey2 dark:text-gray-400'
+                            )}
+                          />
+                        </div>
+                      ) : (
+                        <span className='text-sm font-semibold text-grey-black dark:text-white'>
+                          N{(li.amount || 0).toLocaleString()}
+                        </span>
+                      )}
                     </div>
                   );
                 })}
@@ -218,10 +261,10 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
 
               <div className='mt-3 flex items-center justify-between border-t border-border pt-3'>
                 <span className='text-sm font-semibold text-grey-black dark:text-white'>
-                  Total:
+                  {isDraft ? 'Total:' : 'TOTAL:'}
                 </span>
                 <span className='text-sm font-bold text-grey-black dark:text-white'>
-                  ₦{total.toLocaleString()}
+                  N{total.toLocaleString()}
                 </span>
               </div>
             </div>
@@ -236,11 +279,11 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                   type='number'
                   min={0}
                   value={fabricYards}
-                  readOnly={!isEditable}
+                  readOnly={!isDraft}
                   onChange={(e) => setFabricYards(Number(e.target.value) || 0)}
                   className={cn(
-                    'w-16 rounded-lg border border-border px-3 py-1.5 text-right text-sm text-grey-black dark:text-white focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
-                    !isEditable && 'bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] text-grey2 dark:text-gray-400'
+                    'w-16 rounded-lg px-3 py-1.5 text-right text-sm text-grey-black dark:text-white focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+                    isDraft ? 'border border-border' : 'bg-transparent'
                   )}
                 />
                 <span className='text-sm text-grey3 dark:text-gray-300'>yards</span>
@@ -260,13 +303,13 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                   type='number'
                   min={0}
                   value={completionDays}
-                  readOnly={!isEditable}
+                  readOnly={!isDraft}
                   onChange={(e) =>
                     setCompletionDays(Number(e.target.value) || 0)
                   }
                   className={cn(
-                    'w-20 rounded-lg border border-border px-3 py-1.5 text-right text-sm text-grey-black dark:text-white focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
-                    !isEditable && 'bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] text-grey2 dark:text-gray-400'
+                    'w-20 rounded-lg px-3 py-1.5 text-right text-sm text-grey-black dark:text-white focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+                    isDraft ? 'border border-border' : 'bg-transparent'
                   )}
                 />
                 <span className='text-sm text-grey3 dark:text-gray-300'>days</span>
@@ -280,33 +323,22 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
               </label>
               <Textarea
                 value={notes}
-                readOnly={!isEditable}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder={
-                  isEditable
-                    ? 'Any special notes, conditions or payment terms...'
-                    : 'No notes'
-                }
-                className={cn(
-                  'min-h-[80px] resize-none bg-white dark:bg-[#404040]',
-                  !isEditable && 'bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]'
-                )}
+                readOnly={!isDraft}
+                placeholder='Any special notes, conditions or payment terms...'
+                className='min-h-[80px] resize-none bg-white dark:bg-[#404040]'
               />
             </div>
 
-            {isEditable ? (
+            {isDraft && (
               <div className='space-y-3'>
                 <Button
                   type='button'
                   onClick={handleSubmit}
-                  disabled={isSubmitting || total <= 0}
+                  disabled={isSubmitting}
                   className='w-full'
                 >
-                  {isSubmitting
-                    ? 'Submitting...'
-                    : quoteStatus === 'revision_requested'
-                      ? 'Resubmit quote'
-                      : 'Submit quote'}
+                  {isSubmitting ? 'Submitting...' : 'Submit quote'}
                 </Button>
                 <Button
                   type='button'
@@ -315,66 +347,82 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                   disabled={isSaving}
                   className='w-full'
                 >
-                  {isSaving ? 'Saving...' : 'Save draft'}
+                  {isSaving ? 'Saving...' : 'Save quote'}
                 </Button>
-              </div>
-            ) : (
-              <div className='rounded-lg bg-white dark:bg-[#404040] px-3 py-3 text-center text-xs text-grey3 dark:text-gray-300'>
-                {quoteStatus === 'submitted' &&
-                  'Quote submitted — waiting for the customer to accept or request changes.'}
-                {quoteStatus === 'accepted' &&
-                  'Accepted — this is now a confirmed order in your Orders.'}
-                {quoteStatus === 'declined' &&
-                  'The customer chose a different tailor for this design.'}
-                {quoteStatus === 'expired' &&
-                  'This quote expired before it was accepted.'}
               </div>
             )}
 
-            <div className='flex items-start gap-2 rounded-lg bg-[#F1F1F1] dark:bg-[#404040] p-3'>
+            <div className='flex items-start gap-2 rounded-lg bg-[#F1F1F1] p-3'>
               <Info className='mt-0.5 size-4 shrink-0 text-grey3 dark:text-gray-300' />
               <p className='text-xs text-grey3 dark:text-gray-300'>
-                Once the customer accepts and pays, this becomes a confirmed
-                order you fulfil. Quotes expire after 7 days.
+                {isDraft
+                  ? 'Custom orders become non-cancellable after cutting begins. If something feels off, message the customer or escalate to Qlozet.'
+                  : 'Waiting for customer to review and accept'}
               </p>
             </div>
           </section>
 
-          {/* Design details — compact card that opens the full design modal */}
-          {design && (
-            <button
-              type='button'
-              onClick={() => NiceModal.show(DesignDetailModal, { design })}
-              className='order-first flex items-center gap-3 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-3 text-left transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.03]'
-            >
-              <div className='relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100'>
-                {design.design_images?.[0] ? (
+          {/* Garment specs */}
+          <section className='space-y-3'>
+            <h3 className='text-base font-semibold text-grey-black dark:text-white'>
+              Garment Specs
+            </h3>
+            <div className='flex items-center gap-3 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4'>
+              <div className='relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100'>
+                {SAMPLE_GARMENT_SPEC.image ? (
                   <Image
-                    src={design.design_images[0]}
-                    alt={design.name ?? 'Design'}
+                    src={SAMPLE_GARMENT_SPEC.image}
+                    alt={SAMPLE_GARMENT_SPEC.name}
                     fill
                     className='object-cover'
-                    sizes='56px'
+                    sizes='48px'
                   />
                 ) : (
                   <ImageIcon className='size-5 text-gray-400' />
                 )}
               </div>
-              <div className='min-w-0 flex-1'>
-                <p className='truncate text-sm font-semibold text-grey-black dark:text-white'>
-                  {design.name ?? 'Custom design'}
+              <div>
+                <p className='text-sm font-semibold text-grey-black dark:text-white'>
+                  {SAMPLE_GARMENT_SPEC.name}
                 </p>
-                <p className='truncate text-xs capitalize text-grey3 dark:text-gray-400'>
-                  {[design.category, design.gender].filter(Boolean).join(' · ') ||
-                    'Bespoke design'}
-                </p>
+                <div className='mt-1 flex flex-wrap gap-2'>
+                  {SAMPLE_GARMENT_SPEC.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className='rounded-md bg-white dark:bg-[#404040] px-2 py-0.5 text-[11px] font-medium text-grey3 dark:text-gray-300'
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
-              <span className='shrink-0 text-xs font-medium text-primary'>
-                View details
-              </span>
-              <ChevronRight className='size-4 shrink-0 text-grey3' />
-            </button>
+            </div>
+          </section>
+
+          {/* TODO(api): Body Measurement sits here — blocked on an endpoint that
+              can return the customer's measurement set for this order.
+              GET /measurements/users/active takes no params and only ever
+              returns the caller's own set. */}
+
+          {/* Fabric */}
+          <OrderFabricCard order={order} businessId={businessId} />
+
+          {/* Accessories & add-ons */}
+          <OrderAccessoriesCard order={order} />
+
+          {/* TODO(api): Customers card sits here — needs the per-vendor order
+              count ("3 orders with you") and the size profile, which depends on
+              the same measurement endpoint as above. */}
+
+          {/* Earnings — the agreed amount, once the quote is settled. */}
+          {!isDraft && (
+            <OrderEarningsCard
+              lineItems={lineItems}
+              deliveryFee={order.shipping_fee}
+            />
           )}
+
+          <VendorGuidelinesCard />
         </div>
       </SheetContent>
     </Sheet>

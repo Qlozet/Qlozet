@@ -1,8 +1,22 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight, Plus, ListFilter, Search, Ticket } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  ListFilter,
+  MoreVertical,
+  Search,
+  Ticket,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -17,7 +31,11 @@ import {
   useGetTicketsQuery,
   type Ticket as TicketType,
 } from '@/redux/services/tickets/tickets.api-slice';
-import { formatDateTime, readField } from '../lib/ticket-fields';
+import {
+  formatDateTime,
+  issueTypeLabel,
+  readField,
+} from '../lib/ticket-fields';
 
 const PAGE_SIZE = 5;
 
@@ -73,10 +91,12 @@ export const SupportTicketsList = ({
   return (
     <div className='overflow-hidden rounded-xl border bg-white custom-card-shadow'>
       {/* Toolbar */}
-      <div className='flex flex-col gap-4 px-6 py-5 lg:flex-row lg:items-center lg:justify-between'>
+      <div className='flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between'>
         <h2 className='text-lg font-semibold text-grey-black'>Tickets</h2>
 
-        <div className='flex flex-wrap items-center gap-3'>
+        {/* Mirrors the shared TableToolbar rhythm: below `sm` the buttons
+            collapse to icons and the search takes the remaining width. */}
+        <div className='flex w-full items-stretch gap-2 sm:gap-3 md:w-auto'>
           <Select
             value={status}
             onValueChange={(value) => {
@@ -84,9 +104,14 @@ export const SupportTicketsList = ({
               setPage(1);
             }}
           >
-            <SelectTrigger className='h-10 w-[170px] gap-2 text-sm text-gray-600 dark:text-gray-200 dark:bg-muted dark:border-white/10'>
-              <ListFilter className='size-4' />
-              <SelectValue placeholder='Filter By Status' />
+            <SelectTrigger className='h-10 w-10 shrink-0 justify-center gap-2 px-0 text-sm text-gray-600 sm:w-fit sm:justify-between sm:px-3 max-sm:[&>svg:last-child]:hidden dark:text-gray-200 dark:bg-muted dark:border-white/10'>
+              <ListFilter className='size-4 shrink-0' />
+              {/* `!` is required: SelectTrigger's own `[&>span]:line-clamp-1`
+                  forces `display:-webkit-box` on direct span children at a
+                  higher specificity than a plain `hidden`. */}
+              <span className='hidden! sm:inline!'>
+                <SelectValue placeholder='Filter By Status' />
+              </span>
             </SelectTrigger>
             <SelectContent>
               {STATUS_OPTIONS.map((option) => (
@@ -97,7 +122,7 @@ export const SupportTicketsList = ({
             </SelectContent>
           </Select>
 
-          <div className='relative'>
+          <div className='relative flex-1 sm:flex-none'>
             <Search className='pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400' />
             <Input
               value={search}
@@ -110,8 +135,12 @@ export const SupportTicketsList = ({
             />
           </div>
 
-          <Button type='button' onClick={onAddTicket} className='h-10 gap-2'>
-            Add Ticket
+          <Button
+            type='button'
+            onClick={onAddTicket}
+            className='h-10 w-10 shrink-0 justify-center gap-2 px-0 sm:w-auto sm:px-4'
+          >
+            <span className='hidden sm:inline'>Add Ticket</span>
             <Plus className='size-4' />
           </Button>
         </div>
@@ -128,7 +157,16 @@ export const SupportTicketsList = ({
           rows.map((ticket, index) => (
             <div
               key={ticket._id}
-              className='flex items-start gap-4 rounded-xl bg-[#F8F9FA] p-4'
+              role='button'
+              tabIndex={0}
+              onClick={() => onViewDetails(ticket._id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onViewDetails(ticket._id);
+                }
+              }}
+              className='flex cursor-pointer items-start gap-4 rounded-xl bg-[#F8F9FA] p-4 transition-colors hover:bg-[#F1F2F4] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring'
             >
               <span
                 className='flex size-9 shrink-0 items-center justify-center rounded-full text-white'
@@ -141,12 +179,17 @@ export const SupportTicketsList = ({
                 <p className='text-sm font-semibold text-grey-black'>
                   {ticketRef(ticket)}
                 </p>
-                <p className='text-xs text-grey2'>
-                  {readField(ticket, 'category', 'issue_type')}
+                <p className='text-xs text-grey3'>
+                  {issueTypeLabel(readField(ticket, 'category', 'issue_type'))}
                 </p>
-                <p className='mt-1 line-clamp-2 max-w-[640px] text-sm text-grey3'>
+                <p className='max-md:mt-2 md:mt-5 line-clamp-2 max-w-160 text-sm text-grey3'>
                   {readField(ticket, 'description', 'message')}
                 </p>
+                {/* On mobile the date stacks under the description instead of
+                    sitting in the (button-less) actions column. */}
+                <span className='mt-2 block text-xs text-grey3 md:hidden'>
+                  {formatDateTime(ticket.createdAt)}
+                </span>
               </div>
 
               <div className='flex shrink-0 flex-col items-end gap-6'>
@@ -154,12 +197,40 @@ export const SupportTicketsList = ({
                   type='button'
                   variant='outline'
                   size='sm'
-                  onClick={() => onViewDetails(ticket._id)}
-                  className='h-9 text-sm'
+                  onClick={(e) => {
+                    // The whole card is clickable — don't navigate twice.
+                    e.stopPropagation();
+                    onViewDetails(ticket._id);
+                  }}
+                  className='h-9 cursor-pointer text-sm max-md:hidden'
                 >
                   View details
                 </Button>
-                <span className='whitespace-nowrap text-xs text-grey2'>
+
+                {/* Mobile: the row is already tappable, so the button gives way
+                    to a kebab menu. */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type='button'
+                      onClick={(e) => e.stopPropagation()}
+                      aria-label='Ticket actions'
+                      className='cursor-pointer p-1 text-grey3 md:hidden'
+                    >
+                      <MoreVertical className='size-4' />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align='end'>
+                    <DropdownMenuItem
+                      onClick={() => onViewDetails(ticket._id)}
+                      className='cursor-pointer'
+                    >
+                      View details
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <span className='whitespace-nowrap text-xs text-grey3 max-md:hidden'>
                   {formatDateTime(ticket.createdAt)}
                 </span>
               </div>
@@ -167,13 +238,13 @@ export const SupportTicketsList = ({
           ))}
 
         {!showLoader && !isError && rows.length === 0 && (
-          <div className='flex min-h-[200px] items-center justify-center text-sm text-muted-foreground'>
+          <div className='flex min-h-50 items-center justify-center text-sm text-muted-foreground'>
             No tickets yet.
           </div>
         )}
 
         {!showLoader && isError && (
-          <div className='flex min-h-[200px] flex-col items-center justify-center gap-1'>
+          <div className='flex min-h-50 flex-col items-center justify-center gap-1'>
             <p className='text-base font-medium text-destructive'>
               Error loading tickets
             </p>

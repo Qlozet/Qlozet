@@ -4,8 +4,45 @@
 
 import React, { useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Camera, Upload, Loader2, Palette } from 'lucide-react';
+import {
+  Camera,
+  Loader2,
+  Palette,
+  FileUp,
+  CheckCircle2,
+  XCircle,
+} from 'lucide-react';
 import Image from 'next/image';
+
+type UploadType = 'logo' | 'svg_logo' | 'cover' | 'cac';
+
+// Local overrides: `null` = no local change yet (use whatever the API returned),
+// `''` = the vendor removed the file, anything else = just-uploaded URL.
+const resolveFile = (local: string | null, remote?: string) =>
+  local === null ? remote : local || undefined;
+
+const payloadKeyFor = (type: UploadType): string =>
+  type === 'logo'
+    ? 'business_logo_url'
+    : type === 'svg_logo'
+      ? 'business_logo_svg_url'
+      : type === 'cover'
+        ? 'cover_image_url'
+        : 'cac_document_url';
+
+// Cloudinary URLs end in the stored file name — good enough to confirm to the
+// vendor *which* file is on record.
+const fileNameFromUrl = (url?: string | null): string | null => {
+  if (!url) return null;
+  const path = url.split('?')[0].split('#')[0];
+  const name = path.split('/').pop();
+  if (!name) return null;
+  try {
+    return decodeURIComponent(name);
+  } catch {
+    return name;
+  }
+};
 
 // Darken a hex colour — mirrors the shop storefront, which paints its page
 // background with darkenHex(theme_color), so the preview here matches what
@@ -36,9 +73,102 @@ interface VendorProfileCardProps {
   logoUrl?: string;
   svgLogoUrl?: string;
   coverImageUrl?: string;
+  /** CAC documents already on the business profile (`cac_document_url`). */
+  cacDocumentUrls?: string[];
   themeColor?: string;
   className?: string;
 }
+
+// One row in the upload list. Empty state is the plain "Upload X" button; once
+// a file exists the row keeps that label and gains a green tick plus a chip
+// naming the stored file, which can be opened or removed.
+const UploadRow = ({
+  label,
+  fileUrl,
+  uploading,
+  removing,
+  disabled,
+  verified = false,
+  onSelect,
+  onRemove,
+}: {
+  label: string;
+  fileUrl?: string | null;
+  uploading: boolean;
+  removing: boolean;
+  disabled: boolean;
+  /**
+   * Back-office confirmation that the document is genuine. No endpoint exposes
+   * per-document verification yet, so nothing passes this today.
+   * TODO(api): wire once the business profile returns a verification flag.
+   */
+  verified?: boolean;
+  onSelect: () => void;
+  onRemove: () => void;
+}) => {
+  const busy = uploading || removing;
+
+  return (
+    <div className='w-full px-6 py-4 bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] custom-card-shadow'>
+      <div className='flex items-center gap-3'>
+        <button
+          type='button'
+          onClick={onSelect}
+          disabled={disabled}
+          className='flex min-w-0 flex-1 cursor-pointer items-center gap-3 text-left disabled:opacity-50'
+        >
+          {uploading ? (
+            <Loader2 className='w-5 h-5 shrink-0 animate-spin text-gray-400' />
+          ) : (
+            <FileUp className='w-5 h-5 shrink-0 text-gray-500 dark:text-gray-400' />
+          )}
+          <span className='truncate text-sm font-medium text-gray-600 dark:text-gray-300'>
+            {uploading ? 'Uploading…' : `Upload ${label}`}
+          </span>
+        </button>
+
+        {fileUrl && !busy && (
+          <span className='shrink-0'>
+            {verified ? (
+              <span className='text-xs font-bold text-green-700 dark:text-green-500'>
+                Verified
+              </span>
+            ) : (
+              <CheckCircle2 className='size-5 fill-green-600 text-white dark:text-card' />
+            )}
+          </span>
+        )}
+      </div>
+
+      {fileUrl && !uploading && (
+        <div className='mt-3 flex items-center gap-2 rounded-lg border border-gray-200 dark:border-white/10 px-3 py-2'>
+          <a
+            href={fileUrl}
+            target='_blank'
+            rel='noreferrer'
+            title={fileNameFromUrl(fileUrl) ?? undefined}
+            className='min-w-0 flex-1 truncate text-sm text-gray-500 hover:underline dark:text-gray-400'
+          >
+            {fileNameFromUrl(fileUrl) ?? 'View file'}
+          </a>
+          <button
+            type='button'
+            onClick={onRemove}
+            disabled={disabled}
+            aria-label={`Remove ${label}`}
+            className='shrink-0 cursor-pointer text-gray-400 transition-colors hover:text-gray-600 disabled:opacity-50 dark:hover:text-gray-200'
+          >
+            {removing ? (
+              <Loader2 className='size-5 animate-spin' />
+            ) : (
+              <XCircle className='size-5' />
+            )}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   vendorName,
@@ -48,6 +178,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   logoUrl,
   svgLogoUrl,
   coverImageUrl,
+  cacDocumentUrls,
   themeColor,
   className,
 }) => {
@@ -60,6 +191,11 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   const [localLogo, setLocalLogo] = useState<string | null>(null);
   const [localSvgLogo, setLocalSvgLogo] = useState<string | null>(null);
   const [localCover, setLocalCover] = useState<string | null>(null);
+  const [localCac, setLocalCac] = useState<string | null>(null);
+  // Which upload is in flight — the mutation's own isLoading is shared by all
+  // four, which would otherwise spin every control at once.
+  const [uploadingType, setUploadingType] = useState<UploadType | null>(null);
+  const [removingType, setRemovingType] = useState<UploadType | null>(null);
   // Optimistic theme colour, so the preview updates instantly on select.
   const [localTheme, setLocalTheme] = useState<string | null>(null);
   const [savingTheme, setSavingTheme] = useState(false);
@@ -86,10 +222,8 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
     }
   };
 
-  const handleImageUpload = async (
-    file: File,
-    type: 'logo' | 'svg_logo' | 'cover' | 'cac'
-  ) => {
+  const handleImageUpload = async (file: File, type: UploadType) => {
+    setUploadingType(type);
     try {
       const result = await uploadImage(file).unwrap();
       const imageUrl = result?.data?.url || (result as any)?.url;
@@ -99,14 +233,10 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
         return;
       }
 
-      const payloadKey =
-        type === 'logo' ? 'business_logo_url'
-        : type === 'svg_logo' ? 'business_logo_svg_url'
-        : type === 'cover' ? 'cover_image_url'
-        : 'cac_document_url';
-      
       // Save URL to business profile
-      await updateBusinessDetails({ [payloadKey]: type === 'cac' ? [imageUrl] : imageUrl } as any).unwrap();
+      await updateBusinessDetails({
+        [payloadKeyFor(type)]: type === 'cac' ? [imageUrl] : imageUrl,
+      } as any).unwrap();
 
       // Update local state to show the image immediately
       if (type === 'logo') {
@@ -119,16 +249,41 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
         setLocalCover(imageUrl);
         toast.success('Cover image uploaded successfully!');
       } else {
+        setLocalCac(imageUrl);
         toast.success('CAC document uploaded successfully!');
       }
     } catch (error: any) {
       toast.error(error?.data?.message || 'Failed to upload image');
+    } finally {
+      setUploadingType(null);
+    }
+  };
+
+  // Clearing sends the empty value for that field — [] for the CAC list, '' for
+  // the single-URL fields.
+  const handleRemove = async (type: UploadType, label: string) => {
+    setRemovingType(type);
+    try {
+      await updateBusinessDetails({
+        [payloadKeyFor(type)]: type === 'cac' ? [] : '',
+      } as any).unwrap();
+
+      if (type === 'logo') setLocalLogo('');
+      else if (type === 'svg_logo') setLocalSvgLogo('');
+      else if (type === 'cover') setLocalCover('');
+      else setLocalCac('');
+
+      toast.success(`${label} removed`);
+    } catch (error: any) {
+      toast.error(error?.data?.message || `Failed to remove ${label}`);
+    } finally {
+      setRemovingType(null);
     }
   };
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    type: 'logo' | 'svg_logo' | 'cover' | 'cac'
+    type: UploadType
   ) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -137,9 +292,16 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
     e.target.value = '';
   };
 
-  const displayLogo = localLogo || logoUrl;
-  const displaySvgLogo = localSvgLogo || svgLogoUrl;
-  const displayCover = localCover || coverImageUrl;
+  const busy = isUploading || removingType !== null;
+
+  const displayLogo = resolveFile(localLogo, logoUrl);
+  const displaySvgLogo = resolveFile(localSvgLogo, svgLogoUrl);
+  const displayCover = resolveFile(localCover, coverImageUrl);
+  // The API stores CAC as a list; the most recent upload is the one to show.
+  const displayCac = resolveFile(
+    localCac,
+    cacDocumentUrls?.[cacDocumentUrls.length - 1]
+  );
 
   const getStatusColor = () => {
     switch (status) {
@@ -246,7 +408,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
           disabled={isUploading}
           className='absolute top-2 right-2 bg-white dark:bg-muted p-2 rounded-full shadow-md hover:bg-gray-50 dark:hover:bg-muted/80'
         >
-          {isUploading ? (
+          {uploadingType === 'cover' ? (
             <Loader2 className='w-4 h-4 text-gray-600 animate-spin' />
           ) : (
             <Camera className='w-4 h-4 text-gray-600' />
@@ -281,7 +443,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
             disabled={isUploading}
             className='absolute bottom-0 right-0 bg-[#3d2817] p-2 rounded-full shadow-md border-2 border-white hover:bg-[#2c1d11]'
           >
-            {isUploading ? (
+            {uploadingType === 'logo' ? (
               <Loader2 className='w-4 h-4 text-gray-600 animate-spin' />
             ) : (
               <Camera className='w-4 h-4 text-white' />
@@ -353,34 +515,37 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
       </div>
       </div>
 
-      {/* Upload Buttons - Separated */}
+      {/* Upload rows — each reflects whatever is already on the profile */}
       <div className='space-y-4'>
-        <button
-          onClick={() => svgLogoInputRef.current?.click()}
-          disabled={isUploading}
-          className='w-full flex items-center gap-3 px-6 py-4 bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] custom-card-shadow transition-colors hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50'
-        >
-          <Upload className='w-5 h-5 text-gray-400' />
-          <span className='text-sm font-medium text-gray-600 dark:text-gray-300'>Upload SVG/PNG logo</span>
-        </button>
+        <UploadRow
+          label='SVG/PNG logo'
+          fileUrl={displaySvgLogo}
+          uploading={uploadingType === 'svg_logo'}
+          removing={removingType === 'svg_logo'}
+          disabled={busy}
+          onSelect={() => svgLogoInputRef.current?.click()}
+          onRemove={() => handleRemove('svg_logo', 'SVG/PNG logo')}
+        />
 
-        <button
-          onClick={() => coverInputRef.current?.click()}
-          disabled={isUploading}
-          className='w-full flex items-center gap-3 px-6 py-4 bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] custom-card-shadow transition-colors hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50'
-        >
-          <Upload className='w-5 h-5 text-gray-400' />
-          <span className='text-sm font-medium text-gray-600 dark:text-gray-300'>Upload Cover image</span>
-        </button>
+        <UploadRow
+          label='Cover image'
+          fileUrl={displayCover}
+          uploading={uploadingType === 'cover'}
+          removing={removingType === 'cover'}
+          disabled={busy}
+          onSelect={() => coverInputRef.current?.click()}
+          onRemove={() => handleRemove('cover', 'Cover image')}
+        />
 
-        <button
-          onClick={() => cacInputRef.current?.click()}
-          disabled={isUploading}
-          className='w-full flex items-center gap-3 px-6 py-4 bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] custom-card-shadow transition-colors hover:bg-gray-50 dark:hover:bg-muted disabled:opacity-50'
-        >
-          <Upload className='w-5 h-5 text-gray-400' />
-          <span className='text-sm font-medium text-gray-600 dark:text-gray-300'>Upload CAC Document</span>
-        </button>
+        <UploadRow
+          label='CAC Document'
+          fileUrl={displayCac}
+          uploading={uploadingType === 'cac'}
+          removing={removingType === 'cac'}
+          disabled={busy}
+          onSelect={() => cacInputRef.current?.click()}
+          onRemove={() => handleRemove('cac', 'CAC document')}
+        />
       </div>
     </div>
   );

@@ -115,7 +115,7 @@ export const RecentOrders = () => {
                                 type="button"
                                 key={order._id || idx}
                                 onClick={() => handleOrderClick(order)}
-                                className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 dark:bg-muted dark:hover:bg-muted/80 rounded-xl transition group text-left"
+                                className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 dark:bg-muted dark:hover:bg-muted/80 rounded-xl transition group text-left cursor-pointer"
                             >
                                 <div className="flex items-center gap-3 min-w-0 flex-1">
                                     {/* Product thumbnail stack (overlapping for multi-item orders) */}

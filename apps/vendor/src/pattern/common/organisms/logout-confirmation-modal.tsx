@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { create, useModal } from '@ebay/nice-modal-react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { QuestionMarkIcon } from '../atoms/question-mark-icon';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
@@ -30,9 +30,11 @@ const LogoutConfirmationModal = create(() => {
                 <QuestionMarkIcon />
 
                 <div className='w-full flex flex-col items-center gap-y-[24px] mt-[38px]'>
-                    <h1 className='text-black dark:text-foreground text-lg text-center font-bold font-poppins'>
+                    {/* The visible heading is the dialog's accessible name —
+                        Radix warns if DialogContent has no DialogTitle. */}
+                    <DialogTitle className='text-black dark:text-foreground text-lg text-center font-bold font-poppins'>
                         Are you sure you want to logout?
-                    </h1>
+                    </DialogTitle>
                     <Button onClick={handleLogoutClick} variant="destructive" size="lg" className='w-full max-w-[327px]'>Logout</Button>
                 </div>
             </DialogContent>

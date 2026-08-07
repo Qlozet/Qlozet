@@ -3,7 +3,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
 import { FilterMenu, type FilterOption } from '@/pattern/common/molecules/filter-menu';
-import { MoreHorizontal, Loader2 } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
+import { show } from '@ebay/nice-modal-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,21 +12,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { TeamMemberDetailsModal } from '@/pattern/settings/organisms/team-member-details-modal';
 import {
   useGetTeamMembersQuery,
+  useGetVendorRolesQuery,
   type TeamMember,
 } from '@/redux/services/users/users.api-slice';
 
-const ROLE_OPTIONS: FilterOption[] = [
-  { value: 'all', label: 'All roles' },
-  { value: 'owner', label: 'Owner' },
-  { value: 'operations', label: 'Operations' },
-  { value: 'marketing', label: 'Marketing' },
-  { value: 'customer support', label: 'Customer Support' },
-  { value: 'tailor', label: 'Tailor' },
-  { value: 'sales', label: 'Sales' },
-  { value: 'data analyst', label: 'Data Analyst' },
-];
+// "customer_support" -> "Customer Support"
+const prettyRole = (name?: string): string =>
+  (name ?? '').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
 interface UserData {
   _id: string;
@@ -37,15 +33,27 @@ interface UserData {
   is_owner: boolean;
 }
 
-const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({
-  handleEdit,
-}) => {
+const UserAndPermissionTable: FC = () => {
   const [searchValue, setSearchValue] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
 
   const { data: response, isLoading, isFetching, isSuccess, isError, error } = useGetTeamMembersQuery();
   const members = response?.data ?? [];
+
+  // Filter options come from the roles endpoint — a hardcoded list drifts from
+  // whatever roles the business actually has.
+  const { data: rolesResponse } = useGetVendorRolesQuery();
+  const roleOptions: FilterOption[] = useMemo(
+    () => [
+      { value: 'all', label: 'All roles' },
+      ...(rolesResponse?.data ?? []).map((role) => ({
+        value: (role.name ?? '').toLowerCase().replace(/_/g, ' '),
+        label: prettyRole(role.name),
+      })),
+    ],
+    [rolesResponse]
+  );
 
   // Map API response to table format
   const rawData: UserData[] = useMemo(
@@ -55,10 +63,7 @@ const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({
         name: m.full_name ?? '',
         emailAddress: m.email ?? '',
         phoneNumber: m.phone_number ?? '—',
-        role:
-          m.role?.name
-            ?.replace(/_/g, ' ')
-            .replace(/\b\w/g, (c) => c.toUpperCase()) ?? 'Unknown',
+        role: m.role?.name ? prettyRole(m.role.name) : '—',
         status: m.accepted ? 'Active' : 'Pending',
         is_owner: m.is_owner ?? false,
       })),
@@ -134,16 +139,39 @@ const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({
       },
       {
         id: 'actions',
-        cell: ({ row }) => {
-          return (
-            <div className='relative flex items-center justify-end w-full'>
-              <ActionMenu handleEdit={() => handleEdit(row.original)} />
-            </div>
-          );
-        },
+        // View only. The backend exposes just GET /users/team/members and
+        // POST /users/team/invite-member — nothing to update, deactivate or
+        // remove a member with, so no such actions are offered.
+        // TODO(api): add Edit / Deactivate once those endpoints exist.
+        cell: ({ row }) => (
+          <div className='relative flex w-full items-center justify-end'>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='h-8 w-8 cursor-pointer p-0'
+                  aria-label='Team member actions'
+                >
+                  <MoreHorizontal className='h-4 w-4 text-gray-500' />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='end'>
+                <DropdownMenuItem
+                  className='cursor-pointer'
+                  onClick={() =>
+                    show(TeamMemberDetailsModal, { member: row.original })
+                  }
+                >
+                  View details
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ),
       },
     ],
-    [handleEdit]
+    []
   );
 
   return (
@@ -154,7 +182,7 @@ const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({
         onSearchChange={setSearchValue}
         filterControl={
           <FilterMenu
-            options={ROLE_OPTIONS}
+            options={roleOptions}
             value={roleFilter}
             onChange={setRoleFilter}
           />
@@ -173,24 +201,6 @@ const UserAndPermissionTable: FC<{ handleEdit: (item?: unknown) => void }> = ({
         emptyMessage='Team members will show up here once you add them.'
       />
     </div>
-  );
-};
-
-const ActionMenu: FC<{ handleEdit: () => void }> = ({ handleEdit }) => {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant='ghost' size='sm' className='h-8 w-8 p-0'>
-          <MoreHorizontal className='h-4 w-4 text-gray-500' />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align='end'>
-        <DropdownMenuItem onClick={handleEdit}>Edit user</DropdownMenuItem>
-        <DropdownMenuItem className='text-red-600 focus:text-red-600'>
-          Deactivate user
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 };
 

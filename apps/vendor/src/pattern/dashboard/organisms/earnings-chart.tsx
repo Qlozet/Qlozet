@@ -2,7 +2,7 @@
 
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useGetEarningsChartQuery } from '@/redux/services/orders/orders.api-slice';
+import { useGetEarningsChartQuery } from '@/redux/services/business/business.api-slice';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
 import { CustomYAxisTick } from '../molecules/custom-y-axis-tick';
 import { CustomXAxisTick } from '../molecules/custom-x-axis-tick';

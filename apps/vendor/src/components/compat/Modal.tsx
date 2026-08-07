@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -9,6 +9,12 @@ interface CompatModalProps {
   show: boolean;
   closeModal: () => void;
   className?: string;
+  /**
+   * Accessible name for the dialog. `content` is arbitrary, so callers that
+   * render their own heading should still pass this — it's read by screen
+   * readers, not shown.
+   */
+  title?: string;
 }
 
 export const Modal: React.FC<CompatModalProps> = ({
@@ -16,6 +22,7 @@ export const Modal: React.FC<CompatModalProps> = ({
   show,
   closeModal,
   className,
+  title = 'Dialog',
 }) => {
   return (
     <Dialog open={show} onOpenChange={(open) => !open && closeModal()}>
@@ -29,6 +36,10 @@ export const Modal: React.FC<CompatModalProps> = ({
         onPointerDownOutside={closeModal}
         onEscapeKeyDown={closeModal}
       >
+        {/* Radix requires a DialogTitle on every DialogContent; this wrapper
+            doesn't own the markup, so the name is visually hidden. */}
+        <DialogTitle className='sr-only'>{title}</DialogTitle>
+
         <AnimatePresence>
           {show && (
             <motion.div

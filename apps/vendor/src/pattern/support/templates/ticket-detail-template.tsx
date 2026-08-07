@@ -11,6 +11,7 @@ import { GoBackButton } from '@/pattern/common/atoms/go-back-button';
 import { useGetTicketQuery } from '@/redux/services/tickets/tickets.api-slice';
 import {
   formatDateTime,
+  issueTypeLabel,
   readField,
   statusLabel,
   statusVariant,
@@ -79,7 +80,9 @@ export const TicketDetailTemplate = () => {
                 Ticket {ticketTitle}
               </h1>
               <p className='text-xs text-grey2'>
-                {readField(ticket ?? {}, 'category', 'issue_type')}
+                {issueTypeLabel(
+                  readField(ticket ?? {}, 'category', 'issue_type')
+                )}
               </p>
             </div>
           )}

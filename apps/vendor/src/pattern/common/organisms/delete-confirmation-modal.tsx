@@ -2,7 +2,12 @@
 
 import React from 'react'
 import { create, useModal } from '@ebay/nice-modal-react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { QuestionMarkIcon } from '../atoms/question-mark-icon';
 
@@ -29,10 +34,12 @@ export const DeleteProductConfirmationModal = create(({ title, description, acti
 
                 <div className='w-full flex flex-col items-center gap-y-[24px] mt-[38px]'>
                     <div className='w-full space-y-[14px]'>
-                        <h1 className='text-foreground text-lg text-center font-bold font-poppins'>
+                        {/* The visible heading is the dialog's accessible name —
+                            Radix warns if DialogContent has no DialogTitle. */}
+                        <DialogTitle className='text-foreground text-lg text-center font-bold font-poppins'>
                             {title}
-                        </h1>
-                        {description ? <p className='text-foreground text-xs font-normal'>{description}</p> : ""}
+                        </DialogTitle>
+                        {description ? <DialogDescription className='text-foreground text-xs font-normal'>{description}</DialogDescription> : ""}
                     </div>
                     <Button variant="destructive" size="lg" onClick={handleDelete} className='w-full max-w-[327px]'>{actionText}</Button>
                 </div>

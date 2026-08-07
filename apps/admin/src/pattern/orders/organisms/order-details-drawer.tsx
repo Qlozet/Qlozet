@@ -1,0 +1,309 @@
+'use client';
+
+// Order Details Drawer — Organism
+//
+// Read-only slide-over for a single order. Admin oversight only: there is no
+// admin order-detail endpoint, so the order is passed in from the cached list
+// query, and none of the vendor-side workflow (confirm / reject / fulfil /
+// shipping labels) belongs here.
+
+import React from 'react';
+import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
+import { ChevronRight, Package, Printer } from 'lucide-react';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { WorkInProgressModal } from '@/pattern/common/organisms/work-in-progress-modal';
+import {
+  formatNaira,
+  formatOrderDate,
+  orderStatusBadge,
+  readAmountPaid,
+  readCustomerName,
+  readItemImage,
+  readItemName,
+  readItemPricing,
+  readOrderId,
+  readPaymentStatus,
+  readRefundStatus,
+  readStatus,
+} from '@/lib/orders';
+import type {
+  AdminOrder,
+  AdminOrderItem,
+} from '@/redux/services/orders/orders.api-slice';
+
+interface OrderDetailsDrawerProps {
+  order: AdminOrder;
+}
+
+/* ── Shared layout atoms ── */
+
+const DetailRow = ({
+  label,
+  value,
+  isLast = false,
+}: {
+  label: string;
+  value: React.ReactNode;
+  isLast?: boolean;
+}) => (
+  <div
+    className={cn(
+      'flex items-center justify-between gap-4 px-5 py-3.5',
+      !isLast && 'border-b border-[#DDE2E5]'
+    )}
+  >
+    <span className="text-sm text-gray-500">{label}</span>
+    <span className="text-right text-sm font-medium text-[#333333]">
+      {value}
+    </span>
+  </div>
+);
+
+const SectionTitle = ({
+  children,
+  trailing,
+}: {
+  children: React.ReactNode;
+  trailing?: React.ReactNode;
+}) => (
+  <div className="flex items-center justify-between gap-3">
+    <h3 className="text-sm font-semibold text-[#0C0C0D]">{children}</h3>
+    {trailing}
+  </div>
+);
+
+const Panel = ({ children }: { children: React.ReactNode }) => (
+  <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)]">
+    {children}
+  </div>
+);
+
+/* ── Order item row ── */
+
+const OrderItemRow = ({
+  item,
+  isLast = false,
+  onOpen,
+}: {
+  item: AdminOrderItem;
+  isLast?: boolean;
+  onOpen: () => void;
+}) => {
+  const name = readItemName(item);
+  const imageUrl = readItemImage(item);
+  const { final, original, discount, quantity } = readItemPricing(item);
+
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className={cn(
+        'group flex w-full items-start gap-3 px-5 py-4 text-left transition-colors hover:bg-black/[0.03] cursor-pointer',
+        !isLast && 'border-b border-[#DDE2E5]'
+      )}
+    >
+      {/* Thumbnail */}
+      <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-200">
+        {imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={imageUrl}
+            alt={name}
+            className="size-full object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <Package className="size-5 text-gray-400" />
+        )}
+      </div>
+
+      {/* Name, price, quantity */}
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-[#333333] group-hover:text-primary transition-colors">
+          {name}
+        </p>
+
+        <div className="mt-0.5 flex flex-wrap items-baseline gap-2">
+          <span className="text-sm font-semibold text-[#0C0C0D]">
+            {formatNaira(final)}
+          </span>
+          {original !== undefined && (
+            <span className="text-xs text-gray-400 line-through">
+              {formatNaira(original)}
+            </span>
+          )}
+        </div>
+
+        {quantity > 0 && (
+          <p className="mt-0.5 text-xs text-gray-500">QTY: {quantity}</p>
+        )}
+
+        {/* The backend records a single discount amount per item, so one badge
+            is all we can honestly show. */}
+        {discount !== undefined && (
+          <span className="mt-2 inline-flex items-center rounded-md bg-[#D42620] px-2 py-0.5 text-[11px] font-semibold text-white">
+            {formatNaira(discount)} off
+          </span>
+        )}
+      </div>
+
+      <span className="mt-1 flex size-6 shrink-0 items-center justify-center rounded-full bg-white text-gray-400 transition-colors group-hover:text-primary">
+        <ChevronRight className="size-4" />
+      </span>
+    </button>
+  );
+};
+
+/* ── Drawer ── */
+
+export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
+  ({ order }) => {
+    const { visible, resolve, hide, remove } = useModal();
+
+    const handleClose = (open?: boolean | React.MouseEvent) => {
+      if (typeof open !== 'boolean' || !open) {
+        resolve({ resolved: true });
+        hide();
+        setTimeout(() => remove(), 300);
+      }
+    };
+
+    // TODO(api): per-item detail screens (Bespoke / Custom / Accessories /
+    // Fabric) aren't designed yet — the chevron parks on the WIP modal.
+    const showWorkInProgress = () => NiceModal.show(WorkInProgressModal);
+
+    const items = Array.isArray(order.items) ? order.items : [];
+    const paymentStatus = readPaymentStatus(order);
+    const refundStatus = readRefundStatus(order);
+
+    return (
+      <Sheet open={visible} onOpenChange={handleClose}>
+        <SheetContent
+          side="right"
+          className="flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white"
+          style={{
+            height: 'calc(100vh - 3rem)',
+            maxHeight: 'calc(100vh - 3rem)',
+          }}
+        >
+          {/* pr-12 keeps the title clear of the Sheet's built-in close button. */}
+          <SheetHeader className="shrink-0 py-5 pl-6 pr-12">
+            <SheetTitle className="text-xl font-semibold text-[#0C0C0D]">
+              Order details
+            </SheetTitle>
+          </SheetHeader>
+
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className="space-y-6 px-6 pb-6">
+              {/* ── Order Summary ── */}
+              <section className="space-y-3">
+                <SectionTitle>Order Summary</SectionTitle>
+                <Panel>
+                  <DetailRow label="Order ID:" value={readOrderId(order)} />
+                  <DetailRow
+                    label="Order date:"
+                    value={formatOrderDate(order.createdAt)}
+                  />
+                  <DetailRow
+                    label="Status:"
+                    value={orderStatusBadge(readStatus(order)).label}
+                  />
+                  <DetailRow
+                    label="Customer:"
+                    value={
+                      <span className="text-[#3387CC] underline underline-offset-2">
+                        {readCustomerName(order)}
+                      </span>
+                    }
+                    isLast
+                  />
+                </Panel>
+              </section>
+
+              {/* ── Order items ── */}
+              <section className="space-y-3">
+                <SectionTitle>Order items ({items.length})</SectionTitle>
+                <Panel>
+                  {items.length > 0 ? (
+                    items.map((item, index) => (
+                      <OrderItemRow
+                        key={index}
+                        item={item}
+                        isLast={index === items.length - 1}
+                        onOpen={showWorkInProgress}
+                      />
+                    ))
+                  ) : (
+                    <div className="flex flex-col items-center justify-center gap-2 px-5 py-8 text-center">
+                      <Package className="size-8 text-gray-400" />
+                      <p className="text-sm text-gray-500">
+                        This order has no items.
+                      </p>
+                    </div>
+                  )}
+                </Panel>
+              </section>
+
+              {/* ── Payment and Invoice ── */}
+              <section className="space-y-3">
+                <SectionTitle
+                  trailing={
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={showWorkInProgress}
+                      className="h-8 gap-1.5 rounded-lg px-3 text-xs font-normal text-gray-700"
+                    >
+                      <Printer className="size-3.5" />
+                      Print invoice
+                    </Button>
+                  }
+                >
+                  Payment and Invoice
+                </SectionTitle>
+                <Panel>
+                  <DetailRow
+                    label="Total"
+                    value={formatNaira(readAmountPaid(order))}
+                  />
+                  <DetailRow
+                    label="Payment Status:"
+                    value={
+                      paymentStatus ? (
+                        <span className="capitalize text-[#0F973D]">
+                          {paymentStatus}
+                        </span>
+                      ) : (
+                        '—'
+                      )
+                    }
+                  />
+                  <DetailRow
+                    label="Refund Status:"
+                    value={
+                      refundStatus ? (
+                        <span className="capitalize text-[#0F973D]">
+                          {refundStatus}
+                        </span>
+                      ) : (
+                        '—'
+                      )
+                    }
+                    isLast
+                  />
+                </Panel>
+              </section>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+);

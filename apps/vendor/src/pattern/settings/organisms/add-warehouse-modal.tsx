@@ -1,5 +1,10 @@
 // Add Warehouse Modal - Organism
-// Modal for adding a new warehouse with form validation
+// Creates a warehouse via POST /business/warehouse, or updates one via
+// PUT /business/{id}/warehouse when a warehouse is passed in.
+//
+// Fields mirror CreateWarehouseDto exactly. Default/alternate status isn't part
+// of that DTO — it's set from the table's "Set as default" action, which calls
+// the dedicated activate endpoint.
 
 import React from 'react';
 import { create, useModal } from '@ebay/nice-modal-react';
@@ -23,45 +28,51 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { X } from 'lucide-react';
+  useCreateBusinessWarehouseMutation,
+  useUpdateBusinessWarehouseMutation,
+  type BusinessWarehouse,
+} from '@/redux/services/settings/settings.api-slice';
 import { toast } from 'sonner';
 
 const warehouseSchema = z.object({
-  warehouseName: z.string().min(1, 'Warehouse name is required'),
-  vendorName: z.string().min(1, 'Vendor name is required'),
-  warehouseAddress: z.string().min(1, 'Warehouse address is required'),
-  contactName: z.string().min(1, 'Contact name is required'),
-  contactPhoneNumber: z.string().min(1, 'Contact phone number is required'),
-  contactEmail: z.string().email('Invalid email address'),
-  status: z.enum(['default', 'alternate']),
+  name: z.string().min(1, 'Warehouse name is required'),
+  address: z.string().min(1, 'Warehouse address is required'),
+  contact_name: z.string().min(1, 'Contact name is required'),
+  contact_phone: z.string().min(1, 'Contact phone number is required'),
+  contact_email: z.string().email('Invalid email address'),
 });
 
 type WarehouseFormData = z.infer<typeof warehouseSchema>;
 
 interface AddWarehouseModalProps {
-  onWarehouseAdded?: () => void;
+  /** Pass an existing warehouse to edit it; omit to create a new one. */
+  warehouse?: BusinessWarehouse;
 }
 
+const FIELDS: { name: keyof WarehouseFormData; label: string }[] = [
+  { name: 'name', label: 'Warehouse name' },
+  { name: 'address', label: 'Warehouse address' },
+  { name: 'contact_name', label: 'Contact name' },
+  { name: 'contact_phone', label: 'Contact phone number' },
+  { name: 'contact_email', label: 'Contact email address' },
+];
+
 export const AddWarehouseModal = create<AddWarehouseModalProps>(
-  ({ onWarehouseAdded }) => {
+  ({ warehouse }) => {
     const { visible, resolve, remove } = useModal();
+    const isEditing = Boolean(warehouse?._id);
+
+    const [createWarehouse] = useCreateBusinessWarehouseMutation();
+    const [updateWarehouse] = useUpdateBusinessWarehouseMutation();
 
     const form = useForm<WarehouseFormData>({
       resolver: zodResolver(warehouseSchema),
       defaultValues: {
-        warehouseName: '',
-        vendorName: '',
-        warehouseAddress: '',
-        contactName: '',
-        contactPhoneNumber: '',
-        contactEmail: '',
-        status: 'alternate',
+        name: warehouse?.name ?? '',
+        address: warehouse?.address ?? '',
+        contact_name: warehouse?.contact_name ?? '',
+        contact_phone: warehouse?.contact_phone ?? '',
+        contact_email: warehouse?.contact_email ?? '',
       },
     });
 
@@ -73,37 +84,35 @@ export const AddWarehouseModal = create<AddWarehouseModalProps>(
 
     const handleSubmit = async (data: WarehouseFormData) => {
       try {
-        // TODO: Integrate with actual API
-        console.log('Warehouse data:', data);
-
-        toast.success('Warehouse added successfully');
-        onWarehouseAdded?.();
+        if (isEditing && warehouse?._id) {
+          await updateWarehouse({ id: warehouse._id, data }).unwrap();
+          toast.success('Warehouse updated');
+        } else {
+          await createWarehouse(data).unwrap();
+          toast.success('Warehouse added');
+        }
 
         form.reset();
         resolve({ resolved: true, data });
         remove();
       } catch (error: any) {
-        toast.error(error?.message || 'Failed to add warehouse');
+        toast.error(
+          error?.data?.message ||
+            `Failed to ${isEditing ? 'update' : 'add'} warehouse`
+        );
       }
     };
 
+    const submitting = form.formState.isSubmitting;
+
     return (
       <Dialog open={visible} onOpenChange={handleCloseModal}>
-        <DialogContent className='max-w-md max-h-[90vh] overflow-hidden'>
+        <DialogContent className='max-w-lg max-h-[90vh] overflow-hidden'>
           <DialogHeader>
-            <div className='flex items-center justify-between'>
-              <DialogTitle className='text-lg font-semibold'>
-                Add new warehouse
-              </DialogTitle>
-              <Button
-                variant='ghost'
-                size='sm'
-                onClick={handleCloseModal}
-                className='h-8 w-8 p-0 rounded-full'
-              >
-                <X className='h-4 w-4' />
-              </Button>
-            </div>
+            {/* No close button here — DialogContent renders its own. */}
+            <DialogTitle className='text-lg font-semibold'>
+              {isEditing ? 'Edit Warehouse' : 'Add New Warehouse'}
+            </DialogTitle>
           </DialogHeader>
 
           <div className='overflow-y-auto max-h-[70vh] px-1'>
@@ -112,173 +121,49 @@ export const AddWarehouseModal = create<AddWarehouseModalProps>(
                 onSubmit={form.handleSubmit(handleSubmit)}
                 className='space-y-4'
               >
-                {/* Warehouse name */}
-                <FormField
-                  control={form.control}
-                  name='warehouseName'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className='text-sm font-normal text-gray-900'>
-                        Warehouse name
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='Enter warehouse name'
-                          className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Vendor name */}
-                <FormField
-                  control={form.control}
-                  name='vendorName'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className='text-sm font-normal text-gray-900'>
-                        Vendor name
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='Enter vendor name'
-                          className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Warehouse address */}
-                <FormField
-                  control={form.control}
-                  name='warehouseAddress'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className='text-sm font-normal text-gray-900'>
-                        Warehouse address
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='Enter warehouse address'
-                          className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Contact name */}
-                <FormField
-                  control={form.control}
-                  name='contactName'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className='text-sm font-normal text-gray-900'>
-                        Contact name
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='Enter contact name'
-                          className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Contact phone number */}
-                <FormField
-                  control={form.control}
-                  name='contactPhoneNumber'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className='text-sm font-normal text-gray-900'>
-                        Contact phone number
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='Enter contact phone number'
-                          className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Contact email address */}
-                <FormField
-                  control={form.control}
-                  name='contactEmail'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className='text-sm font-normal text-gray-900'>
-                        Contact email address
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type='email'
-                          placeholder='Enter contact email address'
-                          className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Set warehouse status */}
-                <FormField
-                  control={form.control}
-                  name='status'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className='text-sm font-normal text-gray-900'>
-                        Set warehouse status
-                      </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                {FIELDS.map(({ name, label }) => (
+                  <FormField
+                    key={name}
+                    control={form.control}
+                    name={name}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className='text-sm font-normal text-gray-900 dark:text-gray-200'>
+                          {label}
+                        </FormLabel>
                         <FormControl>
-                          <SelectTrigger className='bg-background dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200'>
-                            <SelectValue placeholder='Select an option' />
-                          </SelectTrigger>
+                          <Input
+                            type={
+                              name === 'contact_email'
+                                ? 'email'
+                                : name === 'contact_phone'
+                                  ? 'tel'
+                                  : 'text'
+                            }
+                            placeholder={`Enter ${label.toLowerCase()}`}
+                            className='bg-white dark:bg-muted/40 border-gray-200 dark:border-white/10 dark:text-gray-200'
+                            {...field}
+                          />
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value='default'>
-                            Default warehouse
-                          </SelectItem>
-                          <SelectItem value='alternate'>
-                            Alternate warehouse
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
 
-                {/* Submit Button */}
-                <div className='flex justify-end pt-4'>
+                <div className='flex pt-4'>
                   <Button
                     type='submit'
-                    className='bg-[#5C2D0D] hover:bg-[#4A2409] text-white px-8'
-                    disabled={form.formState.isSubmitting}
+                    className='w-full text-white px-8'
+                    disabled={submitting}
                   >
-                    {form.formState.isSubmitting ? 'Adding...' : 'Add'}
+                    {submitting
+                      ? isEditing
+                        ? 'Saving...'
+                        : 'Adding...'
+                      : isEditing
+                        ? 'Save changes'
+                        : 'Add'}
                   </Button>
                 </div>
               </form>

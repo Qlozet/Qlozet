@@ -13,7 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
@@ -24,19 +23,13 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { FormSectionHeader } from '@/pattern/settings/atoms/form-section-header';
+import { ISSUE_TYPES } from '../lib/ticket-fields';
 
 interface SupportFormProps {
-  onSubmit: (data: SupportData) => void;
+  /** Resolves true when the ticket was created — only then are fields cleared. */
+  onSubmit: (data: SupportData) => Promise<boolean> | boolean;
   isLoading?: boolean;
 }
-
-const ISSUE_TYPES = [
-  { value: 'general', label: 'General Inquiry' },
-  { value: 'pricing', label: 'Pricing' },
-  { value: 'feature', label: 'Feature Request' },
-  { value: 'bugs', label: 'Bugs and Issues' },
-  { value: 'others', label: 'Others' },
-];
 
 export const SupportForm: React.FC<SupportFormProps> = ({
   onSubmit,
@@ -50,9 +43,10 @@ export const SupportForm: React.FC<SupportFormProps> = ({
     },
   });
 
-  const handleSubmit = (data: SupportData) => {
-    onSubmit(data);
-    form.reset();
+  // Keep the vendor's input on failure so a retry doesn't mean retyping it.
+  const handleSubmit = async (data: SupportData) => {
+    const created = await onSubmit(data);
+    if (created) form.reset();
   };
 
   return (
@@ -98,7 +92,7 @@ export const SupportForm: React.FC<SupportFormProps> = ({
                 <FormControl>
                   <Textarea
                     placeholder='Give a summary of the problem you are presently encountering.'
-                    className='resize-none min-h-[120px]'
+                    className='resize-none min-h-30'
                     {...field}
                   />
                 </FormControl>
@@ -111,7 +105,7 @@ export const SupportForm: React.FC<SupportFormProps> = ({
             <Button
               type='submit'
               disabled={isLoading}
-              className='min-w-[14rem]'
+              className='min-w-56 w-full'
             >
               {isLoading ? 'Submitting...' : 'Submit'}
             </Button>

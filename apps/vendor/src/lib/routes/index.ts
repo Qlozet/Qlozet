@@ -35,6 +35,7 @@ export const APP_ROUTES = {
   users: '/users',
   settings: '/settings',
   support: '/support',
+  supportCreateTicket: '/support/create-ticket',
   add: '/add',
   details: '/details',
   cookiePolicy: '/cookie-policy',

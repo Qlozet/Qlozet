@@ -2,7 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Sparkles, Send, Plus, History, ArrowLeft, Loader2 } from 'lucide-react';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
@@ -156,12 +161,12 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
                 <Sparkles className='h-4 w-4 text-primary' />
               </span>
               <div>
-                <p className='text-sm font-semibold text-foreground'>
+                <SheetTitle className='text-sm font-semibold text-foreground'>
                   Business Assistant
-                </p>
-                <p className='text-[10px] text-muted-foreground'>
+                </SheetTitle>
+                <SheetDescription className='text-[10px] text-muted-foreground'>
                   Insights on your store · beta
-                </p>
+                </SheetDescription>
               </div>
             </div>
           </div>
