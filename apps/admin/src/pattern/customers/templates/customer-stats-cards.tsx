@@ -3,7 +3,6 @@
 import type { ReactNode } from 'react';
 import { Users, MapPin, UserCheck, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { APP_ROUTES } from '@/lib/routes';
 import { MetricCard } from '@/pattern/common/molecules/metric-card';
 import { StatsCardSkeleton } from '@/pattern/dashboard/molecules/stats-card-skeleton';
 import { useGetAdminDashboardQuery } from '@/redux/services/dashboard/dashboard.api-slice';
@@ -68,7 +67,6 @@ export const CustomerStatsCards = ({
             <Users className="size-6" />
           </CardIcon>
         }
-        viewAllLink={APP_ROUTES.customers}
       />
       <MetricCard
         title="Highest customer by location"
@@ -87,7 +85,6 @@ export const CustomerStatsCards = ({
             <UserCheck className="size-6" />
           </CardIcon>
         }
-        viewAllLink={APP_ROUTES.customers}
       />
       <MetricCard
         title="Customer favorite"

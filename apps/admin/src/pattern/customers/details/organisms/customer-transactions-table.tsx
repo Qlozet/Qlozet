@@ -3,9 +3,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import NiceModal from '@ebay/nice-modal-react';
 import type { PaginationState } from '@tanstack/react-table';
-import { WorkInProgressModal } from '@/pattern/common/organisms/work-in-progress-modal';
+import { toast } from 'sonner';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
+import { downloadCsv, toCsv } from '@/lib/csv';
+import { formatDate } from '@/lib/customers';
+import { TransactionDetailModal } from './transaction-detail-modal';
 import { useGetCustomerTransactionsQuery } from '@/redux/services/transactions/transactions.api-slice';
 import { createCustomerTransactionsColumns } from '../molecules/customer-transactions-columns';
 
@@ -41,10 +44,39 @@ export const CustomerTransactionsTable = () => {
     paginated?.totalCount ?? paginated?.total ?? transactions.length;
   const pageCount = Math.max(Math.ceil(totalCount / pagination.pageSize), 1);
 
-  const showWip = () => NiceModal.show(WorkInProgressModal);
+  // No date filter: the transactions endpoint takes no date params, and the
+  // list is already scoped to this customer.
+  const handleExport = () => {
+    if (transactions.length === 0) {
+      toast.info('There are no transactions to export.');
+      return;
+    }
+    downloadCsv(
+      'customer-transactions.csv',
+      toCsv(
+        ['Date', 'Transaction ID', 'Type', 'Narration', 'Amount', 'Status'],
+        transactions.map((t) => [
+          formatDate(t.createdAt),
+          t.transactionId || t.reference || t._id,
+          t.type ?? '—',
+          t.narration || t.description || '—',
+          typeof t.amount === 'number'
+            ? `${t.currency || 'NGN'} ${t.amount}`
+            : '—',
+          t.status ?? '—',
+        ])
+      )
+    );
+  };
 
+  // No per-transaction endpoint exists; the modal renders the record this list
+  // already returned.
   const columns = useMemo(
-    () => createCustomerTransactionsColumns({ onViewDetails: showWip }),
+    () =>
+      createCustomerTransactionsColumns({
+        onViewDetails: (transaction) =>
+          NiceModal.show(TransactionDetailModal, { transaction }),
+      }),
     []
   );
 
@@ -65,8 +97,8 @@ export const CustomerTransactionsTable = () => {
           title="Recent Transactions"
           search={search}
           onSearchChange={setSearch}
-          onFilterDate={showWip}
-          onExport={showWip}
+          onExport={handleExport}
+          showFilter={false}
           filterLabel="Filter By :"
           filterIcon={null}
         />

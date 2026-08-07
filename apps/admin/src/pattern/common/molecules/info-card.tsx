@@ -21,6 +21,10 @@ export interface InfoCardProps {
 // Single labelled info cell used across the vendor and customer detail grids.
 // A card shows a muted label, a value, and one optional right-side affordance:
 // a text link, a pencil edit button, or the value itself as a link.
+//
+// The text link needs both a label and a handler. Rendering it on the label
+// alone produces a button that looks actionable and does nothing — which is how
+// "Not uploaded · View document" ended up on the vendor detail page.
 export const InfoCard = ({
   label,
   value,
@@ -61,7 +65,7 @@ export const InfoCard = ({
           </p>
         )}
 
-        {linkLabel ? (
+        {linkLabel && onLinkClick ? (
           <button
             type="button"
             onClick={onLinkClick}

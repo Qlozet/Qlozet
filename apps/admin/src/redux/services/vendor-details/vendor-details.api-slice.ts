@@ -37,13 +37,10 @@ export interface VendorActivity {
 
 export interface VendorComplaint {
   _id: string;
-  reference?: string;
-  ticket_id?: string;
-  title?: string;
-  subject?: string;
+  /** Owning business id — the only reliable way to scope tickets to a vendor. */
+  business?: string;
+  issue_type?: string;
   description?: string;
-  message?: string;
-  date?: string;
   createdAt?: string;
   status?: string;
   [key: string]: unknown;
@@ -60,18 +57,39 @@ export interface VendorTableParams {
 export const vendorDetailsApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // Products belonging to a vendor (Top Products table)
+    //
+    // NOT /products/by-vendor: that endpoint takes no business id at all (its
+    // params are kind/page/size) and resolves the vendor from the caller's own
+    // JWT, so an admin — who has no business on their session — gets
+    // "Vendor business ID is missing from your session".
+    //
+    // The filter param is `business_id`, not `businessId`. An unrecognised
+    // param is silently ignored rather than rejected, so the camelCase spelling
+    // returned every product on the platform under one vendor's heading.
     getVendorProducts: builder.query<
       ApiResponse<PaginatedData<VendorProduct>>,
       VendorTableParams
     >({
-      query: ({ businessId, page, size }) => ({
-        url: `/products/by-vendor${buildQueryString({ businessId, page, size })}`,
+      query: ({ businessId, page, size, search }) => ({
+        url: `/products${buildQueryString({
+          business_id: businessId,
+          page,
+          size,
+          search: search || undefined,
+        })}`,
         method: 'GET',
       }),
       providesTags: ['Products'],
     }),
 
     // Wallet activity / transactions for a vendor (Activity Log table)
+    //
+    // TODO(api): there is no admin-visible endpoint for another vendor's
+    // transactions. `/transactions/vendor` is session-scoped exactly like
+    // /products/by-vendor and fails with "Cannot read properties of undefined
+    // (reading 'toString')" when the caller has no business. Kept pointing at
+    // it so the table surfaces a real error instead of silently showing
+    // somebody else's ledger; it needs a backend endpoint to work.
     getVendorActivityLog: builder.query<
       ApiResponse<PaginatedData<VendorActivity>>,
       VendorTableParams
@@ -93,23 +111,32 @@ export const vendorDetailsApiSlice = baseAPI.injectEndpoints({
       ApiResponse<PaginatedData<VendorComplaint>>,
       VendorTableParams
     >({
-      // TODO(api): /admin/tickets has no business/vendor filter — its params
-      // are search, status, assigned_to, start_date, end_date, page, size. The
-      // best available scoping is a text search for the business id, so results
-      // are at worst empty; they are never another vendor's.
+      // /admin/tickets has no business filter — its params are search, status,
+      // assigned_to, start_date, end_date, page, size — but every ticket does
+      // carry a `business` id, so the scoping is done here instead.
       //
-      // `search ?? businessId` used to leave this UNSCOPED: the caller passes
-      // '' for an empty search box, and `??` only catches null/undefined, so an
-      // empty string went through, buildQueryString dropped it, and the request
-      // returned EVERY ticket on the platform under one vendor's page.
-      query: ({ businessId, page, size }) => ({
-        url: `/admin/tickets${buildQueryString({
-          search: businessId,
-          page,
-          size,
-        })}`,
+      // The previous approach passed the business id as `search`, which can
+      // never match: search compares against `description` and `issue_type`
+      // only, so the table was always empty. A page is fetched and filtered by
+      // the real field instead.
+      query: () => ({
+        url: `/admin/tickets${buildQueryString({ page: 1, size: 200 })}`,
         method: 'GET',
       }),
+      transformResponse: (
+        response: ApiResponse<PaginatedData<VendorComplaint>>,
+        _meta,
+        arg: VendorTableParams
+      ) => {
+        const all = response?.data?.data ?? [];
+        const mine = all.filter(
+          (ticket) => String(ticket.business ?? '') === String(arg.businessId)
+        );
+        return {
+          ...response,
+          data: { ...response.data, data: mine, total_items: mine.length },
+        };
+      },
       providesTags: ['Tickets'],
     }),
   }),

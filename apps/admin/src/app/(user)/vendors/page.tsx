@@ -42,23 +42,12 @@ const VendorsPage = () => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
-  const showAddVendor = () => NiceModal.show(WorkInProgressModal);
-
   return (
     <div className="w-full min-h-screen h-fit space-y-6 pb-10">
-      {/* Add Vendor */}
-      <div>
-        <button
-          type="button"
-          onClick={showAddVendor}
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity cursor-pointer"
-        >
-          Add Vendor
-          <span className="flex size-5 items-center justify-center rounded-full bg-white/20">
-            <Plus className="size-3.5" />
-          </span>
-        </button>
-      </div>
+      {/* No Add Vendor action: vendors self-register through
+          POST /auth/register/vendor, which sets a password and sends an email
+          verification link. There is no admin-side create endpoint, so this
+          console can only review and approve businesses, not create them. */}
 
       {/* Vendor metrics */}
       <VendorStatsCards totalFromList={totalCount} />

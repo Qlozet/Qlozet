@@ -5,7 +5,6 @@ import NiceModal from '@ebay/nice-modal-react';
 import { toast } from 'sonner';
 import { APP_ROUTES } from '@/lib/routes';
 import { GoBackButton } from '@/pattern/admin/atoms/go-back-button';
-import { WorkInProgressModal } from '@/pattern/common/organisms/work-in-progress-modal';
 import {
   populatedReplies,
   useGetTicketByIdQuery,
@@ -93,10 +92,6 @@ export const TicketDetailTemplate = () => {
       description: ticket?.description ?? '',
     });
 
-  // No backend support yet: PATCH /tickets/{id} takes no `status`, and there is
-  // no flag endpoint at all. Surface the shared WIP modal instead of pretending.
-  const showWip = () => NiceModal.show(WorkInProgressModal);
-
   const loading = isLoading || isFetching || isFetchingList;
 
   // Only a genuine dead end once both the direct fetch and the fallback fail.
@@ -139,7 +134,6 @@ export const TicketDetailTemplate = () => {
                 isSending={isSending}
                 onSendReply={handleSendReply}
                 onCopyId={handleCopyId}
-                onFlag={showWip}
               />
             </div>
 
@@ -150,7 +144,6 @@ export const TicketDetailTemplate = () => {
                 isLoading={loading}
                 onReassign={handleReassign}
                 onEdit={handleEdit}
-                onResolve={showWip}
               />
             </div>
           </div>

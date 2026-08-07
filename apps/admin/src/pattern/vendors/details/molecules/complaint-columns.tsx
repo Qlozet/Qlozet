@@ -5,6 +5,12 @@ import { ShoppingBag } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import {
+  formatDate,
+  shortTicketId,
+  ticketCategory,
+  ticketSubject,
+} from '@/pattern/support/lib/ticket-fields';
 import type { VendorComplaint } from '@/redux/services/vendor-details/vendor-details.api-slice';
 
 const ICON_BG = [
@@ -52,14 +58,14 @@ export const createComplaintColumns = ({
             <ShoppingBag className="size-4" />
           </div>
           <div className="flex flex-col gap-1">
+            {/* Tickets carry no reference/subject fields — the id tail and the
+                issue type stand in for them. */}
             <span className="text-sm font-semibold text-[hsla(210,9%,31%,1)]">
-              {c.reference ?? c.ticket_id ?? '—'}
+              {shortTicketId(c._id)}
             </span>
-            <span className="text-xs text-gray-500">
-              {c.title ?? c.subject ?? 'Issue'}
-            </span>
+            <span className="text-xs text-gray-500">{ticketCategory(c)}</span>
             <span className="max-w-[420px] text-xs text-gray-500">
-              {c.description ?? c.message ?? ''}
+              {ticketSubject(c)}
             </span>
           </div>
         </div>
@@ -72,7 +78,7 @@ export const createComplaintColumns = ({
     header: 'Date',
     cell: ({ row }) => (
       <span className="text-sm text-gray-600 whitespace-nowrap">
-        {row.original.date ?? row.original.createdAt ?? '—'}
+        {formatDate(row.original.createdAt)}
       </span>
     ),
     enableSorting: false,

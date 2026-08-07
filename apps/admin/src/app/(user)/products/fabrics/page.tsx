@@ -9,7 +9,6 @@ import { APP_ROUTES } from '@/lib/routes';
 import { ProductsStats } from '@/pattern/products/templates/products-stats';
 import { FabricProductsTemplate } from '@/pattern/products/templates/fabric-products-template';
 import { AddFabricModal } from '@/pattern/products/organisms/add-fabric-modal';
-import { WorkInProgressModal } from '@/pattern/common/organisms/work-in-progress-modal';
 import type { DonutDatum } from '@/pattern/dashboard/molecules/donut-chart';
 import { useGetProductsQuery } from '@/redux/services/products/products.api-slice';
 
@@ -59,14 +58,8 @@ export default function FabricsPage() {
     <div className="w-full min-h-screen h-fit space-y-6 pb-10">
       {/* Header actions */}
       <div className="flex justify-end gap-3">
-        <Button
-          variant="outline"
-          onClick={() => NiceModal.show(WorkInProgressModal)}
-          className="h-11 gap-2 rounded-lg px-5 text-sm"
-        >
-          Import Products
-          <Download className="size-4" />
-        </Button>
+        {/* No Import Products action: the backend has no bulk product import
+            endpoint, so there is nothing an import dialog could submit to. */}
         <Button
           onClick={() => NiceModal.show(AddFabricModal)}
           className="h-11 gap-2 rounded-lg px-5 text-sm"
