@@ -1,11 +1,18 @@
-// Qlozet Admin Layout — last deployed 2026-06-04
-import type { Metadata } from "next";
-import "./globals.css";
-import { Providers } from "@/redux/provider";
+import type { Metadata, Viewport } from 'next';
+import './globals.css';
+import { Providers } from '@/redux/provider';
+import { rootMetadata, siteConfig } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: "Qlozet Admin",
-  description: "Qlozet admin panel",
+// Title/description/OG/Twitter/robots all live in src/lib/seo.ts.
+// Icons come from the file conventions in this directory: icon.svg,
+// apple-icon.png, favicon.ico and opengraph-image.png.
+export const metadata: Metadata = rootMetadata;
+
+export const viewport: Viewport = {
+  themeColor: siteConfig.themeColor,
+  colorScheme: 'light',
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -21,4 +28,3 @@ export default function RootLayout({
     </html>
   );
 }
-
