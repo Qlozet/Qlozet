@@ -9,7 +9,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { create, useModal } from '@ebay/nice-modal-react';
 import NiceModal from '@ebay/nice-modal-react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
   Ruler,
@@ -38,13 +37,13 @@ import {
 import {
   getCustomerIdentifier,
   getCustomerName,
-  getCustomerInitial,
   getCustomerStatus,
   formatCount,
   type CustomerStatusVariant,
 } from '@/lib/customers';
 import { APP_ROUTES } from '@/lib/routes';
 import { CustomerMeasurementsModal } from '../details/organisms/customer-measurements-modal';
+import { CustomerAvatar } from '../atoms/customer-avatar';
 
 const STATUS_BADGE_VARIANT: Record<
   CustomerStatusVariant,
@@ -315,7 +314,8 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
     return (
       <Dialog open={visible} onOpenChange={handleClose}>
         <DialogContent className='max-w-2xl p-0 gap-0 bg-white dark:bg-card'>
-          <DialogHeader className='border-b border-border px-6 py-4'>
+          {/* text-left: DialogHeader centres its title below `sm` by default */}
+          <DialogHeader className='border-b border-border px-6 py-4 text-left'>
             <DialogTitle className='text-base font-semibold text-[#0C0C0D] dark:text-white'>
               Customer details
             </DialogTitle>
@@ -335,21 +335,7 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
             ) : customer ? (
               <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
                 <div className='flex items-center gap-4'>
-                  {customer.profile_picture ? (
-                    <div className='relative size-16 shrink-0 overflow-hidden rounded-full bg-gray-100'>
-                      <Image
-                        src={customer.profile_picture}
-                        alt={getCustomerIdentifier(customer)}
-                        fill
-                        className='object-cover'
-                        sizes='64px'
-                      />
-                    </div>
-                  ) : (
-                    <span className='flex size-16 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xl font-semibold text-primary'>
-                      {getCustomerInitial(customer)}
-                    </span>
-                  )}
+                  <CustomerAvatar customer={customer} size='lg' />
                   <div className='min-w-0'>
                     <div className='flex flex-wrap items-center gap-2'>
                       <h3 className='text-base font-semibold text-[#0C0C0D] dark:text-white'>

@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Sparkles, Send, Plus, History, ArrowLeft, Loader2 } from 'lucide-react';
+import { Sparkles, Send, Plus, History, ArrowLeft, Loader2, X } from 'lucide-react';
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetTitle,
@@ -139,7 +140,7 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side='right'
-        className='flex w-full flex-col overflow-hidden p-0 sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] sm:max-w-md sm:rounded-[15px] !bg-white dark:!bg-card border border-gray-100 dark:border-border'
+        className='flex w-full flex-col overflow-hidden p-0 sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] sm:max-w-md sm:rounded-[15px] !bg-white dark:!bg-card border border-gray-100 dark:border-border [&>button:last-of-type]:hidden'
       >
         {/* Fixed-height flex column: header + history are fixed, messages scroll,
             composer is pinned to the bottom. */}
@@ -150,7 +151,7 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
             {!isEmpty && (
               <button
                 onClick={startNew}
-                className='rounded-lg p-1 hover:bg-muted'
+                className='cursor-pointer rounded-lg p-1 hover:bg-muted'
                 aria-label='Back'
               >
                 <ArrowLeft className='h-4 w-4 text-muted-foreground' />
@@ -174,7 +175,7 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
             <button
               onClick={() => setShowHistory((s) => !s)}
               className={cn(
-                'rounded-lg p-2 hover:bg-muted',
+                'cursor-pointer rounded-lg p-2 hover:bg-muted',
                 showHistory && 'bg-muted',
               )}
               aria-label='Chat history'
@@ -183,11 +184,19 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
             </button>
             <button
               onClick={startNew}
-              className='rounded-lg p-2 hover:bg-muted'
+              className='cursor-pointer rounded-lg p-2 hover:bg-muted'
               aria-label='New chat'
             >
               <Plus className='h-4 w-4 text-muted-foreground' />
             </button>
+            {/* SheetContent's own absolutely-positioned close is hidden above
+                so it can't overlap these actions — this is its replacement. */}
+            <SheetClose
+              className='cursor-pointer rounded-lg p-2 hover:bg-muted'
+              aria-label='Close'
+            >
+              <X className='h-4 w-4 text-muted-foreground' />
+            </SheetClose>
           </div>
         </div>
 
@@ -207,7 +216,7 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
                 <button
                   key={c._id}
                   onClick={() => openThread(c._id)}
-                  className='block w-full truncate rounded-lg px-2 py-2 text-left text-xs text-foreground hover:bg-muted'
+                  className='block w-full cursor-pointer truncate rounded-lg px-2 py-2 text-left text-xs text-foreground hover:bg-muted'
                 >
                   {c.title}
                 </button>
@@ -237,7 +246,7 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
                   <button
                     key={s}
                     onClick={() => submit(s)}
-                    className='rounded-xl border border-border bg-background px-3 py-2 text-left text-xs text-foreground hover:bg-muted dark:bg-[#4A4949]/40'
+                    className='cursor-pointer rounded-xl border border-border bg-background px-3 py-2 text-left text-xs text-foreground hover:bg-muted dark:bg-[#4A4949]/40'
                   >
                     {s}
                   </button>

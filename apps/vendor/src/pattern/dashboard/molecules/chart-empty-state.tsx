@@ -12,46 +12,42 @@ interface ChartEmptyStateProps {
     message?: string;
     /** Secondary helper text */
     description?: string;
+    /**
+     * Matches the wrapped chart's height so the card keeps its size when there
+     * is nothing to plot. Defaults to the common 250px chart height.
+     */
+    height?: number;
 }
 
+// When there's no data the chart isn't rendered at all — an earlier version
+// drew a faint "ghost" chart from placeholder numbers and floated this message
+// over it, which both invented data and sat on top of the bars.
 export const ChartEmptyState = ({
     children,
     isEmpty,
     variant = "bar",
     message = "No data yet",
     description,
+    height = 250,
 }: ChartEmptyStateProps) => {
     if (!isEmpty) return <>{children}</>;
 
     const Icon = variant === "pie" ? PieChartIcon : BarChart3;
 
     return (
-        <div className="relative">
-            {/* Ghost chart — very faint, non-interactive */}
-            <div className="opacity-[0.12] pointer-events-none select-none" aria-hidden="true">
-                {children}
-            </div>
-
-            {/* Centered overlay */}
-            <div className="absolute inset-0 flex items-center justify-center z-10">
-                <div className="text-center px-5 py-4 max-w-[240px] rounded-xl bg-background/70 dark:bg-card/70 backdrop-blur-sm">
-                    <div className="mx-auto mb-2.5 flex items-center justify-center">
-                        <Icon
-                            size={32}
-                            className="text-muted-foreground"
-                            strokeWidth={1.5}
-                        />
-                    </div>
-                    <p className="text-sm font-semibold text-foreground">
-                        {message}
-                    </p>
-                    {description && (
-                        <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                            {description}
-                        </p>
-                    )}
-                </div>
-            </div>
+        <div
+            className="flex w-full flex-col items-center justify-center px-5 text-center"
+            style={{ minHeight: height }}
+        >
+            <Icon size={32} className="text-muted-foreground" strokeWidth={1.5} />
+            <p className="mt-2.5 text-sm font-semibold text-foreground">
+                {message}
+            </p>
+            {description && (
+                <p className="mt-1.5 max-w-60 text-xs leading-relaxed text-muted-foreground">
+                    {description}
+                </p>
+            )}
         </div>
     );
 };

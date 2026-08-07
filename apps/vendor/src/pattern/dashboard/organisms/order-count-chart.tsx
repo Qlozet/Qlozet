@@ -8,16 +8,6 @@ import { CustomYAxisTick } from '../molecules/custom-y-axis-tick';
 import { CustomXAxisTick } from '../molecules/custom-x-axis-tick';
 import { ChartEmptyState } from '../molecules/chart-empty-state';
 
-const PLACEHOLDER_DATA = [
-    { day: "Mon", earnings: 12 },
-    { day: "Tue", earnings: 19 },
-    { day: "Wed", earnings: 8 },
-    { day: "Thu", earnings: 24 },
-    { day: "Fri", earnings: 15 },
-    { day: "Sat", earnings: 20 },
-    { day: "Sun", earnings: 6 },
-];
-
 export const OrderCountChart = () => {
     const { data: chartResponse, isLoading } = useGetOrdersChartQuery();
 
@@ -28,12 +18,10 @@ export const OrderCountChart = () => {
     const seriesData = chartResponse?.data?.charts?.orderCountByDay?.series?.[0]?.data ?? [];
     const hasData = seriesData.length > 0 && seriesData.some((item: any) => item.value > 0);
 
-    const chartData = hasData
-        ? seriesData.map((item: any) => ({
+    const chartData = seriesData.map((item: any) => ({
             day: item.label,
             earnings: item.value, // reusing "earnings" key since the BarChart is bound to it
-        }))
-        : PLACEHOLDER_DATA;
+        }));
 
     const maxEarnings = Math.max(...chartData.map((d: any) => d.earnings), 0);
 
@@ -47,6 +35,7 @@ export const OrderCountChart = () => {
                     isEmpty={!hasData}
                     variant="bar"
                     description="Order count trends will show here as orders come in"
+                    height={350}
                 >
                     <ResponsiveContainer width="100%" height={350}>
                         <BarChart

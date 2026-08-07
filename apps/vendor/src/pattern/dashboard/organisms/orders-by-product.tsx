@@ -11,13 +11,6 @@ import { ChartEmptyState } from "../molecules/chart-empty-state";
 
 const COLORS = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)'];
 
-const PLACEHOLDER_DATA = [
-    { name: "Accessory", value: 35 },
-    { name: "Custom", value: 25 },
-    { name: "Fabric", value: 20 },
-    { name: "Non-Custom", value: 20 },
-];
-
 const renderLegend = (props: any): JSX.Element => {
     const payload = props?.payload ?? [];
 
@@ -49,7 +42,7 @@ export const OrdersByProduct = () => {
         const rawKindData = chartResponse?.data?.charts?.ordersByProductKind?.series?.[0]?.data;
 
         if (!rawKindData || rawKindData.length === 0) {
-            return { chartData: PLACEHOLDER_DATA, hasData: false };
+            return { chartData: [], hasData: false };
         }
 
         const processed = rawKindData.map((item: any) => ({
@@ -58,7 +51,7 @@ export const OrdersByProduct = () => {
         })).filter((d: any) => d.value > 0).sort((a: any, b: any) => b.value - a.value);
 
         if (processed.length === 0) {
-            return { chartData: PLACEHOLDER_DATA, hasData: false };
+            return { chartData: [], hasData: false };
         }
 
         return { chartData: processed, hasData: true };

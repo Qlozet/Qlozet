@@ -88,7 +88,7 @@ export const Sidebar = () => {
                                             onValueChange={(val) => setExpandedItem(val)}
                                         >
                                             <AccordionItem value={`item-${idx}`} className="border-none">
-                                                <AccordionTrigger className="flex items-center justify-center 2xl:justify-start gap-x-0 2xl:gap-x-3 px-2 2xl:px-4 py-2 2xl:py-3 text-[#ACB5BD] dark:text-gray-400 hover:text-secondary dark:hover:text-white transition-colors text-sm font-normal data-[state=open]:text-primary dark:data-[state=open]:text-white hover:no-underline cursor-pointer border-none outline-none shadow-none duration-300">
+                                                <AccordionTrigger className="flex items-center justify-center 2xl:justify-start gap-x-0 2xl:gap-x-3 px-2 2xl:px-4 py-2 2xl:py-3 text-grey4 dark:text-gray-400 [&_svg]:text-[#ACB5BD] hover:text-secondary dark:hover:text-white hover:[&_svg]:text-secondary dark:hover:[&_svg]:text-white transition-colors text-sm font-normal data-[state=open]:text-primary dark:data-[state=open]:text-white data-[state=open]:[&_svg]:text-primary dark:data-[state=open]:[&_svg]:text-white hover:no-underline cursor-pointer border-none outline-none shadow-none duration-300">
                                                     <span> <item.icon className="w-6 h-6 transition-colors duration-75" /></span>
                                                     <span className="invisible hidden 2xl:visible 2xl:inline-block">{item.label}</span>
                                                 </AccordionTrigger>

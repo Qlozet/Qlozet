@@ -104,8 +104,12 @@ export const createTransactionColumns = (
         type='button'
         variant='outline'
         size='sm'
-        onClick={() => onViewDetails(row.original)}
-        className='text-xs'
+        onClick={(e) => {
+          // The whole row opens the same modal — don't fire it twice.
+          e.stopPropagation();
+          onViewDetails(row.original);
+        }}
+        className='cursor-pointer text-xs'
       >
         View Details
       </Button>

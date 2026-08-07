@@ -9,7 +9,8 @@ import { type CompanyDetailsData } from '@/lib/validations/settings';
 import { toast } from 'sonner';
 
 // Import existing components for other sections
-import BillingAndInvoice from '@/components/Settings/BillingAndInvioceInfo';
+// TODO(api): restore alongside the Billing tab.
+// import BillingAndInvoice from '@/components/Settings/BillingAndInvioceInfo';
 import { WarehouseContent } from './warehouse-content';
 import UserAndPermission from '@/components/Settings/UserAndPermission/UserAndPermssion';
 import Category from '@/components/Settings/Category/Category';
@@ -85,8 +86,11 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
           />
         );
 
-      case 'Billing':
-        return <BillingAndInvoice />;
+      // TODO(api): Billing and Security are hidden from the nav (see
+      // lib/settings-tabs.ts) until endpoints exist — the forms were wired to
+      // empty handlers.
+      // case 'Billing':
+      //   return <BillingAndInvoice />;
 
       case 'Warehouses':
         return <WarehouseContent />;
@@ -100,12 +104,8 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
       case 'Order Settings':
         return <OrderSettingsContent />;
 
-      case 'Security':
-        return (
-          <div className='bg-white dark:bg-card dark:border dark:border-white/10 rounded-lg p-6'>
-            <p className='text-gray-500'>Security settings coming soon...</p>
-          </div>
-        );
+      // case 'Security':
+      //   return <SecurityContent />;
 
       default:
         return null;

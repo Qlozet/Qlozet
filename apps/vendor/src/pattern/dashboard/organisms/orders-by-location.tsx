@@ -7,14 +7,6 @@ import { ChartSkeleton } from '../molecules/chart-skeleton';
 import { CustomChartTooltip } from '../molecules/custom-chart-tooltip';
 import { ChartEmptyState } from '../molecules/chart-empty-state';
 
-const PLACEHOLDER_DATA = [
-    { label: "LAGOS", orders: 32 },
-    { label: "ABUJA", orders: 22 },
-    { label: "RIVERS", orders: 14 },
-    { label: "KANO", orders: 9 },
-    { label: "OYO", orders: 7 },
-];
-
 export const OrdersByLocation = () => {
     const { data: chartResponse, isLoading } = useGetOrdersChartQuery();
 
@@ -32,12 +24,10 @@ export const OrdersByLocation = () => {
         ordersSeries.data.some((item: any) => item.value > 0);
 
     // One bar per state = total orders (clean, always populated when there are orders).
-    const chartData = hasData
-        ? ordersSeries.data.map((item: any) => ({
+    const chartData = ordersSeries.data.map((item: any) => ({
             label: item.label?.toUpperCase() ?? 'UNKNOWN',
             orders: item.value ?? 0,
-        }))
-        : PLACEHOLDER_DATA;
+        }));
 
     return (
         <>

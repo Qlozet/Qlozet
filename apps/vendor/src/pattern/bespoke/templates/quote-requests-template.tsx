@@ -89,7 +89,7 @@ export const QuoteRequestsTemplate = () => {
               <button
                 key={q._id}
                 onClick={() => open(q)}
-                className='flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-card text-left transition-shadow hover:shadow-md sm:w-[220px]'
+                className='flex w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-border bg-card text-left transition-shadow hover:shadow-md sm:w-[220px]'
               >
                 <div className='relative h-40 w-full bg-muted'>
                   {img ? (

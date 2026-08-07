@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Typography from '../Typography';
-import Profile from '../Profile.js';
+import Profile from '../Profile';
 import { UserDetails } from '@/types';
 import { Search, Bell, Menu, User, Sparkles } from 'lucide-react';
 import { useGetUnreadCountQuery } from '@/redux/services/notifications/notifications.api-slice';

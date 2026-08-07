@@ -11,7 +11,6 @@ import Link from 'next/link';
 import { Users, MapPin, UserCheck, Heart, Eye } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { APP_ROUTES } from '@/lib/routes';
 import { If } from '@/pattern/common/atoms/If';
 import { StatsCardSkeleton } from '@/pattern/dashboard/molecules/stats-card-skeleton';
 
@@ -69,11 +68,17 @@ interface CustomerStatsSectionProps {
   /** Total customer count from the paginated response. */
   total?: number;
   isLoading?: boolean;
+  /**
+   * Anchor the "View All" links scroll to (the customers table). These cards
+   * live on the customers page itself, so linking to /customers was a no-op.
+   */
+  tableHref?: string;
 }
 
 export const CustomerStatsSection: React.FC<CustomerStatsSectionProps> = ({
   total,
   isLoading = false,
+  tableHref = '#customers-table',
 }) => {
   if (isLoading) {
     return (
@@ -95,7 +100,7 @@ export const CustomerStatsSection: React.FC<CustomerStatsSectionProps> = ({
             <Users className='size-6' />
           </CardIcon>
         }
-        viewAllLink={APP_ROUTES.customers}
+        viewAllLink={tableHref}
       />
       <MetricCard
         title='Highest customer by location'
@@ -114,7 +119,7 @@ export const CustomerStatsSection: React.FC<CustomerStatsSectionProps> = ({
             <UserCheck className='size-6' />
           </CardIcon>
         }
-        viewAllLink={APP_ROUTES.customers}
+        viewAllLink={tableHref}
       />
       <MetricCard
         title='Customer favorite'

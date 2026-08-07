@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMarkNotificationAsViewedMutation } from '@/redux/services/notifications/notifications.api-slice';
-import { Package, Truck, CreditCard, Scissors, ShoppingBag, Users, Settings, Bell, Layers } from 'lucide-react';
+import { Package, Truck, CreditCard, Scissors, ShoppingBag, Users, Settings, Bell, Layers, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
@@ -52,17 +52,17 @@ interface NotificationProps {
 
 const Notification = ({ id, read, title, desc, date, category }: NotificationProps) => {
   const [isRead, setIsRead] = useState(read);
-  const [markAsViewed] = useMarkNotificationAsViewedMutation();
+  const [markAsViewed, { isLoading: isMarking }] =
+    useMarkNotificationAsViewedMutation();
 
-  const handleClick = async () => {
-    if (!isRead) {
-      try {
-        setIsRead(true);
-        await markAsViewed(id).unwrap();
-      } catch (error) {
-        console.error('Error marking notification as viewed:', error);
-        setIsRead(false);
-      }
+  const markRead = async () => {
+    if (isRead) return;
+    try {
+      setIsRead(true);
+      await markAsViewed(id).unwrap();
+    } catch (error) {
+      console.error('Error marking notification as viewed:', error);
+      setIsRead(false);
     }
   };
 
@@ -70,13 +70,22 @@ const Notification = ({ id, read, title, desc, date, category }: NotificationPro
   const colorClass = (category && CATEGORY_COLORS[category]) || CATEGORY_COLORS.system;
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
+    // A div rather than a button: the row is clickable, but it also contains
+    // the "Mark as read" button and a button can't nest inside a button.
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={markRead}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          markRead();
+        }
+      }}
       className={cn(
-        'flex items-start gap-3 w-full text-left px-4 py-4 transition-colors',
+        'flex items-start gap-3 w-full text-left px-4 py-4 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
         !isRead
-          ? 'bg-primary/5 dark:bg-primary/10 hover:bg-primary/10 dark:hover:bg-primary/15'
+          ? 'cursor-pointer bg-primary/10 dark:bg-primary/15 hover:bg-primary/15 dark:hover:bg-primary/20'
           : 'hover:bg-accent dark:hover:bg-muted/50'
       )}
     >
@@ -101,11 +110,29 @@ const Notification = ({ id, read, title, desc, date, category }: NotificationPro
         <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">
           {desc}
         </p>
-        <p className="text-xs text-muted-foreground mt-1.5">
-          {timeAgo(date)}
-        </p>
+
+        <div className="mt-1.5 flex items-center justify-between gap-3">
+          <p className="text-xs text-muted-foreground">{timeAgo(date)}</p>
+
+          {/* Explicit action for unread items — clicking the row does the same
+              thing, so this stops propagation to avoid firing twice. */}
+          {!isRead && (
+            <button
+              type="button"
+              disabled={isMarking}
+              onClick={(e) => {
+                e.stopPropagation();
+                markRead();
+              }}
+              className="flex shrink-0 cursor-pointer items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary/10 disabled:opacity-50 dark:text-white"
+            >
+              <Check className="size-3.5" />
+              Mark as read
+            </button>
+          )}
+        </div>
       </div>
-    </button>
+    </div>
   );
 };
 

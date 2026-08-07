@@ -174,7 +174,7 @@ export const SelectStylesModal = NiceModal.create(() => {
             <button
               type="button"
               onClick={handleAddStyle}
-              className="flex items-center gap-2 rounded-lg border border-input px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
+              className="flex items-center gap-2 rounded-lg border border-input px-4 py-2 text-sm font-medium text-foreground hover:bg-accent cursor-pointer"
             >
               Add Style
               <Plus className="size-4" />

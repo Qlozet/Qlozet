@@ -66,7 +66,11 @@ const SheetContent = React.forwardRef<
         "sheet-mobile-bottom",
         // sm+: normal sheet behavior
         "sm:left-auto sm:right-auto sm:bottom-auto sm:max-h-full sm:overflow-hidden",
-        sheetVariants({ side, className: "hidden sm:block" }),
+        // No display utility here: callers set their own (`flex flex-col` for
+        // a header + scrolling body). Forcing `sm:block` won the cascade over
+        // the caller's `flex`, which killed `flex-1 min-h-0` on their scroll
+        // container — the panel then clipped its content instead of scrolling.
+        sheetVariants({ side }),
         className
       )}
       {...props}

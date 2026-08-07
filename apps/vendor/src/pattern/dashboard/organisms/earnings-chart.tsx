@@ -8,16 +8,6 @@ import { CustomYAxisTick } from '../molecules/custom-y-axis-tick';
 import { CustomXAxisTick } from '../molecules/custom-x-axis-tick';
 import { ChartEmptyState } from '../molecules/chart-empty-state';
 
-const PLACEHOLDER_DATA = [
-    { day: "Mon", earnings: 4500 },
-    { day: "Tue", earnings: 7200 },
-    { day: "Wed", earnings: 3100 },
-    { day: "Thu", earnings: 8900 },
-    { day: "Fri", earnings: 5600 },
-    { day: "Sat", earnings: 6800 },
-    { day: "Sun", earnings: 2400 },
-];
-
 export const EarningsChart = () => {
     const { data: earningsResponse, isLoading } = useGetEarningsChartQuery();
 
@@ -36,12 +26,10 @@ export const EarningsChart = () => {
       [];
     const hasData = seriesData.length > 0 && seriesData.some((item: any) => item.value > 0);
 
-    const chartData = hasData
-        ? seriesData.map((item: any) => ({
+    const chartData = seriesData.map((item: any) => ({
             day: item.label,
             earnings: item.value,
-        }))
-        : PLACEHOLDER_DATA;
+        }));
 
     const maxEarnings = Math.max(...chartData.map((d: any) => d.earnings), 0);
 
@@ -55,6 +43,7 @@ export const EarningsChart = () => {
                     isEmpty={!hasData}
                     variant="bar"
                     description="Your earnings will appear here once you start receiving orders"
+                    height={350}
                 >
                     <ResponsiveContainer width="100%" height={350}>
                         <BarChart 

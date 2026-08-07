@@ -43,9 +43,15 @@ const DetailRow = ({
   label: string;
   value: ReactNode;
 }) => (
-  <div className='flex items-center justify-between gap-4 border-b border-[#DDE2E5] dark:border-border px-5 py-4 last:border-b-0'>
-    <span className='text-sm text-grey-black dark:text-gray-400'>{label}</span>
-    <span className='text-right text-sm text-[#333333] dark:text-white'>{value}</span>
+  <div className='flex items-center justify-between gap-3 border-b border-[#DDE2E5] dark:border-border px-4 py-3 last:border-b-0 sm:gap-4 sm:px-5 sm:py-4'>
+    <span className='shrink-0 text-sm text-grey-black dark:text-gray-400'>
+      {label}
+    </span>
+    {/* Values like the transaction ID are long — let them wrap rather than
+        force the dialog wider than the viewport. */}
+    <span className='min-w-0 wrap-break-word text-right text-sm text-[#333333] dark:text-white'>
+      {value}
+    </span>
   </div>
 );
 
@@ -63,7 +69,7 @@ export const TransactionDetailsModal = create<TransactionDetailsModalProps>(
 
     return (
       <Dialog open={visible} onOpenChange={handleClose}>
-        <DialogContent className='bg-card flex max-h-[85vh] max-w-xl flex-col overflow-hidden p-6'>
+        <DialogContent className='bg-card flex max-h-[90vh] max-w-xl flex-col overflow-hidden p-4 sm:p-6'>
           <DialogHeader className='shrink-0 border-b border-dashed dark:border-border pb-3 text-left mb-4'>
             <DialogTitle className='text-lg font-medium text-[#000000] dark:text-white'>
               Transaction details
