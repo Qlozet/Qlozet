@@ -5,12 +5,17 @@ import nextConfig from 'eslint-config-next';
 
 const eslintConfig = [
   {
+    // node_modules is already in ESLint 9's default ignores; it's repeated here
+    // so this list reads as the complete picture of what is skipped.
     ignores: [
       '**/node_modules/**',
       '**/.next/**',
+      '**/.turbo/**',
       '**/out/**',
       '**/dist/**',
       '**/build/**',
+      '**/coverage/**',
+      '**/*.tsbuildinfo',
       'next-env.d.ts',
     ],
   },
