@@ -11,6 +11,11 @@
       "persistent": true
     },
     "lint": {},
+    "test": {
+      "cache": false,
+      "persistent": true
+    },
+    "test:run": {},
     "type-check": {
       "dependsOn": ["^build"]
     },

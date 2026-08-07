@@ -23,8 +23,6 @@ import {
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import {
-  useGetOrderSettingsQuery,
-  useUpdateOrderSettingsMutation,
   useGetBusinessProfileQuery,
   useUpdateBusinessSettingsMutation,
 } from '@/redux/services/settings/settings.api-slice';
@@ -232,23 +230,21 @@ const SettingsCard = ({
 
 // ─── Main Order Settings Component ──────────────────────────────────
 export const OrderSettingsContent = () => {
-  // ─── API Integration ────────────────────────────────────────────
+  // Order settings are flat fields on the business profile, saved through the
+  // same PATCH /business/profile as the external-fabric policy below.
   const {
-    data: apiData,
+    data: businessProfile,
     isLoading: isLoadingSettings,
     isError: settingsUnavailable,
-  } = useGetOrderSettingsQuery();
-  const [updateOrderSettings, { isLoading: isSaving }] = useUpdateOrderSettingsMutation();
+  } = useGetBusinessProfileQuery();
+  const [updateBusinessSettings, { isLoading: isSaving }] =
+    useUpdateBusinessSettingsMutation();
 
   // ─── Local State (seeded from API) ──────────────────────────────
   const [settings, setSettings] = useState<OrderSettingsData>(BLANK_SETTINGS);
   const [hasChanges, setHasChanges] = useState(false);
-
-  // ─── External Fabric (from Business Profile API) ─────────────────
-  const { data: businessProfile } = useGetBusinessProfileQuery();
-  const [updateBusinessSettings, { isLoading: isSavingFabric }] =
-    useUpdateBusinessSettingsMutation();
   const [acceptsExternalFabric, setAcceptsExternalFabric] = useState(true);
+  const isSavingFabric = isSaving;
 
   // Sync external fabric toggle from business profile
   useEffect(() => {
@@ -257,23 +253,30 @@ export const OrderSettingsContent = () => {
     }
   }, [businessProfile]);
 
-  // Seed local state when API data arrives
+  // Seed the form from the profile. Fields the backend hasn't set yet fall back
+  // to BLANK_SETTINGS rather than an invented default.
   useEffect(() => {
-    if (apiData?.data) {
-      setSettings(apiData.data);
-    }
-  }, [apiData]);
-
-  // A missing settings endpoint is a deployment matter, not something the
-  // vendor can act on — the controls simply render disabled. Developers get
-  // the detail in the console.
-  useEffect(() => {
-    if (settingsUnavailable) {
-      console.warn(
-        '[OrderSettings] order settings endpoint unavailable — controls are disabled until it exists.'
-      );
-    }
-  }, [settingsUnavailable]);
+    if (!businessProfile) return;
+    setSettings({
+      orderConfirmation:
+        businessProfile.order_confirmation ?? BLANK_SETTINGS.orderConfirmation,
+      orderNotifications:
+        businessProfile.order_notifications ?? BLANK_SETTINGS.orderNotifications,
+      orderTracking:
+        businessProfile.order_tracking ?? BLANK_SETTINGS.orderTracking,
+      dailyOrderLimit:
+        businessProfile.daily_order_limit ?? BLANK_SETTINGS.dailyOrderLimit,
+      automaticRefunds:
+        businessProfile.automatic_refunds ?? BLANK_SETTINGS.automaticRefunds,
+      returnWindow:
+        businessProfile.return_window_days ?? BLANK_SETTINGS.returnWindow,
+      customOrderOptions:
+        businessProfile.custom_order_options ?? BLANK_SETTINGS.customOrderOptions,
+      defaultCurrency:
+        businessProfile.default_currency ?? BLANK_SETTINGS.defaultCurrency,
+    });
+    setHasChanges(false);
+  }, [businessProfile]);
 
   // ─── Handlers ───────────────────────────────────────────────────
   const handleToggle = (id: string, value: boolean) => {
@@ -296,7 +299,18 @@ export const OrderSettingsContent = () => {
 
   const handleSave = async () => {
     try {
-      await updateOrderSettings(settings).unwrap();
+      // Map the form's camelCase state onto the backend's flat snake_case
+      // fields (UpdateBusinessProfileDto).
+      await updateBusinessSettings({
+        order_confirmation: settings.orderConfirmation,
+        order_notifications: settings.orderNotifications,
+        order_tracking: settings.orderTracking,
+        daily_order_limit: Number(settings.dailyOrderLimit) || 0,
+        automatic_refunds: settings.automaticRefunds,
+        return_window_days: Number(settings.returnWindow) || 0,
+        custom_order_options: settings.customOrderOptions,
+        default_currency: settings.defaultCurrency,
+      }).unwrap();
       toast.success('Order settings saved successfully');
       setHasChanges(false);
     } catch (error: any) {

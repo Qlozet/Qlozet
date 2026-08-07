@@ -23,7 +23,11 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      'fixed inset-0 z-[99999999px] bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-150',
+      // z-[60] deliberately outranks Sheet (z-50) and the order media panel
+      // (z-55/56): dialogs are opened *from* drawers, so they must stack above
+      // them. The previous `z-[99999999px]` was invalid CSS — a z-index can't
+      // carry a unit — so the overlay had no z-index at all.
+      'fixed inset-0 z-60 bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-150',
       className
     )}
     {...props}
@@ -50,7 +54,8 @@ const DialogContent = React.forwardRef<
       ref={ref}
       className={cn(
         // Mobile: floating bottom sheet
-        "fixed z-50 grid w-[calc(100%-32px)] gap-4 border bg-background p-6 shadow-lg rounded-[16px]",
+        // One above the overlay (z-60) — see the note there.
+        "fixed z-61 grid w-[calc(100%-32px)] gap-4 border bg-background p-6 shadow-lg rounded-[16px]",
         "bottom-4 left-4 right-4 max-h-[85vh] overflow-y-auto",
         "dialog-mobile-anim",
         // sm+: centered dialog

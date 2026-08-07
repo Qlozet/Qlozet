@@ -1,0 +1,24 @@
+# Run every test affected by changes since the base branch, not just tests for
+# currently-uncommitted files. `vitest --changed` with no ref diffs against HEAD,
+# so a test broken by an *earlier* commit on the branch is never re-run and slips
+# through to CI. Diffing against the base branch catches that.
+#
+# --passWithNoTests: a branch that touches nothing testable is not a failure.
+BASE=$(git rev-parse --verify --quiet origin/main || git rev-parse --verify --quiet main)
+
+if [ -n "$BASE" ]; then
+  for app in admin vendor; do
+    # `pnpm --filter` so each app's vitest resolves its own config.
+    pnpm --filter "$app" exec vitest run --changed "$BASE" --passWithNoTests || exit 1
+  done
+else
+  # No base ref locally (e.g. a fresh clone) — fall back to the full suite.
+  pnpm test:run || exit 1
+fi
+
+# Not yet enabled — both would fail today on pre-existing issues:
+#   type-check:  legacy components under apps/vendor/src/components/** don't compile
+#   lint:strict: ~370 warnings, mostly newly-surfaced React Compiler rules
+# Turn these on once those are cleared.
+# pnpm type-check || exit 1
+# pnpm lint || exit 1

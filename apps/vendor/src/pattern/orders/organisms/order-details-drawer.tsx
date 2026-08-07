@@ -59,10 +59,13 @@ import {
 } from '@/redux/services/business/business.api-slice';
 import { useAppSelector } from '@/redux/store';
 import { selectActiveBusiness } from '@/redux/slices/auth-slice';
+import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import { CustomerDetailsModal } from '../../customers/organisms/customer-details-modal';
 import { OrderItemDetailModal } from './order-item-detail-modal';
+import { DesignDetailModal } from './design-detail-modal';
 import { MediaPreviewModal } from './media-preview-modal';
-import { allProductImages, asProduct } from '../lib/item-resolvers';
+import { allProductImages } from '../lib/item-resolvers';
+import { readBespokeDesign } from '../lib/bespoke-design';
 import {
   OrderMediaPanel,
   ignoreMediaPanelInteraction,
@@ -263,7 +266,9 @@ const OrderItemRow: React.FC<{
   item: OrderItem;
   order?: Order;
   isLast?: boolean;
-}> = ({ item, order, isLast = false }) => {
+  /** Hands this item's images to the drawer's single large preview. */
+  onPreview: (images: string[], title: string) => void;
+}> = ({ item, order, isLast = false, onPreview }) => {
   const product =
     typeof item.product === 'object' && item.product !== null
       ? (item.product as PopulatedProduct)
@@ -330,16 +335,16 @@ const OrderItemRow: React.FC<{
     if (hasDetails) NiceModal.show(OrderItemDetailModal, { item, order });
   };
 
-  // Always opens — with no image the preview shows a placeholder rather than
+  // Always fires — with no image the preview shows a placeholder rather than
   // the click doing nothing.
   const openMedia = () => {
     const images = gallery.length > 0 ? gallery : imageUrl ? [imageUrl] : [];
-    NiceModal.show(MediaPreviewModal, { images, title: name });
+    onPreview(images, name);
   };
 
   // The thumbnail and the rest of the row are sibling buttons rather than one
-  // nested inside the other — the image opens the lightbox, the row opens the
-  // item breakdown.
+  // nested inside the other — the image drives the large preview, the row opens
+  // the item breakdown.
   return (
     <div
       className={cn(
@@ -681,19 +686,48 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
         : true;
     });
 
-    // Every image across this vendor's items, feeding the companion panel.
-    const orderMedia = vendorItems.flatMap((item) =>
-      allProductImages(asProduct(item.product))
-    );
+    // The large preview is opt-in: nothing is shown until the vendor clicks a
+    // thumbnail, and a second click swaps the panel's contents rather than
+    // stacking another lightbox on top.
+    const [preview, setPreview] = useState<{
+      images: string[];
+      title: string;
+    } | null>(null);
+
+    // Below `sm` the companion panel has nowhere to sit next to a full-width
+    // drawer, so the thumbnail falls back to the lightbox modal there.
+    const canShowPanel = useMediaQuery('(min-width: 640px)', false);
+
+    const showPreview = (images: string[], title: string) => {
+      if (canShowPanel) {
+        setPreview({ images, title });
+      } else {
+        NiceModal.show(MediaPreviewModal, { images, title });
+      }
+    };
+
+    // Reset when the drawer is reopened on a different order.
+    useEffect(() => {
+      setPreview(null);
+    }, [orderProp]);
+
+    // Bespoke orders have no catalogue items — the design IS the garment.
+    const bespokeDesign = readBespokeDesign(order);
 
     return (
       <Sheet open={visible} onOpenChange={handleClose}>
-        <OrderMediaPanel
-          images={Array.from(new Set(orderMedia))}
-          title={`Order ${displayOrderId}`}
-          drawerOpen={visible}
-          onClose={() => handleClose()}
-        />
+        {preview && (
+          <OrderMediaPanel
+            // Re-keying resets the panel's carousel index when a different
+            // thumbnail takes it over.
+            key={`${preview.title}:${preview.images[0] ?? ''}`}
+            images={preview.images}
+            title={preview.title}
+            drawerOpen={visible}
+            onClose={() => setPreview(null)}
+            closeLabel='Close image preview'
+          />
+        )}
         <SheetContent
           side='right'
           onInteractOutside={ignoreMediaPanelInteraction}
@@ -740,7 +774,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                       <button
                         type='button'
                         onClick={() => copy(displayOrderId)}
-                        className='inline-flex items-center gap-1.5 text-sm font-medium text-[#333333] dark:text-white hover:text-primary transition-colors'
+                        className='inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-[#333333] dark:text-white hover:text-primary transition-colors'
                       >
                         {displayOrderId}
                         {copied ? (
@@ -762,7 +796,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                         <button
                           type='button'
                           onClick={openCustomer}
-                          className='inline-flex items-center gap-1 text-[#3387CC] hover:underline underline-offset-2 transition-colors'
+                          className='inline-flex cursor-pointer items-center gap-1 text-[#3387CC] hover:underline underline-offset-2 transition-colors'
                         >
                           {readCustomerHandle(order)}
                           <ExternalLink className='size-3' />
@@ -799,10 +833,72 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                 </Card>
               </section>
 
+              {/* ── Bespoke design ──
+                  A bespoke order has no catalogue items, so the design is the
+                  only picture of what the tailor has to make. The thumbnail
+                  drives the large preview; the rest of the card opens the full
+                  design breakdown. */}
+              {bespokeDesign && (
+                <section className='space-y-3'>
+                  <SectionTitle>Design</SectionTitle>
+                  <Card>
+                    <div className='flex w-full items-center gap-3 px-5 py-4'>
+                      <button
+                        type='button'
+                        onClick={() =>
+                          showPreview(bespokeDesign.images, bespokeDesign.name)
+                        }
+                        aria-label={`View ${bespokeDesign.name} media`}
+                        className='relative flex size-14 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700'
+                      >
+                        {bespokeDesign.images[0] ? (
+                          <Image
+                            src={bespokeDesign.images[0]}
+                            alt={bespokeDesign.name}
+                            fill
+                            className='object-cover'
+                            sizes='56px'
+                          />
+                        ) : (
+                          <Tag className='size-5 text-gray-400' />
+                        )}
+                        <span className='absolute inset-0 flex items-center justify-center bg-black/0 text-white/0 transition-colors hover:bg-black/35 hover:text-white'>
+                          <Maximize2 className='size-3.5' />
+                        </span>
+                      </button>
+
+                      <button
+                        type='button'
+                        onClick={() =>
+                          NiceModal.show(DesignDetailModal, {
+                            design: bespokeDesign.design,
+                          })
+                        }
+                        className='min-w-0 flex-1 cursor-pointer text-left'
+                      >
+                        <p className='truncate text-sm font-medium text-[#333333] dark:text-white'>
+                          {bespokeDesign.name}
+                        </p>
+                        <p className='mt-1 text-xs text-grey3 dark:text-gray-400'>
+                          Bespoke design
+                        </p>
+                        <span className='mt-1.5 inline-flex items-center gap-0.5 text-xs font-medium text-primary'>
+                          View design
+                          <ChevronRight className='size-3.5' />
+                        </span>
+                      </button>
+                    </div>
+                  </Card>
+                </section>
+              )}
+
               {/* ── Vendor Items ──
                   Sits directly under Order Summary, as in the design — the
                   item media is the first thing the vendor should see, so the
-                  Confirmation block must not push it below the fold. */}
+                  Confirmation block must not push it below the fold.
+                  Skipped entirely on a bespoke order, where the design card
+                  above is the item. */}
+              {!(bespokeDesign && vendorItems.length === 0) && (
               <section className='space-y-3'>
                 <SectionTitle>
                   Your items ({vendorItems.length})
@@ -816,6 +912,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                         item={item}
                         order={order}
                         isLast={index === vendorItems.length - 1}
+                        onPreview={showPreview}
                       />
                     ))}
                   </Card>
@@ -830,6 +927,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   </Card>
                 )}
               </section>
+              )}
 
               {/* ── Confirmation Status ── */}
               {vendorShipment && (
@@ -1117,7 +1215,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                             onClick={() =>
                               copy(vendorShipment.tracking_number!)
                             }
-                            className='inline-flex items-center gap-1.5 text-sm font-medium text-[#333333] dark:text-white hover:text-primary transition-colors'
+                            className='inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-[#333333] dark:text-white hover:text-primary transition-colors'
                           >
                             {vendorShipment.tracking_number}
                             <Copy className='size-3.5 text-grey3' />

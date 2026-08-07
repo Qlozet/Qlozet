@@ -42,8 +42,10 @@ interface OrderMediaPanelProps {
    * so it has to be told — otherwise it lingers after the drawer closes.
    */
   drawerOpen: boolean;
-  /** Dismisses the drawer and this panel together. */
+  /** What the handle does — dismiss just this panel, or the drawer with it. */
   onClose: () => void;
+  /** Accessible name for the handle, matching what `onClose` actually does. */
+  closeLabel?: string;
 }
 
 export const OrderMediaPanel = ({
@@ -51,6 +53,7 @@ export const OrderMediaPanel = ({
   title = 'Order media',
   drawerOpen,
   onClose,
+  closeLabel = 'Close order details',
 }: OrderMediaPanelProps) => {
   const [index, setIndex] = useState(0);
 
@@ -79,7 +82,7 @@ export const OrderMediaPanel = ({
       <button
         type='button'
         onClick={onClose}
-        aria-label='Close order details'
+        aria-label={closeLabel}
         className='fixed top-1/2 z-[56] flex h-20 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-white text-grey3 shadow-[0px_4px_16px_rgba(0,0,0,0.12)] transition-colors hover:text-primary dark:bg-card dark:text-gray-300 cursor-pointer'
         style={{ right: DRAWER_WIDTH + DRAWER_OFFSET - 12 }}
       >
@@ -102,6 +105,7 @@ export const OrderMediaPanel = ({
             ) : (
               <Image
                 key={images[index]}
+                data-testid='order-media-panel-image'
                 src={images[index]}
                 alt={title}
                 fill

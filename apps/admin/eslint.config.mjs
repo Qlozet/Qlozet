@@ -1,14 +1,34 @@
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
-import { FlatCompat } from '@eslint/eslintrc'
+// eslint-config-next ships a flat config in Next 16, so it's spread directly.
+// The previous FlatCompat/eslintrc bridge crashed on load ("Converting circular
+// structure to JSON"), which meant `pnpm lint` never actually linted anything.
+import nextConfig from 'eslint-config-next'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-})
-
-const eslintConfig = [...compat.extends('next/core-web-vitals', 'next/typescript')]
+const eslintConfig = [
+  {
+    ignores: [
+      '**/node_modules/**',
+      '**/.next/**',
+      '**/out/**',
+      '**/dist/**',
+      '**/build/**',
+      'next-env.d.ts',
+    ],
+  },
+  ...nextConfig,
+  {
+    files: ['**/*.{js,jsx,ts,tsx}'],
+    rules: {
+      // React Compiler rules, newly surfaced by the config fix above — they had
+      // never actually run against this codebase. They flag real issues worth
+      // fixing, but as warnings so the existing backlog doesn't block every
+      // commit. Promote them back to 'error' once the count reaches zero.
+      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/static-components': 'warn',
+      'react-hooks/immutability': 'warn',
+      'react-hooks/purity': 'warn',
+      'react-hooks/preserve-manual-memoization': 'warn',
+    },
+  },
+]
 
 export default eslintConfig

@@ -58,6 +58,20 @@ export interface BusinessProfileResponse {
   /** Storefront accent colour (hex). */
   theme_color?: string;
   accepts_external_fabric?: boolean;
+  // ─── Order settings ───
+  // Flat fields, exactly like accepts_external_fabric. The backend also returns
+  // a nested `order_settings` object with similarly-named fields — read these
+  // flat ones, per the API team, so there's only one source of truth.
+  order_confirmation?: boolean;
+  order_notifications?: boolean;
+  order_tracking?: boolean;
+  /** 0 = no limit. */
+  daily_order_limit?: number;
+  automatic_refunds?: boolean;
+  /** 0 | 7 | 14 | 30 | 60 — 0 means returns are not accepted. */
+  return_window_days?: number;
+  custom_order_options?: boolean;
+  default_currency?: string;
   email_verified: boolean;
   address_completed: boolean;
   createdAt?: string;
@@ -105,6 +119,15 @@ export interface UpdateBusinessProfileDetailsPayload {
   bvn?: string;
   /** Storefront accent colour (hex, e.g. '#8D7F72'). */
   theme_color?: string;
+  // ─── Order settings (see BusinessProfileResponse) ───
+  order_confirmation?: boolean;
+  order_notifications?: boolean;
+  order_tracking?: boolean;
+  daily_order_limit?: number;
+  automatic_refunds?: boolean;
+  return_window_days?: number;
+  custom_order_options?: boolean;
+  default_currency?: string;
 }
 
 export interface UpdateUserProfilePayload {
@@ -188,7 +211,22 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Update business settings (e.g. external fabric policy)
-    updateBusinessSettings: builder.mutation<any, { accepts_external_fabric?: boolean }>(
+    // Business-level toggles: the external-fabric policy and the flat order
+    // settings, all on PATCH /business/profile.
+    updateBusinessSettings: builder.mutation<
+      any,
+      Pick<
+        UpdateBusinessProfileDetailsPayload,
+        | 'order_confirmation'
+        | 'order_notifications'
+        | 'order_tracking'
+        | 'daily_order_limit'
+        | 'automatic_refunds'
+        | 'return_window_days'
+        | 'custom_order_options'
+        | 'default_currency'
+      > & { accepts_external_fabric?: boolean }
+    >(
       {
         query: (data) => ({
           url: '/business/profile',
@@ -359,16 +397,10 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
     // products one — RTK Query warned about the duplicate endpoint name and
     // whichever module evaluated last silently won.
 
-    // Order Settings
-    getOrderSettings: builder.query<ApiResponse<OrderSettingsData>, void>({
-      query: () => '/vendor/settings/order-settings',
-      providesTags: ['OrderSettings'],
-    }),
-
-    updateOrderSettings: builder.mutation<ApiResponse<OrderSettingsData>, OrderSettingsData>({
-      query: (data) => ({ url: '/vendor/settings/order-settings', method: 'PUT', body: data }),
-      invalidatesTags: ['OrderSettings'],
-    }),
+    // NOTE: order settings are flat fields on the business profile — read them
+    // from `getBusinessProfile` and write them with `updateBusinessSettings`.
+    // The old `/vendor/settings/order-settings` pair never existed on the
+    // backend and always 404'd.
 
     // Verify vendor account
     verifyVendorAccount: builder.query<ApiResponse<any>, string>({
@@ -401,8 +433,6 @@ export const {
   useCreateUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
-  useGetOrderSettingsQuery,
-  useUpdateOrderSettingsMutation,
   useLazyVerifyVendorAccountQuery,
   useUpdateBusinessSettingsMutation,
 } = settingsApiSlice;

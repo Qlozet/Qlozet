@@ -90,7 +90,7 @@ const UnitToggle = ({
         type='button'
         onClick={() => onChange(u)}
         className={cn(
-          'rounded-full px-3 py-1 uppercase transition-colors',
+          'cursor-pointer rounded-full px-3 py-1 uppercase transition-colors',
           unit === u
             ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
             : 'text-gray-500'

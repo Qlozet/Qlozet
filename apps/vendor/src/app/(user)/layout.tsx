@@ -17,8 +17,6 @@ import Image from 'next/image';
 import DasboardNavWithOutSearch from '@/components/DashboardNavBarWithoutSearch';
 import MobileSideBar from '@/components/MobileSideBar';
 import SideBar from '@/components/SideBar';
-import Modal from '@/components/Modal';
-import Logout from '@/components/Logout';
 
 import { useGetVendorProfileQuery } from '@/redux/services/vendor/vendor.api-slice';
 import { setUserData } from '@/lib/utils';
@@ -186,7 +184,10 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
   );
 
   const searchParams = useSearchParams();
-  const isEditing = !!searchParams.get('edit');
+  // Create pages signal edit mode inconsistently: add-product and collections
+  // use `?edit=`, discounts and size guides use `?id=`. Accept either, so the
+  // header doesn't say "Add …" while the form is editing an existing record.
+  const isEditing = !!searchParams.get('edit') || !!searchParams.get('id');
 
   // Memoized computed values
   const { addSearch, currentPage } = useMemo(() => {
@@ -208,6 +209,11 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
       if (actionPage === 'create' && isEditing) computedPageName = 'Edit Collection';
       else if (actionPage === 'create') computedPageName = 'Add Collection';
       else if (actionPage === 'edit') computedPageName = 'Edit Collection';
+    } else if (subPage === 'size-guides') {
+      if (actionPage === 'create' && isEditing) computedPageName = 'Edit Size Guide';
+      else if (actionPage === 'create') computedPageName = 'Add Size Guide';
+      else if (actionPage === 'edit') computedPageName = 'Edit Size Guide';
+      else computedPageName = 'Size Guides';
     } else if (subPage === 'add-product') {
       computedPageName = isEditing ? 'Edit Product' : 'Add Product';
     } else if (basePage === 'support') {
