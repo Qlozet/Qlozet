@@ -1,15 +1,22 @@
 import './assets/styles/globals.css';
 import React from 'react';
 import { inter, poppins, roboto_mono } from './assets/fonts';
-import { Metadata } from 'next';
+import { Metadata, Viewport } from 'next';
 import { Providers } from '@/redux/provider';
+import { rootMetadata, siteConfig } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Qlozet Vendor - Business Management Platform',
-  description:
-    'Comprehensive business management platform for clothing vendors and retailers',
-  keywords: ['vendor', 'ecommerce', 'clothing', 'business management'],
-  authors: [{ name: 'Qlozet Team' }],
+// Title/description/OG/Twitter/robots all live in src/lib/seo.ts.
+// Icons come from the file conventions in this directory: icon.svg,
+// apple-icon.png, favicon.ico and opengraph-image.png.
+export const metadata: Metadata = rootMetadata;
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: siteConfig.themeColor },
+    { media: '(prefers-color-scheme: dark)', color: siteConfig.themeColor },
+  ],
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
