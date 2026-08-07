@@ -81,28 +81,51 @@ export interface AdminOrder {
 }
 
 export interface GetAdminOrdersParams {
-  /** Optional order status filter — the only param the endpoint accepts. */
   status?: string;
+  /** 1-based. Ignored by the backend until server-side paging is deployed. */
+  page?: number;
+  size?: number;
+}
+
+/**
+ * Normalised result. `serverPaginated` reports whether the backend actually
+ * honoured `page`/`size` — it echoes pagination metadata when it did. Until
+ * then the caller keeps paginating client-side over the full list, so this
+ * works before and after the endpoint is updated with no further changes.
+ */
+export interface AdminOrdersResult {
+  data: AdminOrder[];
+  serverPaginated: boolean;
+  total_items?: number;
+  total_pages?: number;
+  current_page?: number;
+  page_size?: number;
+  has_next_page?: boolean;
 }
 
 export const ordersApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // All vendor orders across the platform, optionally filtered by status.
     getAdminOrders: builder.query<
-      ApiResponse<AdminOrder[]>,
+      AdminOrdersResult,
       GetAdminOrdersParams | void
     >({
       query: (params) => {
-        const status = params && 'status' in params ? params.status : undefined;
+        const search = new URLSearchParams();
+        if (params?.status) search.set('status', params.status);
+        // Sent unconditionally: harmless while the backend ignores them, and
+        // it starts paginating server-side the moment support lands.
+        if (params?.page) search.set('page', String(params.page));
+        if (params?.size) search.set('size', String(params.size));
+        const qs = search.toString();
         return {
-          url: status
-            ? `/admin/vendor/orders?status=${encodeURIComponent(status)}`
-            : '/admin/vendor/orders',
+          url: qs ? `/admin/vendor/orders?${qs}` : '/admin/vendor/orders',
           method: 'GET',
         };
       },
-      // Normalise the undocumented response into a flat array of orders.
-      transformResponse: (response: unknown): ApiResponse<AdminOrder[]> => {
+      // Normalise the undocumented response into a flat array plus whatever
+      // pagination metadata came back.
+      transformResponse: (response: unknown): AdminOrdersResult => {
         const unwrap = (value: unknown): AdminOrder[] => {
           if (Array.isArray(value)) return value as AdminOrder[];
           if (value && typeof value === 'object') {
@@ -112,15 +135,30 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
           return [];
         };
 
-        const envelope = (response ?? {}) as {
-          success?: boolean;
-          message?: string;
+        // The envelope may sit at the root or one level down under `data`.
+        const root = (response ?? {}) as Record<string, unknown>;
+        const nested = (root.data ?? {}) as Record<string, unknown>;
+        const num = (key: string): number | undefined => {
+          const v = root[key] ?? nested[key];
+          return typeof v === 'number' ? v : undefined;
         };
 
+        const total_items = num('total_items');
+        const total_pages = num('total_pages');
+
         return {
-          success: envelope.success,
-          message: envelope.message,
           data: unwrap(response),
+          // Metadata present == the backend paginated for us.
+          serverPaginated:
+            total_items !== undefined || total_pages !== undefined,
+          total_items,
+          total_pages,
+          current_page: num('current_page'),
+          page_size: num('page_size'),
+          has_next_page:
+            typeof (root.has_next_page ?? nested.has_next_page) === 'boolean'
+              ? ((root.has_next_page ?? nested.has_next_page) as boolean)
+              : undefined,
         };
       },
       providesTags: ['VendorOrders'],

@@ -5,9 +5,7 @@ import { ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   formatDate,
-  readAgent,
   readField,
-  readName,
   statusLabel,
   statusVariant,
 } from '../lib/ticket-fields';
@@ -45,7 +43,7 @@ export const createLiveChatColumns = (): ColumnDef<LiveChatLog>[] => [
     header: 'User/Vendor Name',
     cell: ({ row }) => (
       <span className="whitespace-nowrap text-sm font-medium text-[#3387CC]">
-        {readName(row.original)}
+        {readField(row.original, 'user_name', 'vendor_name', 'customer_name')}
       </span>
     ),
     enableSorting: false,
@@ -65,7 +63,7 @@ export const createLiveChatColumns = (): ColumnDef<LiveChatLog>[] => [
     header: 'Chat Agent / Bot',
     cell: ({ row }) => (
       <span className="whitespace-nowrap text-sm text-grey3">
-        {readAgent(row.original)}
+        {readField(row.original, 'chat_agent', 'agent_name', 'bot')}
       </span>
     ),
     enableSorting: false,

@@ -25,6 +25,25 @@ interface LoginResponse {
   };
 }
 
+interface MessageResponse {
+  statusCode?: number;
+  message: string;
+  success?: boolean;
+}
+
+// Mirrors PasswordResetRequestDto — `email` only.
+interface ForgotPasswordPayload {
+  email: string;
+}
+
+// Mirrors PasswordResetDto exactly: the reset token from the email plus the
+// new password. The field is `newPassword`, NOT `password` — sending the wrong
+// key fails the backend's validation.
+interface ResetPasswordPayload {
+  token: string;
+  newPassword: string;
+}
+
 const authAPI = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     adminLogin: builder.mutation<LoginResponse, LoginPayload>({
@@ -34,8 +53,30 @@ const authAPI = baseAPI.injectEndpoints({
         body: credentials,
       }),
     }),
+
+    // Emails a password reset token to the address, if an account exists.
+    forgotPassword: builder.mutation<MessageResponse, ForgotPasswordPayload>({
+      query: (body) => ({
+        url: '/auth/forgot-password',
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    // Completes the reset using the token from that email.
+    resetPassword: builder.mutation<MessageResponse, ResetPasswordPayload>({
+      query: (body) => ({
+        url: '/auth/reset-password',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useAdminLoginMutation } = authAPI;
+export const {
+  useAdminLoginMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+} = authAPI;

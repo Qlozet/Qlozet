@@ -65,7 +65,11 @@ const SheetContent = React.forwardRef<
         'sheet-mobile-bottom',
         // sm+: normal sheet behavior
         'sm:left-auto sm:right-auto sm:bottom-auto sm:max-h-full sm:overflow-hidden',
-        sheetVariants({ side, className: 'hidden sm:block' }),
+        // No display utility here: callers set their own (`flex flex-col` for
+        // a header + scrolling body). Forcing `sm:block` won the cascade over
+        // the caller's `flex`, which killed `flex-1 min-h-0` on their scroll
+        // container — the panel then clipped its content instead of scrolling.
+        sheetVariants({ side }),
         className
       )}
       {...props}
@@ -100,9 +104,15 @@ const SheetContent = React.forwardRef<
           100% { opacity: 0; translate: 0 100%; }
         }
         /* Desktop: undo mobile-only bottom-sheet overrides */
+        /* Desktop: undo mobile-only bottom-sheet overrides.
+           NOTE: no width reset here. The mobile block above is already scoped
+           to max-width:639px, so there is nothing to undo — and forcing
+           width:auto made the panel size to its CONTENT, overriding w-full.
+           That let two drawers with the same classes render at different
+           widths, and any element positioned off the drawer edge (e.g. the
+           order media panel handle) drifted away from it. */
         @media (min-width: 640px) {
           .sheet-mobile-bottom {
-            width: auto !important;
             left: auto !important;
           }
         }

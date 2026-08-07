@@ -7,11 +7,12 @@ import { APP_ROUTES } from '@/lib/routes';
 import { GoBackButton } from '@/pattern/admin/atoms/go-back-button';
 import { WorkInProgressModal } from '@/pattern/common/organisms/work-in-progress-modal';
 import {
+  populatedReplies,
   useGetTicketByIdQuery,
   useGetTicketsQuery,
   useReplyToTicketMutation,
 } from '@/redux/services/tickets/tickets.api-slice';
-import { readField } from '../lib/ticket-fields';
+import { useBusinessNames } from '../lib/use-business-names';
 import { ReassignTicketModal } from '../organisms/reassign-ticket-modal';
 import { EditTicketDrawer } from '../organisms/edit-ticket-drawer';
 import { TicketDetailCard } from '../details/organisms/ticket-detail-card';
@@ -30,20 +31,29 @@ export const TicketDetailTemplate = () => {
     error,
   } = useGetTicketByIdQuery(id, { skip: !id });
 
-  // GET /tickets/{id} isn't under the /admin prefix, so it may be scoped to the
-  // requesting user. If it rejects, fall back to locating the ticket in the
-  // admin list (which is definitely admin-visible) rather than dead-ending.
+  // The admin list is queried unconditionally, for two reasons:
+  //  1. GET /tickets/{id} isn't under the /admin prefix, so it may be scoped to
+  //     the requesting user — the list is the fallback when it rejects.
+  //  2. More importantly, /tickets/{id} returns `replies` as an array of *ids*
+  //     while the list returns them fully populated. The list is currently the
+  //     only source of reply bodies, so the conversation has to come from it.
   const {
     data: listData,
     isFetching: isFetchingList,
     isError: listFailed,
-  } = useGetTicketsQuery({ page: 1, size: 200 }, { skip: !id || !byIdFailed });
+  } = useGetTicketsQuery({ page: 1, size: 200 }, { skip: !id });
 
-  const ticket =
-    data?.data ??
-    (byIdFailed
-      ? (listData?.data?.data ?? []).find((row) => row._id === id)
-      : undefined);
+  const listTicket = (listData?.data?.data ?? []).find((row) => row._id === id);
+  const ticket = data?.data ?? listTicket;
+
+  const replies = populatedReplies(listTicket);
+
+  // The ticket claims replies exist but none came back with a body.
+  const repliesUnresolved =
+    (ticket?.replies?.length ?? 0) > 0 && replies.length === 0;
+
+  const { businessName } = useBusinessNames();
+  const vendorName = businessName(ticket?.business);
 
   const [reply, { isLoading: isSending }] = useReplyToTicketMutation();
 
@@ -59,10 +69,9 @@ export const TicketDetailTemplate = () => {
   };
 
   const handleCopyId = async () => {
-    const ref = ticket
-      ? readField(ticket, 'reference', 'ticket_id', '_id')
-      : '';
-    if (!ref || ref === '—') return;
+    // Copies the full ObjectId — the UI only ever shows its tail.
+    const ref = ticket?._id;
+    if (!ref) return;
     try {
       await navigator.clipboard.writeText(ref);
       toast.success('Ticket ID copied');
@@ -71,20 +80,17 @@ export const TicketDetailTemplate = () => {
     }
   };
 
-  const handleReassign = () => {
-    const current = ticket?.assigned_to;
+  const handleReassign = () =>
     NiceModal.show(ReassignTicketModal, {
       ticketId: id,
-      currentAssigneeId: typeof current === 'string' ? current : undefined,
+      currentAssigneeId: ticket?.assigned_to ?? undefined,
     });
-  };
 
   const handleEdit = () =>
     NiceModal.show(EditTicketDrawer, {
       ticketId: id,
-      issueType:
-        typeof ticket?.issue_type === 'string' ? ticket.issue_type : '',
-      description: ticket?.description ?? ticket?.message ?? '',
+      issueType: ticket?.issue_type ?? '',
+      description: ticket?.description ?? '',
     });
 
   // No backend support yet: PATCH /tickets/{id} takes no `status`, and there is
@@ -126,6 +132,9 @@ export const TicketDetailTemplate = () => {
             <div className="lg:col-span-2">
               <TicketDetailCard
                 ticket={ticket}
+                vendorName={vendorName}
+                replies={replies}
+                repliesUnresolved={repliesUnresolved}
                 isLoading={loading}
                 isSending={isSending}
                 onSendReply={handleSendReply}
@@ -137,6 +146,7 @@ export const TicketDetailTemplate = () => {
             <div className="lg:col-span-1">
               <TicketInformationCard
                 ticket={ticket}
+                vendorName={vendorName}
                 isLoading={loading}
                 onReassign={handleReassign}
                 onEdit={handleEdit}

@@ -3,40 +3,59 @@
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, LogOut, Sparkles, User } from 'lucide-react';
+import { Bell, Sparkles, User } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { APP_ROUTES, AUTH_ROUTES } from '@/lib/routes';
-import { SESSION_COOKIE_KEY } from '@/lib/constants';
-import { removeCookie } from '@/lib/helpers/cookies-manager';
+import { APP_ROUTES } from '@/lib/routes';
 import { initialsFrom, readUserAvatar, readUserName } from '@/lib/current-user';
 import { useGetCurrentUserQuery } from '@/redux/services/users/users.api-slice';
 import { useGetUnreadCountQuery } from '@/redux/services/notifications/notifications.api-slice';
 import { useGetLatestDigestQuery } from '@/redux/services/assistant/assistant.api-slice';
 import { AssistantChatSheet } from '@/pattern/assistant/organisms/assistant-chat-sheet';
+import { ProfileSheet } from './profile-sheet';
 
 interface DashboardTopBarProps {
   /** Optional override for the page title. Defaults to the current route. */
   title?: string;
 }
 
+// Detail routes end in a record id. Titling from the last segment would put a
+// raw ObjectId in the header, so those fall back to the parent section.
+const DETAIL_TITLES: Record<string, string> = {
+  vendors: 'Vendor details',
+  customers: 'Customer details',
+  orders: 'Order details',
+  support: 'Ticket details',
+  products: 'Product details',
+};
+
+const isRecordId = (segment: string): boolean =>
+  /^[a-f0-9]{24}$/i.test(segment) || // Mongo ObjectId
+  /^[0-9a-f-]{36}$/i.test(segment) || // uuid
+  /^\d+$/.test(segment); // numeric id
+
+const titleCase = (segment: string): string =>
+  segment.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+
 const deriveTitle = (pathname: string): string => {
   const segments = pathname.replace(/^\//, '').split('/').filter(Boolean);
   const last = segments[segments.length - 1] ?? 'dashboard';
-  return last.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+
+  if (isRecordId(last) && segments.length > 1) {
+    const parent = segments[segments.length - 2];
+    // Fall back to a singularised parent for sections not in the map.
+    return (
+      DETAIL_TITLES[parent] ?? `${titleCase(parent.replace(/s$/, ''))} details`
+    );
+  }
+
+  return titleCase(last);
 };
 
 export const DashboardTopBar = ({ title }: DashboardTopBarProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const [showAssistant, setShowAssistant] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   const pageTitle = useMemo(
     () => title ?? deriveTitle(pathname),
@@ -48,18 +67,7 @@ export const DashboardTopBar = ({ title }: DashboardTopBarProps) => {
     useGetCurrentUserQuery();
   const user = userResponse?.data;
   const userName = readUserName(user);
-  const userEmail = typeof user?.email === 'string' ? user.email : null;
   const avatarUrl = readUserAvatar(user);
-
-  // Mirrors the 401 middleware's teardown: drop the session cookie and any
-  // locally persisted profile, then hard-navigate so every cache is dropped.
-  const handleLogout = () => {
-    removeCookie(SESSION_COOKIE_KEY);
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('AltireuserDetails');
-      window.location.replace(AUTH_ROUTES.signIn);
-    }
-  };
 
   // Unread badge, polled the same way the vendor top bar does.
   const { data: unreadData } = useGetUnreadCountQuery(undefined, {
@@ -120,69 +128,38 @@ export const DashboardTopBar = ({ title }: DashboardTopBarProps) => {
           </span>
         ) : null}
 
-        {/* Profile menu.
-            Deliberately not a link to /settings: that route is still gated
-            behind the sidebar's WIP modal, so sending people there from here
-            would route around the gate onto an unfinished page. */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              aria-label="Account menu"
-              className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border bg-[#F8F9FA] text-grey3 hover:bg-gray-100 transition-colors cursor-pointer"
-            >
-              {avatarUrl ? (
-                <Image
-                  src={avatarUrl}
-                  alt={userName ?? 'Profile'}
-                  width={36}
-                  height={36}
-                  className="h-full w-full object-cover"
-                  unoptimized
-                />
-              ) : userName ? (
-                <span className="text-xs font-semibold text-grey-black">
-                  {initialsFrom(userName)}
-                </span>
-              ) : (
-                <User className="h-5 w-5" />
-              )}
-            </button>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel className="font-normal">
-              <p className="text-sm font-medium text-grey-black truncate">
-                {userName ?? 'Signed in'}
-              </p>
-              {userEmail && userEmail !== userName && (
-                <p className="text-xs text-grey3 truncate">{userEmail}</p>
-              )}
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onSelect={() => router.push(APP_ROUTES.notifications)}
-              className="cursor-pointer"
-            >
-              <Bell className="mr-2 size-4" />
-              Notifications
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onSelect={handleLogout}
-              className="cursor-pointer text-destructive focus:text-destructive"
-            >
-              <LogOut className="mr-2 size-4" />
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* Opens the full profile drawer, matching the vendor app. */}
+        <button
+          type="button"
+          onClick={() => setShowProfile(true)}
+          aria-label="Open profile"
+          className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border bg-[#F8F9FA] text-grey3 hover:bg-gray-100 transition-colors cursor-pointer"
+        >
+          {avatarUrl ? (
+            <Image
+              src={avatarUrl}
+              alt={userName ?? 'Profile'}
+              width={36}
+              height={36}
+              className="h-full w-full object-cover"
+              unoptimized
+            />
+          ) : userName ? (
+            <span className="text-xs font-semibold text-grey-black">
+              {initialsFrom(userName)}
+            </span>
+          ) : (
+            <User className="h-5 w-5" />
+          )}
+        </button>
       </div>
 
       <AssistantChatSheet
         open={showAssistant}
         onOpenChange={setShowAssistant}
       />
+
+      <ProfileSheet open={showProfile} onOpenChange={setShowProfile} />
     </div>
   );
 };

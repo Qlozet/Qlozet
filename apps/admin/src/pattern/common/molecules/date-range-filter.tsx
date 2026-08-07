@@ -14,6 +14,22 @@ export interface DateRange {
 
 export const EMPTY_DATE_RANGE: DateRange = { start: '', end: '' };
 
+/**
+ * Convert the picker's plain 'YYYY-MM-DD' values into the full ISO instants the
+ * API expects.
+ *
+ * The backend compares these against `createdAt` as timestamps, so sending a
+ * bare date as `end_date` pins it to midnight and drops every ticket created
+ * later that day — filtering to a single day returned nothing at all. Verified
+ * against GET /admin/tickets: `start=2026-08-07&end=2026-08-07` matched 0 rows,
+ * the same day expanded to end-of-day matched 1.
+ */
+export const toStartIso = (date: string): string | undefined =>
+  date ? `${date}T00:00:00.000Z` : undefined;
+
+export const toEndIso = (date: string): string | undefined =>
+  date ? `${date}T23:59:59.999Z` : undefined;
+
 interface DateRangeFilterProps {
   value: DateRange;
   onChange: (value: DateRange) => void;

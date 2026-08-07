@@ -1,22 +1,26 @@
 'use client';
 
-import { Star, Flag, ClipboardList, Pencil } from 'lucide-react';
+import NiceModal from '@ebay/nice-modal-react';
+import { Star, ShieldCheck, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { Business } from '@/redux/services/businesses/businesses.api-slice';
 import type { VendorDashboardMetrics } from '@/redux/services/dashboard/dashboard.api-slice';
 import { getVendorName, formatCount } from '@/lib/vendors';
 import { VendorInfoCard } from '../molecules/vendor-info-card';
+import { VendorDocumentModal } from './vendor-document-modal';
 
 interface VendorInfoGridProps {
   vendor?: Business;
   metrics?: VendorDashboardMetrics;
-  onEscalate?: () => void;
-  onEdit?: () => void;
+  onApprove?: () => void;
+  onVerify?: () => void;
+  onReject?: () => void;
+  onSetInReview?: () => void;
+  /** Disables every status button while one of the mutations is in flight. */
+  isUpdatingStatus?: boolean;
+  onViewProducts?: () => void;
   onViewOrders?: () => void;
   onViewCustomers?: () => void;
-  onViewWarehouses?: () => void;
-  onViewDocument?: () => void;
-  onViewLogo?: () => void;
 }
 
 const num = (value: unknown): number | undefined =>
@@ -24,6 +28,16 @@ const num = (value: unknown): number | undefined =>
 
 const str = (value: unknown): string | undefined =>
   typeof value === 'string' && value.length > 0 ? value : undefined;
+
+// cac_document_url is a string[]; take the most recent entry.
+const readFirstUrl = (value: unknown): string | undefined => {
+  if (typeof value === 'string' && value) return value;
+  if (Array.isArray(value)) {
+    const last = [...value].reverse().find((v) => typeof v === 'string' && v);
+    return typeof last === 'string' ? last : undefined;
+  }
+  return undefined;
+};
 
 const formatJoined = (value?: string): string => {
   if (!value) return '—';
@@ -39,13 +53,14 @@ const formatJoined = (value?: string): string => {
 export const VendorInfoGrid = ({
   vendor,
   metrics,
-  onEscalate,
-  onEdit,
+  onApprove,
+  onVerify,
+  onReject,
+  onSetInReview,
+  isUpdatingStatus = false,
+  onViewProducts,
   onViewOrders,
   onViewCustomers,
-  onViewWarehouses,
-  onViewDocument,
-  onViewLogo,
 }: VendorInfoGridProps) => {
   const m = (metrics ?? {}) as Record<string, unknown>;
   const v = (vendor ?? {}) as Record<string, unknown>;
@@ -54,6 +69,13 @@ export const VendorInfoGrid = ({
   const reviews = num(v.reviewsCount) ?? num(v.totalReviews);
 
   const idVerified = Boolean(v.id_verified ?? v.isVerified ?? v.kyc_verified);
+  const status = str(v.status);
+
+  // A "View all" link is only offered when there's somewhere to go.
+  const cacUrl = readFirstUrl(v.cac_document_url);
+  const logoUrl =
+    str(v.business_logo_svg_url) ?? str(v.business_logo_url) ?? str(v.logo);
+  const vendorName = getVendorName(vendor ?? ({} as Business));
 
   return (
     <div className="space-y-5">
@@ -75,32 +97,51 @@ export const VendorInfoGrid = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            aria-label="Notes"
-            className="flex size-10 items-center justify-center rounded-lg border border-border text-gray-600 hover:bg-gray-50 cursor-pointer"
-          >
-            <ClipboardList className="size-5" />
-          </button>
-          <button
-            type="button"
-            aria-label="Flag vendor"
-            className="flex size-10 items-center justify-center rounded-lg border border-border text-destructive hover:bg-gray-50 cursor-pointer"
-          >
-            <Flag className="size-5" />
-          </button>
+        {/*
+          Status actions are the admin capabilities the backend actually
+          exposes for a business (POST /admin/{id}/approve | verify | reject |
+          in-review). "Notes", "Flag vendor", "Escalate to support" and "Edit
+          Information" had no endpoints behind them and are omitted rather than
+          shown as controls that do nothing.
+          TODO(api): restore them if/when those endpoints exist.
+        */}
+        <div className="flex flex-wrap items-center gap-3">
           <Button
             type="button"
             variant="outline"
-            onClick={onEscalate}
-            className="h-10 border-destructive/40 text-destructive hover:bg-destructive/5"
+            onClick={onSetInReview}
+            disabled={isUpdatingStatus || status === 'in_review'}
+            className="h-10 cursor-pointer"
           >
-            Escalate to support
+            Mark in review
           </Button>
-          <Button type="button" onClick={onEdit} className="h-10 gap-2">
-            Edit Information
-            <Pencil className="size-4" />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onVerify}
+            disabled={isUpdatingStatus || Boolean(vendor?.isVerified)}
+            className="h-10 cursor-pointer gap-2"
+          >
+            <ShieldCheck className="size-4" />
+            {vendor?.isVerified ? 'Verified' : 'Verify'}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onReject}
+            disabled={isUpdatingStatus || status === 'rejected'}
+            className="h-10 cursor-pointer border-destructive/40 text-destructive hover:bg-destructive/5"
+          >
+            Reject
+          </Button>
+          <Button
+            type="button"
+            onClick={onApprove}
+            disabled={isUpdatingStatus || status === 'approved'}
+            className="h-10 cursor-pointer gap-2"
+          >
+            {status === 'approved' ? 'Approved' : 'Approve'}
+            <Check className="size-4" />
           </Button>
         </div>
       </div>
@@ -119,6 +160,7 @@ export const VendorInfoGrid = ({
           label="Total products"
           value={formatCount(num(m.totalProducts) ?? num(v.productsCount))}
           linkLabel="View all"
+          onLinkClick={onViewProducts}
         />
         <VendorInfoCard
           label="Total orders"
@@ -156,11 +198,12 @@ export const VendorInfoGrid = ({
           value={str(v.principal_email) ?? str(v.email)}
         />
 
+        {/* TODO(api): no admin endpoint lists another business's warehouses
+            (GET /business/warehouse is scoped to the caller), so the count
+            stands alone rather than offering a link that can't resolve. */}
         <VendorInfoCard
           label="Warehouses"
           value={formatCount(num(m.warehouses) ?? num(v.warehousesCount))}
-          linkLabel="View all"
-          onLinkClick={onViewWarehouses}
         />
         <VendorInfoCard
           label="Achieved custom orders / day"
@@ -173,15 +216,31 @@ export const VendorInfoGrid = ({
         />
         <VendorInfoCard
           label="CAC Document"
-          value=" "
+          value={cacUrl ? 'Uploaded' : 'Not uploaded'}
+          valueClassName={cacUrl ? 'text-[#0F973D]' : 'text-destructive'}
           linkLabel="View document"
-          onLinkClick={onViewDocument}
+          onLinkClick={() =>
+            NiceModal.show(VendorDocumentModal, {
+              kind: 'CAC Document',
+              vendorName,
+              url: cacUrl,
+              downloadLabel: 'Download Document',
+            })
+          }
         />
         <VendorInfoCard
           label="Company PNG logo"
-          value=" "
+          value={logoUrl ? 'Uploaded' : 'Not uploaded'}
+          valueClassName={logoUrl ? 'text-[#0F973D]' : 'text-destructive'}
           linkLabel="View logo"
-          onLinkClick={onViewLogo}
+          onLinkClick={() =>
+            NiceModal.show(VendorDocumentModal, {
+              kind: 'PNG Logo',
+              vendorName,
+              url: logoUrl,
+              downloadLabel: 'Download Logo',
+            })
+          }
         />
       </div>
     </div>

@@ -14,7 +14,6 @@ import {
 interface WalletDetailsSectionProps {
   vendor?: Business;
   metrics?: VendorDashboardMetrics;
-  onEditBank?: () => void;
 }
 
 const Icon = ({ bg, children }: { bg: string; children: React.ReactNode }) => (
@@ -37,7 +36,6 @@ const str = (value: unknown, fallback: string): string =>
 export const WalletDetailsSection = ({
   vendor,
   metrics,
-  onEditBank,
 }: WalletDetailsSectionProps) => {
   const m = (metrics ?? {}) as Record<string, unknown>;
   const bank = (vendor?.bank ?? vendor?.bank_details ?? {}) as Record<
@@ -114,7 +112,7 @@ export const WalletDetailsSection = ({
         </div>
 
         {/* Bank details */}
-        <BankDetailsCard rows={bankRows} onEdit={onEditBank} />
+        <BankDetailsCard rows={bankRows} />
       </div>
     </div>
   );

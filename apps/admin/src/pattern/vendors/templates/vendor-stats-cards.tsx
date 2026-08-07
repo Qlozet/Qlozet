@@ -2,10 +2,11 @@
 
 import { Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { APP_ROUTES } from '@/lib/routes';
+import { periodChangeLabel } from '@/lib/metric-change';
 import { MetricCard } from '@/pattern/common/molecules/metric-card';
 import { StatsCardSkeleton } from '@/pattern/dashboard/molecules/stats-card-skeleton';
 import { useGetAdminDashboardQuery } from '@/redux/services/dashboard/dashboard.api-slice';
+import { useGetNewVendorsThisWeekQuery } from '@/redux/services/users/users.api-slice';
 
 const formatValue = (value: number | undefined, fallback: string): string =>
   typeof value === 'number' ? value.toLocaleString() : fallback;
@@ -30,6 +31,15 @@ export const VendorStatsCards = ({ totalFromList }: VendorStatsCardsProps) => {
   const { data, isLoading } = useGetAdminDashboardQuery();
   const metrics = data?.data;
 
+  // Real week-over-week movement: /users/vendors/new-week returns the vendors
+  // onboarded this week, so the total's growth can be derived from it. There is
+  // no equivalent source for the active/inactive splits, so those cards show no
+  // change widget rather than an invented one.
+  const { data: newThisWeekData } = useGetNewVendorsThisWeekQuery();
+  const newThisWeek = Array.isArray(newThisWeekData?.data)
+    ? newThisWeekData.data.length
+    : undefined;
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -50,11 +60,14 @@ export const VendorStatsCards = ({ totalFromList }: VendorStatsCardsProps) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* No viewAllLink: this card sits on the vendors page itself, so the
+          link pointed at the page you're already on. */}
       <MetricCard
         title="Total Vendors"
         value={formatValue(total, '—')}
+        change={periodChangeLabel(total, newThisWeek)}
+        subLabel={newThisWeek ? 'vs last week' : undefined}
         icon={<CardIcon bg="bg-[#57CAEB]" />}
-        viewAllLink={APP_ROUTES.vendors}
       />
       <MetricCard
         title="Active Vendors"

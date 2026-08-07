@@ -11,6 +11,7 @@ import {
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CustomChartTooltip } from './custom-chart-tooltip';
+import { ChartEmptyState } from './chart-empty-state';
 import ChartLegendIcon from '../atoms/chart-legend-icon';
 
 export interface DonutDatum {
@@ -54,6 +55,12 @@ interface DonutChartProps {
    * a two-column legend grid beside the donut (used by the products stats card).
    */
   legendPosition?: 'bottom' | 'right';
+  /**
+   * Helper text for the empty template. A donut with no slices (or all-zero
+   * slices) renders `ChartEmptyState` instead of an empty ring — never a
+   * placeholder distribution.
+   */
+  emptyDescription?: string;
 }
 
 // Reusable donut chart (Card + Pie + legend). Backs "Orders by gender",
@@ -65,7 +72,11 @@ export const DonutChart = ({
   colors,
   className,
   legendPosition = 'bottom',
+  emptyDescription,
 }: DonutChartProps) => {
+  const isEmpty =
+    data.length === 0 || !data.some((datum) => (datum.value ?? 0) > 0);
+
   if (legendPosition === 'right') {
     return (
       <Card
@@ -123,7 +134,7 @@ export const DonutChart = ({
 
   return (
     <Card
-      className={`w-full rounded-[12px] custom-card-shadow ${className ?? ''}`}
+      className={`w-full max-h-fit rounded-[12px] custom-card-shadow ${className ?? ''}`}
     >
       <CardHeader className="px-6 pb-4">
         <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
@@ -131,33 +142,46 @@ export const DonutChart = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="w-full px-3 pt-0 pb-6">
-        <ResponsiveContainer width="100%" height={250}>
-          <PieChart>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              innerRadius={60}
-              outerRadius={100}
-              paddingAngle={2}
-              dataKey="value"
-            >
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={colors[index % colors.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip content={<CustomChartTooltip />} cursor={false} />
-            <Legend
-              align="center"
-              iconType="circle"
-              iconSize={9}
-              content={renderLegend}
-            />
-          </PieChart>
-        </ResponsiveContainer>
+        {/* Same height as the populated chart, so the card doesn't resize
+            when data arrives. */}
+        <ChartEmptyState
+          isEmpty={isEmpty}
+          variant="pie"
+          height={320}
+          description={emptyDescription}
+        >
+          {/* 320, not 250: recharts carves the legend out of this height, and
+              the pie is a fixed 200px across (outerRadius 100). At 250 a legend
+              that wraps to two rows left too little room and clipped the top of
+              the donut. */}
+          <ResponsiveContainer width="100%" height={320}>
+            <PieChart>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={100}
+                paddingAngle={2}
+                dataKey="value"
+              >
+                {data.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={colors[index % colors.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomChartTooltip />} cursor={false} />
+              <Legend
+                align="center"
+                iconType="circle"
+                iconSize={9}
+                content={renderLegend}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </ChartEmptyState>
       </CardContent>
     </Card>
   );

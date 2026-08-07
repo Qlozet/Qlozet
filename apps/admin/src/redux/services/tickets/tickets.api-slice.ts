@@ -4,39 +4,79 @@
 import { baseAPI } from '@/redux/api/base-api';
 import { ApiResponse, PaginatedData, buildQueryString } from '../types';
 
-export interface Ticket {
-  _id: string;
-  reference?: string;
-  ticket_id?: string;
-  subject?: string;
-  title?: string;
-  description?: string;
-  message?: string;
-  status?: string;
-  assigned_to?: string;
-  customer_id?: string;
-  date?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  [key: string]: unknown;
-}
-
 export interface TicketReply {
   _id: string;
   ticket_id: string;
+  /** Author's user id. Not populated — the backend sends a bare ObjectId. */
   sender: string;
-  sender_type: string;
+  /** Documented in Swagger (TicketReplyResponseDto) but absent from the live payload. */
+  sender_type?: string;
   message: string;
   attachments: string[];
   createdAt: string;
   updatedAt: string;
 }
 
+/**
+ * A support ticket, typed from the live GET /admin/tickets response — Swagger
+ * documents the request params for this endpoint but no response schema.
+ *
+ * Two things to know about the shape:
+ *  - `business` and `assigned_to` are bare ObjectIds, never populated. A vendor
+ *    name has to be resolved separately (see useBusinessNames).
+ *  - `replies` is populated with full objects on the *list* endpoint but comes
+ *    back as an array of id strings from GET /tickets/{id}. Normalise with
+ *    `populatedReplies` instead of indexing into it.
+ *
+ * There is no `reference`, `subject`, `title` or `due_date` field — the UI
+ * derives a display id and subject from `_id` and `description`.
+ */
+export interface Ticket {
+  _id: string;
+  /** Owning business id. Resolve to a name via GET /admin/businesses. */
+  business?: string;
+  issue_type?: string;
+  description?: string;
+  attachments?: string[];
+  /** Observed value: 'open'. The backend has no endpoint that changes it yet. */
+  status?: string;
+  /** Support-team id, or null when nobody owns the ticket. */
+  assigned_to?: string | null;
+  is_resolved?: boolean;
+  replies?: Array<TicketReply | string>;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+/**
+ * The subset of `replies` that arrived as full objects, newest last.
+ *
+ * GET /tickets/{id} returns reply *ids*, so a detail view fed only by that
+ * endpoint has nothing to render; the list endpoint is currently the only
+ * source of populated replies.
+ */
+export const populatedReplies = (ticket?: Ticket): TicketReply[] =>
+  (ticket?.replies ?? []).filter(
+    (reply): reply is TicketReply =>
+      typeof reply === 'object' && reply !== null && 'message' in reply
+  );
+
 export interface GetTicketsParams {
+  /** Matches `description` and `issue_type`. Does NOT match a ticket id. */
   search?: string;
   status?: string;
   assigned_to?: string;
+  /**
+   * Not in Swagger and not honoured by the backend — an unknown param is
+   * ignored, so passing this returns *every* ticket rather than one customer's.
+   * Kept only because the customer detail table still sends it.
+   */
   customer_id?: string;
+  /**
+   * Compared against `createdAt` as a timestamp, so a bare 'YYYY-MM-DD' end
+   * date resolves to midnight and excludes that whole day. Send full ISO
+   * instants — see `toStartIso` / `toEndIso` in date-range-filter.
+   */
   start_date?: string;
   end_date?: string;
   page?: number;

@@ -1,11 +1,9 @@
 import type { ReactNode } from 'react';
 
+// The auth shell (split layout, brand mark, imagery) lives in
+// pattern/auth/organisms/auth-layout.tsx and is applied per page, so each
+// screen can set its own title/subtitle and choose whether to show the
+// imagery. This segment is just a passthrough — matching the vendor app.
 export default function AuthLayout({ children }: { children: ReactNode }) {
-  return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-sm">
-        {children}
-      </div>
-    </div>
-  );
+  return <div className="w-full min-w-0">{children}</div>;
 }

@@ -1,118 +1,213 @@
 'use client';
 
-import { ChevronRight, Package } from 'lucide-react';
+import { useMemo } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
+import NiceModal from '@ebay/nice-modal-react';
+import { ChevronRight, PackageX, ShoppingBag, Package } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 import { APP_ROUTES } from '@/lib/routes';
 import {
   formatNaira,
-  formatOrderDate,
+  orderStatusBadge,
   readAmountPaid,
   readCustomerName,
   readFirstProductName,
+  readItemImage,
   readOrderId,
+  readStatus,
 } from '@/lib/orders';
-import { useGetAdminOrdersQuery } from '@/redux/services/orders/orders.api-slice';
+import {
+  useGetAdminOrdersQuery,
+  type AdminOrder,
+} from '@/redux/services/orders/orders.api-slice';
+import { OrderDetailsDrawer } from '@/pattern/orders/organisms/order-details-drawer';
+import { ChartSkeleton } from '../molecules/chart-skeleton';
 
-const MAX_ROWS = 3;
+const MAX_ROWS = 5;
+const MAX_THUMBS = 3;
 
-const RecentOrdersSkeleton = () => (
-  <div className="space-y-3">
-    {Array.from({ length: MAX_ROWS }).map((_, i) => (
-      <div
-        key={i}
-        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-      >
-        <div className="flex items-center gap-3">
-          <Skeleton className="size-11 rounded-md" />
-          <div className="flex flex-col gap-1.5">
-            <Skeleton className="h-4 w-28 rounded-md" />
-            <Skeleton className="h-3 w-20 rounded-md" />
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex flex-col items-end gap-1.5">
-            <Skeleton className="h-4 w-20 rounded-md" />
-            <Skeleton className="h-3 w-16 rounded-md" />
-          </div>
-          <Skeleton className="size-7 rounded-full" />
-        </div>
-      </div>
-    ))}
-  </div>
-);
+/** Relative time string (e.g. "2h ago", "3d ago"). */
+const timeAgo = (value?: string): string => {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (seconds < 60) return 'Just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+};
+
+const orderThumbnails = (order: AdminOrder): string[] =>
+  (order.items ?? [])
+    .map(readItemImage)
+    .filter((src): src is string => Boolean(src))
+    .slice(0, MAX_THUMBS);
 
 export const RecentOrders = () => {
   const { data, isLoading } = useGetAdminOrdersQuery();
 
-  // The endpoint returns every order, newest first is not guaranteed — sort
-  // by creation date before taking the top few.
-  const orders = [...(data?.data ?? [])]
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt ?? 0).getTime() -
-        new Date(a.createdAt ?? 0).getTime()
-    )
-    .slice(0, MAX_ROWS);
+  // The endpoint returns every order and newest-first isn't guaranteed, so sort
+  // before taking the top few.
+  const orders = useMemo(
+    () =>
+      [...(data?.data ?? [])]
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt ?? 0).getTime() -
+            new Date(a.createdAt ?? 0).getTime()
+        )
+        .slice(0, MAX_ROWS),
+    [data]
+  );
+
+  if (isLoading) return <ChartSkeleton />;
+
+  const isEmpty = orders.length === 0;
 
   return (
-    <Card className="w-full h-[443px] overflow-y-auto rounded-[12px] custom-card-shadow">
-      <CardHeader className="flex flex-row items-center justify-between pb-4">
-        <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] m-0">
-          Recent orders
-        </CardTitle>
+    <Card className="flex w-full h-[443px] flex-col overflow-hidden rounded-[12px] custom-card-shadow">
+      <CardHeader className="flex shrink-0 flex-row items-center justify-between pb-3">
+        <div className="flex items-center gap-2">
+          <ShoppingBag className="size-4 text-muted-foreground" />
+          <CardTitle className="m-0 text-sm font-medium text-[hsla(210,9%,31%,1)]">
+            Recent orders
+          </CardTitle>
+          {!isEmpty && (
+            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+              {orders.length}
+            </span>
+          )}
+        </div>
         <Link
           href={APP_ROUTES.orders}
-          className="flex items-center gap-1 text-xs text-foreground"
+          className="flex items-center gap-1 text-xs font-medium text-primary transition-colors hover:text-primary/80"
         >
-          View all <ChevronRight size={16} />
+          View all <ChevronRight size={14} />
         </Link>
       </CardHeader>
-      <CardContent className="space-y-3">
-        {isLoading && <RecentOrdersSkeleton />}
 
-        {!isLoading && orders.length === 0 && (
-          <p className="py-16 text-center text-sm text-muted-foreground">
-            No orders yet.
-          </p>
+      <CardContent className="min-h-0 flex-1 space-y-2 overflow-y-auto pb-4">
+        {isEmpty ? (
+          <div className="flex flex-col items-center justify-center gap-3 py-16">
+            <PackageX
+              size={32}
+              strokeWidth={1.5}
+              className="text-muted-foreground"
+            />
+            <div className="flex flex-col items-center gap-1.5">
+              <p className="text-base font-medium text-muted-foreground">
+                Nothing in here yet.
+              </p>
+              <p className="text-center text-sm text-muted-foreground">
+                Recent orders will show up here as customers place them
+              </p>
+            </div>
+          </div>
+        ) : (
+          orders.map((order) => {
+            const productName =
+              readFirstProductName(order) ?? readOrderId(order);
+            const images = orderThumbnails(order);
+            const itemsCount = order.items?.length ?? 0;
+            const badge = orderStatusBadge(readStatus(order));
+            const orderId = readOrderId(order);
+
+            return (
+              <button
+                type="button"
+                key={order._id}
+                onClick={() => NiceModal.show(OrderDetailsDrawer, { order })}
+                className="group flex w-full cursor-pointer items-center justify-between rounded-xl bg-gray-50 p-3 text-left transition hover:bg-gray-100"
+              >
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  {/* Thumbnail stack — tight by default, fans out on hover. */}
+                  <div className="flex shrink-0 items-center">
+                    {images.length > 0 ? (
+                      images.map((src, index) => (
+                        <div
+                          key={index}
+                          className={cn(
+                            'relative size-11 overflow-hidden rounded-lg bg-gray-200 ring-2 ring-gray-50 transition-all duration-200 ease-out',
+                            index !== 0 && '-ml-8 group-hover:-ml-4'
+                          )}
+                          style={{ zIndex: images.length - index }}
+                        >
+                          <Image
+                            src={src}
+                            alt={productName}
+                            fill
+                            className="object-cover"
+                            sizes="44px"
+                            unoptimized
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <div className="relative flex size-11 items-center justify-center overflow-hidden rounded-lg bg-gray-200">
+                        <Package className="size-4 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-sm font-medium text-gray-900 transition-colors group-hover:text-primary">
+                        {productName}
+                      </p>
+                      {itemsCount > 1 && (
+                        <span className="shrink-0 text-[10px] text-muted-foreground">
+                          +{itemsCount - 1} more
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-xs text-gray-500">
+                        {readCustomerName(order)}
+                      </p>
+                      <span className="text-gray-300">&middot;</span>
+                      <span className="shrink-0 font-mono text-[11px] text-muted-foreground">
+                        #{orderId.slice(-6).toUpperCase()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="ml-3 flex shrink-0 items-center gap-3">
+                  <div className="flex flex-col items-end gap-1">
+                    <p className="text-sm font-semibold text-gray-900">
+                      {formatNaira(readAmountPaid(order))}
+                    </p>
+                    <span
+                      className={cn(
+                        'inline-flex h-[20px] items-center justify-center whitespace-nowrap rounded-md px-2 text-[10px] font-medium',
+                        badge.className
+                      )}
+                    >
+                      {badge.label}
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="text-[10px] text-muted-foreground">
+                      {timeAgo(order.createdAt)}
+                    </span>
+                    <ChevronRight
+                      size={14}
+                      className="text-gray-400 transition-colors group-hover:text-primary"
+                    />
+                  </div>
+                </div>
+              </button>
+            );
+          })
         )}
-
-        {!isLoading &&
-          orders.map((order) => (
-            <Link
-              key={order._id}
-              href={APP_ROUTES.orders}
-              className="group flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition cursor-pointer"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="flex size-11 shrink-0 items-center justify-center rounded-md bg-gray-200">
-                  <Package className="size-4 text-gray-500" />
-                </div>
-                <div className="flex flex-col gap-0.5 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {readFirstProductName(order) ?? readOrderId(order)}
-                  </p>
-                  <p className="text-xs text-gray-600 truncate">
-                    {readCustomerName(order)}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 shrink-0">
-                <div className="flex flex-col items-end gap-0.5">
-                  <p className="text-sm font-semibold text-gray-900">
-                    {formatNaira(readAmountPaid(order))}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {formatOrderDate(order.createdAt)}
-                  </p>
-                </div>
-                <span className="p-1.5 bg-gray-200 group-hover:bg-gray-300 rounded-full transition">
-                  <ChevronRight size={16} className="text-gray-600" />
-                </span>
-              </div>
-            </Link>
-          ))}
       </CardContent>
     </Card>
   );

@@ -1,70 +1,86 @@
-// Tolerant field accessors for tickets / live-chat rows.
+// Display helpers for support tickets.
 //
-// The backend's ticket response shape isn't documented in Swagger and the
-// live-chat feature has no endpoint yet, so rows arrive loosely typed. These
-// helpers read the most likely keys and fall back to an honest "—" / null
-// rather than fabricating values.
+// These read the ticket shape returned by GET /admin/tickets, confirmed against
+// the live backend. Earlier versions of this file guessed at a dozen possible
+// key names (`reference`, `subject`, `user_name`, `customer.full_name`, …) —
+// none of those fields exist, which is why several columns rendered "—".
 
 import type { BadgeProps } from '@/components/ui/badge';
+import type { Ticket } from '@/redux/services/tickets/tickets.api-slice';
+
+export const EM_DASH = '—';
 
 export type Row = Record<string, unknown>;
-
-const asDict = (v: unknown): Row =>
-  v && typeof v === 'object' ? (v as Row) : {};
 
 const str = (v: unknown): string | undefined =>
   typeof v === 'string' && v.trim() ? v.trim() : undefined;
 
-// Pull a display name out of a populated relation object.
-const nestedName = (v: unknown): string | undefined => {
-  const o = asDict(v);
-  return (
-    str(o.username) ??
-    str(o.full_name) ??
-    str(o.name) ??
-    str(o.business_name) ??
-    str(o.email)
-  );
+/**
+ * Display id for a ticket.
+ *
+ * Tickets have no human-readable reference — `_id` is the only identifier the
+ * backend issues — so the last six characters stand in for one. They are the
+ * high-entropy end of a Mongo ObjectId, so they stay distinct in practice; the
+ * full id is still what gets copied and used in URLs.
+ */
+export const shortTicketId = (id?: string): string => {
+  const value = str(id);
+  return value ? `#${value.slice(-6).toUpperCase()}` : EM_DASH;
 };
 
-// User / Vendor name column.
-export const readName = (t: Row): string =>
-  str(t.user_name) ??
-  str(t.vendor_name) ??
-  str(t.customer_name) ??
-  nestedName(t.user) ??
-  nestedName(t.customer) ??
-  nestedName(t.vendor) ??
-  '—';
+/**
+ * Subject line for a ticket.
+ *
+ * There is no `subject` field, so the first line of the description stands in
+ * for one — that is what a vendor actually types as their opening sentence.
+ */
+export const ticketSubject = (ticket?: Ticket): string => {
+  const description = str(ticket?.description);
+  if (!description) return EM_DASH;
+  const [firstLine] = description.split('\n');
+  return str(firstLine) ?? description;
+};
 
-// "Assigned To" (tickets) — null when unassigned so the UI can flag it.
-export const readAssigned = (t: Row): string | null =>
-  str(t.assigned_to_name) ??
-  nestedName(t.assigned_to) ??
-  str(t.assigned_to) ??
-  null;
+/** Category column — the backend stores this free-form via CreateTicketDto. */
+export const ticketCategory = (ticket?: Ticket): string =>
+  str(ticket?.issue_type) ?? EM_DASH;
 
-// "Chat Agent / Bot" (live chat).
-export const readAgent = (t: Row): string =>
-  str(t.chat_agent) ??
-  str(t.agent_name) ??
-  nestedName(t.agent) ??
-  str(t.bot) ??
-  '—';
+/**
+ * Reads the assignee id. `assigned_to` is a bare support-team ObjectId (or
+ * null); it is never populated, so a caller that wants a name must resolve it.
+ */
+export const assigneeId = (ticket?: Ticket): string | null =>
+  str(ticket?.assigned_to) ?? null;
 
-export const readField = (t: Row, ...keys: string[]): string => {
+/** Generic first-non-blank-key reader, still used by the live-chat columns. */
+export const readField = (row: Row, ...keys: string[]): string => {
   for (const key of keys) {
-    const value = str(t[key]);
+    const value = str(row[key]);
     if (value) return value;
   }
-  return '—';
+  return EM_DASH;
 };
 
-// Format an ISO timestamp down to YYYY-MM-DD; pass through anything else.
+/** Format an ISO timestamp down to YYYY-MM-DD; pass through anything else. */
 export const formatDate = (value: unknown): string => {
   const s = str(value);
-  if (!s) return '—';
+  if (!s) return EM_DASH;
   return s.includes('T') ? s.slice(0, 10) : s;
+};
+
+/** Fuller timestamp for the reply thread, e.g. "7 Aug 2026, 03:59". */
+export const formatDateTime = (value: unknown): string => {
+  const s = str(value);
+  if (!s) return EM_DASH;
+  const date = new Date(s);
+  if (Number.isNaN(date.getTime())) return s;
+  return date.toLocaleString(undefined, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 };
 
 export const statusVariant = (status?: string): BadgeProps['variant'] => {

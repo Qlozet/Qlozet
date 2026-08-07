@@ -1,36 +1,44 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import type { PaginationState } from '@tanstack/react-table';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
 import { useGetVendorComplaintsQuery } from '@/redux/services/vendor-details/vendor-details.api-slice';
+import { APP_ROUTES } from '@/lib/routes';
 import { createComplaintColumns } from '../molecules/complaint-columns';
 
 const PAGE_SIZE = 5;
 
 export const ComplaintTable = ({ businessId }: { businessId: string }) => {
+  const router = useRouter();
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
   });
-  const [search, setSearch] = useState('');
 
   const { data, isLoading, isFetching, isSuccess, isError, error } =
     useGetVendorComplaintsQuery({
       businessId,
       page: pagination.pageIndex + 1,
       size: pagination.pageSize,
-      search,
     });
 
+  // Complaints are tickets — the admin ticket detail screen already exists.
   const columns = useMemo(
     () =>
       createComplaintColumns({
-        onViewDetails: () => toast.info('Complaint details coming soon'),
+        onViewDetails: (ticketId) => {
+          if (!ticketId) {
+            toast.error("This complaint has no id — it can't be opened.");
+            return;
+          }
+          router.push(`${APP_ROUTES.support}/${ticketId}`);
+        },
       }),
-    []
+    [router]
   );
 
   const rows = data?.data?.data ?? [];
@@ -52,11 +60,9 @@ export const ComplaintTable = ({ businessId }: { businessId: string }) => {
       emptyMessage="No complaints yet."
       loadingMessage="Loading complaints..."
       toolbar={
-        <TableToolbar
-          title="Complaint"
-          search={search}
-          onSearchChange={setSearch}
-        />
+        // No search box: /admin/tickets exposes a single `search` param, and
+        // it's already spent scoping results to this vendor.
+        <TableToolbar title="Complaint" showSearch={false} />
       }
     />
   );

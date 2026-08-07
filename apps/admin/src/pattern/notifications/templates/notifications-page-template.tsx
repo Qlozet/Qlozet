@@ -1,50 +1,46 @@
 'use client';
 
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { NotificationInbox } from './notification-inbox';
 import { NotificationsTemplate } from './notifications-template';
 
-type NotificationsTab = 'inbox' | 'settings';
-
-const TABS: { label: string; value: NotificationsTab }[] = [
-  { label: 'Inbox', value: 'inbox' },
-  { label: 'Settings', value: 'settings' },
+const TABS = [
+  { value: 'inbox', label: 'Inbox' },
+  { value: 'settings', label: 'Settings' },
 ];
 
 /**
  * Notifications has two distinct jobs: reading the notifications addressed to
  * you (Inbox, backed by /notifications) and configuring which notifications the
  * platform sends (Settings). They're tabbed rather than split across routes so
- * the top bar's bell has a single destination — matching the Support page.
+ * the top bar's bell has a single destination.
  */
 export const NotificationsPageTemplate = () => {
-  const [tab, setTab] = useState<NotificationsTab>('inbox');
-
   return (
-    <div className="w-full min-h-screen h-fit space-y-6 pb-10">
-      <div className="inline-flex rounded-xl bg-[#F8F9FA] p-1">
-        {TABS.map((item) => {
-          const active = item.value === tab;
-          return (
-            <button
-              key={item.value}
-              type="button"
-              onClick={() => setTab(item.value)}
-              className={cn(
-                'cursor-pointer rounded-lg px-5 py-2.5 text-sm font-medium transition-colors',
-                active
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-grey3 hover:text-grey-black'
-              )}
+    <div className="w-full min-h-screen h-fit pb-10">
+      <Tabs defaultValue="inbox" className="space-y-6">
+        {/* Card-background tab bar; active tab uses the theme's primary colour.
+            Matches the vendor Orders page bar exactly. */}
+        <TabsList className="h-12 gap-1 rounded-2xl border border-border bg-card p-1.5 custom-card-shadow">
+          {TABS.map((tab) => (
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className="rounded-xl px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
             >
-              {item.label}
-            </button>
-          );
-        })}
-      </div>
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
-      {tab === 'inbox' ? <NotificationInbox /> : <NotificationsTemplate />}
+        <TabsContent value="inbox" className="space-y-6">
+          <NotificationInbox />
+        </TabsContent>
+
+        <TabsContent value="settings" className="space-y-6">
+          <NotificationsTemplate />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

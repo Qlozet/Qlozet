@@ -10,7 +10,7 @@ import {
   type LiveChatLog,
 } from '../molecules/live-chat-columns';
 import { LiveChatConversation } from './live-chat-conversation';
-import { readName } from '../lib/ticket-fields';
+import { readField } from '../lib/ticket-fields';
 
 const PAGE_SIZE = 8;
 
@@ -27,7 +27,9 @@ export const LiveChatTable = () => {
   const rows: LiveChatLog[] = useMemo(() => [], []);
 
   const openChat = (row: LiveChatLog) =>
-    NiceModal.show(LiveChatConversation, { name: readName(row) });
+    NiceModal.show(LiveChatConversation, {
+      name: readField(row, 'user_name', 'vendor_name', 'customer_name'),
+    });
   const columns = useMemo(() => createLiveChatColumns(), []);
 
   return (

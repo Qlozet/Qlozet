@@ -27,6 +27,8 @@ interface TableToolbarProps {
   showFilter?: boolean;
   /** Hide the export button entirely (nothing to export). */
   showExport?: boolean;
+  /** Hide the search field entirely (nothing searchable). */
+  showSearch?: boolean;
   className?: string;
 }
 
@@ -44,6 +46,7 @@ export const TableToolbar = ({
   rightExtra,
   showFilter = true,
   showExport = true,
+  showSearch = true,
   className,
 }: TableToolbarProps) => {
   return (
@@ -77,15 +80,17 @@ export const TableToolbar = ({
             </Button>
           ))}
 
-        <div className="relative flex-1 sm:flex-none">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
-          <Input
-            value={search ?? ''}
-            onChange={(e) => onSearchChange?.(e.target.value)}
-            placeholder="Search"
-            className="h-10 w-full rounded-lg pl-9 sm:w-60"
-          />
-        </div>
+        {showSearch && (
+          <div className="relative flex-1 sm:flex-none">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
+            <Input
+              value={search ?? ''}
+              onChange={(e) => onSearchChange?.(e.target.value)}
+              placeholder="Search"
+              className="h-10 w-full rounded-lg pl-9 sm:w-60"
+            />
+          </div>
+        )}
 
         {showExport && (
           <Button

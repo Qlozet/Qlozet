@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { inter, poppins, roboto_mono } from './fonts';
 import { Providers } from '@/redux/provider';
 import { rootMetadata, siteConfig } from '@/lib/seo';
 
@@ -22,7 +23,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body
+        className={`${poppins.variable} ${inter.variable} ${roboto_mono.variable} font-poppins antialiased`}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>

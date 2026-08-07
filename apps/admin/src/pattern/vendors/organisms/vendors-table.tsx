@@ -56,10 +56,20 @@ export const VendorsTable = ({
     }
   };
 
+  // Guarded so a row missing `_id` surfaces the problem instead of silently
+  // navigating to /vendors/undefined.
+  const openVendor = (id?: string) => {
+    if (!id) {
+      toast.error("This vendor has no id — details can't be opened.");
+      return;
+    }
+    router.push(`${APP_ROUTES.vendors}/${id}`);
+  };
+
   const columns = useMemo(
     () =>
       createVendorsTableColumns({
-        onViewDetails: (id) => router.push(`${APP_ROUTES.vendors}/${id}`),
+        onViewDetails: (id) => openVendor(id),
         onApprove: (id) => runMutation(approve, id, 'Vendor approved'),
         onVerify: (id) => runMutation(verify, id, 'Vendor verified'),
         onReject: (id) => runMutation(reject, id, 'Vendor rejected'),
@@ -80,9 +90,7 @@ export const VendorsTable = ({
       pagination={pagination}
       setPagination={setPagination}
       pageCount={pageCount}
-      onRowClick={(vendor) =>
-        router.push(`${APP_ROUTES.vendors}/${vendor._id}`)
-      }
+      onRowClick={(vendor) => openVendor(vendor._id)}
       emptyMessage="No vendors found."
       loadingMessage="Loading vendors..."
     />

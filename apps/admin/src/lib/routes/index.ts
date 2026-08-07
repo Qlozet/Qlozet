@@ -2,6 +2,7 @@ export const AUTH_ROUTES = {
   signIn: '/auth/sign-in',
   signup: '/auth/sign-up',
   forgotPassword: '/auth/forgot-password',
+  passwordResetCodeSent: '/auth/forgot-password/code-sent',
   resetPassword: '/auth/reset',
   createNewPassword: '/auth/create-new-password',
   verification: '/auth/verification',
