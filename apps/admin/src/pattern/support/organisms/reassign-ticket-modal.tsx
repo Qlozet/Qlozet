@@ -27,7 +27,11 @@ export const ReassignTicketModal = NiceModal.create(
     const modal = useModal();
     const [assignee, setAssignee] = useState(currentAssigneeId ?? '');
 
-    const { data, isLoading: isLoadingMembers } = useGetTeamMembersQuery();
+    const {
+      data,
+      isLoading: isLoadingMembers,
+      isError: membersFailed,
+    } = useGetTeamMembersQuery();
     const [assignTicket, { isLoading: isAssigning }] =
       useAssignTicketMutation();
 
@@ -64,9 +68,14 @@ export const ReassignTicketModal = NiceModal.create(
       }
     };
 
+    // GET /users/team/members is currently returning a 500 from the backend, so
+    // distinguish "the list is genuinely empty" from "we couldn't load it" —
+    // otherwise a broken endpoint reads as an admin having no colleagues.
     const emptyLabel = isLoadingMembers
       ? 'Loading team members...'
-      : 'No team members available';
+      : membersFailed
+        ? 'Team members unavailable'
+        : 'No team members available';
 
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -99,6 +108,13 @@ export const ReassignTicketModal = NiceModal.create(
           <p className="mt-1 text-sm text-grey3">
             Choose the support team member who should own this ticket.
           </p>
+
+          {membersFailed && (
+            <p className="mt-3 rounded-lg bg-error/10 px-3 py-2 text-xs text-error">
+              The team members list could not be loaded, so this ticket
+              can&apos;t be reassigned right now.
+            </p>
+          )}
 
           <div className="mt-5 space-y-1.5">
             <label className="text-sm font-medium text-grey-black">

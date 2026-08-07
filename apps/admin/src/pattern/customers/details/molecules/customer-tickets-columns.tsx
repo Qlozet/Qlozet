@@ -6,6 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { Ticket } from '@/redux/services/tickets/tickets.api-slice';
+import {
+  formatDate,
+  shortTicketId,
+  ticketCategory,
+  ticketSubject,
+} from '@/pattern/support/lib/ticket-fields';
 
 const ICON_BG = [
   'bg-[#B42318]',
@@ -52,14 +58,14 @@ export const createCustomerTicketsColumns = ({
             <ShoppingBag className="size-4" />
           </div>
           <div className="flex flex-col gap-1">
+            {/* Tickets carry no reference/subject fields — the id tail and the
+                issue type stand in for them. */}
             <span className="text-sm font-semibold text-[hsla(210,9%,31%,1)]">
-              {t.reference ?? t.ticket_id ?? '—'}
+              {shortTicketId(t._id)}
             </span>
-            <span className="text-xs text-gray-500">
-              {t.title ?? t.subject ?? 'Issue'}
-            </span>
+            <span className="text-xs text-gray-500">{ticketCategory(t)}</span>
             <span className="max-w-[420px] text-xs text-gray-500">
-              {t.description ?? t.message ?? ''}
+              {ticketSubject(t)}
             </span>
           </div>
         </div>
@@ -72,7 +78,7 @@ export const createCustomerTicketsColumns = ({
     header: 'Date',
     cell: ({ row }) => (
       <span className="whitespace-nowrap text-sm text-gray-600">
-        {row.original.date ?? row.original.createdAt ?? '—'}
+        {formatDate(row.original.createdAt)}
       </span>
     ),
     enableSorting: false,

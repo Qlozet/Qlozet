@@ -6,16 +6,27 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { Ticket } from '@/redux/services/tickets/tickets.api-slice';
+import type {
+  Ticket,
+  TicketReply,
+} from '@/redux/services/tickets/tickets.api-slice';
 import {
-  readField,
-  readName,
+  EM_DASH,
+  shortTicketId,
   statusLabel,
   statusVariant,
+  ticketCategory,
+  ticketSubject,
 } from '../../lib/ticket-fields';
+import { TicketReplyThread } from '../molecules/ticket-reply-thread';
 
 interface TicketDetailCardProps {
   ticket?: Ticket;
+  /** Vendor name resolved from the ticket's `business` id. */
+  vendorName?: string;
+  replies?: TicketReply[];
+  /** True when the ticket has replies that came back as ids only. */
+  repliesUnresolved?: boolean;
   isLoading?: boolean;
   isSending?: boolean;
   /** Returns true when the reply was sent so the field can clear. */
@@ -33,6 +44,9 @@ const Meta = ({ label, value }: { label: string; value: string }) => (
 
 export const TicketDetailCard = ({
   ticket,
+  vendorName,
+  replies = [],
+  repliesUnresolved,
   isLoading,
   isSending,
   onSendReply,
@@ -61,11 +75,7 @@ export const TicketDetailCard = ({
     );
   }
 
-  const title = `${readField(ticket, 'reference', 'ticket_id')} - ${readField(
-    ticket,
-    'subject',
-    'title'
-  )}`;
+  const title = `${shortTicketId(ticket._id)} - ${ticketSubject(ticket)}`;
 
   const handleSend = async () => {
     const trimmed = message.trim();
@@ -113,21 +123,37 @@ export const TicketDetailCard = ({
         </div>
       </div>
 
-      {/* Customer / Category */}
+      {/* Vendor / Category */}
       <div className="flex gap-12">
-        <Meta label="Customer" value={readName(ticket)} />
-        <Meta
-          label="Category"
-          value={readField(ticket, 'category', 'issue_type')}
-        />
+        <Meta label="Vendor" value={vendorName || EM_DASH} />
+        <Meta label="Category" value={ticketCategory(ticket)} />
       </div>
 
       {/* Original message */}
       <div className="rounded-xl border border-border p-4">
         <p className="whitespace-pre-wrap text-sm leading-relaxed text-grey3">
-          {readField(ticket, 'description', 'message')}
+          {ticket.description?.trim() || EM_DASH}
         </p>
+
+        {ticket.attachments && ticket.attachments.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {ticket.attachments.map((url) => (
+              <a
+                key={url}
+                href={url}
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs text-[#3387CC] underline"
+              >
+                Attachment
+              </a>
+            ))}
+          </div>
+        )}
       </div>
+
+      {/* Conversation */}
+      <TicketReplyThread replies={replies} unresolved={repliesUnresolved} />
 
       {/* Reply composer */}
       <div className="flex items-center gap-3 rounded-lg border border-border p-1.5">

@@ -4,24 +4,23 @@ import { Repeat2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Ticket } from '@/redux/services/tickets/tickets.api-slice';
-import { formatDate, readAssigned, readField } from '../../lib/ticket-fields';
+import {
+  EM_DASH,
+  assigneeId,
+  formatDateTime,
+  shortTicketId,
+} from '../../lib/ticket-fields';
 
 interface TicketInformationCardProps {
   ticket?: Ticket;
+  /** Vendor name resolved from the ticket's `business` id. */
+  vendorName?: string;
   isLoading?: boolean;
   isResolving?: boolean;
   onReassign: () => void;
   onEdit: () => void;
   onResolve: () => void;
 }
-
-const initials = (name: string): string =>
-  name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? '')
-    .join('') || '?';
 
 const Field = ({ label, value }: { label: string; value: string }) => (
   <div className="space-y-1">
@@ -32,6 +31,7 @@ const Field = ({ label, value }: { label: string; value: string }) => (
 
 export const TicketInformationCard = ({
   ticket,
+  vendorName,
   isLoading,
   isResolving,
   onReassign,
@@ -53,7 +53,10 @@ export const TicketInformationCard = ({
     );
   }
 
-  const assigned = readAssigned(ticket);
+  // A support-team id, never a name: the backend doesn't populate it and
+  // GET /users/team/members currently 500s, so there is nothing to look it up
+  // against. Showing the id beats showing a made-up person.
+  const assigned = assigneeId(ticket);
 
   return (
     <div className="space-y-5 rounded-2xl bg-white p-6 custom-card-shadow">
@@ -66,14 +69,12 @@ export const TicketInformationCard = ({
         <p className="text-xs font-medium text-[#3387CC]">Assigned To</p>
         <div className="flex items-center gap-2">
           {assigned ? (
-            <>
-              <div className="flex size-7 items-center justify-center rounded-full bg-brown3 text-[11px] font-semibold text-white">
-                {initials(assigned)}
-              </div>
-              <span className="text-sm font-medium text-grey-black">
-                {assigned}
-              </span>
-            </>
+            <span
+              title={assigned}
+              className="text-sm font-medium text-grey-black"
+            >
+              Team {shortTicketId(assigned)}
+            </span>
           ) : (
             <span className="text-sm text-error">Unassigned</span>
           )}
@@ -88,14 +89,12 @@ export const TicketInformationCard = ({
         </div>
       </div>
 
-      <Field
-        label="Created"
-        value={formatDate(readField(ticket, 'createdAt', 'date'))}
-      />
-      <Field
-        label="Due Date"
-        value={formatDate(readField(ticket, 'due_date', 'dueDate'))}
-      />
+      {/* No "Due Date" field: tickets carry no due date, so the row that used
+          to sit here could only ever render a dash. */}
+      <Field label="Ticket ID" value={shortTicketId(ticket._id)} />
+      <Field label="Vendor" value={vendorName || EM_DASH} />
+      <Field label="Created" value={formatDateTime(ticket.createdAt)} />
+      <Field label="Last Updated" value={formatDateTime(ticket.updatedAt)} />
 
       <div className="flex justify-end gap-3 pt-2">
         <Button type="button" variant="outline" onClick={onEdit}>
