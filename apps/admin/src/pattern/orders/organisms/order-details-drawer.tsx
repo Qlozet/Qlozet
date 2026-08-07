@@ -16,15 +16,21 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { printOrderInvoice } from '@/lib/order-invoice';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
-import { WorkInProgressModal } from '@/pattern/common/organisms/work-in-progress-modal';
 import {
   OrderMediaPanel,
   ignoreMediaPanelInteraction,
 } from '../molecules/order-media-panel';
-import { allProductImages, bespokeDesignImages } from '../lib/item-resolvers';
+import {
+  allProductImages,
+  bespokeDesignImages,
+  hasItemDetails,
+} from '../lib/item-resolvers';
+import { OrderItemDetailModal } from './order-item-detail-modal';
 import {
   formatNaira,
   formatOrderDate,
@@ -96,10 +102,13 @@ const Panel = ({ children }: { children: React.ReactNode }) => (
 const OrderItemRow = ({
   item,
   isLast = false,
+  interactive = true,
   onOpen,
 }: {
   item: AdminOrderItem;
   isLast?: boolean;
+  /** False when the item has nothing beyond what this row already shows. */
+  interactive?: boolean;
   onOpen: () => void;
 }) => {
   const name = readItemName(item);
@@ -109,9 +118,11 @@ const OrderItemRow = ({
   return (
     <button
       type="button"
-      onClick={onOpen}
+      onClick={interactive ? onOpen : undefined}
+      disabled={!interactive}
       className={cn(
-        'group flex w-full items-start gap-3 px-5 py-4 text-left transition-colors hover:bg-black/[0.03] cursor-pointer',
+        'group flex w-full items-start gap-3 px-5 py-4 text-left transition-colors',
+        interactive && 'hover:bg-black/[0.03] cursor-pointer',
         !isLast && 'border-b border-[#DDE2E5]'
       )}
     >
@@ -160,9 +171,11 @@ const OrderItemRow = ({
         )}
       </div>
 
-      <span className="mt-1 flex size-6 shrink-0 items-center justify-center rounded-full bg-white text-gray-400 transition-colors group-hover:text-primary">
-        <ChevronRight className="size-4" />
-      </span>
+      {interactive && (
+        <span className="mt-1 flex size-6 shrink-0 items-center justify-center rounded-full bg-white text-gray-400 transition-colors group-hover:text-primary">
+          <ChevronRight className="size-4" />
+        </span>
+      )}
     </button>
   );
 };
@@ -181,9 +194,15 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       }
     };
 
-    // TODO(api): per-item detail screens (Bespoke / Custom / Accessories /
-    // Fabric) aren't designed yet — the chevron parks on the WIP modal.
-    const showWorkInProgress = () => NiceModal.show(WorkInProgressModal);
+    // No invoice endpoint exists, so the invoice is composed from this order and
+    // handed to the browser's print dialog (which covers "Save as PDF" too).
+    const handlePrintInvoice = () => {
+      if (!printOrderInvoice(order)) {
+        toast.error(
+          'Your browser blocked the invoice window. Allow pop-ups for this site and try again.'
+        );
+      }
+    };
 
     const items = Array.isArray(order.items) ? order.items : [];
     const paymentStatus = readPaymentStatus(order);
@@ -269,7 +288,10 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                         key={index}
                         item={item}
                         isLast={index === items.length - 1}
-                        onOpen={showWorkInProgress}
+                        interactive={hasItemDetails(item)}
+                        onOpen={() =>
+                          NiceModal.show(OrderItemDetailModal, { item, order })
+                        }
                       />
                     ))
                   ) : (
@@ -290,7 +312,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={showWorkInProgress}
+                      onClick={handlePrintInvoice}
                       className="h-8 gap-1.5 rounded-lg px-3 text-xs font-normal text-gray-700"
                     >
                       <Printer className="size-3.5" />

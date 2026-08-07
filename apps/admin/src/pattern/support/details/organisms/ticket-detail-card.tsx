@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ClipboardList, Flag, ShoppingCart } from 'lucide-react';
+import { ClipboardList, ShoppingCart } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,7 +32,6 @@ interface TicketDetailCardProps {
   /** Returns true when the reply was sent so the field can clear. */
   onSendReply: (message: string) => Promise<boolean>;
   onCopyId: () => void;
-  onFlag: () => void;
 }
 
 const Meta = ({ label, value }: { label: string; value: string }) => (
@@ -51,7 +50,6 @@ export const TicketDetailCard = ({
   isSending,
   onSendReply,
   onCopyId,
-  onFlag,
 }: TicketDetailCardProps) => {
   const [message, setMessage] = useState('');
 
@@ -112,14 +110,8 @@ export const TicketDetailCard = ({
           >
             <ClipboardList className="size-4" />
           </button>
-          <button
-            type="button"
-            onClick={onFlag}
-            aria-label="Flag ticket"
-            className="flex size-9 items-center justify-center rounded-lg bg-[#F8F9FA] text-error hover:bg-gray-100 transition-colors cursor-pointer"
-          >
-            <Flag className="size-4" />
-          </button>
+          {/* No flag control: the backend has no ticket-flag endpoint, and
+              UpdateTicketDto carries no status field either. */}
         </div>
       </div>
 

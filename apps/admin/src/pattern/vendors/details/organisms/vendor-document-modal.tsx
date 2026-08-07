@@ -1,9 +1,11 @@
 'use client';
 
-import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import { Download, FileText, Pencil, X } from 'lucide-react';
+import { useState } from 'react';
+import { create, useModal } from '@ebay/nice-modal-react';
+import { Download, FileText, X } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { WorkInProgressModal } from '@/pattern/common/organisms/work-in-progress-modal';
+import { downloadFile, filenameFromUrl } from '@/lib/download-file';
 
 interface VendorDocumentModalProps {
   /** e.g. "PNG Logo" or "CAC Document". */
@@ -23,20 +25,40 @@ const isPdf = (url: string) => /\.pdf(\?|#|$)/i.test(url);
  *
  * View + download are fully wired against the URL on the business record.
  *
- * TODO(api): the design also has an upload/replace mode. There is no endpoint
- * for it — `/admin/businesses/{id}` is GET-only and the upload routes are
- * profile/product/outfits, none of which target a business document. So the
- * edit affordance opens the shared work-in-progress modal, and a vendor with no
- * document gets an honest empty state rather than a dropzone that can't save.
+ * The design also has an upload/replace mode, which is deliberately absent: the
+ * backend has no endpoint for it. `/admin/businesses/{id}` is GET-only, and the
+ * only upload routes (`/uploads/{profile,product,outfits}`) return a URL with
+ * nothing to attach it to on another business's record — `PATCH /business/profile`
+ * writes to the *caller's* own business. A vendor with no document therefore gets
+ * an honest empty state rather than a dropzone that can't save.
  */
-export const VendorDocumentModal = NiceModal.create(
+export const VendorDocumentModal = create(
   ({ kind, vendorName, url, downloadLabel }: VendorDocumentModalProps) => {
     const modal = useModal();
+    const [isDownloading, setIsDownloading] = useState(false);
 
     if (!modal.visible) return null;
 
     const close = () => modal.remove();
     const title = vendorName ? `${kind} - ${vendorName}` : kind;
+
+    const handleDownload = async () => {
+      if (!url) return;
+      setIsDownloading(true);
+      const name = filenameFromUrl(
+        url,
+        `${(vendorName ?? 'vendor').replace(/\s+/g, '-').toLowerCase()}-${kind
+          .replace(/\s+/g, '-')
+          .toLowerCase()}`
+      );
+      const ok = await downloadFile(url, name);
+      setIsDownloading(false);
+      if (!ok) {
+        toast.error(
+          'Could not download the file. Allow pop-ups for this site and try again.'
+        );
+      }
+    };
 
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -67,16 +89,11 @@ export const VendorDocumentModal = NiceModal.create(
           </div>
 
           {/* Preview */}
+          {/* No replace/upload affordance: the admin console cannot write to a
+              vendor's business record. /admin/businesses/{id} is read-only and
+              PATCH /business/profile acts on the *caller's* own business, so a
+              replace control here could only ever mislead. */}
           <div className="relative overflow-hidden rounded-xl border border-border bg-[#F2F2F2]">
-            <button
-              type="button"
-              onClick={() => NiceModal.show(WorkInProgressModal)}
-              aria-label={`Replace ${kind.toLowerCase()}`}
-              className="absolute right-3 top-3 z-10 flex size-8 cursor-pointer items-center justify-center rounded-lg bg-white/90 text-grey-black shadow-sm transition-colors hover:bg-white"
-            >
-              <Pencil className="size-4" />
-            </button>
-
             {url ? (
               isPdf(url) ? (
                 <iframe
@@ -117,13 +134,17 @@ export const VendorDocumentModal = NiceModal.create(
 
           {/* Action */}
           {url ? (
-            <Button asChild size="lg" className="w-full gap-2">
-              {/* Cross-origin downloads ignore the `download` attribute, so this
-                  opens in a new tab rather than silently doing nothing. */}
-              <a href={url} target="_blank" rel="noreferrer" download>
-                <Download className="size-4" />
-                {downloadLabel ?? `Download ${kind}`}
-              </a>
+            <Button
+              type="button"
+              size="lg"
+              className="w-full gap-2"
+              onClick={handleDownload}
+              disabled={isDownloading}
+            >
+              <Download className="size-4" />
+              {isDownloading
+                ? 'Downloading...'
+                : (downloadLabel ?? `Download ${kind}`)}
             </Button>
           ) : (
             <Button

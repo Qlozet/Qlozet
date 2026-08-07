@@ -43,19 +43,173 @@ export interface AdminOrderPricing {
   final?: number;
 }
 
+/* ── Populated product sub-documents ──
+ *
+ * Verified against the live GET /admin/vendor/orders payload: `items[].product`
+ * comes back fully populated, with the kind-specific sub-document (clothing /
+ * fabric / accessory) carrying the catalogue arrays that the item's selection
+ * arrays reference by id. Mirrors the vendor app's shape — the two endpoints
+ * return the same item structure.
+ */
+
+export interface ProductImage {
+  public_id?: string;
+  url: string;
+  width?: number;
+  height?: number;
+}
+
+export interface ClothingStyleDoc {
+  _id: string;
+  name?: string;
+  style_code?: string;
+  type?: string;
+  price?: number;
+  images?: ProductImage[];
+}
+
+export interface ClothingFabricDoc {
+  _id: string;
+  name?: string;
+  price_per_yard?: number;
+  min_cut?: number;
+  colors?: { name?: string; hex?: string }[];
+  images?: ProductImage[];
+}
+
+export interface ClothingAccessoryDoc {
+  _id: string;
+  name?: string;
+  price?: number;
+  images?: ProductImage[];
+  variants?: {
+    _id?: string;
+    name?: string;
+    price?: number;
+    images?: ProductImage[];
+  }[];
+}
+
+export interface ClothingAddonDoc {
+  _id: string;
+  name?: string;
+  display_type?: 'colour' | 'picture';
+  variants?: {
+    _id?: string;
+    name?: string;
+    price?: number;
+    color_hex?: string;
+    image_url?: string;
+  }[];
+}
+
+export interface ClothingColorVariantDoc {
+  _id: string;
+  name?: string;
+  color_name?: string;
+  hex?: string;
+  hex_code?: string;
+  images?: ProductImage[];
+  variants?: {
+    _id?: string;
+    size?: string;
+    price?: number;
+    images?: ProductImage[];
+  }[];
+}
+
+/** Cross-vendor fabric applied to a custom outfit. */
+export interface AppliedFabricRef {
+  _id?: string;
+  base_price?: number;
+  fabric?: { name?: string; images?: ProductImage[] };
+  business?:
+    | string
+    | { _id: string; business_name?: string; business_logo_url?: string };
+}
+
+export interface PopulatedProduct {
+  _id?: string;
+  name?: string;
+  images?: (string | ProductImage)[];
+  base_price?: number;
+  kind?: 'clothing' | 'fabric' | 'accessory';
+  clothing?: {
+    name?: string;
+    description?: string;
+    type?: string;
+    images?: ProductImage[];
+    styles?: ClothingStyleDoc[];
+    fabrics?: ClothingFabricDoc[];
+    accessories?: ClothingAccessoryDoc[];
+    addons?: ClothingAddonDoc[];
+    color_variants?: ClothingColorVariantDoc[];
+  };
+  fabric?: { name?: string; images?: ProductImage[] };
+  accessory?: { name?: string; images?: ProductImage[] };
+}
+
+/* ── Selections: what the customer actually chose ── */
+
+export interface VariantSelection {
+  variant_id?: string;
+  color?: string;
+  size?: string;
+  price?: number;
+  quantity?: number;
+  total_amount?: number;
+}
+
+export interface FabricSelection {
+  fabric_id?: string;
+  yardage?: number;
+  yards?: number;
+  price?: number;
+  quantity?: number;
+  total_amount?: number;
+}
+
+export interface StyleSelection {
+  style_id?: string;
+  price?: number;
+  quantity?: number;
+  total_amount?: number;
+}
+
+export interface AccessorySelection {
+  accessory_id?: string;
+  variant_id?: string;
+  price?: number;
+  quantity?: number;
+  total_amount?: number;
+}
+
+export interface AddonSelection {
+  addon_id?: string;
+  variant_id?: string;
+  price?: number;
+  quantity?: number;
+  total_amount?: number;
+}
+
 export interface AdminOrderItem {
   quantity?: number;
   price?: number;
   total_price?: number;
   total_amount?: number;
   pricing?: AdminOrderPricing;
-  product?: unknown;
-  /** Per-selection arrays; only used here to total up quantities. */
-  color_variant_selections?: { quantity?: number }[];
-  fabric_selections?: { quantity?: number }[];
-  style_selections?: { quantity?: number }[];
-  accessory_selections?: { quantity?: number }[];
-  addon_selections?: { quantity?: number }[];
+  /** Populated product document, or a bare ObjectId string. */
+  product?: PopulatedProduct | string | unknown;
+  /** Owning vendor's business id. */
+  business?: string;
+  color_variant_selections?: VariantSelection[];
+  fabric_selections?: FabricSelection[];
+  style_selections?: StyleSelection[];
+  accessory_selections?: AccessorySelection[];
+  addon_selections?: AddonSelection[];
+  applied_fabric?: string | AppliedFabricRef | null;
+  applied_fabric_yards?: number | null;
+  note?: string;
   [key: string]: unknown;
 }
 

@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import type { PaginationState } from '@tanstack/react-table';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
+import { readPageCount } from '@/redux/services/types';
 import { useGetVendorProductsQuery } from '@/redux/services/vendor-details/vendor-details.api-slice';
 import { createTopProductsColumns } from '../molecules/top-products-columns';
 
@@ -21,13 +22,13 @@ export const TopProductsTable = ({ businessId }: { businessId: string }) => {
       businessId,
       page: pagination.pageIndex + 1,
       size: pagination.pageSize,
+      search,
     });
 
   const columns = useMemo(() => createTopProductsColumns(), []);
 
   const rows = data?.data?.data ?? [];
-  const totalCount = data?.data?.totalCount ?? data?.data?.total ?? rows.length;
-  const pageCount = Math.max(Math.ceil(totalCount / pagination.pageSize), 1);
+  const pageCount = readPageCount(data?.data, pagination.pageSize);
 
   return (
     <DataTable

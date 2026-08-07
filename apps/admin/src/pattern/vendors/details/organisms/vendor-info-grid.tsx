@@ -214,32 +214,41 @@ export const VendorInfoGrid = ({
           value={idVerified ? 'Verified' : 'Unverified'}
           valueClassName={idVerified ? 'text-[#0F973D]' : 'text-destructive'}
         />
+        {/* The viewer link is withheld when nothing was uploaded — it could
+            only open an empty modal, and replacing a document has no endpoint
+            either, so there is nothing for the click to do. */}
         <VendorInfoCard
           label="CAC Document"
           value={cacUrl ? 'Uploaded' : 'Not uploaded'}
           valueClassName={cacUrl ? 'text-[#0F973D]' : 'text-destructive'}
-          linkLabel="View document"
-          onLinkClick={() =>
-            NiceModal.show(VendorDocumentModal, {
-              kind: 'CAC Document',
-              vendorName,
-              url: cacUrl,
-              downloadLabel: 'Download Document',
-            })
+          linkLabel={cacUrl ? 'View document' : undefined}
+          onLinkClick={
+            cacUrl
+              ? () =>
+                  NiceModal.show(VendorDocumentModal, {
+                    kind: 'CAC Document',
+                    vendorName,
+                    url: cacUrl,
+                    downloadLabel: 'Download Document',
+                  })
+              : undefined
           }
         />
         <VendorInfoCard
           label="Company PNG logo"
           value={logoUrl ? 'Uploaded' : 'Not uploaded'}
           valueClassName={logoUrl ? 'text-[#0F973D]' : 'text-destructive'}
-          linkLabel="View logo"
-          onLinkClick={() =>
-            NiceModal.show(VendorDocumentModal, {
-              kind: 'PNG Logo',
-              vendorName,
-              url: logoUrl,
-              downloadLabel: 'Download Logo',
-            })
+          linkLabel={logoUrl ? 'View logo' : undefined}
+          onLinkClick={
+            logoUrl
+              ? () =>
+                  NiceModal.show(VendorDocumentModal, {
+                    kind: 'PNG Logo',
+                    vendorName,
+                    url: logoUrl,
+                    downloadLabel: 'Download Logo',
+                  })
+              : undefined
           }
         />
       </div>
