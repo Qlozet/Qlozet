@@ -15,6 +15,11 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import WeeklyDigestSection from '@/pattern/common/organisms/weekly-digest-section';
 import { useGetProfileQuery } from '@/redux/services/auth/auth.api-slice';
+import { useGetVendorProductRatingsQuery } from '@/redux/services/products/products.api-slice';
+import { useAppSelector } from '@/redux/store';
+import { selectActiveBusiness } from '@/redux/slices/auth-slice';
+import NiceModal from '@ebay/nice-modal-react';
+import { ProductReviewsSheet } from '@/pattern/products/organisms/product-reviews-sheet';
 
 // Bands rendered in the reviews breakdown, in display order.
 const RATING_BANDS = [
@@ -31,11 +36,30 @@ const Profile = ({
   showProfileHandler,
   isLoading,
 }: ProfileProps) => {
-  const ratings = userDetails?.ratings;
-  const totalReviews = RATING_BANDS.reduce(
-    (sum, band) => sum + (ratings?.[band.key] ?? 0),
-    0
+  // Live vendor reviews (aggregated across the vendor's products). The
+  // userDetails transform doesn't populate ratings, so read them here.
+  const activeBusiness = useAppSelector(selectActiveBusiness);
+  const businessId = activeBusiness?._id ?? '';
+  const { data: vrRaw } = useGetVendorProductRatingsQuery(
+    { business_id: businessId },
+    { skip: !businessId || !showProfile }
   );
+  const summary = (vrRaw as any)?.data?.summary ?? (vrRaw as any)?.summary;
+
+  const bandCount = (key: (typeof RATING_BANDS)[number]['key']): number => {
+    const map: Record<string, string> = {
+      excellent: 'five_star',
+      good: 'four_star',
+      average: 'three_star',
+      belowAverage: 'two_star',
+      poor: 'one_star',
+    };
+    return summary?.[map[key]] ?? userDetails?.ratings?.[key] ?? 0;
+  };
+  const averageRating = summary?.average_rating ?? userDetails?.averageRating ?? 0;
+  const totalReviews =
+    summary?.total_reviews ??
+    RATING_BANDS.reduce((sum, band) => sum + (userDetails?.ratings?.[band.key] ?? 0), 0);
   const hasReviews = totalReviews > 0;
 
   // The signed-in user's email isn't part of UserDetails, so read it from
@@ -230,19 +254,33 @@ const Profile = ({
                       >
                         Customers Reviews
                       </Typography>
+                      {hasReviews && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            NiceModal.show(ProductReviewsSheet, {
+                              businessId,
+                              title: 'Customer reviews',
+                            })
+                          }
+                          className="text-[12px] font-semibold text-[#A67B5B] dark:text-[#E0D5CB] underline"
+                        >
+                          Read reviews
+                        </button>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-3 mb-1">
                       {/* Not rounded to a whole star — react-stars renders
                           halves, which is how the design shows e.g. 4.8. */}
-                      <Rating newRating={userDetails?.averageRating || 0} />
+                      <Rating newRating={averageRating || 0} />
                       <div className="flex items-baseline gap-1.5">
                         <Typography
                           textColor="text-[#1C1C1E] dark:text-white"
                           textWeight="font-bold"
                           textSize="text-[18px]"
                         >
-                          {userDetails?.averageRating || '0'}
+                          {averageRating || '0'}
                         </Typography>
                         <Typography
                           textColor="text-[#8E8E93] dark:text-gray-300"
@@ -270,7 +308,7 @@ const Profile = ({
                           <Performance
                             key={band.name}
                             name={band.name}
-                            value={ratings?.[band.key] ?? 0}
+                            value={bandCount(band.key)}
                             color="bg-[#1C1C1E] dark:bg-white"
                           />
                         ))}

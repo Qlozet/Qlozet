@@ -607,9 +607,19 @@ export const productsApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['ProductReviews', 'Product'],
     }),
 
-    // GET /products/{id}/ratings — rating summary and reviews
+    // GET /products/{id}/ratings — rating summary, reviews + items_sold
     getProductRatings: builder.query<any, string>({
       query: (id) => ({ url: `/products/${id}/ratings`, method: 'GET' }),
+      providesTags: ['ProductReviews'],
+    }),
+
+    // GET /products/ratings/vendor?business_id=... — reviews across all of a
+    // vendor's products, with a star-breakdown summary.
+    getVendorProductRatings: builder.query<any, { business_id: string }>({
+      query: ({ business_id }) => ({
+        url: `/products/ratings/vendor?business_id=${business_id}`,
+        method: 'GET',
+      }),
       providesTags: ['ProductReviews'],
     }),
 
@@ -653,5 +663,6 @@ export const {
   useUpdateAccessoryVariantStockMutation,
   useRateProductMutation,
   useGetProductRatingsQuery,
+  useGetVendorProductRatingsQuery,
   useToggleProductWishlistMutation,
 } = productsApiSlice;

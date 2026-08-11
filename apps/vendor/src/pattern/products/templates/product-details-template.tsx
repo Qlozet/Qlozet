@@ -9,7 +9,6 @@ import {
   ChevronRight,
   Clipboard,
   Flag,
-  Heart,
   MessageSquare,
   Monitor,
   Star,
@@ -22,7 +21,9 @@ import { cn } from '@/lib/utils';
 import {
   useGetProductQuery,
   useDeleteProductMutation,
+  useGetProductRatingsQuery,
 } from '@/redux/services/products/products.api-slice';
+import { ProductReviewsSheet } from '@/pattern/products/organisms/product-reviews-sheet';
 import { AddFabricModal } from '../organisms/add-fabric-modal';
 import { AddAccessoryModal } from '../organisms/add-accessories-modal';
 
@@ -158,11 +159,23 @@ export const ProductDetailsTemplate = ({
     apiProduct.fabric ||
     apiProduct;
 
+  // Ratings + units-sold for the metrics row (one call powers rating, review
+  // count and "Items delivered").
+  const { data: ratingsRaw } = useGetProductRatingsQuery(productId, {
+    skip: !productId,
+  });
+  const ratings = (ratingsRaw as any)?.data ?? ratingsRaw;
+
   const product: ClothingView = {
     ...apiProduct,
     ...itemData,
     price: apiProduct.base_price ?? itemData.price ?? 0,
     status: apiProduct.status ?? 'draft',
+    // Real review + sales metrics (undefined → the row/badge stays hidden).
+    rating:
+      ratings?.total_reviews > 0 ? Number(ratings.average) || 0 : undefined,
+    reviews_count: ratings ? ratings.total_reviews ?? 0 : undefined,
+    items_delivered: ratings?.items_sold,
   };
 
   const baseImages = (product.images ?? [])
@@ -220,9 +233,7 @@ export const ProductDetailsTemplate = ({
 
   const tags = product.taxonomy?.attributes ?? [];
   const hasMetrics =
-    product.rating !== undefined ||
-    product.likes !== undefined ||
-    product.reviews_count !== undefined;
+    product.rating !== undefined || product.reviews_count !== undefined;
 
   // Fabric products render a different detail set than clothing.
   const isFabric =
@@ -403,19 +414,15 @@ export const ProductDetailsTemplate = ({
                       <span className="text-lg">{product.rating}</span>
                     </span>
                   )}
-                  {product.likes !== undefined && (
-                    <span className="flex items-center gap-1.5 ml-2">
-                      <Heart className="size-5 fill-[#EB5757] text-[#EB5757]" />
-                      <span className="text-lg">{product.likes}</span>
-                    </span>
-                  )}
                   {product.reviews_count !== undefined && (
                     <span className="flex items-center gap-1.5 ml-2">
                       <MessageSquare className="size-5" />
                       <span className="text-lg">{product.reviews_count}</span>
                       <button
                         type="button"
-                        onClick={wip}
+                        onClick={() =>
+                          NiceModal.show(ProductReviewsSheet, { productId })
+                        }
                         className="ml-2 text-xs font-normal text-muted-foreground underline"
                       >
                         Read reviews
