@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { create, useModal } from '@ebay/nice-modal-react';
 import { Loader2, Star } from 'lucide-react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
@@ -32,7 +31,7 @@ interface NormalReview {
   product?: string;
 }
 
-const BAND_LABELS = ['Excellent', 'Good', 'Average', 'Below avg.', 'Poor'];
+const BAND_LABELS = ['Excellent', 'Good', 'Average', 'Avg. Below', 'Poor'];
 
 function dateFromObjectId(id?: string): string {
   if (!id || typeof id !== 'string' || id.length < 8) return '';
@@ -50,20 +49,24 @@ function dateFromObjectId(id?: string): string {
   });
 }
 
+// Amber stars, matching the shop's vendor-profile reviews sheet (#F5A623).
 function Stars({ value, size = 14 }: { value: number; size?: number }) {
   return (
     <div className="flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map((s) => (
-        <Star
-          key={s}
-          className={
-            s <= Math.round(value)
-              ? 'fill-[#F2C94C] text-[#F2C94C]'
-              : 'text-muted-foreground/40'
-          }
-          style={{ width: size, height: size }}
-        />
-      ))}
+      {[1, 2, 3, 4, 5].map((s) => {
+        const on = s <= Math.round(value);
+        return (
+          <Star
+            key={s}
+            style={{
+              width: size,
+              height: size,
+              fill: on ? '#F5A623' : 'none',
+              color: on ? '#F5A623' : '#D0D0D0',
+            }}
+          />
+        );
+      })}
     </div>
   );
 }
@@ -153,8 +156,8 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
           style={{ height: 'calc(100vh - 3rem)' }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-6 pt-6 pb-3">
-            <h2 className="text-xl font-bold text-grey-black dark:text-white">
+          <div className="flex items-center justify-between px-6 pt-6 pb-2">
+            <h2 className="text-[22px] font-black text-grey-black dark:text-white">
               {title || 'Reviews'}
             </h2>
           </div>
@@ -162,12 +165,12 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
           <div className="flex-1 overflow-y-auto px-6 pb-6">
             {/* Summary */}
             <div className="flex items-center gap-2">
-              <Stars value={average} size={18} />
-              <span className="text-lg font-bold text-grey-black dark:text-white">
+              <Stars value={average} size={16} />
+              <span className="text-[18px] font-extrabold text-grey-black dark:text-white">
                 {Number(average || 0).toFixed(1)}
               </span>
             </div>
-            <p className="mb-5 text-xs text-muted-foreground">
+            <p className="mb-6 mt-1 text-[13px] text-[#888] dark:text-gray-400">
               {total > 0
                 ? `Overall rating from ${total} customer review${total === 1 ? '' : 's'}`
                 : 'No reviews yet'}
@@ -178,16 +181,19 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
               <div className="mb-6 flex flex-col gap-2.5">
                 {breakdown.map((b) => (
                   <div key={b.label} className="flex items-center gap-3">
-                    <span className="w-[74px] shrink-0 text-xs font-medium text-muted-foreground">
+                    <span className="w-[70px] shrink-0 text-xs font-semibold text-[#666] dark:text-gray-300">
                       {b.label}
                     </span>
-                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-accent">
+                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-[#F0F0F0] dark:bg-white/10">
                       <div
-                        className="h-full rounded-full bg-[#8B7A47]"
-                        style={{ width: `${Math.round((b.count / maxCount) * 100)}%` }}
+                        className="h-full rounded-full"
+                        style={{
+                          width: `${Math.round((b.count / maxCount) * 100)}%`,
+                          background: b.label === 'Poor' ? '#1A1A1A' : '#8B7A47',
+                        }}
                       />
                     </div>
-                    <span className="w-6 text-right text-xs font-semibold text-muted-foreground">
+                    <span className="w-6 text-right text-xs font-semibold text-[#999]">
                       {String(b.count).padStart(2, '0')}
                     </span>
                   </div>
@@ -203,17 +209,20 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
             ) : reviews.length === 0 ? (
               <p className="text-sm text-muted-foreground">No reviews yet.</p>
             ) : (
-              <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-6">
                 {reviews.map((r) => (
-                  <div key={r.id} className="border-b border-border pb-5 last:border-0">
+                  <div key={r.id} className="border-b border-[#F0F0F0] dark:border-white/10 pb-5 last:border-0">
                     <div className="mb-2 flex items-center justify-between">
                       <Stars value={r.rating} />
                       {r.date && (
                         <span className="text-[11px] text-muted-foreground">{r.date}</span>
                       )}
                     </div>
-                    <div className="mb-1.5 flex items-center gap-2">
-                      <div className="flex size-8 items-center justify-center rounded-full bg-accent text-xs font-bold text-grey-black dark:text-white">
+                    <div className="mb-2.5 flex items-center gap-2.5">
+                      <div
+                        className="flex size-10 items-center justify-center rounded-full text-[15px] font-extrabold"
+                        style={{ background: '#EFE9E3', color: '#462814' }}
+                      >
                         {r.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0">
@@ -221,14 +230,12 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
                           {r.name}
                         </p>
                         {r.product && (
-                          <p className="truncate text-[11px] text-muted-foreground">
-                            {r.product}
-                          </p>
+                          <p className="truncate text-[11px] text-[#999]">{r.product}</p>
                         )}
                       </div>
                     </div>
                     {r.comment && (
-                      <p className="text-xs leading-relaxed text-muted-foreground">
+                      <p className="text-[13px] leading-relaxed text-[#555] dark:text-gray-300">
                         {r.comment}
                       </p>
                     )}
