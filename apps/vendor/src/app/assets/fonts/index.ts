@@ -1,29 +1,43 @@
-import { DM_Sans, Inter, Poppins, Roboto_Mono } from 'next/font/google';
+// Self-hosted via next/font/local (files alongside this index) instead of
+// next/font/google: the Google fetch happens at BUILD time and intermittently
+// fails the Vercel build ("module not found" on the generated font CSS). Local
+// files make the build deterministic and offline-safe. Same CSS variables +
+// weights as before, so nothing else changes.
+import localFont from 'next/font/local';
 
-export const dmsans = DM_Sans({
-  weight: ['300', '400', '700'],
+// Variable font — one file covers the whole weight range.
+export const dmsans = localFont({
+  src: './dm-sans-var.woff2',
+  weight: '300 700',
   style: 'normal',
-  subsets: ['latin-ext', 'latin'],
   variable: '--font-dmsans',
+  display: 'swap',
 });
 
-export const poppins = Poppins({
-  weight: ['400', '500', '600', '700', '800'],
-  subsets: ['latin-ext', 'latin'],
+export const poppins = localFont({
+  src: [
+    { path: './poppins-400.woff2', weight: '400', style: 'normal' },
+    { path: './poppins-500.woff2', weight: '500', style: 'normal' },
+    { path: './poppins-600.woff2', weight: '600', style: 'normal' },
+    { path: './poppins-700.woff2', weight: '700', style: 'normal' },
+    { path: './poppins-800.woff2', weight: '800', style: 'normal' },
+  ],
   variable: '--font-poppins',
   display: 'swap',
 });
 
-export const roboto_mono = Roboto_Mono({
-  weight: ['300', '400', '500', '600', '700'],
+export const roboto_mono = localFont({
+  src: './roboto-mono-var.woff2',
+  weight: '300 700',
   style: 'normal',
-  subsets: ['latin-ext', 'latin'],
   variable: '--font-robotoMono',
+  display: 'swap',
 });
 
-export const inter = Inter({
-  weight: ['300', '400', '500'],
+export const inter = localFont({
+  src: './inter-var.woff2',
+  weight: '300 500',
   style: 'normal',
-  subsets: ['latin-ext', 'latin'],
   variable: '--font-inter',
+  display: 'swap',
 });
