@@ -19,6 +19,7 @@ import MobileSideBar from '@/components/MobileSideBar';
 import SideBar from '@/components/SideBar';
 
 import { useGetVendorProfileQuery } from '@/redux/services/vendor/vendor.api-slice';
+import { useNotificationsSocket } from '@/lib/hooks/use-notifications-socket';
 import { setUserData } from '@/lib/utils';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import {
@@ -49,6 +50,9 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
   const dispatch = useAppDispatch();
   const pathname = usePathname();
   const router = useRouter();
+
+  // Realtime notifications: refetch list + unread badge on each push.
+  useNotificationsSocket();
 
   // Route guard: redirect team members who must change their password
   useEffect(() => {
