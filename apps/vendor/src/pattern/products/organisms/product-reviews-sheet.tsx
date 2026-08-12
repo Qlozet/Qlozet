@@ -155,74 +155,74 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
           className="flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white dark:bg-card"
           style={{ height: 'calc(100vh - 3rem)' }}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 pt-6 pb-2">
-            <h2 className="text-[22px] font-black text-grey-black dark:text-white">
+          {/* Header — matches the order-details sheet's bordered header. */}
+          <div className="shrink-0 border-b border-border px-6 py-5">
+            <h2 className="text-lg font-semibold text-grey-black dark:text-white">
               {title || 'Reviews'}
             </h2>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-6 pb-6">
-            {/* Summary */}
-            <div className="flex items-center gap-2">
-              <Stars value={average} size={16} />
-              <span className="text-[18px] font-extrabold text-grey-black dark:text-white">
-                {Number(average || 0).toFixed(1)}
-              </span>
-            </div>
-            <p className="mb-6 mt-1 text-[13px] text-[#888] dark:text-gray-400">
-              {total > 0
-                ? `Overall rating from ${total} customer review${total === 1 ? '' : 's'}`
-                : 'No reviews yet'}
-            </p>
-
-            {/* Breakdown */}
-            {total > 0 && (
-              <div className="mb-6 flex flex-col gap-2.5">
-                {breakdown.map((b) => (
-                  <div key={b.label} className="flex items-center gap-3">
-                    <span className="w-[70px] shrink-0 text-xs font-semibold text-[#666] dark:text-gray-300">
-                      {b.label}
-                    </span>
-                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-[#F0F0F0] dark:bg-white/10">
-                      <div
-                        className="h-full rounded-full"
-                        style={{
-                          width: `${Math.round((b.count / maxCount) * 100)}%`,
-                          background: b.label === 'Poor' ? '#1A1A1A' : '#8B7A47',
-                        }}
-                      />
-                    </div>
-                    <span className="w-6 text-right text-xs font-semibold text-[#999]">
-                      {String(b.count).padStart(2, '0')}
-                    </span>
-                  </div>
-                ))}
+          <div className="flex-1 overflow-y-auto px-6 py-5">
+            {/* Summary + breakdown — one card (order-details card colouring). */}
+            <div className="mb-4 rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] dark:border dark:border-border p-5">
+              <div className="flex items-center gap-2">
+                <Stars value={average} size={16} />
+                <span className="text-[18px] font-bold text-grey-black dark:text-white">
+                  {Number(average || 0).toFixed(1)}
+                </span>
               </div>
-            )}
+              <p className="mt-1 text-[13px] text-grey3 dark:text-gray-400">
+                {total > 0
+                  ? `Overall rating from ${total} customer review${total === 1 ? '' : 's'}`
+                  : 'No reviews yet'}
+              </p>
 
-            {/* Reviews */}
+              {total > 0 && (
+                <div className="mt-5 flex flex-col gap-2.5">
+                  {breakdown.map((b) => (
+                    <div key={b.label} className="flex items-center gap-3">
+                      <span className="w-[70px] shrink-0 text-xs font-medium text-grey3 dark:text-gray-400">
+                        {b.label}
+                      </span>
+                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+                        <div
+                          className="h-full rounded-full bg-grey-black dark:bg-white"
+                          style={{ width: `${Math.round((b.count / maxCount) * 100)}%` }}
+                        />
+                      </div>
+                      <span className="w-6 text-right text-xs font-semibold text-grey3 dark:text-gray-400">
+                        {String(b.count).padStart(2, '0')}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Individual reviews — each in its own card, like the order sheet. */}
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="size-5 animate-spin text-muted-foreground" />
+                <Loader2 className="size-5 animate-spin text-grey3" />
               </div>
             ) : reviews.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No reviews yet.</p>
+              <p className="text-sm text-grey3 dark:text-gray-400">No reviews yet.</p>
             ) : (
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-4">
                 {reviews.map((r) => (
-                  <div key={r.id} className="border-b border-[#F0F0F0] dark:border-white/10 pb-5 last:border-0">
-                    <div className="mb-2 flex items-center justify-between">
+                  <div
+                    key={r.id}
+                    className="rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] dark:border dark:border-border p-4"
+                  >
+                    <div className="mb-2.5 flex items-center justify-between">
                       <Stars value={r.rating} />
                       {r.date && (
-                        <span className="text-[11px] text-muted-foreground">{r.date}</span>
+                        <span className="text-[11px] text-grey3 dark:text-gray-400">
+                          {r.date}
+                        </span>
                       )}
                     </div>
                     <div className="mb-2.5 flex items-center gap-2.5">
-                      <div
-                        className="flex size-10 items-center justify-center rounded-full text-[15px] font-extrabold"
-                        style={{ background: '#EFE9E3', color: '#462814' }}
-                      >
+                      <div className="flex size-10 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 text-[15px] font-bold text-grey-black dark:text-white">
                         {r.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0">
@@ -230,12 +230,14 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
                           {r.name}
                         </p>
                         {r.product && (
-                          <p className="truncate text-[11px] text-[#999]">{r.product}</p>
+                          <p className="truncate text-[11px] text-grey3 dark:text-gray-400">
+                            {r.product}
+                          </p>
                         )}
                       </div>
                     </div>
                     {r.comment && (
-                      <p className="text-[13px] leading-relaxed text-[#555] dark:text-gray-300">
+                      <p className="text-[13px] leading-relaxed text-grey3 dark:text-gray-300">
                         {r.comment}
                       </p>
                     )}
