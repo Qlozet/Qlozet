@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
 import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
@@ -77,6 +77,50 @@ const humanizeStatus = (status?: string): string =>
   status
     ? status.replace(/[_-]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
     : 'Draft';
+
+// Colour-coded status pill for the quote card, matching the quote-requests
+// list so a submitted/accepted quote reads at a glance instead of a flat grey.
+const STATUS_PILL: Record<string, { label: string; className: string }> = {
+  pending: {
+    label: 'New request',
+    className:
+      'bg-[#FEF6E7] text-[#DD900D] dark:bg-[#DD900D]/10 dark:text-[#FBBF24]',
+  },
+  draft: {
+    label: 'Draft',
+    className: 'bg-[#EAECF0] text-[#475467] dark:bg-gray-800 dark:text-gray-300',
+  },
+  submitted: {
+    label: 'Quoted',
+    className:
+      'bg-[#E7F6EC] text-[#0F973D] dark:bg-[#0F973D]/10 dark:text-[#4ADE80]',
+  },
+  revision_requested: {
+    label: 'Revision',
+    className:
+      'bg-[#F4EBFF] text-[#7E22CE] dark:bg-[#7E22CE]/10 dark:text-[#C084FC]',
+  },
+  accepted: {
+    label: 'Accepted',
+    className:
+      'bg-[#E3EFFC] text-[#1671D9] dark:bg-[#1671D9]/10 dark:text-[#60A5FA]',
+  },
+  declined: {
+    label: 'Declined',
+    className:
+      'bg-[#FBEAE9] text-[#D42620] dark:bg-[#D42620]/10 dark:text-[#F87171]',
+  },
+  expired: {
+    label: 'Expired',
+    className: 'bg-[#EAECF0] text-[#98A2B3] dark:bg-gray-800 dark:text-gray-500',
+  },
+};
+
+const statusPill = (status?: string): { label: string; className: string } =>
+  STATUS_PILL[(status || '').toLowerCase()] ?? {
+    label: humanizeStatus(status),
+    className: 'bg-[#EAECF0] text-[#475467] dark:bg-gray-800 dark:text-gray-300',
+  };
 
 export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
   const { visible, resolve, remove } = useModal();
@@ -180,7 +224,12 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
   // Editable while the vendor is still building it (pending/draft/revision);
   // submitted, accepted and declined are read-only.
   const isDraft = isDraftStatus(quote?.status);
-  const status = humanizeStatus(quote?.status);
+  const pill = statusPill(quote?.status);
+
+  // While drafting, flag the two fields the backend requires to submit so the
+  // vendor fills them instead of hitting a rejected submit.
+  const fabricMissing = isDraft && fabricYards < 0.1;
+  const daysMissing = isDraft && completionDays < 1;
 
   // Garment media for the companion panel. A bespoke quote request carries the
   // customer's reference images on `bespoke_design` and has no order items at
@@ -247,16 +296,20 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
               {formatLongDate(order.createdAt)}
             </SheetDescription>
           </div>
-          {(() => {
-            const badge = deliveryBadge(readStatus(order));
-            return (
-              <span
-                className={`inline-flex h-[26px] items-center rounded-[8px] px-3 text-xs font-medium ${badge.className}`}
-              >
-                {badge.label}
-              </span>
-            );
-          })()}
+          {/* Delivery badge only once the quote is accepted (a real, fulfillable
+              order). Before that the quote pill below carries the status, so a
+              second "pending"-style badge up here would only confuse. */}
+          {quote?.status === 'accepted' &&
+            (() => {
+              const badge = deliveryBadge(readStatus(order));
+              return (
+                <span
+                  className={`inline-flex h-[26px] items-center rounded-[8px] px-3 text-xs font-medium ${badge.className}`}
+                >
+                  {badge.label}
+                </span>
+              );
+            })()}
         </div>
 
         {/* Scrollable body */}
@@ -267,8 +320,13 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
               <h3 className="text-base font-semibold text-grey-black dark:text-white">
                 Quote
               </h3>
-              <span className="rounded-[8px] bg-[#EAECF0] px-3 py-1 text-xs font-medium text-[#475467]">
-                {status}
+              <span
+                className={cn(
+                  'rounded-[8px] px-3 py-1 text-xs font-medium',
+                  pill.className
+                )}
+              >
+                {pill.label}
               </span>
             </div>
             <p className="text-xs text-grey2 dark:text-gray-400">
@@ -348,6 +406,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
             <div className="flex items-center justify-between rounded-xl border border-border bg-white dark:bg-[#404040] px-4 py-3">
               <span className="text-sm font-semibold text-grey-black dark:text-white">
                 Required fabric amount
+                {isDraft && <span className="ml-0.5 text-[#D42620]">*</span>}
               </span>
               <div className="flex items-center gap-2">
                 <input
@@ -358,7 +417,8 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                   onChange={(e) => setFabricYards(Number(e.target.value) || 0)}
                   className={cn(
                     'w-16 rounded-lg px-3 py-1.5 text-right text-sm text-grey-black dark:text-white focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
-                    isDraft ? 'border border-border' : 'bg-transparent'
+                    isDraft ? 'border border-border' : 'bg-transparent',
+                    fabricMissing && 'border-[#D42620] dark:border-[#D42620]'
                   )}
                 />
                 <span className="text-sm text-grey3 dark:text-gray-300">
@@ -372,6 +432,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
               <div>
                 <p className="text-sm font-semibold text-grey-black dark:text-white">
                   Estimated completion
+                  {isDraft && <span className="ml-0.5 text-[#D42620]">*</span>}
                 </p>
                 <p className="text-xs text-grey2 dark:text-gray-400">
                   Days from acceptance
@@ -388,7 +449,8 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                   }
                   className={cn(
                     'w-20 rounded-lg px-3 py-1.5 text-right text-sm text-grey-black dark:text-white focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
-                    isDraft ? 'border border-border' : 'bg-transparent'
+                    isDraft ? 'border border-border' : 'bg-transparent',
+                    daysMissing && 'border-[#D42620] dark:border-[#D42620]'
                   )}
                 />
                 <span className="text-sm text-grey3 dark:text-gray-300">
