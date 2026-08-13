@@ -21,14 +21,14 @@ export const ChatMessageBubble = ({
           'max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed',
           isOut
             ? 'rounded-br-md bg-primary text-primary-foreground'
-            : 'rounded-bl-md bg-[#F1F1F1] text-grey-black'
+            : 'rounded-bl-md bg-[#F1F1F1] dark:bg-[#4A4949] text-grey-black dark:text-white'
         )}
       >
         <p className="whitespace-pre-wrap break-words">{text}</p>
         <span
           className={cn(
             'mt-1 block text-right text-[10px]',
-            isOut ? 'text-primary-foreground/70' : 'text-grey2'
+            isOut ? 'text-primary-foreground/70' : 'text-grey2 dark:text-gray-400'
           )}
         >
           {time}

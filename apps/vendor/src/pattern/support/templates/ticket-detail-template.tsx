@@ -23,13 +23,15 @@ import { nowTime, type ChatMessage } from '../lib/chat-types';
 const ref = (id: string) => (id.startsWith('#') ? id : `#${id}`);
 
 const MetaChip = ({ label, value }: { label: string; value: string }) => (
-  <div className="flex items-center gap-2 rounded-lg bg-[#F8F9FA] px-3 py-2">
+  <div className="flex items-center gap-2 rounded-lg bg-[#F8F9FA] dark:bg-[#4A4949] px-3 py-2">
     <span className="flex size-6 items-center justify-center rounded-full bg-brown3 text-white">
       <Clock className="size-3.5" />
     </span>
     <div className="leading-tight">
-      <p className="text-[11px] text-grey2">{label}</p>
-      <p className="text-xs font-medium text-grey-black">{value}</p>
+      <p className="text-[11px] text-grey2 dark:text-gray-400">{label}</p>
+      <p className="text-xs font-medium text-grey-black dark:text-white">
+        {value}
+      </p>
     </div>
   </div>
 );
@@ -74,7 +76,7 @@ export const TicketDetailTemplate = () => {
     <div className="w-full min-h-screen h-fit space-y-6 pb-10">
       <GoBackButton href={APP_ROUTES.support} />
 
-      <div className="flex flex-col overflow-hidden rounded-2xl bg-white custom-card-shadow">
+      <div className="flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-card custom-card-shadow">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-4">
           {loading ? (
@@ -84,10 +86,10 @@ export const TicketDetailTemplate = () => {
             </div>
           ) : (
             <div>
-              <h1 className="text-base font-bold text-grey-black">
+              <h1 className="text-base font-bold text-grey-black dark:text-white">
                 Ticket {ticketTitle}
               </h1>
-              <p className="text-xs text-grey2">
+              <p className="text-xs text-grey2 dark:text-gray-400">
                 {issueTypeLabel(
                   readField(ticket ?? {}, 'category', 'issue_type')
                 )}
@@ -132,7 +134,7 @@ export const TicketDetailTemplate = () => {
         </div>
 
         {/* Thread */}
-        <div className="min-h-[320px] max-h-[460px] flex-1 space-y-3 overflow-y-auto bg-[#FCFCFC] px-6 py-4">
+        <div className="min-h-[320px] max-h-[460px] flex-1 space-y-3 overflow-y-auto bg-[#FCFCFC] dark:bg-[#2A2A2A] px-6 py-4">
           {messages.length > 0 ? (
             messages.map((message) => (
               <ChatMessageBubble
@@ -143,7 +145,7 @@ export const TicketDetailTemplate = () => {
               />
             ))
           ) : (
-            <div className="flex h-full min-h-[280px] items-center justify-center text-center text-sm text-grey2">
+            <div className="flex h-full min-h-[280px] items-center justify-center text-center text-sm text-grey2 dark:text-gray-400">
               No messages yet. Start the conversation below.
             </div>
           )}

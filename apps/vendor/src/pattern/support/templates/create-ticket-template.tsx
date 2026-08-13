@@ -52,7 +52,7 @@ export const CreateTicketTemplate: React.FC = () => {
   };
 
   return (
-    <section className="w-full min-h-[80vh] space-y-6 bg-[#F8F9FA]">
+    <section className="w-full min-h-[80vh] space-y-6 bg-[#F8F9FA] dark:bg-transparent">
       <GoBackButton href={APP_ROUTES.support} />
 
       {submitted ? (
