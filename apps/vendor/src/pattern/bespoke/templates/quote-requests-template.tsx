@@ -41,6 +41,11 @@ const statusPill = (status: string): { label: string; className: string } => {
       className:
         'bg-[#FBEAE9] text-[#D42620] dark:bg-[#D42620]/10 dark:text-[#F87171]',
     },
+    expired: {
+      label: 'Expired',
+      className:
+        'bg-[#EAECF0] text-[#98A2B3] dark:bg-gray-800 dark:text-gray-500',
+    },
   };
   return (
     map[s] ?? {

@@ -39,7 +39,6 @@ import { OrderFabricCard } from '../molecules/order-fabric-card';
 import { OrderAccessoriesCard } from '../molecules/order-accessories-card';
 import { OrderEarningsCard } from '../molecules/order-earnings-card';
 import { VendorGuidelinesCard } from '../molecules/vendor-guidelines-card';
-import { SAMPLE_GARMENT_SPEC } from '../lib/orders-sample';
 
 interface OrderQuoteDrawerProps {
   order: Order;
@@ -54,9 +53,14 @@ const EMPTY_LINE_ITEMS: QuoteLineItem[] = [
   { label: 'Add-ons', amount: 0 },
 ];
 
-/** A quote is editable only while it is still a draft. */
+/**
+ * Editable while the vendor is still building the quote: a new request
+ * (`pending`, which starts with empty line items), a saved `draft`, or one the
+ * customer asked to revise (`revision_requested`). `submitted` / `accepted` /
+ * `declined` are read-only — matching the backend's edit rules.
+ */
 const isDraftStatus = (status?: string): boolean =>
-  !status || /draft/i.test(status);
+  !status || /draft|pending|revision/i.test(status);
 
 const humanizeStatus = (status?: string): string =>
   status
@@ -132,8 +136,8 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
     }
   };
 
-  // Editable while the quote is a draft; once submitted the vendor can only
-  // read it back while the customer reviews.
+  // Editable while the vendor is still building it (pending/draft/revision);
+  // submitted, accepted and declined are read-only.
   const isDraft = isDraftStatus(quote?.status);
   const status = humanizeStatus(quote?.status);
 
@@ -259,7 +263,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                           )}
                         >
                           <span className="text-sm text-grey2 dark:text-gray-400">
-                            $
+                            ₦
                           </span>
                           <input
                             type="number"
@@ -277,7 +281,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                         </div>
                       ) : (
                         <span className="text-sm font-semibold text-grey-black dark:text-white">
-                          N{(li.amount || 0).toLocaleString()}
+                          ₦{(li.amount || 0).toLocaleString()}
                         </span>
                       )}
                     </div>
@@ -290,7 +294,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                   {isDraft ? 'Total:' : 'TOTAL:'}
                 </span>
                 <span className="text-sm font-bold text-grey-black dark:text-white">
-                  N{total.toLocaleString()}
+                  ₦{total.toLocaleString()}
                 </span>
               </div>
             </div>
@@ -401,10 +405,10 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
             </h3>
             <div className="flex items-center gap-3 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
               <div className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100">
-                {SAMPLE_GARMENT_SPEC.image ? (
+                {designImages[0] ? (
                   <Image
-                    src={SAMPLE_GARMENT_SPEC.image}
-                    alt={SAMPLE_GARMENT_SPEC.name}
+                    src={designImages[0]}
+                    alt={(order as any).bespoke_design?.name || 'Design'}
                     fill
                     className="object-cover"
                     sizes="48px"
@@ -415,17 +419,22 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
               </div>
               <div>
                 <p className="text-sm font-semibold text-grey-black dark:text-white">
-                  {SAMPLE_GARMENT_SPEC.name}
+                  {(order as any).bespoke_design?.name || 'Custom outfit'}
                 </p>
                 <div className="mt-1 flex flex-wrap gap-2">
-                  {SAMPLE_GARMENT_SPEC.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-md bg-white dark:bg-[#404040] px-2 py-0.5 text-[11px] font-medium text-grey3 dark:text-gray-300"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                  {[
+                    (order as any).bespoke_design?.category,
+                    (order as any).bespoke_design?.gender,
+                  ]
+                    .filter(Boolean)
+                    .map((tag: string) => (
+                      <span
+                        key={tag}
+                        className="rounded-md bg-white dark:bg-[#404040] px-2 py-0.5 text-[11px] font-medium capitalize text-grey3 dark:text-gray-300"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                 </div>
               </div>
             </div>
