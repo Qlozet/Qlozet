@@ -1,9 +1,15 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { create, useModal } from '@ebay/nice-modal-react';
+import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
 import Image from 'next/image';
-import { ArrowLeft, Calculator, ImageIcon, Info } from 'lucide-react';
+import {
+  ArrowLeft,
+  Calculator,
+  ChevronRight,
+  ImageIcon,
+  Info,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Sheet,
@@ -35,6 +41,8 @@ import {
   ignoreMediaPanelInteraction,
 } from '../molecules/order-media-panel';
 import { allProductImages, asProduct } from '../lib/item-resolvers';
+import { DesignDetailModal } from './design-detail-modal';
+import { readBespokeDesign } from '../lib/bespoke-design';
 import { OrderFabricCard } from '../molecules/order-fabric-card';
 import { OrderAccessoriesCard } from '../molecules/order-accessories-card';
 import { OrderEarningsCard } from '../molecules/order-earnings-card';
@@ -160,6 +168,10 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
       ),
     ])
   );
+
+  // The populated bespoke design, if any — powers the "Garment Specs" card,
+  // which opens the full design-details modal on tap.
+  const bespokeDesign = readBespokeDesign(order);
 
   return (
     <Sheet open={visible} onOpenChange={handleClose}>
@@ -398,17 +410,27 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
             </div>
           </section>
 
-          {/* Garment specs */}
+          {/* Garment specs — taps through to the full design-details modal. */}
           <section className="space-y-3">
             <h3 className="text-base font-semibold text-grey-black dark:text-white">
               Garment Specs
             </h3>
-            <div className="flex items-center gap-3 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
+            <button
+              type="button"
+              onClick={() =>
+                bespokeDesign &&
+                NiceModal.show(DesignDetailModal, {
+                  design: bespokeDesign.design,
+                })
+              }
+              disabled={!bespokeDesign}
+              className="flex w-full items-center gap-3 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4 text-left transition-colors enabled:hover:bg-[hsla(0,0%,92%,1)] enabled:cursor-pointer dark:enabled:hover:bg-[#525151]"
+            >
               <div className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100">
                 {designImages[0] ? (
                   <Image
                     src={designImages[0]}
-                    alt={(order as any).bespoke_design?.name || 'Design'}
+                    alt={bespokeDesign?.name || 'Design'}
                     fill
                     className="object-cover"
                     sizes="48px"
@@ -417,9 +439,9 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                   <ImageIcon className="size-5 text-gray-400" />
                 )}
               </div>
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-grey-black dark:text-white">
-                  {(order as any).bespoke_design?.name || 'Custom outfit'}
+                  {bespokeDesign?.name || 'Custom outfit'}
                 </p>
                 <div className="mt-1 flex flex-wrap gap-2">
                   {[
@@ -437,7 +459,13 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                     ))}
                 </div>
               </div>
-            </div>
+              {bespokeDesign && (
+                <span className="flex items-center gap-1 shrink-0 text-xs font-medium text-grey3 dark:text-gray-300">
+                  Details
+                  <ChevronRight className="size-4" />
+                </span>
+              )}
+            </button>
           </section>
 
           {/* TODO(api): Body Measurement sits here — blocked on an endpoint that
