@@ -89,10 +89,12 @@ export const SupportTicketsList = ({
   const canNext = page * PAGE_SIZE < total;
 
   return (
-    <div className="overflow-hidden rounded-xl border bg-white custom-card-shadow">
+    <div className="overflow-hidden rounded-xl border bg-white dark:bg-card dark:border-border custom-card-shadow">
       {/* Toolbar */}
       <div className="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between">
-        <h2 className="text-lg font-semibold text-grey-black">Tickets</h2>
+        <h2 className="text-lg font-semibold text-grey-black dark:text-white">
+          Tickets
+        </h2>
 
         {/* Mirrors the shared TableToolbar rhythm: below `sm` the buttons
             collapse to icons and the search takes the remaining width. */}
@@ -166,7 +168,7 @@ export const SupportTicketsList = ({
                   onViewDetails(ticket._id);
                 }
               }}
-              className="flex cursor-pointer items-start gap-4 rounded-xl bg-[#F8F9FA] p-4 transition-colors hover:bg-[#F1F2F4] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex cursor-pointer items-start gap-4 rounded-xl bg-[#F8F9FA] dark:bg-[#4A4949] p-4 transition-colors hover:bg-[#F1F2F4] dark:hover:bg-[#525151] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <span
                 className="flex size-9 shrink-0 items-center justify-center rounded-full text-white"
@@ -176,18 +178,18 @@ export const SupportTicketsList = ({
               </span>
 
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-grey-black">
+                <p className="text-sm font-semibold text-grey-black dark:text-white">
                   {ticketRef(ticket)}
                 </p>
-                <p className="text-xs text-grey3">
+                <p className="text-xs text-grey3 dark:text-gray-400">
                   {issueTypeLabel(readField(ticket, 'category', 'issue_type'))}
                 </p>
-                <p className="max-md:mt-2 md:mt-5 line-clamp-2 max-w-160 text-sm text-grey3">
+                <p className="max-md:mt-2 md:mt-5 line-clamp-2 max-w-160 text-sm text-grey3 dark:text-gray-300">
                   {readField(ticket, 'description', 'message')}
                 </p>
                 {/* On mobile the date stacks under the description instead of
                     sitting in the (button-less) actions column. */}
-                <span className="mt-2 block text-xs text-grey3 md:hidden">
+                <span className="mt-2 block text-xs text-grey3 dark:text-gray-400 md:hidden">
                   {formatDateTime(ticket.createdAt)}
                 </span>
               </div>
@@ -215,7 +217,7 @@ export const SupportTicketsList = ({
                       type="button"
                       onClick={(e) => e.stopPropagation()}
                       aria-label="Ticket actions"
-                      className="cursor-pointer p-1 text-grey3 md:hidden"
+                      className="cursor-pointer p-1 text-grey3 dark:text-gray-400 md:hidden"
                     >
                       <MoreVertical className="size-4" />
                     </button>
@@ -230,7 +232,7 @@ export const SupportTicketsList = ({
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                <span className="whitespace-nowrap text-xs text-grey3 max-md:hidden">
+                <span className="whitespace-nowrap text-xs text-grey3 dark:text-gray-400 max-md:hidden">
                   {formatDateTime(ticket.createdAt)}
                 </span>
               </div>

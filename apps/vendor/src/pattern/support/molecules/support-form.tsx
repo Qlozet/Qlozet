@@ -50,7 +50,7 @@ export const SupportForm: React.FC<SupportFormProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-[12px] w-full lg:w-[40%] m-auto px-4 py-6 my-6 shadow">
+    <div className="bg-white dark:bg-card rounded-[12px] w-full lg:w-[40%] m-auto px-4 py-6 my-6 shadow">
       <FormSectionHeader title="Get support" />
 
       <Form {...form}>
