@@ -128,7 +128,15 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
   const activeBusiness = useAppSelector(selectActiveBusiness);
   const businessId = activeBusiness?._id;
 
-  const { data } = useGetQuoteQuery(quoteId, { skip: !quoteId || !visible });
+  // refetchOnMountOrArgChange: submitting closes the drawer, which aborts the
+  // post-submit refetch, so the cache would otherwise still hold the old
+  // pending/empty quote. Forcing a fresh fetch each time the drawer opens means
+  // a re-opened quote always reflects its real saved state (submitted, priced,
+  // read-only) instead of resetting to an editable zero form.
+  const { data } = useGetQuoteQuery(quoteId, {
+    skip: !quoteId || !visible,
+    refetchOnMountOrArgChange: true,
+  });
   const quote = data?.data;
 
   const [lineItems, setLineItems] = useState<QuoteLineItem[]>(EMPTY_LINE_ITEMS);
@@ -213,7 +221,10 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
     try {
       await submitQuote({ id: quoteId, data: payload() }).unwrap();
       toast.success('Quote submitted');
-      handleClose();
+      // Keep the drawer open: submitting invalidates the quote, so it refetches
+      // in place and flips to the read-only "Quoted" view with the saved prices
+      // — immediate proof it saved. (Closing here aborted that refetch and left
+      // a stale, editable, zeroed quote in cache.)
     } catch (err) {
       toast.error(
         apiError(err, 'Could not submit the quote. Please try again.')
