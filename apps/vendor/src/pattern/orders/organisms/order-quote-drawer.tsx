@@ -121,29 +121,59 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
       prev.map((li, i) => (i === index ? { ...li, amount } : li))
     );
 
+  // Fabric yards (≥0.1) and completion days (≥1) are only sent when actually
+  // filled in — a zero fails the backend's Min() validation, which would 400
+  // and silently discard the whole quote (the bug behind "I priced it but it
+  // shows ₦0"). Omitting them lets a draft save partial progress; submit
+  // requires them and is gated by validateForSubmit() below.
   const payload = () => ({
     line_items: lineItems,
-    required_fabric_yards: fabricYards,
-    estimated_completion_days: completionDays,
+    ...(fabricYards >= 0.1 ? { required_fabric_yards: fabricYards } : {}),
+    ...(completionDays >= 1 ? { estimated_completion_days: completionDays } : {}),
     vendor_notes: notes || undefined,
   });
+
+  // Pull the backend's real validation message out of an RTK Query error so the
+  // vendor sees *what* was wrong instead of a generic "please try again".
+  const apiError = (err: unknown, fallback: string): string => {
+    const msg = (err as { data?: { message?: unknown } })?.data?.message;
+    if (Array.isArray(msg) && msg.length) return String(msg[0]);
+    if (typeof msg === 'string' && msg) return msg;
+    return fallback;
+  };
+
+  // Everything the backend requires to *submit* (not just save a draft).
+  const validateForSubmit = (): string | null => {
+    if (total <= 0) return 'Add at least one price before submitting.';
+    if (fabricYards < 0.1) return 'Enter the required fabric amount (in yards).';
+    if (completionDays < 1)
+      return 'Enter the estimated completion time (in days).';
+    return null;
+  };
 
   const handleSave = async () => {
     try {
       await saveDraft({ id: quoteId, data: payload() }).unwrap();
       toast.success('Quote saved as draft');
-    } catch {
-      toast.error('Could not save the quote. Please try again.');
+    } catch (err) {
+      toast.error(apiError(err, 'Could not save the quote. Please try again.'));
     }
   };
 
   const handleSubmit = async () => {
+    const problem = validateForSubmit();
+    if (problem) {
+      toast.error(problem);
+      return;
+    }
     try {
       await submitQuote({ id: quoteId, data: payload() }).unwrap();
       toast.success('Quote submitted');
       handleClose();
-    } catch {
-      toast.error('Could not submit the quote. Please try again.');
+    } catch (err) {
+      toast.error(
+        apiError(err, 'Could not submit the quote. Please try again.')
+      );
     }
   };
 

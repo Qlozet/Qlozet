@@ -11,11 +11,14 @@ export interface QuoteLineItem {
   amount: number;
 }
 
-// SubmitQuoteDto / SaveDraftDto share this shape.
+// SubmitQuoteDto / SaveDraftDto share this shape. fabric yards / completion
+// days are optional here: a draft may omit them (the backend rejects a 0), and
+// the drawer only includes them once filled. Submit validates their presence
+// client-side before calling.
 export interface QuotePayload {
   line_items: QuoteLineItem[];
-  required_fabric_yards: number;
-  estimated_completion_days: number;
+  required_fabric_yards?: number;
+  estimated_completion_days?: number;
   vendor_notes?: string;
 }
 
