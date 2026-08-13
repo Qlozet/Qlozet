@@ -174,7 +174,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
         // 440px, not max-w-md (448px): OrderMediaPanel pins its handle at
         // DRAWER_WIDTH + DRAWER_OFFSET, so this must match DRAWER_WIDTH or the
         // handle sits off the drawer's edge.
-        className="flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 !h-[calc(100vh-3rem)] rounded-2xl custom-card-shadow bg-white dark:bg-[#404040] dark:bg-card"
+        className="flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-[440px] sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] rounded-2xl custom-card-shadow bg-white dark:bg-[#404040] dark:bg-card"
       >
         {/* Header */}
         <div className="flex items-start justify-between px-6 pb-3 pt-6">
