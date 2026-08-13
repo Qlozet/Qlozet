@@ -61,6 +61,9 @@ const EMPTY_LINE_ITEMS: QuoteLineItem[] = [
   { label: 'Add-ons', amount: 0 },
 ];
 
+// NOTE: A submitted/accepted quote renders its saved line_items read-only.
+// A quote only shows ₦0 when it was never priced — i.e. submitted before this
+// pending-editable fix was deployed. Re-quote a fresh request to verify.
 /**
  * Editable while the vendor is still building the quote: a new request
  * (`pending`, which starts with empty line items), a saved `draft`, or one the
