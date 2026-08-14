@@ -137,7 +137,14 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
     skip: !quoteId || !visible,
     refetchOnMountOrArgChange: true,
   });
-  const quote = data?.data;
+  // Defensive unwrap. The API's response interceptor only strips the service's
+  // { data } envelope when the payload carries a `message`; GET /quotes/:id
+  // returns { data: quote } with no message, so it stays double-nested
+  // (response.data === { data: quote }). Handle both shapes — the same pattern
+  // the quote list and the product form use — so line_items/status actually
+  // reach the form instead of leaving it empty + editable.
+  const rawQuote = data?.data as any;
+  const quote = (rawQuote?.data ?? rawQuote) as typeof rawQuote | undefined;
 
   const [lineItems, setLineItems] = useState<QuoteLineItem[]>(EMPTY_LINE_ITEMS);
   const [fabricYards, setFabricYards] = useState(0);
