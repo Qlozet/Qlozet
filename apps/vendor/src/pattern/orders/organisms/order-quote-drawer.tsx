@@ -40,7 +40,13 @@ import {
   OrderMediaPanel,
   ignoreMediaPanelInteraction,
 } from '../molecules/order-media-panel';
-import { allProductImages, asProduct } from '../lib/item-resolvers';
+import {
+  allProductImages,
+  asProduct,
+  findFabricItem,
+  readOrderFabric,
+} from '../lib/item-resolvers';
+import { MediaPreviewModal } from './media-preview-modal';
 import { DesignDetailModal } from './design-detail-modal';
 import { readBespokeDesign } from '../lib/bespoke-design';
 import { OrderFabricCard } from '../molecules/order-fabric-card';
@@ -587,7 +593,28 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
               returns the caller's own set. */}
 
           {/* Fabric */}
-          <OrderFabricCard order={order} businessId={businessId} />
+          {(() => {
+            const fItem = findFabricItem(order);
+            const fabric = fItem
+              ? readOrderFabric(fItem, asProduct(fItem.product))
+              : null;
+            const img = fabric?.imageUrl;
+            return (
+              <OrderFabricCard
+                order={order}
+                businessId={businessId}
+                onViewFabric={
+                  img
+                    ? () =>
+                        NiceModal.show(MediaPreviewModal, {
+                          images: [img],
+                          title: fabric?.name ?? 'Fabric',
+                        })
+                    : undefined
+                }
+              />
+            );
+          })()}
 
           {/* Accessories & add-ons */}
           <OrderAccessoriesCard order={order} />

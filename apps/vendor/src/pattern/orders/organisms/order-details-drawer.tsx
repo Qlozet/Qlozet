@@ -64,7 +64,13 @@ import { CustomerDetailsModal } from '../../customers/organisms/customer-details
 import { OrderItemDetailModal } from './order-item-detail-modal';
 import { DesignDetailModal } from './design-detail-modal';
 import { MediaPreviewModal } from './media-preview-modal';
-import { allProductImages, asProduct } from '../lib/item-resolvers';
+import { OrderFabricCard } from '../molecules/order-fabric-card';
+import {
+  allProductImages,
+  asProduct,
+  findFabricItem,
+  readOrderFabric,
+} from '../lib/item-resolvers';
 import { readBespokeDesign } from '../lib/bespoke-design';
 import {
   OrderMediaPanel,
@@ -1148,6 +1154,34 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   })}
                 </section>
               )}
+
+              {/* ── Applied / external fabric (what the customer supplied) ──
+                  Shows the fabric identity — name, image, source vendor, yards,
+                  price — even when no transfer shipment exists yet. The card
+                  self-hides when the order has no fabric item. The logistics /
+                  fulfillment-gating view lives in the section below. */}
+              {(() => {
+                const fItem = findFabricItem(order);
+                const fabric = fItem
+                  ? readOrderFabric(fItem, asProduct(fItem.product))
+                  : null;
+                const img = fabric?.imageUrl;
+                return (
+                  <OrderFabricCard
+                    order={order}
+                    businessId={businessId}
+                    onViewFabric={
+                      img
+                        ? () =>
+                            NiceModal.show(MediaPreviewModal, {
+                              images: [img],
+                              title: fabric?.name ?? 'Fabric',
+                            })
+                        : undefined
+                    }
+                  />
+                );
+              })()}
 
               {/* ── Incoming Fabric (You are the tailor/receiver) ── */}
               {incomingFabricTransfers.length > 0 && (
