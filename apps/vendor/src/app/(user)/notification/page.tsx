@@ -72,7 +72,9 @@ const NotificationPage: React.FC = () => {
           </h1>
           {unreadCount > 0 && (
             <span className="rounded-full bg-destructive px-2.5 py-0.5 text-xs font-medium text-white">
-              {unreadCount} unread
+              {unreadCount}
+              {/* Drop the "unread" label on mobile — the count alone is enough. */}
+              <span className="hidden md:inline"> unread</span>
             </span>
           )}
         </div>
