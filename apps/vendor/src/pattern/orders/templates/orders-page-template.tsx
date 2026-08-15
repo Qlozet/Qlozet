@@ -76,8 +76,11 @@ export const OrdersPageTemplate: React.FC = () => {
   return (
     <div className="w-full min-h-screen h-fit pb-10">
       <Tabs defaultValue="orders" className="space-y-6">
-        {/* Card-background tab bar; active tab uses the theme's primary colour. */}
-        <TabsList className="h-12 gap-1 rounded-2xl border border-border bg-card p-1.5 custom-card-shadow">
+        {/* Card-background tab bar; active tab uses the theme's primary colour.
+            On mobile it spans the full screen width and scrolls horizontally
+            (triggers keep their size and overflow into a swipe-scroll); on
+            larger screens it shrinks back to fit its content. */}
+        <TabsList className="h-12 w-full sm:w-fit justify-start sm:justify-center gap-1 overflow-x-auto scrollbar-hide rounded-2xl border border-border bg-card p-1.5 custom-card-shadow">
           {[
             { value: 'orders', label: 'Orders' },
             { value: 'quotes', label: 'Quote Requests' },
@@ -87,7 +90,7 @@ export const OrdersPageTemplate: React.FC = () => {
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className="rounded-xl px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
+              className="shrink-0 rounded-xl px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
             >
               {tab.label}
             </TabsTrigger>
