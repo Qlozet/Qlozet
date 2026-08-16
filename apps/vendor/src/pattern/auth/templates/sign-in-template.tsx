@@ -26,6 +26,7 @@ import { SubmitButton } from '@/pattern/common/molecules/submit-button';
 import { useAppDispatch } from '@/redux/store';
 import { setCredentials, setActiveBusiness } from '@/redux/slices/auth-slice';
 import { BusinessPicker } from '../organisms/business-picker';
+import { baseAPI } from '@/redux/api/base-api';
 
 export const SignInTemplate = () => {
   const { push } = useRouter();
@@ -130,6 +131,11 @@ export const SignInTemplate = () => {
 
       // Update active business in Redux
       dispatch(setActiveBusiness(result.data.active_business));
+
+      // Clear ALL cached API data so the dashboard (and every other view)
+      // refetches under the new business + token, instead of showing the
+      // previous business's cached data until a manual refresh.
+      dispatch(baseAPI.util.resetApiState());
 
       setShowBusinessPicker(false);
       goToDashboard();
