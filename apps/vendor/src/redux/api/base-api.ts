@@ -88,6 +88,24 @@ export const baseAPI = createApi({
   endpoints: () => ({}),
 });
 
+// Endpoints where a 401 is a DOMAIN / credential error (e.g. "wrong password",
+// "you are not a member of this business"), NOT an expired session. These must
+// be left for the calling component to catch and show — auto-logging out here
+// hides the real error and boots the user to sign-in (the switch-business bug).
+const AUTH_401_ENDPOINTS = new Set([
+  'switchBusiness',
+  'signIn',
+  'login',
+  'register',
+  'forgotPassword',
+  'forgotPasswordGeneral',
+  'resetPassword',
+  'resetPasswordGeneral',
+  'changePassword',
+  'verifyEmail',
+  'resendVerificationEmail',
+]);
+
 // Create a custom middleware to handle 401 errors
 export const custom401Middleware: Middleware =
   () => (next: any) => (action: any) => {
@@ -103,6 +121,13 @@ export const custom401Middleware: Middleware =
       'status' in action.payload &&
       action.payload.status === 401
     ) {
+      const endpointName = action?.meta?.arg?.endpointName;
+      // Session-expiry 401 on a data endpoint → sign the user out. But a 401 from
+      // an auth endpoint (bad credentials, not-a-member) is a normal result the
+      // caller handles, so don't clobber the session or redirect for those.
+      if (endpointName && AUTH_401_ENDPOINTS.has(endpointName)) {
+        return next(action);
+      }
       console.log('Received 401 Unauthorized response');
       removeCookie(SESSION_COOKIE_KEY);
       window.location.replace('/auth/sign-in');
