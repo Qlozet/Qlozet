@@ -219,6 +219,14 @@ export interface ShipmentBusinessRef {
   _id: string;
   business_name: string;
   business_logo_url?: string;
+  // Present on a fabric transfer's destination_business (the tailor) so the
+  // fabric vendor has a ship-to address. Only populated for that field.
+  business_phone_number?: string;
+  business_address?: string;
+  validated_address?: string;
+  address_line_2?: string;
+  state?: string;
+  city?: string;
 }
 
 // Populated fabric product reference on shipments
@@ -331,6 +339,14 @@ export interface Order {
   bespoke_design?: string;
   bespoke_quote?: string;
   shipments: VendorShipment[];
+  /**
+   * Set by the backend when this vendor is on the order ONLY as the SOURCE of a
+   * fabric transfer (a cross-vendor "use my own fabric" order). The order is
+   * then trimmed to just that transfer — no customer, items, totals, design or
+   * earnings — so the drawer/list render a scoped fabric-transfer view instead
+   * of the full order. See scopeOrderForVendor on the backend.
+   */
+  vendor_role?: 'fabric_transfer';
   vendor_earnings?: number;
   platform_commission?: number;
   payout_eligible_at?: string;
@@ -364,7 +380,8 @@ export interface PaginatedOrdersResponse {
 
 /** Filter order items to only show this vendor's products */
 export function getVendorItems(order: Order, businessId: string): OrderItem[] {
-  return order.items.filter((item) => {
+  // order.items is absent on a scoped fabric-transfer order (see vendor_role).
+  return (order.items ?? []).filter((item) => {
     const itemBiz =
       typeof item.business === 'string'
         ? item.business
