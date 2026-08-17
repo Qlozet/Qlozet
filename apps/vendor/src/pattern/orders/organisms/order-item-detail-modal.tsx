@@ -79,6 +79,9 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
     appliedFabric?.business && typeof appliedFabric.business === 'object'
       ? appliedFabric.business.business_name
       : undefined;
+  // Cost of the customer's external fabric. Billed to the customer and paid to
+  // the fabric vendor — NOT part of this item's `final` (the tailor's earnings).
+  const externalFabricCost = item.pricing?.external_fabric ?? 0;
 
   return (
     <div className="space-y-5">
@@ -164,6 +167,16 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
                 {appliedFabricVendor ? ` · from ${appliedFabricVendor}` : ''}
               </p>
             </div>
+            {externalFabricCost > 0 && (
+              <div className="shrink-0 text-right">
+                <p className="text-sm font-semibold text-amber-700 dark:text-amber-300">
+                  {formatNaira(externalFabricCost)}
+                </p>
+                <p className="text-[10px] text-amber-700/70 dark:text-amber-300/70">
+                  paid to fabric vendor
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -360,6 +373,33 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
               {formatNaira(item.pricing.final)}
             </span>
           </div>
+          {/* External fabric is the customer's "use my own fabric" charge — the
+              fabric vendor's revenue, not part of the tailor's item total above.
+              Shown here so the amount the customer actually paid reconciles. */}
+          {externalFabricCost > 0 && (
+            <>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-grey3 dark:text-gray-400">
+                  External fabric
+                  <span className="text-[10px] text-grey3/70 dark:text-gray-500">
+                    {' '}
+                    (to fabric vendor)
+                  </span>
+                </span>
+                <span className="text-[#333333] dark:text-gray-200">
+                  {formatNaira(externalFabricCost)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between border-t border-[#DDE2E5] dark:border-border pt-1.5">
+                <span className="text-xs font-semibold text-[#333333] dark:text-gray-200">
+                  Customer paid
+                </span>
+                <span className="text-sm font-bold text-[#0C0C0D] dark:text-white">
+                  {formatNaira(item.pricing.final + externalFabricCost)}
+                </span>
+              </div>
+            </>
+          )}
         </div>
       )}
 
