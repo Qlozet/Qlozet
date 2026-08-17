@@ -239,7 +239,7 @@ export interface ShipmentBusinessRef {
 // Populated fabric product reference on shipments
 export interface ShipmentFabricProductRef {
   _id: string;
-  fabric?: { name: string };
+  fabric?: { name?: string; images?: Array<string | { url?: string }> };
   base_price?: number;
 }
 
@@ -364,6 +364,17 @@ export interface Order {
   fabric_value?: number;
   fabric_commission?: number;
   fabric_net?: number;
+  /**
+   * The requesting vendor's own money breakdown for THIS order (their items'
+   * subtotal, platform commission, net). Prefer this over vendor_earnings, which
+   * is order-wide and on a "use my own fabric" order also folds in the fabric
+   * vendor's net.
+   */
+  vendor_breakdown?: {
+    subtotal: number;
+    commission: number;
+    net: number;
+  };
   vendor_earnings?: number;
   platform_commission?: number;
   payout_eligible_at?: string;

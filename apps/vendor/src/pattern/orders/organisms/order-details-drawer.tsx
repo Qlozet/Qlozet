@@ -63,6 +63,10 @@ import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import { CustomerDetailsModal } from '../../customers/organisms/customer-details-modal';
 import { OrderItemDetailModal } from './order-item-detail-modal';
+import {
+  FabricTransferDetailModal,
+  fabricImageUrl,
+} from './fabric-transfer-detail-modal';
 import { DesignDetailModal } from './design-detail-modal';
 import { MediaPreviewModal } from './media-preview-modal';
 import { OrderFabricCard } from '../molecules/order-fabric-card';
@@ -565,12 +569,15 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       ? getVendorSubtotal(order, businessId)
       : order.subtotal;
 
+    // Prefer the backend's per-vendor breakdown (this vendor's items only, with
+    // commission computed the same way as the real earning). It is reliable on
+    // multi-vendor AND "use my own fabric" orders, where order.vendor_earnings
+    // is order-wide and folds in other vendors'/the fabric vendor's net.
+    const breakdown = order.vendor_breakdown;
+
     // order.vendor_earnings is ORDER-WIDE (net across ALL vendors' items), so on
-    // a multi-vendor order it overstates a single vendor's share. Single-vendor
-    // orders use the exact value; multi-vendor orders get this vendor's share,
-    // allocated by their portion of the order's goods subtotal.
-    // TODO(api): prefer a real per-vendor earnings figure when the backend
-    // exposes one (the disabled getOrderEarnings endpoint would be ideal).
+    // a multi-vendor order it overstates a single vendor's share. Used only as a
+    // fallback when the backend didn't send vendor_breakdown.
     const distinctBusinesses = new Set(
       (order.items ?? [])
         .map((i) => i.business)
@@ -579,6 +586,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     const isMultiVendor = distinctBusinesses.size > 1;
 
     const vendorEarnings = ((): number | undefined => {
+      if (breakdown) return breakdown.net;
       if (order.vendor_earnings === undefined) return undefined;
       if (!isMultiVendor) return order.vendor_earnings;
       const orderGoods = getOrderGoodsSubtotal(order);
@@ -587,11 +595,12 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     })();
 
     // Commission is the gap between this vendor's subtotal and their net
-    // earnings — both now on a per-vendor basis, so it stays non-negative.
-    const vendorCommission =
-      vendorEarnings !== undefined &&
-      typeof vendorSubtotal === 'number' &&
-      vendorSubtotal > vendorEarnings
+    // earnings — both on a per-vendor basis, so it stays non-negative.
+    const vendorCommission = breakdown
+      ? breakdown.commission
+      : vendorEarnings !== undefined &&
+          typeof vendorSubtotal === 'number' &&
+          vendorSubtotal > vendorEarnings
         ? vendorSubtotal - vendorEarnings
         : undefined;
 
@@ -948,6 +957,87 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   )}
                 </Card>
               </section>
+
+              {/* ── Fabric item (fabric transfer only) ──
+                  The fabric vendor's equivalent of the tailor's "Your items"
+                  card: the one thing they're sending, tappable to open the
+                  fabric detail modal. */}
+              {isFabricTransferOnly && outgoingFabricTransfers.length > 0 && (
+                <section className="space-y-3">
+                  <SectionTitle>Fabric</SectionTitle>
+                  <Card>
+                    {outgoingFabricTransfers.map((transfer, index) => {
+                      const fName = extractFabricName(transfer.fabric_product);
+                      const fImg = fabricImageUrl(transfer);
+                      return (
+                        <div
+                          key={transfer._id}
+                          className={cn(
+                            'group flex w-full items-start gap-3 px-5 py-4 transition-colors hover:bg-gray-50/70 dark:hover:bg-white/5',
+                            index !== outgoingFabricTransfers.length - 1 &&
+                              'border-b border-[#DDE2E5] dark:border-border'
+                          )}
+                        >
+                          <button
+                            type="button"
+                            onClick={() =>
+                              fImg
+                                ? NiceModal.show(MediaPreviewModal, {
+                                    images: [fImg],
+                                    title: fName,
+                                  })
+                                : undefined
+                            }
+                            aria-label={`View ${fName} media`}
+                            className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700 cursor-pointer"
+                          >
+                            {fImg ? (
+                              <Image
+                                src={fImg}
+                                alt={fName}
+                                fill
+                                className="object-cover"
+                                sizes="48px"
+                              />
+                            ) : (
+                              <Package className="size-5 text-gray-400" />
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              NiceModal.show(FabricTransferDetailModal, {
+                                transfer,
+                                fabricValue: order.fabric_value,
+                              })
+                            }
+                            className="min-w-0 flex-1 cursor-pointer text-left"
+                          >
+                            <p className="truncate text-sm font-medium text-[#333333] dark:text-white group-hover:text-primary transition-colors">
+                              {fName}
+                            </p>
+                            <p className="mt-1 text-xs text-grey3 dark:text-gray-400">
+                              {transfer.fabric_yards ?? '—'} yards
+                            </p>
+                            <span className="mt-1.5 inline-flex items-center gap-0.5 text-xs font-medium text-primary">
+                              View details
+                              <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                            </span>
+                          </button>
+                          {typeof order.fabric_value === 'number' &&
+                            order.fabric_value > 0 && (
+                              <div className="shrink-0 text-right">
+                                <p className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
+                                  {formatNaira(order.fabric_value)}
+                                </p>
+                              </div>
+                            )}
+                        </div>
+                      );
+                    })}
+                  </Card>
+                </section>
+              )}
 
               {/* ── Fabric earnings (fabric transfer only) ──
                   Makes the transfer read like a real fabric order: the same
