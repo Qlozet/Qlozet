@@ -204,6 +204,13 @@ export interface OrderItem {
     variant_total: number;
     accessories_total: number;
     addons_total: number;
+    /**
+     * Customer-supplied external ("use my own fabric") fabric charge. This is the
+     * fabric vendor's revenue — billed to the customer and added to the order
+     * total, but deliberately NOT part of `final`/`total_price` (which drives the
+     * tailor's earnings). Shown on the tailor's item breakdown for transparency.
+     */
+    external_fabric?: number;
     before_discount: number;
     discount: number;
     final: number;
@@ -349,10 +356,14 @@ export interface Order {
   vendor_role?: 'fabric_transfer';
   /**
    * On a scoped fabric-transfer order: the fabric vendor's gross revenue for the
-   * order (the customer's "use my own fabric" charge). Their wallet payout is
-   * this minus platform commission, released once the transfer is delivered.
+   * order (the customer's "use my own fabric" charge), the platform commission
+   * taken from it, and their net earnings. Released to their wallet once the
+   * transfer is delivered. `payout_status` reflects THEIR earning here (not the
+   * tailor's order-level payout).
    */
   fabric_value?: number;
+  fabric_commission?: number;
+  fabric_net?: number;
   vendor_earnings?: number;
   platform_commission?: number;
   payout_eligible_at?: string;

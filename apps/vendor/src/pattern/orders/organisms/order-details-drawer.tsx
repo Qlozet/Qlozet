@@ -950,25 +950,58 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               </section>
 
               {/* ── Fabric earnings (fabric transfer only) ──
-                  Makes the transfer read like a real fabric order: what this
-                  vendor earns for the fabric the customer chose. */}
+                  Makes the transfer read like a real fabric order: the same
+                  value − commission = earnings breakdown as any regular order,
+                  for the fabric the customer chose. */}
               {isFabricTransferOnly && (
                 <section className="space-y-3">
                   <SectionTitle>Your fabric sale</SectionTitle>
                   <Card>
                     <DetailRow
                       label="Fabric value"
-                      value={
-                        <span className="text-base font-semibold text-[#0F973D]">
-                          {formatNaira(order.fabric_value)}
-                        </span>
+                      value={formatNaira(order.fabric_value)}
+                      isLast={
+                        order.fabric_commission === undefined &&
+                        order.fabric_net === undefined &&
+                        !order.payout_status
                       }
-                      isLast
                     />
+                    {order.fabric_commission !== undefined && (
+                      <DetailRow
+                        label="Platform commission"
+                        value={
+                          <span className="text-[#D42620]">
+                            -{formatNaira(order.fabric_commission)}
+                          </span>
+                        }
+                      />
+                    )}
+                    {order.fabric_net !== undefined && (
+                      <DetailRow
+                        label="Your earnings"
+                        value={
+                          <span className="text-base font-semibold text-[#0F973D]">
+                            {formatNaira(order.fabric_net)}
+                          </span>
+                        }
+                        isLast={!order.payout_status}
+                      />
+                    )}
+                    {order.payout_status && (
+                      <DetailRow
+                        label="Payout"
+                        value={
+                          <span className="capitalize">
+                            {order.payout_status}
+                          </span>
+                        }
+                        isLast
+                      />
+                    )}
                   </Card>
                   <p className="px-1 text-xs text-grey3 dark:text-gray-400">
-                    Paid by the customer. Released to your wallet (minus platform
-                    commission) once the fabric is delivered to the tailor.
+                    Paid by the customer. Released to your wallet once the fabric
+                    is delivered to the tailor.
                   </p>
                 </section>
               )}
