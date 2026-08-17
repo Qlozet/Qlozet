@@ -9,7 +9,7 @@ export const ForgotPasswordTemplate = () => {
   return (
     <AuthFormCard
       title="Forgot Password"
-      subtitle="Enter your email address to receive a password reset link"
+      subtitle="Enter your email address and we'll send you a reset code"
       showLogo={true}
     >
       <ForgotPasswordForm />

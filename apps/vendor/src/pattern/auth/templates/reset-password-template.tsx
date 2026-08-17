@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   ResetPasswordForm,
@@ -13,17 +14,29 @@ import { AuthFormCard } from '../molecules/auth-form-card';
 export const ResetPasswordTemplate = () => {
   const { push } = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const email = searchParams.get('email');
+  const code = searchParams.get('code');
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
 
+  // Reached without a verified email + code (e.g. deep link / refresh) — send
+  // them back to the start rather than showing a form that can't submit.
+  useEffect(() => {
+    if (!email || !code) {
+      toast.error('Your reset session expired. Please request a new code.');
+      push(AUTH_ROUTES.forgotPassword);
+    }
+  }, [email, code, push]);
+
   const handleResetPassword = async (data: ResetPasswordFormData) => {
-    if (!token) {
-      toast.error('Invalid reset token. Please request a new password reset.');
+    if (!email || !code) {
+      toast.error('Your reset session expired. Please request a new code.');
+      push(AUTH_ROUTES.forgotPassword);
       return;
     }
 
     resetPassword({
-      token,
+      email,
+      code,
       password: data.password,
       confirmPassword: data.confirmPassword,
     })
@@ -41,7 +54,7 @@ export const ResetPasswordTemplate = () => {
 
   return (
     <AuthFormCard
-      title="Reset Password"
+      title="Create a new password"
       subtitle="Enter your new password below"
       showLogo={true}
       className="w-full md:min-w-[344px]"
