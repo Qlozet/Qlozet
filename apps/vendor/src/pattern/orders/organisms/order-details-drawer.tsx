@@ -24,6 +24,7 @@ import {
   ShieldAlert,
   ChevronRight,
   Maximize2,
+  MapPin,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -39,6 +40,7 @@ import {
   type Order,
   type OrderItem,
   type VendorShipment,
+  type ShipmentBusinessRef,
   type PopulatedProduct,
   getVendorItems,
   getVendorShipment,
@@ -504,6 +506,223 @@ const useCopyId = () => {
 /*  Main drawer                                                        */
 /* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/*  Scoped fabric-transfer drawer                                      */
+/* ------------------------------------------------------------------ */
+
+/** Build the tailor's ship-to lines from a populated destination business. */
+function readTailorAddress(
+  dest: string | ShipmentBusinessRef | undefined
+): { name: string; lines: string[]; phone?: string } | null {
+  if (!dest || typeof dest === 'string') return null;
+  const name = dest.business_name || 'Tailor';
+  const street = dest.validated_address || dest.business_address;
+  const parts = [street, dest.address_line_2, dest.city, dest.state].filter(
+    (v, i, all): v is string => {
+      if (typeof v !== 'string' || !v.trim()) return false;
+      if (i === 0) return true;
+      const first = all[0];
+      // Don't repeat city/state already spelled out in the street line.
+      return typeof first === 'string'
+        ? !first.toLowerCase().includes(v.toLowerCase())
+        : true;
+    }
+  );
+  return { name, lines: parts, phone: dest.business_phone_number };
+}
+
+const FabricTransferScopedDrawer: React.FC<{
+  order: Order;
+  transfers: VendorShipment[];
+  displayOrderId: string;
+  visible: boolean;
+  onClose: (open?: boolean | React.MouseEvent) => void;
+  onCopy: (text: string) => void;
+  copied: boolean;
+}> = ({ order, transfers, displayOrderId, visible, onClose, onCopy, copied }) => {
+  return (
+    <Sheet open={visible} onOpenChange={onClose}>
+      <SheetContent
+        side="right"
+        className="flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white dark:bg-card"
+        style={{
+          height: 'calc(100vh - 3rem)',
+          maxHeight: 'calc(100vh - 3rem)',
+        }}
+      >
+        <SheetHeader className="shrink-0 border-b border-border py-5 pl-6 pr-12">
+          <div className="flex items-center justify-between gap-3">
+            <SheetTitle className="text-lg font-semibold text-[#0C0C0D] dark:text-white">
+              Fabric transfer
+            </SheetTitle>
+            <span className="inline-flex h-[26px] items-center gap-1 whitespace-nowrap rounded-lg bg-amber-50 px-3 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+              <Package className="size-3.5" />
+              Your fabric only
+            </span>
+          </div>
+        </SheetHeader>
+
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          <div className="space-y-5 px-6 py-5">
+            {/* Reference only — nothing about the customer or the garment is
+                this fabric vendor's to see. */}
+            <section className="space-y-3">
+              <SectionTitle>Transfer</SectionTitle>
+              <Card>
+                <DetailRow
+                  label="Reference"
+                  value={
+                    <button
+                      type="button"
+                      onClick={() => onCopy(displayOrderId)}
+                      className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-[#333333] dark:text-white hover:text-primary transition-colors"
+                    >
+                      {displayOrderId}
+                      {copied ? (
+                        <Check className="size-3.5 text-green-600" />
+                      ) : (
+                        <Copy className="size-3.5 text-grey3" />
+                      )}
+                    </button>
+                  }
+                />
+                <DetailRow
+                  label="Date"
+                  value={formatDate(order.createdAt)}
+                  isLast
+                />
+              </Card>
+            </section>
+
+            {transfers.length === 0 && (
+              <Card>
+                <div className="flex flex-col items-center justify-center gap-2 px-5 py-8 text-center">
+                  <Package className="size-8 text-grey3 dark:text-gray-500" />
+                  <p className="text-sm text-grey3 dark:text-gray-400">
+                    No fabric transfer found on this order.
+                  </p>
+                </div>
+              </Card>
+            )}
+
+            {transfers.map((transfer) => {
+              const fabricName = extractFabricName(transfer.fabric_product);
+              const sBadge = shipmentStatusBadge(transfer.status);
+              const tailor = readTailorAddress(transfer.destination_business);
+              const destName =
+                tailor?.name ?? extractBizName(transfer.destination_business);
+              return (
+                <section key={transfer._id} className="space-y-3">
+                  <SectionTitle>What to send</SectionTitle>
+                  <Card>
+                    <DetailRow
+                      label="Fabric"
+                      value={`${transfer.fabric_yards ?? '—'} yards of ${fabricName}`}
+                    />
+                    {transfer.courier_name && (
+                      <DetailRow
+                        label="Courier"
+                        value={transfer.courier_name}
+                      />
+                    )}
+                    {transfer.tracking_number && (
+                      <DetailRow
+                        label="Tracking #"
+                        value={
+                          <button
+                            type="button"
+                            onClick={() => onCopy(transfer.tracking_number!)}
+                            className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-[#333333] dark:text-white hover:text-primary transition-colors"
+                          >
+                            {transfer.tracking_number}
+                            <Copy className="size-3.5 text-grey3" />
+                          </button>
+                        }
+                      />
+                    )}
+                    <DetailRow
+                      label="Shipping fee"
+                      value={
+                        <span>
+                          {formatNaira(transfer.shipping_fee)}{' '}
+                          <span className="text-xs text-muted-foreground">
+                            (paid by customer)
+                          </span>
+                        </span>
+                      }
+                    />
+                    <DetailRow
+                      label="Status"
+                      value={
+                        <span
+                          className={cn(
+                            'inline-flex h-[26px] items-center justify-center whitespace-nowrap rounded-lg px-3 text-xs font-medium',
+                            sBadge.className
+                          )}
+                        >
+                          {sBadge.label}
+                        </span>
+                      }
+                      isLast
+                    />
+                  </Card>
+
+                  {/* Ship-to: the tailor's business address (never the
+                      customer's). */}
+                  <SectionTitle>Ship to</SectionTitle>
+                  <Card>
+                    <div className="flex items-start gap-3 px-5 py-4">
+                      <MapPin className="mt-0.5 size-4 shrink-0 text-grey3 dark:text-gray-400" />
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-[#333333] dark:text-white">
+                          {destName}{' '}
+                          <span className="text-xs font-normal text-muted-foreground">
+                            (Tailor)
+                          </span>
+                        </p>
+                        {tailor && tailor.lines.length > 0 ? (
+                          <p className="mt-1 text-sm leading-relaxed text-[#333333] dark:text-white">
+                            {tailor.lines.join(', ')}
+                          </p>
+                        ) : (
+                          <p className="mt-1 text-xs text-grey3 dark:text-gray-400">
+                            The courier will collect and deliver to the tailor —
+                            no manual address needed.
+                          </p>
+                        )}
+                        {tailor?.phone && (
+                          <p className="mt-1 text-xs text-grey3 dark:text-gray-400">
+                            {tailor.phone}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                </section>
+              );
+            })}
+
+            <p className="px-1 text-xs text-grey3 dark:text-gray-400">
+              This is a fabric transfer for another vendor&apos;s order. You only
+              ship the fabric — the rest of the order is handled by the tailor.
+            </p>
+          </div>
+        </div>
+
+        <div className="shrink-0 border-t border-border px-6 py-4">
+          <Button
+            type="button"
+            onClick={onClose}
+            className="h-11 w-full text-sm"
+          >
+            Close
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+};
+
 export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
   ({ order: orderProp }) => {
     const { visible, resolve, hide, remove } = useModal();
@@ -781,6 +1000,25 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       );
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [orderProp, canShowPanel]);
+
+    // ── Scoped fabric-transfer view ──
+    // When this vendor is on the order ONLY as the source of a fabric transfer,
+    // the backend trims the order to just that transfer (no customer, items,
+    // totals, design or earnings — none of which are this vendor's to see). Show
+    // a dedicated card: what fabric to send, to which tailor, and where.
+    if (order.vendor_role === 'fabric_transfer') {
+      return (
+        <FabricTransferScopedDrawer
+          order={order}
+          transfers={outgoingFabricTransfers}
+          displayOrderId={displayOrderId}
+          visible={visible}
+          onClose={handleClose}
+          onCopy={copy}
+          copied={copied}
+        />
+      );
+    }
 
     return (
       <Sheet open={visible} onOpenChange={handleClose}>

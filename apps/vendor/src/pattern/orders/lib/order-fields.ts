@@ -69,8 +69,11 @@ export const readProductPrice = (o: Order): number | undefined => o.subtotal;
 export const readStatus = (o: Order): OrderStatus => o.status ?? 'pending';
 
 // Custom (bespoke) orders open the quote builder instead of the standard drawer.
+// A scoped fabric-transfer order is never routed there — the fabric vendor must
+// not see the customer's quote/design, so it always uses the plain drawer.
 export const isCustomOrder = (o: Order): boolean =>
-  o.type === 'bespoke' || Boolean(o.bespoke_design) || Boolean(o.bespoke_quote);
+  o.vendor_role !== 'fabric_transfer' &&
+  (o.type === 'bespoke' || Boolean(o.bespoke_design) || Boolean(o.bespoke_quote));
 
 export const readQuoteId = (o: Order): string => o.bespoke_quote ?? o._id;
 
@@ -156,8 +159,23 @@ export const readOrderItemImages = (o: Order, max = 3): string[] => {
   return imgs;
 };
 
+// On a scoped fabric-transfer order the vendor is only shipping fabric to a
+// tailor — there are no items to name, so label the row by its destination.
+const readFabricTransferTitle = (o: Order): string | null => {
+  if (o.vendor_role !== 'fabric_transfer') return null;
+  const transfer = (o.shipments ?? []).find(
+    (s) => s.shipment_type === 'fabric_transfer'
+  );
+  const dest = transfer?.destination_business;
+  const tailor =
+    dest && typeof dest === 'object' ? dest.business_name : undefined;
+  return `Fabric transfer${tailor ? ` → ${tailor}` : ''}`;
+};
+
 // Display title for the order's first item; bespoke design name for custom orders.
 export const readOrderTitle = (o: Order): string => {
+  const fabricTitle = readFabricTransferTitle(o);
+  if (fabricTitle) return fabricTitle;
   const product = asPopulatedProduct(o.items?.[0]);
   const name =
     product?.clothing?.name ??
