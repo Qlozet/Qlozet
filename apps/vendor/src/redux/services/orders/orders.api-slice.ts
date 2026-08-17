@@ -347,6 +347,12 @@ export interface Order {
    * of the full order. See scopeOrderForVendor on the backend.
    */
   vendor_role?: 'fabric_transfer';
+  /**
+   * On a scoped fabric-transfer order: the fabric vendor's gross revenue for the
+   * order (the customer's "use my own fabric" charge). Their wallet payout is
+   * this minus platform commission, released once the transfer is delivered.
+   */
+  fabric_value?: number;
   vendor_earnings?: number;
   platform_commission?: number;
   payout_eligible_at?: string;

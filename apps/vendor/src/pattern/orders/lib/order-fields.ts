@@ -62,9 +62,13 @@ export const readCustomerHandle = (o: Order): string => {
 export const readItemsCount = (o: Order): number =>
   Array.isArray(o.items) ? o.items.length : 0;
 
-export const readAmountPaid = (o: Order): number | undefined => o.total;
+// On a scoped fabric transfer there is no order total to show — the vendor's
+// figure is the fabric they sold, so surface that instead of a blank cell.
+export const readAmountPaid = (o: Order): number | undefined =>
+  o.vendor_role === 'fabric_transfer' ? o.fabric_value : o.total;
 
-export const readProductPrice = (o: Order): number | undefined => o.subtotal;
+export const readProductPrice = (o: Order): number | undefined =>
+  o.vendor_role === 'fabric_transfer' ? o.fabric_value : o.subtotal;
 
 export const readStatus = (o: Order): OrderStatus => o.status ?? 'pending';
 
