@@ -46,7 +46,20 @@ export const formatLongDate = (value?: unknown): string => {
 
 export const readOrderId = (o: Order): string => o.reference ?? o._id;
 
+// The fabric transfer's destination tailor — the fabric vendor never sees the
+// customer, so the tailor is the meaningful "who is this for" on their rows.
+const readFabricTransferTailor = (o: Order) => {
+  if (o.vendor_role !== 'fabric_transfer') return undefined;
+  const dest = (o.shipments ?? []).find(
+    (s) => s.shipment_type === 'fabric_transfer'
+  )?.destination_business;
+  return dest && typeof dest === 'object' ? dest : undefined;
+};
+
 export const readCustomerName = (o: Order): string => {
+  // Fabric vendor: show the tailor they ship to, not the (hidden) customer.
+  const tailor = readFabricTransferTailor(o);
+  if (tailor) return tailor.business_name ?? 'Tailor';
   const c = o.customer;
   if (!c) return '—';
   if (c.username) return c.username;
@@ -93,9 +106,26 @@ const readBespokeDesign = (o: Order): any | null => {
   return d && typeof d === 'object' ? d : null;
 };
 
-// First image for the order's first item; falls back to the bespoke design's
-// image for custom orders (which have no catalog product).
+// Fabric image(s) from a fabric-transfer order's shipments — the fabric vendor
+// has no catalogue item, so the fabric they're sending is the row's picture.
+const readFabricTransferImages = (o: Order): string[] => {
+  if (o.vendor_role !== 'fabric_transfer') return [];
+  const imgs: string[] = [];
+  for (const s of o.shipments ?? []) {
+    if (s.shipment_type !== 'fabric_transfer') continue;
+    const fp = s.fabric_product;
+    const img =
+      fp && typeof fp === 'object' ? firstImageOf(fp.fabric?.images) : null;
+    if (img) imgs.push(img);
+  }
+  return imgs;
+};
+
+// First image for the order's first item; falls back to the fabric image for a
+// fabric transfer and the bespoke design's image for custom orders.
 export const readOrderImage = (o: Order): string | null => {
+  const fabricImg = readFabricTransferImages(o)[0];
+  if (fabricImg) return fabricImg;
   const product = asPopulatedProduct(o.items?.[0]);
   if (product) {
     const kindImages =
@@ -146,6 +176,8 @@ const productImage = (item: any): string | null => {
 // falling back to the bespoke design image for custom orders. Used to render the
 // overlapping thumbnail stack for multi-item orders.
 export const readOrderItemImages = (o: Order, max = 3): string[] => {
+  const fabricImgs = readFabricTransferImages(o);
+  if (fabricImgs.length) return fabricImgs.slice(0, max);
   const imgs: string[] = [];
   for (const item of Array.isArray(o.items) ? o.items : []) {
     const img = productImage(item);

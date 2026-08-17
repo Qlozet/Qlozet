@@ -15,6 +15,7 @@ import { ChartSkeleton } from '../molecules/chart-skeleton';
 import { BoldBoxRemoveIcon } from '@/pattern/common/atoms/bold-box-remove-icon';
 import { OrderDetailsDrawer } from '@/pattern/orders/organisms/order-details-drawer';
 import {
+  readAmountPaid,
   readCustomerName,
   readOrderId,
   readOrderItemImages,
@@ -114,7 +115,7 @@ export const RecentOrders = () => {
             const productName = readOrderTitle(order);
             const images = readOrderItemImages(order, 3);
             const customerName = readCustomerName(order);
-            const total = order.total ?? order.subtotal ?? 0;
+            const total = readAmountPaid(order) ?? order.total ?? order.subtotal ?? 0;
             const status = readStatus(order);
             const badge = orderStatusBadge(status);
             const itemsCount = Array.isArray(order.items)
