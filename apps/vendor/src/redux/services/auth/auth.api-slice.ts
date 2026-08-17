@@ -92,10 +92,17 @@ export interface ForgotPasswordRequest {
 }
 
 export interface ResetPasswordRequest {
-  token: string;
+  email: string;
+  /** 6-digit code emailed to the user. */
+  code: string;
   password: string;
-  /** Checked client-side only — the backend takes just token + newPassword. */
+  /** Checked client-side only — the backend takes email + code + newPassword. */
   confirmPassword: string;
+}
+
+export interface VerifyResetCodeRequest {
+  email: string;
+  code: string;
 }
 
 export interface RegisterResponse {
@@ -183,7 +190,20 @@ export const authApiSlice = baseAPI.injectEndpoints({
       }),
     }),
 
-    // Reset Password (vendor endpoint)
+    // Verify the emailed reset code (does not consume it) — gates the
+    // create-new-password screen.
+    verifyResetCode: builder.mutation<
+      { valid: boolean; message: string },
+      VerifyResetCodeRequest
+    >({
+      query: (data) => ({
+        url: '/auth/verify-reset-code',
+        method: 'POST',
+        body: { email: data.email, code: data.code },
+      }),
+    }),
+
+    // Reset Password (vendor endpoint) — code-based.
     resetPassword: builder.mutation<
       { message: string; success?: boolean },
       ResetPasswordRequest
@@ -191,10 +211,12 @@ export const authApiSlice = baseAPI.injectEndpoints({
       query: (data) => ({
         url: '/auth/reset-password',
         method: 'POST',
-        // PasswordResetDto is { token, newPassword }. Posting the raw form
-        // (password / confirmPassword) fails validation — `newPassword` is
-        // required and would arrive empty.
-        body: { token: data.token, newPassword: data.password },
+        // PasswordResetDto is { email, code, newPassword }.
+        body: {
+          email: data.email,
+          code: data.code,
+          newPassword: data.password,
+        },
       }),
     }),
 
@@ -229,8 +251,12 @@ export const authApiSlice = baseAPI.injectEndpoints({
       query: (data) => ({
         url: '/auth/reset-password',
         method: 'POST',
-        // Same DTO as above: { token, newPassword }.
-        body: { token: data.token, newPassword: data.password },
+        // Same DTO as above: { email, code, newPassword }.
+        body: {
+          email: data.email,
+          code: data.code,
+          newPassword: data.password,
+        },
       }),
     }),
 
@@ -400,6 +426,7 @@ export const {
   useRegisterMutation,
   useLogoutMutation,
   useForgotPasswordMutation,
+  useVerifyResetCodeMutation,
   useResetPasswordMutation,
   useForgotPasswordGeneralMutation,
   useResetPasswordGeneralMutation,

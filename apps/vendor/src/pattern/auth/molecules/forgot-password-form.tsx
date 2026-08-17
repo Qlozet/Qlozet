@@ -53,7 +53,7 @@ export const ForgotPasswordForm = () => {
       .catch((error) => {
         const errorMessage =
           error?.data?.message ||
-          'Failed to send reset link. Please try again.';
+          'Failed to send reset code. Please try again.';
         toast.error(errorMessage);
       });
   };
@@ -70,7 +70,7 @@ export const ForgotPasswordForm = () => {
         />
 
         <SubmitButton disabled={isLoading} loading={isLoading}>
-          Send Reset Link
+          Send Reset Code
         </SubmitButton>
       </form>
     </Form>
