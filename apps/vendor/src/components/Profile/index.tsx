@@ -20,6 +20,7 @@ import { useAppSelector } from '@/redux/store';
 import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 import NiceModal from '@ebay/nice-modal-react';
 import { ProductReviewsSheet } from '@/pattern/products/organisms/product-reviews-sheet';
+import { OverlayScroll } from '@/components/OverlayScroll';
 
 // Bands rendered in the reviews breakdown, in display order.
 const RATING_BANDS = [
@@ -56,10 +57,14 @@ const Profile = ({
     };
     return summary?.[map[key]] ?? userDetails?.ratings?.[key] ?? 0;
   };
-  const averageRating = summary?.average_rating ?? userDetails?.averageRating ?? 0;
+  const averageRating =
+    summary?.average_rating ?? userDetails?.averageRating ?? 0;
   const totalReviews =
     summary?.total_reviews ??
-    RATING_BANDS.reduce((sum, band) => sum + (userDetails?.ratings?.[band.key] ?? 0), 0);
+    RATING_BANDS.reduce(
+      (sum, band) => sum + (userDetails?.ratings?.[band.key] ?? 0),
+      0
+    );
   const hasReviews = totalReviews > 0;
 
   // The signed-in user's email isn't part of UserDetails, so read it from
@@ -87,7 +92,7 @@ const Profile = ({
           </SheetHeader>
 
           {/* Scrollable body */}
-          <div className="flex-1 overflow-y-auto sidebar-scrollbar">
+          <OverlayScroll className="flex-1">
             <div className="space-y-5 px-4 py-5">
               {isLoading ? (
                 <>
@@ -326,7 +331,7 @@ const Profile = ({
                 </>
               )}
             </div>
-          </div>
+          </OverlayScroll>
         </div>
       </SheetContent>
     </Sheet>
