@@ -401,21 +401,11 @@ input[type='number'] {
   background: var(--primary);
 }
 
-/* The main page content uses a FLOATING OverlayScrollbars bar (see the (user)
-   layout), so it needs no reserved gutter. These remaining native scroll areas
-   (drawers, modals, tables, sidebars) reserve the thin (6px) gutter so their
-   scrollbar fades in/out WITHOUT shifting content — Windows Chromium/Edge have
-   no zero-width overlay scrollbar, so a stable thin gutter is the no-shift
-   equivalent. Scoped to real scroll areas so non-scrolling elements aren't padded. */
-.overflow-auto,
-.overflow-y-auto,
-.overflow-y-scroll,
-.custom-scrollbar,
-.sidebar-scrollbar,
-.bds-scrollbar,
-.datalist-scroll {
-  scrollbar-gutter: stable;
-}
+/* No global scrollbar-gutter reservation: reserving a stable gutter padded even
+   the containers that don't overflow, so content sat permanently shifted on
+   desktop. The prominent scroll areas (main content, drawers, detail modals)
+   float via OverlayScrollbars and reserve nothing; the rest use the native thin
+   bar, which only takes space while the area actually overflows. */
 
 /* OverlayScrollbars floating theme — a neutral handle that reads on both light
    and dark backgrounds and brightens on hover. It floats over the content and
