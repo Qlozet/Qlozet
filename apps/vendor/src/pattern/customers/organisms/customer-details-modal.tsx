@@ -334,13 +334,13 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
       <Dialog open={visible} onOpenChange={handleClose}>
         <DialogContent className="max-w-2xl p-0 gap-0 bg-white dark:bg-card">
           {/* text-left: DialogHeader centres its title below `sm` by default */}
-          <DialogHeader className="border-b border-border px-6 py-4 text-left">
+          <DialogHeader className="border-b border-border px-4 py-4 text-left sm:px-6">
             <DialogTitle className="text-base font-semibold text-[#0C0C0D] dark:text-white">
               Customer details
             </DialogTitle>
           </DialogHeader>
 
-          <OverlayScroll className="max-h-[75vh] px-6 py-5">
+          <OverlayScroll className="max-h-[75vh] px-4 py-5 sm:px-6">
             <div className="space-y-6">
               {/* Profile header */}
               {loading ? (
@@ -444,7 +444,7 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
             </div>
           </OverlayScroll>
 
-          <div className="flex justify-end border-t border-border px-6 py-4">
+          <div className="flex justify-end border-t border-border px-4 py-4 sm:px-6">
             <Button
               type="button"
               variant="outline"

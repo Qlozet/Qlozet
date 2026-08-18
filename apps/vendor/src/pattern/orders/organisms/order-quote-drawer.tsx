@@ -306,7 +306,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
         className="flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-[440px] sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] rounded-2xl custom-card-shadow bg-white dark:bg-[#404040] dark:bg-card"
       >
         {/* Header */}
-        <div className="flex items-start justify-between px-6 pb-3 pt-6">
+        <div className="flex items-start justify-between px-4 pb-3 pt-6 sm:px-6">
           <button
             type="button"
             onClick={handleClose}
@@ -318,7 +318,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
           {/* Sheet renders its own close button at top-right */}
         </div>
 
-        <div className="flex items-center justify-between px-6">
+        <div className="flex items-center justify-between px-4 sm:px-6">
           <div>
             <SheetTitle className="text-lg font-bold text-grey-black dark:text-white">
               Order #{readOrderId(order)}
@@ -344,7 +344,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
         </div>
 
         {/* Scrollable body */}
-        <OverlayScroll className="flex-1 min-h-0 px-6 py-5">
+        <OverlayScroll className="flex-1 min-h-0 px-4 py-5 sm:px-6">
           <div className="space-y-5">
             {/* Quote card */}
             <section className="space-y-4 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">

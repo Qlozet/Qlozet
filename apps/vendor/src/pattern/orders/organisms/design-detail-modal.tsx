@@ -359,12 +359,12 @@ export const DesignDetailModal = create<{ design: any }>(({ design }) => {
           'z-[60]'
         )}
       >
-        <DialogHeader className="border-b border-border px-5 py-4">
+        <DialogHeader className="border-b border-border px-4 py-4 sm:px-5">
           <DialogTitle className="text-base font-semibold text-[#0C0C0D] dark:text-white">
             Design details
           </DialogTitle>
         </DialogHeader>
-        <OverlayScroll className="max-h-[70vh] px-5 py-5 sm:max-h-[65vh]">
+        <OverlayScroll className="max-h-[70vh] px-4 py-5 sm:px-5 sm:max-h-[65vh]">
           <DesignDetailContent design={design} />
         </OverlayScroll>
       </DialogContent>
