@@ -145,7 +145,7 @@ export const SelectFabricModal = NiceModal.create(() => {
       <DialogContent className="sm:max-w-4xl p-0 gap-0 overflow-hidden sm:rounded-[16px] bg-card border-none sm:border-solid">
         <div className="flex max-h-[85vh] sm:max-h-[90vh] h-full w-full flex-col sm:rounded-[16px]">
           {/* Header */}
-          <div className="flex items-center gap-4 border-b border-border p-6 pr-12">
+          <div className="flex items-center gap-4 border-b border-border p-4 pr-12 sm:p-6 sm:pr-12">
             <DialogTitle className="text-base font-semibold text-grey-black dark:text-white shrink-0 m-0">
               Select Fabric
             </DialogTitle>
@@ -161,7 +161,7 @@ export const SelectFabricModal = NiceModal.create(() => {
           </div>
 
           {/* Body */}
-          <div className="flex-1 space-y-4 overflow-y-auto p-6">
+          <div className="flex-1 space-y-4 overflow-y-auto p-4 sm:p-6">
             <div className="flex justify-end">
               <button
                 type="button"
@@ -304,7 +304,7 @@ export const SelectFabricModal = NiceModal.create(() => {
           </div>
 
           {/* Footer */}
-          <div className="border-t border-border p-6">
+          <div className="border-t border-border p-4 sm:p-6">
             <button
               type="button"
               onClick={useFabric}

@@ -114,7 +114,7 @@ export const TeamMemberDetailsModal = create<{ member: TeamMemberDetails }>(
 
     return (
       <Dialog open={visible} onOpenChange={close}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-hidden">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-hidden p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold">
               {member.is_owner ? 'Team member' : 'Edit team member'}

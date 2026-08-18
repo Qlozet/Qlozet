@@ -45,7 +45,7 @@ export const AddAddonModal = NiceModal.create(() => {
       <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden sm:rounded-[16px] bg-card border-none sm:border-solid">
         <div className="flex flex-col sm:rounded-[16px]">
           {/* Header */}
-          <div className="border-b border-border p-6">
+          <div className="border-b border-border p-4 sm:p-6">
             <DialogTitle className="text-base font-semibold text-grey-black dark:text-white m-0">
               Create Add-On
             </DialogTitle>
@@ -55,7 +55,7 @@ export const AddAddonModal = NiceModal.create(() => {
           </div>
 
           {/* Body */}
-          <div className="space-y-5 p-6">
+          <div className="space-y-5 p-4 sm:p-6">
             {/* Name */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">
@@ -143,7 +143,7 @@ export const AddAddonModal = NiceModal.create(() => {
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 border-t border-border px-6 py-4">
+          <div className="flex justify-end gap-3 border-t border-border px-4 py-4 sm:px-6">
             <button
               type="button"
               onClick={cancel}
