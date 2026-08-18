@@ -401,14 +401,12 @@ input[type='number'] {
   background: var(--primary);
 }
 
-/* Reserve the scrollbar's gutter on scroll containers so it fades in and out
-   WITHOUT shifting the content sideways. Windows Chromium/Edge have no
-   zero-width overlay scrollbar, so a permanently-reserved thin (6px) gutter is
-   the no-shift equivalent: the layout stops jumping when the scrollbar appears
-   or disappears. Scoped to real scroll areas — the app's main content, the
-   Tailwind overflow utilities, and the opt-in scrollbar utilities — so it never
-   pads non-scrolling elements. */
-main,
+/* The main page content uses a FLOATING OverlayScrollbars bar (see the (user)
+   layout), so it needs no reserved gutter. These remaining native scroll areas
+   (drawers, modals, tables, sidebars) reserve the thin (6px) gutter so their
+   scrollbar fades in/out WITHOUT shifting content — Windows Chromium/Edge have
+   no zero-width overlay scrollbar, so a stable thin gutter is the no-shift
+   equivalent. Scoped to real scroll areas so non-scrolling elements aren't padded. */
 .overflow-auto,
 .overflow-y-auto,
 .overflow-y-scroll,
@@ -417,6 +415,19 @@ main,
 .bds-scrollbar,
 .datalist-scroll {
   scrollbar-gutter: stable;
+}
+
+/* OverlayScrollbars floating theme — a neutral handle that reads on both light
+   and dark backgrounds and brightens on hover. It floats over the content and
+   reserves no layout width, matching the mobile overlay scrollbar. */
+.os-theme-qlozet {
+  --os-size: 10px;
+  --os-padding-perpendicular: 2px;
+  --os-padding-axis: 2px;
+  --os-handle-border-radius: 8px;
+  --os-handle-bg: rgba(120, 120, 135, 0.45);
+  --os-handle-bg-hover: rgba(120, 120, 135, 0.7);
+  --os-handle-bg-active: rgba(120, 120, 135, 0.85);
 }
 
 @utility sidebar-scrollbar {

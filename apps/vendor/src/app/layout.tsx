@@ -1,4 +1,5 @@
 import './assets/styles/globals.css';
+import 'overlayscrollbars/overlayscrollbars.css';
 import React from 'react';
 import { inter, poppins, roboto_mono } from './assets/fonts';
 import { Metadata, Viewport } from 'next';
