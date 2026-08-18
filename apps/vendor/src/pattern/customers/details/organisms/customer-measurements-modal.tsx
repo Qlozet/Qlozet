@@ -19,6 +19,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
+import { OverlayScroll } from '@/components/OverlayScroll';
 import type {
   VendorCustomer,
   CustomerMeasurement,
@@ -143,7 +144,7 @@ export const CustomerMeasurementsModal = create<CustomerMeasurementsModalProps>(
             </DialogTitle>
           </DialogHeader>
 
-          <div className="max-h-[70vh] overflow-y-auto px-6 py-5">
+          <OverlayScroll className="max-h-[70vh] px-6 py-5">
             {/* Set meta + unit toggle */}
             <div className="mb-4 flex items-center justify-between gap-3">
               <div className="min-w-0">
@@ -193,7 +194,7 @@ export const CustomerMeasurementsModal = create<CustomerMeasurementsModalProps>(
                 </p>
               </div>
             )}
-          </div>
+          </OverlayScroll>
         </DialogContent>
       </Dialog>
     );

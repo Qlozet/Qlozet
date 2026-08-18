@@ -70,6 +70,7 @@ import {
 import { DesignDetailModal } from './design-detail-modal';
 import { MediaPreviewModal } from './media-preview-modal';
 import { OrderFabricCard } from '../molecules/order-fabric-card';
+import { OverlayScroll } from '@/components/OverlayScroll';
 import {
   allProductImages,
   asProduct,
@@ -877,7 +878,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
           </SheetHeader>
 
           {/* Scrollable body */}
-          <div className="flex-1 min-h-0 overflow-y-auto">
+          <OverlayScroll className="flex-1 min-h-0">
             <div className="space-y-5 px-6 py-5">
               {/* ── Order Summary ── */}
               <section className="space-y-3">
@@ -1090,8 +1091,8 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     )}
                   </Card>
                   <p className="px-1 text-xs text-grey3 dark:text-gray-400">
-                    Paid by the customer. Released to your wallet once the fabric
-                    is delivered to the tailor.
+                    Paid by the customer. Released to your wallet once the
+                    fabric is delivered to the tailor.
                   </p>
                 </section>
               )}
@@ -1164,33 +1165,35 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   has no items — only the fabric they're sending. */}
               {!isFabricTransferOnly &&
                 !(bespokeDesign && vendorItems.length === 0) && (
-                <section className="space-y-3">
-                  <SectionTitle>Your items ({vendorItems.length})</SectionTitle>
+                  <section className="space-y-3">
+                    <SectionTitle>
+                      Your items ({vendorItems.length})
+                    </SectionTitle>
 
-                  {vendorItems.length > 0 ? (
-                    <Card>
-                      {vendorItems.map((item, index) => (
-                        <OrderItemRow
-                          key={index}
-                          item={item}
-                          order={order}
-                          isLast={index === vendorItems.length - 1}
-                          onPreview={showPreview}
-                        />
-                      ))}
-                    </Card>
-                  ) : (
-                    <Card>
-                      <div className="flex flex-col items-center justify-center gap-2 px-5 py-8 text-center">
-                        <Package className="size-8 text-grey3 dark:text-gray-500" />
-                        <p className="text-sm text-grey3 dark:text-gray-400">
-                          No items from your store in this order.
-                        </p>
-                      </div>
-                    </Card>
-                  )}
-                </section>
-              )}
+                    {vendorItems.length > 0 ? (
+                      <Card>
+                        {vendorItems.map((item, index) => (
+                          <OrderItemRow
+                            key={index}
+                            item={item}
+                            order={order}
+                            isLast={index === vendorItems.length - 1}
+                            onPreview={showPreview}
+                          />
+                        ))}
+                      </Card>
+                    ) : (
+                      <Card>
+                        <div className="flex flex-col items-center justify-center gap-2 px-5 py-8 text-center">
+                          <Package className="size-8 text-grey3 dark:text-gray-500" />
+                          <p className="text-sm text-grey3 dark:text-gray-400">
+                            No items from your store in this order.
+                          </p>
+                        </div>
+                      </Card>
+                    )}
+                  </section>
+                )}
 
               {/* ── Confirmation Status ── */}
               {vendorShipment && (
@@ -1474,56 +1477,56 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   Hidden on a fabric transfer, whose money is the "Your fabric
                   sale" card above — the order's own totals aren't this vendor's. */}
               {!isFabricTransferOnly && (
-              <section className="space-y-3">
-                <SectionTitle>Payment</SectionTitle>
-                <Card>
-                  <DetailRow
-                    label="Items subtotal"
-                    value={formatNaira(vendorSubtotal)}
-                    isLast={
-                      vendorEarnings === undefined && !order.payout_status
-                    }
-                  />
-                  {vendorCommission !== undefined && (
+                <section className="space-y-3">
+                  <SectionTitle>Payment</SectionTitle>
+                  <Card>
                     <DetailRow
-                      label="Platform commission"
-                      value={
-                        <span className="text-[#D42620]">
-                          -{formatNaira(vendorCommission)}
-                        </span>
+                      label="Items subtotal"
+                      value={formatNaira(vendorSubtotal)}
+                      isLast={
+                        vendorEarnings === undefined && !order.payout_status
                       }
                     />
-                  )}
-                  {vendorEarnings !== undefined && (
-                    <DetailRow
-                      label="Your earnings"
-                      value={
-                        <span className="text-base font-semibold text-[#0F973D]">
-                          {formatNaira(vendorEarnings)}
-                        </span>
-                      }
-                      isLast={!order.payout_status}
-                    />
-                  )}
-                  {order.payout_status && (
-                    <DetailRow
-                      label="Payout"
-                      value={
-                        <span className="capitalize">
-                          {order.payout_status}
-                        </span>
-                      }
-                      isLast
-                    />
-                  )}
-                </Card>
-                <p className="px-1 text-xs text-grey3 dark:text-gray-400">
-                  Delivery (paid by customer):{' '}
-                  {formatNaira(
-                    vendorShipment?.shipping_fee ?? order.shipping_fee
-                  )}
-                </p>
-              </section>
+                    {vendorCommission !== undefined && (
+                      <DetailRow
+                        label="Platform commission"
+                        value={
+                          <span className="text-[#D42620]">
+                            -{formatNaira(vendorCommission)}
+                          </span>
+                        }
+                      />
+                    )}
+                    {vendorEarnings !== undefined && (
+                      <DetailRow
+                        label="Your earnings"
+                        value={
+                          <span className="text-base font-semibold text-[#0F973D]">
+                            {formatNaira(vendorEarnings)}
+                          </span>
+                        }
+                        isLast={!order.payout_status}
+                      />
+                    )}
+                    {order.payout_status && (
+                      <DetailRow
+                        label="Payout"
+                        value={
+                          <span className="capitalize">
+                            {order.payout_status}
+                          </span>
+                        }
+                        isLast
+                      />
+                    )}
+                  </Card>
+                  <p className="px-1 text-xs text-grey3 dark:text-gray-400">
+                    Delivery (paid by customer):{' '}
+                    {formatNaira(
+                      vendorShipment?.shipping_fee ?? order.shipping_fee
+                    )}
+                  </p>
+                </section>
               )}
 
               {/* Earnings breakdown (milestones) — custom-clothing orders only */}
@@ -1537,54 +1540,54 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               {!isFabricTransferOnly &&
                 vendorShipment &&
                 vendorShipment.status !== 'pending' && (
-                <section className="space-y-3">
-                  <SectionTitle>Shipment</SectionTitle>
-                  <Card>
-                    <DetailRow
-                      label="Status"
-                      value={(() => {
-                        const sBadge = shipmentStatusBadge(
-                          vendorShipment.status
-                        );
-                        return (
-                          <span
-                            className={cn(
-                              'inline-flex h-[26px] items-center justify-center whitespace-nowrap rounded-lg px-3 text-xs font-medium',
-                              sBadge.className
-                            )}
-                          >
-                            {sBadge.label}
-                          </span>
-                        );
-                      })()}
-                    />
-                    {vendorShipment.courier_name && (
+                  <section className="space-y-3">
+                    <SectionTitle>Shipment</SectionTitle>
+                    <Card>
                       <DetailRow
-                        label="Courier"
-                        value={vendorShipment.courier_name}
+                        label="Status"
+                        value={(() => {
+                          const sBadge = shipmentStatusBadge(
+                            vendorShipment.status
+                          );
+                          return (
+                            <span
+                              className={cn(
+                                'inline-flex h-[26px] items-center justify-center whitespace-nowrap rounded-lg px-3 text-xs font-medium',
+                                sBadge.className
+                              )}
+                            >
+                              {sBadge.label}
+                            </span>
+                          );
+                        })()}
                       />
-                    )}
-                    {vendorShipment.tracking_number && (
-                      <DetailRow
-                        label="Tracking #"
-                        value={
-                          <button
-                            type="button"
-                            onClick={() =>
-                              copy(vendorShipment.tracking_number!)
-                            }
-                            className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-[#333333] dark:text-white hover:text-primary transition-colors"
-                          >
-                            {vendorShipment.tracking_number}
-                            <Copy className="size-3.5 text-grey3" />
-                          </button>
-                        }
-                        isLast
-                      />
-                    )}
-                  </Card>
-                </section>
-              )}
+                      {vendorShipment.courier_name && (
+                        <DetailRow
+                          label="Courier"
+                          value={vendorShipment.courier_name}
+                        />
+                      )}
+                      {vendorShipment.tracking_number && (
+                        <DetailRow
+                          label="Tracking #"
+                          value={
+                            <button
+                              type="button"
+                              onClick={() =>
+                                copy(vendorShipment.tracking_number!)
+                              }
+                              className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-[#333333] dark:text-white hover:text-primary transition-colors"
+                            >
+                              {vendorShipment.tracking_number}
+                              <Copy className="size-3.5 text-grey3" />
+                            </button>
+                          }
+                          isLast
+                        />
+                      )}
+                    </Card>
+                  </section>
+                )}
 
               {/* ── Delivery Address ── */}
               {addressParts.length > 0 && (
@@ -1610,7 +1613,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                 </section>
               )}
             </div>
-          </div>
+          </OverlayScroll>
 
           {/* Reject Confirmation Dialog */}
           {showRejectDialog && (
