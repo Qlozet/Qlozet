@@ -13,6 +13,7 @@ import React, {
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { X } from 'lucide-react';
 import Image from 'next/image';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
 import DasboardNavWithOutSearch from '@/components/DashboardNavBarWithoutSearch';
 import MobileSideBar from '@/components/MobileSideBar';
@@ -288,10 +289,23 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
           />
         </header>
 
-        {/* Page Content */}
-        <main className="w-full overflow-auto pt-4 md:pt-6 px-4 md:px-8 pb-4 md:pb-8">
+        {/* Page Content — OverlayScrollbars gives a FLOATING, auto-hiding
+            scrollbar on desktop (like mobile's native overlay), so the content
+            keeps full width and never shifts when the bar appears/disappears. */}
+        <OverlayScrollbarsComponent
+          element="main"
+          className="w-full flex-1 min-h-0 pt-4 md:pt-6 px-4 md:px-8 pb-4 md:pb-8"
+          options={{
+            scrollbars: {
+              theme: 'os-theme-qlozet',
+              autoHide: 'leave',
+              autoHideDelay: 600,
+            },
+          }}
+          defer
+        >
           {children}
-        </main>
+        </OverlayScrollbarsComponent>
       </div>
 
       {/* KYC Completion Popup */}
