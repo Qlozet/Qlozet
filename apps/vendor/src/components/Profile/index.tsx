@@ -309,6 +309,7 @@ const Profile = ({
                             key={band.name}
                             name={band.name}
                             value={bandCount(band.key)}
+                            total={totalReviews}
                             color="bg-[#1C1C1E] dark:bg-white"
                           />
                         ))}
