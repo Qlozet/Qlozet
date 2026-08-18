@@ -154,7 +154,7 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
           className="flex w-full flex-col overflow-hidden p-0 sm:max-w-md sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] sm:rounded-[15px] custom-card-shadow bg-white dark:bg-card"
         >
           {/* Header */}
-          <div className="shrink-0 flex items-center justify-between border-b border-border px-6 py-5">
+          <div className="shrink-0 flex items-center justify-between border-b border-border px-4 py-5 sm:px-6">
             <h2 className="text-lg font-bold text-grey-black dark:text-white">
               {title || 'Reviews'}
             </h2>
@@ -162,7 +162,7 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
 
           {/* Summary: big score + 5→1 star-row breakdown (shop vendor-profile
               layout, order-details colouring). */}
-          <div className="shrink-0 border-b border-border px-6 pb-5 pt-4">
+          <div className="shrink-0 border-b border-border px-4 pb-5 pt-4 sm:px-6">
             <div className="flex items-center gap-6">
               <div>
                 <div className="text-[48px] font-bold leading-none text-grey-black dark:text-white">
@@ -196,7 +196,7 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
           </div>
 
           {/* Individual reviews — each in its own card. */}
-          <OverlayScroll className="flex-1 px-6 py-5">
+          <OverlayScroll className="flex-1 px-4 py-5 sm:px-6">
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
                 <Loader2 className="size-5 animate-spin text-grey3" />

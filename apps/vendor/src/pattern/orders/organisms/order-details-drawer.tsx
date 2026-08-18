@@ -853,7 +853,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
           {/* Header */}
           {/* pr-12 reserves room on the right for the Sheet's built-in close (X)
               at right-4, so the status badge no longer sits under it. */}
-          <SheetHeader className="shrink-0 border-b border-border py-5 pl-6 pr-12">
+          <SheetHeader className="shrink-0 border-b border-border py-5 pl-4 pr-12 sm:pl-6">
             <div className="flex items-center justify-between gap-3">
               <SheetTitle className="text-lg font-semibold text-[#0C0C0D] dark:text-white">
                 {isFabricTransferOnly ? 'Fabric transfer' : 'Order details'}
@@ -879,7 +879,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
 
           {/* Scrollable body */}
           <OverlayScroll className="flex-1 min-h-0">
-            <div className="space-y-5 px-6 py-5">
+            <div className="space-y-5 px-4 py-5 sm:px-6">
               {/* ── Order Summary ── */}
               <section className="space-y-3">
                 <SectionTitle>Order Summary</SectionTitle>
@@ -1666,7 +1666,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
           )}
 
           {/* Footer */}
-          <div className="shrink-0 border-t border-border px-6 py-4">
+          <div className="shrink-0 border-t border-border px-4 py-4 sm:px-6">
             {isRetryFulfill && canFulfill && (
               <div className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-800/50 dark:bg-amber-900/20">
                 <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
