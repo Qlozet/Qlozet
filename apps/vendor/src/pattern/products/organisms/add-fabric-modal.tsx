@@ -202,7 +202,7 @@ export const AddFabricModal = NiceModal.create(
             {/* Left: form */}
             <form
               onSubmit={(e) => e.preventDefault()}
-              className="flex-1 space-y-4 p-6 bg-card md:overflow-y-auto custom-scrollbar"
+              className="flex-1 space-y-4 p-4 sm:p-6 bg-card md:overflow-y-auto custom-scrollbar"
             >
               <DialogTitle
                 id="add-fabric-title"
@@ -371,7 +371,7 @@ export const AddFabricModal = NiceModal.create(
             </form>
 
             {/* Right: preview / upload */}
-            <div className="flex-1 space-y-4 bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-6 md:overflow-y-auto custom-scrollbar h-full">
+            <div className="flex-1 space-y-4 bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4 sm:p-6 md:overflow-y-auto custom-scrollbar h-full">
               <h2 className="text-xl font-semibold text-grey-black dark:text-white">
                 Preview
               </h2>

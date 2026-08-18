@@ -107,7 +107,7 @@ export const AddWarehouseModal = create<AddWarehouseModalProps>(
 
     return (
       <Dialog open={visible} onOpenChange={handleCloseModal}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-hidden">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-hidden p-4 sm:p-6">
           <DialogHeader>
             {/* No close button here — DialogContent renders its own. */}
             <DialogTitle className="text-lg font-semibold">

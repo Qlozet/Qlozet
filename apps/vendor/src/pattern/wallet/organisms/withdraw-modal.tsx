@@ -99,7 +99,7 @@ export const WithdrawModal = create<WithdrawModalProps>(({ balance }) => {
 
   return (
     <Dialog open={visible} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md p-6 bg-card">
+      <DialogContent className="max-w-md p-4 sm:p-6 bg-card">
         <DialogHeader className="border-b border-dashed dark:border-border pb-3 text-left mb-4">
           <DialogTitle className="text-base font-medium text-[#0C0C0D] dark:text-white">
             Withdraw Earnings

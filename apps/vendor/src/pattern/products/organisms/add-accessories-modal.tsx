@@ -334,7 +334,7 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
       <DialogContent className="max-w-5xl sm:max-w-5xl p-0 overflow-hidden sm:rounded-[16px]">
         <div className="h-full w-full max-h-[85vh] grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-0 overflow-y-auto lg:overflow-hidden sm:rounded-[16px]">
           {/* Left Column - Form */}
-          <div className="w-full gap-y-[26px] p-6 lg:p-8 bg-card lg:overflow-y-auto">
+          <div className="w-full gap-y-[26px] p-4 sm:p-6 lg:p-8 bg-card lg:overflow-y-auto">
             <DialogTitle className="text-2xl font-semibold text-grey-black dark:text-white">
               {editId ? 'Edit' : 'Add'} Accessory
             </DialogTitle>
@@ -551,7 +551,7 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
           </div>
 
           {/* Preview section */}
-          <div className="bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] space-y-3 p-7 lg:overflow-y-auto h-full">
+          <div className="bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] space-y-3 p-4 sm:p-7 lg:overflow-y-auto h-full">
             <h3 className="text-xl font-semibold text-grey-black dark:text-white">
               Preview
             </h3>

@@ -204,7 +204,7 @@ export const AddStylesModal = NiceModal.create(() => {
       <DialogContent className="sm:max-w-4xl p-0 overflow-hidden sm:rounded-[16px]">
         <div className="grid max-h-[90vh] w-full grid-cols-1 overflow-y-auto sm:rounded-[16px] md:grid-cols-2 md:overflow-hidden">
           {/* Left: form */}
-          <div className="space-y-4 p-6 bg-card md:overflow-y-auto custom-scrollbar">
+          <div className="space-y-4 p-4 sm:p-6 bg-card md:overflow-y-auto custom-scrollbar">
             <DialogTitle className="text-xl font-semibold text-grey-black dark:text-white">
               Add Styles
             </DialogTitle>
@@ -314,7 +314,7 @@ export const AddStylesModal = NiceModal.create(() => {
           </div>
 
           {/* Right: preview */}
-          <div className="relative space-y-4 md:overflow-y-auto h-full bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-6 custom-scrollbar">
+          <div className="relative space-y-4 md:overflow-y-auto h-full bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4 sm:p-6 custom-scrollbar">
             <h2 className="text-xl font-semibold text-grey-black dark:text-white">
               Preview
             </h2>
