@@ -369,10 +369,8 @@ input[type='number'] {
 }
 
 /* ── Global scrollbars ────────────────────────────────────────────────
-   Brand-coloured and auto-hiding everywhere, emulating the mobile side menu:
-   the thumb is invisible at rest and only reveals while the user interacts
-   with (scrolls/hovers) the scrollable area. On touch/mobile the browser's
-   native overlay scrollbar already fades in on scroll and out when idle. */
+   Thin, brand-coloured and auto-hiding: the thumb is transparent at rest and
+   only reveals while the user scrolls/hovers the scrollable area. */
 * {
   scrollbar-width: thin; /* Firefox */
   scrollbar-color: transparent transparent; /* hidden at rest */
@@ -401,6 +399,24 @@ input[type='number'] {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
+}
+
+/* Reserve the scrollbar's gutter on scroll containers so it fades in and out
+   WITHOUT shifting the content sideways. Windows Chromium/Edge have no
+   zero-width overlay scrollbar, so a permanently-reserved thin (6px) gutter is
+   the no-shift equivalent: the layout stops jumping when the scrollbar appears
+   or disappears. Scoped to real scroll areas — the app's main content, the
+   Tailwind overflow utilities, and the opt-in scrollbar utilities — so it never
+   pads non-scrolling elements. */
+main,
+.overflow-auto,
+.overflow-y-auto,
+.overflow-y-scroll,
+.custom-scrollbar,
+.sidebar-scrollbar,
+.bds-scrollbar,
+.datalist-scroll {
+  scrollbar-gutter: stable;
 }
 
 @utility sidebar-scrollbar {
