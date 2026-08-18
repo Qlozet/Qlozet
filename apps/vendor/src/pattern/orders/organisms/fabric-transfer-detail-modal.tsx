@@ -24,6 +24,7 @@ import {
 } from '@/redux/services/orders/orders.api-slice';
 import { formatNaira, shipmentStatusBadge } from '../lib/order-fields';
 import { MediaPreviewModal } from './media-preview-modal';
+import { OverlayScroll } from '@/components/OverlayScroll';
 
 /** First usable image URL from a fabric product's images (strings or {url}). */
 export function fabricImageUrl(transfer: VendorShipment): string | null {
@@ -38,13 +39,7 @@ export function fabricImageUrl(transfer: VendorShipment): string | null {
   return null;
 }
 
-const Row = ({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode;
-}) => (
+const Row = ({ label, value }: { label: string; value: React.ReactNode }) => (
   <div className="flex items-center justify-between text-xs">
     <span className="text-grey3 dark:text-gray-400">{label}</span>
     <span className="text-right font-medium text-[#333333] dark:text-gray-200">
@@ -58,8 +53,8 @@ interface FabricTransferDetailModalProps {
   fabricValue?: number;
 }
 
-export const FabricTransferDetailModal =
-  create<FabricTransferDetailModalProps>(({ transfer, fabricValue }) => {
+export const FabricTransferDetailModal = create<FabricTransferDetailModalProps>(
+  ({ transfer, fabricValue }) => {
     const { visible, hide, remove } = useModal();
 
     const onOpenChange = (open: boolean) => {
@@ -92,7 +87,7 @@ export const FabricTransferDetailModal =
               Fabric details
             </DialogTitle>
           </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto px-5 py-5 sm:max-h-[65vh]">
+          <OverlayScroll className="max-h-[70vh] px-5 py-5 sm:max-h-[65vh]">
             <div className="space-y-5">
               {/* Hero */}
               <div className="flex items-start gap-3.5">
@@ -210,8 +205,9 @@ export const FabricTransferDetailModal =
                 </p>
               </div>
             </div>
-          </div>
+          </OverlayScroll>
         </DialogContent>
       </Dialog>
     );
-  });
+  }
+);

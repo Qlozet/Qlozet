@@ -42,6 +42,7 @@ import {
   type CustomerStatusVariant,
 } from '@/lib/customers';
 import { APP_ROUTES } from '@/lib/routes';
+import { OverlayScroll } from '@/components/OverlayScroll';
 import { CustomerMeasurementsModal } from '../details/organisms/customer-measurements-modal';
 import { CustomerAvatar } from '../atoms/customer-avatar';
 
@@ -339,107 +340,109 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
             </DialogTitle>
           </DialogHeader>
 
-          <div className="max-h-[75vh] space-y-6 overflow-y-auto px-6 py-5">
-            {/* Profile header */}
-            {loading ? (
-              <div className="flex items-center gap-4">
-                <Skeleton className="size-16 rounded-full" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-4 w-40" />
-                  <Skeleton className="h-3 w-28" />
-                  <Skeleton className="h-7 w-56 rounded-lg" />
-                </div>
-              </div>
-            ) : customer ? (
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <OverlayScroll className="max-h-[75vh] px-6 py-5">
+            <div className="space-y-6">
+              {/* Profile header */}
+              {loading ? (
                 <div className="flex items-center gap-4">
-                  <CustomerAvatar customer={customer} size="lg" />
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-base font-semibold text-[#0C0C0D] dark:text-white">
-                        {getCustomerName(customer)}
-                      </h3>
-                      <Badge
-                        variant={
-                          STATUS_BADGE_VARIANT[
-                            getCustomerStatus(customer).variant
-                          ]
-                        }
-                        shape="square"
-                        className="h-[22px] px-2 text-[11px] font-normal"
-                      >
-                        {getCustomerStatus(customer).label}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-grey3 dark:text-gray-400">
-                      @{getCustomerIdentifier(customer)}
-                    </p>
-                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                      {customer.email && (
-                        <ContactChip
-                          icon={
-                            <Mail className="size-3 shrink-0 text-gray-400" />
-                          }
-                        >
-                          {customer.email}
-                        </ContactChip>
-                      )}
-                      {customer.phone_number && (
-                        <ContactChip
-                          icon={
-                            <Phone className="size-3 shrink-0 text-gray-400" />
-                          }
-                        >
-                          {customer.phone_number}
-                        </ContactChip>
-                      )}
-                      <ContactChip
-                        icon={
-                          <ShoppingBag className="size-3 shrink-0 text-gray-400" />
-                        }
-                      >
-                        {formatCount(customer.total_orders)} orders
-                      </ContactChip>
-                    </div>
+                  <Skeleton className="size-16 rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-3 w-28" />
+                    <Skeleton className="h-7 w-56 rounded-lg" />
                   </div>
                 </div>
+              ) : customer ? (
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="flex items-center gap-4">
+                    <CustomerAvatar customer={customer} size="lg" />
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-base font-semibold text-[#0C0C0D] dark:text-white">
+                          {getCustomerName(customer)}
+                        </h3>
+                        <Badge
+                          variant={
+                            STATUS_BADGE_VARIANT[
+                              getCustomerStatus(customer).variant
+                            ]
+                          }
+                          shape="square"
+                          className="h-[22px] px-2 text-[11px] font-normal"
+                        >
+                          {getCustomerStatus(customer).label}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-grey3 dark:text-gray-400">
+                        @{getCustomerIdentifier(customer)}
+                      </p>
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                        {customer.email && (
+                          <ContactChip
+                            icon={
+                              <Mail className="size-3 shrink-0 text-gray-400" />
+                            }
+                          >
+                            {customer.email}
+                          </ContactChip>
+                        )}
+                        {customer.phone_number && (
+                          <ContactChip
+                            icon={
+                              <Phone className="size-3 shrink-0 text-gray-400" />
+                            }
+                          >
+                            {customer.phone_number}
+                          </ContactChip>
+                        )}
+                        <ContactChip
+                          icon={
+                            <ShoppingBag className="size-3 shrink-0 text-gray-400" />
+                          }
+                        >
+                          {formatCount(customer.total_orders)} orders
+                        </ContactChip>
+                      </div>
+                    </div>
+                  </div>
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={openMeasurements}
-                  className="shrink-0 gap-2"
-                >
-                  <Ruler className="size-4" />
-                  Measurement
-                  <ChevronRight className="size-4" />
-                </Button>
-              </div>
-            ) : (
-              <p className="py-8 text-center text-sm text-muted-foreground">
-                Customer not found.
-              </p>
-            )}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={openMeasurements}
+                    className="shrink-0 gap-2"
+                  >
+                    <Ruler className="size-4" />
+                    Measurement
+                    <ChevronRight className="size-4" />
+                  </Button>
+                </div>
+              ) : (
+                <p className="py-8 text-center text-sm text-muted-foreground">
+                  Customer not found.
+                </p>
+              )}
 
-            {/* Order history */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
-                  Order history
-                </h3>
-                {orders.length > 0 && (
-                  <span className="text-xs text-grey3 dark:text-gray-400">
-                    {orders.length} total
-                  </span>
-                )}
+              {/* Order history */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
+                    Order history
+                  </h3>
+                  {orders.length > 0 && (
+                    <span className="text-xs text-grey3 dark:text-gray-400">
+                      {orders.length} total
+                    </span>
+                  )}
+                </div>
+                <OrderHistoryTable
+                  orders={orders}
+                  loading={loading}
+                  onView={handleViewOrder}
+                />
               </div>
-              <OrderHistoryTable
-                orders={orders}
-                loading={loading}
-                onView={handleViewOrder}
-              />
             </div>
-          </div>
+          </OverlayScroll>
 
           <div className="flex justify-end border-t border-border px-6 py-4">
             <Button

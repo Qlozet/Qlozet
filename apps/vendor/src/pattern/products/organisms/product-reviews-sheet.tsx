@@ -3,6 +3,7 @@
 import { create, useModal } from '@ebay/nice-modal-react';
 import { Loader2, Star } from 'lucide-react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { OverlayScroll } from '@/components/OverlayScroll';
 import {
   useGetProductRatingsQuery,
   useGetVendorProductRatingsQuery,
@@ -84,7 +85,7 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
     });
     const vendorQ = useGetVendorProductRatingsQuery(
       { business_id: businessId ?? '' },
-      { skip: !businessId },
+      { skip: !businessId }
     );
 
     const isLoading = productId ? productQ.isLoading : vendorQ.isLoading;
@@ -140,7 +141,7 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
         rating: r.rating || 0,
         comment: r.comment || '',
         date: dateFromObjectId(
-          typeof r.created_at === 'string' ? r.created_at : undefined,
+          typeof r.created_at === 'string' ? r.created_at : undefined
         ),
         product: r.product_name,
       }));
@@ -174,7 +175,8 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
               <div className="flex flex-1 flex-col gap-1.5">
                 {breakdown.map((b, i) => {
                   const star = 5 - i;
-                  const pct = total > 0 ? Math.round((b.count / total) * 100) : 0;
+                  const pct =
+                    total > 0 ? Math.round((b.count / total) * 100) : 0;
                   return (
                     <div key={star} className="flex items-center gap-2">
                       <span className="w-3 text-[10px] font-bold text-grey3 dark:text-gray-400">
@@ -194,13 +196,15 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
           </div>
 
           {/* Individual reviews — each in its own card. */}
-          <div className="flex-1 overflow-y-auto px-6 py-5">
+          <OverlayScroll className="flex-1 px-6 py-5">
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
                 <Loader2 className="size-5 animate-spin text-grey3" />
               </div>
             ) : reviews.length === 0 ? (
-              <p className="text-sm text-grey3 dark:text-gray-400">No reviews yet.</p>
+              <p className="text-sm text-grey3 dark:text-gray-400">
+                No reviews yet.
+              </p>
             ) : (
               <div className="flex flex-col gap-4">
                 {reviews.map((r) => (
@@ -230,15 +234,17 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
                       </p>
                     )}
                     {r.date && (
-                      <p className="mt-2 text-[10px] text-grey3 dark:text-gray-400">{r.date}</p>
+                      <p className="mt-2 text-[10px] text-grey3 dark:text-gray-400">
+                        {r.date}
+                      </p>
                     )}
                   </div>
                 ))}
               </div>
             )}
-          </div>
+          </OverlayScroll>
         </SheetContent>
       </Sheet>
     );
-  },
+  }
 );

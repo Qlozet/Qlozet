@@ -50,6 +50,7 @@ import {
 } from '../lib/item-resolvers';
 import { SelectionRow, Section, Thumb } from '../molecules/selection-row';
 import { MediaPreviewModal } from './media-preview-modal';
+import { OverlayScroll } from '@/components/OverlayScroll';
 
 /* ------------------------------------------------------------------ */
 /*  Content                                                            */
@@ -454,9 +455,9 @@ export const OrderItemDetailModal = create<OrderItemDetailModalProps>(
               Item details
             </DialogTitle>
           </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto px-5 py-5 sm:max-h-[65vh]">
+          <OverlayScroll className="max-h-[70vh] px-5 py-5 sm:max-h-[65vh]">
             <ItemDetailContent item={item} />
-          </div>
+          </OverlayScroll>
         </DialogContent>
       </Dialog>
     );

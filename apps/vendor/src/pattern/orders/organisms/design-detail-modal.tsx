@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { formatNaira } from '../lib/order-fields';
+import { OverlayScroll } from '@/components/OverlayScroll';
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
@@ -363,9 +364,9 @@ export const DesignDetailModal = create<{ design: any }>(({ design }) => {
             Design details
           </DialogTitle>
         </DialogHeader>
-        <div className="max-h-[70vh] overflow-y-auto px-5 py-5 sm:max-h-[65vh]">
+        <OverlayScroll className="max-h-[70vh] px-5 py-5 sm:max-h-[65vh]">
           <DesignDetailContent design={design} />
-        </div>
+        </OverlayScroll>
       </DialogContent>
     </Dialog>
   );
