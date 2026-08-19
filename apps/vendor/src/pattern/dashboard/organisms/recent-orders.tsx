@@ -17,6 +17,7 @@ import { OrderDetailsDrawer } from '@/pattern/orders/organisms/order-details-dra
 import {
   readAmountPaid,
   readCustomerName,
+  readItemsCount,
   readOrderId,
   readOrderItemImages,
   readOrderTitle,
@@ -24,6 +25,8 @@ import {
   orderStatusBadge,
   formatNaira,
 } from '@/pattern/orders/lib/order-fields';
+import { useAppSelector } from '@/redux/store';
+import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 import { cn } from '@/lib/utils';
 
 /* ── Helpers ── */
@@ -47,6 +50,9 @@ function timeAgo(dateStr?: string): string {
 /* ── Component ── */
 
 export const RecentOrders = () => {
+  // Active vendor business — scopes each row to this vendor's items so a shared
+  // multi-vendor order doesn't surface another vendor's product/amount.
+  const businessId = useAppSelector(selectActiveBusiness)?._id ?? '';
   const { data: ordersResponse, isLoading } = useGetVendorOrdersQuery({
     page: 1,
     size: 5,
@@ -112,15 +118,17 @@ export const RecentOrders = () => {
           </div>
         ) : (
           orders.map((order: Order, idx: number) => {
-            const productName = readOrderTitle(order);
-            const images = readOrderItemImages(order, 3);
+            const productName = readOrderTitle(order, businessId);
+            const images = readOrderItemImages(order, 3, businessId);
             const customerName = readCustomerName(order);
-            const total = readAmountPaid(order) ?? order.total ?? order.subtotal ?? 0;
+            const total =
+              readAmountPaid(order, businessId) ??
+              order.total ??
+              order.subtotal ??
+              0;
             const status = readStatus(order);
             const badge = orderStatusBadge(status);
-            const itemsCount = Array.isArray(order.items)
-              ? order.items.length
-              : 0;
+            const itemsCount = readItemsCount(order, businessId);
             const orderId = readOrderId(order);
 
             return (

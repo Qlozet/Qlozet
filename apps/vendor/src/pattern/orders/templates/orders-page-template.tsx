@@ -27,10 +27,14 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ReturnsPanel } from '../organisms/returns-panel';
 import { DisputesPanel } from '../organisms/disputes-panel';
 import { QuoteRequestsTemplate } from '@/pattern/bespoke/templates/quote-requests-template';
+import { useAppSelector } from '@/redux/store';
+import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 
 const PAGE_SIZE = 7;
 
 export const OrdersPageTemplate: React.FC = () => {
+  // Active vendor business — used to scope each order row to this vendor's items.
+  const businessId = useAppSelector(selectActiveBusiness)?._id ?? '';
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<OrderStatusFilter>('all');
   const [pagination, setPagination] = useState<PaginationState>({
@@ -66,7 +70,10 @@ export const OrdersPageTemplate: React.FC = () => {
     NiceModal.show(OrderDetailsDrawer, { order });
   };
 
-  const columns = useMemo(() => createOrdersColumns(openDetails), []);
+  const columns = useMemo(
+    () => createOrdersColumns(openDetails, businessId),
+    [businessId]
+  );
 
   const pageCount = data?.total_pages ?? 1;
 

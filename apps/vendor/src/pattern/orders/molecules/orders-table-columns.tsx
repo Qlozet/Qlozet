@@ -21,15 +21,18 @@ import {
 } from '../lib/order-fields';
 
 export const createOrdersColumns = (
-  onViewDetails: (order: Order) => void
+  onViewDetails: (order: Order) => void,
+  // Active vendor business — scopes each row to THIS vendor's items so a shared
+  // multi-vendor order doesn't surface another vendor's product/price/count.
+  businessId?: string
 ): ColumnDef<Order>[] => [
   {
     id: 'product',
     header: 'Product',
     cell: ({ row }) => {
-      const img = readOrderImage(row.original);
-      const title = readOrderTitle(row.original);
-      const count = readItemsCount(row.original);
+      const img = readOrderImage(row.original, businessId);
+      const title = readOrderTitle(row.original, businessId);
+      const count = readItemsCount(row.original, businessId);
       return (
         <div className="flex items-center gap-2.5">
           <div className="relative shrink-0">
@@ -87,7 +90,7 @@ export const createOrdersColumns = (
     header: 'Product price',
     cell: ({ row }) => (
       <span className="whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground">
-        {formatNaira(readProductPrice(row.original))}
+        {formatNaira(readProductPrice(row.original, businessId))}
       </span>
     ),
     enableSorting: false,
@@ -107,7 +110,7 @@ export const createOrdersColumns = (
     header: 'Amount paid',
     cell: ({ row }) => (
       <span className="whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground">
-        {formatNaira(readAmountPaid(row.original))}
+        {formatNaira(readAmountPaid(row.original, businessId))}
       </span>
     ),
     enableSorting: false,
@@ -116,7 +119,7 @@ export const createOrdersColumns = (
     id: 'items',
     header: 'Items',
     cell: ({ row }) => {
-      const count = readItemsCount(row.original);
+      const count = readItemsCount(row.original, businessId);
       return (
         <span className="whitespace-nowrap text-sm text-gray-600 dark:text-muted-foreground">
           {count} item{count === 1 ? '' : 's'}
