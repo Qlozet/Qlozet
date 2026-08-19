@@ -72,16 +72,54 @@ export const readCustomerHandle = (o: Order): string => {
   return name.startsWith('@') ? name : `@${name}`;
 };
 
-export const readItemsCount = (o: Order): number =>
-  Array.isArray(o.items) ? o.items.length : 0;
+// GET /orders/vendor returns the WHOLE order, which can contain items from
+// SEVERAL vendors (one customer basket, one shipment per vendor). The list must
+// therefore scope to the ACTIVE vendor's items — otherwise a shared order shows
+// another vendor's product, price and item count and looks like "someone else's
+// order". Pass the active businessId to these readers to get the scoped view
+// (the drawer already scopes the same way via getVendorItems).
+const itemBusinessId = (item: any): string | undefined => {
+  const b = item?.business;
+  return typeof b === 'string' ? b : b?._id;
+};
+
+const vendorItems = (o: Order, businessId?: string): any[] => {
+  const items = Array.isArray(o.items) ? o.items : [];
+  if (!businessId) return items;
+  return items.filter((it) => itemBusinessId(it) === businessId);
+};
+
+const vendorSubtotal = (o: Order, businessId?: string): number =>
+  vendorItems(o, businessId).reduce(
+    (sum, it) => sum + (it?.total_price ?? it?.pricing?.final ?? 0),
+    0
+  );
+
+export const readItemsCount = (o: Order, businessId?: string): number =>
+  vendorItems(o, businessId).length;
 
 // On a scoped fabric transfer there is no order total to show — the vendor's
-// figure is the fabric they sold, so surface that instead of a blank cell.
-export const readAmountPaid = (o: Order): number | undefined =>
-  o.vendor_role === 'fabric_transfer' ? o.fabric_value : o.total;
+// figure is the fabric they sold. Otherwise show THIS vendor's subtotal (their
+// own items), not the whole multi-vendor order total.
+export const readAmountPaid = (
+  o: Order,
+  businessId?: string
+): number | undefined =>
+  o.vendor_role === 'fabric_transfer'
+    ? o.fabric_value
+    : businessId
+      ? vendorSubtotal(o, businessId)
+      : o.total;
 
-export const readProductPrice = (o: Order): number | undefined =>
-  o.vendor_role === 'fabric_transfer' ? o.fabric_value : o.subtotal;
+export const readProductPrice = (
+  o: Order,
+  businessId?: string
+): number | undefined =>
+  o.vendor_role === 'fabric_transfer'
+    ? o.fabric_value
+    : businessId
+      ? vendorSubtotal(o, businessId)
+      : o.subtotal;
 
 export const readStatus = (o: Order): OrderStatus => o.status ?? 'pending';
 
@@ -90,7 +128,9 @@ export const readStatus = (o: Order): OrderStatus => o.status ?? 'pending';
 // not see the customer's quote/design, so it always uses the plain drawer.
 export const isCustomOrder = (o: Order): boolean =>
   o.vendor_role !== 'fabric_transfer' &&
-  (o.type === 'bespoke' || Boolean(o.bespoke_design) || Boolean(o.bespoke_quote));
+  (o.type === 'bespoke' ||
+    Boolean(o.bespoke_design) ||
+    Boolean(o.bespoke_quote));
 
 export const readQuoteId = (o: Order): string => o.bespoke_quote ?? o._id;
 
@@ -121,12 +161,15 @@ const readFabricTransferImages = (o: Order): string[] => {
   return imgs;
 };
 
-// First image for the order's first item; falls back to the fabric image for a
-// fabric transfer and the bespoke design's image for custom orders.
-export const readOrderImage = (o: Order): string | null => {
+// First image for the vendor's first item on the order; falls back to the fabric
+// image for a fabric transfer and the bespoke design's image for custom orders.
+export const readOrderImage = (
+  o: Order,
+  businessId?: string
+): string | null => {
   const fabricImg = readFabricTransferImages(o)[0];
   if (fabricImg) return fabricImg;
-  const product = asPopulatedProduct(o.items?.[0]);
+  const product = asPopulatedProduct(vendorItems(o, businessId)[0]);
   if (product) {
     const kindImages =
       product.clothing?.images ??
@@ -175,11 +218,15 @@ const productImage = (item: any): string | null => {
 // Up to `max` thumbnails for the order — one per item that has a product image,
 // falling back to the bespoke design image for custom orders. Used to render the
 // overlapping thumbnail stack for multi-item orders.
-export const readOrderItemImages = (o: Order, max = 3): string[] => {
+export const readOrderItemImages = (
+  o: Order,
+  max = 3,
+  businessId?: string
+): string[] => {
   const fabricImgs = readFabricTransferImages(o);
   if (fabricImgs.length) return fabricImgs.slice(0, max);
   const imgs: string[] = [];
-  for (const item of Array.isArray(o.items) ? o.items : []) {
+  for (const item of vendorItems(o, businessId)) {
     const img = productImage(item);
     if (img) imgs.push(img);
     if (imgs.length >= max) break;
@@ -208,11 +255,12 @@ const readFabricTransferTitle = (o: Order): string | null => {
   return `Fabric transfer${tailor ? ` → ${tailor}` : ''}`;
 };
 
-// Display title for the order's first item; bespoke design name for custom orders.
-export const readOrderTitle = (o: Order): string => {
+// Display title for the vendor's first item on the order; bespoke design name
+// for custom orders.
+export const readOrderTitle = (o: Order, businessId?: string): string => {
   const fabricTitle = readFabricTransferTitle(o);
   if (fabricTitle) return fabricTitle;
-  const product = asPopulatedProduct(o.items?.[0]);
+  const product = asPopulatedProduct(vendorItems(o, businessId)[0]);
   const name =
     product?.clothing?.name ??
     product?.fabric?.name ??
