@@ -570,6 +570,12 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       ? getVendorSubtotal(order, businessId)
       : order.subtotal;
 
+    // This vendor's own order total: their goods + their delivery, NOT the whole
+    // multi-vendor basket. (Kept in sync with the backend's per-vendor scoping;
+    // computed here too so it's right even before that deploys.)
+    const vendorOrderTotal =
+      (vendorSubtotal ?? 0) + (vendorShipment?.shipping_fee ?? 0);
+
     // Prefer the backend's per-vendor breakdown (this vendor's items only, with
     // commission computed the same way as the real earning). It is reliable on
     // multi-vendor AND "use my own fabric" orders, where order.vendor_earnings
@@ -949,7 +955,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                         label="Total"
                         value={
                           <span className="text-base font-semibold text-[#0C0C0D] dark:text-white">
-                            {formatNaira(order.total)}
+                            {formatNaira(vendorOrderTotal)}
                           </span>
                         }
                         isLast
