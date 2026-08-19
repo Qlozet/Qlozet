@@ -174,7 +174,7 @@ export const ProductDetailsTemplate = ({
     // Real review + sales metrics (undefined → the row/badge stays hidden).
     rating:
       ratings?.total_reviews > 0 ? Number(ratings.average) || 0 : undefined,
-    reviews_count: ratings ? ratings.total_reviews ?? 0 : undefined,
+    reviews_count: ratings ? (ratings.total_reviews ?? 0) : undefined,
     items_delivered: ratings?.items_sold,
   };
 
@@ -200,14 +200,6 @@ export const ProductDetailsTemplate = ({
 
   const images = colorImages.length > 0 ? colorImages : baseImages;
 
-  console.log('Product Details Debug:', {
-    selectedColorIndex,
-    colorVariants: product.color_variants,
-    colorImages,
-    baseImages,
-    images,
-  });
-
   const businessName = product.business?.name ?? product.business_name;
   const customisation = product.type
     ? product.type === 'customize'
@@ -218,14 +210,23 @@ export const ProductDetailsTemplate = ({
   const colours = (product.color_variants ?? [])
     .map((c, i) => ({ hex: c.hex, index: i }))
     .filter((c) => Boolean(c.hex));
+  // When a colour is selected, its variants drive the available sizes and the
+  // stock shown; with no colour selected, show every size across colours and the
+  // total stock.
+  const stockColorVariants =
+    selectedColorIndex !== null
+      ? ([product.color_variants?.[selectedColorIndex]].filter(
+          Boolean
+        ) as ColorVariantView[])
+      : (product.color_variants ?? []);
   const sizes = Array.from(
     new Set(
-      (product.color_variants ?? []).flatMap((c) =>
+      stockColorVariants.flatMap((c) =>
         (c.variants ?? []).map((v) => v.size).filter(Boolean)
       )
     )
   ) as string[];
-  const totalStock = (product.color_variants ?? []).reduce(
+  const totalStock = stockColorVariants.reduce(
     (sum, c) =>
       sum + (c.variants ?? []).reduce((s, v) => s + (v.stock ?? 0), 0),
     0
