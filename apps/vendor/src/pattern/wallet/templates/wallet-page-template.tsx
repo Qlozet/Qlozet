@@ -62,11 +62,13 @@ const readBalance = (raw: unknown): number | undefined => {
   return undefined;
 };
 
-// The business profile carries the vendor's held (pending) earnings. The key
-// name is undocumented, so read the most likely variants tolerantly.
+// The business profile carries the vendor's held (pending) earnings. The
+// backend field is `pending_payout_balance` ("money waiting for payout"); the
+// other keys are tolerated fallbacks.
 const readPendingBalance = (raw: unknown): number | undefined => {
   const d = (raw ?? {}) as Record<string, unknown>;
   for (const key of [
+    'pending_payout_balance',
     'pending_balance',
     'pendingBalance',
     'pending_earnings',
