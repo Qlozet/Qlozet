@@ -8,11 +8,12 @@
 // their tags), so the page updates without a manual refresh.
 
 import React, { useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { create, useModal } from '@ebay/nice-modal-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Landmark } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -30,7 +31,10 @@ import {
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useWithdrawEarningsMutation } from '@/redux/services/wallet/wallet.api-slice';
+import {
+  useWithdrawEarningsMutation,
+  useGetPayoutAccountQuery,
+} from '@/redux/services/wallet/wallet.api-slice';
 
 const MIN_WITHDRAWAL = 2000;
 
@@ -43,8 +47,12 @@ interface WithdrawModalProps {
 
 export const WithdrawModal = create<WithdrawModalProps>(({ balance }) => {
   const { visible, resolve, remove } = useModal();
+  const router = useRouter();
   const [withdraw, { isLoading }] = useWithdrawEarningsMutation();
+  const { data: payoutRes, isLoading: loadingPayout } =
+    useGetPayoutAccountQuery();
 
+  const payoutLinked = payoutRes?.data?.linked;
   const hasBalance = typeof balance === 'number' && !Number.isNaN(balance);
 
   // Build the schema with the current balance in scope so the "exceeds balance"
@@ -106,70 +114,111 @@ export const WithdrawModal = create<WithdrawModalProps>(({ balance }) => {
           </DialogTitle>
         </DialogHeader>
 
-        <p className="text-sm font-normal text-[#0C0C0D] dark:text-white mb-2">
-          Enter the amount you want to withdraw to your registered bank account.
-          The minimum withdrawal is {formatNaira(MIN_WITHDRAWAL)}.
-        </p>
-        {hasBalance && (
-          <p className="text-sm font-medium text-[#646A86] dark:text-gray-400 mb-4">
-            Available balance: {formatNaira(balance as number)}
-          </p>
+        {/* No payout account yet → withdrawal would be rejected server-side.
+            Send the vendor to Settings → Payout to link one first. */}
+        {!loadingPayout && !payoutLinked && (
+          <div className="flex flex-col items-center gap-4 py-4 text-center">
+            <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Landmark className="size-6" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-[#0C0C0D] dark:text-white">
+                Link a payout account first
+              </p>
+              <p className="mt-1 text-sm text-[#646A86] dark:text-gray-400">
+                Add the bank account your withdrawals should be paid to before
+                you can withdraw.
+              </p>
+            </div>
+            <Button
+              className="w-full"
+              onClick={() => {
+                handleClose();
+                router.push('/settings?tab=payout');
+              }}
+            >
+              Go to Payout settings
+            </Button>
+          </div>
         )}
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-[#333333] dark:text-gray-300">
-                    Amount
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#646A86] dark:text-gray-400">
-                        ₦
-                      </span>
-                      <Input
-                        inputMode="numeric"
-                        placeholder="Enter amount"
-                        className="h-12 rounded-lg pl-8"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(e.target.value.replace(/[^\d]/g, ''))
-                        }
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        {(loadingPayout || payoutLinked) && (
+          <>
+            <p className="text-sm font-normal text-[#0C0C0D] dark:text-white mb-2">
+              Enter the amount you want to withdraw to your registered bank
+              account. The minimum withdrawal is {formatNaira(MIN_WITHDRAWAL)}.
+            </p>
+            {hasBalance && (
+              <p className="text-sm font-medium text-[#646A86] dark:text-gray-400 mb-4">
+                Available balance: {formatNaira(balance as number)}
+              </p>
+            )}
 
-            <div className="flex justify-end gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleClose}
-                className="min-w-28"
-                disabled={isLoading}
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
               >
-                Cancel
-              </Button>
-              <Button type="submit" className="min-w-28" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="size-4 animate-spin" />
-                    Processing…
-                  </>
-                ) : (
-                  `Withdraw ₦${amount.toLocaleString()}`
-                )}
-              </Button>
-            </div>
-          </form>
-        </Form>
+                <FormField
+                  control={form.control}
+                  name="amount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-[#333333] dark:text-gray-300">
+                        Amount
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#646A86] dark:text-gray-400">
+                            ₦
+                          </span>
+                          <Input
+                            inputMode="numeric"
+                            placeholder="Enter amount"
+                            className="h-12 rounded-lg pl-8"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(
+                                e.target.value.replace(/[^\d]/g, '')
+                              )
+                            }
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex justify-end gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleClose}
+                    className="min-w-28"
+                    disabled={isLoading}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="min-w-28"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="size-4 animate-spin" />
+                        Processing…
+                      </>
+                    ) : (
+                      `Withdraw ₦${amount.toLocaleString()}`
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
