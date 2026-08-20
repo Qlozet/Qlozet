@@ -119,7 +119,9 @@ export const PayoutContent: React.FC = () => {
     useLinkPayoutAccountMutation();
 
   const linked = accountRes?.data;
-  const banks = banksRes?.data ?? [];
+  // Defensive: only ever hand an array to the picker, whatever the envelope
+  // shape turns out to be.
+  const banks = Array.isArray(banksRes?.data) ? banksRes.data : [];
 
   // The form is shown when nothing is linked, or when the vendor chooses to
   // change the linked account.
