@@ -10,11 +10,14 @@ import NiceModal from '@ebay/nice-modal-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { PaginationState } from '@tanstack/react-table';
 import { toast } from 'sonner';
+import { Landmark, ChevronRight } from 'lucide-react';
 import {
   useGetWalletBalanceQuery,
   useGetWalletTransactionsQuery,
   useLazyVerifyWalletPaymentQuery,
+  useGetPayoutAccountQuery,
 } from '@/redux/services/wallet/wallet.api-slice';
+import { Button } from '@/components/ui/button';
 import { useGetTokenBalanceQuery } from '@/redux/services/tokens/tokens.api-slice';
 import { useGetBusinessProfileQuery } from '@/redux/services/settings/settings.api-slice';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
@@ -146,6 +149,11 @@ export const WalletPageTemplate: React.FC = () => {
   // Business profile supplies the pending (held) earnings figure.
   const { data: businessData } = useGetBusinessProfileQuery();
 
+  // Whether a payout bank account is linked — drives the setup banner below.
+  const { data: payoutRes, isLoading: isPayoutLoading } =
+    useGetPayoutAccountQuery();
+  const payoutLinked = payoutRes?.data?.linked;
+
   const {
     data: transactionsData,
     isLoading,
@@ -239,6 +247,34 @@ export const WalletPageTemplate: React.FC = () => {
 
   return (
     <div className="w-full min-h-screen h-fit space-y-6 pb-10">
+      {/* Prompt to link a payout account — withdrawals are blocked until one
+          exists, so surface it up front rather than only at withdraw time. */}
+      {!isPayoutLoading && !payoutLinked && (
+        <div className="flex flex-col gap-3 rounded-[10px] border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/40 dark:bg-amber-900/20 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400">
+              <Landmark className="size-5" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-amber-900 dark:text-amber-200">
+                Set up your payout account
+              </p>
+              <p className="text-xs text-amber-800/80 dark:text-amber-300/70">
+                Link the bank account your withdrawals are paid to. You can’t
+                withdraw earnings until this is done.
+              </p>
+            </div>
+          </div>
+          <Button
+            onClick={() => router.push('/settings?tab=payout')}
+            className="shrink-0 bg-amber-600 text-white hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600"
+          >
+            Set up payout
+            <ChevronRight className="ml-1 size-4" />
+          </Button>
+        </div>
+      )}
+
       <WalletStatsSection
         balance={balance}
         pendingBalance={pendingBalance}

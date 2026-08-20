@@ -54,6 +54,44 @@ export interface WithdrawEarningsRequest {
   amount: number;
 }
 
+// ─── Payout (bank) account ───────────────────────────────────────────────────
+
+// GET /wallets/banks — supported banks for the payout picker.
+export interface Bank {
+  name: string;
+  code: string;
+  slug?: string;
+}
+
+// GET /wallets/payout-account — the vendor's linked account (masked). `linked`
+// is false and the rest null when nothing has been linked yet.
+export interface PayoutAccount {
+  linked: boolean;
+  bank_name: string | null;
+  bank_code: string | null;
+  account_name: string | null;
+  account_number: string | null; // masked, e.g. "******1234"
+}
+
+// POST /wallets/payout-account/resolve — confirm the account name before saving.
+export interface ResolveAccountRequest {
+  account_number: string;
+  bank_code: string;
+}
+export interface ResolvedAccount {
+  account_number: string;
+  account_name: string;
+  bank_code: string;
+}
+
+// POST /wallets/payout-account — link (create/replace) the payout account.
+export interface LinkPayoutAccountRequest {
+  name: string; // account holder name (from resolve)
+  account_number: string;
+  bank_code: string;
+  bank_name?: string;
+}
+
 // API Slice
 export const walletApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
@@ -107,6 +145,51 @@ export const walletApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['WalletBalance', 'Transaction'],
     }),
 
+    // ─── Payout account ──────────────────────────────────────────────────────
+
+    // List supported banks (GET /wallets/banks)
+    getBanks: builder.query<ApiResponse<Bank[]>, string | void>({
+      query: (currency) => ({
+        url: `/wallets/banks${currency ? `?currency=${currency}` : ''}`,
+        method: 'GET',
+      }),
+      providesTags: ['Bank'],
+    }),
+
+    // Current linked payout account (GET /wallets/payout-account)
+    getPayoutAccount: builder.query<ApiResponse<PayoutAccount>, void>({
+      query: () => ({
+        url: '/wallets/payout-account',
+        method: 'GET',
+      }),
+      providesTags: ['PayoutAccount'],
+    }),
+
+    // Resolve an account name before linking (POST /wallets/payout-account/resolve)
+    resolvePayoutAccount: builder.mutation<
+      ApiResponse<ResolvedAccount>,
+      ResolveAccountRequest
+    >({
+      query: (body) => ({
+        url: '/wallets/payout-account/resolve',
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    // Link/replace the payout account (POST /wallets/payout-account)
+    linkPayoutAccount: builder.mutation<
+      { message: string; recipient_code: string; account: PayoutAccount },
+      LinkPayoutAccountRequest
+    >({
+      query: (body) => ({
+        url: '/wallets/payout-account',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['PayoutAccount'],
+    }),
+
     // Get token price quote (GET /wallets/price?tokens=&currency=)
     getWalletPrice: builder.query<
       ApiResponse<PendingData>,
@@ -154,6 +237,10 @@ export const {
   useGetWalletBalanceQuery,
   useFundWalletMutation,
   useWithdrawEarningsMutation,
+  useGetBanksQuery,
+  useGetPayoutAccountQuery,
+  useResolvePayoutAccountMutation,
+  useLinkPayoutAccountMutation,
   useGetWalletPriceQuery,
   useGetWalletTransactionsQuery,
   useVerifyWalletPaymentQuery,

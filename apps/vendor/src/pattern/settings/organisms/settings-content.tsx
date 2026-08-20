@@ -15,6 +15,7 @@ import { WarehouseContent } from './warehouse-content';
 import UserAndPermission from '@/components/Settings/UserAndPermission/UserAndPermssion';
 import Category from '@/components/Settings/Category/Category';
 import { OrderSettingsContent } from './order-settings-content';
+import { PayoutContent } from './payout-content';
 
 interface SettingsContentProps {
   activeTab: string;
@@ -101,6 +102,9 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
 
       case 'Order Settings':
         return <OrderSettingsContent />;
+
+      case 'Payout':
+        return <PayoutContent />;
 
       // case 'Security':
       //   return <SecurityContent />;

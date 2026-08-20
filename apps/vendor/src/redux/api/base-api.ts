@@ -28,6 +28,7 @@ export const baseAPI = createApi({
     'Transactions',
     'Beneficiary',
     'WalletBalance',
+    'PayoutAccount',
     'Bank',
     'SupportTicket',
     'VendorDetails',
