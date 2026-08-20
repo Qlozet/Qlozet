@@ -19,7 +19,6 @@ import {
 } from '@/redux/services/wallet/wallet.api-slice';
 import { Button } from '@/components/ui/button';
 import { useGetTokenBalanceQuery } from '@/redux/services/tokens/tokens.api-slice';
-import { useGetBusinessProfileQuery } from '@/redux/services/settings/settings.api-slice';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
 import { WalletStatsSection } from '../molecules/wallet-stats-section';
@@ -62,18 +61,14 @@ const readBalance = (raw: unknown): number | undefined => {
   return undefined;
 };
 
-// The business profile carries the vendor's held (pending) earnings. The
-// backend field is `pending_payout_balance` ("money waiting for payout"); the
-// other keys are tolerated fallbacks.
+// Held (pending) earnings — the money earned but not yet released to the
+// spendable balance. The source of truth is the WALLET's `pending_balance`
+// (GET /wallets/balance): recordBusinessEarnings increments it and the
+// release cron decrements it. (The business profile's `pending_payout_balance`
+// is a dead field — never incremented — so we do NOT read it here.)
 const readPendingBalance = (raw: unknown): number | undefined => {
   const d = (raw ?? {}) as Record<string, unknown>;
-  for (const key of [
-    'pending_payout_balance',
-    'pending_balance',
-    'pendingBalance',
-    'pending_earnings',
-    'held_balance',
-  ]) {
+  for (const key of ['pending_balance', 'pendingBalance', 'held_balance']) {
     if (typeof d[key] === 'number') return d[key] as number;
   }
   return undefined;
@@ -148,9 +143,6 @@ export const WalletPageTemplate: React.FC = () => {
   const { data: tokenData, isLoading: isTokenLoading } =
     useGetTokenBalanceQuery();
 
-  // Business profile supplies the pending (held) earnings figure.
-  const { data: businessData } = useGetBusinessProfileQuery();
-
   // Whether a payout bank account is linked — drives the setup banner below.
   const { data: payoutRes, isLoading: isPayoutLoading } =
     useGetPayoutAccountQuery();
@@ -206,7 +198,9 @@ export const WalletPageTemplate: React.FC = () => {
   // Real wallet balance (GET /wallets/balance). Undefined until it resolves, so
   // the card shows an honest "—" rather than a fabricated figure.
   const balance = readBalance(balanceData?.data);
-  const pendingBalance = readPendingBalance(businessData);
+  // Held earnings come from the wallet itself (pending_balance), not the
+  // business profile — see readPendingBalance.
+  const pendingBalance = readPendingBalance(balanceData?.data);
 
   const transactions = useMemo(
     () => readTransactionList(transactionsData?.data),
