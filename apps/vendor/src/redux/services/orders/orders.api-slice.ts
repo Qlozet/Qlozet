@@ -29,6 +29,8 @@ export type OrderType = 'standard' | 'bespoke';
 export interface VariantSelection {
   variant_id: string;
   color?: string;
+  /** Colour hex snapshot (for the swatch). */
+  hex?: string;
   size?: string;
   price: number;
   quantity: number;
@@ -54,6 +56,10 @@ export interface StyleSelection {
 export interface AccessorySelection {
   accessory_id: string;
   variant_id: string;
+  /** Snapshots stored on the order item for display. */
+  name?: string;
+  color?: string;
+  hex?: string;
   price: number;
   quantity: number;
   total_amount: number;

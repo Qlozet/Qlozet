@@ -189,11 +189,25 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
           icon={<Palette className="size-3.5 text-grey3" />}
         >
           {item.color_variant_selections.map((v, i) => {
-            const cv = byId<ClothingColorVariantDoc>(
-              clothing?.color_variants,
-              v.variant_id
-            );
-            const swatch = cv?.hex ?? cv?.hex_code;
+            // `variant_id` is the INNER size-variant id, so first find the colour
+            // variant that CONTAINS it; fall back to the (legacy) direct match.
+            const cv =
+              (
+                clothing?.color_variants as
+                  | ClothingColorVariantDoc[]
+                  | undefined
+              )?.find((c) =>
+                ((c as any).variants ?? []).some(
+                  (iv: any) => String(iv._id) === String(v.variant_id)
+                )
+              ) ??
+              byId<ClothingColorVariantDoc>(
+                clothing?.color_variants,
+                v.variant_id
+              );
+            // Prefer the snapshot stored on the order item (new orders); fall
+            // back to the resolved product colour variant (older orders).
+            const swatch = v.hex ?? cv?.hex ?? cv?.hex_code;
             const colourName =
               v.color ?? cv?.color_name ?? cv?.name ?? 'Standard';
             return (
@@ -278,13 +292,16 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
             const variant = byId(acc?.variants as any, a.variant_id) as
               | { name?: string; images?: ProductImage[] }
               | undefined;
+            // Prefer the snapshots stored on the order item (accessory name +
+            // chosen colour), falling back to the resolved product.
             return (
               <SelectionRow
                 key={i}
                 url={firstImg(variant?.images) ?? firstImg(acc?.images)}
+                swatch={a.hex ?? null}
                 icon={<Gem className="size-4 text-gray-400" />}
-                title={acc?.name ?? 'Accessory'}
-                subtitle={variant?.name}
+                title={a.name ?? acc?.name ?? 'Accessory'}
+                subtitle={a.color ?? variant?.name}
                 price={a.total_amount}
                 qty={a.quantity}
               />

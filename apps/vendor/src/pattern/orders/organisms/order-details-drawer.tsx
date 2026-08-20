@@ -356,6 +356,17 @@ const OrderItemRow: React.FC<{
   const summaryBits: string[] = [];
   const plural = (n: number, one: string, many: string) =>
     `${n} ${n === 1 ? one : many}`;
+  // Colour + size chosen (clothing / accessory) — snapshotted on the order item,
+  // so the row hints at the colour without opening the detail modal.
+  (item.color_variant_selections ?? []).forEach((v) => {
+    const bit = [v.color, v.size ? `Size ${v.size}` : undefined]
+      .filter(Boolean)
+      .join(' · ');
+    if (bit) summaryBits.push(bit);
+  });
+  (item.accessory_selections ?? []).forEach((a) => {
+    if (a.color) summaryBits.push(a.color);
+  });
   if (item.style_selections?.length)
     summaryBits.push(plural(item.style_selections.length, 'style', 'styles'));
   if (item.fabric_selections?.length) summaryBits.push('fabric');
