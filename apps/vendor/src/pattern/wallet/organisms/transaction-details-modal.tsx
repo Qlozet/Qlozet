@@ -4,7 +4,7 @@
 // Read-only breakdown of a single wallet transaction, opened from the
 // "View Details" action on the Recent Transactions table.
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { create, useModal } from '@ebay/nice-modal-react';
 import {
   Dialog,
@@ -19,11 +19,8 @@ import {
   formatDate,
   formatNaira,
   readAmount,
-  readBalanceAfter,
-  readBalanceBefore,
+  readChannel,
   readNarration,
-  readSender,
-  readSenderAccount,
   readStatus,
   readTransactionDate,
   readTransactionId,
@@ -98,20 +95,8 @@ export const TransactionDetailsModal = create<TransactionDetailsModalProps>(
                   </span>
                 }
               />
-              <DetailRow label="Sender" value={readSender(transaction)} />
-              <DetailRow
-                label="Sender account/bank"
-                value={readSenderAccount(transaction)}
-              />
+              <DetailRow label="Channel" value={readChannel(transaction)} />
               <DetailRow label="Narration" value={readNarration(transaction)} />
-              <DetailRow
-                label="Balance before"
-                value={formatNaira(readBalanceBefore(transaction))}
-              />
-              <DetailRow
-                label="Balance after"
-                value={formatNaira(readBalanceAfter(transaction))}
-              />
               <DetailRow
                 label="Status"
                 value={
