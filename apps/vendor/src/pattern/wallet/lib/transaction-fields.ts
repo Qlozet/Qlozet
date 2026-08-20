@@ -97,6 +97,27 @@ export const readBalanceBefore = (t: TransactionRow): number | undefined =>
 export const readBalanceAfter = (t: TransactionRow): number | undefined =>
   num(t.balanceAfter) ?? num(t.balance_after);
 
+// The transaction's channel, mapped to a vendor-facing label describing what it
+// was for. Falls back to a title-cased raw value, then "—".
+export const readChannel = (t: TransactionRow): string => {
+  const raw = (str(t.channel) ?? '').toLowerCase();
+  const labels: Record<string, string> = {
+    checkout: 'Order payment',
+    wallet_topup: 'Wallet top-up',
+    wallet_checkout: 'Wallet payment',
+    refund: 'Refund',
+    payout: 'Payout',
+    earning: 'Earning',
+    reservation: 'Fabric reservation',
+  };
+  if (labels[raw]) return labels[raw];
+  if (!raw) return '—';
+  return raw
+    .split(/[_\s-]+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+};
+
 // Status pill: label + colour classes, matching the design.
 export interface TransactionBadge {
   label: string;
