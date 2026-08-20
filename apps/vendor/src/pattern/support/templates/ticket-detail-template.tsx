@@ -73,7 +73,7 @@ export const TicketDetailTemplate = () => {
     : '';
 
   return (
-    <div className="w-full min-h-screen h-fit space-y-6 pb-10">
+    <div className="mx-auto w-full max-w-7xl min-h-screen h-fit space-y-6 pb-10">
       <GoBackButton href={APP_ROUTES.support} />
 
       <div className="flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-card custom-card-shadow">
