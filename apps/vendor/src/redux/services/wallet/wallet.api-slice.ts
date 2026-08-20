@@ -179,7 +179,7 @@ export const walletApiSlice = baseAPI.injectEndpoints({
 
     // Link/replace the payout account (POST /wallets/payout-account)
     linkPayoutAccount: builder.mutation<
-      { message: string; recipient_code: string; account: PayoutAccount },
+      ApiResponse<{ recipient_code: string; account: PayoutAccount }>,
       LinkPayoutAccountRequest
     >({
       query: (body) => ({
