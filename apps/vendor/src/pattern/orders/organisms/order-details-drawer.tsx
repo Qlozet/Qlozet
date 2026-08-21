@@ -53,6 +53,7 @@ import {
   useFulfillOrderMutation,
   useConfirmOrderMutation,
   useRejectOrderMutation,
+  useRejectOrderItemMutation,
 } from '@/redux/services/orders/orders.api-slice';
 import {
   useGetOrderEarningsQuery,
@@ -294,7 +295,18 @@ const OrderItemRow: React.FC<{
   isLast?: boolean;
   /** Hands this item's images to the drawer's single large preview. */
   onPreview: (images: string[], title: string) => void;
-}> = ({ item, order, isLast = false, onPreview }) => {
+  /** Whether a per-item reject control should be offered for this row. */
+  canReject?: boolean;
+  /** Opens the reject dialog for this item id. */
+  onReject?: (itemId?: string) => void;
+}> = ({
+  item,
+  order,
+  isLast = false,
+  onPreview,
+  canReject = false,
+  onReject,
+}) => {
   const product =
     typeof item.product === 'object' && item.product !== null
       ? (item.product as PopulatedProduct)
@@ -497,6 +509,23 @@ const OrderItemRow: React.FC<{
             {formatNaira(discount)} off
           </span>
         )}
+        {item.rejected ? (
+          <span className="mt-1.5 inline-flex items-center rounded-md bg-[#FBEAE9] dark:bg-[#D42620]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[#D42620] dark:text-[#F87171]">
+            Rejected
+          </span>
+        ) : (
+          canReject &&
+          item._id &&
+          onReject && (
+            <button
+              type="button"
+              onClick={() => onReject(item._id)}
+              className="mt-1.5 block text-[11px] font-medium text-[#D42620] hover:underline dark:text-[#F87171]"
+            >
+              Reject item
+            </button>
+          )
+        )}
       </div>
     </div>
   );
@@ -628,10 +657,14 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     const [confirmOrder, { isLoading: isConfirming }] =
       useConfirmOrderMutation();
     const [rejectOrder, { isLoading: isRejecting }] = useRejectOrderMutation();
+    const [rejectOrderItem, { isLoading: isRejectingItem }] =
+      useRejectOrderItemMutation();
 
-    // Reject dialog state
+    // Reject dialog state. When `rejectItemId` is set, the dialog rejects that
+    // single item; otherwise it rejects the vendor's whole portion.
     const [showRejectDialog, setShowRejectDialog] = useState(false);
     const [rejectReason, setRejectReason] = useState('');
+    const [rejectItemId, setRejectItemId] = useState<string | null>(null);
 
     // Confirmation state derived from shipment
     const isConfirmed = vendorShipment?.confirmed === true;
@@ -743,18 +776,48 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
 
     const handleReject = async () => {
       try {
-        await rejectOrder({
-          reference: order.reference,
-          reason: rejectReason.trim() || undefined,
-        }).unwrap();
-        toast.success(
-          'Order rejected. The customer will be refunded for your items.'
-        );
+        if (rejectItemId) {
+          await rejectOrderItem({
+            reference: order.reference,
+            itemId: rejectItemId,
+            reason: rejectReason.trim() || undefined,
+          }).unwrap();
+          toast.success(
+            'Item rejected. The customer will be refunded for that item.'
+          );
+        } else {
+          await rejectOrder({
+            reference: order.reference,
+            reason: rejectReason.trim() || undefined,
+          }).unwrap();
+          toast.success(
+            'Order rejected. The customer will be refunded for your items.'
+          );
+        }
         setShowRejectDialog(false);
         setRejectReason('');
-      } catch {
-        toast.error('Could not reject order. Please try again.');
+        setRejectItemId(null);
+      } catch (err: any) {
+        toast.error(
+          err?.data?.message || 'Could not reject. Please try again.'
+        );
       }
+    };
+
+    // Whether the vendor can still reject items (order active + not dispatched).
+    const canRejectItems =
+      ['pending', 'in_review', 'processing'].includes(order.status) &&
+      (!vendorShipment ||
+        vendorShipment.status === 'pending' ||
+        vendorShipment.status === 'ready_to_ship') &&
+      !vendorShipment?.rejected;
+
+    // Open the reject dialog targeting a single item.
+    const openRejectItem = (itemId?: string) => {
+      if (!itemId) return;
+      setRejectItemId(itemId);
+      setRejectReason('');
+      setShowRejectDialog(true);
     };
 
     const handleClose = (open?: boolean | React.MouseEvent) => {
@@ -1196,6 +1259,8 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                             order={order}
                             isLast={index === vendorItems.length - 1}
                             onPreview={showPreview}
+                            canReject={canRejectItems && vendorItems.length > 1}
+                            onReject={openRejectItem}
                           />
                         ))}
                       </Card>
@@ -1642,11 +1707,14 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   </div>
                   <div>
                     <h4 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
-                      Reject this order?
+                      {rejectItemId
+                        ? 'Reject this item?'
+                        : 'Reject this order?'}
                     </h4>
                     <p className="mt-1 text-xs text-grey3 dark:text-gray-400 leading-relaxed">
-                      The customer will be refunded for your items and shipping.
-                      This action cannot be undone.
+                      {rejectItemId
+                        ? 'The customer will be refunded for this item. The rest of the order continues. This cannot be undone.'
+                        : 'The customer will be refunded for your items and shipping. This action cannot be undone.'}
                     </p>
                   </div>
                 </div>
@@ -1664,6 +1732,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     onClick={() => {
                       setShowRejectDialog(false);
                       setRejectReason('');
+                      setRejectItemId(null);
                     }}
                     className="flex-1 h-10 text-sm"
                   >
@@ -1672,10 +1741,14 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   <Button
                     type="button"
                     onClick={handleReject}
-                    disabled={isRejecting}
+                    disabled={isRejecting || isRejectingItem}
                     className="flex-1 h-10 text-sm bg-red-600 hover:bg-red-700 text-white"
                   >
-                    {isRejecting ? 'Rejecting...' : 'Reject Order'}
+                    {isRejecting || isRejectingItem
+                      ? 'Rejecting...'
+                      : rejectItemId
+                        ? 'Reject Item'
+                        : 'Reject Order'}
                   </Button>
                 </div>
               </div>

@@ -188,10 +188,16 @@ export interface PopulatedProduct {
 }
 
 export interface OrderItem {
+  /** Order-item id — target for per-item rejection. Absent on pre-migration orders. */
+  _id?: string;
   /** Populated product (has name, images, base_price, kind + sub-docs) or ObjectId string */
   product: PopulatedProduct | string;
   /** The vendor's business ID */
   business: string;
+  /** True when this single item was declined by the vendor. */
+  rejected?: boolean;
+  rejected_at?: string;
+  rejection_reason?: string;
   color_variant_selections?: VariantSelection[];
   fabric_selections?: FabricSelection[];
   style_selections?: StyleSelection[];
@@ -593,6 +599,19 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Orders'],
     }),
 
+    // PATCH /orders/:reference/items/:itemId/reject — reject a single item
+    rejectOrderItem: builder.mutation<
+      { message: string; data: unknown },
+      { reference: string; itemId: string; reason?: string }
+    >({
+      query: ({ reference, itemId, ...body }) => ({
+        url: `/orders/${reference}/items/${itemId}/reject`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: ['Orders'],
+    }),
+
     // GET /orders/chart — dashboard chart data (summary + all charts)
     getOrdersChart: builder.query<{ data: any }, void>({
       query: () => ({ url: '/orders/chart', method: 'GET' }),
@@ -617,6 +636,7 @@ export const {
   useCancelOrderMutation,
   useConfirmOrderMutation,
   useRejectOrderMutation,
+  useRejectOrderItemMutation,
   useGetOrdersChartQuery,
   useGetVendorDashboardMetricsQuery,
 } = ordersApiSlice;
