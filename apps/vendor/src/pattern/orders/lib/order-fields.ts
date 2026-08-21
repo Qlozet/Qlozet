@@ -89,11 +89,13 @@ const vendorItems = (o: Order, businessId?: string): any[] => {
   return items.filter((it) => itemBusinessId(it) === businessId);
 };
 
+// Money figure: excludes items the vendor rejected (they're refunded, so they
+// no longer count toward the vendor's subtotal/earnings). The display list still
+// shows rejected rows — only the money drops them.
 const vendorSubtotal = (o: Order, businessId?: string): number =>
-  vendorItems(o, businessId).reduce(
-    (sum, it) => sum + (it?.total_price ?? it?.pricing?.final ?? 0),
-    0
-  );
+  vendorItems(o, businessId)
+    .filter((it) => !it?.rejected)
+    .reduce((sum, it) => sum + (it?.total_price ?? it?.pricing?.final ?? 0), 0);
 
 export const readItemsCount = (o: Order, businessId?: string): number =>
   vendorItems(o, businessId).length;
