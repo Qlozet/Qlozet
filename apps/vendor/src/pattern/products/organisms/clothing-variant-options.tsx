@@ -18,15 +18,17 @@ const SIZE_OPTIONS = [
   { value: 'm', label: 'Medium' },
   { value: 'l', label: 'Large' },
   { value: 'xl', label: 'Extra Large' },
+  { value: 'xxl', label: 'Extra Extra Large' },
 ];
 
 // Maps the Select Options size values to the Set Variants size keys.
 const SIZE_KEY: Record<string, string> = {
-  xs: 'S',
-  s: 'M',
-  m: 'L',
-  l: 'XL',
-  xl: 'XXL',
+  xs: 'XS',
+  s: 'S',
+  m: 'M',
+  l: 'L',
+  xl: 'XL',
+  xxl: 'XXL',
 };
 
 const SWATCHES = ['#000000', '#3d2817', '#8a7060', '#991B1B', '#1E3A5F'];

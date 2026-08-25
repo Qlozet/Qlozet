@@ -370,25 +370,70 @@ export default function AddClothingTemplate() {
   const wordCount = countWords(description);
 
   const addVariant = (descriptor: VariantDescriptor, sizeKeys: string[]) => {
-    const details: Record<string, SizeDetail> = {};
-    sizeKeys.forEach((size) => {
-      details[size] = makeSizeDetail();
+    // Keep sizes in a consistent order (XS → XXL) regardless of pick order.
+    const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+    const sortSizes = (arr: string[]) =>
+      [...arr].sort((a, b) => {
+        const ia = SIZE_ORDER.indexOf(a);
+        const ib = SIZE_ORDER.indexOf(b);
+        return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+      });
+
+    // Same colour/fabric added again → merge the new sizes into that existing
+    // row instead of creating a duplicate colour. Sizes already present stay as
+    // they are (their stock/price aren't reset).
+    const matches = (v: VariantRow) => {
+      if (descriptor.colorHex && v.colorHex)
+        return v.colorHex.toLowerCase() === descriptor.colorHex.toLowerCase();
+      if (descriptor.label && v.label) return v.label === descriptor.label;
+      return false;
+    };
+
+    setVariants((prev) => {
+      const idx = prev.findIndex(matches);
+
+      if (idx >= 0) {
+        const existing = prev[idx];
+        const newSizes = sizeKeys.filter(
+          (s) => !existing.availableSizes.includes(s)
+        );
+        if (newSizes.length === 0) return prev; // every size already exists
+        const details = { ...existing.details };
+        newSizes.forEach((size) => {
+          details[size] = makeSizeDetail();
+        });
+        const merged: VariantRow = {
+          ...existing,
+          availableSizes: sortSizes([...existing.availableSizes, ...newSizes]),
+          details,
+          expanded: true,
+        };
+        const next = [...prev];
+        next[idx] = merged;
+        return next;
+      }
+
+      // New colour/fabric → new row.
+      const details: Record<string, SizeDetail> = {};
+      sizeKeys.forEach((size) => {
+        details[size] = makeSizeDetail();
+      });
+      const key = descriptor.colorHex ?? descriptor.label ?? 'variant';
+      return [
+        ...prev,
+        {
+          id: `${key}-${prev.length}-${sizeKeys.join('')}`,
+          colorHex: descriptor.colorHex ?? '',
+          imageUrl: descriptor.imageUrl,
+          label: descriptor.label,
+          availableSizes: sortSizes(sizeKeys),
+          details,
+          images: [],
+          expanded: true,
+          selected: false,
+        },
+      ];
     });
-    const key = descriptor.colorHex ?? descriptor.label ?? 'variant';
-    setVariants((prev) => [
-      ...prev,
-      {
-        id: `${key}-${prev.length}-${sizeKeys.join('')}`,
-        colorHex: descriptor.colorHex ?? '',
-        imageUrl: descriptor.imageUrl,
-        label: descriptor.label,
-        availableSizes: sizeKeys,
-        details,
-        images: [],
-        expanded: true,
-        selected: false,
-      },
-    ]);
   };
 
   const handleSave = async (isDraft = false) => {

@@ -38,6 +38,8 @@ export const AVAILABLE_SIZES: SizeOption[] = [
   { value: 's', label: 'Small' },
   { value: 'm', label: 'Medium' },
   { value: 'l', label: 'Large' },
+  { value: 'xl', label: 'Extra large' },
+  { value: 'xxl', label: 'Extra Extra Large' },
 ];
-5;
-export const ALL_SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
+
+export const ALL_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];

@@ -112,6 +112,7 @@ export function VariantSelectOptions({
           onSelectColor={handlePredefinedColorSelect}
           onOpenCustomPicker={handleOpenCustomPicker}
           selectedColors={selectedColors}
+          scrollFix
         >
           <div className="min-h-[44px] flex items-center gap-2 flex-wrap px-3 py-2 border-2 border-border rounded-md cursor-pointer hover:border-border-input transition-colors bg-accent">
             {selectedColors?.length === 0 ? (
