@@ -6,7 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { NumberStepper } from '../molecules/number-stepper';
 import { cn } from '@/lib/utils';
 
-export const ALL_SIZES = ['S', 'M', 'L', 'XL', 'XXL'] as const;
+export const ALL_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'] as const;
 export type SizeKey = (typeof ALL_SIZES)[number];
 
 export interface SizeDetail {

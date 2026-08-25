@@ -289,6 +289,83 @@ const KIND_BADGE: Record<string, { label: string; className: string }> = {
 /*  Order item row                                                     */
 /* ------------------------------------------------------------------ */
 
+// A shipment's business id, whether it's a plain id or a populated object.
+const shipmentBizId = (b: unknown): string | undefined =>
+  typeof b === 'string' ? b : (b as { _id?: string })?._id;
+
+// ── Optimistic drawer patches ──
+// The drawer keeps a local copy of the order, so after a mutation we patch that
+// copy to reflect the new state immediately (rather than waiting for a reopen).
+
+/** Mark one item rejected + recompute this vendor's money from what's left. */
+function rejectItemLocally(
+  order: Order,
+  itemId: string,
+  businessId?: string
+): Order {
+  const items = (order.items ?? []).map((it) =>
+    it._id === itemId ? { ...it, rejected: true } : it
+  );
+  // Reuse the effective commission rate from the current breakdown.
+  const bd = order.vendor_breakdown;
+  const rate = bd && bd.subtotal > 0 ? bd.commission / bd.subtotal : 0.1;
+  const activeSubtotal = items
+    .filter((it) => it.business === businessId && !it.rejected)
+    .reduce((s, it) => s + (it.total_price ?? it.pricing?.final ?? 0), 0);
+  const commission = Math.round(activeSubtotal * rate);
+  const vendor_breakdown = {
+    subtotal: activeSubtotal,
+    commission,
+    net: activeSubtotal - commission,
+  };
+  const stillActive = items.some(
+    (it) => it.business === businessId && !it.rejected
+  );
+  const shipments = stillActive
+    ? order.shipments
+    : (order.shipments ?? []).map((s) =>
+        shipmentBizId(s.business) === businessId &&
+        s.shipment_type !== 'fabric_transfer'
+          ? {
+              ...s,
+              rejected: true,
+              status: 'failed' as VendorShipment['status'],
+            }
+          : s
+      );
+  const allRejected =
+    (shipments ?? []).length > 0 && (shipments ?? []).every((s) => s.rejected);
+  return {
+    ...order,
+    items,
+    shipments,
+    vendor_breakdown,
+    status: allRejected ? ('cancelled' as Order['status']) : order.status,
+  };
+}
+
+/** Fail this vendor's whole portion (all their items + their shipment). */
+function rejectVendorLocally(order: Order, businessId?: string): Order {
+  const items = (order.items ?? []).map((it) =>
+    it.business === businessId ? { ...it, rejected: true } : it
+  );
+  const shipments = (order.shipments ?? []).map((s) =>
+    shipmentBizId(s.business) === businessId &&
+    s.shipment_type !== 'fabric_transfer'
+      ? { ...s, rejected: true, status: 'failed' as VendorShipment['status'] }
+      : s
+  );
+  const allRejected =
+    shipments.length > 0 && shipments.every((s) => s.rejected);
+  return {
+    ...order,
+    items,
+    shipments,
+    vendor_breakdown: { subtotal: 0, commission: 0, net: 0 },
+    status: allRejected ? ('cancelled' as Order['status']) : order.status,
+  };
+}
+
 const OrderItemRow: React.FC<{
   item: OrderItem;
   order?: Order;
@@ -766,6 +843,30 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     const handleConfirm = async () => {
       try {
         await confirmOrder({ reference: order.reference }).unwrap();
+        // Optimistically reflect the confirmation so the drawer flips to the
+        // fulfill state immediately (the modal keeps a local order copy, so it
+        // otherwise wouldn't update until reopened).
+        setOrder((prev) => {
+          const shipments = (prev.shipments ?? []).map((s) =>
+            vendorShipment && s._id === vendorShipment._id
+              ? {
+                  ...s,
+                  confirmed: true,
+                  confirmed_at: s.confirmed_at ?? new Date().toISOString(),
+                }
+              : s
+          );
+          const active = shipments.filter((s) => !s.rejected);
+          const allConfirmed =
+            active.length > 0 && active.every((s) => s.confirmed);
+          return {
+            ...prev,
+            shipments,
+            status: allConfirmed
+              ? ('processing' as Order['status'])
+              : prev.status,
+          };
+        });
         toast.success(
           'Order confirmed! You can now prepare it for fulfillment.'
         );
@@ -782,6 +883,9 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
             itemId: rejectItemId,
             reason: rejectReason.trim() || undefined,
           }).unwrap();
+          // Optimistically mark the item rejected + recompute this vendor's money
+          // from the remaining active items (so subtotal/earnings update now).
+          setOrder((prev) => rejectItemLocally(prev, rejectItemId, businessId));
           toast.success(
             'Item rejected. The customer will be refunded for that item.'
           );
@@ -790,6 +894,9 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
             reference: order.reference,
             reason: rejectReason.trim() || undefined,
           }).unwrap();
+          // Optimistically fail this vendor's shipment + items → their money
+          // drops to 0 and the reject/confirm buttons disappear.
+          setOrder((prev) => rejectVendorLocally(prev, businessId));
           toast.success(
             'Order rejected. The customer will be refunded for your items.'
           );

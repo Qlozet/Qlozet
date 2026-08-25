@@ -18,6 +18,14 @@ interface ColorMenuPopoverProps {
   onOpenCustomPicker: () => void;
   children: React.ReactNode;
   selectedColors?: string[];
+  /**
+   * Enable when this popover is rendered inside a Radix Dialog (e.g. the
+   * accessories modal). The dialog's scroll-lock blocks wheel events on the
+   * portalled popover, so we scroll the list manually. Leave off on plain
+   * pages (clothing), where native scrolling already works — enabling it there
+   * would double-scroll.
+   */
+  scrollFix?: boolean;
 }
 
 export function ColorMenuPopover({
@@ -25,6 +33,7 @@ export function ColorMenuPopover({
   onOpenCustomPicker,
   children,
   selectedColors = [],
+  scrollFix = false,
 }: ColorMenuPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -46,7 +55,16 @@ export function ColorMenuPopover({
           <h4 className="text-xs font-normal text-muted-foreground">
             Colour menu
           </h4>
-          <div className="h-[250px] overflow-y-auto pr-2">
+          <div
+            className="h-[250px] overflow-y-auto pr-2"
+            onWheel={
+              scrollFix
+                ? (e) => {
+                    e.currentTarget.scrollTop += e.deltaY;
+                  }
+                : undefined
+            }
+          >
             <div className="w-full flex gap-x-2 gap-y-3 flex-wrap">
               {/* Custom colour */}
               <button

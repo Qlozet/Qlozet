@@ -206,6 +206,7 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
         m: 'M',
         l: 'L',
         xl: 'XL',
+        xxl: 'XXL',
       };
 
       const availableSizes =
