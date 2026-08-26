@@ -54,6 +54,8 @@ export interface CreatePlatformCollectionRequest {
   sort_order?: number;
   kinds?: string[];
   product_types?: string[];
+  manual_includes?: string[];
+  manual_excludes?: string[];
 }
 
 // UpdateCollectionDto — all fields optional.
@@ -67,6 +69,8 @@ export interface UpdateCollectionDto {
   sort_order?: number;
   kinds?: string[];
   product_types?: string[];
+  manual_includes?: string[];
+  manual_excludes?: string[];
 }
 
 export type UpdatePlatformCollectionRequest = UpdateCollectionDto & {

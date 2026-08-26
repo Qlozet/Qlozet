@@ -43,6 +43,110 @@ export const CONDITION_OPERATOR_OPTIONS: ConditionOption[] = [
 /** Explore-scope kinds a platform collection can be pinned to. */
 export const KIND_OPTIONS = ['clothing', 'accessory', 'fabric'] as const;
 
+// ── Condition VALUE inputs ──
+// Fields whose value is picked from the taxonomy tree (dynamic dropdown).
+export const TAXONOMY_FIELD_CONFIG: Record<
+  string,
+  {
+    kind: string;
+    type: 'product_type' | 'categories' | 'audience' | 'attributes';
+  }
+> = {
+  'clothing.taxonomy.product_type': { kind: 'clothing', type: 'product_type' },
+  'clothing.taxonomy.categories': { kind: 'clothing', type: 'categories' },
+  'clothing.taxonomy.audience': { kind: 'clothing', type: 'audience' },
+  'clothing.taxonomy.attributes': { kind: 'clothing', type: 'attributes' },
+  'fabric.taxonomy.product_type': { kind: 'fabric', type: 'product_type' },
+  'fabric.pattern': { kind: 'fabric', type: 'categories' },
+  'accessory.taxonomy.product_type': {
+    kind: 'accessory',
+    type: 'product_type',
+  },
+  'accessory.taxonomy.categories': { kind: 'accessory', type: 'categories' },
+};
+
+// Fields with a fixed enum of values.
+export const STATIC_VALUE_OPTIONS: Record<string, ConditionOption[]> = {
+  'clothing.type': [
+    { value: 'customize', label: 'Customizable' },
+    { value: 'non_customize', label: 'Non-customizable' },
+  ],
+  kind: [
+    { value: 'clothing', label: 'Clothing' },
+    { value: 'fabric', label: 'Fabric' },
+    { value: 'accessory', label: 'Accessory' },
+  ],
+  status: [
+    { value: 'active', label: 'Active' },
+    { value: 'draft', label: 'Draft' },
+    { value: 'archived', label: 'Archived' },
+  ],
+};
+
+// Fields that use a plain text input (names, prices).
+export const FREE_TEXT_FIELDS = new Set([
+  'clothing.name',
+  'base_price',
+  'fabric.name',
+  'fabric.price_per_yard',
+]);
+
+/** Derive value options for a taxonomy-backed field from the taxonomy tree. */
+export function getTaxonomyValues(
+  tree:
+    | Record<
+        string,
+        {
+          product_types?: {
+            name: string;
+            categories?: string[];
+            attributes?: string[];
+          }[];
+        }
+      >
+    | undefined,
+  fieldPath: string
+): ConditionOption[] {
+  const config = TAXONOMY_FIELD_CONFIG[fieldPath];
+  if (!config || !tree) return [];
+  const kindData = tree[config.kind];
+  if (!kindData?.product_types) return [];
+  switch (config.type) {
+    case 'product_type':
+      return kindData.product_types.map((pt) => ({
+        value: pt.name,
+        label: pt.name,
+      }));
+    case 'categories': {
+      const all = new Set<string>();
+      kindData.product_types.forEach((pt) =>
+        pt.categories?.forEach((c) => all.add(c))
+      );
+      return Array.from(all)
+        .sort()
+        .map((c) => ({ value: c, label: c }));
+    }
+    case 'attributes': {
+      const all = new Set<string>();
+      kindData.product_types.forEach((pt) =>
+        pt.attributes?.forEach((a) => all.add(a))
+      );
+      return Array.from(all)
+        .sort()
+        .map((a) => ({ value: a, label: a }));
+    }
+    case 'audience':
+      return [
+        { value: 'men', label: 'Men' },
+        { value: 'women', label: 'Women' },
+        { value: 'unisex', label: 'Unisex' },
+        { value: 'kids', label: 'Kids' },
+      ];
+    default:
+      return [];
+  }
+}
+
 const FIELD_LABELS = Object.fromEntries(
   CONDITION_FIELD_OPTIONS.map((o) => [o.value, o.label])
 );
