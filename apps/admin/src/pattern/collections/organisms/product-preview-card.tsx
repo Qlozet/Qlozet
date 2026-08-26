@@ -11,24 +11,29 @@ const cardCls =
 
 function productName(p: any): string {
   return (
+    p?.name ??
+    p?.title ??
     p?.clothing?.name ??
     p?.accessory?.name ??
     p?.fabric?.name ??
-    p?.name ??
     'Product'
   );
 }
 function productPrice(p: any): number {
+  // Admin products expose a normalized top-level `price`; raw products use
+  // discounted_price/base_price.
+  if (typeof p?.price === 'number') return p.price;
   const d = Number(p?.discounted_price) || 0;
   return d > 0 ? d : Number(p?.base_price) || 0;
 }
 function productImage(p: any): string | undefined {
+  const top = p?.images?.[0];
   return (
+    (typeof top === 'string' ? top : top?.url) ??
     p?.clothing?.color_variants?.[0]?.variants?.[0]?.images?.[0] ??
     p?.clothing?.color_variants?.[0]?.images?.[0] ??
     p?.accessory?.images?.[0] ??
-    p?.fabric?.images?.[0] ??
-    (typeof p?.images?.[0] === 'string' ? p.images[0] : p?.images?.[0]?.url)
+    p?.fabric?.images?.[0]
   );
 }
 
