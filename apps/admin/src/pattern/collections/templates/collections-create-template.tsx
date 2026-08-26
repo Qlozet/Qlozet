@@ -2,13 +2,22 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, Plus, Trash2, ImagePlus, Loader2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  Plus,
+  Trash2,
+  ImagePlus,
+  Loader2,
+  ArrowUp,
+  ArrowDown,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { APP_ROUTES } from '@/lib/routes';
 import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
+import { useGetTaxonomyTreeQuery } from '@/redux/services/taxonomy/taxonomy.api-slice';
 import {
   useGetPlatformCollectionsAdminQuery,
   useCreatePlatformCollectionMutation,
@@ -20,7 +29,13 @@ import {
   CONDITION_FIELD_OPTIONS,
   CONDITION_OPERATOR_OPTIONS,
   KIND_OPTIONS,
+  TAXONOMY_FIELD_CONFIG,
+  STATIC_VALUE_OPTIONS,
+  FREE_TEXT_FIELDS,
+  getTaxonomyValues,
 } from '../lib/collection-condition-options';
+import { useProductConditions } from '../hooks/use-product-conditions';
+import { ProductPreviewCard } from '../organisms/product-preview-card';
 
 const selectCls =
   'h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-gray-700 dark:text-gray-200 outline-none focus:border-primary';
@@ -62,6 +77,15 @@ export default function CollectionsCreateTemplate() {
   const [productTypesText, setProductTypesText] = useState('');
   const [coverImage, setCoverImage] = useState('');
 
+  // Taxonomy tree drives the condition value dropdowns.
+  const { data: taxonomyTree } = useGetTaxonomyTreeQuery();
+
+  // Live product-match preview + manual include/exclude.
+  const conditionState = useProductConditions({
+    watchedConditions: conditions,
+    watchedConditionMatch: conditionMatch,
+  });
+
   // Prefill once when editing (find in the admin list, which includes inactive).
   const prefilled = useRef(false);
   useEffect(() => {
@@ -79,11 +103,23 @@ export default function CollectionsCreateTemplate() {
     setKinds(c.kinds ?? []);
     setProductTypesText((c.product_types ?? []).join(', '));
     setCoverImage(c.cover_image ?? '');
-  }, [isEditing, editId, listData]);
+    conditionState.syncInitialState(
+      ((c.manual_includes as string[]) ?? []).map(String),
+      ((c.manual_excludes as string[]) ?? []).map(String)
+    );
+  }, [isEditing, editId, listData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setCondition = (i: number, patch: Partial<CollectionCondition>) =>
     setConditions((prev) =>
-      prev.map((c, idx) => (idx === i ? { ...c, ...patch } : c))
+      prev.map((c, idx) =>
+        idx === i
+          ? {
+              ...c,
+              ...patch,
+              ...(patch.field !== undefined ? { value: '' } : {}),
+            }
+          : c
+      )
     );
   const addCondition = () =>
     setConditions((prev) => [...prev, emptyCondition()]);
@@ -91,6 +127,14 @@ export default function CollectionsCreateTemplate() {
     setConditions((prev) =>
       prev.length > 1 ? prev.filter((_, idx) => idx !== i) : prev
     );
+  const moveCondition = (i: number, dir: -1 | 1) =>
+    setConditions((prev) => {
+      const j = i + dir;
+      if (j < 0 || j >= prev.length) return prev;
+      const next = [...prev];
+      [next[i], next[j]] = [next[j], next[i]];
+      return next;
+    });
 
   const toggleKind = (k: string) =>
     setKinds((prev) =>
@@ -138,6 +182,8 @@ export default function CollectionsCreateTemplate() {
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean),
+      manual_includes: Array.from(conditionState.manualIncludes),
+      manual_excludes: Array.from(conditionState.manualExcludes),
     };
 
     try {
@@ -152,6 +198,51 @@ export default function CollectionsCreateTemplate() {
     } catch {
       toast.error('Could not save the collection.');
     }
+  };
+
+  // Value input adapts to the field: taxonomy dropdown, fixed enum, or free text.
+  const renderValueInput = (c: CollectionCondition, i: number) => {
+    const onValue = (v: string) => setCondition(i, { value: v });
+    if (TAXONOMY_FIELD_CONFIG[c.field]) {
+      const opts = getTaxonomyValues(taxonomyTree, c.field);
+      return (
+        <select
+          className={selectCls}
+          value={c.value}
+          onChange={(e) => onValue(e.target.value)}
+        >
+          <option value="">Select value…</option>
+          {opts.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+      );
+    }
+    if (STATIC_VALUE_OPTIONS[c.field]) {
+      return (
+        <select
+          className={selectCls}
+          value={c.value}
+          onChange={(e) => onValue(e.target.value)}
+        >
+          <option value="">Select value…</option>
+          {STATIC_VALUE_OPTIONS[c.field].map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+      );
+    }
+    return (
+      <Input
+        value={c.value}
+        onChange={(e) => onValue(e.target.value)}
+        placeholder={FREE_TEXT_FIELDS.has(c.field) ? 'value' : 'value'}
+      />
+    );
   };
 
   const saving = creating || updating;
@@ -267,22 +358,37 @@ export default function CollectionsCreateTemplate() {
                         </option>
                       ))}
                     </select>
-                    <Input
-                      value={c.value}
-                      onChange={(e) =>
-                        setCondition(i, { value: e.target.value })
-                      }
-                      placeholder="value"
-                    />
+                    {renderValueInput(c, i)}
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => removeCondition(i)}
-                    disabled={conditions.length === 1}
-                    className="flex h-10 w-10 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-red-500 disabled:opacity-40 dark:hover:bg-gray-800"
-                  >
-                    <Trash2 className="size-4" />
-                  </button>
+                  <div className="flex items-center">
+                    <button
+                      type="button"
+                      onClick={() => moveCondition(i, -1)}
+                      disabled={i === 0}
+                      title="Move up"
+                      className="flex h-9 w-8 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 dark:hover:bg-gray-800"
+                    >
+                      <ArrowUp className="size-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveCondition(i, 1)}
+                      disabled={i === conditions.length - 1}
+                      title="Move down"
+                      className="flex h-9 w-8 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 dark:hover:bg-gray-800"
+                    >
+                      <ArrowDown className="size-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeCondition(i)}
+                      disabled={conditions.length === 1}
+                      title="Remove"
+                      className="flex h-9 w-8 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-red-500 disabled:opacity-40 dark:hover:bg-gray-800"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -295,6 +401,9 @@ export default function CollectionsCreateTemplate() {
               Add condition
             </button>
           </div>
+
+          {/* Live product-match preview */}
+          <ProductPreviewCard conditionState={conditionState} />
 
           {/* Explore scope */}
           <div className={cardCls}>
