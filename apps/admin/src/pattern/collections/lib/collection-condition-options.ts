@@ -24,7 +24,7 @@ export const CONDITION_FIELD_OPTIONS: ConditionOption[] = [
     label: 'Accessory · product type',
   },
   { value: 'accessory.taxonomy.categories', label: 'Accessory · category' },
-  { value: 'fabric.taxonomy.product_type', label: 'Fabric · product type' },
+  { value: 'fabric.product_type', label: 'Fabric · product type' },
   { value: 'fabric.pattern', label: 'Fabric · pattern' },
   { value: 'fabric.name', label: 'Fabric · name' },
   { value: 'fabric.price_per_yard', label: 'Fabric · price per yard' },
@@ -56,7 +56,7 @@ export const TAXONOMY_FIELD_CONFIG: Record<
   'clothing.taxonomy.categories': { kind: 'clothing', type: 'categories' },
   'clothing.taxonomy.audience': { kind: 'clothing', type: 'audience' },
   'clothing.taxonomy.attributes': { kind: 'clothing', type: 'attributes' },
-  'fabric.taxonomy.product_type': { kind: 'fabric', type: 'product_type' },
+  'fabric.product_type': { kind: 'fabric', type: 'product_type' },
   'fabric.pattern': { kind: 'fabric', type: 'categories' },
   'accessory.taxonomy.product_type': {
     kind: 'accessory',
