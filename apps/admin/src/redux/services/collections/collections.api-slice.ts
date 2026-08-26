@@ -11,7 +11,10 @@ export type CollectionConditionOperator =
   | 'is_equal_to'
   | 'not_equal_to'
   | 'greater_than'
-  | 'less_than';
+  | 'less_than'
+  | 'contains'
+  | 'starts_with'
+  | 'ends_with';
 
 export interface CollectionCondition {
   field: string;
@@ -29,7 +32,11 @@ export interface Collection {
   slug?: string;
   cover_image?: string;
   sort_order?: number;
+  /** Explore scoping — which kinds/product_types this collection appears under. */
+  kinds?: string[];
+  product_types?: string[];
   products?: unknown[];
+  product_count?: number;
   createdAt?: string;
   updatedAt?: string;
   [key: string]: unknown;
@@ -45,6 +52,8 @@ export interface CreatePlatformCollectionRequest {
   slug?: string;
   cover_image?: string;
   sort_order?: number;
+  kinds?: string[];
+  product_types?: string[];
 }
 
 // UpdateCollectionDto — all fields optional.
@@ -56,6 +65,8 @@ export interface UpdateCollectionDto {
   is_active?: boolean;
   cover_image?: string;
   sort_order?: number;
+  kinds?: string[];
+  product_types?: string[];
 }
 
 export type UpdatePlatformCollectionRequest = UpdateCollectionDto & {
