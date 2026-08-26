@@ -10,6 +10,7 @@ import { ProductsNavIcon } from '../atoms/nav-icons/products-nav-icon';
 import { ProductsClothsNavIcon } from '../atoms/nav-icons/products-cloths-nav-icon';
 import { ProductsAccessoriesNavIcon } from '../atoms/nav-icons/products-accessories-nav-icon';
 import { ProductsFabricsNavIcon } from '../atoms/nav-icons/products-fabrics-nav-icon';
+import { CollectionsNavIcon } from '../atoms/nav-icons/collections-nav-icon';
 import { ProductsAddNavIcon } from '../atoms/nav-icons/products-add-nav-icon';
 import { StaticPageNavIcon } from '../atoms/nav-icons/static-page-nav-icon';
 import { MarketingNavIcon } from '../atoms/nav-icons/marketing-nav-icon';
@@ -52,6 +53,8 @@ const ENABLED_ROUTES: string[] = [
   APP_ROUTES.productsCloth,
   APP_ROUTES.productsFabrics,
   APP_ROUTES.productsAccessories,
+  APP_ROUTES.productsCollections,
+  APP_ROUTES.productsCollectionsCreate,
   APP_ROUTES.productsAdd,
   APP_ROUTES.notifications,
   APP_ROUTES.support,
@@ -85,6 +88,11 @@ export const Sidebar = () => {
           icon: ProductsFabricsNavIcon,
           label: 'Fabrics',
           href: APP_ROUTES.productsFabrics,
+        },
+        {
+          icon: CollectionsNavIcon,
+          label: 'Collections',
+          href: APP_ROUTES.productsCollections,
         },
         {
           icon: ProductsAddNavIcon,
