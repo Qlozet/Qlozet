@@ -24,6 +24,28 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
         form.append('file', file);
         return { url: '/uploads/product', method: 'POST', body: form };
       },
+      // Backend returns { data: { imageUrl, imagePublicId } }. Normalize to
+      // { data: { url, public_id } } so consumers can rely on UploadedImage.url.
+      transformResponse: (
+        res: {
+          data?: {
+            imageUrl?: string;
+            url?: string;
+            imagePublicId?: string;
+            public_id?: string;
+          };
+        } & Record<string, unknown>
+      ) => {
+        const d = res?.data ?? {};
+        const url = (d.url ?? d.imageUrl ?? '').replace(
+          /^http:\/\//,
+          'https://'
+        );
+        return {
+          ...res,
+          data: { ...d, url, public_id: d.public_id ?? d.imagePublicId },
+        } as ApiResponse<UploadedImage>;
+      },
     }),
 
     uploadProfileImage: builder.mutation<ApiResponse<UploadedImage>, File>({
