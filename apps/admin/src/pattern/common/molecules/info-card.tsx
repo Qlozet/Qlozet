@@ -87,3 +87,18 @@ export const InfoCard = ({
     </div>
   );
 };
+
+// Placeholder for a card whose value is still in flight. A grid of dashes is
+// indistinguishable from a customer who genuinely has nothing set, so the two
+// states must not look alike.
+export const InfoCardSkeleton = ({ className }: { className?: string }) => (
+  <div
+    className={cn(
+      'flex animate-pulse flex-col gap-3 rounded-xl bg-white dark:bg-card p-4 custom-card-shadow',
+      className
+    )}
+  >
+    <div className="h-3 w-20 rounded bg-gray-200 dark:bg-gray-700" />
+    <div className="h-5 w-28 rounded bg-gray-300 dark:bg-gray-600" />
+  </div>
+);

@@ -11,8 +11,12 @@ import {
   useApproveBusinessMutation,
   useVerifyBusinessMutation,
   useRejectBusinessMutation,
+  useSetBusinessInReviewMutation,
 } from '@/redux/services/businesses/businesses.api-slice';
-import { createVendorsTableColumns } from '../molecules/vendors-table-columns';
+import {
+  createVendorsTableColumns,
+  type VendorSortColumn,
+} from '../molecules/vendors-table-columns';
 
 interface VendorsTableProps {
   data: Business[];
@@ -26,8 +30,9 @@ interface VendorsTableProps {
   pageCount: number;
   /** Rows across every page, so the footer can report a real total. */
   totalRows?: number;
-  revenueSort?: 'asc' | 'desc';
-  onToggleRevenueSort: () => void;
+  sort?: VendorSortColumn;
+  order?: 'asc' | 'desc';
+  onToggleSort: (column: VendorSortColumn) => void;
   toolbar?: React.ReactNode;
 }
 
@@ -42,15 +47,19 @@ export const VendorsTable = ({
   setPagination,
   pageCount,
   totalRows,
-  revenueSort,
-  onToggleRevenueSort,
+  sort,
+  order,
+  onToggleSort,
   toolbar,
 }: VendorsTableProps) => {
   const router = useRouter();
 
-  const [approve] = useApproveBusinessMutation();
-  const [verify] = useVerifyBusinessMutation();
-  const [reject] = useRejectBusinessMutation();
+  const [approve, { isLoading: isApproving }] = useApproveBusinessMutation();
+  const [verify, { isLoading: isVerifying }] = useVerifyBusinessMutation();
+  const [reject, { isLoading: isRejecting }] = useRejectBusinessMutation();
+  const [setInReview, { isLoading: isReviewing }] =
+    useSetBusinessInReviewMutation();
+  const isUpdating = isApproving || isVerifying || isRejecting || isReviewing;
 
   const runMutation = async (
     action: (id: string) => { unwrap: () => Promise<unknown> },
@@ -82,11 +91,25 @@ export const VendorsTable = ({
         onApprove: (id) => runMutation(approve, id, 'Vendor approved'),
         onVerify: (id) => runMutation(verify, id, 'Vendor verified'),
         onReject: (id) => runMutation(reject, id, 'Vendor rejected'),
-        revenueSort,
-        onToggleRevenueSort,
+        onSetInReview: (id) =>
+          runMutation(setInReview, id, 'Vendor sent back for review'),
+        isUpdating,
+        sort,
+        order,
+        onToggleSort,
       }),
 
-    [router, approve, verify, reject, revenueSort, onToggleRevenueSort]
+    [
+      router,
+      approve,
+      verify,
+      reject,
+      setInReview,
+      isUpdating,
+      sort,
+      order,
+      onToggleSort,
+    ]
   );
 
   return (

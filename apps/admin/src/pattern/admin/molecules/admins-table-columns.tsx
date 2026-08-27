@@ -127,10 +127,10 @@ export const createAdminsTableColumns = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-44">
             <DropdownMenuItem onClick={() => onEdit(member)}>
-              <Pencil className="size-4" /> Edit admin
+              Edit admin
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onDeactivate(member)}>
-              <UserX className="size-4" /> Deactivate admin
+              Deactivate admin
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
