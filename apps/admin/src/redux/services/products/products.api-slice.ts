@@ -5,17 +5,44 @@
 import { baseAPI } from '@/redux/api/base-api';
 import { ApiResponse, PaginatedData, buildQueryString } from '../types';
 
+/**
+ * A catalogue product as the API returns it.
+ *
+ * The document is discriminated on `kind`: the sellable detail (name, images,
+ * taxonomy, variants) lives under `clothing` / `accessory` / `fabric`, and only
+ * the envelope is top-level. Read fields through the helpers in `@/lib/products`
+ * rather than reaching in directly — the nesting differs per kind.
+ */
 export interface Product {
   _id: string;
-  name?: string;
-  description?: string;
   kind?: string;
   status?: string;
+  seo?: { title?: string; keywords?: string[] };
+  metafields?: Record<string, unknown>;
+  base_price?: number;
+  discounted_price?: number | null;
+  discount_percentage?: number | null;
+  scheduled_activation_date?: string | null;
+  moderation?: {
+    status?: 'pending' | 'approved' | 'rejected';
+    reason?: string | null;
+    moderated_at?: string | null;
+  };
+  clothing?: Record<string, unknown> | null;
+  accessory?: Record<string, unknown> | null;
+  fabric?: Record<string, unknown> | null;
+  business?: { _id?: string; business_name?: string } | string;
+  tags?: { name?: string; slug?: string }[];
+  availability?: Record<string, unknown>;
+  average_rating?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  // Legacy flat fields some older screens still read.
+  name?: string;
+  description?: string;
   price?: number;
   business_id?: string;
   images?: { url: string; public_id?: string }[];
-  createdAt?: string;
-  updatedAt?: string;
   [key: string]: unknown;
 }
 

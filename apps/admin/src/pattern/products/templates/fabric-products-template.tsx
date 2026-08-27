@@ -1,13 +1,28 @@
 'use client';
 
-import NiceModal from '@ebay/nice-modal-react';
+import { useCallback } from 'react';
 import type { OnChangeFn, PaginationState } from '@tanstack/react-table';
-import { WorkInProgressModal } from '@/pattern/common/organisms/work-in-progress-modal';
+import { toast } from 'sonner';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
+import { downloadCsv, toCsv } from '@/lib/csv';
+import {
+  formatPricePerYard,
+  getFabricColour,
+  getFabricPattern,
+  getFabricSubCategory,
+  getFabricYards,
+  getProductName,
+  getProductStatus,
+  getProductVendorName,
+} from '@/lib/products';
 import { FabricProductsTable } from '../organisms/fabric-products-table';
-import { ScheduleProductActivationModal } from '../organisms/schedule-product-activation-modal';
-import type { ProductAction } from '../molecules/product-actions-cell';
+import {
+  ProductFiltersControl,
+  type ProductFilters,
+} from '../molecules/product-filters';
+import { useProductRowActions } from '../hooks/use-product-row-actions';
 import type { Product } from '@/redux/services/products/products.api-slice';
+import type { AdminProductFilterOptions } from '@/redux/services/products/admin-products.api-slice';
 
 interface FabricProductsTemplateProps {
   products: Product[];
@@ -21,7 +36,35 @@ interface FabricProductsTemplateProps {
   pagination: PaginationState;
   setPagination: OnChangeFn<PaginationState>;
   pageCount: number;
+  /** Rows across every page, so the footer can report a real total. */
+  totalRows?: number;
+  filters: ProductFilters;
+  onFiltersChange: (filters: ProductFilters) => void;
+  filterOptions?: AdminProductFilterOptions;
+  isLoadingFilters?: boolean;
 }
+
+const CSV_HEADERS = [
+  'Product name',
+  'Vendor',
+  'Price per yard',
+  'Sub category',
+  'Pattern',
+  'Colour',
+  'Yards',
+  'Status',
+];
+
+const toCsvRow = (product: Product) => [
+  getProductName(product),
+  getProductVendorName(product),
+  formatPricePerYard(product),
+  getFabricSubCategory(product),
+  getFabricPattern(product),
+  getFabricColour(product),
+  String(getFabricYards(product)),
+  getProductStatus(product).label,
+];
 
 export const FabricProductsTemplate = ({
   products,
@@ -35,19 +78,21 @@ export const FabricProductsTemplate = ({
   pagination,
   setPagination,
   pageCount,
+  totalRows,
+  filters,
+  onFiltersChange,
+  filterOptions,
+  isLoadingFilters,
 }: FabricProductsTemplateProps) => {
-  const showWip = () => NiceModal.show(WorkInProgressModal);
+  const handleAction = useProductRowActions();
 
-  // Schedule activation opens the dedicated date/time modal; the remaining
-  // actions are not yet wired to the backend, so they fall back to the shared
-  // "Work in Progress" modal for now.
-  const handleAction = (action: ProductAction, product: Product) => {
-    if (action === 'schedule') {
-      NiceModal.show(ScheduleProductActivationModal, { product });
+  const handleExport = useCallback(() => {
+    if (products.length === 0) {
+      toast.info('There is nothing to export.');
       return;
     }
-    showWip();
-  };
+    downloadCsv('fabrics.csv', toCsv(CSV_HEADERS, products.map(toCsvRow)));
+  }, [products]);
 
   return (
     <FabricProductsTable
@@ -60,16 +105,22 @@ export const FabricProductsTemplate = ({
       pagination={pagination}
       setPagination={setPagination}
       pageCount={pageCount}
+      totalRows={totalRows}
       onAction={handleAction}
       toolbar={
         <TableToolbar
           title="Fabric"
           search={search}
           onSearchChange={onSearchChange}
-          onFilterDate={showWip}
-          onExport={showWip}
-          filterLabel="Filter By :"
-          filterIcon={null}
+          onExport={handleExport}
+          filterControl={
+            <ProductFiltersControl
+              value={filters}
+              onChange={onFiltersChange}
+              options={filterOptions}
+              isLoading={isLoadingFilters}
+            />
+          }
         />
       }
     />

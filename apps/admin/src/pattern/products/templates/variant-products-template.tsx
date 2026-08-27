@@ -1,13 +1,28 @@
 'use client';
 
-import NiceModal from '@ebay/nice-modal-react';
+import { useCallback } from 'react';
 import type { OnChangeFn, PaginationState } from '@tanstack/react-table';
-import { WorkInProgressModal } from '@/pattern/common/organisms/work-in-progress-modal';
+import { toast } from 'sonner';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
+import { downloadCsv, toCsv } from '@/lib/csv';
+import {
+  formatProductPrice,
+  getProductCategory,
+  getProductName,
+  getProductQuantity,
+  getProductStatus,
+  getProductTags,
+  getProductType,
+  getProductVendorName,
+} from '@/lib/products';
 import { VariantProductsTable } from '../organisms/variant-products-table';
-import { ScheduleProductActivationModal } from '../organisms/schedule-product-activation-modal';
-import type { ProductAction } from '../molecules/product-actions-cell';
+import {
+  ProductFiltersControl,
+  type ProductFilters,
+} from '../molecules/product-filters';
+import { useProductRowActions } from '../hooks/use-product-row-actions';
 import type { Product } from '@/redux/services/products/products.api-slice';
+import type { AdminProductFilterOptions } from '@/redux/services/products/admin-products.api-slice';
 
 interface VariantProductsTemplateProps {
   /** Toolbar heading, e.g. "Clothing" or "Accessories". */
@@ -23,8 +38,43 @@ interface VariantProductsTemplateProps {
   pagination: PaginationState;
   setPagination: OnChangeFn<PaginationState>;
   pageCount: number;
+  /** Rows across every page, so the footer can report a real total. */
+  totalRows?: number;
   emptyMessage?: string;
+  filters: ProductFilters;
+  onFiltersChange: (filters: ProductFilters) => void;
+  filterOptions?: AdminProductFilterOptions;
+  isLoadingFilters?: boolean;
+  /** Filename stem for the CSV export, e.g. "clothing". */
+  exportName?: string;
 }
+
+const CSV_HEADERS = [
+  'Product name',
+  'Vendor',
+  'Price',
+  'Category',
+  'Product type',
+  'Tags',
+  'Stock',
+  'Variants',
+  'Status',
+];
+
+const toCsvRow = (product: Product) => {
+  const { stock, variantCount } = getProductQuantity(product);
+  return [
+    getProductName(product),
+    getProductVendorName(product),
+    formatProductPrice(product),
+    getProductCategory(product),
+    getProductType(product),
+    getProductTags(product).join(' | '),
+    String(stock),
+    String(variantCount),
+    getProductStatus(product).label,
+  ];
+};
 
 // Toolbar + table for any product-with-variants catalogue. Clothing and
 // Accessories differ only by the toolbar title and empty-state copy.
@@ -42,19 +92,27 @@ export const VariantProductsTemplate = ({
   setPagination,
   pageCount,
   emptyMessage,
+  totalRows,
+  filters,
+  onFiltersChange,
+  filterOptions,
+  isLoadingFilters,
+  exportName = 'products',
 }: VariantProductsTemplateProps) => {
-  const showWip = () => NiceModal.show(WorkInProgressModal);
+  const handleAction = useProductRowActions();
 
-  // Schedule activation opens the dedicated date/time modal; the remaining
-  // actions are not yet wired to the backend, so they fall back to the shared
-  // "Work in Progress" modal for now.
-  const handleAction = (action: ProductAction, product: Product) => {
-    if (action === 'schedule') {
-      NiceModal.show(ScheduleProductActivationModal, { product });
+  const handleExport = useCallback(() => {
+    if (products.length === 0) {
+      toast.info('There is nothing to export.');
       return;
     }
-    showWip();
-  };
+    // This page only: the list endpoint has no "all rows" mode, and walking
+    // every page to build one file would hammer it.
+    downloadCsv(
+      `${exportName}.csv`,
+      toCsv(CSV_HEADERS, products.map(toCsvRow))
+    );
+  }, [products, exportName]);
 
   return (
     <VariantProductsTable
@@ -67,6 +125,7 @@ export const VariantProductsTemplate = ({
       pagination={pagination}
       setPagination={setPagination}
       pageCount={pageCount}
+      totalRows={totalRows}
       onAction={handleAction}
       emptyMessage={emptyMessage}
       toolbar={
@@ -74,10 +133,15 @@ export const VariantProductsTemplate = ({
           title={title}
           search={search}
           onSearchChange={onSearchChange}
-          onFilterDate={showWip}
-          onExport={showWip}
-          filterLabel="Filter By :"
-          filterIcon={null}
+          onExport={handleExport}
+          filterControl={
+            <ProductFiltersControl
+              value={filters}
+              onChange={onFiltersChange}
+              options={filterOptions}
+              isLoading={isLoadingFilters}
+            />
+          }
         />
       }
     />

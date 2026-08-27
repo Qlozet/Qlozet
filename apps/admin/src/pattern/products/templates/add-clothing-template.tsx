@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -48,6 +48,12 @@ import {
   useCreateClothingMutation,
   type ColorVariantDto,
 } from '@/redux/services/products/products.api-slice';
+import {
+  useGetAdminProductQuery,
+  useUpdateAdminProductMutation,
+} from '@/redux/services/products/admin-products.api-slice';
+import { readApiError } from '@/redux/services/types';
+import { getKindDetail } from '@/lib/products';
 
 const countWords = (html: string) =>
   html
@@ -58,9 +64,65 @@ const countWords = (html: string) =>
 
 type ProductStatus = 'active' | 'draft' | 'archived';
 
-// Add Clothing product form. Ported from the vendor app and adapted to the
-// admin component library.
-export const AddClothingTemplate = () => {
+interface AddClothingTemplateProps {
+  /** Set to edit an existing product instead of creating a new one. */
+  productId?: string;
+}
+
+/** Rebuild the Set Variants rows from a saved product's colour variants. */
+const toVariantRows = (
+  colorVariants: {
+    name?: string;
+    hex?: string;
+    images?: { url?: string }[];
+    variants?: {
+      size?: string;
+      stock?: number;
+      price?: number;
+      sku?: string;
+      yard_per_order?: number;
+    }[];
+  }[]
+): VariantRow[] =>
+  colorVariants.map((colour, index) => {
+    const sizes = (colour.variants ?? [])
+      .map((variant) => variant.size)
+      .filter((size): size is string => Boolean(size));
+
+    const details: Record<string, SizeDetail> = {};
+    for (const variant of colour.variants ?? []) {
+      if (!variant.size) continue;
+      details[variant.size] = {
+        ...makeSizeDetail(),
+        stock: variant.stock ?? 0,
+        price: variant.price ?? 0,
+        sku: variant.sku ?? '',
+        yardsPerOrder: variant.yard_per_order ?? 0,
+      };
+    }
+
+    const images = (colour.images ?? [])
+      .map((image) => image?.url)
+      .filter((url): url is string => Boolean(url));
+
+    return {
+      id: `${colour.hex ?? colour.name ?? 'variant'}-${index}`,
+      colorHex: colour.hex ?? '',
+      label: colour.name,
+      availableSizes: sizes,
+      details,
+      images,
+      expanded: false,
+      selected: false,
+    };
+  });
+
+// Clothing product form — creates a new product, or edits an existing one when
+// `productId` is set (the catalogue's "Edit product" row action links here).
+export const AddClothingTemplate = ({
+  productId,
+}: AddClothingTemplateProps = {}) => {
+  const isEdit = Boolean(productId);
   const [showAlert, setShowAlert] = useState(true);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -87,7 +149,70 @@ export const AddClothingTemplate = () => {
   const [variants, setVariants] = useState<VariantRow[]>([]);
 
   const router = useRouter();
-  const [createClothing, { isLoading: isSaving }] = useCreateClothingMutation();
+  const [createClothing, { isLoading: isCreating }] =
+    useCreateClothingMutation();
+  const [updateProduct, { isLoading: isUpdating }] =
+    useUpdateAdminProductMutation();
+  const { data: existing, isLoading: isLoadingProduct } =
+    useGetAdminProductQuery(productId ?? '', { skip: !productId });
+
+  const isSaving = isCreating || isUpdating;
+
+  const loaded = existing?.data;
+  const clothing = useMemo(
+    () =>
+      (loaded ? getKindDetail(loaded) : {}) as {
+        name?: string;
+        description?: string;
+        type?: string;
+        turnaround_days?: number;
+        taxonomy?: {
+          product_type?: string;
+          categories?: string[];
+          attributes?: string[];
+          audience?: string;
+        };
+        images?: { url?: string }[];
+        color_variants?: Parameters<typeof toVariantRows>[0];
+      },
+    [loaded]
+  );
+
+  // Seed the form once the product arrives. Keyed on the document id so a
+  // second render of the same product doesn't stomp on edits in progress.
+  useEffect(() => {
+    if (!loaded?._id) return;
+    setTitle(clothing.name ?? '');
+    setDescription(clothing.description ?? '');
+    setStatus((loaded.status as ProductStatus) ?? 'active');
+    setCustomizationEnabled(clothing.type === 'customize');
+    setTurnaroundDays(String(clothing.turnaround_days ?? 2));
+    setDefaultImages(
+      (clothing.images ?? [])
+        .map((image) => image?.url)
+        .filter((url): url is string => Boolean(url))
+        .map((url) => ({ url, isLocal: false }))
+    );
+    setOrganization({
+      tag: [],
+      category: clothing.taxonomy?.categories ?? [],
+      subCategory: clothing.taxonomy?.attributes ?? [],
+      productType: clothing.taxonomy?.product_type
+        ? [clothing.taxonomy.product_type]
+        : [],
+      audience: (clothing.taxonomy?.audience ??
+        '') as ProductOrganizationValue['audience'],
+    });
+    const basePrice =
+      loaded.base_price ??
+      (loaded.metafields as { base_price?: number } | undefined)?.base_price;
+    setPrice(basePrice !== undefined ? String(basePrice) : '');
+    setDiscount(
+      loaded.discount_percentage ? String(loaded.discount_percentage) : ''
+    );
+    setVariants(toVariantRows(clothing.color_variants ?? []));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded?._id]);
 
   const wordCount = countWords(description);
 
@@ -152,45 +277,84 @@ export const AddClothingTemplate = () => {
       };
     });
 
-    try {
-      await createClothing({
-        seo: { title: title.trim() },
-        // Base price/discount aren't first-class on the clothing contract
-        // (pricing is per-variant), so preserve them as metafields.
-        metafields: {
-          base_price: price ? Number(price) : undefined,
-          discount: discount || undefined,
-        },
-        clothing: {
-          name: title.trim(),
-          type: customizationEnabled ? 'customize' : 'non_customize',
-          description: description || undefined,
-          turnaround_days: Number(turnaroundDays) || 0,
-          status,
-          taxonomy: {
-            product_type: organization.productType[0] ?? '',
-            categories: organization.category,
-            attributes: [...organization.subCategory, ...organization.tag],
-            audience: organization.audience,
-          },
-          // Only hosted ("Add from URL") images can be submitted — local file
-          // previews have no upload endpoint yet.
-          images: defaultImages
-            .filter((img) => !img.isLocal)
-            .map((img) => ({ url: img.url })),
-          color_variants: colorVariants,
-          styles: [],
-          accessories: [],
-          fabrics: [],
-        },
-      }).unwrap();
+    const clothingPayload = {
+      name: title.trim(),
+      type: (customizationEnabled ? 'customize' : 'non_customize') as
+        | 'customize'
+        | 'non_customize',
+      description: description || undefined,
+      turnaround_days: Number(turnaroundDays) || 0,
+      status,
+      taxonomy: {
+        product_type: organization.productType[0] ?? '',
+        categories: organization.category,
+        attributes: [...organization.subCategory, ...organization.tag],
+        audience: organization.audience,
+      },
+      // Only hosted ("Add from URL") images can be submitted — local file
+      // previews have no upload endpoint yet.
+      images: defaultImages
+        .filter((img) => !img.isLocal)
+        .map((img) => ({ url: img.url })),
+      color_variants: colorVariants,
+    };
 
-      toast.success('Clothing product created successfully.');
+    // Base price/discount aren't first-class on the clothing contract (pricing
+    // is per-variant), so preserve them as metafields too.
+    const metafields = {
+      base_price: price ? Number(price) : undefined,
+      discount: discount || undefined,
+    };
+
+    try {
+      if (productId) {
+        await updateProduct({
+          id: productId,
+          seo: { title: title.trim() },
+          metafields,
+          base_price: price ? Number(price) : undefined,
+          status,
+          clothing: clothingPayload,
+        }).unwrap();
+        toast.success('Product updated.');
+      } else {
+        await createClothing({
+          seo: { title: title.trim() },
+          metafields,
+          clothing: {
+            ...clothingPayload,
+            styles: [],
+            accessories: [],
+            fabrics: [],
+          },
+        }).unwrap();
+        toast.success('Clothing product created successfully.');
+      }
       router.push(APP_ROUTES.productsCloth);
-    } catch {
-      toast.error('Failed to create product. Please try again.');
+    } catch (error) {
+      toast.error(
+        readApiError(
+          error,
+          productId
+            ? 'Failed to update product. Please try again.'
+            : 'Failed to create product. Please try again.'
+        )
+      );
     }
   };
+
+  if (isEdit && isLoadingProduct) {
+    return (
+      <div className="w-full min-h-screen h-fit pb-10">
+        <div className="mx-auto max-w-7xl space-y-6">
+          <GoBackButton />
+          <div className="rounded-lg border border-dashed border-border bg-card p-12 text-center text-sm text-muted-foreground">
+            Loading product…
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen h-fit pb-10">
@@ -350,7 +514,7 @@ export const AddClothingTemplate = () => {
 
             <div className="flex justify-end">
               <Button onClick={handleSave} disabled={isSaving} className="px-8">
-                {isSaving ? 'Saving…' : 'Save'}
+                {isSaving ? 'Saving…' : isEdit ? 'Save changes' : 'Save'}
               </Button>
             </div>
           </div>

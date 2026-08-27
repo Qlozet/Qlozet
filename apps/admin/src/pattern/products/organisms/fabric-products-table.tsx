@@ -17,6 +17,8 @@ interface FabricProductsTableProps {
   pagination: PaginationState;
   setPagination: OnChangeFn<PaginationState>;
   pageCount: number;
+  /** Rows across every page, so the footer can report a real total. */
+  totalRows?: number;
   toolbar?: React.ReactNode;
   onAction?: (action: ProductAction, product: Product) => void;
 }
@@ -31,6 +33,7 @@ export const FabricProductsTable = ({
   pagination,
   setPagination,
   pageCount,
+  totalRows,
   toolbar,
   onAction,
 }: FabricProductsTableProps) => {
@@ -51,6 +54,7 @@ export const FabricProductsTable = ({
       pagination={pagination}
       setPagination={setPagination}
       pageCount={pageCount}
+      totalRows={totalRows}
       toolbar={toolbar}
       onRowClick={onAction ? (product) => onAction('view', product) : undefined}
       emptyMessage="No fabric products found."

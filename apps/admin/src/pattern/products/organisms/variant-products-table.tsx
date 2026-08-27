@@ -17,6 +17,8 @@ interface VariantProductsTableProps {
   pagination: PaginationState;
   setPagination: OnChangeFn<PaginationState>;
   pageCount: number;
+  /** Rows across every page, so the footer can report a real total. */
+  totalRows?: number;
   toolbar?: React.ReactNode;
   emptyMessage?: string;
   onAction?: (action: ProductAction, product: Product) => void;
@@ -32,6 +34,7 @@ export const VariantProductsTable = ({
   pagination,
   setPagination,
   pageCount,
+  totalRows,
   toolbar,
   emptyMessage = 'No products found.',
   onAction,
@@ -53,6 +56,7 @@ export const VariantProductsTable = ({
       pagination={pagination}
       setPagination={setPagination}
       pageCount={pageCount}
+      totalRows={totalRows}
       toolbar={toolbar}
       onRowClick={onAction ? (product) => onAction('view', product) : undefined}
       emptyMessage={emptyMessage}
