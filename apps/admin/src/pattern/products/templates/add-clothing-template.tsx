@@ -127,6 +127,11 @@ export const AddClothingTemplate = ({
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<ProductStatus>('active');
+  // What the product arrived as. An edit that never touches the Select must not
+  // send `status` at all — a product mid-schedule reads as "scheduled", which
+  // isn't one of the three options here, and echoing a status back would cancel
+  // its pending activation.
+  const [initialStatus, setInitialStatus] = useState<string | undefined>();
   const [, setMediaFiles] = useState<File[]>([]);
   const [defaultImages, setDefaultImages] = useState<DefaultImage[]>([]);
 
@@ -184,7 +189,14 @@ export const AddClothingTemplate = ({
     if (!loaded?._id) return;
     setTitle(clothing.name ?? '');
     setDescription(clothing.description ?? '');
-    setStatus((loaded.status as ProductStatus) ?? 'active');
+    setInitialStatus(loaded.status);
+    // 'scheduled' has no Select option — show the underlying draft state; the
+    // schedule itself is left alone because `status` won't be sent unchanged.
+    setStatus(
+      loaded.status === 'active' || loaded.status === 'archived'
+        ? (loaded.status as ProductStatus)
+        : 'draft'
+    );
     setCustomizationEnabled(clothing.type === 'customize');
     setTurnaroundDays(String(clothing.turnaround_days ?? 2));
     setDefaultImages(
@@ -313,7 +325,7 @@ export const AddClothingTemplate = ({
           seo: { title: title.trim() },
           metafields,
           base_price: price ? Number(price) : undefined,
-          status,
+          status: status === initialStatus ? undefined : status,
           clothing: clothingPayload,
         }).unwrap();
         toast.success('Product updated.');

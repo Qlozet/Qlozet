@@ -212,12 +212,19 @@ export const vendorDetailsApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['VendorNotes', 'Business', 'Businesses'],
     }),
 
+    // These two take a note id and do not care what the note is about, so the
+    // product detail page reuses them — hence ProductNotes in the invalidation.
     resolveVendorNote: builder.mutation<ApiResponse<VendorNote>, string>({
       query: (noteId) => ({
         url: `/admin/vendor-notes/${noteId}/resolve`,
         method: 'PATCH',
       }),
-      invalidatesTags: ['VendorNotes', 'Business', 'Businesses'],
+      invalidatesTags: [
+        'VendorNotes',
+        'ProductNotes',
+        'Business',
+        'Businesses',
+      ],
     }),
 
     deleteVendorNote: builder.mutation<ApiResponse<unknown>, string>({
@@ -225,7 +232,12 @@ export const vendorDetailsApiSlice = baseAPI.injectEndpoints({
         url: `/admin/vendor-notes/${noteId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['VendorNotes', 'Business', 'Businesses'],
+      invalidatesTags: [
+        'VendorNotes',
+        'ProductNotes',
+        'Business',
+        'Businesses',
+      ],
     }),
 
     // Raises a support ticket against the vendor — the console already has a

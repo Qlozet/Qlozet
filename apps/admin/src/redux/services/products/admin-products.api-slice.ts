@@ -9,6 +9,8 @@
 import { baseAPI } from '@/redux/api/base-api';
 import { ApiResponse, PaginatedData, buildQueryString } from '../types';
 import type { Product } from './products.api-slice';
+import type { ReviewsSummary } from '@/pattern/common/organisms/reviews-drawer';
+import type { VendorNote } from '../vendor-details/vendor-details.api-slice';
 
 export type ProductStatus = 'active' | 'draft' | 'archived' | 'scheduled';
 export type ProductModerationStatus = 'pending' | 'approved' | 'rejected';
@@ -68,6 +70,20 @@ export interface AdminProductFilterOptions {
   moderation_statuses: ProductModerationStatus[];
 }
 
+/** One review left on a product — the reviewer, not the product, identifies it. */
+export interface ProductReview {
+  rating: number;
+  comment?: string | null;
+  reviewer?: { _id?: string; name?: string; email?: string };
+  created_at?: string | null;
+}
+
+export interface ProductReviewsPage {
+  summary: ReviewsSummary;
+  reviews: ProductReview[];
+  pagination: { page: number; size: number; total: number; pages: number };
+}
+
 const toQuery = (params: AdminProductsParams = {}) =>
   buildQueryString(
     Object.fromEntries(
@@ -120,6 +136,60 @@ export const adminProductsApiSlice = baseAPI.injectEndpoints({
         method: 'GET',
       }),
       providesTags: ['ProductFilters'],
+    }),
+
+    // GET /admin/products/{id}/reviews — the reviews drawer on the detail page
+    getAdminProductReviews: builder.query<
+      ApiResponse<ProductReviewsPage>,
+      { productId: string; page?: number; size?: number; sortBy?: string }
+    >({
+      query: ({ productId, ...params }) => ({
+        url: `/admin/products/${productId}/reviews${buildQueryString(params)}`,
+        method: 'GET',
+      }),
+      providesTags: ['ProductReviews'],
+    }),
+
+    // Internal notes and flags on ONE product. Never shown to the vendor.
+    //
+    // Served by the same collection and service as vendor notes — a product
+    // note has the same author, body, kind and resolution, so clearing and
+    // deleting go through the existing /admin/vendor-notes/{id} routes.
+    getProductNotes: builder.query<
+      ApiResponse<PaginatedData<VendorNote>>,
+      { productId: string; page?: number; size?: number }
+    >({
+      query: ({ productId, ...params }) => ({
+        url: `/admin/products/${productId}/notes${buildQueryString(params)}`,
+        method: 'GET',
+      }),
+      providesTags: ['ProductNotes'],
+    }),
+
+    addProductNote: builder.mutation<
+      ApiResponse<VendorNote>,
+      { productId: string; body: string; kind?: 'note' | 'flag' }
+    >({
+      query: ({ productId, ...payload }) => ({
+        url: `/admin/products/${productId}/notes`,
+        method: 'POST',
+        body: payload,
+      }),
+      invalidatesTags: ['ProductNotes'],
+    }),
+
+    // POST /admin/products/{id}/escalate — raises a support ticket against the
+    // product's vendor, naming the listing.
+    escalateProduct: builder.mutation<
+      ApiResponse<{ _id?: string }>,
+      { productId: string; issue_type: string; description: string }
+    >({
+      query: ({ productId, ...payload }) => ({
+        url: `/admin/products/${productId}/escalate`,
+        method: 'POST',
+        body: payload,
+      }),
+      invalidatesTags: ['Tickets'],
     }),
 
     // PATCH /admin/products/{id} — partial edit from the product form
@@ -199,6 +269,10 @@ export const {
   useGetAdminProductQuery,
   useGetAdminProductStatsQuery,
   useGetAdminProductFiltersQuery,
+  useGetAdminProductReviewsQuery,
+  useGetProductNotesQuery,
+  useAddProductNoteMutation,
+  useEscalateProductMutation,
   useUpdateAdminProductMutation,
   useUpdateAdminProductStatusMutation,
   useScheduleAdminProductActivationMutation,

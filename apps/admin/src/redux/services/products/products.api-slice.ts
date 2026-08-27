@@ -177,7 +177,9 @@ export const productsApiSlice = baseAPI.injectEndpoints({
     // DELETE /products/{id} — remove a product (admin moderation)
     deleteProduct: builder.mutation<ApiResponse<null>, string>({
       query: (id) => ({ url: `/products/${id}`, method: 'DELETE' }),
-      invalidatesTags: ['Product', 'Products'],
+      // ProductStats too: the header cards count the catalogue, so a delete
+      // that didn't invalidate them left "Total products" one too high.
+      invalidatesTags: ['Product', 'Products', 'ProductStats'],
     }),
 
     // POST /products/fabric — create a fabric product from the admin panel
