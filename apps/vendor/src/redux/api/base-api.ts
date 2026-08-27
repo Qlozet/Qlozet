@@ -82,6 +82,7 @@ export const baseAPI = createApi({
     'Returns',
     'Dispute',
     'Disputes',
+    'OrderMessages',
     'AssistantConversation',
     'AssistantConversations',
     'AssistantDigest',
