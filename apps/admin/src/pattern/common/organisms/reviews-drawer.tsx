@@ -10,7 +10,14 @@
 
 import { useState, type ReactNode } from 'react';
 import { useModal } from '@ebay/nice-modal-react';
-import { ArrowLeft, MessageSquare, Star } from 'lucide-react';
+import { MessageSquare, SlidersHorizontal, Star } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { timeAgo } from '@/lib/orders';
 import {
   Sheet,
   SheetContent,
@@ -37,13 +44,23 @@ export interface ReviewRowData {
   rating: number;
   /** A rating may carry no comment — stars alone are a review. */
   comment?: string | null;
-  /** Heading line: the product for a customer's reviews, the reviewer for a product's. */
+  /** Heading line: the reviewer for a product's reviews, the product for a customer's. */
   title?: string | null;
   /** Second line: the vendor, or the reviewer's email. */
   subtitle?: string | null;
+  /** Ratings carry no timestamp; the API derives one from the ObjectId. */
+  createdAt?: string | null;
   image?: string | null;
   key: string;
 }
+
+export type ReviewSort = 'recent' | 'highest' | 'lowest';
+
+const SORT_LABELS: Record<ReviewSort, string> = {
+  recent: 'Most recent',
+  highest: 'Highest rated',
+  lowest: 'Lowest rated',
+};
 
 /**
  * The five buckets, worst-value last, with the ramp the design uses: brown
@@ -114,21 +131,21 @@ const RatingBars = ({ summary }: { summary: ReviewsSummary }) => {
   const total = summary.total_reviews || 1;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {BUCKETS.map((bucket) => {
         const count = bucket.read(summary);
         return (
           <div key={bucket.label} className="flex items-center gap-4">
-            <span className="w-20 shrink-0 text-sm font-medium text-grey-black dark:text-white">
+            <span className="w-[86px] shrink-0 text-sm font-medium text-grey-black dark:text-white">
               {bucket.label}
             </span>
-            <span className="h-6 flex-1 overflow-hidden rounded-full bg-gray-200 dark:bg-muted">
+            <span className="h-5 flex-1 overflow-hidden rounded-full bg-gray-200 dark:bg-muted">
               <span
                 className={cn('block h-full rounded-full', bucket.bar)}
                 style={{ width: `${(count / total) * 100}%` }}
               />
             </span>
-            <span className="w-8 shrink-0 text-right text-sm text-grey-black dark:text-white">
+            <span className="w-6 shrink-0 text-right text-sm text-grey-black dark:text-white">
               {padCount(count)}
             </span>
           </div>
@@ -139,38 +156,50 @@ const RatingBars = ({ summary }: { summary: ReviewsSummary }) => {
 };
 
 const ReviewRow = ({ review }: { review: ReviewRowData }) => (
-  <article className="flex gap-4 border-b border-border py-5 last:border-b-0">
-    {review.image !== undefined && (
-      <div className="size-24 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-muted">
-        {review.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={review.image}
-            alt={review.title ?? 'Product'}
-            className="h-full w-full object-cover"
-          />
-        ) : null}
-      </div>
-    )}
-
-    <div className="min-w-0 flex-1">
+  <article className="border-b border-border py-4 last:border-b-0">
+    <div className="flex items-start justify-between gap-3">
       <Stars value={review.rating} />
-      {review.title && (
-        <p className="mt-1 truncate text-sm font-semibold text-grey-black dark:text-white">
-          {review.title}
-        </p>
+      {review.createdAt && (
+        <span className="shrink-0 text-xs text-muted-foreground">
+          {timeAgo(review.createdAt)}
+        </span>
       )}
-      {review.subtitle && (
-        <p className="truncate text-sm text-gray-500 dark:text-gray-400">
-          {review.subtitle}
-        </p>
+    </div>
+
+    <div className="mt-2 flex gap-3">
+      {/* Only the customer's list carries a thumbnail — on a product's own
+          reviews it would be the same picture on every row. */}
+      {review.image !== undefined && (
+        <div className="size-12 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-muted">
+          {review.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={review.image}
+              alt={review.title ?? ''}
+              className="h-full w-full object-cover"
+            />
+          ) : null}
+        </div>
       )}
-      {/* Stars alone are a review — a rating with no comment shows none. */}
-      {review.comment && (
-        <p className="mt-2 text-sm text-grey-black dark:text-gray-300">
-          {review.comment}
-        </p>
-      )}
+
+      <div className="min-w-0 flex-1">
+        {review.title && (
+          <p className="truncate text-sm font-semibold text-grey-black dark:text-white">
+            {review.title}
+          </p>
+        )}
+        {review.subtitle && (
+          <p className="truncate text-xs text-gray-500 dark:text-gray-400">
+            {review.subtitle}
+          </p>
+        )}
+        {/* Stars alone are a review — a rating with no comment shows none. */}
+        {review.comment && (
+          <p className="mt-1 text-sm leading-relaxed text-grey-black dark:text-gray-300">
+            {review.comment}
+          </p>
+        )}
+      </div>
     </div>
   </article>
 );
@@ -192,8 +221,9 @@ export interface ReviewsDrawerViewProps {
   isFetching: boolean;
   isError: boolean;
   error?: unknown;
-  /** Accessible label on the back control, e.g. "Back to product". */
-  backLabel: string;
+  /** Current sort, and the setter behind the header's control. */
+  sort: ReviewSort;
+  onSortChange: (sort: ReviewSort) => void;
   /** Shown when the subject has no reviews at all. */
   emptyMessage: string;
   errorMessage: string;
@@ -214,7 +244,8 @@ export const ReviewsDrawerView = ({
   isFetching,
   isError,
   error,
-  backLabel,
+  sort,
+  onSortChange,
   emptyMessage,
   errorMessage,
   onShowMore,
@@ -227,22 +258,53 @@ export const ReviewsDrawerView = ({
 
   return (
     <Sheet open={visible} onOpenChange={(next) => !next && close()}>
+      {/* `mobileBottomSheet={false}` is what pins this to the right edge. The
+          default bottom-sheet mode adds `sm:left-auto sm:right-auto`, which
+          cancels the `right-0` the side variant sets — the panel then falls
+          back to its static position and opens flush against the LEFT edge on
+          desktop. It also gets the proper slide-in-from-right animation. */}
       <SheetContent
         side="right"
-        className="flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-xl"
+        mobileBottomSheet={false}
+        className="flex w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-[385px]"
       >
-        <SheetHeader className="shrink-0 space-y-0 px-6 py-5 max-lg:px-4">
-          <button
-            type="button"
-            onClick={close}
-            aria-label={backLabel}
-            className="flex size-9 cursor-pointer items-center justify-center rounded-full bg-grey3 text-white transition-opacity hover:opacity-90"
-          >
-            <ArrowLeft className="size-4" />
-          </button>
-          <SheetTitle className="pt-4 text-left text-2xl font-bold">
-            Reviews
-          </SheetTitle>
+        <SheetHeader className="shrink-0 space-y-0 px-6 pb-2 pt-4 max-lg:px-4">
+          {/* Grab handle, as in the design — a panel that reads as draggable. */}
+          <span
+            aria-hidden="true"
+            className="mx-auto h-1 w-10 shrink-0 rounded-full bg-gray-300 dark:bg-muted"
+          />
+
+          <div className="flex items-center justify-between gap-3 pt-4">
+            <SheetTitle className="text-left text-2xl font-bold">
+              Reviews
+            </SheetTitle>
+
+            {/* Sorting is server-side (the endpoint takes sortBy), so it
+                reorders every review, not the page already loaded. */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  aria-label={`Sort reviews — ${SORT_LABELS[sort]}`}
+                  className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border text-foreground transition-colors hover:bg-accent"
+                >
+                  <SlidersHorizontal className="size-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44">
+                {(Object.keys(SORT_LABELS) as ReviewSort[]).map((option) => (
+                  <DropdownMenuItem
+                    key={option}
+                    onClick={() => onSortChange(option)}
+                    className={cn(option === sort && 'font-semibold')}
+                  >
+                    {SORT_LABELS[option]}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto px-6 pb-6 max-lg:px-4">
@@ -263,15 +325,19 @@ export const ReviewsDrawerView = ({
             <>
               {header}
 
-              <div className="flex items-center gap-4">
-                <Stars value={summary?.average_rating ?? 0} className="gap-1" />
+              <div className="flex items-center gap-3">
+                <Stars
+                  value={summary?.average_rating ?? 0}
+                  className="gap-0.5"
+                />
                 <span className="text-2xl font-bold text-grey-black dark:text-white">
                   {(summary?.average_rating ?? 0).toFixed(1)}
                 </span>
               </div>
 
-              <p className="mt-3 text-sm text-grey-black dark:text-gray-300">
-                Overall rating of {total} {total === 1 ? 'review' : 'reviews'}
+              <p className="mt-2 text-sm text-grey-black dark:text-gray-300">
+                Overall rating of {total}{' '}
+                {total === 1 ? "customer's review" : "customers' reviews"}
               </p>
 
               {summary && (
@@ -280,7 +346,7 @@ export const ReviewsDrawerView = ({
                 </div>
               )}
 
-              <div className="mt-6 border-t border-border">
+              <div className="mt-6 border-t border-border pt-1">
                 {reviews.map((review) => (
                   <ReviewRow key={review.key} review={review} />
                 ))}
@@ -306,11 +372,21 @@ export const ReviewsDrawerView = ({
   );
 };
 
-/** Grows the requested page size; pages accumulate into one scrolling list. */
+/**
+ * Grows the requested page size; pages accumulate into one scrolling list.
+ * Changing the sort resets it — the accumulated pages were in the old order.
+ */
 export const useAccumulatingPage = () => {
   const [size, setSize] = useState(REVIEWS_PAGE_SIZE);
+  const [sort, setSortState] = useState<ReviewSort>('recent');
+
   return {
     size,
+    sort,
     showMore: () => setSize((current) => current + REVIEWS_PAGE_SIZE),
+    setSort: (next: ReviewSort) => {
+      setSortState(next);
+      setSize(REVIEWS_PAGE_SIZE);
+    },
   };
 };

@@ -27,11 +27,11 @@ interface ProductReviewsDrawerProps {
 
 export const ProductReviewsDrawer = create<ProductReviewsDrawerProps>(
   ({ productId, productName }) => {
-    const { size, showMore } = useAccumulatingPage();
+    const { size, sort, showMore, setSort } = useAccumulatingPage();
 
     const { data, isLoading, isFetching, isError, error } =
       useGetAdminProductReviewsQuery(
-        { productId, page: 1, size },
+        { productId, page: 1, size, sortBy: sort },
         { skip: !productId }
       );
 
@@ -43,7 +43,7 @@ export const ProductReviewsDrawer = create<ProductReviewsDrawerProps>(
           rating: review.rating,
           comment: review.comment,
           title: review.reviewer?.name ?? 'A customer',
-          subtitle: review.reviewer?.email,
+          createdAt: review.created_at,
           key: `${review.reviewer?._id ?? 'anon'}-${index}`,
         })),
       [page]
@@ -57,7 +57,8 @@ export const ProductReviewsDrawer = create<ProductReviewsDrawerProps>(
         isFetching={isFetching}
         isError={isError}
         error={error}
-        backLabel="Back to product"
+        sort={sort}
+        onSortChange={setSort}
         emptyMessage={`Nobody has reviewed ${
           productName ?? 'this product'
         } yet.`}

@@ -96,7 +96,7 @@ describe('CustomerReviewsDrawer', () => {
     await open();
 
     expect(useGetCustomerReviewsQuery).toHaveBeenCalledWith(
-      { customerId: CUSTOMER_ID, page: 1, size: 20 },
+      { customerId: CUSTOMER_ID, page: 1, size: 20, sortBy: 'recent' },
       { skip: false }
     );
   });
@@ -106,7 +106,7 @@ describe('CustomerReviewsDrawer', () => {
 
     expect(within(drawer).getByText('4.8')).toBeInTheDocument();
     expect(
-      within(drawer).getByText('Overall rating of 100 reviews')
+      within(drawer).getByText("Overall rating of 100 customers' reviews")
     ).toBeInTheDocument();
     // Not rounded up to five solid stars — the overlay is clipped to the value.
     expect(
@@ -174,7 +174,7 @@ describe('CustomerReviewsDrawer', () => {
 
     await waitFor(() =>
       expect(useGetCustomerReviewsQuery).toHaveBeenLastCalledWith(
-        { customerId: CUSTOMER_ID, page: 1, size: 40 },
+        { customerId: CUSTOMER_ID, page: 1, size: 40, sortBy: 'recent' },
         { skip: false }
       )
     );

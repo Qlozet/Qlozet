@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { readApiError } from '@/redux/services/types';
 import { Pagination } from './pagination';
 
 export interface DataTableProps<TData> {
@@ -81,19 +82,33 @@ export function DataTable<TData>({
     manualPagination: true,
   });
 
-  const errorMessage =
-    (error as { data?: { message?: string } })?.data?.message ??
-    'Something went wrong';
+  // readApiError also handles a bare string and Nest's array-of-messages,
+  // which the hand-rolled read here missed.
+  const errorMessage = readApiError(error);
 
   const rows = table.getRowModel().rows;
-  const showLoader = isLoading || isFetching;
+  // Skeletons are for the FIRST load only. Tying them to isFetching as well
+  // replaced the whole table on every refetch — each debounced keystroke in
+  // search, every filter change, every page turn — and took the pager with it,
+  // so clicking "next" made the control you were using disappear until the
+  // response landed. A refetch now dims the rows in place and leaves the pager
+  // reachable.
+  const showSkeleton = isLoading;
+  const isRefetching = isFetching && !isLoading;
+  const hasRows = rows.length > 0;
   const skeletonRowCount = pagination.pageSize || 5;
 
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-white dark:bg-card custom-card-shadow">
       {toolbar}
 
-      <Table style={{ minWidth }}>
+      <Table
+        style={{ minWidth }}
+        className={cn(
+          'transition-opacity',
+          isRefetching && 'pointer-events-none opacity-60'
+        )}
+      >
         <TableHeader className="bg-[#F9FAFB] dark:bg-muted">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="hover:bg-transparent">
@@ -124,7 +139,7 @@ export function DataTable<TData>({
 
         <TableBody>
           {/* Loading: skeleton rows that mirror the real table layout */}
-          {showLoader &&
+          {showSkeleton &&
             Array.from({ length: skeletonRowCount }).map((_, rowIndex) => (
               <TableRow
                 key={`skeleton-${rowIndex}`}
@@ -154,9 +169,8 @@ export function DataTable<TData>({
               </TableRow>
             ))}
 
-          {!showLoader &&
-            isSuccess &&
-            rows.length > 0 &&
+          {!showSkeleton &&
+            hasRows &&
             rows.map((row) => (
               <TableRow
                 key={row.id}
@@ -198,7 +212,7 @@ export function DataTable<TData>({
               </TableRow>
             ))}
 
-          {!showLoader && isSuccess && data.length === 0 && (
+          {!showSkeleton && !isError && isSuccess && !hasRows && (
             <TableRow>
               <TableCell
                 colSpan={columns.length}
@@ -209,7 +223,7 @@ export function DataTable<TData>({
             </TableRow>
           )}
 
-          {!showLoader && isError && (
+          {!showSkeleton && isError && (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-48 text-center">
                 <p className="text-base font-medium text-destructive">
@@ -222,9 +236,7 @@ export function DataTable<TData>({
         </TableBody>
       </Table>
 
-      {!showLoader && isSuccess && rows.length > 0 && (
-        <Pagination table={table} />
-      )}
+      {!showSkeleton && hasRows && <Pagination table={table} />}
     </div>
   );
 }

@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Calendar, SlidersHorizontal, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { AnchoredPopover } from './anchored-popover';
 
 export interface DateRange {
   /** ISO date (YYYY-MM-DD) or '' when unset. */
@@ -39,6 +40,10 @@ interface DateRangeFilterProps {
 // "Filter By Date" control: a small popover with From/To inputs that reports an
 // ISO date range. Kept dependency-free (native date inputs) since the admin app
 // doesn't bundle a calendar library.
+//
+// The panel is portalled (see AnchoredPopover): every toolbar that uses this
+// sits inside the DataTable card, which is `overflow-hidden` for its rounded
+// corners and was clipping the popover's lower half.
 export const DateRangeFilter = ({
   value,
   onChange,
@@ -46,28 +51,11 @@ export const DateRangeFilter = ({
 }: DateRangeFilterProps) => {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<DateRange>(value);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   // Re-seed the draft whenever the popover opens so a cancelled edit is lost.
   useEffect(() => {
     if (open) setDraft(value);
   }, [open, value]);
-
-  useEffect(() => {
-    if (!open) return;
-    const onPointerDown = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false);
-    };
-    document.addEventListener('mousedown', onPointerDown);
-    document.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.removeEventListener('mousedown', onPointerDown);
-      document.removeEventListener('keydown', onKeyDown);
-    };
-  }, [open]);
 
   const active = Boolean(value.start || value.end);
   const label = active
@@ -89,115 +77,116 @@ export const DateRangeFilter = ({
     setOpen(false);
   };
 
-  return (
-    <div ref={containerRef} className={cn('relative shrink-0', className)}>
-      {/* Icon-only below `sm` so the toolbar stays on one row on mobile. */}
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => setOpen((prev) => !prev)}
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        aria-label={label}
-        className={cn(
-          'h-10 w-10 shrink-0 gap-2 px-0 text-sm text-gray-600 dark:text-gray-400 sm:w-auto sm:px-4',
-          active && 'border-primary text-grey-black dark:text-white'
+  // Icon-only below `sm` so the toolbar stays on one row on mobile.
+  const trigger = (
+    <Button
+      type="button"
+      variant="outline"
+      onClick={() => setOpen((prev) => !prev)}
+      aria-haspopup="dialog"
+      aria-expanded={open}
+      aria-label={label}
+      className={cn(
+        'h-10 w-10 shrink-0 gap-2 px-0 text-sm text-gray-600 dark:text-gray-400 sm:w-auto sm:px-4',
+        active && 'border-primary text-grey-black dark:text-white'
+      )}
+    >
+      <span className="relative flex items-center sm:hidden">
+        <SlidersHorizontal className="size-4" />
+        {active && (
+          <span className="absolute -right-1 -top-1 size-1.5 rounded-full bg-primary" />
         )}
-      >
-        <span className="relative flex items-center sm:hidden">
-          <SlidersHorizontal className="size-4" />
-          {active && (
-            <span className="absolute -right-1 -top-1 size-1.5 rounded-full bg-primary" />
-          )}
-        </span>
+      </span>
 
-        <span className="hidden items-center gap-2 sm:flex">
-          <Calendar className="size-4" />
-          {label}
-          {active && (
-            <span
-              role="button"
-              tabIndex={0}
-              aria-label="Clear date filter"
-              onClick={(event) => {
+      <span className="hidden items-center gap-2 sm:flex">
+        <Calendar className="size-4" />
+        {label}
+        {active && (
+          <span
+            role="button"
+            tabIndex={0}
+            aria-label="Clear date filter"
+            onClick={(event) => {
+              event.stopPropagation();
+              clear();
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
                 event.stopPropagation();
                 clear();
-              }}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  clear();
-                }
-              }}
-              className="ml-1 flex size-4 items-center justify-center rounded-full text-grey3 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-muted/80"
-            >
-              <X className="size-3" />
-            </span>
-          )}
-        </span>
-      </Button>
+              }
+            }}
+            className="ml-1 flex size-4 items-center justify-center rounded-full text-grey3 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-muted/80"
+          >
+            <X className="size-3" />
+          </span>
+        )}
+      </span>
+    </Button>
+  );
 
-      {open && (
-        <div
-          role="dialog"
-          aria-label="Filter by date"
-          className="absolute left-0 z-50 mt-2 w-70 max-w-[calc(100vw-3rem)] rounded-xl border border-border bg-white dark:bg-card p-4 shadow-xl sm:left-auto sm:right-0"
-        >
-          <div className="space-y-3">
-            <div className="space-y-1.5">
-              <label
-                htmlFor="date-range-start"
-                className="text-xs font-medium text-grey3 dark:text-gray-400"
-              >
-                From
-              </label>
-              <Input
-                id="date-range-start"
-                type="date"
-                value={draft.start}
-                max={draft.end || undefined}
-                onChange={(event) =>
-                  setDraft((prev) => ({ ...prev, start: event.target.value }))
-                }
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label
-                htmlFor="date-range-end"
-                className="text-xs font-medium text-grey3 dark:text-gray-400"
-              >
-                To
-              </label>
-              <Input
-                id="date-range-end"
-                type="date"
-                value={draft.end}
-                min={draft.start || undefined}
-                onChange={(event) =>
-                  setDraft((prev) => ({ ...prev, end: event.target.value }))
-                }
-              />
-            </div>
-
-            {invalid && (
-              <p className="text-xs text-error">
-                The end date can&apos;t be before the start date.
-              </p>
-            )}
-
-            <div className="flex justify-end gap-2 pt-1">
-              <Button type="button" variant="outline" onClick={clear}>
-                Clear
-              </Button>
-              <Button type="button" onClick={apply} disabled={invalid}>
-                Apply
-              </Button>
-            </div>
-          </div>
+  return (
+    <AnchoredPopover
+      open={open}
+      onOpenChange={setOpen}
+      trigger={trigger}
+      label="Filter by date"
+      width={280}
+      className={cn('shrink-0', className)}
+    >
+      <div className="space-y-3">
+        <div className="space-y-1.5">
+          <label
+            htmlFor="date-range-start"
+            className="text-xs font-medium text-grey3 dark:text-gray-400"
+          >
+            From
+          </label>
+          <Input
+            id="date-range-start"
+            type="date"
+            value={draft.start}
+            max={draft.end || undefined}
+            onChange={(event) =>
+              setDraft((prev) => ({ ...prev, start: event.target.value }))
+            }
+          />
         </div>
-      )}
-    </div>
+
+        <div className="space-y-1.5">
+          <label
+            htmlFor="date-range-end"
+            className="text-xs font-medium text-grey3 dark:text-gray-400"
+          >
+            To
+          </label>
+          <Input
+            id="date-range-end"
+            type="date"
+            value={draft.end}
+            min={draft.start || undefined}
+            onChange={(event) =>
+              setDraft((prev) => ({ ...prev, end: event.target.value }))
+            }
+          />
+        </div>
+
+        {invalid && (
+          <p className="text-xs text-error">
+            The end date can&apos;t be before the start date.
+          </p>
+        )}
+
+        <div className="flex justify-end gap-2 pt-1">
+          <Button type="button" variant="outline" onClick={clear}>
+            Clear
+          </Button>
+          <Button type="button" onClick={apply} disabled={invalid}>
+            Apply
+          </Button>
+        </div>
+      </div>
+    </AnchoredPopover>
   );
 };

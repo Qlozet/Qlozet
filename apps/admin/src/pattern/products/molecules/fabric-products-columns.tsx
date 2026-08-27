@@ -9,12 +9,12 @@ import {
   getFabricSubCategory,
   getFabricYards,
   getProductCategory,
-  getProductImage,
   getProductName,
   stockBadgeVariant,
 } from '@/lib/products';
 import { ProductStatusBadge } from './product-status-badge';
 import { ProductActionsCell, type ProductAction } from './product-actions-cell';
+import { ProductThumbnail } from '../atoms/product-thumbnail';
 import type { Product } from '@/redux/services/products/products.api-slice';
 
 interface FabricProductsColumnsProps {
@@ -33,21 +33,7 @@ export const createFabricProductsColumns = ({
   {
     id: 'picture',
     header: 'Picture',
-    cell: ({ row }) => {
-      const img = getProductImage(row.original);
-      return (
-        <div className="h-[31px] w-[51px] overflow-hidden rounded-[8px] border border-border bg-gray-50 dark:bg-muted">
-          {img ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={img}
-              alt={getProductName(row.original)}
-              className="h-full w-full object-cover"
-            />
-          ) : null}
-        </div>
-      );
-    },
+    cell: ({ row }) => <ProductThumbnail product={row.original} />,
     enableSorting: false,
   },
   {

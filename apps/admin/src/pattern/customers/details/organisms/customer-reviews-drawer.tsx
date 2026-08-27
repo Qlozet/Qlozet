@@ -32,11 +32,11 @@ interface CustomerReviewsDrawerProps {
 
 export const CustomerReviewsDrawer = create<CustomerReviewsDrawerProps>(
   ({ customerId, customerName }) => {
-    const { size, showMore } = useAccumulatingPage();
+    const { size, sort, showMore, setSort } = useAccumulatingPage();
 
     const { data, isLoading, isFetching, isError, error } =
       useGetCustomerReviewsQuery(
-        { customerId, page: 1, size },
+        { customerId, page: 1, size, sortBy: sort },
         { skip: !customerId }
       );
 
@@ -49,6 +49,7 @@ export const CustomerReviewsDrawer = create<CustomerReviewsDrawerProps>(
           comment: review.comment,
           title: review.product_name ?? 'Product no longer listed',
           subtitle: review.vendor_name,
+          createdAt: review.created_at,
           image: review.product_image ?? null,
           // A rating has no id of its own, and one customer can review the same
           // product only once, so the product is the key — with the index as a
@@ -66,7 +67,8 @@ export const CustomerReviewsDrawer = create<CustomerReviewsDrawerProps>(
         isFetching={isFetching}
         isError={isError}
         error={error}
-        backLabel="Back to customer"
+        sort={sort}
+        onSortChange={setSort}
         emptyMessage={`${
           customerName ?? 'This customer'
         } hasn't reviewed anything they've bought.`}
