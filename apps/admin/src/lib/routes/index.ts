@@ -33,6 +33,7 @@ export const APP_ROUTES = {
   feedback: '/feedback',
   help: '/help',
   orders: '/orders',
+  disputes: '/disputes',
   wallet: '/wallet',
   notification: '/notification',
   add: '/add',
