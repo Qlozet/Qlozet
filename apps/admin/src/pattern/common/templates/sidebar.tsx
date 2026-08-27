@@ -64,6 +64,7 @@ const ENABLED_ROUTES: string[] = [
   APP_ROUTES.productsAdd,
   APP_ROUTES.notifications,
   APP_ROUTES.support,
+  APP_ROUTES.settings,
 ];
 
 interface SidebarNavProps {

@@ -52,13 +52,22 @@ describe('SidebarNav', () => {
     expect(onNavigate).toHaveBeenCalled();
   });
 
-  // Unbuilt sections open the work-in-progress modal; that is a destination
-  // too, so the drawer must not stay open behind it.
-  it('reports navigation for work-in-progress items too', async () => {
-    const onNavigate = vi.fn();
-    renderNav({ expanded: true, onNavigate });
+  // Settings used to be the one item in the visible nav that opened the
+  // work-in-progress modal, so it was what this file reached for to cover that
+  // branch. The page is built now and every listed destination is a real link;
+  // the modal branch stays in the component for the sections still commented
+  // out of `menuItems`, which is why it is no longer exercised here.
+  it('links Settings to its page rather than the work-in-progress modal', () => {
+    renderNav({ expanded: true });
 
-    await userEvent.click(screen.getByRole('button', { name: /settings/i }));
-    expect(onNavigate).toHaveBeenCalled();
+    expect(screen.getByRole('link', { name: /settings/i })).toHaveAttribute(
+      'href',
+      '/settings'
+    );
+    // The gated branch renders a button, not a link, so its absence is the
+    // assertion that Settings is no longer treated as unbuilt.
+    expect(
+      screen.queryByRole('button', { name: /settings/i })
+    ).not.toBeInTheDocument();
   });
 });
