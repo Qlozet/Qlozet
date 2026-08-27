@@ -30,10 +30,12 @@ const NavLink = ({
 }: INavLinkProps) => {
   const pathname = usePathname();
 
-  const handleToggle = () => {
-    if (onToggle) {
-      onToggle();
-    }
+  // `onToggle` has to survive an onClick arriving through `props` — Radix's
+  // TooltipTrigger injects one when it clones this element, and a bare
+  // `{...props}` spread would drop the handler below on the floor.
+  const handleToggle = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    props.onClick?.(event);
+    onToggle?.();
   };
 
   const isActiveState = useCallback(() => {
@@ -44,6 +46,7 @@ const NavLink = ({
   return (
     <>
       <Link
+        {...props}
         href={href}
         className={cn(
           'w-fit 2xl:w-full flex items-center gap-3 px-2 2xl:px-4 py-2 2xl:py-3 text-grey4 dark:text-gray-400 hover:text-secondary dark:hover:text-white transition-colors text-sm font-normal duration-300',
@@ -52,7 +55,6 @@ const NavLink = ({
         )}
         onClick={handleToggle}
         ref={innerRef}
-        {...props}
       >
         {children}
       </Link>

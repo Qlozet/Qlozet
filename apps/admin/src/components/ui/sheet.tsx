@@ -48,33 +48,51 @@ const sheetVariants = cva('fixed z-50 gap-4 bg-background p-6 shadow-lg', {
 interface SheetContentProps
   extends
     React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
-    VariantProps<typeof sheetVariants> {}
+    VariantProps<typeof sheetVariants> {
+  /**
+   * Below sm a sheet floats up as a rounded bottom card, which suits the
+   * profile/assistant panels. Pass false to keep it pinned to its `side` edge
+   * at every width — what a navigation drawer needs, so it reads as a sidebar
+   * sliding in rather than a card hovering over the page.
+   */
+  mobileBottomSheet?: boolean;
+}
 
 const SheetContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentProps
->(({ side = 'right', className, children, ...props }, ref) => (
-  <SheetPortal>
-    <SheetOverlay />
-    <SheetPrimitive.Content
-      ref={ref}
-      className={cn(
-        // Mobile: floating bottom sheet
-        'fixed z-50 gap-4 bg-background p-6 shadow-lg',
-        'inset-x-4 bottom-4 rounded-[16px] max-h-[85vh] overflow-y-auto',
-        'sheet-mobile-bottom',
-        // sm+: normal sheet behavior
-        'sm:left-auto sm:right-auto sm:bottom-auto sm:max-h-full sm:overflow-hidden',
-        // No display utility here: callers set their own (`flex flex-col` for
-        // a header + scrolling body). Forcing `sm:block` won the cascade over
-        // the caller's `flex`, which killed `flex-1 min-h-0` on their scroll
-        // container — the panel then clipped its content instead of scrolling.
-        sheetVariants({ side }),
-        className
-      )}
-      {...props}
-    >
-      <style>{`
+>(
+  (
+    { side = 'right', className, children, mobileBottomSheet = true, ...props },
+    ref
+  ) => (
+    <SheetPortal>
+      <SheetOverlay />
+      <SheetPrimitive.Content
+        ref={ref}
+        className={cn(
+          'fixed z-50 gap-4 bg-background p-6 shadow-lg',
+          mobileBottomSheet
+            ? cn(
+                // Mobile: floating bottom sheet
+                'inset-x-4 bottom-4 rounded-[16px] max-h-[85vh] overflow-y-auto',
+                'sheet-mobile-bottom',
+                // sm+: normal sheet behavior
+                'sm:left-auto sm:right-auto sm:bottom-auto sm:max-h-full sm:overflow-hidden'
+              )
+            : // Edge-anchored at every width; `sheet-edge` re-enables the side
+              // slide below sm, where the bottom-sheet animation would own it.
+              'sheet-edge',
+          // No display utility here: callers set their own (`flex flex-col` for
+          // a header + scrolling body). Forcing `sm:block` won the cascade over
+          // the caller's `flex`, which killed `flex-1 min-h-0` on their scroll
+          // container — the panel then clipped its content instead of scrolling.
+          sheetVariants({ side }),
+          className
+        )}
+        {...props}
+      >
+        <style>{`
         /* Mobile: force bottom sheet positioning over variant classes */
         @media (max-width: 639px) {
           .sheet-mobile-bottom {
@@ -148,6 +166,20 @@ const SheetContent = React.forwardRef<
           0% { translate: 0 0; opacity: 1; }
           100% { translate: 0 100%; opacity: 0; }
         }
+        /* Edge drawers (mobileBottomSheet={false}) slide from their side at
+           every width, including below sm. */
+        .sheet-edge.sheet-gentle-left[data-state="open"] {
+          animation: sheetSlideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .sheet-edge.sheet-gentle-left[data-state="closed"] {
+          animation: sheetSlideOutLeft 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        .sheet-edge.sheet-gentle-right[data-state="open"] {
+          animation: sheetSlideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .sheet-edge.sheet-gentle-right[data-state="closed"] {
+          animation: sheetSlideOutRight 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
         @media (min-width: 640px) {
           .sheet-gentle-right[data-state="open"] {
             animation: sheetSlideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -175,14 +207,15 @@ const SheetContent = React.forwardRef<
           }
         }
       `}</style>
-      {children}
-      <SheetPrimitive.Close className="absolute right-4 top-4 cursor-pointer rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:cursor-default data-[state=open]:bg-secondary">
-        <X className="h-4 w-4" />
-        <span className="sr-only">Close</span>
-      </SheetPrimitive.Close>
-    </SheetPrimitive.Content>
-  </SheetPortal>
-));
+        {children}
+        <SheetPrimitive.Close className="absolute right-4 top-4 cursor-pointer rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:cursor-default data-[state=open]:bg-secondary">
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </SheetPrimitive.Close>
+      </SheetPrimitive.Content>
+    </SheetPortal>
+  )
+);
 SheetContent.displayName = SheetPrimitive.Content.displayName;
 
 const SheetHeader = ({
