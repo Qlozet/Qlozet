@@ -1,7 +1,6 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { Copy, Eye, ShoppingBag, Trash2, UserCheck, UserX } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { RowActionsMenu } from '@/pattern/common/molecules/row-actions-menu';
 import type { Customer } from '@/redux/services/customers/customers.api-slice';
@@ -152,12 +151,10 @@ export const createCustomersTableColumns = ({
           actions={[
             {
               label: 'View details',
-              icon: <Eye className="size-4" />,
               onSelect: () => onViewDetails(customer._id),
             },
             {
               label: 'Copy email',
-              icon: <Copy className="size-4" />,
               // Disabled rather than hidden, so the menu keeps a stable shape
               // from row to row.
               disabled: email === '—',
@@ -165,7 +162,6 @@ export const createCustomersTableColumns = ({
             },
             {
               label: 'View orders',
-              icon: <ShoppingBag className="size-4" />,
               onSelect: () => onViewOrders(customer._id),
             },
             // One item, not both: offering "Suspend" on an already-suspended
@@ -173,19 +169,16 @@ export const createCustomersTableColumns = ({
             isSuspended
               ? {
                   label: 'Reactivate',
-                  icon: <UserCheck className="size-4" />,
                   disabled: isUpdating,
                   onSelect: () => onSetStatus(customer, 'active'),
                 }
               : {
                   label: 'Suspend',
-                  icon: <UserX className="size-4" />,
                   disabled: isUpdating,
                   onSelect: () => onSetStatus(customer, 'suspended'),
                 },
             {
               label: 'Delete',
-              icon: <Trash2 className="size-4" />,
               destructive: true,
               disabled: isUpdating,
               onSelect: () => onDelete(customer),

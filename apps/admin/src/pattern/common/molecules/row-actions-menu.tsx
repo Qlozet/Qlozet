@@ -1,6 +1,5 @@
 'use client';
 
-import type { ReactNode } from 'react';
 import { MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,7 +15,6 @@ import { cn } from '@/lib/utils';
 export interface RowAction {
   /** Stable key; also the accessible name of the item. */
   label: string;
-  icon: ReactNode;
   onSelect: () => void;
   /** Renders in the destructive colour, below a separator. */
   destructive?: boolean;
@@ -58,7 +56,6 @@ export const RowActionsMenu = ({
       onClick={action.onSelect}
       className={cn(action.destructive && 'text-destructive')}
     >
-      {action.icon}
       {action.label}
     </DropdownMenuItem>
   );

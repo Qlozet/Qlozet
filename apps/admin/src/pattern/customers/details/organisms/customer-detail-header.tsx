@@ -9,7 +9,9 @@ import {
   getCustomerHandle,
   getCustomerAvatar,
   getCustomerInitial,
+  getCustomerReviewsCount,
   getCustomerStatus,
+  formatCount,
 } from '@/lib/customers';
 
 interface CustomerDetailHeaderProps {
@@ -30,8 +32,9 @@ export const CustomerDetailHeader = ({
   const c = customer ?? ({} as Customer);
   const avatar = getCustomerAvatar(c);
   const status = getCustomerStatus(c);
-  const reviews =
-    typeof c.reviewsCount === 'number' ? c.reviewsCount : undefined;
+  // reviews_count from GET /admin/customer/:id. This used to fall back to a
+  // hardcoded 20, which every customer wore regardless of what they'd written.
+  const reviews = getCustomerReviewsCount(c);
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -77,7 +80,7 @@ export const CustomerDetailHeader = ({
             onClick={onViewReviews}
             className="mt-1 inline-flex w-fit items-center gap-1 rounded-md bg-gray-100 dark:bg-muted px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-muted/80 transition-colors cursor-pointer"
           >
-            {typeof reviews === 'number' ? reviews : 20} reviews
+            {formatCount(reviews)} reviews
             <ChevronRight className="size-3.5" />
           </button>
         </div>

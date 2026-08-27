@@ -5,15 +5,27 @@ import {
   formatDate,
   formatJoinedDate,
   formatLastLoggedIn,
+  formatNaira,
   getCustomerAvatar,
   getCustomerEmail,
+  getCustomerFollowedVendors,
   getCustomerHandle,
   getCustomerInitial,
+  getCustomerJoinedDate,
+  getCustomerLastLoginAt,
   getCustomerLastOrderDate,
+  getCustomerLifetimeSpending,
+  getCustomerLocation,
   getCustomerName,
+  getCustomerPendingBalance,
   getCustomerPhone,
+  getCustomerReservedFabrics,
+  getCustomerReviewsCount,
   getCustomerStatus,
+  getCustomerTokenBalance,
   getCustomerTotalOrders,
+  getCustomerTotalReturns,
+  getCustomerWalletBalance,
 } from '../customers';
 
 const customer = (patch: Record<string, unknown> = {}) =>
@@ -200,5 +212,120 @@ describe('customer field resolution', () => {
     expect(
       getCustomerPhone({ _id: 'c1', phone_number: '+2348012347890' })
     ).toBe('+2348012347890');
+  });
+});
+
+// GET /admin/customer/:id — snake_case throughout, and every count or money
+// figure the data supports is a number, including 0.
+describe('customer detail payload', () => {
+  const detail = customer({
+    location: 'Ikeja, Lagos',
+    address: { state: 'Lagos', city: 'Ikeja' },
+    created_at: '2026-07-05T00:00:00.000Z',
+    last_login_at: '2026-08-26T09:12:00.000Z',
+    reviews_count: 20,
+    followed_vendors: 3,
+    reserved_fabrics: 1,
+    wallet_balance: 25000,
+    pending_balance: 0,
+    token_balance: 120,
+    total_returns: 4500,
+    lifetime_spending: 486000,
+  });
+
+  it('reads every field by its contract name', () => {
+    expect(getCustomerLocation(detail)).toBe('Ikeja, Lagos');
+    expect(getCustomerJoinedDate(detail)).toBe('2026-07-05T00:00:00.000Z');
+    expect(getCustomerLastLoginAt(detail)).toBe('2026-08-26T09:12:00.000Z');
+    expect(getCustomerReviewsCount(detail)).toBe(20);
+    expect(getCustomerFollowedVendors(detail)).toBe(3);
+    expect(getCustomerReservedFabrics(detail)).toBe(1);
+    expect(getCustomerWalletBalance(detail)).toBe(25000);
+    expect(getCustomerPendingBalance(detail)).toBe(0);
+    expect(getCustomerTokenBalance(detail)).toBe(120);
+    expect(getCustomerTotalReturns(detail)).toBe(4500);
+    expect(getCustomerLifetimeSpending(detail)).toBe(486000);
+  });
+
+  it('keeps a zero rather than turning it into "unknown"', () => {
+    for (const read of [
+      getCustomerReviewsCount,
+      getCustomerFollowedVendors,
+      getCustomerReservedFabrics,
+      getCustomerWalletBalance,
+      getCustomerTokenBalance,
+      getCustomerTotalReturns,
+      getCustomerLifetimeSpending,
+    ]) {
+      expect(
+        read(
+          customer({
+            reviews_count: 0,
+            followed_vendors: 0,
+            reserved_fabrics: 0,
+            wallet_balance: 0,
+            token_balance: 0,
+            total_returns: 0,
+            lifetime_spending: 0,
+          })
+        )
+      ).toBe(0);
+    }
+  });
+
+  it('treats null — the "no source at all" case — as absent', () => {
+    const empty = customer({
+      location: null,
+      address: null,
+      created_at: null,
+      last_login_at: null,
+      reviews_count: null,
+      followed_vendors: null,
+      reserved_fabrics: null,
+      wallet_balance: null,
+      token_balance: null,
+      total_returns: null,
+      lifetime_spending: null,
+    });
+
+    expect(getCustomerLocation(empty)).toBeUndefined();
+    expect(getCustomerJoinedDate(empty)).toBeUndefined();
+    expect(getCustomerLastLoginAt(empty)).toBeUndefined();
+    expect(getCustomerReviewsCount(empty)).toBeUndefined();
+    expect(getCustomerFollowedVendors(empty)).toBeUndefined();
+    expect(getCustomerReservedFabrics(empty)).toBeUndefined();
+    expect(getCustomerWalletBalance(empty)).toBeUndefined();
+    expect(getCustomerTokenBalance(empty)).toBeUndefined();
+    expect(getCustomerTotalReturns(empty)).toBeUndefined();
+    expect(getCustomerLifetimeSpending(empty)).toBeUndefined();
+  });
+
+  it('builds a location from the address when the string is missing', () => {
+    expect(
+      getCustomerLocation(
+        customer({ address: { state: 'Lagos', city: 'Ikeja' } })
+      )
+    ).toBe('Ikeja, Lagos');
+    expect(getCustomerLocation(customer({ address: { state: 'Lagos' } }))).toBe(
+      'Lagos'
+    );
+    expect(getCustomerLocation(customer({ address: { city: 'Ikeja' } }))).toBe(
+      'Ikeja'
+    );
+    expect(getCustomerLocation(customer({ address: {} }))).toBeUndefined();
+  });
+
+  it('formats naira, keeping a zero balance as money', () => {
+    expect(formatNaira(486000)).toBe('₦486,000');
+    expect(formatNaira(0)).toBe('₦0');
+    expect(formatNaira(null)).toBe('—');
+    expect(formatNaira(undefined)).toBe('—');
+  });
+
+  it('formats the last login from last_login_at', () => {
+    const last_login_at = new Date(2026, 7, 26, 9, 12).toISOString();
+    expect(formatLastLoggedIn(customer({ last_login_at }))).toBe(
+      '9:12am - 26/08/2026'
+    );
   });
 });

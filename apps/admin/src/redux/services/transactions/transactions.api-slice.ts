@@ -43,17 +43,9 @@ export const transactionsApiSlice = baseAPI.injectEndpoints({
       providesTags: ['Transactions'],
     }),
 
-    // GET /transactions/customer — paginated transactions by customer
-    getCustomerTransactions: builder.query<
-      ApiResponse<PaginatedData<Transaction>>,
-      GetTransactionsParams
-    >({
-      query: (params) => ({
-        url: `/transactions/customer${buildQueryString({ ...params })}`,
-        method: 'GET',
-      }),
-      providesTags: ['Transactions'],
-    }),
+    // A customer's transactions live in the customers slice, on
+    // GET /admin/customer/{id}/transactions — /transactions/customer is scoped
+    // to the *caller*, so on an admin session it returns the admin's own rows.
 
     // GET /transactions/reference/{reference} — single transaction
     getTransactionByReference: builder.query<ApiResponse<Transaction>, string>({
@@ -69,6 +61,5 @@ export const transactionsApiSlice = baseAPI.injectEndpoints({
 // Export hooks
 export const {
   useGetVendorTransactionsQuery,
-  useGetCustomerTransactionsQuery,
   useGetTransactionByReferenceQuery,
 } = transactionsApiSlice;

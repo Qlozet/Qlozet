@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import NiceModal from '@ebay/nice-modal-react';
 import type { PaginationState } from '@tanstack/react-table';
 import { toast } from 'sonner';
@@ -8,44 +8,44 @@ import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
 import { downloadCsv, toCsv } from '@/lib/csv';
 import { formatDate } from '@/lib/customers';
+import { readPageCount, readTotalItems } from '@/redux/services/types';
 import { TransactionDetailModal } from './transaction-detail-modal';
-import { useGetCustomerTransactionsQuery } from '@/redux/services/transactions/transactions.api-slice';
+import { useGetCustomerTransactionsQuery } from '@/redux/services/customers/customers.api-slice';
 import { createCustomerTransactionsColumns } from '../molecules/customer-transactions-columns';
 
 const PAGE_SIZE = 5;
 
-export const CustomerTransactionsTable = () => {
+// This customer's transactions, from GET /admin/customer/:id/transactions.
+// It previously called /transactions/customer, which is scoped to the caller,
+// so an admin saw their own rows on every customer's page.
+export const CustomerTransactionsTable = ({
+  customerId,
+}: {
+  customerId: string;
+}) => {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
   });
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search);
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [search]);
 
   const { data, isLoading, isFetching, isSuccess, isError, error } =
-    useGetCustomerTransactionsQuery({
-      status: '',
-      page: pagination.pageIndex + 1,
-      size: pagination.pageSize,
-      ...(debouncedSearch ? { search: debouncedSearch } : {}),
-    });
+    useGetCustomerTransactionsQuery(
+      {
+        customerId,
+        page: pagination.pageIndex + 1,
+        size: pagination.pageSize,
+      },
+      { skip: !customerId }
+    );
 
   const paginated = data?.data;
   const transactions = useMemo(() => paginated?.data ?? [], [paginated]);
-  const totalCount =
-    paginated?.totalCount ?? paginated?.total ?? transactions.length;
-  const pageCount = Math.max(Math.ceil(totalCount / pagination.pageSize), 1);
+  const pageCount = readPageCount(paginated, pagination.pageSize);
+  const totalRows = readTotalItems(paginated);
 
-  // No date filter: the transactions endpoint takes no date params, and the
-  // list is already scoped to this customer.
+  // No search or date control: the endpoint takes page and size only, and the
+  // list is already scoped to this customer. A box that filtered nothing but
+  // the page in front of you would be worse than none.
   const handleExport = () => {
     if (transactions.length === 0) {
       toast.info('There are no transactions to export.');
@@ -92,15 +92,13 @@ export const CustomerTransactionsTable = () => {
       pagination={pagination}
       setPagination={setPagination}
       pageCount={pageCount}
+      totalRows={totalRows}
       toolbar={
         <TableToolbar
           title="Recent Transactions"
-          search={search}
-          onSearchChange={setSearch}
           onExport={handleExport}
           showFilter={false}
-          filterLabel="Filter By :"
-          filterIcon={null}
+          showSearch={false}
         />
       }
       emptyMessage="No transactions found."

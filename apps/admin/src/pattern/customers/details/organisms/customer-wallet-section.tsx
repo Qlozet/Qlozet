@@ -5,10 +5,19 @@ import { Wallet, CircleDollarSign, Undo2, HandCoins } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MetricCard } from '@/pattern/common/molecules/metric-card';
 import type { Customer } from '@/redux/services/customers/customers.api-slice';
+import {
+  formatNaira,
+  getCustomerLifetimeSpending,
+  getCustomerTokenBalance,
+  getCustomerTotalReturns,
+  getCustomerWalletBalance,
+} from '@/lib/customers';
 import { CustomerTransactionsTable } from './customer-transactions-table';
 
 interface CustomerWalletSectionProps {
   customer?: Customer;
+  /** Route id — the transactions table needs it before the record loads. */
+  customerId: string;
 }
 
 const Icon = ({ bg, children }: { bg: string; children: ReactNode }) => (
@@ -22,18 +31,18 @@ const Icon = ({ bg, children }: { bg: string; children: ReactNode }) => (
   </div>
 );
 
-const naira = (value: unknown, fallback: string): string =>
-  typeof value === 'number' ? `N ${value.toLocaleString()}` : fallback;
-
+// The four figures come from GET /admin/customer/:id. A customer who has never
+// topped up has a balance of 0, and that is what shows — the dash is reserved
+// for a figure the payload didn't carry at all.
 export const CustomerWalletSection = ({
   customer,
+  customerId,
 }: CustomerWalletSectionProps) => {
-  const c = (customer ?? {}) as Record<string, unknown>;
+  const c = customer ?? ({} as Customer);
 
+  const tokens = getCustomerTokenBalance(c);
   const tokenBalance =
-    typeof c.tokenBalance === 'number'
-      ? `${c.tokenBalance.toLocaleString()} TCN`
-      : '—';
+    typeof tokens === 'number' ? `${tokens.toLocaleString()} TCN` : '—';
 
   return (
     <section className="space-y-6">
@@ -48,7 +57,7 @@ export const CustomerWalletSection = ({
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title="Wallet Balance"
-          value={naira(c.walletBalance, '—')}
+          value={formatNaira(getCustomerWalletBalance(c))}
           icon={
             <Icon bg="bg-[#5DDAB4]">
               <Wallet className="size-6" />
@@ -66,7 +75,7 @@ export const CustomerWalletSection = ({
         />
         <MetricCard
           title="Total Returns"
-          value={naira(c.totalReturns, '—')}
+          value={formatNaira(getCustomerTotalReturns(c))}
           icon={
             <Icon bg="bg-[#FF7976]">
               <Undo2 className="size-6" />
@@ -75,7 +84,7 @@ export const CustomerWalletSection = ({
         />
         <MetricCard
           title="Lifetime Spending"
-          value={naira(c.lifetimeSpending, '—')}
+          value={formatNaira(getCustomerLifetimeSpending(c))}
           icon={
             <Icon bg="bg-[#FF7976]">
               <HandCoins className="size-6" />
@@ -85,7 +94,7 @@ export const CustomerWalletSection = ({
       </div>
 
       {/* Recent transactions */}
-      <CustomerTransactionsTable />
+      <CustomerTransactionsTable customerId={customerId} />
     </section>
   );
 };

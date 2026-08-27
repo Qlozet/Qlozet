@@ -6,6 +6,10 @@ import {
   getCustomerName,
   getCustomerPhone,
   getCustomerTotalOrders,
+  getCustomerLocation,
+  getCustomerJoinedDate,
+  getCustomerFollowedVendors,
+  getCustomerReservedFabrics,
   formatCount,
   formatJoinedDate,
   formatLastLoggedIn,
@@ -23,6 +27,8 @@ interface CustomerInfoGridProps {
 const str = (value: unknown): string | undefined =>
   typeof value === 'string' && value.length > 0 ? value : undefined;
 
+// Every value here comes from GET /admin/customer/:id. Counts render through
+// formatCount so a genuine 0 shows as "0" and only a missing figure dashes.
 export const CustomerInfoGrid = ({
   customer,
   onEditLocation,
@@ -39,7 +45,7 @@ export const CustomerInfoGrid = ({
       <InfoCard label="Customer name" value={getCustomerName(c)} />
       <InfoCard
         label="Location"
-        value={str(c.location) ?? str(c.address)}
+        value={getCustomerLocation(c)}
         onEdit={onEditLocation}
       />
       <InfoCard label="Phone number" value={getCustomerPhone(c)} />
@@ -50,7 +56,7 @@ export const CustomerInfoGrid = ({
       />
       <InfoCard
         label="Date joined"
-        value={formatJoinedDate(c.createdAt)}
+        value={formatJoinedDate(getCustomerJoinedDate(c))}
         linkLabel="View all"
         onLinkClick={onViewDateJoined}
       />
@@ -62,16 +68,20 @@ export const CustomerInfoGrid = ({
         onLinkClick={onViewOrders}
       />
       <InfoCard label="Last logged in" value={formatLastLoggedIn(c)} />
-      <InfoCard label="Gender" value={str(c.gender)} />
+      <InfoCard
+        label="Gender"
+        value={str(c.gender)}
+        valueClassName="capitalize"
+      />
       <InfoCard
         label="Followed Vendors"
-        value={formatCount(c.followedVendorsCount)}
+        value={formatCount(getCustomerFollowedVendors(c))}
         linkLabel="View all"
         onLinkClick={onViewFollowedVendors}
       />
       <InfoCard
         label="Reserved Fabric"
-        value={formatCount(c.reservedFabricCount)}
+        value={formatCount(getCustomerReservedFabrics(c))}
         linkLabel="View all"
         onLinkClick={onViewReservedFabric}
       />

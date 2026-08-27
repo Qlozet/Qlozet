@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Eye, Trash2 } from 'lucide-react';
 import { RowActionsMenu } from '../row-actions-menu';
 
 const open = async () => {
@@ -16,7 +15,7 @@ describe('RowActionsMenu', () => {
     render(
       <RowActionsMenu
         title="Customer actions"
-        actions={[{ label: 'View details', icon: <Eye />, onSelect }]}
+        actions={[{ label: 'View details', onSelect }]}
       />
     );
 
@@ -35,7 +34,7 @@ describe('RowActionsMenu', () => {
     render(
       <RowActionsMenu
         title="Customer actions"
-        actions={[{ label: 'View details', icon: <Eye />, onSelect }]}
+        actions={[{ label: 'View details', onSelect }]}
       />
     );
 
@@ -52,11 +51,10 @@ describe('RowActionsMenu', () => {
         actions={[
           {
             label: 'Delete',
-            icon: <Trash2 />,
             onSelect: vi.fn(),
             destructive: true,
           },
-          { label: 'View details', icon: <Eye />, onSelect: vi.fn() },
+          { label: 'View details', onSelect: vi.fn() },
         ]}
       />
     );
@@ -75,7 +73,6 @@ describe('RowActionsMenu', () => {
         actions={[
           {
             label: 'Copy email',
-            icon: <Eye />,
             onSelect: vi.fn(),
             disabled: true,
           },
@@ -96,9 +93,7 @@ describe('RowActionsMenu', () => {
       <div onClick={onRowClick}>
         <RowActionsMenu
           title="Customer actions"
-          actions={[
-            { label: 'View details', icon: <Eye />, onSelect: vi.fn() },
-          ]}
+          actions={[{ label: 'View details', onSelect: vi.fn() }]}
         />
       </div>
     );
@@ -112,7 +107,7 @@ describe('RowActionsMenu', () => {
       <RowActionsMenu
         title="Customer actions"
         triggerLabel="Actions for Ada Obi"
-        actions={[{ label: 'View details', icon: <Eye />, onSelect: vi.fn() }]}
+        actions={[{ label: 'View details', onSelect: vi.fn() }]}
       />
     );
 
