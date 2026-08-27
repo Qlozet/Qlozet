@@ -31,6 +31,7 @@ export default function FabricsPage() {
       <ProductsStats
         totalProducts={catalogue.stats?.total_products ?? catalogue.totalCount}
         archivedProducts={catalogue.stats?.archived_products}
+        changes={catalogue.stats?.changes}
         isLoading={catalogue.isLoadingStats}
         salesTitle="Sales By Product Category"
         salesData={catalogue.stats?.sales_by_category}

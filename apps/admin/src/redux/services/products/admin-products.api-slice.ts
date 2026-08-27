@@ -45,6 +45,16 @@ export interface AdminProductStats {
   pending_products: number;
   approved_products: number;
   rejected_products: number;
+  /**
+   * Movement over the last `period_days`, in the same shape the vendors and
+   * orders summaries use. A member is null when the previous window was empty —
+   * there is no meaningful percentage — and `formatChange` renders no badge.
+   */
+  changes?: {
+    period_days: number;
+    total_products: number | null;
+    archived_products: number | null;
+  };
   sales_by_category: { name: string; value: number }[];
 }
 

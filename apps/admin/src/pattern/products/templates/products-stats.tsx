@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { APP_ROUTES } from '@/lib/routes';
+import { formatChange } from '@/lib/orders';
 import { MetricCard } from '@/pattern/common/molecules/metric-card';
 import { StatsCardSkeleton } from '@/pattern/dashboard/molecules/stats-card-skeleton';
 import {
@@ -39,6 +40,11 @@ interface ProductsStatsProps {
   totalProducts?: number;
   /** Archived products — the second card in the Figma header. */
   archivedProducts?: number;
+  /** 30-day movement for the two cards, from the same response. */
+  changes?: {
+    total_products?: number | null;
+    archived_products?: number | null;
+  };
   isLoading?: boolean;
   /** Right-hand donut: title + real sales-by-category data. */
   salesTitle: string;
@@ -57,6 +63,7 @@ interface ProductsStatsProps {
 export const ProductsStats = ({
   totalProducts,
   archivedProducts,
+  changes,
   isLoading = false,
   salesTitle,
   salesData,
@@ -75,6 +82,7 @@ export const ProductsStats = ({
           <MetricCard
             title="Total products"
             value={showNum(totalProducts)}
+            change={formatChange(changes?.total_products)}
             icon={
               <CardIcon bg="bg-[#57CAEB]">
                 <ShoppingBag className="size-6" />
@@ -85,6 +93,7 @@ export const ProductsStats = ({
           <MetricCard
             title="Archived products"
             value={showNum(archivedProducts)}
+            change={formatChange(changes?.archived_products)}
             icon={
               <CardIcon bg="bg-[#5DDAB4]">
                 <ShoppingBag className="size-6" />
