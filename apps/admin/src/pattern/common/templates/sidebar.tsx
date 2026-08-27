@@ -17,6 +17,7 @@ import { ProductsAddNavIcon } from '../atoms/nav-icons/products-add-nav-icon';
 // import { MarketingNavIcon } from '../atoms/nav-icons/marketing-nav-icon';
 import { AdminNavIcon } from '../atoms/nav-icons/admin-nav-icon';
 // import { PaymentNavIcon } from '../atoms/nav-icons/payment-nav-icon';
+import { DisputesNavIcon } from '../atoms/nav-icons/disputes-nav-icon';
 import { NotificationsNavIcon } from '../atoms/nav-icons/notifications-nav-icon';
 // import { PerformanceNavIcon } from '../atoms/nav-icons/performance-nav-icon';
 import { SupportNavIcon } from '../atoms/nav-icons/support-nav-icon';
@@ -54,6 +55,7 @@ const ENABLED_ROUTES: string[] = [
   APP_ROUTES.customers,
   APP_ROUTES.admin,
   APP_ROUTES.orders,
+  APP_ROUTES.disputes,
   APP_ROUTES.productsCloth,
   APP_ROUTES.productsFabrics,
   APP_ROUTES.productsAccessories,
@@ -155,6 +157,7 @@ export const SidebarNav = ({
     //   ],
     // },
     { icon: AdminNavIcon, label: 'Admin', href: APP_ROUTES.admin },
+    { icon: DisputesNavIcon, label: 'Disputes', href: APP_ROUTES.disputes },
     // { icon: PaymentNavIcon, label: 'Payment', href: APP_ROUTES.payment },
     {
       icon: NotificationsNavIcon,

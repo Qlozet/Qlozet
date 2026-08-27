@@ -24,6 +24,7 @@ import {
   ShieldAlert,
   ChevronRight,
   Maximize2,
+  MessageSquare,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -63,6 +64,7 @@ import { useAppSelector } from '@/redux/store';
 import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import { CustomerDetailsModal } from '../../customers/organisms/customer-details-modal';
+import { CustomerChatSheet } from './customer-chat-sheet';
 import { OrderItemDetailModal } from './order-item-detail-modal';
 import {
   FabricTransferDetailModal,
@@ -743,6 +745,12 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     const [showRejectDialog, setShowRejectDialog] = useState(false);
     const [rejectReason, setRejectReason] = useState('');
     const [rejectItemId, setRejectItemId] = useState<string | null>(null);
+    const [chatOpen, setChatOpen] = useState(false);
+
+    // Bespoke customer chat: available on bespoke orders (not fabric transfers);
+    // sending is open only while the order is in production or transit.
+    const canChat = order.type === 'bespoke' && !isFabricTransferOnly;
+    const chatCanSend = ['processing', 'in_transit'].includes(order.status);
 
     // Confirmation state derived from shipment
     const isConfirmed = vendorShipment?.confirmed === true;
@@ -1045,6 +1053,16 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                 {isFabricTransferOnly ? 'Fabric transfer' : 'Order details'}
               </SheetTitle>
               <div className="flex flex-wrap items-center justify-end gap-2">
+                {canChat && (
+                  <button
+                    type="button"
+                    onClick={() => setChatOpen(true)}
+                    className="inline-flex h-[26px] items-center gap-1 whitespace-nowrap rounded-lg border border-border px-3 text-xs font-medium text-grey-black transition-colors hover:bg-gray-100 dark:text-white dark:hover:bg-white/10"
+                  >
+                    <MessageSquare className="size-3.5" />
+                    Message
+                  </button>
+                )}
                 {isEarningsFrozen(order) && (
                   <span className="inline-flex h-[26px] items-center gap-1 whitespace-nowrap rounded-lg bg-[#FEF6E7] px-3 text-xs font-medium text-[#DD900D]">
                     <ShieldAlert className="size-3.5" />
@@ -1979,6 +1997,16 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
             </div>
           </div>
         </SheetContent>
+
+        {canChat && (
+          <CustomerChatSheet
+            open={chatOpen}
+            onOpenChange={setChatOpen}
+            reference={order.reference}
+            customerName={readCustomerName(order)}
+            canSend={chatCanSend}
+          />
+        )}
       </Sheet>
     );
   }
