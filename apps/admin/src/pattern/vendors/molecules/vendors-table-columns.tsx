@@ -3,25 +3,20 @@
 import Image from 'next/image';
 import { ColumnDef } from '@tanstack/react-table';
 import {
-  MoreHorizontal,
   Eye,
   CheckCircle2,
   BadgeCheck,
   XCircle,
+  RotateCcw,
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  RowActionsMenu,
+  type RowAction,
+} from '@/pattern/common/molecules/row-actions-menu';
 import type { Business } from '@/redux/services/businesses/businesses.api-slice';
 import {
   getVendorName,
@@ -46,15 +41,75 @@ const STATUS_BADGE_VARIANT: Record<
   inactive: 'error',
 };
 
+/** Columns the endpoint can order by. */
+export type VendorSortColumn =
+  | 'revenue'
+  | 'products'
+  | 'orders'
+  | 'date'
+  | 'name';
+
+interface SortableHeaderProps {
+  label: string;
+  column: VendorSortColumn;
+  sort?: VendorSortColumn;
+  order?: 'asc' | 'desc';
+  onToggle: (column: VendorSortColumn) => void;
+}
+
+/**
+ * A column header that sorts server-side.
+ *
+ * Sorting has to be the server's job here: products, orders and revenue are
+ * computed per row, and the page on screen is not enough to order the whole
+ * table by any of them.
+ */
+const SortableHeader = ({
+  label,
+  column,
+  sort,
+  order,
+  onToggle,
+}: SortableHeaderProps) => {
+  const active = sort === column;
+  const direction = active ? order : undefined;
+
+  return (
+    <button
+      type="button"
+      onClick={() => onToggle(column)}
+      className="flex items-center gap-1 text-inherit transition-colors hover:text-foreground"
+      aria-label={
+        direction
+          ? `${label}, sorted ${direction === 'asc' ? 'ascending' : 'descending'}`
+          : `Sort by ${label.toLowerCase()}`
+      }
+    >
+      {label}
+      {direction === 'asc' ? (
+        <ArrowUp className="size-3.5" />
+      ) : direction === 'desc' ? (
+        <ArrowDown className="size-3.5" />
+      ) : (
+        <ArrowUpDown className="size-3.5 opacity-40" />
+      )}
+    </button>
+  );
+};
+
 interface VendorsTableColumnsProps {
   onViewDetails: (vendorId: string) => void;
   onApprove: (vendorId: string) => void;
   onVerify: (vendorId: string) => void;
   onReject: (vendorId: string) => void;
-  /** Current revenue sort, or undefined when the table is in its default order. */
-  revenueSort?: 'asc' | 'desc';
-  /** Cycles desc -> asc -> off. */
-  onToggleRevenueSort: () => void;
+  onSetInReview: (vendorId: string) => void;
+  /** Disables the state-changing items while a mutation is in flight. */
+  isUpdating?: boolean;
+  /** Column currently sorted, or undefined for the endpoint's default order. */
+  sort?: VendorSortColumn;
+  order?: 'asc' | 'desc';
+  /** Cycles that column desc -> asc -> off. */
+  onToggleSort: (column: VendorSortColumn) => void;
 }
 
 export const createVendorsTableColumns = ({
@@ -62,12 +117,23 @@ export const createVendorsTableColumns = ({
   onApprove,
   onVerify,
   onReject,
-  revenueSort,
-  onToggleRevenueSort,
+  onSetInReview,
+  isUpdating,
+  sort,
+  order,
+  onToggleSort,
 }: VendorsTableColumnsProps): ColumnDef<Business>[] => [
   {
     id: 'name',
-    header: "Vendor's name",
+    header: () => (
+      <SortableHeader
+        label="Vendor's name"
+        column="name"
+        sort={sort}
+        order={order}
+        onToggle={onToggleSort}
+      />
+    ),
     cell: ({ row }) => {
       const vendor = row.original;
       const name = getVendorName(vendor);
@@ -112,7 +178,15 @@ export const createVendorsTableColumns = ({
   },
   {
     accessorKey: 'createdAt',
-    header: 'Date onboarded',
+    header: () => (
+      <SortableHeader
+        label="Date onboarded"
+        column="date"
+        sort={sort}
+        order={order}
+        onToggle={onToggleSort}
+      />
+    ),
     cell: ({ row }) => (
       <div className="text-sm text-gray-600 dark:text-gray-400">
         {formatOnboardedDate(row.original.createdAt)}
@@ -122,7 +196,15 @@ export const createVendorsTableColumns = ({
   },
   {
     id: 'products',
-    header: 'Products',
+    header: () => (
+      <SortableHeader
+        label="Products"
+        column="products"
+        sort={sort}
+        order={order}
+        onToggle={onToggleSort}
+      />
+    ),
     cell: ({ row }) => (
       <div className="text-sm text-gray-600 dark:text-gray-400">
         {formatCount(row.original.total_products)}
@@ -132,7 +214,15 @@ export const createVendorsTableColumns = ({
   },
   {
     id: 'orders',
-    header: 'Orders',
+    header: () => (
+      <SortableHeader
+        label="Orders"
+        column="orders"
+        sort={sort}
+        order={order}
+        onToggle={onToggleSort}
+      />
+    ),
     cell: ({ row }) => (
       <div className="text-sm text-gray-600 dark:text-gray-400">
         {formatCount(row.original.total_orders)}
@@ -142,28 +232,14 @@ export const createVendorsTableColumns = ({
   },
   {
     id: 'revenue',
-    // Sorted server-side: revenue is a computed column, so the page being shown
-    // is not enough to order the whole table by it.
     header: () => (
-      <button
-        type="button"
-        onClick={onToggleRevenueSort}
-        className="flex items-center gap-1 text-inherit transition-colors hover:text-foreground"
-        aria-label={
-          revenueSort
-            ? `Revenue, sorted ${revenueSort === 'asc' ? 'ascending' : 'descending'}`
-            : 'Sort by revenue'
-        }
-      >
-        Revenue
-        {revenueSort === 'asc' ? (
-          <ArrowUp className="size-3.5" />
-        ) : revenueSort === 'desc' ? (
-          <ArrowDown className="size-3.5" />
-        ) : (
-          <ArrowUpDown className="size-3.5 opacity-40" />
-        )}
-      </button>
+      <SortableHeader
+        label="Revenue"
+        column="revenue"
+        sort={sort}
+        order={order}
+        onToggle={onToggleSort}
+      />
     ),
     cell: ({ row }) => (
       <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -193,36 +269,58 @@ export const createVendorsTableColumns = ({
     id: 'actions',
     header: '',
     cell: ({ row }) => {
-      const vendorId = row.original._id;
+      const vendor = row.original;
+      const status = (vendor.status ?? '').toString().toLowerCase();
+
+      // Only offer the transitions that would actually change something.
+      // "Approve" on an approved vendor is a no-op the admin has to reason
+      // about, and it makes the menu look like it did nothing.
+      const actions: RowAction[] = [
+        {
+          label: 'View details',
+          onSelect: () => onViewDetails(vendor._id),
+        },
+      ];
+
+      if (status !== 'approved' && status !== 'verified') {
+        actions.push({
+          label: 'Approve',
+          disabled: isUpdating,
+          onSelect: () => onApprove(vendor._id),
+        });
+      }
+      if (status !== 'verified') {
+        actions.push({
+          label: 'Verify',
+          disabled: isUpdating,
+          onSelect: () => onVerify(vendor._id),
+        });
+      }
+      if (status !== 'in-review' && status !== 'pending') {
+        // The mutation already existed and was wired on the detail page; the
+        // table never offered it, so sending a vendor back for review meant
+        // opening their page first.
+        actions.push({
+          label: 'Send to review',
+          disabled: isUpdating,
+          onSelect: () => onSetInReview(vendor._id),
+        });
+      }
+      if (status !== 'rejected') {
+        actions.push({
+          label: 'Reject',
+          destructive: true,
+          disabled: isUpdating,
+          onSelect: () => onReject(vendor._id),
+        });
+      }
+
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuLabel>Vendor actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => onViewDetails(vendorId)}>
-              <Eye className="size-4" /> View details
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onApprove(vendorId)}>
-              <CheckCircle2 className="size-4" /> Approve
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onVerify(vendorId)}>
-              <BadgeCheck className="size-4" /> Verify
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => onReject(vendorId)}
-              className="text-destructive"
-            >
-              <XCircle className="size-4" /> Reject
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <RowActionsMenu
+          title="Vendor actions"
+          triggerLabel={`Actions for ${getVendorName(vendor)}`}
+          actions={actions}
+        />
       );
     },
     enableSorting: false,

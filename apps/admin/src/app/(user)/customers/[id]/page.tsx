@@ -24,6 +24,10 @@ const CustomerDetailsPage = () => {
   });
   const customer = data?.data;
 
+  // One flag for the whole page: sections flipping out of their skeletons at
+  // different moments reads as the page breaking rather than loading.
+  const isBusy = isLoading || isFetching;
+
   const notImplemented = () => toast.info('This action is coming soon');
 
   return (
@@ -33,27 +37,24 @@ const CustomerDetailsPage = () => {
       {/* 1. Identity header + actions */}
       <CustomerDetailHeader
         customer={customer}
-        isLoading={isLoading || isFetching}
+        isLoading={isBusy}
         onEscalate={notImplemented}
         onEdit={notImplemented}
         onViewReviews={notImplemented}
       />
 
       {/* 2. Info grid */}
-      <CustomerInfoGrid
-        customer={customer}
-        onEditLocation={notImplemented}
-        onViewDateJoined={notImplemented}
-        onViewOrders={notImplemented}
-        onViewFollowedVendors={notImplemented}
-        onViewReservedFabric={notImplemented}
-      />
+      <CustomerInfoGrid customer={customer} isLoading={isBusy} />
 
       {/* 3. Analytics */}
       <CustomerAnalyticsSection customerId={id} />
 
       {/* 4. Wallet details + recent transactions */}
-      <CustomerWalletSection customer={customer} customerId={id} />
+      <CustomerWalletSection
+        customer={customer}
+        customerId={id}
+        isLoading={isBusy}
+      />
 
       {/* 5. Tickets */}
       <CustomerTicketsTable customerId={id} />

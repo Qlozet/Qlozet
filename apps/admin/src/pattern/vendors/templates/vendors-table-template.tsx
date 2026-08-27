@@ -2,9 +2,14 @@
 
 import type { PaginationState, OnChangeFn } from '@tanstack/react-table';
 import type { Business } from '@/redux/services/businesses/businesses.api-slice';
+import {
+  DateRangeFilter,
+  type DateRange,
+} from '@/pattern/common/molecules/date-range-filter';
 import { VendorSearchInput } from '../molecules/vendor-search-input';
 import { VendorStatusFilter } from '../molecules/vendor-status-filter';
 import { VendorsTable } from '../organisms/vendors-table';
+import type { VendorSortColumn } from '../molecules/vendors-table-columns';
 
 interface VendorsTableTemplateProps {
   vendors: Business[];
@@ -21,8 +26,11 @@ interface VendorsTableTemplateProps {
   totalRows?: number;
   search: string;
   onSearchChange: (search: string) => void;
-  revenueSort?: 'asc' | 'desc';
-  onToggleRevenueSort: () => void;
+  sort?: VendorSortColumn;
+  order?: 'asc' | 'desc';
+  onToggleSort: (column: VendorSortColumn) => void;
+  dateRange: DateRange;
+  onDateRangeChange: (range: DateRange) => void;
 }
 
 export const VendorsTableTemplate = ({
@@ -40,8 +48,11 @@ export const VendorsTableTemplate = ({
   totalRows,
   search,
   onSearchChange,
-  revenueSort,
-  onToggleRevenueSort,
+  sort,
+  order,
+  onToggleSort,
+  dateRange,
+  onDateRangeChange,
 }: VendorsTableTemplateProps) => {
   return (
     <div className="space-y-4">
@@ -51,6 +62,7 @@ export const VendorsTableTemplate = ({
         </h2>
         <div className="flex items-center gap-3">
           <VendorSearchInput value={search} onChange={onSearchChange} />
+          <DateRangeFilter value={dateRange} onChange={onDateRangeChange} />
           <VendorStatusFilter value={status} onChange={onStatusChange} />
         </div>
       </div>
@@ -66,8 +78,9 @@ export const VendorsTableTemplate = ({
         setPagination={setPagination}
         pageCount={pageCount}
         totalRows={totalRows}
-        revenueSort={revenueSort}
-        onToggleRevenueSort={onToggleRevenueSort}
+        sort={sort}
+        order={order}
+        onToggleSort={onToggleSort}
       />
     </div>
   );

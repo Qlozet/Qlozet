@@ -7,6 +7,11 @@ import NiceModal from '@ebay/nice-modal-react';
 import { WorkInProgressModal } from '@/pattern/common/organisms/work-in-progress-modal';
 import { VendorStatsCards } from '@/pattern/vendors/templates/vendor-stats-cards';
 import { VendorsTableTemplate } from '@/pattern/vendors/templates/vendors-table-template';
+import type { VendorSortColumn } from '@/pattern/vendors/molecules/vendors-table-columns';
+import {
+  EMPTY_DATE_RANGE,
+  type DateRange,
+} from '@/pattern/common/molecules/date-range-filter';
 import {
   useGetBusinessesQuery,
   type VendorSummary,
@@ -22,9 +27,12 @@ const VendorsPage = () => {
   const [status, setStatus] = useState('');
   const [search, setSearch] = useState('');
   // undefined = the endpoint's default order (oldest first).
-  const [revenueSort, setRevenueSort] = useState<'asc' | 'desc' | undefined>(
-    undefined
-  );
+  const [sortState, setSortState] = useState<{
+    column?: VendorSortColumn;
+    order?: 'asc' | 'desc';
+  }>({});
+  const { column: sort, order } = sortState;
+  const [dateRange, setDateRange] = useState<DateRange>(EMPTY_DATE_RANGE);
 
   const { data, isLoading, isFetching, isSuccess, isError, error } =
     useGetBusinessesQuery({
@@ -32,9 +40,15 @@ const VendorsPage = () => {
       size: pagination.pageSize,
       status: status || undefined,
       search: search || undefined,
+      // Every one of these is applied by the endpoint's aggregation, not to the
+      // page already on screen: products, orders and revenue are computed per
+      // row, and a client-side sort or filter would only ever cover one page.
       // Both or neither: `order` alone would silently reverse the default sort.
-      sort: revenueSort ? 'revenue' : undefined,
-      order: revenueSort,
+      sort,
+      order: sort ? order : undefined,
+      startDate: dateRange.start || undefined,
+      // End of the chosen day, so a single-day range covers that whole day.
+      endDate: dateRange.end ? `${dateRange.end}T23:59:59.999Z` : undefined,
     });
 
   const paginated = data?.data as any;
@@ -67,14 +81,23 @@ const VendorsPage = () => {
     toFirstPage();
   };
 
-  // desc -> asc -> off, so a third click restores the default order rather
-  // than trapping the table in a sort.
-  const toggleRevenueSort = useCallback(() => {
-    setRevenueSort((current) =>
-      current === undefined ? 'desc' : current === 'desc' ? 'asc' : undefined
-    );
-    toFirstPage();
+  // desc -> asc -> off, so a third click restores the endpoint's default order
+  // rather than trapping the table in a sort. A different column starts at
+  // desc, which is what "show me the biggest" means for every sortable column
+  // here.
+  const toggleSort = useCallback((column: VendorSortColumn) => {
+    setSortState((current) => {
+      if (current.column !== column) return { column, order: 'desc' };
+      if (current.order === 'desc') return { column, order: 'asc' };
+      return {};
+    });
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   }, []);
+
+  const handleDateRangeChange = (range: DateRange) => {
+    setDateRange(range);
+    toFirstPage();
+  };
 
   return (
     <div className="w-full min-h-screen h-fit space-y-6 pb-10">
@@ -102,8 +125,11 @@ const VendorsPage = () => {
         onStatusChange={handleStatusChange}
         search={search}
         onSearchChange={handleSearchChange}
-        revenueSort={revenueSort}
-        onToggleRevenueSort={toggleRevenueSort}
+        sort={sort}
+        order={order}
+        onToggleSort={toggleSort}
+        dateRange={dateRange}
+        onDateRangeChange={handleDateRangeChange}
         pagination={pagination}
         setPagination={setPagination}
         pageCount={pageCount}

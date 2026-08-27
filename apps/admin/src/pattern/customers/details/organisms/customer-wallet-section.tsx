@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { Wallet, CircleDollarSign, Undo2, HandCoins } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MetricCard } from '@/pattern/common/molecules/metric-card';
+import { StatsCardSkeleton } from '@/pattern/dashboard/molecules/stats-card-skeleton';
 import type { Customer } from '@/redux/services/customers/customers.api-slice';
 import {
   formatNaira,
@@ -18,6 +19,7 @@ interface CustomerWalletSectionProps {
   customer?: Customer;
   /** Route id — the transactions table needs it before the record loads. */
   customerId: string;
+  isLoading?: boolean;
 }
 
 const Icon = ({ bg, children }: { bg: string; children: ReactNode }) => (
@@ -37,6 +39,7 @@ const Icon = ({ bg, children }: { bg: string; children: ReactNode }) => (
 export const CustomerWalletSection = ({
   customer,
   customerId,
+  isLoading,
 }: CustomerWalletSectionProps) => {
   const c = customer ?? ({} as Customer);
 
@@ -53,45 +56,54 @@ export const CustomerWalletSection = ({
         </h2>
       </div>
 
-      {/* Metric cards */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <MetricCard
-          title="Wallet Balance"
-          value={formatNaira(getCustomerWalletBalance(c))}
-          icon={
-            <Icon bg="bg-[#5DDAB4]">
-              <Wallet className="size-6" />
-            </Icon>
-          }
-        />
-        <MetricCard
-          title="Token Balance"
-          value={tokenBalance}
-          icon={
-            <Icon bg="bg-[#FFB200]">
-              <CircleDollarSign className="size-6" />
-            </Icon>
-          }
-        />
-        <MetricCard
-          title="Total Returns"
-          value={formatNaira(getCustomerTotalReturns(c))}
-          icon={
-            <Icon bg="bg-[#FF7976]">
-              <Undo2 className="size-6" />
-            </Icon>
-          }
-        />
-        <MetricCard
-          title="Lifetime Spending"
-          value={formatNaira(getCustomerLifetimeSpending(c))}
-          icon={
-            <Icon bg="bg-[#FF7976]">
-              <HandCoins className="size-6" />
-            </Icon>
-          }
-        />
-      </div>
+      {/* Metric cards. Four dashes look like a customer with no wallet, so
+          while the payload is in flight they are skeletons instead. */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <StatsCardSkeleton key={i} />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <MetricCard
+            title="Wallet Balance"
+            value={formatNaira(getCustomerWalletBalance(c))}
+            icon={
+              <Icon bg="bg-[#5DDAB4]">
+                <Wallet className="size-6" />
+              </Icon>
+            }
+          />
+          <MetricCard
+            title="Token Balance"
+            value={tokenBalance}
+            icon={
+              <Icon bg="bg-[#FFB200]">
+                <CircleDollarSign className="size-6" />
+              </Icon>
+            }
+          />
+          <MetricCard
+            title="Total Returns"
+            value={formatNaira(getCustomerTotalReturns(c))}
+            icon={
+              <Icon bg="bg-[#FF7976]">
+                <Undo2 className="size-6" />
+              </Icon>
+            }
+          />
+          <MetricCard
+            title="Lifetime Spending"
+            value={formatNaira(getCustomerLifetimeSpending(c))}
+            icon={
+              <Icon bg="bg-[#FF7976]">
+                <HandCoins className="size-6" />
+              </Icon>
+            }
+          />
+        </div>
+      )}
 
       {/* Recent transactions */}
       <CustomerTransactionsTable customerId={customerId} />

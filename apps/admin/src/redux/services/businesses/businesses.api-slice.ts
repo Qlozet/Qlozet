@@ -61,6 +61,9 @@ export interface GetBusinessesParams {
   /** Column to order by; the endpoint defaults to 'date'. */
   sort?: 'revenue' | 'products' | 'orders' | 'date' | 'name';
   order?: 'asc' | 'desc';
+  /** Date-onboarded range, matched on createdAt. ISO strings. */
+  startDate?: string;
+  endDate?: string;
 }
 
 /** Whole-collection figures for the vendors page's stat cards. */
