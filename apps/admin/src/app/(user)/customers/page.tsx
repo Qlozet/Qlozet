@@ -4,7 +4,15 @@ import { useEffect, useMemo, useState } from 'react';
 import type { PaginationState } from '@tanstack/react-table';
 import { CustomerStatsCards } from '@/pattern/customers/templates/customer-stats-cards';
 import { CustomersTableTemplate } from '@/pattern/customers/templates/customers-table-template';
-import { useGetCustomersQuery } from '@/redux/services/customers/customers.api-slice';
+import {
+  useGetCustomersQuery,
+  type CustomerSummary,
+} from '@/redux/services/customers/customers.api-slice';
+import { readPageCount, readTotalItems } from '@/redux/services/types';
+import {
+  EMPTY_DATE_RANGE,
+  type DateRange,
+} from '@/pattern/common/molecules/date-range-filter';
 
 const PAGE_SIZE = 5;
 
@@ -15,6 +23,7 @@ export default function CustomersPage() {
   });
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [dateRange, setDateRange] = useState<DateRange>(EMPTY_DATE_RANGE);
 
   // Debounce the search input so we don't refetch on every keystroke.
   useEffect(() => {
@@ -30,18 +39,35 @@ export default function CustomersPage() {
       page: pagination.pageIndex + 1,
       size: pagination.pageSize,
       search: debouncedSearch || undefined,
+      // Sent to the server: filtering client-side only ever filtered the page
+      // on screen, so a range matching rows on page 3 showed an empty table.
+      startDate: dateRange.start || undefined,
+      // End of the chosen day, so a single-day range includes that whole day
+      // rather than only midnight.
+      endDate: dateRange.end ? `${dateRange.end}T23:59:59.999Z` : undefined,
     });
 
   const paginated = data?.data;
   const customers = useMemo(() => paginated?.data ?? [], [paginated]);
-  const totalCount =
-    paginated?.totalCount ?? paginated?.total ?? customers.length;
-  const pageCount = Math.max(Math.ceil(totalCount / pagination.pageSize), 1);
+  const summary = (paginated as { summary?: CustomerSummary } | undefined)
+    ?.summary;
+  const totalCount = readTotalItems(paginated) ?? customers.length;
+  const pageCount = readPageCount(paginated, pagination.pageSize);
+
+  // Any change to what is being listed returns the reader to page 1.
+  const handleDateRangeChange = (range: DateRange) => {
+    setDateRange(range);
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  };
 
   return (
     <div className="w-full min-h-screen h-fit space-y-6 pb-10">
       {/* Customer metrics */}
-      <CustomerStatsCards totalFromList={totalCount} />
+      <CustomerStatsCards
+        summary={summary}
+        totalFromList={totalCount}
+        isLoading={isLoading}
+      />
 
       {/* Customers table */}
       <CustomersTableTemplate
@@ -56,6 +82,9 @@ export default function CustomersPage() {
         pagination={pagination}
         setPagination={setPagination}
         pageCount={pageCount}
+        totalRows={totalCount}
+        dateRange={dateRange}
+        onDateRangeChange={handleDateRangeChange}
       />
     </div>
   );

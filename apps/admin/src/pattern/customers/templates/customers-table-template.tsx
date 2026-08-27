@@ -1,12 +1,11 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback } from 'react';
 import type { PaginationState, OnChangeFn } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
 import {
   DateRangeFilter,
-  EMPTY_DATE_RANGE,
   type DateRange,
 } from '@/pattern/common/molecules/date-range-filter';
 import { downloadCsv, toCsv } from '@/lib/csv';
@@ -32,6 +31,10 @@ interface CustomersTableTemplateProps {
   pagination: PaginationState;
   setPagination: OnChangeFn<PaginationState>;
   pageCount: number;
+  /** Rows across every page, so the footer can report a real total. */
+  totalRows?: number;
+  dateRange: DateRange;
+  onDateRangeChange: (range: DateRange) => void;
 }
 
 const CSV_HEADERS = ['Name', 'Email', 'Phone', 'Total orders', 'Date joined'];
@@ -56,33 +59,27 @@ export const CustomersTableTemplate = ({
   pagination,
   setPagination,
   pageCount,
+  totalRows,
+  dateRange,
+  onDateRangeChange,
 }: CustomersTableTemplateProps) => {
-  const [dateRange, setDateRange] = useState<DateRange>(EMPTY_DATE_RANGE);
-
-  // GET /admin/customer takes no date params, so the join-date filter is
-  // applied to the rows already on screen rather than sent to the backend.
-  const visible = useMemo(() => {
-    if (!dateRange.start && !dateRange.end) return customers;
-    return customers.filter((customer) => {
-      const joined = String(customer.createdAt ?? '').slice(0, 10);
-      if (!joined) return false;
-      if (dateRange.start && joined < dateRange.start) return false;
-      if (dateRange.end && joined > dateRange.end) return false;
-      return true;
-    });
-  }, [customers, dateRange]);
-
+  // The date range goes to the server. It used to filter the rows already on
+  // screen, which on a paginated list only ever filtered ONE page — so a range
+  // matching customers on page 3 showed nothing while claiming to have filtered
+  // everything. GET /admin/customer accepts startDate/endDate.
   const handleExport = useCallback(() => {
-    if (visible.length === 0) {
+    if (customers.length === 0) {
       toast.info('There are no customers to export.');
       return;
     }
-    downloadCsv('customers.csv', toCsv(CSV_HEADERS, visible.map(toCsvRow)));
-  }, [visible]);
+    // This page only. The endpoint has no "all rows" mode, and fetching every
+    // page to build the file would hammer it.
+    downloadCsv('customers.csv', toCsv(CSV_HEADERS, customers.map(toCsvRow)));
+  }, [customers]);
 
   return (
     <CustomersTable
-      data={visible}
+      data={customers}
       isLoading={isLoading}
       isFetching={isFetching}
       isSuccess={isSuccess}
@@ -91,6 +88,7 @@ export const CustomersTableTemplate = ({
       pagination={pagination}
       setPagination={setPagination}
       pageCount={pageCount}
+      totalRows={totalRows}
       toolbar={
         <TableToolbar
           title="Customers"
@@ -98,7 +96,7 @@ export const CustomersTableTemplate = ({
           onSearchChange={onSearchChange}
           onExport={handleExport}
           filterControl={
-            <DateRangeFilter value={dateRange} onChange={setDateRange} />
+            <DateRangeFilter value={dateRange} onChange={onDateRangeChange} />
           }
         />
       }

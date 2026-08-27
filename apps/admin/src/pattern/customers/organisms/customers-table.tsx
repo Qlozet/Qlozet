@@ -18,6 +18,8 @@ interface CustomersTableProps {
   pagination: PaginationState;
   setPagination: OnChangeFn<PaginationState>;
   pageCount: number;
+  /** Rows across every page, so the footer can report a real total. */
+  totalRows?: number;
   toolbar?: React.ReactNode;
 }
 
@@ -31,6 +33,7 @@ export const CustomersTable = ({
   pagination,
   setPagination,
   pageCount,
+  totalRows,
   toolbar,
 }: CustomersTableProps) => {
   const router = useRouter();
@@ -55,6 +58,7 @@ export const CustomersTable = ({
       pagination={pagination}
       setPagination={setPagination}
       pageCount={pageCount}
+      totalRows={totalRows}
       toolbar={toolbar}
       onRowClick={(customer) =>
         router.push(`${APP_ROUTES.customers}/${customer._id}`)
