@@ -22,15 +22,17 @@ import { cn } from '@/lib/utils';
 
 /**
  * Radix dismisses a Dialog when it detects a pointer interaction outside its
- * Content. The media panel is deliberately rendered outside, so pass this to
- * `onInteractOutside` on any SheetContent that renders an OrderMediaPanel.
+ * Content. The media panel — and the bespoke customer-chat panel — are
+ * deliberately rendered outside, so pass this to `onInteractOutside` on any
+ * SheetContent that renders them, to cancel that dismissal.
  */
 export const ignoreMediaPanelInteraction = (event: {
   target: EventTarget | null;
   preventDefault: () => void;
 }) => {
   const target = event.target as HTMLElement | null;
-  if (target?.closest?.('[data-order-media-panel]')) event.preventDefault();
+  if (target?.closest?.('[data-order-media-panel], [data-order-chat-panel]'))
+    event.preventDefault();
 };
 
 // Matches the drawer geometry: 440px wide, offset 24px from the right edge.

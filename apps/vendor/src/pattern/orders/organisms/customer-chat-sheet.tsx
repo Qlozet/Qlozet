@@ -1,15 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { Loader2, Lock } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { Loader2, Lock, Store, X } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@/components/ui/sheet';
 import { ChatMessageBubble } from '@/pattern/support/molecules/chat-message-bubble';
 import { ChatComposer } from '@/pattern/support/molecules/chat-composer';
 import {
@@ -52,6 +46,20 @@ export function CustomerChatSheet({
   const [sendMessage] = useSendOrderMessageMutation();
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Mount + slide/fade so the panel animates in and out.
+  const [mounted, setMounted] = useState(false);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      const id = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(id);
+    }
+    setVisible(false);
+    const t = window.setTimeout(() => setMounted(false), 500);
+    return () => window.clearTimeout(t);
+  }, [open]);
+
   // Live delivery — refetch the thread when a new message lands.
   useOrderMessageSocket(open ? reference : null, open, () => {
     refetch();
@@ -60,7 +68,9 @@ export function CustomerChatSheet({
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [messages, isLoading]);
+  }, [messages, isLoading, visible]);
+
+  if (!mounted || typeof document === 'undefined') return null;
 
   const handleSend = async (text: string) => {
     try {
@@ -74,17 +84,56 @@ export function CustomerChatSheet({
     }
   };
 
-  return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        side="right"
-        className="flex w-full flex-col gap-0 p-0 sm:max-w-md"
-      >
-        <SheetHeader className="border-b border-border px-5 py-4">
-          <SheetTitle>{customerName || 'Customer'}</SheetTitle>
-          <SheetDescription>Order {reference}</SheetDescription>
-        </SheetHeader>
+  const close = () => onOpenChange(false);
 
+  return createPortal(
+    <>
+      {/* Backdrop — above the drawer (z-50), media panel (z-55) and design
+          preview (z-70). data-order-chat-panel + pointer-events-auto so it's
+          clickable and doesn't dismiss the underlying order drawer. */}
+      <div
+        data-order-chat-panel
+        className={`pointer-events-auto fixed inset-0 z-[78] bg-black/40 transition-opacity duration-300 ${
+          visible ? 'opacity-100' : 'pointer-events-none opacity-0'
+        }`}
+        onClick={close}
+      />
+
+      {/* Floating panel — bottom sheet on mobile, right panel on desktop. */}
+      <div
+        data-order-chat-panel
+        className={`pointer-events-auto fixed bottom-3 left-3 right-3 z-[80] flex max-h-[75vh] flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-2xl transition-all duration-500 ease-out dark:bg-card lg:bottom-6 lg:left-auto lg:right-6 lg:top-6 lg:max-h-[640px] lg:w-[420px] ${
+          visible
+            ? 'translate-y-0 opacity-100 lg:translate-x-0'
+            : 'translate-y-[calc(100%+24px)] opacity-100 lg:translate-y-0 lg:translate-x-6 lg:opacity-0'
+        }`}
+      >
+        {/* Header */}
+        <div className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3">
+          <div className="flex items-center gap-2.5">
+            <div className="flex size-9 items-center justify-center rounded-full bg-[#F1F1F1] dark:bg-[#4A4949]">
+              <Store className="size-4 text-primary" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-grey-black dark:text-white">
+                {customerName || 'Customer'}
+              </span>
+              <span className="text-[11px] text-grey2 dark:text-gray-400">
+                Order {reference}
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={close}
+            aria-label="Close chat"
+            className="flex size-8 items-center justify-center rounded-full text-grey3 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/10"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+
+        {/* Messages */}
         <div
           ref={scrollRef}
           className="flex-1 space-y-3 overflow-y-auto bg-[#FAF9F7] px-4 py-4 dark:bg-[#2A2A2A]"
@@ -123,6 +172,7 @@ export function CustomerChatSheet({
           )}
         </div>
 
+        {/* Composer */}
         {canSend ? (
           <ChatComposer onSend={handleSend} />
         ) : (
@@ -133,7 +183,8 @@ export function CustomerChatSheet({
             </span>
           </div>
         )}
-      </SheetContent>
-    </Sheet>
+      </div>
+    </>,
+    document.body
   );
 }
