@@ -38,11 +38,9 @@ export const getVendorEmail = (vendor: Business): string =>
 export const getVendorInitial = (vendor: Business): string =>
   getVendorName(vendor).charAt(0).toUpperCase() || 'V';
 
-// Naira-formatted currency, e.g. ₦180,000
-export const formatNaira = (value?: number): string => {
-  if (typeof value !== 'number' || Number.isNaN(value)) return '—';
-  return `₦${value.toLocaleString()}`;
-};
+// Re-exported so the vendor screens and everything else format money the same
+// way. This used to be a second implementation with the same name.
+export { formatNaira } from './orders';
 
 export const formatCount = (value?: number): string => {
   if (typeof value !== 'number' || Number.isNaN(value)) return '—';

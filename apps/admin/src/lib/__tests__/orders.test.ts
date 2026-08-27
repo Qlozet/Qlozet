@@ -39,8 +39,8 @@ afterEach(() => {
 
 describe('formatters', () => {
   it('formats money, including zero', () => {
-    expect(formatNaira(180000)).toBe('NGN 180,000');
-    expect(formatNaira(0)).toBe('NGN 0');
+    expect(formatNaira(180000)).toBe('₦180,000');
+    expect(formatNaira(0)).toBe('₦0');
   });
 
   it('dashes non-numeric money rather than printing NaN', () => {

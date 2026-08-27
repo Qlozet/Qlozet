@@ -118,3 +118,76 @@ describe('OrderStatsCards', () => {
     expect(screen.getAllByText('0').length).toBe(2);
   });
 });
+
+describe('OrderStatsCards — change badges', () => {
+  it('renders a badge on each of the three count cards', () => {
+    withMetrics({
+      total_orders: 1000,
+      orders_delivered: 900,
+      orders_in_transit: 3,
+      changes: {
+        period_days: 30,
+        total_orders: 2.5,
+        orders_delivered: -1.2,
+        orders_in_transit: 8,
+      },
+    });
+    render(<OrderStatsCards />);
+
+    expect(screen.getByText('2.5%')).toBeInTheDocument();
+    expect(screen.getByText('-1.2%')).toBeInTheDocument();
+    expect(screen.getByText('8%')).toBeInTheDocument();
+  });
+
+  it('omits a badge the API could not compute', () => {
+    withMetrics({
+      total_orders: 1000,
+      changes: { period_days: 30, total_orders: null, orders_delivered: 4 },
+    });
+    render(<OrderStatsCards />);
+
+    expect(screen.getByText('4%')).toBeInTheDocument();
+    expect(screen.queryByText('null%')).not.toBeInTheDocument();
+  });
+
+  it('never puts a badge on the product-name card', () => {
+    // A percentage movement on a NAME has no meaning, whatever the design
+    // mock shows — the value is not a quantity.
+    withMetrics({
+      must_purchase_products: [
+        { product_id: 'p1', name: 'Amasi Dress', totalOrdered: 9 },
+      ],
+      changes: { period_days: 30 },
+    });
+    render(<OrderStatsCards />);
+
+    expect(screen.getByText('Amasi Dress')).toBeInTheDocument();
+    expect(screen.queryByText(/%$/)).not.toBeInTheDocument();
+  });
+
+  it('sizes the product name down so a long one fits the card', () => {
+    withMetrics({
+      must_purchase_products: [
+        {
+          product_id: 'p1',
+          name: 'Hand-embroidered Aso-Oke Two-piece Set',
+          totalOrdered: 9,
+        },
+      ],
+    });
+    render(<OrderStatsCards />);
+
+    // The numeric cards use text-2xl; a name needs to be smaller and allowed
+    // to wrap before it truncates.
+    const name = screen.getByText('Hand-embroidered Aso-Oke Two-piece Set');
+    expect(name).toHaveClass('text-base');
+    expect(name).toHaveClass('line-clamp-2');
+    expect(name).not.toHaveClass('text-2xl');
+  });
+
+  it('keeps the numeric cards at the larger size', () => {
+    withMetrics({ total_orders: 1000 });
+    render(<OrderStatsCards />);
+    expect(screen.getByText('1,000')).toHaveClass('text-2xl');
+  });
+});

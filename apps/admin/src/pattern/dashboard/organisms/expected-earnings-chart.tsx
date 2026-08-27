@@ -12,7 +12,7 @@ import {
 import { BarChart3 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatNaira } from '@/lib/orders';
-import { hasAnyValue, maxOf, readSeries } from '@/lib/dashboard-series';
+import { maxOf, readSeries, withoutZeroes } from '@/lib/dashboard-series';
 import { useGetAdminDashboardChartsQuery } from '@/redux/services/dashboard/dashboard.api-slice';
 import { CustomXAxisTick } from '../molecules/custom-x-axis-tick';
 import { ChartEmptyState } from '../molecules/chart-empty-state';
@@ -29,7 +29,9 @@ export const ExpectedEarningsChart = () => {
   const { data, isLoading } = useGetAdminDashboardChartsQuery();
   const chart = data?.data?.charts?.expectedEarnings;
 
-  const series = useMemo(() => readSeries(chart), [chart]);
+  // Drop the zero months. A release month whose commission sums to nothing is
+  // not a bar — left in, it contributed an axis tick with no column above it.
+  const series = useMemo(() => withoutZeroes(readSeries(chart)), [chart]);
   const maxValue = useMemo(() => maxOf(series), [series]);
 
   // `total` is not the sum of the bars: commission on orders that haven't been
@@ -37,7 +39,13 @@ export const ExpectedEarningsChart = () => {
   // money owed, so it belongs in the headline even though it has no bar.
   const total = chart?.total ?? 0;
   const unscheduled = chart?.unscheduled ?? 0;
-  const isEmpty = total === 0 && !hasAnyValue(series);
+
+  // Two independent questions. There can be money to report with nothing to
+  // plot — when every naira of it is still unscheduled — so the headline and
+  // the chart area decide separately. Tying them together rendered an empty
+  // plot area under a real figure.
+  const hasMoney = total > 0;
+  const hasBars = series.length > 0;
 
   if (isLoading) return <ChartSkeleton />;
 
@@ -50,7 +58,7 @@ export const ExpectedEarningsChart = () => {
       <CardContent className="flex h-full flex-col px-6 pt-7">
         <p className="text-sm text-[hsla(210,9%,31%,1)]">Expected earnings</p>
 
-        {!isEmpty && (
+        {hasMoney && (
           <>
             <p className="mt-2 text-2xl font-bold text-[hsla(210,9%,31%,1)]">
               {formatNaira(total)}
@@ -65,9 +73,15 @@ export const ExpectedEarningsChart = () => {
 
         <div className="mt-6 flex flex-1 items-center">
           <ChartEmptyState
-            isEmpty={isEmpty}
-            message="Nothing in the pipeline"
-            description="Expected earnings show the platform commission on orders that haven't paid out yet."
+            isEmpty={!hasBars}
+            message={
+              hasMoney ? 'Nothing scheduled yet' : 'Nothing in the pipeline'
+            }
+            description={
+              hasMoney
+                ? 'None of this commission has a release date yet — one is set when an order is delivered.'
+                : "Expected earnings show the platform commission on orders that haven't paid out yet."
+            }
             height={220}
           >
             <ResponsiveContainer width="100%" height="100%">

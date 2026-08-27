@@ -119,7 +119,7 @@ describe('ProfileSheet', () => {
     expect(screen.getByText('Vendors Managed')).toBeInTheDocument();
     expect(screen.getByText('Tickets resolved')).toBeInTheDocument();
     // The design mocks a dollar figure; the marketplace trades in naira.
-    expect(screen.getByText('NGN 500,000')).toBeInTheDocument();
+    expect(screen.getByText('₦500,000')).toBeInTheDocument();
   });
 
   it('keeps the per-admin and platform-wide figures distinct', () => {

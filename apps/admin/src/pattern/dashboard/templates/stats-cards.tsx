@@ -1,6 +1,7 @@
 'use client';
 
 import { APP_ROUTES } from '@/lib/routes';
+import { formatChange, formatNaira } from '@/lib/orders';
 import { StatCartIcon } from '../atoms/stat-cart-icon';
 import { StatTruckIcon } from '../atoms/stat-truck-icon';
 import { StatsCardsSkeleton } from '../molecules/stats-card-skeleton';
@@ -39,18 +40,22 @@ const formatValue = (
 ): string => {
   if (typeof value !== 'number') return fallback;
   if (percent) return `${value}%`;
-  const formatted = value.toLocaleString();
-  return currency ? `N ${formatted}` : formatted;
+  return currency ? formatNaira(value) : value.toLocaleString();
 };
 
 export const StatsCards = () => {
   // Admin dashboard metrics. The card set matches the Figma overview. Five of
   // the six come straight off GET /admin/dashboard; Measurement Accuracy has no
-  // backend definition yet and dashes. Nothing here invents a number — see the
-  // deliberate absence of the design's "2.5%" change badges, which no endpoint
-  // supports.
+  // backend definition yet and dashes.
+  //
+  // The design's "2.5%" change badges are now real: `changes` compares the last
+  // 30 days against the 30 before. A badge is absent — rather than showing 0% —
+  // when the earlier window had nothing to compare against, so a card never
+  // claims a trend the data cannot support. Measurement Accuracy has no badge
+  // for the same reason it has no value.
   const { data, isLoading } = useGetAdminDashboardQuery();
   const metrics = data?.data;
+  const changes = metrics?.changes;
 
   if (isLoading) {
     return <StatsCardsSkeleton />;
@@ -61,6 +66,7 @@ export const StatsCards = () => {
       id: 1,
       title: 'Total Vendors',
       value: formatValue(metrics?.total_vendors, '—'),
+      change: formatChange(changes?.total_vendors),
       icon: <StatCartIcon fill="#57CAEB" />,
       viewAllLink: APP_ROUTES.vendors,
     },
@@ -68,6 +74,7 @@ export const StatsCards = () => {
       id: 2,
       title: 'Verified Vendors',
       value: formatValue(metrics?.verified_vendors, '—'),
+      change: formatChange(changes?.verified_vendors),
       icon: <StatCartIcon fill="#57CAEB" />,
       viewAllLink: APP_ROUTES.vendors,
     },
@@ -77,12 +84,14 @@ export const StatsCards = () => {
       // of the Gross Sales card, so this renders as a plain count.
       title: 'Total Customers',
       value: formatValue(metrics?.total_customers, '—'),
+      change: formatChange(changes?.total_customers),
       icon: <StatTruckIcon fill="#5DDAB4" />,
     },
     {
       id: 4,
       title: 'Total Orders',
       value: formatValue(metrics?.total_orders, '—'),
+      change: formatChange(changes?.total_orders),
       icon: <StatCartIcon fill="#57CAEB" />,
       viewAllLink: APP_ROUTES.orders,
     },
@@ -92,6 +101,7 @@ export const StatsCards = () => {
       value: formatValue(metrics?.gross_sales, '—', {
         currency: true,
       }),
+      change: formatChange(changes?.gross_sales),
       icon: <StatTruckIcon fill="#5DDAB4" />,
     },
     {
@@ -113,6 +123,7 @@ export const StatsCards = () => {
           key={stat.id}
           title={stat.title}
           value={stat.value}
+          change={stat.change}
           icon={stat.icon}
           viewAllLink={stat.viewAllLink}
         />

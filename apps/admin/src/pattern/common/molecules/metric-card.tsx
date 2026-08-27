@@ -17,6 +17,11 @@ export interface MetricCardProps {
   subLabel?: string;
   /** When set, renders a "View All" link in the footer. */
   viewAllLink?: string;
+  /**
+   * Overrides the value's typography. Cards whose "value" is a name rather
+   * than a number need a smaller size and room to wrap.
+   */
+  valueClassName?: string;
   className?: string;
 }
 
@@ -30,6 +35,7 @@ export const MetricCard = ({
   subLabel,
   viewAllLink,
   className,
+  valueClassName,
 }: MetricCardProps) => {
   const isPositive = !change?.startsWith('-');
 
@@ -56,7 +62,12 @@ export const MetricCard = ({
                   </span>
                 </If>
               </div>
-              <p className="text-2xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white">
+              <p
+                className={cn(
+                  'text-2xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white',
+                  valueClassName
+                )}
+              >
                 {value}
               </p>
             </div>

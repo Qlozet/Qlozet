@@ -26,6 +26,24 @@ export interface MustPurchaseProduct {
   name?: string | null;
 }
 
+/**
+ * Percentage movement over the last `period_days` versus the window before it.
+ *
+ * A field is `null` when the previous window had nothing to compare against —
+ * the card shows no badge rather than assert a trend it cannot compute. 0 is a
+ * real "no movement" and does render.
+ */
+export interface AdminDashboardChanges {
+  period_days: number;
+  total_orders: number | null;
+  orders_delivered: number | null;
+  orders_in_transit: number | null;
+  total_vendors: number | null;
+  verified_vendors: number | null;
+  total_customers: number | null;
+  gross_sales: number | null;
+}
+
 export interface AdminDashboardMetrics {
   total_orders?: number;
   orders_delivered?: number;
@@ -36,6 +54,8 @@ export interface AdminDashboardMetrics {
   /** Sum of paid order totals, in naira, before refunds and commission. */
   gross_sales?: number;
   must_purchase_products?: MustPurchaseProduct[];
+  /** Windowed, unlike every figure above it. Absent on older deployments. */
+  changes?: AdminDashboardChanges;
   [key: string]: unknown;
 }
 
