@@ -32,7 +32,7 @@ export const createVariantProductsColumns = ({
     cell: ({ row }) => {
       const img = getProductImage(row.original);
       return (
-        <div className="h-[31px] w-[51px] overflow-hidden rounded-[8px] border border-border bg-gray-50">
+        <div className="h-[31px] w-[51px] overflow-hidden rounded-[8px] border border-border bg-gray-50 dark:bg-muted">
           {img ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -50,7 +50,7 @@ export const createVariantProductsColumns = ({
     id: 'name',
     header: 'Product name',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-700">
+      <span className="text-sm text-gray-700 dark:text-gray-200">
         {getProductName(row.original)}
       </span>
     ),
@@ -60,7 +60,7 @@ export const createVariantProductsColumns = ({
     id: 'price',
     header: 'Product price',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-700">
+      <span className="text-sm text-gray-700 dark:text-gray-200">
         {formatProductPrice(row.original)}
       </span>
     ),
@@ -70,7 +70,7 @@ export const createVariantProductsColumns = ({
     id: 'category',
     header: 'Category',
     cell: ({ row }) => (
-      <span className="text-sm capitalize text-gray-700">
+      <span className="text-sm capitalize text-gray-700 dark:text-gray-200">
         {getProductCategory(row.original)}
       </span>
     ),
@@ -80,7 +80,7 @@ export const createVariantProductsColumns = ({
     id: 'productType',
     header: 'Product type',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-700">
+      <span className="text-sm text-gray-700 dark:text-gray-200">
         {getProductType(row.original)}
       </span>
     ),
@@ -90,7 +90,7 @@ export const createVariantProductsColumns = ({
     id: 'tag',
     header: 'Tag',
     cell: ({ row }) => (
-      <span className="text-sm capitalize text-gray-700">
+      <span className="text-sm capitalize text-gray-700 dark:text-gray-200">
         {getProductTag(row.original)}
       </span>
     ),
@@ -102,7 +102,7 @@ export const createVariantProductsColumns = ({
     cell: ({ row }) => {
       const { stock, variantCount } = getProductQuantity(row.original);
       return (
-        <div className="flex items-center gap-2 text-sm text-gray-700">
+        <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
           <Badge
             variant={stockBadgeVariant(stock)}
             shape="square"

@@ -92,7 +92,9 @@ export const createVendorsTableColumns = ({
               getVendorInitial(vendor)
             )}
           </span>
-          <span className="text-sm font-medium text-gray-900">{name}</span>
+          <span className="text-sm font-medium text-gray-900 dark:text-white">
+            {name}
+          </span>
         </div>
       );
     },
@@ -102,7 +104,7 @@ export const createVendorsTableColumns = ({
     id: 'email',
     header: 'Email Address',
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-gray-600 dark:text-gray-400">
         {getVendorEmail(row.original)}
       </div>
     ),
@@ -112,7 +114,7 @@ export const createVendorsTableColumns = ({
     accessorKey: 'createdAt',
     header: 'Date onboarded',
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-gray-600 dark:text-gray-400">
         {formatOnboardedDate(row.original.createdAt)}
       </div>
     ),
@@ -122,7 +124,7 @@ export const createVendorsTableColumns = ({
     id: 'products',
     header: 'Products',
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-gray-600 dark:text-gray-400">
         {formatCount(row.original.total_products)}
       </div>
     ),
@@ -132,7 +134,7 @@ export const createVendorsTableColumns = ({
     id: 'orders',
     header: 'Orders',
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-gray-600 dark:text-gray-400">
         {formatCount(row.original.total_orders)}
       </div>
     ),
@@ -164,7 +166,7 @@ export const createVendorsTableColumns = ({
       </button>
     ),
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-gray-600 dark:text-gray-400">
         {formatNaira(row.original.total_revenue)}
       </div>
     ),

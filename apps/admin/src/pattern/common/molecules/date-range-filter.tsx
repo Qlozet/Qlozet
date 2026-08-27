@@ -100,8 +100,8 @@ export const DateRangeFilter = ({
         aria-expanded={open}
         aria-label={label}
         className={cn(
-          'h-10 w-10 shrink-0 gap-2 px-0 text-sm text-gray-600 sm:w-auto sm:px-4',
-          active && 'border-primary text-grey-black'
+          'h-10 w-10 shrink-0 gap-2 px-0 text-sm text-gray-600 dark:text-gray-400 sm:w-auto sm:px-4',
+          active && 'border-primary text-grey-black dark:text-white'
         )}
       >
         <span className="relative flex items-center sm:hidden">
@@ -130,7 +130,7 @@ export const DateRangeFilter = ({
                   clear();
                 }
               }}
-              className="ml-1 flex size-4 items-center justify-center rounded-full text-grey3 hover:bg-gray-200"
+              className="ml-1 flex size-4 items-center justify-center rounded-full text-grey3 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-muted/80"
             >
               <X className="size-3" />
             </span>
@@ -142,13 +142,13 @@ export const DateRangeFilter = ({
         <div
           role="dialog"
           aria-label="Filter by date"
-          className="absolute left-0 z-50 mt-2 w-70 max-w-[calc(100vw-3rem)] rounded-xl border border-border bg-white p-4 shadow-xl sm:left-auto sm:right-0"
+          className="absolute left-0 z-50 mt-2 w-70 max-w-[calc(100vw-3rem)] rounded-xl border border-border bg-white dark:bg-card p-4 shadow-xl sm:left-auto sm:right-0"
         >
           <div className="space-y-3">
             <div className="space-y-1.5">
               <label
                 htmlFor="date-range-start"
-                className="text-xs font-medium text-grey3"
+                className="text-xs font-medium text-grey3 dark:text-gray-400"
               >
                 From
               </label>
@@ -166,7 +166,7 @@ export const DateRangeFilter = ({
             <div className="space-y-1.5">
               <label
                 htmlFor="date-range-end"
-                className="text-xs font-medium text-grey3"
+                className="text-xs font-medium text-grey3 dark:text-gray-400"
               >
                 To
               </label>

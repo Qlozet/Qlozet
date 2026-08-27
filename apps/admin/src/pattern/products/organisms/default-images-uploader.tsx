@@ -90,7 +90,7 @@ export const DefaultImagesUploader = ({
           <button
             type="button"
             onClick={() => setShowUrlInput((s) => !s)}
-            className="text-sm font-medium text-[#2F80ED] hover:underline"
+            className="text-sm font-medium text-[#2F80ED] dark:text-blue-400 hover:underline"
           >
             Add from URL
           </button>

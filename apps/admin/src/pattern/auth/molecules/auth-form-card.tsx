@@ -36,16 +36,18 @@ export const AuthFormCard = ({
 
       <div
         className={cn(
-          'relative z-20 h-fit w-full max-w-lg overflow-hidden rounded-lg bg-white p-6 shadow-sm md:p-8',
+          'relative z-20 h-fit w-full max-w-lg overflow-hidden rounded-lg bg-white dark:bg-card p-6 shadow-sm md:p-8',
           className
         )}
       >
         <div className="mb-3 space-y-3">
-          <h2 className="text-xl font-medium text-[hsla(0,0%,7%,1)] md:text-2xl">
+          <h2 className="text-xl font-medium text-[hsla(0,0%,7%,1)] dark:text-white md:text-2xl">
             {title}
           </h2>
           {subtitle && (
-            <p className="text-sm text-[hsla(0,0%,7%,1)]">{subtitle}</p>
+            <p className="text-sm text-[hsla(0,0%,7%,1)] dark:text-white">
+              {subtitle}
+            </p>
           )}
         </div>
 

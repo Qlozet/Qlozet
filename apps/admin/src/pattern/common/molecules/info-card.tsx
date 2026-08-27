@@ -38,11 +38,11 @@ export const InfoCard = ({
   return (
     <div
       className={cn(
-        'flex flex-col gap-2 rounded-xl bg-white p-4 custom-card-shadow',
+        'flex flex-col gap-2 rounded-xl bg-white dark:bg-card p-4 custom-card-shadow',
         className
       )}
     >
-      <p className="text-xs text-gray-500">{label}</p>
+      <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
       <div className="flex items-center justify-between gap-2">
         {href ? (
           <a
@@ -57,7 +57,7 @@ export const InfoCard = ({
         ) : (
           <p
             className={cn(
-              'truncate text-sm font-semibold text-[hsla(210,9%,31%,1)]',
+              'truncate text-sm font-semibold text-[hsla(210,9%,31%,1)] dark:text-white',
               valueClassName
             )}
           >
@@ -78,7 +78,7 @@ export const InfoCard = ({
             type="button"
             aria-label={`Edit ${label}`}
             onClick={onEdit}
-            className="shrink-0 text-gray-500 hover:text-gray-700 cursor-pointer"
+            className="shrink-0 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer"
           >
             <Pencil className="size-4" />
           </button>

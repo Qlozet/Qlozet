@@ -26,7 +26,7 @@ const LogoutBtn = ({ expanded = false }: LogoutBtnProps) => {
     <>
       <button
         className={cn(
-          'w-fit 2xl:w-full flex items-center gap-3 2xl:px-4 py-3 text-gray-700 hover:text-destructive rounded-lg cursor-pointer transition-colors',
+          'w-fit 2xl:w-full flex items-center gap-3 2xl:px-4 py-3 text-gray-700 dark:text-gray-200 hover:text-destructive rounded-lg cursor-pointer transition-colors',
           expanded && 'w-full px-4'
         )}
         onClick={handleLogout}

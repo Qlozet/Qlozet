@@ -67,7 +67,7 @@ export const LiveChatConversation = NiceModal.create(
       <Sheet open={visible} onOpenChange={handleOpenChange}>
         <SheetContent
           side="right"
-          className="flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white"
+          className="flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white dark:bg-card"
           style={{
             height: 'calc(100vh - 3rem)',
             maxHeight: 'calc(100vh - 3rem)',
@@ -90,12 +90,12 @@ export const LiveChatConversation = NiceModal.create(
                   </div>
                 )}
                 {active && (
-                  <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-success ring-2 ring-white" />
+                  <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-success ring-2 ring-white dark:ring-card" />
                 )}
               </div>
 
               <div className="flex-1 text-left">
-                <SheetTitle className="text-sm font-semibold text-grey-black">
+                <SheetTitle className="text-sm font-semibold text-grey-black dark:text-white">
                   {name}
                 </SheetTitle>
                 {active && (
@@ -106,13 +106,13 @@ export const LiveChatConversation = NiceModal.create(
           </SheetHeader>
 
           {/* Messages */}
-          <div className="flex-1 min-h-0 space-y-2 overflow-y-auto bg-white px-4 py-4">
+          <div className="flex-1 min-h-0 space-y-2 overflow-y-auto bg-white dark:bg-card px-4 py-4">
             {messages.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center text-center">
-                <p className="text-sm font-medium text-grey-black">
+                <p className="text-sm font-medium text-grey-black dark:text-white">
                   No messages yet
                 </p>
-                <p className="mt-1 text-sm text-grey3">
+                <p className="mt-1 text-sm text-grey3 dark:text-gray-400">
                   Start the conversation below.
                 </p>
               </div>

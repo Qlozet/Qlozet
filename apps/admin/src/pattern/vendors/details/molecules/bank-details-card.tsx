@@ -11,9 +11,9 @@ interface BankDetailsCardProps {
 
 export const BankDetailsCard = ({ rows }: BankDetailsCardProps) => {
   return (
-    <div className="flex h-full flex-col rounded-xl bg-white p-5 custom-card-shadow">
+    <div className="flex h-full flex-col rounded-xl bg-white p-5 custom-card-shadow dark:bg-card">
       <div className="mb-2 flex items-center justify-between">
-        <h3 className="text-base font-semibold text-[hsla(210,9%,31%,1)]">
+        <h3 className="text-base font-semibold text-[hsla(210,9%,31%,1)] dark:text-white">
           Bank Details
         </h3>
         {/* TODO(api): no admin endpoint writes a vendor's payout account, so
@@ -26,8 +26,10 @@ export const BankDetailsCard = ({ rows }: BankDetailsCardProps) => {
             key={row.label}
             className="flex items-center justify-between gap-4 py-3.5"
           >
-            <span className="text-sm text-gray-500">{row.label}:</span>
-            <span className="text-sm font-semibold text-[hsla(210,9%,31%,1)] text-right">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              {row.label}:
+            </span>
+            <span className="text-sm font-semibold text-[hsla(210,9%,31%,1)] dark:text-white text-right">
               {row.value}
             </span>
           </div>

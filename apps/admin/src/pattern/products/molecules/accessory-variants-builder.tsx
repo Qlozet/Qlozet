@@ -43,7 +43,7 @@ interface AccessoryVariantsBuilderProps {
 }
 
 const FieldLabel = ({ children }: { children: string }) => (
-  <label className="flex items-center gap-1 text-sm font-medium text-gray-700">
+  <label className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-200">
     {children}
     <Info className="size-3.5 text-gray-400" />
   </label>
@@ -117,7 +117,7 @@ export const AccessoryVariantsBuilder = ({
             type="button"
             aria-label="Clear selected colours"
             onClick={() => setSelectedColours([])}
-            className="ml-auto flex size-7 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100"
+            className="ml-auto flex size-7 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-muted/80"
           >
             <Trash2 className="size-4" />
           </button>
@@ -153,7 +153,7 @@ export const AccessoryVariantsBuilder = ({
                   'rounded-md border px-3 py-1 text-xs transition',
                   active
                     ? 'border-primary bg-primary/10 text-primary'
-                    : 'border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100'
+                    : 'border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:bg-muted dark:text-gray-400 dark:hover:bg-muted/80'
                 )}
               >
                 {size}
@@ -177,7 +177,7 @@ export const AccessoryVariantsBuilder = ({
       <div className="space-y-2">
         <h4 className="text-sm font-semibold text-foreground">Set variants</h4>
         <div className="overflow-hidden rounded-lg border border-border">
-          <div className="grid grid-cols-[1fr_1fr_1.5fr_auto] gap-2 bg-[#F9FAFB] px-4 py-2.5 text-xs font-medium text-gray-500">
+          <div className="grid grid-cols-[1fr_1fr_1.5fr_auto] gap-2 bg-[#F9FAFB] px-4 py-2.5 text-xs font-medium text-gray-500 dark:bg-muted dark:text-gray-400">
             <span>Colours</span>
             <span>Sizes</span>
             <span>Add product images</span>
@@ -199,7 +199,7 @@ export const AccessoryVariantsBuilder = ({
                     style={{ backgroundColor: variant.colour.hex }}
                     className="size-4 rounded-full border border-black/10"
                   />
-                  <span className="truncate text-gray-700">
+                  <span className="truncate text-gray-700 dark:text-gray-200">
                     {variant.colour.name}
                   </span>
                 </span>
@@ -208,7 +208,7 @@ export const AccessoryVariantsBuilder = ({
                     variant.sizes.map((s) => (
                       <span
                         key={s}
-                        className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600"
+                        className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 dark:bg-muted dark:text-gray-400"
                       >
                         {s}
                       </span>
@@ -224,7 +224,7 @@ export const AccessoryVariantsBuilder = ({
                   type="button"
                   aria-label="Remove variant"
                   onClick={() => onRemove(variant.id)}
-                  className="flex size-7 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-destructive"
+                  className="flex size-7 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-destructive dark:hover:bg-muted/80"
                 >
                   <X className="size-4" />
                 </button>

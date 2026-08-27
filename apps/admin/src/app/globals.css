@@ -16,6 +16,16 @@
   --secondary-foreground: hsla(222.2, 84%, 4.9%);
   --muted: hsla(210, 40%, 96%);
   --muted-foreground: hsla(215.4, 16.3%, 46.9%);
+  /* Chart palette, shared with the vendor app so both consoles plot in the
+     same colours. Charts must read these rather than hardcoding the hex —
+     the .dark block below is what makes them legible on a dark canvas. */
+  --chart-1: #3d2817;
+  --chart-2: #5b4636;
+  --chart-3: #8a7060;
+  --chart-4: #d4c5b9;
+  --chart-5: #e0d5cb;
+  --chart-primary: #3d2817;
+  --chart-secondary: #9c857870;
   --accent: hsla(210, 17%, 98%, 1);
   --accent-foreground: hsla(222.2, 84%, 4.9%);
   --destructive: hsla(0, 84.2%, 60.2%);
@@ -49,25 +59,32 @@
 }
 
 .dark {
+  /* Every value here must be a COMPLETE colour. These tokens are consumed
+     through `@theme inline` (--color-card: var(--card)), so Tailwind emits
+     `background-color: var(--color-card)` verbatim. A bare HSL triplet like
+     `222.2 84% 4.9%` — the Tailwind v3 shadcn convention — is not a valid
+     colour on its own, so the declaration is dropped and the surface renders
+     TRANSPARENT. That is what made every modal, popover and sheet see-through
+     in dark mode. Values below match the vendor app. */
   --background: hsla(0, 0%, 7%, 1);
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
+  --foreground: hsl(0, 0%, 98%);
+  --card: #303030;
+  --card-foreground: hsl(0, 0%, 98%);
+  --popover: #303030;
+  --popover-foreground: hsl(0, 0%, 98%);
   --primary: hsla(27, 97%, 12%, 1);
-  --primary-foreground: 210 40% 98%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 28 96% 12%;
+  --primary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(240, 4%, 16%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --muted: #404040;
+  --muted-foreground: hsl(240, 5%, 65%);
+  --accent: hsl(240, 4%, 16%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 4%, 16%);
+  --input: hsl(240, 4%, 16%);
+  --ring: hsl(0, 0%, 98%);
   --sidebar: hsla(0, 0%, 7%, 1);
   --sidebar-foreground: hsl(0, 0%, 98%);
   --sidebar-primary: hsl(225, 84%, 49%);
@@ -76,6 +93,14 @@
   --sidebar-accent-foreground: hsl(0, 0%, 98%);
   --sidebar-border: hsl(0, 0%, 15%);
   --sidebar-ring: hsl(0, 0%, 32%);
+  /* Inverted for a dark canvas: the light palette's near-blacks would vanish. */
+  --chart-1: hsl(0, 0%, 98%);
+  --chart-2: hsl(240, 5%, 75%);
+  --chart-3: hsl(240, 5%, 55%);
+  --chart-4: hsl(240, 5%, 35%);
+  --chart-5: hsl(240, 5%, 20%);
+  --chart-primary: hsl(0, 0%, 98%);
+  --chart-secondary: hsl(240, 5%, 65%);
 }
 
 @theme inline {
@@ -126,6 +151,13 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-radius: var(--radius);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-primary: var(--chart-primary);
+  --color-chart-secondary: var(--chart-secondary);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);

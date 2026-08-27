@@ -21,7 +21,7 @@ export const PeriodFilter = ({ value, onChange }: PeriodFilterProps) => (
   <Select value={value} onValueChange={(next) => onChange(next as OrderPeriod)}>
     <SelectTrigger
       aria-label="Filter orders by period"
-      className="h-10 w-[150px] gap-2 rounded-lg bg-white text-sm text-gray-600"
+      className="h-10 w-[150px] gap-2 rounded-lg bg-white dark:bg-card text-sm text-gray-600 dark:text-gray-400"
     >
       <Clock className="size-4 shrink-0" />
       <SelectValue />

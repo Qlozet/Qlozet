@@ -6,7 +6,7 @@ import { useGetAdminDashboardChartsQuery } from '@/redux/services/dashboard/dash
 import { DonutChart } from '../molecules/donut-chart';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
 
-const COLORS = ['#3d2817', '#d4c5b9', '#9C8578'];
+const COLORS = ['var(--chart-1)', 'var(--chart-4)', 'var(--chart-3)'];
 
 // "Sales by audience", not "orders by gender": the split is read from each
 // product's taxonomy audience (men / women / unisex), which says who the

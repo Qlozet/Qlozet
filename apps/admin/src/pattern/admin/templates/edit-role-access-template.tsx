@@ -35,7 +35,9 @@ export const EditRoleAccessTemplate = ({
       {/* Header */}
       <div className="space-y-3">
         <GoBackButton href={APP_ROUTES.adminManageRoles} />
-        <h1 className="text-xl font-bold text-grey-black">{title}</h1>
+        <h1 className="text-xl font-bold text-grey-black dark:text-white">
+          {title}
+        </h1>
       </div>
 
       {/* Two-column body */}

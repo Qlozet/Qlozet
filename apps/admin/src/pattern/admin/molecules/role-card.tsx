@@ -29,7 +29,7 @@ export const RoleCard = ({
         'flex h-full w-full flex-col items-start gap-3 rounded-2xl border p-5 text-left transition-colors cursor-pointer',
         active
           ? 'border-transparent bg-primary text-primary-foreground'
-          : 'border-border bg-white text-grey-black hover:border-primary/40'
+          : 'border-border bg-white text-grey-black dark:bg-card dark:text-white hover:border-primary/40'
       )}
     >
       <h3 className="text-lg font-bold">{role.name}</h3>
@@ -37,7 +37,9 @@ export const RoleCard = ({
       <p
         className={cn(
           'text-sm',
-          active ? 'text-primary-foreground/80' : 'text-grey3'
+          active
+            ? 'text-primary-foreground/80'
+            : 'text-grey3 dark:text-gray-400'
         )}
       >
         {role.description}
@@ -61,7 +63,7 @@ export const RoleCard = ({
           'mt-auto inline-flex w-full items-center justify-center rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors',
           active
             ? 'border-transparent bg-white text-primary hover:bg-white/90'
-            : 'border-primary bg-white text-primary hover:bg-primary/5'
+            : 'border-primary bg-white dark:bg-muted text-primary hover:bg-primary/5'
         )}
       >
         Edit Access

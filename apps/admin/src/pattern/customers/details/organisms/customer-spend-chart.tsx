@@ -46,10 +46,10 @@ export const CustomerSpendChart = ({ customerId }: CustomerSpendChartProps) => {
   return (
     <Card className="w-full max-h-fit rounded-[12px] custom-card-shadow">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
+        <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-white">
           {analytics?.year ? `Spend in ${analytics.year}` : 'Spend'}
         </CardTitle>
-        <span className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
+        <span className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-white">
           {/* Lifetime, so it is deliberately >= the charted year's bars. */}
           Total spent: {formatNaira(analytics?.summary?.totalSpent ?? 0)}
         </span>
@@ -69,7 +69,7 @@ export const CustomerSpendChart = ({ customerId }: CustomerSpendChartProps) => {
               <CartesianGrid
                 strokeDasharray="0"
                 vertical={false}
-                stroke="#e5e7eb"
+                stroke="var(--border)"
               />
               <XAxis
                 dataKey="name"
@@ -84,7 +84,7 @@ export const CustomerSpendChart = ({ customerId }: CustomerSpendChartProps) => {
               />
               <Bar
                 dataKey="value"
-                fill="#c4b5a0"
+                fill="var(--chart-4)"
                 maxBarSize={24}
                 radius={[2.26, 2.26, 0, 0]}
               />

@@ -83,17 +83,19 @@ export const VendorInfoGrid = ({
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-[hsla(210,9%,31%,1)]">
+            <h1 className="text-xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white">
               {getVendorName(vendor ?? ({} as Business))}
             </h1>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
               Joined {formatJoined(vendor?.createdAt)}
             </span>
           </div>
-          <div className="flex items-center gap-1 text-sm text-gray-700">
+          <div className="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-200">
             <span className="font-semibold">{rating ?? '—'}</span>
             <Star className="size-4 fill-[#FFB020] text-[#FFB020]" />
-            <span className="text-gray-500">({formatCount(reviews)})</span>
+            <span className="text-gray-500 dark:text-gray-400">
+              ({formatCount(reviews)})
+            </span>
           </div>
         </div>
 
@@ -212,7 +214,11 @@ export const VendorInfoGrid = ({
         <VendorInfoCard
           label="ID Check"
           value={idVerified ? 'Verified' : 'Unverified'}
-          valueClassName={idVerified ? 'text-[#0F973D]' : 'text-destructive'}
+          valueClassName={
+            idVerified
+              ? 'text-[#0F973D] dark:text-green-400'
+              : 'text-destructive'
+          }
         />
         {/* The viewer link is withheld when nothing was uploaded — it could
             only open an empty modal, and replacing a document has no endpoint
@@ -220,7 +226,9 @@ export const VendorInfoGrid = ({
         <VendorInfoCard
           label="CAC Document"
           value={cacUrl ? 'Uploaded' : 'Not uploaded'}
-          valueClassName={cacUrl ? 'text-[#0F973D]' : 'text-destructive'}
+          valueClassName={
+            cacUrl ? 'text-[#0F973D] dark:text-green-400' : 'text-destructive'
+          }
           linkLabel={cacUrl ? 'View document' : undefined}
           onLinkClick={
             cacUrl
@@ -237,7 +245,9 @@ export const VendorInfoGrid = ({
         <VendorInfoCard
           label="Company PNG logo"
           value={logoUrl ? 'Uploaded' : 'Not uploaded'}
-          valueClassName={logoUrl ? 'text-[#0F973D]' : 'text-destructive'}
+          valueClassName={
+            logoUrl ? 'text-[#0F973D] dark:text-green-400' : 'text-destructive'
+          }
           linkLabel={logoUrl ? 'View logo' : undefined}
           onLinkClick={
             logoUrl

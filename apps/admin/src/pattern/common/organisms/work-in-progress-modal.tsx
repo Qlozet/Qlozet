@@ -31,7 +31,7 @@ export const WorkInProgressModal = NiceModal.create(() => {
           type="button"
           onClick={handleClose}
           aria-label="Close"
-          className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 transition"
+          className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-muted/80 transition"
         >
           <X className="size-4" />
         </button>

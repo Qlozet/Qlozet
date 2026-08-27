@@ -33,19 +33,19 @@ export const OrdersByLocation = () => {
   if (isLoading) return <ChartSkeleton />;
 
   return (
-    <Card className="w-full rounded-[12px] custom-card-shadow">
+    <Card className="w-full h-full flex flex-col rounded-[12px] custom-card-shadow">
       <CardHeader className="px-6 pb-4">
-        <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
+        <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-white">
           Orders by top location
         </CardTitle>
       </CardHeader>
-      <CardContent className="w-full px-3 pt-0 pb-6">
+      <CardContent className="w-full flex-1 min-h-0 px-3 pt-0 pb-6">
         <ChartEmptyState
           isEmpty={isEmpty}
           height={250}
           description="Once orders ship to a delivery address, the top regions rank here."
         >
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={series}
               margin={{ top: 0, right: 0, left: -10, bottom: 0 }}
@@ -53,7 +53,7 @@ export const OrdersByLocation = () => {
               <CartesianGrid
                 strokeDasharray="0"
                 vertical={false}
-                stroke="#e5e7eb"
+                stroke="var(--border)"
               />
               <XAxis
                 dataKey="name"
@@ -69,7 +69,7 @@ export const OrdersByLocation = () => {
               />
               <Bar
                 dataKey="value"
-                fill="#3d2817"
+                fill="var(--chart-primary)"
                 maxBarSize={24}
                 radius={[2.26, 2.26, 0, 0]}
               />

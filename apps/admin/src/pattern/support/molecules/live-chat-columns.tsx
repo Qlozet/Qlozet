@@ -22,7 +22,7 @@ export const createLiveChatColumns = (): ColumnDef<LiveChatLog>[] => [
     id: 'ticket_id',
     header: 'Ticket ID',
     cell: ({ row }) => (
-      <span className="whitespace-nowrap text-sm font-medium text-grey-black">
+      <span className="whitespace-nowrap text-sm font-medium text-grey-black dark:text-white">
         {readField(row.original, 'reference', 'chat_id', 'ticket_id')}
       </span>
     ),
@@ -32,7 +32,7 @@ export const createLiveChatColumns = (): ColumnDef<LiveChatLog>[] => [
     id: 'last_message',
     header: 'Last Message',
     cell: ({ row }) => (
-      <span className="line-clamp-2 max-w-[220px] text-sm text-grey3">
+      <span className="line-clamp-2 max-w-[220px] text-sm text-grey3 dark:text-gray-400">
         {readField(row.original, 'last_message', 'message')}
       </span>
     ),
@@ -52,7 +52,7 @@ export const createLiveChatColumns = (): ColumnDef<LiveChatLog>[] => [
     id: 'user_type',
     header: 'User Type',
     cell: ({ row }) => (
-      <span className="whitespace-nowrap text-sm text-grey3">
+      <span className="whitespace-nowrap text-sm text-grey3 dark:text-gray-400">
         {readField(row.original, 'user_type', 'sender_type')}
       </span>
     ),
@@ -62,7 +62,7 @@ export const createLiveChatColumns = (): ColumnDef<LiveChatLog>[] => [
     id: 'chat_agent',
     header: 'Chat Agent / Bot',
     cell: ({ row }) => (
-      <span className="whitespace-nowrap text-sm text-grey3">
+      <span className="whitespace-nowrap text-sm text-grey3 dark:text-gray-400">
         {readField(row.original, 'chat_agent', 'agent_name', 'bot')}
       </span>
     ),
@@ -86,7 +86,7 @@ export const createLiveChatColumns = (): ColumnDef<LiveChatLog>[] => [
     id: 'created_at',
     header: 'Created At',
     cell: ({ row }) => (
-      <span className="whitespace-nowrap text-sm text-grey3">
+      <span className="whitespace-nowrap text-sm text-grey3 dark:text-gray-400">
         {formatDate(row.original.createdAt ?? row.original.date)}
       </span>
     ),
@@ -95,7 +95,9 @@ export const createLiveChatColumns = (): ColumnDef<LiveChatLog>[] => [
   {
     id: 'chevron',
     header: '',
-    cell: () => <ChevronRight className="size-4 text-grey2" />,
+    cell: () => (
+      <ChevronRight className="size-4 text-grey2 dark:text-gray-400" />
+    ),
     enableSorting: false,
   },
 ];

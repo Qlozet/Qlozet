@@ -30,7 +30,7 @@ const CodeSent = () => {
   return (
     <AuthFormCard title="Reset code sent to email">
       <div className="space-y-6 text-center">
-        <p className="text-sm leading-relaxed text-grey-black">
+        <p className="text-sm leading-relaxed text-grey-black dark:text-white">
           We&apos;ve sent a code to the email associated with your Qlozet admin
           account
           {email ? (

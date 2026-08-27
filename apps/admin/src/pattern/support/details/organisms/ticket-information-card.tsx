@@ -23,7 +23,9 @@ interface TicketInformationCardProps {
 const Field = ({ label, value }: { label: string; value: string }) => (
   <div className="space-y-1">
     <p className="text-xs font-medium text-[#3387CC]">{label}</p>
-    <p className="text-sm font-medium text-grey-black">{value}</p>
+    <p className="text-sm font-medium text-grey-black dark:text-white">
+      {value}
+    </p>
   </div>
 );
 
@@ -36,7 +38,7 @@ export const TicketInformationCard = ({
 }: TicketInformationCardProps) => {
   if (isLoading || !ticket) {
     return (
-      <div className="space-y-5 rounded-2xl bg-white p-6 custom-card-shadow">
+      <div className="space-y-5 rounded-2xl bg-white dark:bg-card p-6 custom-card-shadow">
         <Skeleton className="h-5 w-40" />
         <Skeleton className="h-10 w-full" />
         <Skeleton className="h-10 w-32" />
@@ -55,8 +57,8 @@ export const TicketInformationCard = ({
   const assigned = assigneeId(ticket);
 
   return (
-    <div className="space-y-5 rounded-2xl bg-white p-6 custom-card-shadow">
-      <h3 className="text-base font-semibold text-grey-black">
+    <div className="space-y-5 rounded-2xl bg-white dark:bg-card p-6 custom-card-shadow">
+      <h3 className="text-base font-semibold text-grey-black dark:text-white">
         Ticket Information
       </h3>
 
@@ -67,7 +69,7 @@ export const TicketInformationCard = ({
           {assigned ? (
             <span
               title={assigned}
-              className="text-sm font-medium text-grey-black"
+              className="text-sm font-medium text-grey-black dark:text-white"
             >
               Team {shortTicketId(assigned)}
             </span>
@@ -77,7 +79,7 @@ export const TicketInformationCard = ({
           <button
             type="button"
             onClick={onReassign}
-            className="ml-2 flex items-center gap-1 rounded-md bg-[#F8F9FA] px-2 py-1 text-xs text-grey3 hover:bg-gray-100 transition-colors cursor-pointer"
+            className="ml-2 flex items-center gap-1 rounded-md bg-[#F8F9FA] dark:bg-muted px-2 py-1 text-xs text-grey3 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors cursor-pointer"
           >
             <Repeat2 className="size-3.5" />
             Reassign

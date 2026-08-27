@@ -32,7 +32,7 @@ export const ChatVoiceMessage = ({
           'flex max-w-[80%] items-center gap-3 rounded-2xl px-4 py-3',
           isOut
             ? 'rounded-br-md bg-primary text-primary-foreground'
-            : 'rounded-bl-md bg-[#F1F1F1] text-grey-black'
+            : 'rounded-bl-md bg-[#F1F1F1] text-grey-black dark:bg-muted dark:text-white'
         )}
       >
         {/* Waveform */}
@@ -52,7 +52,9 @@ export const ChatVoiceMessage = ({
         <span
           className={cn(
             'shrink-0 text-xs',
-            isOut ? 'text-primary-foreground/80' : 'text-grey3'
+            isOut
+              ? 'text-primary-foreground/80'
+              : 'text-grey3 dark:text-gray-400'
           )}
         >
           {duration}
@@ -75,7 +77,9 @@ export const ChatVoiceMessage = ({
           <span
             className={cn(
               'text-[10px]',
-              isOut ? 'text-primary-foreground/70' : 'text-grey2'
+              isOut
+                ? 'text-primary-foreground/70'
+                : 'text-grey2 dark:text-gray-400'
             )}
           >
             {time}

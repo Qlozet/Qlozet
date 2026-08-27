@@ -56,15 +56,17 @@ export const CustomerDetailHeader = ({
         </div>
 
         <div className="flex flex-col gap-1">
-          <h1 className="text-xl font-bold text-[hsla(210,9%,31%,1)]">
+          <h1 className="text-xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white">
             {getCustomerName(c)}
           </h1>
-          <p className="text-sm text-gray-500">{getCustomerHandle(c) || '—'}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {getCustomerHandle(c) || '—'}
+          </p>
           <p
             className={cn(
               'text-sm font-medium',
               status.variant === 'active'
-                ? 'text-[#0F973D]'
+                ? 'text-[#0F973D] dark:text-green-400'
                 : 'text-destructive'
             )}
           >
@@ -73,7 +75,7 @@ export const CustomerDetailHeader = ({
           <button
             type="button"
             onClick={onViewReviews}
-            className="mt-1 inline-flex w-fit items-center gap-1 rounded-md bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer"
+            className="mt-1 inline-flex w-fit items-center gap-1 rounded-md bg-gray-100 dark:bg-muted px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-muted/80 transition-colors cursor-pointer"
           >
             {typeof reviews === 'number' ? reviews : 20} reviews
             <ChevronRight className="size-3.5" />
@@ -86,14 +88,14 @@ export const CustomerDetailHeader = ({
         <button
           type="button"
           aria-label="Notes"
-          className="flex size-10 items-center justify-center rounded-lg border border-border text-gray-600 hover:bg-gray-50 cursor-pointer"
+          className="flex size-10 items-center justify-center rounded-lg border border-border text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-muted/80 cursor-pointer"
         >
           <ClipboardList className="size-5" />
         </button>
         <button
           type="button"
           aria-label="Flag customer"
-          className="flex size-10 items-center justify-center rounded-lg border border-border text-destructive hover:bg-gray-50 cursor-pointer"
+          className="flex size-10 items-center justify-center rounded-lg border border-border text-destructive hover:bg-gray-50 dark:hover:bg-muted/80 cursor-pointer"
         >
           <Flag className="size-5" />
         </button>

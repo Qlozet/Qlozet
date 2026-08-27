@@ -16,7 +16,7 @@ const CHANNELS: NotificationChannel[] = ['push', 'email'];
 // Segmented "Push Notifications / Email Notification" tab control.
 export const ChannelTabs = ({ value, onChange }: ChannelTabsProps) => {
   return (
-    <div className="inline-flex rounded-xl bg-[#F8F9FA] p-1">
+    <div className="inline-flex rounded-xl bg-[#F8F9FA] dark:bg-muted p-1">
       {CHANNELS.map((channel) => {
         const active = channel === value;
         return (
@@ -28,7 +28,7 @@ export const ChannelTabs = ({ value, onChange }: ChannelTabsProps) => {
               'rounded-lg px-5 py-2.5 text-sm font-medium transition-colors cursor-pointer',
               active
                 ? 'bg-primary text-primary-foreground'
-                : 'text-grey3 hover:text-grey-black'
+                : 'text-grey3 dark:text-gray-400 hover:text-grey-black dark:hover:text-white'
             )}
           >
             {CHANNEL_LABELS[channel]}

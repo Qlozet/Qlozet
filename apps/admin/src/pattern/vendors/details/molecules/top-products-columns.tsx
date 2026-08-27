@@ -32,7 +32,7 @@ export const createTopProductsColumns = (): ColumnDef<VendorProduct>[] => [
     cell: ({ row }) => {
       const img = row.original.images?.[0];
       return (
-        <div className="h-[31px] w-[51px] overflow-hidden rounded-[8px] border border-border bg-gray-50">
+        <div className="h-[31px] w-[51px] overflow-hidden rounded-[8px] border border-border bg-gray-50 dark:bg-muted">
           {img ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -50,7 +50,9 @@ export const createTopProductsColumns = (): ColumnDef<VendorProduct>[] => [
     accessorKey: 'name',
     header: 'Product name',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-700">{row.original.name ?? '—'}</span>
+      <span className="text-sm text-gray-700 dark:text-gray-200">
+        {row.original.name ?? '—'}
+      </span>
     ),
     enableSorting: false,
   },
@@ -58,7 +60,7 @@ export const createTopProductsColumns = (): ColumnDef<VendorProduct>[] => [
     accessorKey: 'price',
     header: 'Product price',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-700">
+      <span className="text-sm text-gray-700 dark:text-gray-200">
         {typeof row.original.price === 'number'
           ? formatCurrency(row.original.price, 'NGN')
           : '—'}
@@ -70,7 +72,7 @@ export const createTopProductsColumns = (): ColumnDef<VendorProduct>[] => [
     accessorKey: 'category',
     header: 'Category',
     cell: ({ row }) => (
-      <span className="text-sm capitalize text-gray-700">
+      <span className="text-sm capitalize text-gray-700 dark:text-gray-200">
         {row.original.category ?? '—'}
       </span>
     ),
@@ -80,7 +82,7 @@ export const createTopProductsColumns = (): ColumnDef<VendorProduct>[] => [
     id: 'tag',
     header: 'Tag',
     cell: ({ row }) => (
-      <span className="text-sm capitalize text-gray-700">
+      <span className="text-sm capitalize text-gray-700 dark:text-gray-200">
         {row.original.tag ?? row.original.tags?.[0] ?? '—'}
       </span>
     ),
@@ -95,7 +97,7 @@ export const createTopProductsColumns = (): ColumnDef<VendorProduct>[] => [
       const stockVariant =
         stock <= 0 ? 'error' : stock <= 5 ? 'warning' : 'success';
       return (
-        <div className="flex items-center gap-2 text-sm text-gray-700">
+        <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
           <Badge
             variant={stockVariant}
             shape="square"

@@ -249,7 +249,7 @@ export const AddStylesModal = NiceModal.create(() => {
             Preview
           </h2>
 
-          <div className="flex items-center gap-3 rounded-lg bg-[hsla(27,97%,12%,0.06)] p-3">
+          <div className="flex items-center gap-3 rounded-lg bg-[hsla(27,97%,12%,0.06)] dark:bg-muted p-3">
             <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Info className="size-4" />
             </span>
@@ -291,7 +291,7 @@ export const AddStylesModal = NiceModal.create(() => {
                 <button
                   type="button"
                   onClick={() => setShowUrlInput((s) => !s)}
-                  className="text-sm font-medium text-[#2F80ED] hover:underline"
+                  className="text-sm font-medium text-[#2F80ED] dark:text-blue-400 hover:underline"
                 >
                   Add from URL
                 </button>
@@ -312,7 +312,7 @@ export const AddStylesModal = NiceModal.create(() => {
               <button
                 type="button"
                 onClick={() => setShowUrlInput((s) => !s)}
-                className="text-sm font-medium text-[#2F80ED] hover:underline"
+                className="text-sm font-medium text-[#2F80ED] dark:text-blue-400 hover:underline"
               >
                 Add from URL
               </button>

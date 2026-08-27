@@ -28,7 +28,13 @@ export interface SeriesPoint {
 /** The first series of a chart, as recharts-shaped points. Empty when absent. */
 export const readSeries = (chart?: Chart): SeriesPoint[] =>
   (chart?.series?.[0]?.data ?? []).map((point: ChartPoint) => ({
-    name: point.label,
+    // An unlabelled point still plots a bar, so a blank label reads as a bar
+    // with no axis tick under it — which is how orders shipped to an address
+    // with no state showed up. Name them rather than leaving a silent gap.
+    name:
+      typeof point.label === 'string' && point.label.trim()
+        ? point.label
+        : 'Unknown',
     value: point.value,
     ...(point.color ? { color: point.color } : {}),
   }));

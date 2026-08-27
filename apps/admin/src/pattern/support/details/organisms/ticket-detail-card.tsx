@@ -37,7 +37,9 @@ interface TicketDetailCardProps {
 const Meta = ({ label, value }: { label: string; value: string }) => (
   <div className="space-y-1">
     <p className="text-xs font-medium text-[#3387CC]">{label}</p>
-    <p className="text-sm font-medium text-grey-black">{value}</p>
+    <p className="text-sm font-medium text-grey-black dark:text-white">
+      {value}
+    </p>
   </div>
 );
 
@@ -55,7 +57,7 @@ export const TicketDetailCard = ({
 
   if (isLoading || !ticket) {
     return (
-      <div className="space-y-5 rounded-2xl bg-white p-6 custom-card-shadow">
+      <div className="space-y-5 rounded-2xl bg-white dark:bg-card p-6 custom-card-shadow">
         <div className="flex gap-4">
           <Skeleton className="size-14 rounded-2xl" />
           <div className="flex-1 space-y-2">
@@ -83,7 +85,7 @@ export const TicketDetailCard = ({
   };
 
   return (
-    <div className="space-y-5 rounded-2xl bg-white p-6 custom-card-shadow">
+    <div className="space-y-5 rounded-2xl bg-white dark:bg-card p-6 custom-card-shadow">
       {/* Header */}
       <div className="flex items-start gap-4">
         <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-[#B42318] text-white">
@@ -91,7 +93,9 @@ export const TicketDetailCard = ({
         </div>
 
         <div className="flex-1">
-          <h2 className="text-lg font-bold text-grey-black">{title}</h2>
+          <h2 className="text-lg font-bold text-grey-black dark:text-white">
+            {title}
+          </h2>
           <Badge
             variant={statusVariant(ticket.status)}
             shape="square"
@@ -106,7 +110,7 @@ export const TicketDetailCard = ({
             type="button"
             onClick={onCopyId}
             aria-label="Copy ticket ID"
-            className="flex size-9 items-center justify-center rounded-lg bg-[#F8F9FA] text-grey3 hover:bg-gray-100 transition-colors cursor-pointer"
+            className="flex size-9 items-center justify-center rounded-lg bg-[#F8F9FA] dark:bg-muted text-grey3 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors cursor-pointer"
           >
             <ClipboardList className="size-4" />
           </button>
@@ -123,7 +127,7 @@ export const TicketDetailCard = ({
 
       {/* Original message */}
       <div className="rounded-xl border border-border p-4">
-        <p className="whitespace-pre-wrap text-sm leading-relaxed text-grey3">
+        <p className="whitespace-pre-wrap text-sm leading-relaxed text-grey3 dark:text-gray-400">
           {ticket.description?.trim() || EM_DASH}
         </p>
 

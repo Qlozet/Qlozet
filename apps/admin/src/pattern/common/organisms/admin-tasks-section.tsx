@@ -56,9 +56,9 @@ export const AdminTasksSection = ({
       : 'Task Last Month';
 
   return (
-    <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)]">
-      <div className="flex items-center justify-between border-b border-[#DDE2E5] px-5 py-4">
-        <span className="text-[15px] font-semibold text-[#1C1C1E]">
+    <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-muted">
+      <div className="flex items-center justify-between border-b border-[#DDE2E5] dark:border-white/10 px-5 py-4">
+        <span className="text-[15px] font-semibold text-[#1C1C1E] dark:text-white">
           {heading}
         </span>
         <button
@@ -66,7 +66,7 @@ export const AdminTasksSection = ({
           onClick={onRefresh}
           disabled={isFetching}
           aria-label="Refresh tasks"
-          className="text-[#1C1C1E] transition-opacity hover:opacity-60 disabled:opacity-40"
+          className="text-[#1C1C1E] dark:text-white transition-opacity hover:opacity-60 disabled:opacity-40"
         >
           <RefreshCw className={`size-4 ${isFetching ? 'animate-spin' : ''}`} />
         </button>
@@ -88,14 +88,14 @@ export const AdminTasksSection = ({
               onClick={() => setFilter(key)}
               className={`flex items-center gap-1.5 text-[13px] transition-colors ${
                 active
-                  ? 'font-semibold text-[#1C1C1E]'
-                  : 'text-[#8E8E93] hover:text-[#3A3A3C]'
+                  ? 'font-semibold text-[#1C1C1E] dark:text-white'
+                  : 'text-[#8E8E93] dark:text-gray-400 hover:text-[#3A3A3C] dark:hover:text-gray-200'
               }`}
             >
               <span
                 aria-hidden
                 className={`size-1.5 rounded-full ${
-                  active ? 'bg-[#34C759]' : 'bg-[#C7C7CC]'
+                  active ? 'bg-[#34C759]' : 'bg-[#C7C7CC] dark:bg-gray-600'
                 }`}
               />
               {label}
@@ -111,29 +111,29 @@ export const AdminTasksSection = ({
           <Skeleton className="h-5 w-3/5" />
         </div>
       ) : visible.length === 0 ? (
-        <p className="px-5 pb-6 pt-2 text-center text-[13px] text-[#8E8E93]">
+        <p className="px-5 pb-6 pt-2 text-center text-[13px] text-[#8E8E93] dark:text-gray-400">
           {(tasks ?? []).length === 0
             ? 'No tickets have been assigned to you recently.'
             : `No ${filter} tasks in this period.`}
         </p>
       ) : (
-        <ul className="divide-y divide-[#DDE2E5] border-t border-[#DDE2E5]">
+        <ul className="divide-y divide-[#DDE2E5] dark:divide-white/10 border-t border-[#DDE2E5] dark:border-white/10">
           {visible.map((task) => (
             <li
               key={task.id}
               className="flex items-start justify-between gap-3 px-5 py-3.5"
             >
               <div className="min-w-0">
-                <p className="truncate text-[14px] font-medium text-[#1C1C1E]">
+                <p className="truncate text-[14px] font-medium text-[#1C1C1E] dark:text-white">
                   {task.title}
                 </p>
                 {task.vendor && (
-                  <p className="mt-0.5 truncate text-[12px] text-[#8E8E93]">
+                  <p className="mt-0.5 truncate text-[12px] text-[#8E8E93] dark:text-gray-400">
                     {task.vendor}
                   </p>
                 )}
               </div>
-              <span className="shrink-0 whitespace-nowrap text-[12px] text-[#8E8E93]">
+              <span className="shrink-0 whitespace-nowrap text-[12px] text-[#8E8E93] dark:text-gray-400">
                 {timeAgo(task.at)}
               </span>
             </li>

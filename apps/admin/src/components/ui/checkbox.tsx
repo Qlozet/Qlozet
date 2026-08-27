@@ -31,7 +31,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
         'flex size-5 items-center justify-center rounded-[5px] border transition-colors disabled:cursor-not-allowed disabled:opacity-50',
         checked
           ? 'border-primary bg-primary text-primary-foreground'
-          : 'border-border bg-white hover:border-primary/50',
+          : 'border-border bg-white dark:bg-muted hover:border-primary/50',
         className
       )}
       {...props}

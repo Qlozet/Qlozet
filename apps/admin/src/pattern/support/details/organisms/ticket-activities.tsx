@@ -26,7 +26,7 @@ export const TicketActivities = () => {
   }, [activities, search]);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-white custom-card-shadow">
+    <div className="overflow-hidden rounded-xl border border-border bg-white dark:bg-card custom-card-shadow">
       {/* No date filter or export: there is no activity data source to act on. */}
       <TableToolbar
         title="Activities"
@@ -44,7 +44,7 @@ export const TicketActivities = () => {
             ))}
           </div>
         ) : (
-          <div className="flex min-h-40 items-center justify-center text-center text-sm text-grey3">
+          <div className="flex min-h-40 items-center justify-center text-center text-sm text-grey3 dark:text-gray-400">
             {activities.length === 0
               ? 'No activity recorded for this ticket yet.'
               : 'No activity matches your search.'}

@@ -23,6 +23,8 @@ import { SettingsNavIcon } from '../atoms/nav-icons/settings-nav-icon';
 import { FeedbackNavIcon } from '../atoms/nav-icons/feedback-nav-icon';
 import { HelpNavIcon } from '../atoms/nav-icons/help-nav-icon';
 import LogoutBtn from '../molecules/logout-btn';
+import { ThemeToggle } from '../molecules/theme-toggle';
+import { ThemeToggleSwitch } from '../molecules/theme-toggle-switch';
 import {
   Accordion,
   AccordionContent,
@@ -305,6 +307,23 @@ export const SidebarNav = ({
             expanded && 'w-full'
           )}
         >
+          {/* Theme. The labelled button needs room for its text, so the rail
+              falls back to the compact switch until 2xl; the drawer always has
+              the width. Gated in CSS rather than on a measured screen size, so
+              the server and client render the same markup. */}
+          {expanded ? (
+            <ThemeToggle />
+          ) : (
+            <>
+              <div className="hidden 2xl:block w-full">
+                <ThemeToggle />
+              </div>
+              <div className="2xl:hidden">
+                <ThemeToggleSwitch />
+              </div>
+            </>
+          )}
+
           {/* Log out */}
           <LogoutBtn expanded={expanded} />
         </div>

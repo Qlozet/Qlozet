@@ -31,8 +31,10 @@ const num = (value: unknown): number | undefined =>
 const Stat = ({ label, value }: { label: string; value: string }) => (
   <Card className="rounded-[12px] custom-card-shadow">
     <CardContent className="p-5">
-      <p className="text-xs text-[hsla(210,9%,31%,1)]">{label}</p>
-      <p className="mt-2 text-2xl font-bold text-[hsla(210,9%,31%,1)]">
+      <p className="text-xs text-[hsla(210,9%,31%,1)] dark:text-white">
+        {label}
+      </p>
+      <p className="mt-2 text-2xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white">
         {value}
       </p>
     </CardContent>
@@ -88,7 +90,9 @@ export const VendorAnalyticsSection = ({
 
   return (
     <section className="space-y-6">
-      <h2 className="text-lg font-bold text-[hsla(210,9%,31%,1)]">Analytics</h2>
+      <h2 className="text-lg font-bold text-[hsla(210,9%,31%,1)] dark:text-white">
+        Analytics
+      </h2>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat
@@ -111,7 +115,7 @@ export const VendorAnalyticsSection = ({
 
       <Card className="rounded-[12px] custom-card-shadow">
         <CardHeader className="px-6 pb-4">
-          <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
+          <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-white">
             Order volume by day of week
           </CardTitle>
         </CardHeader>
@@ -132,7 +136,7 @@ export const VendorAnalyticsSection = ({
                   <CartesianGrid
                     strokeDasharray="0"
                     vertical={false}
-                    stroke="#e5e7eb"
+                    stroke="var(--border)"
                   />
                   <XAxis
                     dataKey="name"
@@ -148,7 +152,7 @@ export const VendorAnalyticsSection = ({
                   />
                   <Bar
                     dataKey="value"
-                    fill="#c4b5a0"
+                    fill="var(--chart-secondary)"
                     maxBarSize={24}
                     radius={[2.26, 2.26, 0, 0]}
                   />

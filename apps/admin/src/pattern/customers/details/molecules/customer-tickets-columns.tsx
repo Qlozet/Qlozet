@@ -60,11 +60,13 @@ export const createCustomerTicketsColumns = ({
           <div className="flex flex-col gap-1">
             {/* Tickets carry no reference/subject fields — the id tail and the
                 issue type stand in for them. */}
-            <span className="text-sm font-semibold text-[hsla(210,9%,31%,1)]">
+            <span className="text-sm font-semibold text-[hsla(210,9%,31%,1)] dark:text-white">
               {shortTicketId(t._id)}
             </span>
-            <span className="text-xs text-gray-500">{ticketCategory(t)}</span>
-            <span className="max-w-[420px] text-xs text-gray-500">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {ticketCategory(t)}
+            </span>
+            <span className="max-w-[420px] text-xs text-gray-500 dark:text-gray-400">
               {ticketSubject(t)}
             </span>
           </div>
@@ -77,7 +79,7 @@ export const createCustomerTicketsColumns = ({
     id: 'date',
     header: 'Date',
     cell: ({ row }) => (
-      <span className="whitespace-nowrap text-sm text-gray-600">
+      <span className="whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
         {formatDate(row.original.createdAt)}
       </span>
     ),

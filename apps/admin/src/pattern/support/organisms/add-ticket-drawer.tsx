@@ -31,7 +31,7 @@ const Field = ({
   children: React.ReactNode;
 }) => (
   <div className="space-y-1.5">
-    <label className="text-sm font-medium text-grey-black">
+    <label className="text-sm font-medium text-grey-black dark:text-white">
       {label}
       {required && <span className="text-error"> *</span>}
     </label>
@@ -89,7 +89,7 @@ export const AddTicketDrawer = NiceModal.create(() => {
     <Sheet open={visible} onOpenChange={handleOpenChange}>
       <SheetContent
         side="right"
-        className="flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white"
+        className="flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white dark:bg-card"
         style={{
           height: 'calc(100vh - 3rem)',
           maxHeight: 'calc(100vh - 3rem)',
@@ -97,7 +97,7 @@ export const AddTicketDrawer = NiceModal.create(() => {
       >
         {/* pr-12 keeps the title clear of the Sheet's built-in close button. */}
         <SheetHeader className="shrink-0 border-b border-border py-5 pl-6 pr-12">
-          <SheetTitle className="text-lg font-semibold text-[#0C0C0D]">
+          <SheetTitle className="text-lg font-semibold text-[#0C0C0D] dark:text-white">
             Add A Ticket
           </SheetTitle>
         </SheetHeader>
@@ -127,7 +127,7 @@ export const AddTicketDrawer = NiceModal.create(() => {
             />
           </Field>
 
-          <p className="text-xs text-grey3">
+          <p className="text-xs text-grey3 dark:text-gray-400">
             Assign this ticket to a team member from its detail page once it has
             been created.
           </p>

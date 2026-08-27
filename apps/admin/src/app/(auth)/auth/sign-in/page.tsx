@@ -70,7 +70,7 @@ const SignInForm = () => {
           <div className="space-y-1.5">
             <label
               htmlFor="admin-email"
-              className="text-sm font-medium text-grey-black"
+              className="text-sm font-medium text-grey-black dark:text-white"
             >
               Email address
             </label>
@@ -89,7 +89,7 @@ const SignInForm = () => {
           <div className="space-y-1.5">
             <label
               htmlFor="admin-password"
-              className="text-sm font-medium text-grey-black"
+              className="text-sm font-medium text-grey-black dark:text-white"
             >
               Password
             </label>
@@ -108,7 +108,7 @@ const SignInForm = () => {
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-grey3 hover:text-grey-black transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-grey3 hover:text-grey-black transition-colors dark:text-gray-400 dark:hover:text-white"
                 tabIndex={-1}
               >
                 {showPassword ? (

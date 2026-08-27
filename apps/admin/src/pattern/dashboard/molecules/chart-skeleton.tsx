@@ -5,11 +5,11 @@ export const ChartSkeleton = () => {
   return (
     <Card className="animate-pulse">
       <CardHeader>
-        <div className="mb-2 h-6 w-40 rounded bg-gray-300" />
-        <div className="h-4 w-56 rounded bg-gray-200" />
+        <div className="mb-2 h-6 w-40 rounded bg-gray-300 dark:bg-muted" />
+        <div className="h-4 w-56 rounded bg-gray-200 dark:bg-muted/50" />
       </CardHeader>
       <CardContent>
-        <div className="h-64 rounded bg-gray-200" />
+        <div className="h-64 rounded bg-gray-200 dark:bg-muted" />
       </CardContent>
     </Card>
   );

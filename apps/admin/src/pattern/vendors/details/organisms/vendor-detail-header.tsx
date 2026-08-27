@@ -31,7 +31,7 @@ export const VendorDetailHeader = ({
       {/* Banner */}
       <div
         className={cn(
-          'relative h-[180px] w-full overflow-hidden rounded-2xl bg-gradient-to-r from-[#cfcfcf] to-[#e9e9e9]',
+          'relative h-[180px] w-full overflow-hidden rounded-2xl bg-gradient-to-r from-[#cfcfcf] to-[#e9e9e9] dark:from-white/10 dark:to-white/5',
           isLoading && 'animate-pulse'
         )}
         style={
@@ -51,7 +51,7 @@ export const VendorDetailHeader = ({
 
       {/* Avatar */}
       <div className="absolute -bottom-6 left-6">
-        <div className="flex size-24 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-primary/10 text-2xl font-bold text-primary shadow-md">
+        <div className="flex size-24 items-center justify-center overflow-hidden rounded-full border-4 border-white dark:border-background bg-primary/10 text-2xl font-bold text-primary shadow-md">
           {avatar ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img

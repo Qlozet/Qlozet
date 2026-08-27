@@ -17,12 +17,14 @@ export const RoleDetailsForm = ({
   onDescriptionChange,
 }: RoleDetailsFormProps) => {
   return (
-    <div className="rounded-2xl border border-border bg-white p-5">
-      <h2 className="text-base font-bold text-grey-black">Role Details</h2>
+    <div className="rounded-2xl border border-border bg-white dark:bg-card p-5">
+      <h2 className="text-base font-bold text-grey-black dark:text-white">
+        Role Details
+      </h2>
 
       <div className="mt-5 space-y-4">
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-grey-black">
+          <label className="text-sm font-medium text-grey-black dark:text-white">
             Name of Role
           </label>
           <Input
@@ -33,7 +35,7 @@ export const RoleDetailsForm = ({
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-grey-black">
+          <label className="text-sm font-medium text-grey-black dark:text-white">
             Description
           </label>
           <Textarea

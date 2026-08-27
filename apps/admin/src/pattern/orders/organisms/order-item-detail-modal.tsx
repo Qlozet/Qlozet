@@ -93,7 +93,7 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
             })
           }
           aria-label={`View ${name} media`}
-          className="group relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gray-100 cursor-pointer"
+          className="group relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gray-100 dark:bg-muted cursor-pointer"
         >
           {heroUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -103,7 +103,7 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
               className="size-full object-cover transition-transform group-hover:scale-105"
             />
           ) : (
-            <Package className="size-7 text-gray-400" />
+            <Package className="size-7 text-gray-400 dark:text-gray-500" />
           )}
           <span className="absolute inset-0 flex items-center justify-center bg-black/0 text-white/0 transition-colors group-hover:bg-black/30 group-hover:text-white">
             <Maximize2 className="size-4" />
@@ -111,7 +111,9 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
         </button>
 
         <div className="min-w-0 flex-1">
-          <p className="text-base font-semibold text-[#0C0C0D]">{name}</p>
+          <p className="text-base font-semibold text-[#0C0C0D] dark:text-white">
+            {name}
+          </p>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             {kind && (
               <span className="inline-flex items-center rounded-md bg-indigo-50 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-700">
@@ -119,21 +121,21 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
               </span>
             )}
             {typeof product?.base_price === 'number' && (
-              <span className="text-[11px] text-grey3">
+              <span className="text-[11px] text-grey3 dark:text-gray-400">
                 Base: {formatNaira(product.base_price)}
               </span>
             )}
           </div>
           {description && (
-            <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-grey3">
+            <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-grey3 dark:text-gray-400">
               {description}
             </p>
           )}
         </div>
 
         <div className="shrink-0 text-right">
-          <p className="text-[11px] text-grey3">Total</p>
-          <p className="text-base font-bold text-[#0C0C0D]">
+          <p className="text-[11px] text-grey3 dark:text-gray-400">Total</p>
+          <p className="text-base font-bold text-[#0C0C0D] dark:text-white">
             {formatNaira(total)}
           </p>
         </div>
@@ -141,10 +143,10 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
 
       {/* Cross-vendor fabric — the key "what is this made of" fact, so it leads. */}
       {(appliedFabric || item.applied_fabric_yards) && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-3">
+        <div className="rounded-xl border border-amber-200 dark:border-amber-400/30 bg-amber-50 dark:bg-amber-400/10 p-3">
           <div className="flex items-center gap-1.5">
-            <Scissors className="size-3.5 text-amber-600" />
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-700">
+            <Scissors className="size-3.5 text-amber-600 dark:text-amber-400" />
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">
               External fabric
             </h4>
           </div>
@@ -154,10 +156,10 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
               alt={appliedFabric?.fabric?.name ?? 'Fabric'}
             />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-[#333333]">
+              <p className="truncate text-sm font-medium text-[#333333] dark:text-white">
                 {appliedFabric?.fabric?.name ?? 'Applied fabric'}
               </p>
-              <p className="text-xs text-grey3">
+              <p className="text-xs text-grey3 dark:text-gray-400">
                 {item.applied_fabric_yards ?? '—'} yards
                 {appliedFabricVendor ? ` · from ${appliedFabricVendor}` : ''}
               </p>
@@ -170,7 +172,7 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
       {!!item.color_variant_selections?.length && (
         <Section
           title="Colour & Size"
-          icon={<Palette className="size-3.5 text-grey3" />}
+          icon={<Palette className="size-3.5 text-grey3 dark:text-gray-400" />}
         >
           {item.color_variant_selections.map((selection, index) => {
             const variant = byId<ClothingColorVariantDoc>(
@@ -201,7 +203,7 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
       {!!item.style_selections?.length && (
         <Section
           title="Styles"
-          icon={<Layers className="size-3.5 text-grey3" />}
+          icon={<Layers className="size-3.5 text-grey3 dark:text-gray-400" />}
         >
           {item.style_selections.map((selection, index) => {
             const style = byId<ClothingStyleDoc>(
@@ -212,7 +214,9 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
               <SelectionRow
                 key={index}
                 url={firstImg(style?.images)}
-                icon={<Layers className="size-4 text-gray-400" />}
+                icon={
+                  <Layers className="size-4 text-gray-400 dark:text-gray-500" />
+                }
                 title={style?.name ?? 'Style'}
                 subtitle={style?.type}
                 price={selection.total_amount}
@@ -227,7 +231,7 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
       {!!item.fabric_selections?.length && (
         <Section
           title="Fabric"
-          icon={<Scissors className="size-3.5 text-grey3" />}
+          icon={<Scissors className="size-3.5 text-grey3 dark:text-gray-400" />}
         >
           {item.fabric_selections.map((selection, index) => {
             const fabric =
@@ -256,7 +260,7 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
       {!!item.accessory_selections?.length && (
         <Section
           title="Accessories"
-          icon={<Gem className="size-3.5 text-grey3" />}
+          icon={<Gem className="size-3.5 text-grey3 dark:text-gray-400" />}
         >
           {item.accessory_selections.map((selection, index) => {
             const accessory = byId<ClothingAccessoryDoc>(
@@ -268,7 +272,9 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
               <SelectionRow
                 key={index}
                 url={firstImg(variant?.images) ?? firstImg(accessory?.images)}
-                icon={<Gem className="size-4 text-gray-400" />}
+                icon={
+                  <Gem className="size-4 text-gray-400 dark:text-gray-500" />
+                }
                 title={accessory?.name ?? 'Accessory'}
                 subtitle={variant?.name}
                 price={selection.total_amount}
@@ -283,7 +289,9 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
       {!!item.addon_selections?.length && (
         <Section
           title="Add-ons"
-          icon={<PlusCircle className="size-3.5 text-grey3" />}
+          icon={
+            <PlusCircle className="size-3.5 text-grey3 dark:text-gray-400" />
+          }
         >
           {item.addon_selections.map((selection, index) => {
             const addon = byId<ClothingAddonDoc>(
@@ -296,7 +304,9 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
                 key={index}
                 url={variant?.image_url ?? null}
                 swatch={variant?.color_hex ?? null}
-                icon={<PlusCircle className="size-4 text-gray-400" />}
+                icon={
+                  <PlusCircle className="size-4 text-gray-400 dark:text-gray-500" />
+                }
                 title={addon?.name ?? 'Add-on'}
                 subtitle={variant?.name}
                 price={selection.total_amount}
@@ -309,7 +319,7 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
 
       {/* Pricing ladder — the snapshot frozen at order time. */}
       {item.pricing && (
-        <div className="space-y-1.5 rounded-xl bg-[hsla(0,0%,96%,1)] px-3.5 py-3">
+        <div className="space-y-1.5 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-muted px-3.5 py-3">
           {(
             [
               ['Base', item.pricing.base],
@@ -326,34 +336,36 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
                 key={label}
                 className="flex items-center justify-between text-xs"
               >
-                <span className="text-grey3">{label}</span>
-                <span className="text-[#333333]">
+                <span className="text-grey3 dark:text-gray-400">{label}</span>
+                <span className="text-[#333333] dark:text-white">
                   {formatNaira(value ?? 0)}
                 </span>
               </div>
             ))}
 
-          <div className="flex items-center justify-between border-t border-[#DDE2E5] pt-1.5 text-xs">
-            <span className="font-medium text-[#333333]">Before discount</span>
-            <span className="font-medium text-[#333333]">
+          <div className="flex items-center justify-between border-t border-[#DDE2E5] dark:border-white/10 pt-1.5 text-xs">
+            <span className="font-medium text-[#333333] dark:text-white">
+              Before discount
+            </span>
+            <span className="font-medium text-[#333333] dark:text-white">
               {formatNaira(item.pricing.before_discount ?? 0)}
             </span>
           </div>
 
           {(item.pricing.discount ?? 0) > 0 && (
             <div className="flex items-center justify-between text-xs">
-              <span className="text-grey3">Discount</span>
-              <span className="font-semibold text-red-600">
+              <span className="text-grey3 dark:text-gray-400">Discount</span>
+              <span className="font-semibold text-red-600 dark:text-red-400">
                 -{formatNaira(item.pricing.discount ?? 0)}
               </span>
             </div>
           )}
 
-          <div className="flex items-center justify-between border-t border-[#DDE2E5] pt-1.5">
-            <span className="text-xs font-semibold text-[#333333]">
+          <div className="flex items-center justify-between border-t border-[#DDE2E5] dark:border-white/10 pt-1.5">
+            <span className="text-xs font-semibold text-[#333333] dark:text-white">
               Final item total
             </span>
-            <span className="text-sm font-bold text-[#0C0C0D]">
+            <span className="text-sm font-bold text-[#0C0C0D] dark:text-white">
               {formatNaira(item.pricing.final ?? 0)}
             </span>
           </div>
@@ -363,11 +375,11 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
       {/* Customer note */}
       {item.note && (
         <div>
-          <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-grey3">
+          <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-grey3 dark:text-gray-400">
             Customer note
           </h4>
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5">
-            <p className="text-xs italic leading-relaxed text-amber-800">
+          <div className="rounded-xl border border-amber-200 dark:border-amber-400/30 bg-amber-50 dark:bg-amber-400/10 px-3 py-2.5">
+            <p className="text-xs italic leading-relaxed text-amber-800 dark:text-amber-300">
               &ldquo;{item.note}&rdquo;
             </p>
           </div>
@@ -408,17 +420,17 @@ export const OrderItemDetailModal = create<OrderItemDetailModalProps>(
           role="dialog"
           aria-modal="true"
           aria-label="Item details"
-          className="relative z-10 flex max-h-[85vh] w-full max-w-[520px] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+          className="relative z-10 flex max-h-[85vh] w-full max-w-[520px] flex-col overflow-hidden rounded-2xl bg-white dark:bg-card shadow-2xl"
         >
           <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-5 py-4">
-            <h2 className="text-base font-semibold text-[#0C0C0D]">
+            <h2 className="text-base font-semibold text-[#0C0C0D] dark:text-white">
               Item details
             </h2>
             <button
               type="button"
               onClick={close}
               aria-label="Close"
-              className="flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md border border-border text-grey-black transition-colors hover:bg-gray-100"
+              className="flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md border border-border text-grey-black dark:text-white transition-colors hover:bg-gray-100 dark:hover:bg-muted/80"
             >
               <X className="size-4" />
             </button>

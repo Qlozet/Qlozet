@@ -38,8 +38,8 @@ export const CustomerWalletSection = ({
   return (
     <section className="space-y-6">
       {/* Heading */}
-      <div className="rounded-2xl bg-white px-6 py-5 custom-card-shadow">
-        <h2 className="text-lg font-bold text-[hsla(210,9%,31%,1)]">
+      <div className="rounded-2xl bg-white dark:bg-card px-6 py-5 custom-card-shadow">
+        <h2 className="text-lg font-bold text-[hsla(210,9%,31%,1)] dark:text-white">
           Wallet Details
         </h2>
       </div>

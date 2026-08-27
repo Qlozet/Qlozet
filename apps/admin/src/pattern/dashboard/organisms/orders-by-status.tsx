@@ -6,7 +6,13 @@ import { useGetAdminDashboardChartsQuery } from '@/redux/services/dashboard/dash
 import { DonutChart } from '../molecules/donut-chart';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
 
-const COLORS = ['#3d2817', '#8a6f52', '#c4b5a0', '#d4c5b9', '#e8ded4'];
+const COLORS = [
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)',
+  'var(--chart-5)',
+];
 
 // Every marketplace order by delivery status, from
 // GET /admin/dashboard/charts → charts.ordersByStatus.

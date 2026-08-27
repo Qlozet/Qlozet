@@ -90,11 +90,11 @@ export function DataTable<TData>({
   const skeletonRowCount = pagination.pageSize || 5;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-white custom-card-shadow">
+    <div className="overflow-hidden rounded-xl border border-border bg-white dark:bg-card custom-card-shadow">
       {toolbar}
 
       <Table style={{ minWidth }}>
-        <TableHeader className="bg-[#F9FAFB]">
+        <TableHeader className="bg-[#F9FAFB] dark:bg-muted">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="hover:bg-transparent">
               {headerGroup.headers.map((header, index) => {
@@ -104,7 +104,7 @@ export function DataTable<TData>({
                   <TableHead
                     key={header.id}
                     className={cn(
-                      'h-[52px] whitespace-nowrap text-xs font-medium text-gray-500',
+                      'h-[52px] whitespace-nowrap text-xs font-medium text-gray-500 dark:text-gray-400',
                       isFirst && 'pl-6',
                       isLast && 'pr-6'
                     )}
@@ -168,7 +168,7 @@ export function DataTable<TData>({
                   // Hover feedback so a clickable row reads as clickable —
                   // cursor-pointer alone isn't discoverable enough.
                   onRowClick &&
-                    'cursor-pointer transition-colors hover:bg-[#F9FAFB]'
+                    'cursor-pointer transition-colors hover:bg-[#F9FAFB] dark:hover:bg-muted/80'
                 )}
               >
                 {row.getVisibleCells().map((cell, cellIndex) => {

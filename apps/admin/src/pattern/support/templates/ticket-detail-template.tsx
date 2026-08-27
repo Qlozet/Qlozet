@@ -106,18 +106,20 @@ export const TicketDetailTemplate = () => {
       <GoBackButton href={APP_ROUTES.support} />
 
       {isError ? (
-        <div className="flex min-h-60 flex-col items-center justify-center gap-1 rounded-2xl bg-white p-6 text-center custom-card-shadow">
+        <div className="flex min-h-60 flex-col items-center justify-center gap-1 rounded-2xl bg-white dark:bg-card p-6 text-center custom-card-shadow">
           <p className="text-base font-medium text-destructive">
             Error loading ticket
           </p>
-          <p className="text-sm text-grey3">{errorMessage}</p>
+          <p className="text-sm text-grey3 dark:text-gray-400">
+            {errorMessage}
+          </p>
         </div>
       ) : !loading && !ticket ? (
-        <div className="flex min-h-60 flex-col items-center justify-center gap-1 rounded-2xl bg-white p-6 text-center custom-card-shadow">
-          <p className="text-base font-medium text-grey-black">
+        <div className="flex min-h-60 flex-col items-center justify-center gap-1 rounded-2xl bg-white dark:bg-card p-6 text-center custom-card-shadow">
+          <p className="text-base font-medium text-grey-black dark:text-white">
             Ticket not found
           </p>
-          <p className="text-sm text-grey3">
+          <p className="text-sm text-grey3 dark:text-gray-400">
             This ticket may have been removed, or the link is out of date.
           </p>
         </div>

@@ -51,7 +51,7 @@ export const ActivityByTimeChart = ({
   return (
     <Card className="w-full max-h-[450px] rounded-[12px] custom-card-shadow">
       <CardHeader>
-        <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
+        <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-white">
           Activity by Time of Day
         </CardTitle>
       </CardHeader>
@@ -75,7 +75,7 @@ export const ActivityByTimeChart = ({
               <CartesianGrid
                 strokeDasharray="0"
                 vertical={false}
-                stroke="#e5e7eb"
+                stroke="var(--border)"
               />
               <XAxis
                 dataKey="name"
@@ -94,10 +94,15 @@ export const ActivityByTimeChart = ({
               <Area
                 type="monotone"
                 dataKey="value"
-                stroke="#8a7060"
+                stroke="var(--chart-3)"
                 strokeWidth={2}
                 fill="url(#sessionsFill)"
-                dot={{ stroke: '#8a7060', strokeWidth: 2, fill: '#fff', r: 4 }}
+                dot={{
+                  stroke: 'var(--chart-3)',
+                  strokeWidth: 2,
+                  fill: 'var(--card)',
+                  r: 4,
+                }}
                 activeDot={{ r: 5 }}
               />
             </AreaChart>

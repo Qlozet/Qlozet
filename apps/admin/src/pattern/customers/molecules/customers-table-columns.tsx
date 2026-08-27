@@ -62,7 +62,7 @@ export const createCustomersTableColumns = ({
     id: 'name',
     header: 'Customer name',
     cell: ({ row }) => (
-      <span className="text-sm font-medium text-gray-900">
+      <span className="text-sm font-medium text-gray-900 dark:text-white">
         {getCustomerHandle(row.original) || getCustomerName(row.original)}
       </span>
     ),
@@ -72,7 +72,7 @@ export const createCustomersTableColumns = ({
     id: 'email',
     header: 'Email address',
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-gray-600 dark:text-gray-400">
         {getCustomerEmail(row.original)}
       </div>
     ),
@@ -82,7 +82,7 @@ export const createCustomersTableColumns = ({
     id: 'phone',
     header: 'Phone number',
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-gray-600 dark:text-gray-400">
         {getCustomerPhone(row.original)}
       </div>
     ),
@@ -92,7 +92,7 @@ export const createCustomersTableColumns = ({
     id: 'totalOrders',
     header: 'Total orders',
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-gray-600 dark:text-gray-400">
         {formatCount(getCustomerTotalOrders(row.original))}
       </div>
     ),
@@ -102,7 +102,7 @@ export const createCustomersTableColumns = ({
     id: 'lastOrderDate',
     header: 'Last Order date',
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-gray-600 dark:text-gray-400">
         {formatDate(getCustomerLastOrderDate(row.original))}
       </div>
     ),
@@ -133,7 +133,7 @@ export const createCustomersTableColumns = ({
         type="button"
         variant="outline"
         onClick={() => onViewDetails(row.original._id)}
-        className="h-9 rounded-lg text-sm font-normal text-gray-700"
+        className="h-9 rounded-lg text-sm font-normal text-gray-700 dark:text-gray-200"
       >
         View details
       </Button>

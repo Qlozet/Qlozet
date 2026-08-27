@@ -182,7 +182,7 @@ export const SelectStylesModal = NiceModal.create(() => {
             </button>
           </div>
 
-          <div className="flex items-center gap-3 rounded-lg bg-[hsla(27,97%,12%,0.06)] p-4">
+          <div className="flex items-center gap-3 rounded-lg bg-[hsla(27,97%,12%,0.06)] dark:bg-muted p-4">
             <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Info className="size-4" />
             </span>

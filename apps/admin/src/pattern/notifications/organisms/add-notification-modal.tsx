@@ -32,9 +32,9 @@ interface FieldProps {
 
 const Field = ({ label, children, hint }: FieldProps) => (
   <div className="space-y-1.5">
-    <label className="flex items-center gap-1.5 text-sm font-medium text-grey-black">
+    <label className="flex items-center gap-1.5 text-sm font-medium text-grey-black dark:text-white">
       {label}
-      {hint && <Info className="size-3.5 text-grey2" />}
+      {hint && <Info className="size-3.5 text-grey2 dark:text-gray-400" />}
     </label>
     {children}
   </div>
@@ -114,7 +114,7 @@ export const AddNotificationModal = NiceModal.create(() => {
             type="button"
             onClick={handleClose}
             aria-label="Close"
-            className="flex size-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 transition"
+            className="flex size-8 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-muted/80 transition"
           >
             <X className="size-4" />
           </button>
@@ -198,7 +198,7 @@ export const AddNotificationModal = NiceModal.create(() => {
                       onChange={(e) => setDate(e.target.value)}
                       className="pr-10"
                     />
-                    <Calendar className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-grey2" />
+                    <Calendar className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-grey2 dark:text-gray-400" />
                   </div>
                 </Field>
 
@@ -210,7 +210,7 @@ export const AddNotificationModal = NiceModal.create(() => {
                       onChange={(e) => setTime(e.target.value)}
                       className="pr-10"
                     />
-                    <Clock className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-grey2" />
+                    <Clock className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-grey2 dark:text-gray-400" />
                   </div>
                 </Field>
               </>

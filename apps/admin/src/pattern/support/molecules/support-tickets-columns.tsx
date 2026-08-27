@@ -30,7 +30,7 @@ export const createSupportTicketsColumns = ({
       // `title` exposes the full ObjectId, since the cell only shows its tail.
       <span
         title={row.original._id}
-        className="whitespace-nowrap text-sm font-medium text-grey-black"
+        className="whitespace-nowrap text-sm font-medium text-grey-black dark:text-white"
       >
         {shortTicketId(row.original._id)}
       </span>
@@ -41,7 +41,7 @@ export const createSupportTicketsColumns = ({
     id: 'subject',
     header: 'Subject',
     cell: ({ row }) => (
-      <span className="line-clamp-2 max-w-[320px] text-sm text-grey3">
+      <span className="line-clamp-2 max-w-[320px] text-sm text-grey3 dark:text-gray-400">
         {ticketSubject(row.original)}
       </span>
     ),
@@ -61,7 +61,7 @@ export const createSupportTicketsColumns = ({
     id: 'category',
     header: 'Category',
     cell: ({ row }) => (
-      <span className="whitespace-nowrap text-sm text-grey3">
+      <span className="whitespace-nowrap text-sm text-grey3 dark:text-gray-400">
         {ticketCategory(row.original)}
       </span>
     ),
@@ -78,7 +78,7 @@ export const createSupportTicketsColumns = ({
       return id ? (
         <span
           title={id}
-          className="whitespace-nowrap text-sm text-grey3"
+          className="whitespace-nowrap text-sm text-grey3 dark:text-gray-400"
         >{`#${id.slice(-6).toUpperCase()}`}</span>
       ) : (
         <span className="whitespace-nowrap text-sm text-error">Unassigned</span>
@@ -106,7 +106,7 @@ export const createSupportTicketsColumns = ({
     cell: ({ row }) => {
       const count = row.original.replies?.length ?? 0;
       return (
-        <span className="whitespace-nowrap text-sm text-grey3">
+        <span className="whitespace-nowrap text-sm text-grey3 dark:text-gray-400">
           {count > 0 ? count : EM_DASH}
         </span>
       );
@@ -117,7 +117,7 @@ export const createSupportTicketsColumns = ({
     id: 'created_at',
     header: 'Created At',
     cell: ({ row }) => (
-      <span className="whitespace-nowrap text-sm text-grey3">
+      <span className="whitespace-nowrap text-sm text-grey3 dark:text-gray-400">
         {formatDate(row.original.createdAt)}
       </span>
     ),
@@ -126,7 +126,9 @@ export const createSupportTicketsColumns = ({
   {
     id: 'chevron',
     header: '',
-    cell: () => <ChevronRight className="size-4 text-grey2" />,
+    cell: () => (
+      <ChevronRight className="size-4 text-grey2 dark:text-gray-400" />
+    ),
     enableSorting: false,
   },
 ];

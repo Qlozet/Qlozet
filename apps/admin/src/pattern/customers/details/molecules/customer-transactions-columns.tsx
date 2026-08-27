@@ -48,7 +48,7 @@ export const createCustomerTransactionsColumns = ({
     id: 'date',
     header: 'Date',
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-gray-600 dark:text-gray-400">
         {formatDate(row.original.createdAt)}
       </div>
     ),
@@ -58,7 +58,7 @@ export const createCustomerTransactionsColumns = ({
     id: 'transactionId',
     header: 'Transaction ID',
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-gray-600 dark:text-gray-400">
         {getTransactionId(row.original)}
       </div>
     ),
@@ -68,7 +68,7 @@ export const createCustomerTransactionsColumns = ({
     id: 'type',
     header: 'Transaction type',
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600 capitalize">
+      <div className="text-sm text-gray-600 dark:text-gray-400 capitalize">
         {row.original.type || '—'}
       </div>
     ),
@@ -78,7 +78,7 @@ export const createCustomerTransactionsColumns = ({
     id: 'narration',
     header: 'Narration',
     cell: ({ row }) => (
-      <div className="max-w-[180px] truncate text-sm text-gray-600">
+      <div className="max-w-[180px] truncate text-sm text-gray-600 dark:text-gray-400">
         {getNarration(row.original)}
       </div>
     ),
@@ -88,7 +88,9 @@ export const createCustomerTransactionsColumns = ({
     id: 'amount',
     header: 'Amount',
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600">{formatAmount(row.original)}</div>
+      <div className="text-sm text-gray-600 dark:text-gray-400">
+        {formatAmount(row.original)}
+      </div>
     ),
     enableSorting: false,
   },
@@ -117,7 +119,7 @@ export const createCustomerTransactionsColumns = ({
         type="button"
         variant="outline"
         onClick={() => onViewDetails(row.original)}
-        className="h-9 rounded-lg text-sm font-normal text-gray-700"
+        className="h-9 rounded-lg text-sm font-normal text-gray-700 dark:text-gray-200"
       >
         View Details
       </Button>

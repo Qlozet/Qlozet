@@ -2,7 +2,7 @@
 
 import { DonutChart, type DonutDatum } from '../molecules/donut-chart';
 
-const COLORS = ['#3d2817', '#d4c5b9'];
+const COLORS = ['var(--chart-1)', 'var(--chart-4)'];
 
 interface ReturnsRateChartProps {
   data?: DonutDatum[];

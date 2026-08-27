@@ -18,7 +18,8 @@ const STATUS_STYLES: Record<
   scheduled: { variant: 'blue' },
   archived: {
     variant: 'secondary',
-    className: 'bg-gray-200 text-gray-600 hover:bg-gray-200',
+    className:
+      'bg-gray-200 text-gray-600 hover:bg-gray-200 dark:bg-muted dark:text-gray-400 dark:hover:bg-muted',
   },
 };
 

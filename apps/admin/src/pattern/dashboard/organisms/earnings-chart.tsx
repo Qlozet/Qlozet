@@ -47,10 +47,10 @@ export const EarningsChart = ({ grossSales }: EarningsChartProps) => {
   return (
     <Card className="w-full max-h-fit rounded-[12px] custom-card-shadow">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
+        <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-white">
           Earnings
         </CardTitle>
-        <span className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
+        <span className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-white">
           Gross Sales: {grossSales ?? formatNaira(total)}
         </span>
       </CardHeader>
@@ -69,7 +69,7 @@ export const EarningsChart = ({ grossSales }: EarningsChartProps) => {
               <CartesianGrid
                 strokeDasharray="0"
                 vertical={false}
-                stroke="#e5e7eb"
+                stroke="var(--border)"
               />
               <XAxis
                 dataKey="name"
@@ -84,7 +84,7 @@ export const EarningsChart = ({ grossSales }: EarningsChartProps) => {
               />
               <Bar
                 dataKey="value"
-                fill="#c4b5a0"
+                fill="var(--chart-secondary)"
                 maxBarSize={24}
                 radius={[2.26, 2.26, 0, 0]}
               />
