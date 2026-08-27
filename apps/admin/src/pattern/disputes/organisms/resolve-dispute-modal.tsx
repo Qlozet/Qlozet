@@ -26,6 +26,7 @@ import {
   formatDate,
   isActionable,
 } from '../lib/dispute-labels';
+import { OrderConversationView } from './order-conversation-view';
 
 interface ResolveDisputeModalProps {
   dispute: Dispute | null;
@@ -179,6 +180,14 @@ export function ResolveDisputeModal({
                 )}
             </section>
           )}
+
+          {/* Read-only bespoke chat — evidence for the decision. */}
+          <section className="flex flex-col gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+              Conversation
+            </span>
+            <OrderConversationView reference={dispute.order_reference} />
+          </section>
 
           {actionable ? (
             <>
