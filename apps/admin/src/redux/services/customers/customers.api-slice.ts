@@ -108,6 +108,87 @@ export interface CustomerDetail extends Customer {
   lifetime_spending?: number | null;
 }
 
+/**
+ * GET /admin/customer/:id/measurements — the Body Measurement panel.
+ *
+ * The backend stores measurements as a flat { key: number } map holding only
+ * the keys the customer actually recorded, so the panel renders what it is
+ * given rather than a fixed field list. Nothing here is filled in.
+ */
+export interface CustomerMeasurementSet {
+  name: string;
+  unit: 'cm' | 'inch';
+  /** The set the customer currently shops with. Sets arrive active-first. */
+  active: boolean;
+  created_at?: string | null;
+  measurements: Record<string, number>;
+}
+
+export interface CustomerBodyType {
+  /** athletic | rectangle | trapezoid | round | triangle | hourglass | pear | apple | inverted_triangle | unclassified */
+  type: string;
+  confidence: 'high' | 'medium' | 'low' | string;
+  flattering_fits: string[];
+  avoid_fits: string[];
+  style_advice: string[];
+  /** Null when the classification was derived for this response, not cached. */
+  computed_at?: string | null;
+  from_set?: string | null;
+}
+
+export interface CustomerMeasurements {
+  full_name?: string | null;
+  gender?: string | null;
+  sets: CustomerMeasurementSet[];
+  /** Active set, falling back to the first saved one; null when there are none. */
+  active_set: CustomerMeasurementSet | null;
+  body_type: CustomerBodyType | null;
+}
+
+/**
+ * GET /admin/customer/:id/reviews — the reviews this customer WROTE, which is
+ * what `reviews_count` on their detail header counts.
+ *
+ * Ratings live embedded in products, one entry per product per user, so a row
+ * is a rating plus the product it was left on.
+ */
+export interface CustomerReview {
+  product_id: string;
+  product_name?: string | null;
+  product_kind?: string | null;
+  product_image?: string | null;
+  vendor_name?: string | null;
+  rating: number;
+  /** A rating may carry no comment — stars alone are a review. */
+  comment?: string | null;
+  /** Derived from the rating's ObjectId; ratings carry no timestamp. */
+  created_at?: string | null;
+}
+
+/** Over their WHOLE history, not the page — the bars describe the customer. */
+export interface CustomerReviewsSummary {
+  total_reviews: number;
+  average_rating: number;
+  five_star: number;
+  four_star: number;
+  three_star: number;
+  two_star: number;
+  one_star: number;
+}
+
+export interface CustomerReviewsPage {
+  summary: CustomerReviewsSummary;
+  reviews: CustomerReview[];
+  pagination: { page: number; size: number; total: number; pages: number };
+}
+
+export interface GetCustomerReviewsParams {
+  customerId: string;
+  page?: number;
+  size?: number;
+  sortBy?: 'recent' | 'highest' | 'lowest';
+}
+
 export interface GetCustomersParams {
   page?: number;
   size?: number;
@@ -169,6 +250,39 @@ export const customersApiSlice = baseAPI.injectEndpoints({
       providesTags: ['Transactions'],
     }),
 
+    // This customer's saved measurement sets and body-type classification.
+    // Every route under /measurements is customer-scoped and reads the caller's
+    // id from its token, so an admin hitting them got their own empty sets;
+    // this admin twin takes the customer from the path.
+    getCustomerMeasurements: builder.query<
+      ApiResponse<CustomerMeasurements>,
+      string
+    >({
+      query: (customerId) => ({
+        url: `/admin/customer/${customerId}/measurements`,
+        method: 'GET',
+      }),
+      providesTags: ['CustomerMeasurements'],
+    }),
+
+    // The reviews this customer wrote. Paged, but the summary it carries is
+    // over their whole history — the distribution bars describe the customer
+    // and must not move as the reader pages.
+    getCustomerReviews: builder.query<
+      ApiResponse<CustomerReviewsPage>,
+      GetCustomerReviewsParams
+    >({
+      query: ({ customerId, page, size, sortBy }) => ({
+        url: `/admin/customer/${customerId}/reviews${buildQueryString({
+          page,
+          size,
+          sortBy,
+        })}`,
+        method: 'GET',
+      }),
+      providesTags: ['CustomerReviews'],
+    }),
+
     // Set a customer's account state. Sign-in requires 'active', so both
     // 'inactive' and 'suspended' lock them out — the difference is intent.
     setCustomerStatus: builder.mutation<
@@ -203,6 +317,8 @@ export const {
   useGetCustomersQuery,
   useGetCustomerQuery,
   useGetCustomerTransactionsQuery,
+  useGetCustomerMeasurementsQuery,
+  useGetCustomerReviewsQuery,
   useSetCustomerStatusMutation,
   useDeleteCustomerMutation,
 } = customersApiSlice;

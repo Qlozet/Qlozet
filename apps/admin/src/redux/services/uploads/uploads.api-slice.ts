@@ -16,6 +16,37 @@ export interface UploadedImage {
   height?: number;
 }
 
+/**
+ * Both upload routes answer `{ data: { imageUrl, publicId } }`, not
+ * `{ data: { url } }`. Callers read `.data.url`, so without this every upload
+ * looked like it had returned no URL — the profile endpoint had no normalizer
+ * at all, which is why changing a logo or banner always failed.
+ */
+const normalizeUpload = (
+  res: {
+    data?: {
+      url?: string;
+      imageUrl?: string;
+      public_id?: string;
+      publicId?: string;
+      imagePublicId?: string;
+    };
+  } & Record<string, unknown>
+): ApiResponse<UploadedImage> => {
+  const d = res?.data ?? {};
+  // Cloudinary hands back http:// on some accounts; a mixed-content image is
+  // blocked outright by the browser.
+  const url = (d.url ?? d.imageUrl ?? '').replace(/^http:\/\//, 'https://');
+  return {
+    ...res,
+    data: {
+      ...d,
+      url,
+      public_id: d.public_id ?? d.publicId ?? d.imagePublicId,
+    },
+  } as ApiResponse<UploadedImage>;
+};
+
 export const uploadsApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     uploadProductImage: builder.mutation<ApiResponse<UploadedImage>, File>({
@@ -24,28 +55,7 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
         form.append('file', file);
         return { url: '/uploads/product', method: 'POST', body: form };
       },
-      // Backend returns { data: { imageUrl, imagePublicId } }. Normalize to
-      // { data: { url, public_id } } so consumers can rely on UploadedImage.url.
-      transformResponse: (
-        res: {
-          data?: {
-            imageUrl?: string;
-            url?: string;
-            imagePublicId?: string;
-            public_id?: string;
-          };
-        } & Record<string, unknown>
-      ) => {
-        const d = res?.data ?? {};
-        const url = (d.url ?? d.imageUrl ?? '').replace(
-          /^http:\/\//,
-          'https://'
-        );
-        return {
-          ...res,
-          data: { ...d, url, public_id: d.public_id ?? d.imagePublicId },
-        } as ApiResponse<UploadedImage>;
-      },
+      transformResponse: normalizeUpload,
     }),
 
     uploadProfileImage: builder.mutation<ApiResponse<UploadedImage>, File>({
@@ -54,6 +64,7 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
         form.append('file', file);
         return { url: '/uploads/profile', method: 'POST', body: form };
       },
+      transformResponse: normalizeUpload,
     }),
 
     uploadOutfitImages: builder.mutation<ApiResponse<UploadedImage[]>, File[]>({

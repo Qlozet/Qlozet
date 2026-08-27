@@ -2,6 +2,7 @@
 
 import { cn } from '@/lib/utils';
 import type { Business } from '@/redux/services/businesses/businesses.api-slice';
+import { VendorImageUpload } from '../molecules/vendor-image-upload';
 import {
   getVendorCover,
   getVendorInitial,
@@ -44,14 +45,18 @@ export const VendorDetailHeader = ({
             : undefined
         }
       >
-        {/* TODO(api): editing a vendor's cover needs an admin-scoped write —
-            PATCH /business/profile only ever updates the caller's own
-            business, so the control is omitted rather than left inert. */}
+        {/* Writes cover_image_url through PATCH /admin/businesses/:id. */}
+        <VendorImageUpload
+          businessId={vendor?._id}
+          field="cover_image_url"
+          label="Change banner"
+          className="absolute bottom-3 right-3"
+        />
       </div>
 
-      {/* Avatar */}
-      <div className="absolute -bottom-6 left-6">
-        <div className="flex size-24 items-center justify-center overflow-hidden rounded-full border-4 border-white dark:border-background bg-primary/10 text-2xl font-bold text-primary shadow-md">
+      {/* Avatar, with the logo picker sitting on its bottom-left corner. */}
+      <div className="absolute -bottom-6 left-6 size-24">
+        <div className="flex size-full items-center justify-center overflow-hidden rounded-full border-4 border-white dark:border-background bg-primary/10 text-2xl font-bold text-primary shadow-md">
           {avatar ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -63,6 +68,13 @@ export const VendorDetailHeader = ({
             getVendorInitial(vendor ?? empty)
           )}
         </div>
+        <VendorImageUpload
+          businessId={vendor?._id}
+          field="business_logo_url"
+          label="Change logo"
+          iconOnly
+          className="absolute bottom-0 left-0"
+        />
       </div>
     </div>
   );

@@ -1,11 +1,16 @@
 'use client';
 
 import NiceModal from '@ebay/nice-modal-react';
-import { Star, ShieldCheck, Check } from 'lucide-react';
+import { Star, ShieldCheck, Check, ClipboardList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { RowActionsMenu } from '@/pattern/common/molecules/row-actions-menu';
 import type { Business } from '@/redux/services/businesses/businesses.api-slice';
 import type { VendorDashboardMetrics } from '@/redux/services/dashboard/dashboard.api-slice';
 import { getVendorName, formatCount } from '@/lib/vendors';
+import { LifeBuoy, Pencil } from 'lucide-react';
+import { VendorWarehousesModal } from './vendor-warehouses-modal';
+import { EscalateVendorModal } from './escalate-vendor-modal';
+import { EditVendorDrawer } from './edit-vendor-drawer';
 import { VendorInfoCard } from '../molecules/vendor-info-card';
 import { VendorDocumentModal } from './vendor-document-modal';
 
@@ -76,6 +81,7 @@ export const VendorInfoGrid = ({
   const logoUrl =
     str(v.business_logo_svg_url) ?? str(v.business_logo_url) ?? str(v.logo);
   const vendorName = getVendorName(vendor ?? ({} as Business));
+  const businessId = str(v._id);
 
   return (
     <div className="space-y-5">
@@ -100,33 +106,18 @@ export const VendorInfoGrid = ({
         </div>
 
         {/*
-          Status actions are the admin capabilities the backend actually
-          exposes for a business (POST /admin/{id}/approve | verify | reject |
-          in-review). "Notes", "Flag vendor", "Escalate to support" and "Edit
-          Information" had no endpoints behind them and are omitted rather than
-          shown as controls that do nothing.
-          TODO(api): restore them if/when those endpoints exist.
+          Six inline buttons wrapped onto a second line on anything narrower
+          than a desktop and gave equal weight to the rare actions. Only the
+          approve/reject decision stays inline; the rest — the two secondary
+          status moves (POST /admin/{id}/verify | in-review), Edit vendor over
+          PATCH /admin/businesses/:id, and Escalate to support, which raises a
+          ticket — collapse behind the stacked-dots trigger.
+
+          Notes and Flag vendor are in their own section further down rather
+          than here: both need a body, and a button that only opens a prompt
+          for one is a worse version of the panel.
         */}
-        <div className="flex flex-wrap items-center gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onSetInReview}
-            disabled={isUpdatingStatus || status === 'in_review'}
-            className="h-10 cursor-pointer"
-          >
-            Mark in review
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onVerify}
-            disabled={isUpdatingStatus || Boolean(vendor?.isVerified)}
-            className="h-10 cursor-pointer gap-2"
-          >
-            <ShieldCheck className="size-4" />
-            {vendor?.isVerified ? 'Verified' : 'Verify'}
-          </Button>
+        <div className="flex items-center gap-3">
           <Button
             type="button"
             variant="outline"
@@ -134,7 +125,7 @@ export const VendorInfoGrid = ({
             disabled={isUpdatingStatus || status === 'rejected'}
             className="h-10 cursor-pointer border-destructive/40 text-destructive hover:bg-destructive/5"
           >
-            Reject
+            {status === 'rejected' ? 'Rejected' : 'Reject'}
           </Button>
           <Button
             type="button"
@@ -145,6 +136,42 @@ export const VendorInfoGrid = ({
             {status === 'approved' ? 'Approved' : 'Approve'}
             <Check className="size-4" />
           </Button>
+          <RowActionsMenu
+            title="Vendor actions"
+            className="size-10 shrink-0 rounded-lg border border-border-input"
+            actions={[
+              {
+                label: vendor?.isVerified ? 'Verified' : 'Verify',
+                icon: <ShieldCheck className="size-4" />,
+                onSelect: () => onVerify?.(),
+                disabled: isUpdatingStatus || Boolean(vendor?.isVerified),
+              },
+              {
+                label: 'Mark in review',
+                icon: <ClipboardList className="size-4" />,
+                onSelect: () => onSetInReview?.(),
+                disabled: isUpdatingStatus || status === 'in_review',
+              },
+              {
+                label: 'Edit vendor',
+                icon: <Pencil className="size-4" />,
+                onSelect: () =>
+                  vendor && NiceModal.show(EditVendorDrawer, { vendor }),
+                disabled: !vendor,
+              },
+              {
+                label: 'Escalate to support',
+                icon: <LifeBuoy className="size-4" />,
+                onSelect: () =>
+                  vendor?._id &&
+                  NiceModal.show(EscalateVendorModal, {
+                    businessId: vendor._id,
+                    vendorName: v.business_name as string | undefined,
+                  }),
+                disabled: !vendor?._id,
+              },
+            ]}
+          />
         </div>
       </div>
 
@@ -200,12 +227,21 @@ export const VendorInfoGrid = ({
           value={str(v.principal_email) ?? str(v.email)}
         />
 
-        {/* TODO(api): no admin endpoint lists another business's warehouses
-            (GET /business/warehouse is scoped to the caller), so the count
-            stands alone rather than offering a link that can't resolve. */}
+        {/* The count opens the list, now that GET
+            /admin/businesses/:id/warehouses exists — the caller-scoped route
+            could never resolve for an admin. */}
         <VendorInfoCard
           label="Warehouses"
           value={formatCount(num(m.warehouses) ?? num(v.warehousesCount))}
+          linkLabel={vendor?._id ? 'View warehouses' : undefined}
+          onLinkClick={
+            vendor?._id
+              ? () =>
+                  NiceModal.show(VendorWarehousesModal, {
+                    businessId: vendor._id,
+                  })
+              : undefined
+          }
         />
         <VendorInfoCard
           label="Achieved custom orders / day"
@@ -220,43 +256,48 @@ export const VendorInfoGrid = ({
               : 'text-destructive'
           }
         />
-        {/* The viewer link is withheld when nothing was uploaded — it could
-            only open an empty modal, and replacing a document has no endpoint
-            either, so there is nothing for the click to do. */}
+        {/* The value is the affordance: "View document" when a file is on
+            record, "Not uploaded" otherwise. Both open the same modal — with a
+            file it previews and downloads, without one it opens on the
+            dropzone, which now has somewhere to save to. */}
         <VendorInfoCard
           label="CAC Document"
-          value={cacUrl ? 'Uploaded' : 'Not uploaded'}
-          valueClassName={
-            cacUrl ? 'text-[#0F973D] dark:text-green-400' : 'text-destructive'
-          }
-          linkLabel={cacUrl ? 'View document' : undefined}
-          onLinkClick={
-            cacUrl
+          value={cacUrl ? 'View document' : 'Not uploaded'}
+          valueClassName={cacUrl ? undefined : 'text-destructive'}
+          onValueClick={
+            businessId
               ? () =>
                   NiceModal.show(VendorDocumentModal, {
                     kind: 'CAC Document',
                     vendorName,
                     url: cacUrl,
                     downloadLabel: 'Download Document',
+                    businessId,
+                    field: 'cac_document_url',
+                    uploadLabel: 'Upload CAC Document',
+                    accept: 'image/*,application/pdf',
                   })
               : undefined
           }
         />
         <VendorInfoCard
           label="Company PNG logo"
-          value={logoUrl ? 'Uploaded' : 'Not uploaded'}
-          valueClassName={
-            logoUrl ? 'text-[#0F973D] dark:text-green-400' : 'text-destructive'
-          }
-          linkLabel={logoUrl ? 'View logo' : undefined}
-          onLinkClick={
-            logoUrl
+          value={logoUrl ? 'View logo' : 'Not uploaded'}
+          valueClassName={logoUrl ? undefined : 'text-destructive'}
+          onValueClick={
+            businessId
               ? () =>
                   NiceModal.show(VendorDocumentModal, {
                     kind: 'PNG Logo',
                     vendorName,
                     url: logoUrl,
                     downloadLabel: 'Download Logo',
+                    businessId,
+                    // Written separately from business_logo_url so saving here
+                    // never overwrites the header avatar, which has its own
+                    // control — and this card already reads the SVG first.
+                    field: 'business_logo_svg_url',
+                    uploadLabel: 'Upload PNG Image',
                   })
               : undefined
           }

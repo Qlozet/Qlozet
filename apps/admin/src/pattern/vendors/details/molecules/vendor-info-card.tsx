@@ -9,7 +9,12 @@ import {
 // the shared InfoCard so the vendor and customer grids stay in sync.
 export type VendorInfoCardProps = Pick<
   InfoCardProps,
-  'label' | 'value' | 'linkLabel' | 'onLinkClick' | 'valueClassName'
+  | 'label'
+  | 'value'
+  | 'linkLabel'
+  | 'onLinkClick'
+  | 'onValueClick'
+  | 'valueClassName'
 >;
 
 export const VendorInfoCard = (props: VendorInfoCardProps) => (

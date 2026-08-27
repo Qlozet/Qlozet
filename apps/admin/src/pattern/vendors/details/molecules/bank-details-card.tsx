@@ -16,8 +16,9 @@ export const BankDetailsCard = ({ rows }: BankDetailsCardProps) => {
         <h3 className="text-base font-semibold text-[hsla(210,9%,31%,1)] dark:text-white">
           Bank Details
         </h3>
-        {/* TODO(api): no admin endpoint writes a vendor's payout account, so
-            this stays read-only rather than offering an edit that can't save. */}
+        {/* Read-only here by choice, not by limitation: PATCH
+            /admin/businesses/:id does accept the payout fields, and the Edit
+            vendor drawer is where they are corrected. */}
       </div>
 
       <div className="divide-y divide-border">
