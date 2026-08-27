@@ -84,12 +84,12 @@ describe('MonthlyRevenueChart', () => {
   });
 
   it("shows the API's year total, not a re-sum of the bars", () => {
-    // The single-bar screenshot this replaced read NGN 156,921.99 because the
+    // The single-bar screenshot this replaced read ₦156,921.99 because the
     // client was summing ten paginated orders. The headline now comes from the
     // same aggregation that produced the bars.
     withBundle(bundle({ Mar: 40000, Aug: 156921.99 }, 196921.99));
     render(<MonthlyRevenueChart />);
-    expect(screen.getByText('NGN 196,921.99')).toBeInTheDocument();
+    expect(screen.getByText('₦196,921.99')).toBeInTheDocument();
   });
 
   it('labels the axis with the year the API actually charted', () => {
@@ -106,7 +106,7 @@ describe('MonthlyRevenueChart', () => {
     expect(
       screen.getByText(/Monthly revenue will chart here/)
     ).toBeInTheDocument();
-    expect(screen.getByText('NGN 0')).toBeInTheDocument();
+    expect(screen.getByText('₦0')).toBeInTheDocument();
   });
 
   it('renders a skeleton while the query is in flight', () => {
@@ -156,10 +156,8 @@ describe('ExpectedEarningsChart', () => {
       )
     );
     render(<ExpectedEarningsChart />);
-    expect(screen.getByText('NGN 496,500')).toBeInTheDocument();
-    expect(
-      screen.getByText(/NGN 84,000 not yet scheduled/)
-    ).toBeInTheDocument();
+    expect(screen.getByText('₦496,500')).toBeInTheDocument();
+    expect(screen.getByText(/₦84,000 not yet scheduled/)).toBeInTheDocument();
   });
 
   it('drops the unscheduled note when every naira has a release month', () => {
@@ -173,12 +171,59 @@ describe('ExpectedEarningsChart', () => {
     expect(screen.queryByText(/not yet scheduled/)).not.toBeInTheDocument();
   });
 
+  it('shows the empty template when every naira is still unscheduled', () => {
+    // The reported case: real money to report, but none of it has a release
+    // date, so there is nothing to plot. The figure stays; the plot area shows
+    // the fallback instead of an empty grid under it.
+    withBundle(bundle(earnings([], 143567.32, 143567.32)));
+    render(<ExpectedEarningsChart />);
+
+    expect(screen.getByText('₦143,567.32')).toBeInTheDocument();
+    expect(screen.getByText('Nothing scheduled yet')).toBeInTheDocument();
+    expect(
+      screen.getByText(/None of this commission has a release date/)
+    ).toBeInTheDocument();
+  });
+
+  it('does not draw an axis tick for a month that contributes nothing', () => {
+    // A release month whose commission sums to zero is not a bar. Left in, it
+    // put a bare "Jul 2026" label under an empty plot.
+    withBundle(
+      bundle(earnings([{ label: 'Jul 2026', value: 0 }], 143567.32, 143567.32))
+    );
+    render(<ExpectedEarningsChart />);
+
+    expect(screen.queryByText('Jul 2026')).not.toBeInTheDocument();
+    expect(screen.getByText('Nothing scheduled yet')).toBeInTheDocument();
+  });
+
+  it('keeps the chart when at least one month is scheduled', () => {
+    withBundle(
+      bundle(
+        earnings(
+          [
+            { label: 'Jul 2026', value: 0 },
+            { label: 'Aug 2026', value: 12000 },
+          ],
+          143567.32,
+          131567.32
+        )
+      )
+    );
+    render(<ExpectedEarningsChart />);
+
+    expect(screen.queryByText('Nothing scheduled yet')).not.toBeInTheDocument();
+    expect(screen.getAllByText('Aug 2026').length).toBeGreaterThan(0);
+    // Still dropped — it has no column.
+    expect(screen.queryByText('Jul 2026')).not.toBeInTheDocument();
+  });
+
   it('shows the empty template when nothing is awaiting payout', () => {
     withBundle(bundle(earnings([], 0)));
     render(<ExpectedEarningsChart />);
     expect(screen.getByText('Nothing in the pipeline')).toBeInTheDocument();
     // No headline figure at all rather than a ₦0.00 that reads like a data bug.
-    expect(screen.queryByText('NGN 0')).not.toBeInTheDocument();
+    expect(screen.queryByText('₦0')).not.toBeInTheDocument();
   });
 
   it('survives a deployment that predates the chart', () => {
@@ -320,7 +365,7 @@ describe('EarningsChart', () => {
       },
     });
     render(<EarningsChart />);
-    expect(screen.getByText('Gross Sales: NGN 156,921.99')).toBeInTheDocument();
+    expect(screen.getByText('Gross Sales: ₦156,921.99')).toBeInTheDocument();
     expect(screen.getAllByText('Wed').length).toBeGreaterThan(0);
   });
 

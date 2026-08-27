@@ -13,9 +13,18 @@ const DASH = '—';
 
 // ──────────────── Formatters ────────────────
 
+/**
+ * Naira-formatted currency, e.g. ₦180,000.
+ *
+ * The sign is ₦ (U+20A6), not the "NGN" code this used to emit and not the
+ * bare "N" the dashboard stat cards had drifted to — the app rendered all
+ * three at once. `lib/vendors.ts` re-exports this rather than keeping its own
+ * copy: two exports called `formatNaira` with different output is how the
+ * divergence happened.
+ */
 export const formatNaira = (value?: unknown): string =>
   typeof value === 'number' && !Number.isNaN(value)
-    ? `NGN ${value.toLocaleString()}`
+    ? `₦${value.toLocaleString()}`
     : DASH;
 
 // DD/MM/YYYY, matching the Orders table design.
@@ -313,4 +322,17 @@ export const timeAgo = (value?: string | Date | null): string => {
   if (days < 7) return `${days}d ago`;
 
   return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+};
+
+/**
+ * Percentage-change label for a stat card, e.g. "2.5%" or "-25%".
+ *
+ * Returns undefined when the API sent null — the previous window had nothing
+ * to compare against — so the caller renders no badge at all rather than a
+ * "0%" that would read as "flat" when the truth is "unknown".
+ */
+export const formatChange = (value?: number | null): string | undefined => {
+  if (typeof value !== 'number' || Number.isNaN(value)) return undefined;
+  // MetricCard reads the leading "-" to pick the arrow and colour.
+  return `${value}%`;
 };

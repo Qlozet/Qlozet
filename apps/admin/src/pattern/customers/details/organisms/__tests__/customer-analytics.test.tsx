@@ -200,7 +200,7 @@ describe('CustomerSpendChart', () => {
 
     expect(screen.getByText('Spend in 2026')).toBeInTheDocument();
     // Lifetime, deliberately more than the single charted month.
-    expect(screen.getByText('Total spent: NGN 486,000')).toBeInTheDocument();
+    expect(screen.getByText('Total spent: ₦486,000')).toBeInTheDocument();
   });
 
   it('renders the empty template for a customer who has never paid', () => {

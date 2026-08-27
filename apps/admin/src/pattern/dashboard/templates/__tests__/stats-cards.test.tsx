@@ -70,7 +70,9 @@ describe('admin StatsCards', () => {
     expect(screen.getByText('1,200')).toBeInTheDocument();
     // A head count, never money — the design's naira prefix here is a slip.
     expect(screen.getByText('45,000')).toBeInTheDocument();
-    expect(screen.getByText('N 1,250,000')).toBeInTheDocument();
+    // ₦ (U+20A6), from the shared formatNaira — not the bare "N" this card
+    // used to print from its own local formatter.
+    expect(screen.getByText('₦1,250,000')).toBeInTheDocument();
     expect(screen.getByText('92%')).toBeInTheDocument();
   });
 
@@ -121,5 +123,49 @@ describe('admin StatsCards', () => {
     render(<StatsCards />);
     const links = screen.getAllByRole('link', { name: /view all/i });
     expect(links.length).toBe(3);
+  });
+});
+
+describe('admin StatsCards — change badges', () => {
+  const withChanges = (changes: Record<string, unknown>) =>
+    withMetrics({
+      total_orders: 131,
+      changes: { period_days: 30, ...changes },
+    });
+
+  it('renders the percentage movement the API reported', () => {
+    withChanges({ total_orders: 2.5, total_vendors: 4.3 });
+    render(<StatsCards />);
+
+    expect(screen.getByText('2.5%')).toBeInTheDocument();
+    expect(screen.getByText('4.3%')).toBeInTheDocument();
+  });
+
+  it('renders a fall with its sign, so the card can colour it', () => {
+    withChanges({ total_orders: -25 });
+    render(<StatsCards />);
+    // MetricCard reads the leading "-" to pick the down arrow and red.
+    expect(screen.getByText('-25%')).toBeInTheDocument();
+  });
+
+  it('shows no badge when the API could not compute one', () => {
+    // null means the previous window was empty. A "0%" here would read as
+    // "flat" when the truth is "unknown".
+    withChanges({ total_orders: null, total_vendors: null });
+    render(<StatsCards />);
+    expect(screen.queryByText(/%$/)).not.toBeInTheDocument();
+  });
+
+  it('does render a genuine 0%', () => {
+    // Distinct from null: nothing moved, which is a fact worth showing.
+    withChanges({ total_orders: 0 });
+    render(<StatsCards />);
+    expect(screen.getByText('0%')).toBeInTheDocument();
+  });
+
+  it('shows no badges at all against a deployment that predates them', () => {
+    withMetrics({ total_orders: 131 });
+    render(<StatsCards />);
+    expect(screen.queryByText(/%$/)).not.toBeInTheDocument();
   });
 });
