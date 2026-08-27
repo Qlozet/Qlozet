@@ -154,3 +154,51 @@ describe('customer formatters', () => {
     expect(formatLastLoggedIn(customer({}))).toBe('—');
   });
 });
+
+describe('customer field resolution', () => {
+  it('reads the name field the endpoint actually sends', () => {
+    // Every row rendered "Unnamed customer": this read `name` and `username`,
+    // but the User schema defines `full_name`.
+    expect(getCustomerName({ _id: 'c1', full_name: 'Kennedy Ekechukwu' })).toBe(
+      'Kennedy Ekechukwu'
+    );
+  });
+
+  it('still falls back through the older shapes', () => {
+    expect(getCustomerName({ _id: 'c1', name: 'Legacy Name' })).toBe(
+      'Legacy Name'
+    );
+    expect(
+      getCustomerName({ _id: 'c1', first_name: 'Ada', last_name: 'Obi' })
+    ).toBe('Ada Obi');
+    expect(getCustomerName({ _id: 'c1', username: 'ada' })).toBe('ada');
+    expect(getCustomerName({ _id: 'c1' })).toBe('Unnamed customer');
+  });
+
+  it('keeps a zero order count instead of dropping it', () => {
+    // 0 is a fact — the customer has no orders. Rendering a dash instead would
+    // say the figure is unknown.
+    expect(getCustomerTotalOrders({ _id: 'c1', total_orders: 0 })).toBe(0);
+    expect(getCustomerTotalOrders({ _id: 'c1', total_orders: 4 })).toBe(4);
+    expect(getCustomerTotalOrders({ _id: 'c1' })).toBeUndefined();
+  });
+
+  it('reads the joined last-order date', () => {
+    expect(
+      getCustomerLastOrderDate({
+        _id: 'c1',
+        last_order_at: '2026-08-15T09:31:00.000Z',
+      })
+    ).toBe('2026-08-15T09:31:00.000Z');
+    // null from the API (never ordered) is not a date.
+    expect(
+      getCustomerLastOrderDate({ _id: 'c1', last_order_at: null })
+    ).toBeUndefined();
+  });
+
+  it('prefers phone_number, which is the schema field', () => {
+    expect(
+      getCustomerPhone({ _id: 'c1', phone_number: '+2348012347890' })
+    ).toBe('+2348012347890');
+  });
+});

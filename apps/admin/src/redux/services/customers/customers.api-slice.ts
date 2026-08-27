@@ -4,9 +4,29 @@
 import { baseAPI } from '@/redux/api/base-api';
 import { ApiResponse, PaginatedData, buildQueryString } from '../types';
 
+/** Whole-collection figures for the customers page's four stat cards. */
+export interface CustomerSummary {
+  total_customers: number;
+  /** Customers who have actually ordered, as opposed to registered accounts. */
+  unique_customers: number;
+  /** Busiest shipping state, by distinct customers. Null when nothing shipped. */
+  top_location: { label: string; customers: number } | null;
+  /** Most-ordered product by units. Null when nothing has been bought. */
+  favourite_product: { name: string | null; units: number } | null;
+  changes: {
+    period_days: number;
+    total_customers: number | null;
+    unique_customers: number | null;
+  };
+}
+
 export interface Customer {
   _id: string;
+  /** What the User schema defines and the endpoint sends. */
+  full_name?: string;
   name?: string;
+  first_name?: string;
+  last_name?: string;
   username?: string;
   email?: string;
   phone?: string;
@@ -23,6 +43,9 @@ export interface Customer {
   location?: string;
   // Aggregate metrics surfaced in the Customers table / detail view (optional —
   // present only when the backend joins them in).
+  /** Joined onto each row by GET /admin/customer. */
+  total_orders?: number;
+  last_order_at?: string | null;
   totalOrders?: number;
   ordersCount?: number;
   lastOrderDate?: string;

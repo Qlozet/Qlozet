@@ -21,9 +21,19 @@ export const getCustomerStatus = (customer: Customer): CustomerStatusInfo => {
   return { variant: 'active', label: 'Active' };
 };
 
-// Full display name (e.g. "John Doe"), used in the detail header/grid.
+/**
+ * Full display name (e.g. "John Doe"), used in the list and detail header.
+ *
+ * `full_name` is the field the User schema defines and the endpoint sends.
+ * This read `name` and `username` — neither of which the customer records
+ * carry — so every row in the table rendered "Unnamed customer".
+ */
 export const getCustomerName = (customer: Customer): string =>
-  customer.name || customer.username || 'Unnamed customer';
+  customer.full_name ||
+  customer.name ||
+  [customer.first_name, customer.last_name].filter(Boolean).join(' ') ||
+  customer.username ||
+  'Unnamed customer';
 
 // The @handle (e.g. "@johndoe"), used in the list and under the detail name.
 export const getCustomerHandle = (customer: Customer): string => {
@@ -36,7 +46,7 @@ export const getCustomerEmail = (customer: Customer): string =>
   customer.email || '—';
 
 export const getCustomerPhone = (customer: Customer): string =>
-  customer.phone || customer.phone_number || '—';
+  customer.phone_number || customer.phone || '—';
 
 export const getCustomerAvatar = (customer: Customer): string | undefined =>
   customer.avatar || customer.image || customer.profile_picture || undefined;
@@ -44,16 +54,33 @@ export const getCustomerAvatar = (customer: Customer): string | undefined =>
 export const getCustomerInitial = (customer: Customer): string =>
   getCustomerName(customer).replace(/^@/, '').charAt(0).toUpperCase() || 'C';
 
+/**
+ * Orders placed. `total_orders` is joined onto each row by the list endpoint;
+ * the camelCase names are kept as a fallback for deployments that predate it.
+ *
+ * 0 is a real answer and must survive — a customer with no orders has zero,
+ * which is not the same as the figure being unknown.
+ */
 export const getCustomerTotalOrders = (
   customer: Customer
-): number | undefined =>
-  typeof customer.totalOrders === 'number'
-    ? customer.totalOrders
-    : customer.ordersCount;
+): number | undefined => {
+  for (const value of [
+    customer.total_orders,
+    customer.totalOrders,
+    customer.ordersCount,
+  ]) {
+    if (typeof value === 'number' && !Number.isNaN(value)) return value;
+  }
+  return undefined;
+};
 
 export const getCustomerLastOrderDate = (
   customer: Customer
-): string | undefined => customer.lastOrderDate || customer.lastOrderAt;
+): string | undefined => {
+  const raw =
+    customer.last_order_at ?? customer.lastOrderDate ?? customer.lastOrderAt;
+  return typeof raw === 'string' && raw.trim() ? raw : undefined;
+};
 
 export const formatCount = (value?: number): string => {
   if (typeof value !== 'number' || Number.isNaN(value)) return '—';
