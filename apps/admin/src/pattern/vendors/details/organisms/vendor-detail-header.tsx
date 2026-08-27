@@ -2,7 +2,12 @@
 
 import { cn } from '@/lib/utils';
 import type { Business } from '@/redux/services/businesses/businesses.api-slice';
-import { getVendorInitial } from '@/lib/vendors';
+import {
+  getVendorCover,
+  getVendorInitial,
+  getVendorLogo,
+  getVendorName,
+} from '@/lib/vendors';
 
 interface VendorDetailHeaderProps {
   vendor?: Business;
@@ -14,10 +19,12 @@ export const VendorDetailHeader = ({
   vendor,
   isLoading,
 }: VendorDetailHeaderProps) => {
-  const cover =
-    (vendor?.cover_image as string | undefined) ??
-    (vendor?.banner as string | undefined);
-  const avatar = vendor?.logo ?? vendor?.profile_picture;
+  // `cover_image_url` / `business_logo_url` are what the endpoint sends. This
+  // read `cover_image` and `logo`, so both images were permanently absent.
+  const empty = {} as Business;
+  const cover = vendor ? getVendorCover(vendor) : undefined;
+  const avatar = vendor ? getVendorLogo(vendor) : undefined;
+  const name = getVendorName(vendor ?? empty);
 
   return (
     <div className="relative">
@@ -48,12 +55,12 @@ export const VendorDetailHeader = ({
           {avatar ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={avatar as string}
-              alt={getVendorInitial(vendor ?? ({} as Business))}
+              src={avatar}
+              alt={name}
               className="h-full w-full object-cover"
             />
           ) : (
-            getVendorInitial(vendor ?? ({} as Business))
+            getVendorInitial(vendor ?? empty)
           )}
         </div>
       </div>

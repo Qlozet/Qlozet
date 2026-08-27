@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import type { PaginationState, OnChangeFn } from '@tanstack/react-table';
@@ -24,6 +24,11 @@ interface VendorsTableProps {
   pagination: PaginationState;
   setPagination: OnChangeFn<PaginationState>;
   pageCount: number;
+  /** Rows across every page, so the footer can report a real total. */
+  totalRows?: number;
+  revenueSort?: 'asc' | 'desc';
+  onToggleRevenueSort: () => void;
+  toolbar?: React.ReactNode;
 }
 
 export const VendorsTable = ({
@@ -36,6 +41,10 @@ export const VendorsTable = ({
   pagination,
   setPagination,
   pageCount,
+  totalRows,
+  revenueSort,
+  onToggleRevenueSort,
+  toolbar,
 }: VendorsTableProps) => {
   const router = useRouter();
 
@@ -73,9 +82,11 @@ export const VendorsTable = ({
         onApprove: (id) => runMutation(approve, id, 'Vendor approved'),
         onVerify: (id) => runMutation(verify, id, 'Vendor verified'),
         onReject: (id) => runMutation(reject, id, 'Vendor rejected'),
+        revenueSort,
+        onToggleRevenueSort,
       }),
 
-    [router, approve, verify, reject]
+    [router, approve, verify, reject, revenueSort, onToggleRevenueSort]
   );
 
   return (
@@ -90,6 +101,8 @@ export const VendorsTable = ({
       pagination={pagination}
       setPagination={setPagination}
       pageCount={pageCount}
+      totalRows={totalRows}
+      toolbar={toolbar}
       onRowClick={(vendor) => openVendor(vendor._id)}
       emptyMessage="No vendors found."
       loadingMessage="Loading vendors..."

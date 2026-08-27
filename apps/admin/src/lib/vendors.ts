@@ -32,8 +32,44 @@ export const getVendorName = (vendor: Business): string =>
   vendor.full_name ||
   'Unnamed vendor';
 
-export const getVendorEmail = (vendor: Business): string =>
-  vendor.business_email || vendor.email || '—';
+export const getVendorEmail = (vendor: Business): string => {
+  const owner = vendor.vendor as { email?: string } | undefined;
+  const createdBy = vendor.created_by as { email?: string } | undefined;
+
+  // Falls through to the owning vendor's own address: a business can be
+  // registered without a business_email, and the row showed a bare dash even
+  // though the account behind it has one.
+  return (
+    vendor.business_email ||
+    vendor.email ||
+    owner?.email ||
+    createdBy?.email ||
+    '—'
+  );
+};
+
+/**
+ * The vendor's logo, when they have uploaded one.
+ *
+ * `business_logo_url` is an empty string on most records rather than absent,
+ * so a truthiness check is what decides between the photo and the initial.
+ */
+/**
+ * The vendor's cover banner, when they have uploaded one.
+ *
+ * The API field is `cover_image_url`. The detail header read `cover_image` and
+ * `banner` — names the endpoint has never sent — so the banner was always the
+ * grey placeholder gradient no matter what the vendor uploaded.
+ */
+export const getVendorCover = (vendor: Business): string | undefined => {
+  const raw = vendor.cover_image_url ?? vendor.cover_image ?? vendor.banner;
+  return typeof raw === 'string' && raw.trim() ? raw.trim() : undefined;
+};
+
+export const getVendorLogo = (vendor: Business): string | undefined => {
+  const raw = vendor.business_logo_url ?? vendor.display_picture_url;
+  return typeof raw === 'string' && raw.trim() ? raw.trim() : undefined;
+};
 
 export const getVendorInitial = (vendor: Business): string =>
   getVendorName(vendor).charAt(0).toUpperCase() || 'V';

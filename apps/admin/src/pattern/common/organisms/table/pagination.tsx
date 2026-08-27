@@ -13,7 +13,6 @@ export function Pagination<TData>({
   table,
   className,
 }: DataTablePaginationProps<TData>) {
-  const pageCount = table.getPageCount();
   const { pageIndex, pageSize } = table.getState().pagination;
   const totalRows = table.getRowCount();
 
@@ -26,8 +25,10 @@ export function Pagination<TData>({
     >
       <div className="h-fit flex items-center gap-x-4">
         <div className="text-sm text-muted-foreground text-center">
+          {/* "of" is the row total. It used to read the PAGE count, so a
+              16-row, 2-page table announced "Showing 1 - 8 of 2". */}
           Showing {totalRows === 0 ? 0 : pageIndex * pageSize + 1} -{' '}
-          {Math.min((pageIndex + 1) * pageSize, totalRows)} of {pageCount}
+          {Math.min((pageIndex + 1) * pageSize, totalRows)} of {totalRows}
         </div>
 
         {/* Previous Button */}

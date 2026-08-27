@@ -104,7 +104,7 @@ const VendorDetailsPage = () => {
       </div>
 
       {/* 3. Analytics */}
-      <VendorAnalyticsSection metrics={metrics} />
+      <VendorAnalyticsSection metrics={metrics} businessId={id} />
 
       {/* 4. Top products */}
       <div id={PRODUCTS_ANCHOR} className="scroll-mt-24">

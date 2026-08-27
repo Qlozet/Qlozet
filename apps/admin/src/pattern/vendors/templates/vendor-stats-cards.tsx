@@ -2,10 +2,10 @@
 
 import { Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { periodChangeLabel } from '@/lib/metric-change';
+import { formatChange } from '@/lib/orders';
 import { MetricCard } from '@/pattern/common/molecules/metric-card';
 import { StatsCardSkeleton } from '@/pattern/dashboard/molecules/stats-card-skeleton';
-import { useGetNewVendorsThisWeekQuery } from '@/redux/services/users/users.api-slice';
+import type { VendorSummary } from '@/redux/services/businesses/businesses.api-slice';
 
 const formatValue = (value: number | undefined, fallback: string): string =>
   typeof value === 'number' ? value.toLocaleString() : fallback;
@@ -22,24 +22,31 @@ const CardIcon = ({ bg }: { bg: string }) => (
 );
 
 interface VendorStatsCardsProps {
-  /** Total vendor count from the paginated list, used as a fallback. */
+  /** Whole-collection counts and 30-day movement from GET /admin/businesses. */
+  summary?: VendorSummary;
+  /** Row total from the same response, used before `summary` arrives. */
   totalFromList?: number;
+  isLoading?: boolean;
 }
 
-export const VendorStatsCards = ({ totalFromList }: VendorStatsCardsProps) => {
-  // /admin/dashboard used to be read here, but it returns order figures only —
-  // no vendor counts — so every value it supplied was undefined. The vendors
-  // list total is the real source.
-  //
-  // Real week-over-week movement: /users/vendors/new-week returns the vendors
-  // onboarded this week, so the total's growth can be derived from it. There is
-  // no equivalent source for the active/inactive splits, so those cards show no
-  // change widget rather than an invented one.
-  const { data: newThisWeekData, isLoading } = useGetNewVendorsThisWeekQuery();
-  const newThisWeek = Array.isArray(newThisWeekData?.data)
-    ? newThisWeekData.data.length
-    : undefined;
-
+/**
+ * The vendors page's three stat cards.
+ *
+ * Counts come from the list endpoint's `summary`, which is whole-collection —
+ * so the cards do not change as the reader pages through the table or filters
+ * it. They previously had no source at all: /admin/dashboard was read here but
+ * returns order figures only, so active and inactive were permanently dashed.
+ *
+ * Active / Inactive use the same status buckets the table's badges do (see
+ * `getVendorStatus`), NOT the `is_active` flag — that defaults to true and
+ * nothing ever clears it, so it would report every vendor as active while the
+ * rows underneath showed them as Inactive.
+ */
+export const VendorStatsCards = ({
+  summary,
+  totalFromList,
+  isLoading,
+}: VendorStatsCardsProps) => {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -50,11 +57,13 @@ export const VendorStatsCards = ({ totalFromList }: VendorStatsCardsProps) => {
     );
   }
 
-  const total = totalFromList;
-  // No endpoint exposes the active/inactive split yet, so these stay dashed
-  // rather than showing an invented figure.
-  const active: number | undefined = undefined;
-  const inactive: number | undefined = undefined;
+  const changes = summary?.changes;
+  const total = summary?.total_vendors ?? totalFromList;
+
+  // Vendors in neither bucket — pending and in-review. Surfaced as a sub-label
+  // so three cards that do not add up to the total are explained rather than
+  // looking like a miscount.
+  const awaiting = summary?.awaiting_vendors;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -63,19 +72,21 @@ export const VendorStatsCards = ({ totalFromList }: VendorStatsCardsProps) => {
       <MetricCard
         title="Total Vendors"
         value={formatValue(total, '—')}
-        change={periodChangeLabel(total, newThisWeek)}
-        subLabel={newThisWeek ? 'vs last week' : undefined}
+        change={formatChange(changes?.total_vendors)}
+        subLabel={awaiting ? `${awaiting} awaiting` : undefined}
         icon={<CardIcon bg="bg-[#57CAEB]" />}
       />
       <MetricCard
         title="Active Vendors"
-        value={formatValue(active, '—')}
+        value={formatValue(summary?.active_vendors, '—')}
+        change={formatChange(changes?.active_vendors)}
         icon={<CardIcon bg="bg-[#5DDAB4]" />}
       />
       <MetricCard
         title="Inactive Vendors"
-        value={formatValue(inactive, '—')}
-        icon={<CardIcon bg="bg-[#5DDAB4]" />}
+        value={formatValue(summary?.inactive_vendors, '—')}
+        change={formatChange(changes?.inactive_vendors)}
+        icon={<CardIcon bg="bg-[#FF8F6B]" />}
       />
     </div>
   );
