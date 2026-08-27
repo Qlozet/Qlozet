@@ -15,11 +15,12 @@ export interface OrderMessage {
   created_at?: string;
 }
 
+// The response interceptor wraps the service's `{ data: ... }` return inside its
+// own `data`, so the array sits a couple of `.data` levels deep. Recurse down.
 function unwrap(response: unknown): OrderMessage[] {
   if (Array.isArray(response)) return response as OrderMessage[];
-  if (response && typeof response === 'object') {
-    const inner = (response as { data?: unknown }).data;
-    if (Array.isArray(inner)) return inner as OrderMessage[];
+  if (response && typeof response === 'object' && 'data' in response) {
+    return unwrap((response as { data: unknown }).data);
   }
   return [];
 }

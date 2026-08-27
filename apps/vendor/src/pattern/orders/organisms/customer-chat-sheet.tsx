@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useRef } from 'react';
 import { Loader2, Lock, Store, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { ChatMessageBubble } from '@/pattern/support/molecules/chat-message-bubble';
 import { ChatComposer } from '@/pattern/support/molecules/chat-composer';
 import {
@@ -46,20 +46,6 @@ export function CustomerChatSheet({
   const [sendMessage] = useSendOrderMessageMutation();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Mount + slide/fade so the panel animates in and out.
-  const [mounted, setMounted] = useState(false);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    if (open) {
-      setMounted(true);
-      const id = requestAnimationFrame(() => setVisible(true));
-      return () => cancelAnimationFrame(id);
-    }
-    setVisible(false);
-    const t = window.setTimeout(() => setMounted(false), 500);
-    return () => window.clearTimeout(t);
-  }, [open]);
-
   // Live delivery — refetch the thread when a new message lands.
   useOrderMessageSocket(open ? reference : null, open, () => {
     refetch();
@@ -68,9 +54,7 @@ export function CustomerChatSheet({
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [messages, isLoading, visible]);
-
-  if (!mounted || typeof document === 'undefined') return null;
+  }, [messages, isLoading, open]);
 
   const handleSend = async (text: string) => {
     try {
@@ -84,30 +68,19 @@ export function CustomerChatSheet({
     }
   };
 
-  const close = () => onOpenChange(false);
-
-  return createPortal(
-    <>
-      {/* Backdrop — above the drawer (z-50), media panel (z-55) and design
-          preview (z-70). data-order-chat-panel + pointer-events-auto so it's
-          clickable and doesn't dismiss the underlying order drawer. */}
-      <div
-        data-order-chat-panel
-        className={`pointer-events-auto fixed inset-0 z-[78] bg-black/40 transition-opacity duration-300 ${
-          visible ? 'opacity-100' : 'pointer-events-none opacity-0'
-        }`}
-        onClick={close}
-      />
-
-      {/* Floating panel — bottom sheet on mobile, right panel on desktop. */}
-      <div
-        data-order-chat-panel
-        className={`pointer-events-auto fixed bottom-3 left-3 right-3 z-[80] flex max-h-[75vh] flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-2xl transition-all duration-500 ease-out dark:bg-card lg:bottom-6 lg:left-auto lg:right-6 lg:top-6 lg:max-h-[640px] lg:w-[420px] ${
-          visible
-            ? 'translate-y-0 opacity-100 lg:translate-x-0'
-            : 'translate-y-[calc(100%+24px)] opacity-100 lg:translate-y-0 lg:translate-x-6 lg:opacity-0'
-        }`}
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {/* A Dialog (not a bare portal) so it gets its own focus scope — otherwise
+          the order drawer's focus trap steals focus and the composer can't be
+          typed in. Overlay/content are z-60/61, above the design media panel. */}
+      <DialogContent
+        showCloseButton={false}
+        className="flex h-[75vh] flex-col !gap-0 !overflow-hidden !p-0 sm:h-[600px] sm:!max-h-[85vh] sm:!w-[420px] sm:!max-w-[calc(100vw-2rem)] sm:!overflow-hidden"
       >
+        <DialogTitle className="sr-only">
+          Chat with {customerName || 'the customer'}
+        </DialogTitle>
+
         {/* Header */}
         <div className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3">
           <div className="flex items-center gap-2.5">
@@ -125,7 +98,7 @@ export function CustomerChatSheet({
           </div>
           <button
             type="button"
-            onClick={close}
+            onClick={() => onOpenChange(false)}
             aria-label="Close chat"
             className="flex size-8 items-center justify-center rounded-full text-grey3 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/10"
           >
@@ -174,17 +147,18 @@ export function CustomerChatSheet({
 
         {/* Composer */}
         {canSend ? (
-          <ChatComposer onSend={handleSend} />
+          <div className="shrink-0">
+            <ChatComposer onSend={handleSend} />
+          </div>
         ) : (
-          <div className="flex items-center justify-center gap-2 border-t border-border bg-gray-50 px-4 py-3.5 dark:bg-white/5">
+          <div className="flex shrink-0 items-center justify-center gap-2 border-t border-border bg-gray-50 px-4 py-3.5 dark:bg-white/5">
             <Lock className="size-3.5 text-grey2" />
             <span className="text-center text-[11.5px] text-grey2 dark:text-gray-400">
               Chat opens while the order is in production or transit.
             </span>
           </div>
         )}
-      </div>
-    </>,
-    document.body
+      </DialogContent>
+    </Dialog>
   );
 }
