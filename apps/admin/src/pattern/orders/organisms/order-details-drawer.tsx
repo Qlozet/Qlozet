@@ -21,10 +21,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { printOrderInvoice } from '@/lib/order-invoice';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
-import {
-  OrderMediaPanel,
-  ignoreMediaPanelInteraction,
-} from '../molecules/order-media-panel';
+import { OrderMediaPanel } from '../molecules/order-media-panel';
 import {
   allProductImages,
   bespokeDesignImages,
@@ -237,7 +234,15 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
         )}
         <SheetContent
           side="right"
-          onInteractOutside={ignoreMediaPanelInteraction}
+          // The drawer closes only when the user closes it — its own X, or the
+          // media panel handle. Radix otherwise dismisses a Dialog on any
+          // pointer interaction outside its Content, and the drawer's own
+          // companion surfaces all render outside it: the media panel, the item
+          // detail modal, and the media preview above that. Clicking any of
+          // them — including the item modal's close button — took the drawer
+          // down with it. Escape still closes it, after any nested modal on top
+          // has had its turn (see `useNestedModalDismiss`).
+          onInteractOutside={(event) => event.preventDefault()}
           className="flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white"
           style={{
             height: 'calc(100vh - 3rem)',

@@ -236,9 +236,15 @@ export interface AdminOrder {
 
 export interface GetAdminOrdersParams {
   status?: string;
-  /** 1-based. Ignored by the backend until server-side paging is deployed. */
+  /**
+   * 1-based. The backend DOES paginate — `/admin/vendor/orders` defaults to
+   * page 1, size 10, sorted newest-first — so omitting these silently caps the
+   * result at ten orders.
+   */
   page?: number;
   size?: number;
+  /** Narrow to one buyer's orders, for the admin customer detail page. */
+  customerId?: string;
 }
 
 /**
@@ -267,8 +273,7 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
       query: (params) => {
         const search = new URLSearchParams();
         if (params?.status) search.set('status', params.status);
-        // Sent unconditionally: harmless while the backend ignores them, and
-        // it starts paginating server-side the moment support lands.
+        if (params?.customerId) search.set('customerId', params.customerId);
         if (params?.page) search.set('page', String(params.page));
         if (params?.size) search.set('size', String(params.size));
         const qs = search.toString();

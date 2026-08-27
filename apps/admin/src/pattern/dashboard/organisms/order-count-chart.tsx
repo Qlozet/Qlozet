@@ -10,18 +10,23 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { hasAnyValue, monthlyOrderCountSeries } from '@/lib/dashboard-series';
-import { useGetAdminOrdersQuery } from '@/redux/services/orders/orders.api-slice';
+import { hasAnyValue, readSeries } from '@/lib/dashboard-series';
+import { useGetAdminDashboardChartsQuery } from '@/redux/services/dashboard/dashboard.api-slice';
 import { CustomYAxisTick } from '../molecules/custom-y-axis-tick';
 import { CustomXAxisTick } from '../molecules/custom-x-axis-tick';
 import { ChartEmptyState } from '../molecules/chart-empty-state';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
 
-// Real order volume per month, aggregated from /admin/vendor/orders.
+// Order volume by day of the WEEK, from GET /admin/dashboard/charts →
+// charts.orderCountByDay. Every order counts here, paid or not — unlike the
+// earnings series, which only counts orders the customer paid for.
 export const OrderCountChart = () => {
-  const { data, isLoading } = useGetAdminOrdersQuery();
-  const orders = useMemo(() => data?.data ?? [], [data]);
-  const series = useMemo(() => monthlyOrderCountSeries(orders), [orders]);
+  const { data, isLoading } = useGetAdminDashboardChartsQuery();
+
+  const series = useMemo(
+    () => readSeries(data?.data?.charts?.orderCountByDay),
+    [data]
+  );
   const isEmpty = !hasAnyValue(series);
 
   if (isLoading) return <ChartSkeleton />;
@@ -37,7 +42,7 @@ export const OrderCountChart = () => {
         <ChartEmptyState
           isEmpty={isEmpty}
           height={350}
-          description="Order volume will chart here as orders are placed."
+          description="Order volume will chart here by day of the week as orders are placed."
         >
           <ResponsiveContainer width="100%" height={350}>
             <BarChart

@@ -20,19 +20,6 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-/**
- * Radix dismisses a Dialog when it detects a pointer interaction outside its
- * Content. The media panel is deliberately rendered outside, so pass this to
- * `onInteractOutside` on any SheetContent that renders an OrderMediaPanel.
- */
-export const ignoreMediaPanelInteraction = (event: {
-  target: EventTarget | null;
-  preventDefault: () => void;
-}) => {
-  const target = event.target as HTMLElement | null;
-  if (target?.closest?.('[data-order-media-panel]')) event.preventDefault();
-};
-
 // Matches the drawer geometry: 440px wide, offset 24px from the right edge.
 // Only the toggle handle is pinned to the drawer; the panel itself is centred
 // on the viewport.
@@ -71,13 +58,14 @@ export const OrderMediaPanel = ({
   if (!drawerOpen) return null;
 
   return (
-    // Two things are needed to make this clickable:
-    //  1. `pointer-events-auto` — a modal Radix dialog sets `pointer-events:
-    //     none` on <body> and re-enables it only inside its own layer. Without
-    //     this the panel isn't hit-testable and clicks fall through to the
-    //     overlay, which dismisses the drawer.
-    //  2. the data attribute — Radix still reports the click as an "interact
-    //     outside"; the drawers use it to cancel that dismissal.
+    // `pointer-events-auto` is required: a modal Radix dialog sets
+    // `pointer-events: none` on <body> and re-enables it only inside its own
+    // layer, so without this the panel isn't hit-testable at all.
+    //
+    // Radix still reports a click here as an "interact outside" the drawer.
+    // That used to need cancelling per-surface; the drawer now refuses every
+    // outside dismissal outright, so this panel, the item modal and the media
+    // preview are all covered without marking each one.
     <div data-order-media-panel className="pointer-events-auto hidden sm:block">
       {/* Handle — a tab on the drawer's left edge. Dismisses the drawer and
           this panel together. */}

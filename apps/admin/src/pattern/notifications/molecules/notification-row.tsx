@@ -14,6 +14,7 @@ import {
   Users,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { timeAgo } from '@/lib/orders';
 import { useMarkNotificationAsViewedMutation } from '@/redux/services/notifications/notifications.api-slice';
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
@@ -38,23 +39,6 @@ const CATEGORY_COLORS: Record<string, string> = {
   system: 'bg-gray-100 text-gray-600',
   fabric_transfer: 'bg-amber-100 text-amber-600',
   fabric_transfer_incoming: 'bg-blue-100 text-blue-600',
-};
-
-const timeAgo = (dateString: string): string => {
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) return '';
-
-  const diffMins = Math.floor((Date.now() - date.getTime()) / 60000);
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-
-  const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
-
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return `${diffDays}d ago`;
-
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
 interface NotificationRowProps {

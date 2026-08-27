@@ -6,7 +6,6 @@ import { OrderStatsCards } from '@/pattern/orders/templates/order-stats-cards';
 import { OrdersTableTemplate } from '@/pattern/orders/templates/orders-table-template';
 import { PeriodFilter } from '@/pattern/orders/molecules/period-filter';
 import {
-  computeOrderMetrics,
   filterOrdersByPeriod,
   searchOrders,
   type OrderPeriod,
@@ -55,13 +54,6 @@ export default function OrdersPage() {
     [periodOrders, debouncedSearch]
   );
 
-  // Metrics reflect the selected period but ignore the search box, so typing
-  // doesn't make the headline numbers jump around.
-  const metrics = useMemo(
-    () => computeOrderMetrics(periodOrders),
-    [periodOrders]
-  );
-
   const pageCount = serverPaginated
     ? Math.max(data?.total_pages ?? 1, 1)
     : Math.max(Math.ceil(filteredOrders.length / pagination.pageSize), 1);
@@ -104,8 +96,9 @@ export default function OrdersPage() {
         />
       </div>
 
-      {/* Order metrics */}
-      <OrderStatsCards metrics={metrics} isLoading={isLoading} />
+      {/* Order metrics — platform-wide totals from /admin/dashboard. The
+          period filter above scopes the table below, not these cards. */}
+      <OrderStatsCards />
 
       {/* Orders table */}
       <OrdersTableTemplate

@@ -13,27 +13,26 @@ import {
 import { BarChart3 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatNaira } from '@/lib/orders';
-import { hasAnyValue, monthlyRevenueSeries } from '@/lib/dashboard-series';
-import { useGetAdminOrdersQuery } from '@/redux/services/orders/orders.api-slice';
+import { hasAnyValue, maxOf, readSeries } from '@/lib/dashboard-series';
+import { useGetAdminDashboardChartsQuery } from '@/redux/services/dashboard/dashboard.api-slice';
 import { CustomXAxisTick } from '../molecules/custom-x-axis-tick';
 import { ChartEmptyState } from '../molecules/chart-empty-state';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
 
 export const MonthlyRevenueChart = () => {
-  const { data, isLoading } = useGetAdminOrdersQuery();
-  const orders = useMemo(() => data?.data ?? [], [data]);
+  const { data, isLoading } = useGetAdminDashboardChartsQuery();
+  const bundle = data?.data;
 
-  const series = useMemo(() => monthlyRevenueSeries(orders), [orders]);
+  const series = useMemo(
+    () => readSeries(bundle?.charts?.revenueByMonth),
+    [bundle]
+  );
   const isEmpty = !hasAnyValue(series);
 
-  const total = useMemo(
-    () => series.reduce((sum, point) => sum + point.value, 0),
-    [series]
-  );
-  const maxValue = useMemo(
-    () => Math.max(...series.map((point) => point.value), 0),
-    [series]
-  );
+  // The endpoint already sums the year, so the headline never disagrees with
+  // the bars underneath it.
+  const total = bundle?.summary?.revenueThisYear ?? 0;
+  const maxValue = useMemo(() => maxOf(series), [series]);
 
   if (isLoading) return <ChartSkeleton />;
 
@@ -45,10 +44,12 @@ export const MonthlyRevenueChart = () => {
 
       <CardContent className="flex h-full flex-col px-6 pt-7">
         <p className="text-3xl font-bold text-[hsla(210,9%,31%,1)]">
-          {isEmpty ? formatNaira(0) : formatNaira(total)}
+          {formatNaira(isEmpty ? 0 : total)}
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
-          Revenue this year, by month
+          {bundle?.year
+            ? `Revenue in ${bundle.year}, by month`
+            : 'Revenue this year, by month'}
         </p>
 
         <div className="mt-8 flex-1">

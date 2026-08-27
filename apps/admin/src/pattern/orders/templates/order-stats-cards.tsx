@@ -6,7 +6,11 @@ import { cn } from '@/lib/utils';
 import { APP_ROUTES } from '@/lib/routes';
 import { MetricCard } from '@/pattern/common/molecules/metric-card';
 import { StatsCardSkeleton } from '@/pattern/dashboard/molecules/stats-card-skeleton';
-import type { OrderMetrics } from '@/lib/orders';
+import {
+  useGetAdminDashboardQuery,
+  type MustPurchaseProduct,
+} from '@/redux/services/dashboard/dashboard.api-slice';
+import { useGetProductQuery } from '@/redux/services/products/products.api-slice';
 
 const CardIcon = ({ bg, children }: { bg: string; children: ReactNode }) => (
   <div
@@ -19,15 +23,48 @@ const CardIcon = ({ bg, children }: { bg: string; children: ReactNode }) => (
   </div>
 );
 
-interface OrderStatsCardsProps {
-  metrics: OrderMetrics;
-  isLoading: boolean;
-}
+const formatCount = (value: number | undefined): string =>
+  typeof value === 'number' ? value.toLocaleString() : '—';
 
-export const OrderStatsCards = ({
-  metrics,
-  isLoading,
-}: OrderStatsCardsProps) => {
+/**
+ * Highest-selling entry of `must_purchase_products`.
+ *
+ * Returns undefined when nothing in the list has actually been ordered — a
+ * product with `totalOrdered: 0` is not "most purchased", and labelling it so
+ * would put a name on the card that no sale supports.
+ */
+const topPurchased = (
+  products: MustPurchaseProduct[] | undefined
+): MustPurchaseProduct | undefined => {
+  if (!Array.isArray(products)) return undefined;
+  let top: MustPurchaseProduct | undefined;
+  for (const product of products) {
+    const ordered = product?.totalOrdered;
+    if (typeof ordered !== 'number' || ordered <= 0) continue;
+    if (!top || ordered > top.totalOrdered) top = product;
+  }
+  return top;
+};
+
+// Overview breakdown for the Orders page, read straight from
+// GET /admin/dashboard. These are platform-wide, all-time figures: the endpoint
+// takes no parameters, so the page's period filter narrows the table only —
+// hence the "all time" sub-label on each card, so the numbers aren't misread as
+// belonging to the selected period.
+export const OrderStatsCards = () => {
+  const { data, isLoading } = useGetAdminDashboardQuery();
+  const metrics = data?.data;
+
+  // The payload names the product itself; the lookup is the fallback for
+  // deployments that still send the id alone.
+  const top = topPurchased(metrics?.must_purchase_products);
+  const needsLookup = Boolean(top?.product_id) && !top?.name;
+  const { data: productData } = useGetProductQuery(
+    needsLookup ? (top?.product_id ?? '') : '',
+    { skip: !needsLookup }
+  );
+  const productName = top?.name ?? productData?.data?.name;
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -42,7 +79,8 @@ export const OrderStatsCards = ({
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <MetricCard
         title="Total Orders"
-        value={metrics.total.toLocaleString()}
+        subLabel="all time"
+        value={formatCount(metrics?.total_orders)}
         icon={
           <CardIcon bg="bg-[#57CAEB]">
             <ShoppingCart className="size-6" />
@@ -52,7 +90,8 @@ export const OrderStatsCards = ({
       />
       <MetricCard
         title="Orders Delivered"
-        value={metrics.delivered.toLocaleString()}
+        subLabel="all time"
+        value={formatCount(metrics?.orders_delivered)}
         icon={
           <CardIcon bg="bg-[#5DDAB4]">
             <Send className="size-6" />
@@ -61,7 +100,8 @@ export const OrderStatsCards = ({
       />
       <MetricCard
         title="Orders in Transit"
-        value={metrics.inTransit.toLocaleString()}
+        subLabel="all time"
+        value={formatCount(metrics?.orders_in_transit)}
         icon={
           <CardIcon bg="bg-[#FF8F6B]">
             <Truck className="size-6" />
@@ -70,9 +110,10 @@ export const OrderStatsCards = ({
       />
       <MetricCard
         title="Most purchased order"
-        // Product names are only available when the backend populates the
-        // order items; show a neutral dash rather than inventing one.
-        value={metrics.mostPurchased ?? '—'}
+        subLabel="all time"
+        // Needs both a sold product in the list and a resolvable name; show a
+        // neutral dash rather than inventing one.
+        value={productName ?? '—'}
         icon={
           <CardIcon bg="bg-[#57CAEB]">
             <ShoppingBag className="size-6" />

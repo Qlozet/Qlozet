@@ -17,6 +17,7 @@ import {
   readItemImage,
   readOrderId,
   readStatus,
+  timeAgo,
 } from '@/lib/orders';
 import {
   useGetAdminOrdersQuery,
@@ -28,34 +29,33 @@ import { ChartSkeleton } from '../molecules/chart-skeleton';
 const MAX_ROWS = 5;
 const MAX_THUMBS = 3;
 
-/** Relative time string (e.g. "2h ago", "3d ago"). */
-const timeAgo = (value?: string): string => {
-  if (!value) return '—';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
-
-  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-  if (seconds < 60) return 'Just now';
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-};
-
 const orderThumbnails = (order: AdminOrder): string[] =>
   (order.items ?? [])
     .map(readItemImage)
     .filter((src): src is string => Boolean(src))
     .slice(0, MAX_THUMBS);
 
-export const RecentOrders = () => {
-  const { data, isLoading } = useGetAdminOrdersQuery();
+interface RecentOrdersProps {
+  /**
+   * Narrow to one buyer's orders. The customer detail page passes this —
+   * without it that page's "Recent orders" card listed the whole marketplace's
+   * orders on a page about one person.
+   */
+  customerId?: string;
+}
 
-  // The endpoint returns every order and newest-first isn't guaranteed, so sort
-  // before taking the top few.
+export const RecentOrders = ({ customerId }: RecentOrdersProps = {}) => {
+  // Ask for exactly the rows this card shows. `/admin/vendor/orders` is
+  // paginated — it defaults to 10 and sorts newest-first server-side — so
+  // calling it bare fetched a page and a half of orders to render five. The
+  // sort below is kept as a guard: it costs nothing on five rows and keeps the
+  // card correct if the server-side ordering ever changes.
+  const { data, isLoading } = useGetAdminOrdersQuery({
+    page: 1,
+    size: MAX_ROWS,
+    ...(customerId ? { customerId } : {}),
+  });
+
   const orders = useMemo(
     () =>
       [...(data?.data ?? [])]

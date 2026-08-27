@@ -11,36 +11,35 @@ import {
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatNaira } from '@/lib/orders';
-import { hasAnyValue, readSeries, sumSeries } from '@/lib/dashboard-series';
-import { useGetAdminDashboardChartsQuery } from '@/redux/services/dashboard/dashboard.api-slice';
-import { CustomYAxisTick } from '../molecules/custom-y-axis-tick';
-import { CustomXAxisTick } from '../molecules/custom-x-axis-tick';
-import { ChartEmptyState } from '../molecules/chart-empty-state';
-import { ChartSkeleton } from '../molecules/chart-skeleton';
+import { hasAnyValue, readSeries } from '@/lib/dashboard-series';
+import { useGetCustomerAnalyticsQuery } from '@/redux/services/dashboard/dashboard.api-slice';
+import { CustomYAxisTick } from '@/pattern/dashboard/molecules/custom-y-axis-tick';
+import { CustomXAxisTick } from '@/pattern/dashboard/molecules/custom-x-axis-tick';
+import { ChartEmptyState } from '@/pattern/dashboard/molecules/chart-empty-state';
+import { ChartSkeleton } from '@/pattern/dashboard/molecules/chart-skeleton';
 
-interface EarningsChartProps {
-  /**
-   * Optional gross-sales figure for the header. Callers that have the all-time
-   * figure from GET /admin/dashboard pass it in; otherwise the header sums the
-   * bars below.
-   */
-  grossSales?: string;
+interface CustomerSpendChartProps {
+  customerId: string;
 }
 
-// Marketplace revenue by day of the WEEK, from GET /admin/dashboard/charts →
-// charts.earningsByDay. Deliberately a different cut from MonthlyRevenueChart,
-// which charts the same money by month — the two cards used to render an
-// identical monthly series, so one of them said nothing the other didn't.
-export const EarningsChart = ({ grossSales }: EarningsChartProps) => {
-  const { data, isLoading } = useGetAdminDashboardChartsQuery();
-  const bundle = data?.data;
+// What this customer paid, per month, from GET /admin/customer/:id/analytics.
+//
+// Replaces a reused dashboard EarningsChart that charted PLATFORM-wide revenue
+// under a hardcoded "Gross Sales: 51,000" header — two different lies on a page
+// about one person. The header now shows their lifetime spend, which the
+// endpoint computes over their paid orders.
+export const CustomerSpendChart = ({ customerId }: CustomerSpendChartProps) => {
+  const { data, isLoading } = useGetCustomerAnalyticsQuery(
+    { customerId },
+    { skip: !customerId }
+  );
+  const analytics = data?.data;
 
   const series = useMemo(
-    () => readSeries(bundle?.charts?.earningsByDay),
-    [bundle]
+    () => readSeries(analytics?.charts?.spendByMonth),
+    [analytics]
   );
   const isEmpty = !hasAnyValue(series);
-  const total = useMemo(() => sumSeries(series), [series]);
 
   if (isLoading) return <ChartSkeleton />;
 
@@ -48,17 +47,18 @@ export const EarningsChart = ({ grossSales }: EarningsChartProps) => {
     <Card className="w-full max-h-fit rounded-[12px] custom-card-shadow">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
-          Earnings
+          {analytics?.year ? `Spend in ${analytics.year}` : 'Spend'}
         </CardTitle>
         <span className="text-sm font-medium text-[hsla(210,9%,31%,1)]">
-          Gross Sales: {grossSales ?? formatNaira(total)}
+          {/* Lifetime, so it is deliberately >= the charted year's bars. */}
+          Total spent: {formatNaira(analytics?.summary?.totalSpent ?? 0)}
         </span>
       </CardHeader>
       <CardContent className="w-full">
         <ChartEmptyState
           isEmpty={isEmpty}
           height={350}
-          description="Earnings will chart here by day of the week once orders are paid for."
+          description="This customer's spend will chart here once they pay for an order."
         >
           <ResponsiveContainer width="100%" height={350}>
             <BarChart

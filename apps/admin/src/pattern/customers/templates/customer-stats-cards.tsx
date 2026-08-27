@@ -50,12 +50,9 @@ export const CustomerStatsCards = ({
   }
 
   const m = (metrics ?? {}) as Record<string, unknown>;
-  // Total comes from the real customers list count, preferring the dashboard
-  // metric when the backend exposes it.
-  const total =
-    typeof metrics?.totalCustomers === 'number'
-      ? metrics.totalCustomers
-      : totalFromList;
+  // Prefer the platform-wide count from /admin/dashboard; the list total is the
+  // fallback for deployments that predate the backend sending it.
+  const total = metrics?.total_customers ?? totalFromList;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
