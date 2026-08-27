@@ -22,6 +22,7 @@ import type {
 } from '@/redux/services/settings/settings.api-slice';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
+import { readApiError } from '@/redux/services/types';
 
 interface ProfileContentProps {
   shopDetails?: any; // kept for backward compat, but no longer used
@@ -154,9 +155,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
       ]);
       toast.success('Organization profile updated successfully');
     } catch (error: any) {
-      toast.error(
-        error?.data?.message || 'Failed to update organization profile'
-      );
+      toast.error(readApiError(error, 'Failed to update organization profile'));
     }
   };
 
@@ -169,7 +168,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
       await updateUser(payload).unwrap();
       toast.success('User profile updated successfully');
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to update user profile');
+      toast.error(readApiError(error, 'Failed to update user profile'));
     }
   };
 

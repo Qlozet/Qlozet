@@ -25,6 +25,7 @@ import {
   SizeGuidesTableColumns,
   SizeGuidesTableActions,
 } from '../molecules/size-guides-table-columns';
+import { readApiError } from '@/redux/services/types';
 
 interface ISizeGuidesTableProps extends SizeGuidesTableActions {
   data: SizeGuide[];
@@ -222,7 +223,7 @@ export const SizeGuidesTable = ({
                       Error loading size guides
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {error?.data?.message || 'Something went wrong'}
+                      {readApiError(error, 'Something went wrong')}
                     </p>
                   </div>
                 </TableCell>

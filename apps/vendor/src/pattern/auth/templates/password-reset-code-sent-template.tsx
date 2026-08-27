@@ -13,6 +13,7 @@ import { If } from '@/pattern/common/atoms/If';
 import useCreateSearchQuery from '@/lib/hooks/useCreateSearchQuery';
 import { SubmitButton } from '@/pattern/common/molecules/submit-button';
 import { AUTH_ROUTES } from '@/lib/routes';
+import { readApiError } from '@/redux/services/types';
 
 export const PasswordResetCodeSentTemplate = () => {
   const [canResend, setCanResend] = useState(false);
@@ -59,7 +60,7 @@ export const PasswordResetCodeSentTemplate = () => {
       })
       .catch((error: any) => {
         toast.error(
-          error?.data?.message || 'Failed to resend code. Please try again.'
+          readApiError(error, 'Failed to resend code. Please try again.')
         );
       });
   };
@@ -87,7 +88,7 @@ export const PasswordResetCodeSentTemplate = () => {
       })
       .catch((error: any) => {
         toast.error(
-          error?.data?.message || 'Invalid or expired code. Please try again.'
+          readApiError(error, 'Invalid or expired code. Please try again.')
         );
       });
   };

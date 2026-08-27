@@ -91,7 +91,13 @@ export interface Warehouse {
   contact_name: string;
   contact_phone: string;
   contact_email: string;
-  is_active?: boolean;
+  /**
+   * The Warehouse schema's own field, defaulting to 'active'. There is no
+   * `is_active` on this record — reading one made every warehouse render as
+   * inactive. POST /business/warehouse/{id}/activate sets this to 'active' and
+   * every sibling to 'inactive'.
+   */
+  status?: 'active' | 'inactive';
   createdAt?: string;
   updatedAt?: string;
   [key: string]: unknown;

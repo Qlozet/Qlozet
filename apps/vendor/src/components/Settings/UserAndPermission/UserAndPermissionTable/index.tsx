@@ -23,6 +23,7 @@ import {
   useUpdateTeamMemberMutation,
   type TeamMember,
 } from '@/redux/services/users/users.api-slice';
+import { readApiError } from '@/redux/services/types';
 
 // "customer_support" -> "Customer Support"
 const prettyRole = (name?: string): string =>
@@ -71,7 +72,7 @@ const UserAndPermissionTable: FC = () => {
           next ? `${member.name} reactivated` : `${member.name} deactivated`
         );
       } catch (error: any) {
-        toast.error(error?.data?.message || 'Failed to update team member');
+        toast.error(readApiError(error, 'Failed to update team member'));
       }
     },
     [updateMember]

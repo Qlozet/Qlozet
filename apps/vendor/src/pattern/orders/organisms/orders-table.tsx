@@ -27,6 +27,7 @@ import { cn } from '@/lib/utils';
 import { BoldBoxRemoveIcon } from '@/pattern/common/atoms/bold-box-remove-icon';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Order } from '@/redux/services/orders/orders.api-slice';
+import { readApiError } from '@/redux/services/types';
 
 interface IOrdersTableProps {
   data: Order[];
@@ -219,7 +220,7 @@ export const OrdersTable = ({
                       Error loading orders
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {error?.data?.message || 'Something went wrong'}
+                      {readApiError(error, 'Something went wrong')}
                     </p>
                   </div>
                 </TableCell>

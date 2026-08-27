@@ -31,6 +31,7 @@ import {
   useGetTicketsQuery,
   type Ticket as TicketType,
 } from '@/redux/services/tickets/tickets.api-slice';
+import { readApiError, readTotalItems } from '@/redux/services/types';
 import {
   formatDateTime,
   issueTypeLabel,
@@ -77,11 +78,11 @@ export const SupportTicketsList = ({
 
   const paginated = data?.data;
   const rows = useMemo(() => paginated?.data ?? [], [paginated]);
-  const total = paginated?.totalCount ?? paginated?.total ?? rows.length;
+  // The backend sends `total_items`; reading only the camelCase aliases fell
+  // through to the page length, which pinned the list to page one.
+  const total = readTotalItems(paginated);
   const showLoader = isLoading || isFetching;
-  const errorMessage =
-    (error as { data?: { message?: string } })?.data?.message ??
-    'Something went wrong';
+  const errorMessage = readApiError(error, 'Something went wrong');
 
   const from = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
   const to = Math.min(page * PAGE_SIZE, total);

@@ -4,6 +4,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { SESSION_COOKIE_KEY } from '../../lib/constants';
 import { env } from '@/env';
 import { toast } from 'sonner';
+import { readApiError } from '@/redux/services/types';
 
 const BASE_URL = env.NEXT_PUBLIC_BASE_URL;
 
@@ -151,9 +152,10 @@ export const custom403Middleware: Middleware =
       'status' in action.payload &&
       action.payload.status === 403
     ) {
-      const message =
-        (action.payload as any)?.data?.message ||
-        "You don't have permission to perform this action.";
+      const message = readApiError(
+        action.payload,
+        "You don't have permission to perform this action."
+      );
       toast.error(message);
     }
     return next(action);

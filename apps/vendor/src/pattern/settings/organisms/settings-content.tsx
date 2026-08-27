@@ -16,6 +16,7 @@ import UserAndPermission from '@/components/Settings/UserAndPermission/UserAndPe
 import Category from '@/components/Settings/Category/Category';
 import { OrderSettingsContent } from './order-settings-content';
 import { PayoutContent } from './payout-content';
+import { readApiError } from '@/redux/services/types';
 
 interface SettingsContentProps {
   activeTab: string;
@@ -53,7 +54,7 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
         toast.error(response.message);
       }
     } catch (error: any) {
-      toast.error(error?.data?.message || 'An error occurred');
+      toast.error(readApiError(error, 'An error occurred'));
     }
   };
 

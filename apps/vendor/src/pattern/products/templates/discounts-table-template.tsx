@@ -23,6 +23,7 @@ import {
   FilterMenu,
   type FilterOption,
 } from '@/pattern/common/molecules/filter-menu';
+import { readApiError } from '@/redux/services/types';
 
 const TYPE_OPTIONS: FilterOption[] = [
   { value: 'all', label: 'All Types' },
@@ -114,7 +115,7 @@ const DiscountsTableTemplate = () => {
         is_active ? 'Discount activated.' : 'Discount deactivated.'
       );
     } catch (err) {
-      toast.error((err as any)?.data?.message || 'Could not update discount.');
+      toast.error(readApiError(err, 'Could not update discount.'));
     }
   };
 
@@ -134,7 +135,7 @@ const DiscountsTableTemplate = () => {
         .unwrap()
         .then(() => toast.success('Discount deleted successfully.'))
         .catch((err) =>
-          toast.error(err?.data?.message || 'Failed to delete discount.')
+          toast.error(readApiError(err, 'Failed to delete discount.'))
         );
     });
   };

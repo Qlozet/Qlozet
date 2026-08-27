@@ -94,6 +94,7 @@ import {
   shipmentStatusBadge,
 } from '../lib/order-fields';
 import { isEarningsFrozen } from '../lib/dispute-fields';
+import { readApiError } from '@/redux/services/types';
 
 interface OrderDetailsDrawerProps {
   order: Order;
@@ -832,10 +833,10 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               : s
           ),
         }));
-        const errorMsg =
-          err?.data?.message ||
-          err?.error ||
-          'Could not create shipping label. Please try again.';
+        const errorMsg = readApiError(
+          err,
+          err?.error || 'Could not create shipping label. Please try again.'
+        );
         toast.error(errorMsg);
       }
     };
@@ -905,9 +906,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
         setRejectReason('');
         setRejectItemId(null);
       } catch (err: any) {
-        toast.error(
-          err?.data?.message || 'Could not reject. Please try again.'
-        );
+        toast.error(readApiError(err, 'Could not reject. Please try again.'));
       }
     };
 

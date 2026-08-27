@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { useUploadProfileImageMutation } from '@/redux/services/uploads/uploads.api-slice';
 import { useUpdateUserProfileMutation } from '@/redux/services/settings/settings.api-slice';
 import { toast } from 'sonner';
+import { readApiError } from '@/redux/services/types';
 
 interface UserProfileCardProps {
   fullName: string;
@@ -53,7 +54,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
       setLocalPicture(uploadedUrl);
       toast.success('Profile picture updated!');
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to upload profile picture');
+      toast.error(readApiError(error, 'Failed to upload profile picture'));
     }
 
     e.target.value = '';

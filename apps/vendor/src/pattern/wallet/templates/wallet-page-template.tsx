@@ -43,6 +43,7 @@ import {
   transactionBadge,
   type TransactionRow,
 } from '../lib/transaction-fields';
+import { readApiError } from '@/redux/services/types';
 
 const PAGE_SIZE = 6;
 
@@ -176,9 +177,10 @@ export const WalletPageTemplate: React.FC = () => {
         refetchBalance();
         refetchTransactions();
       } catch (err) {
-        const message =
-          (err as { data?: { message?: string } })?.data?.message ||
-          'We could not verify your payment. Please contact support if you were charged.';
+        const message = readApiError(
+          err,
+          'We could not verify your payment. Please contact support if you were charged.'
+        );
         toast.error(message);
       } finally {
         // Strip query params synchronously from the browser address bar

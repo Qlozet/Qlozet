@@ -31,6 +31,7 @@ import { Check, X, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCountdown } from '@/lib/hooks/useCountdown';
 import { Progress } from '@/components/ui/progress';
+import { readApiError } from '@/redux/services/types';
 
 // ─── Types ───────────────────────────────────────────────────────────
 type SignupStep = 'details' | 'password' | 'otp';
@@ -262,11 +263,12 @@ export const SignupTemplate = () => {
       setStep('otp');
     } catch (error: any) {
       const status = error?.status;
-      const message =
-        error?.data?.message ||
-        (status === 409
+      const message = readApiError(
+        error,
+        status === 409
           ? 'An account with this email or business already exists.'
-          : 'Failed to create account. Please try again.');
+          : 'Failed to create account. Please try again.'
+      );
       toast.error(message);
     }
   };
@@ -356,9 +358,7 @@ export const SignupTemplate = () => {
       toast.success('Email verified! Welcome to Qlozet.');
       push(accessToken ? APP_ROUTES.dashboard : AUTH_ROUTES.signIn);
     } catch (error: any) {
-      toast.error(
-        error?.data?.message || 'Invalid or expired verification code.'
-      );
+      toast.error(readApiError(error, 'Invalid or expired verification code.'));
     }
   };
 
@@ -370,7 +370,7 @@ export const SignupTemplate = () => {
       resetCountdown();
       startCountdown();
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to resend code.');
+      toast.error(readApiError(error, 'Failed to resend code.'));
     }
   };
 

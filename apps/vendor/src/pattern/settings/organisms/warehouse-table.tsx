@@ -24,6 +24,7 @@ import {
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BoldBoxRemoveIcon } from '@/pattern/common/atoms/bold-box-remove-icon';
+import { readApiError } from '@/redux/services/types';
 
 interface IWarehouseTableProps {
   data: Warehouse[];
@@ -204,7 +205,7 @@ export const WarehouseTable = ({
                           Error loading warehouses
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {error?.data?.message || 'Something went wrong'}
+                          {readApiError(error, 'Something went wrong')}
                         </p>
                       </div>
                     </TableCell>

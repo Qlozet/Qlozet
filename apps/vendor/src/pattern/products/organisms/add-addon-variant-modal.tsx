@@ -8,6 +8,7 @@ import { Loader2, Upload, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
+import { readApiError } from '@/redux/services/types';
 
 export interface AddonVariantResult {
   name: string;
@@ -120,7 +121,7 @@ export const AddAddonVariantModal = NiceModal.create(
               return;
             }
           } catch (err: any) {
-            toast.error(err?.data?.message || 'Failed to upload image');
+            toast.error(readApiError(err, 'Failed to upload image'));
             return;
           }
         }

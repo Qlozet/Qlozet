@@ -42,6 +42,7 @@ import {
   useGetBodyPartsQuery,
 } from '@/redux/services/size-guides/size-guides.api-slice';
 import { useGetTaxonomyTreeQuery } from '@/redux/services/taxonomy/taxonomy.api-slice';
+import { readApiError } from '@/redux/services/types';
 
 // ─── Schema ──────────────────────────────────────────────────────────
 
@@ -327,13 +328,16 @@ export const SizeGuidesCreateTemplate = () => {
       router.push(APP_ROUTES.productsSizeGuides);
     } catch (err) {
       console.error('Submit error:', err);
-      const data = (err as any)?.data;
-      const message = Array.isArray(data?.message)
-        ? data.message.join(', ')
-        : data?.message ||
-          JSON.stringify(data) ||
-          `Could not ${isEditing ? 'update' : 'create'} the size guide.`;
-      toast.error(message);
+      // readApiError joins the ValidationPipe's array form, which this body is
+      // the most likely in the app to hit. It also drops the old
+      // JSON.stringify(data) fallback — a raw error envelope in a toast is
+      // developer output, not something to show a vendor.
+      toast.error(
+        readApiError(
+          err,
+          `Could not ${isEditing ? 'update' : 'create'} the size guide.`
+        )
+      );
     }
   };
 
@@ -344,9 +348,7 @@ export const SizeGuidesCreateTemplate = () => {
       toast.success('Size guide deleted.');
       router.push(APP_ROUTES.productsSizeGuides);
     } catch (err) {
-      toast.error(
-        (err as any)?.data?.message || 'Failed to delete size guide.'
-      );
+      toast.error(readApiError(err, 'Failed to delete size guide.'));
     }
   };
 

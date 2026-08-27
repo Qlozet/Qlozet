@@ -36,6 +36,7 @@ import {
   type FundWalletResponseData,
 } from '@/redux/services/wallet/wallet.api-slice';
 import paystackLogo from '@/public/assets/image/paystack-logo.png';
+import { readApiError } from '@/redux/services/types';
 
 declare global {
   interface Window {
@@ -162,9 +163,10 @@ export const FundWithPaystackModal = create(() => {
 
       window.location.href = checkoutUrl;
     } catch (error) {
-      const message =
-        (error as { data?: { message?: string } })?.data?.message ||
-        'Could not start the payment. Please try again.';
+      const message = readApiError(
+        error,
+        'Could not start the payment. Please try again.'
+      );
       toast.error(message);
     }
   };

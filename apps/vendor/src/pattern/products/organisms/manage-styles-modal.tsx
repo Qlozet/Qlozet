@@ -25,6 +25,7 @@ import {
   useDeleteVendorStyleMutation,
   useUpdateVendorStyleMutation,
 } from '@/redux/services/style-library/style-library.api-slice';
+import { readApiError } from '@/redux/services/types';
 
 const CATEGORIES = [
   'All',
@@ -116,7 +117,7 @@ export const ManageStylesModal = NiceModal.create(() => {
       toast.success(`"${styleName}" deleted`);
       if (editingId === styleId) setEditingId(null);
     } catch (err: any) {
-      toast.error(err?.data?.message || 'Failed to delete style');
+      toast.error(readApiError(err, 'Failed to delete style'));
     }
   };
 
@@ -153,7 +154,7 @@ export const ManageStylesModal = NiceModal.create(() => {
       toast.success('Style updated');
       cancelEdit();
     } catch (err: any) {
-      toast.error(err?.data?.message || 'Failed to update style');
+      toast.error(readApiError(err, 'Failed to update style'));
     }
   };
 

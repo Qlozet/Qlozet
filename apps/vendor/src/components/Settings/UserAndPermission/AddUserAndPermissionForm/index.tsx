@@ -15,6 +15,7 @@ import {
   useInviteTeamMemberMutation,
 } from '@/redux/services/users/users.api-slice';
 import { toast } from 'sonner';
+import { readApiError } from '@/redux/services/types';
 
 interface InviteRow {
   id: string;
@@ -74,7 +75,7 @@ const AddNewUserAndPermissionForm = ({
         }).unwrap();
         successCount++;
       } catch (err: any) {
-        toast.error(err?.data?.message || `Failed to invite ${row.email}`);
+        toast.error(readApiError(err, `Failed to invite ${row.email}`));
       }
     }
 

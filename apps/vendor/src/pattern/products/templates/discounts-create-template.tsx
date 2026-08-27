@@ -64,6 +64,7 @@ import {
   STATIC_VALUE_OPTIONS,
   FREE_TEXT_FIELDS,
 } from '../lib/collection-condition-options';
+import { readApiError } from '@/redux/services/types';
 
 // ─── Schema ──────────────────────────────────────────────────────────
 
@@ -390,7 +391,7 @@ export const DiscountsCreateTemplate = () => {
       toast.success('Discount deleted.');
       router.push(APP_ROUTES.productsDiscounts);
     } catch (err) {
-      toast.error((err as any)?.data?.message || 'Failed to delete discount.');
+      toast.error(readApiError(err, 'Failed to delete discount.'));
     }
   };
 

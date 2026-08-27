@@ -25,6 +25,7 @@ import {
 } from '@/redux/services/wallet/wallet.api-slice';
 import { FundWalletModal } from './fund-wallet-modal';
 import { toast } from 'sonner';
+import { readApiError } from '@/redux/services/types';
 
 type ActiveSection =
   | 'buy-tokens'
@@ -86,10 +87,10 @@ export const PurchaseTokensModal = NiceModal.create(() => {
       refetchBalance();
       setActiveSection('token-purchase-success');
     } catch (err: any) {
-      const msg =
-        err?.data?.message ||
-        err?.message ||
-        'Failed to purchase tokens. Please try again.';
+      const msg = readApiError(
+        err,
+        err?.message || 'Failed to purchase tokens. Please try again.'
+      );
       if (msg.toLowerCase().includes('insufficient balance')) {
         toast.error(
           'Insufficient wallet balance. Please fund your wallet first.'
@@ -130,7 +131,7 @@ export const PurchaseTokensModal = NiceModal.create(() => {
       : Math.round(FALLBACK_PRICE_PER_TOKEN_NGN * selected.tokens * 10) / 10;
   const hasEnough = walletBalance >= price;
   const errorText = purchaseError
-    ? (purchaseError as any)?.data?.message || 'An error occurred'
+    ? readApiError(purchaseError, 'An error occurred')
     : null;
 
   return (

@@ -27,6 +27,7 @@ import {
   readReturnRef,
   type ReturnStatusFilter,
 } from '../lib/return-fields';
+import { readApiError, readPageCount } from '@/redux/services/types';
 
 const PAGE_SIZE = 7;
 
@@ -40,7 +41,7 @@ const STATUS_OPTIONS: FilterOption<ReturnStatusFilter>[] = [
 ];
 
 const errMessage = (err: unknown, fallback: string): string =>
-  (err as { data?: { message?: string } })?.data?.message || fallback;
+  readApiError(err, fallback);
 
 export const ReturnsPanel: React.FC = () => {
   const [search, setSearch] = useState('');
@@ -126,7 +127,7 @@ export const ReturnsPanel: React.FC = () => {
     [busyId]
   );
 
-  const totalPages = data?.data?.total_pages ?? data?.data?.totalPages ?? 1;
+  const totalPages = readPageCount(data?.data, pagination.pageSize);
 
   return (
     <div className="bg-card w-full rounded-[10px] shadow-md">

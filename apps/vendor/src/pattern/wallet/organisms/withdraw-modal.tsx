@@ -35,6 +35,7 @@ import {
   useWithdrawEarningsMutation,
   useGetPayoutAccountQuery,
 } from '@/redux/services/wallet/wallet.api-slice';
+import { readApiError } from '@/redux/services/types';
 
 const MIN_WITHDRAWAL = 2000;
 
@@ -96,9 +97,10 @@ export const WithdrawModal = create<WithdrawModalProps>(({ balance }) => {
       toast.success(response?.message || 'Withdrawal request submitted.');
       handleClose();
     } catch (error) {
-      const message =
-        (error as { data?: { message?: string } })?.data?.message ||
-        'Could not process the withdrawal. Please try again.';
+      const message = readApiError(
+        error,
+        'Could not process the withdrawal. Please try again.'
+      );
       toast.error(message);
     }
   };

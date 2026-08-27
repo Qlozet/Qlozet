@@ -50,7 +50,10 @@ export const MetricCard = ({
         <div className="flex items-start justify-start gap-x-4 h-full">
           <div className="shrink-0">{icon}</div>
 
-          <div className="flex-1 flex flex-col justify-between h-full">
+          {/* min-w-0: without it this flex item refuses to shrink below its
+              content, and the `truncate` on the value below never engages —
+              a long value (a product name, say) widens the whole card. */}
+          <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <p className="text-[hsla(210,9%,31%,1)] dark:text-white text-xs font-normal">
