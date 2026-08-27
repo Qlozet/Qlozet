@@ -7,6 +7,7 @@ import type { Ticket } from '@/redux/services/tickets/tickets.api-slice';
 import {
   EM_DASH,
   assigneeId,
+  assigneeName,
   formatDateTime,
   shortTicketId,
 } from '../../lib/ticket-fields';
@@ -51,10 +52,11 @@ export const TicketInformationCard = ({
     );
   }
 
-  // A support-team id, never a name: the backend doesn't populate it and
-  // GET /users/team/members currently 500s, so there is nothing to look it up
-  // against. Showing the id beats showing a made-up person.
+  // `assigned_to` refs a User and comes back populated, so this is the owning
+  // administrator's name. A response that still carries a bare id falls back to
+  // a short form of it rather than showing nothing.
   const assigned = assigneeId(ticket);
+  const assignedName = assigneeName(ticket);
 
   return (
     <div className="space-y-5 rounded-2xl bg-white dark:bg-card p-6 custom-card-shadow">
@@ -71,7 +73,7 @@ export const TicketInformationCard = ({
               title={assigned}
               className="text-sm font-medium text-grey-black dark:text-white"
             >
-              Team {shortTicketId(assigned)}
+              {assignedName ?? `Team ${shortTicketId(assigned)}`}
             </span>
           ) : (
             <span className="text-sm text-error">Unassigned</span>

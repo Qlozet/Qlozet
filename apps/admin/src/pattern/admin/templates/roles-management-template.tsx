@@ -11,20 +11,22 @@ interface RolesManagementTemplateProps {
   roles: RoleCardData[];
   isLoading?: boolean;
   isError?: boolean;
-  activeRoleId?: string | null;
   onSelect?: (role: RoleCardData) => void;
   onEditAccess?: (role: RoleCardData) => void;
   onCreateRole?: () => void;
+  onCreateDefaults?: () => void;
+  isCreatingDefaults?: boolean;
 }
 
 export const RolesManagementTemplate = ({
   roles,
   isLoading,
   isError,
-  activeRoleId,
   onSelect,
   onEditAccess,
   onCreateRole,
+  onCreateDefaults,
+  isCreatingDefaults,
 }: RolesManagementTemplateProps) => {
   return (
     <div className="w-full min-h-screen h-fit space-y-6 pb-10">
@@ -43,9 +45,10 @@ export const RolesManagementTemplate = ({
         roles={roles}
         isLoading={isLoading}
         isError={isError}
-        activeRoleId={activeRoleId}
         onSelect={onSelect}
         onEditAccess={onEditAccess}
+        onCreateDefaults={onCreateDefaults}
+        isCreatingDefaults={isCreatingDefaults}
       />
     </div>
   );

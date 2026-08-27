@@ -1,8 +1,14 @@
-// Display helpers for the admin Administrators (team members) views.
-// Mirrors lib/vendors.ts: each accessor falls back across the handful of field
-// names the backend uses, and statuses collapse to the two states the UI shows.
+// Display helpers for the console's Admin Management screens.
+//
+// An administrator is a User with `type: 'platform'` — GET /users/admins — not
+// a vendor TeamMember. Statuses collapse to the two states the table shows, and
+// role names arrive lowercased with underscores (the Role schema lowercases
+// them), so every label goes through `formatRoleName`.
 
-import type { TeamMember } from '@/redux/services/users/users.api-slice';
+import type {
+  ConsolePermissionGroup,
+  PlatformAdmin,
+} from '@/redux/services/users/users.api-slice';
 
 export type AdminStatusVariant = 'active' | 'inactive';
 
@@ -11,74 +17,57 @@ export interface AdminStatusInfo {
   label: string;
 }
 
-// The role options offered when inviting an admin. Used as a fallback when the
-// backend `/users/roles` list is empty so the Add Admin form still matches the
-// Figma design.
-export const ADMIN_ROLE_OPTIONS = [
-  'Super admin',
-  'Customer service',
-  'Operations',
-  'Marketing',
-  'Data analyst',
-  'Sales',
-] as const;
+/** `super_admin` → `Super admin`, `data-analyst` → `Data analyst`. */
+export const formatRoleName = (name?: string | null): string => {
+  const cleaned = (name ?? '').replace(/[_-]+/g, ' ').trim();
+  if (!cleaned) return '—';
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase();
+};
 
 // ---- Role permissions matrix (Edit Access screen) ----
 
-// The actions every module can be granted, in the column order the Figma shows.
+// The actions every module can be granted, in the column order the design shows.
 export const PERMISSION_ACTIONS = ['view', 'create', 'edit', 'delete'] as const;
 export type PermissionAction = (typeof PERMISSION_ACTIONS)[number];
 
-export interface PermissionResource {
-  key: string;
-  label: string;
-}
-
-// The modules a role can be granted permissions on (mirrors the Figma rows).
-export const PERMISSION_RESOURCES: PermissionResource[] = [
-  { key: 'dashboard', label: 'Dashboard (read only)' },
-  { key: 'vendors', label: 'Vendors' },
-  { key: 'customers', label: 'Customers' },
-  { key: 'orders', label: 'Orders' },
-  { key: 'products', label: 'Products' },
-  { key: 'tickets', label: 'Tickets & Complaints' },
-  { key: 'payments', label: 'Payments & Payouts' },
-  { key: 'marketing', label: 'Marketing (Coupons, Banners)' },
-  { key: 'blogs', label: 'Blogs / Static Pages' },
-  { key: 'admin-management', label: 'Admin Management' },
-  { key: 'performance', label: 'Performance Analytics' },
-  { key: 'announcements', label: 'Announcements' },
-  { key: 'notifications', label: 'Notifications (Push & Emails)' },
-  { key: 'live-chat', label: 'Live chat Logs' },
-  { key: 'settings', label: 'Settings (Shipping, Tax, General)' },
-];
-
-// A permission id is encoded as `resource:action` (e.g. `vendors:create`).
+// Which cells are ticked, keyed by the catalogue's resource key.
 export type PermissionMatrix = Record<
   string,
   Record<PermissionAction, boolean>
 >;
 
-export const buildPermissionId = (
-  resourceKey: string,
-  action: PermissionAction
-): string => `${resourceKey}:${action}`;
+/**
+ * The permission ids a role currently holds.
+ *
+ * GET /users/roles/:id populates `permissions` with the documents themselves,
+ * while a role that has just been saved holds bare ids — read both.
+ */
+export const readPermissionIds = (permissions: unknown): string[] => {
+  if (!Array.isArray(permissions)) return [];
+  return permissions
+    .map((permission) => {
+      if (typeof permission === 'string') return permission;
+      if (permission && typeof permission === 'object') {
+        const id = (permission as { _id?: unknown })._id;
+        if (typeof id === 'string') return id;
+      }
+      return null;
+    })
+    .filter((id): id is string => Boolean(id));
+};
 
-// Build the matrix from a role's `permissions` string list. When the role has
-// none yet, seed View + Create as granted to match the Figma default.
+/** Tick the cells whose permission id the role holds. */
 export const buildPermissionMatrix = (
-  permissions: string[] = []
+  catalogue: ConsolePermissionGroup[],
+  granted: string[]
 ): PermissionMatrix => {
-  const granted = new Set(permissions);
-  const seedDefault = permissions.length === 0;
+  const held = new Set(granted);
 
-  return PERMISSION_RESOURCES.reduce<PermissionMatrix>((matrix, resource) => {
-    matrix[resource.key] = PERMISSION_ACTIONS.reduce(
+  return catalogue.reduce<PermissionMatrix>((matrix, group) => {
+    matrix[group.resource] = PERMISSION_ACTIONS.reduce(
       (row, action) => {
-        const isDefault =
-          seedDefault && (action === 'view' || action === 'create');
-        row[action] =
-          granted.has(buildPermissionId(resource.key, action)) || isDefault;
+        const id = group.actions?.[action];
+        row[action] = Boolean(id && held.has(id));
         return row;
       },
       {} as Record<PermissionAction, boolean>
@@ -87,45 +76,79 @@ export const buildPermissionMatrix = (
   }, {});
 };
 
-// Flatten the matrix back into the `permission_ids` list the API expects.
-export const matrixToPermissionIds = (matrix: PermissionMatrix): string[] => {
+/**
+ * Flatten the matrix back to the `permission_ids` the API expects.
+ *
+ * Only ids that exist in the catalogue are sent — a cell with no permission
+ * behind it is a gap in the catalogue, not a grant.
+ */
+export const matrixToPermissionIds = (
+  catalogue: ConsolePermissionGroup[],
+  matrix: PermissionMatrix
+): string[] => {
   const ids: string[] = [];
-  for (const resource of PERMISSION_RESOURCES) {
+  for (const group of catalogue) {
     for (const action of PERMISSION_ACTIONS) {
-      if (matrix[resource.key]?.[action]) {
-        ids.push(buildPermissionId(resource.key, action));
-      }
+      const id = group.actions?.[action];
+      if (id && matrix[group.resource]?.[action]) ids.push(id);
     }
   }
   return ids;
 };
 
-// Collapse the backend status strings into the two states the UI shows.
-export const getAdminStatus = (member: TeamMember): AdminStatusInfo => {
-  const raw = (member.status ?? '').toString().toLowerCase();
+/**
+ * Permission ids the role holds that the console's grid does not cover.
+ *
+ * The catalogue seeded before the console existed (`view_users`,
+ * `approve_vendors`, …) has no cell to tick, so saving the grid would silently
+ * strip those grants. They ride along untouched instead.
+ */
+export const permissionsOutsideMatrix = (
+  catalogue: ConsolePermissionGroup[],
+  granted: string[]
+): string[] => {
+  const known = new Set(
+    catalogue.flatMap((group) =>
+      PERMISSION_ACTIONS.map((action) => group.actions?.[action]).filter(
+        (id): id is string => Boolean(id)
+      )
+    )
+  );
+  return granted.filter((id) => !known.has(id));
+};
 
-  if (['active', 'approved', 'verified', 'accepted'].includes(raw)) {
-    return { variant: 'active', label: 'Active' };
-  }
+// ---- Row helpers ----
+
+// Sign-in requires 'active', so anything else reads as Inactive: what the
+// column tells an admin is whether that person can get in.
+export const getAdminStatus = (admin: PlatformAdmin): AdminStatusInfo => {
+  const raw = (admin.status ?? '').toString().toLowerCase();
+
+  if (raw === 'active') return { variant: 'active', label: 'Active' };
+  if (raw === 'suspended') return { variant: 'inactive', label: 'Suspended' };
   return { variant: 'inactive', label: 'Inactive' };
 };
 
-export const getAdminName = (member: TeamMember): string =>
-  member.full_name || (member.name as string | undefined) || 'Unnamed admin';
+export const isAdminActive = (admin: PlatformAdmin): boolean =>
+  (admin.status ?? '').toString().toLowerCase() === 'active';
 
-export const getAdminEmail = (member: TeamMember): string =>
-  member.email || '—';
+export const getAdminName = (admin: PlatformAdmin): string =>
+  admin.full_name?.trim() || 'Unnamed admin';
 
-export const getAdminPhone = (member: TeamMember): string =>
-  member.phone_number || (member.phone as string | undefined) || '—';
+export const getAdminEmail = (admin: PlatformAdmin): string =>
+  admin.email || '—';
 
-export const getAdminRole = (member: TeamMember): string => member.role || '—';
+export const getAdminPhone = (admin: PlatformAdmin): string =>
+  admin.phone_number || '—';
 
-export const getAdminInitial = (member: TeamMember): string =>
-  getAdminName(member).charAt(0).toUpperCase() || 'A';
+export const getAdminRole = (admin: PlatformAdmin): string =>
+  formatRoleName(admin.role?.name ?? admin.role_name);
 
-// DD/MM/YYYY to match the Figma "Date registered" column.
-export const formatRegisteredDate = (value?: string): string => {
+export const getAdminInitial = (admin: PlatformAdmin): string =>
+  getAdminName(admin).charAt(0).toUpperCase() || 'A';
+
+// DD/MM/YYYY to match the design's "Date registered" column.
+export const formatRegisteredDate = (value?: string | null): string => {
   if (!value) return '—';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '—';

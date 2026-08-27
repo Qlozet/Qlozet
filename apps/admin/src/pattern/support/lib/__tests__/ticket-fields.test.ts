@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   assigneeId,
+  assigneeName,
   formatDate,
   formatDateTime,
   readField,
@@ -62,8 +63,47 @@ describe('assigneeId', () => {
     expect(assigneeId(undefined)).toBeNull();
   });
 
-  it('returns the raw support-team id when assigned', () => {
+  it('returns the raw id when the row carries only an id', () => {
     expect(assigneeId({ _id: 't1', assigned_to: 'team-1' })).toBe('team-1');
+  });
+
+  // `assigned_to` refs a User and the ticket reads populate it, so the id has
+  // to be read out of the object as well as off a bare string.
+  it('reads the id out of a populated assignee', () => {
+    expect(
+      assigneeId({
+        _id: 't1',
+        assigned_to: { _id: 'admin-1', full_name: 'Shola James' },
+      })
+    ).toBe('admin-1');
+  });
+});
+
+describe('assigneeName', () => {
+  it('names the administrator who owns the ticket', () => {
+    expect(
+      assigneeName({
+        _id: 't1',
+        assigned_to: { _id: 'admin-1', full_name: 'Shola James' },
+      })
+    ).toBe('Shola James');
+  });
+
+  it('falls back to their email when the account has no name', () => {
+    expect(
+      assigneeName({
+        _id: 't1',
+        assigned_to: { _id: 'admin-1', email: 'shola@mail.com' },
+      })
+    ).toBe('shola@mail.com');
+  });
+
+  // Null, not a dash: the caller shows a short id instead, and a dash here
+  // would claim the ticket is unassigned when it is not.
+  it('is null when the row carries only an id', () => {
+    expect(assigneeName({ _id: 't1', assigned_to: 'admin-1' })).toBeNull();
+    expect(assigneeName({ _id: 't1', assigned_to: null })).toBeNull();
+    expect(assigneeName(undefined)).toBeNull();
   });
 });
 

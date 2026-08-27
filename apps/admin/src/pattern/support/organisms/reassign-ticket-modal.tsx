@@ -13,15 +13,23 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useAssignTicketMutation } from '@/redux/services/tickets/tickets.api-slice';
-import { useGetTeamMembersQuery } from '@/redux/services/users/users.api-slice';
+import { useGetAdminsQuery } from '@/redux/services/users/users.api-slice';
+import { formatRoleName, getAdminName } from '@/lib/admins';
+import { readApiError } from '@/redux/services/types';
 
 interface ReassignTicketModalProps {
   ticketId: string;
-  /** Currently assigned member id, when known. */
+  /** Currently assigned administrator id, when known. */
   currentAssigneeId?: string;
 }
 
-// Assigns a ticket to a support team member via PATCH /admin/{id}/assign.
+/**
+ * Assigns a ticket to a platform administrator via PATCH /admin/{id}/assign.
+ *
+ * The picker used to list a VENDOR's team members, which was doubly wrong: that
+ * endpoint 500s for a platform caller, and `assigned_to` refs a User, so a team
+ * member's id would never have resolved to anyone. It lists administrators.
+ */
 export const ReassignTicketModal = NiceModal.create(
   ({ ticketId, currentAssigneeId }: ReassignTicketModalProps) => {
     const modal = useModal();
@@ -31,18 +39,24 @@ export const ReassignTicketModal = NiceModal.create(
       data,
       isLoading: isLoadingMembers,
       isError: membersFailed,
-    } = useGetTeamMembersQuery();
+    } = useGetAdminsQuery({
+      // Active only: a deactivated admin cannot sign in, so a ticket assigned
+      // to them would sit unowned. 100 covers the console's staff in one call.
+      status: 'active',
+      size: 100,
+    });
     const [assignTicket, { isLoading: isAssigning }] =
       useAssignTicketMutation();
 
     const members = useMemo(
       () =>
-        (data?.data ?? [])
-          .map((member) => ({
-            id: member._id,
-            name: member.full_name || member.email || '',
+        (data?.data?.data ?? [])
+          .map((admin) => ({
+            id: admin._id,
+            name: getAdminName(admin),
+            role: formatRoleName(admin.role?.name ?? admin.role_name),
           }))
-          .filter((member) => member.id && member.name),
+          .filter((admin) => admin.id && admin.name),
       [data]
     );
 
@@ -61,21 +75,22 @@ export const ReassignTicketModal = NiceModal.create(
         modal.resolve(assignee);
         modal.remove();
       } catch (error) {
-        const message =
-          (error as { data?: { message?: string } })?.data?.message ??
-          'Could not reassign the ticket. Please try again.';
-        toast.error(message);
+        toast.error(
+          readApiError(
+            error,
+            'Could not reassign the ticket. Please try again.'
+          )
+        );
       }
     };
 
-    // GET /users/team/members is currently returning a 500 from the backend, so
-    // distinguish "the list is genuinely empty" from "we couldn't load it" —
-    // otherwise a broken endpoint reads as an admin having no colleagues.
+    // Distinguish "there is genuinely nobody" from "we couldn't load the list"
+    // — a failed request otherwise reads as an admin having no colleagues.
     const emptyLabel = isLoadingMembers
-      ? 'Loading team members...'
+      ? 'Loading administrators...'
       : membersFailed
-        ? 'Team members unavailable'
-        : 'No team members available';
+        ? 'Administrators unavailable'
+        : 'No active administrators';
 
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -106,12 +121,12 @@ export const ReassignTicketModal = NiceModal.create(
             Reassign Ticket
           </h2>
           <p className="mt-1 text-sm text-grey3 dark:text-gray-400">
-            Choose the support team member who should own this ticket.
+            Choose the administrator who should own this ticket.
           </p>
 
           {membersFailed && (
             <p className="mt-3 rounded-lg bg-error/10 px-3 py-2 text-xs text-error">
-              The team members list could not be loaded, so this ticket
+              The administrator list could not be loaded, so this ticket
               can&apos;t be reassigned right now.
             </p>
           )}
@@ -128,14 +143,18 @@ export const ReassignTicketModal = NiceModal.create(
               <SelectTrigger>
                 <SelectValue
                   placeholder={
-                    members.length === 0 ? emptyLabel : 'Select a team member'
+                    members.length === 0
+                      ? emptyLabel
+                      : 'Select an administrator'
                   }
                 />
               </SelectTrigger>
               <SelectContent className="z-[200]">
                 {members.map((member) => (
                   <SelectItem key={member.id} value={member.id}>
-                    {member.name}
+                    {member.role && member.role !== '—'
+                      ? `${member.name} — ${member.role}`
+                      : member.name}
                   </SelectItem>
                 ))}
               </SelectContent>

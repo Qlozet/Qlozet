@@ -1,7 +1,7 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal, Pencil, UserX } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,14 +10,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type { TeamMember } from '@/redux/services/users/users.api-slice';
+import type { PlatformAdmin } from '@/redux/services/users/users.api-slice';
 import {
   getAdminName,
   getAdminEmail,
   getAdminPhone,
   getAdminRole,
   getAdminStatus,
-  getAdminInitial,
+  isAdminActive,
   formatRegisteredDate,
   type AdminStatusVariant,
 } from '@/lib/admins';
@@ -29,30 +29,26 @@ const STATUS_BADGE_VARIANT: Record<AdminStatusVariant, 'success' | 'error'> = {
 };
 
 interface AdminsTableColumnsProps {
-  onEdit: (member: TeamMember) => void;
-  onDeactivate: (member: TeamMember) => void;
+  onEdit: (admin: PlatformAdmin) => void;
+  /** Deactivate an active admin, or reactivate a deactivated one. */
+  onToggleStatus: (admin: PlatformAdmin) => void;
+  /** The signed-in admin's id — they cannot deactivate themselves. */
+  currentUserId?: string;
 }
 
 export const createAdminsTableColumns = ({
   onEdit,
-  onDeactivate,
-}: AdminsTableColumnsProps): ColumnDef<TeamMember>[] => [
+  onToggleStatus,
+  currentUserId,
+}: AdminsTableColumnsProps): ColumnDef<PlatformAdmin>[] => [
   {
     id: 'name',
     header: 'Name',
-    cell: ({ row }) => {
-      const member = row.original;
-      return (
-        <div className="flex items-center gap-3">
-          <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-            {getAdminInitial(member)}
-          </span>
-          <span className="text-sm font-medium text-gray-900 dark:text-white">
-            {getAdminName(member)}
-          </span>
-        </div>
-      );
-    },
+    cell: ({ row }) => (
+      <div className="text-sm font-medium text-gray-900 dark:text-white">
+        {getAdminName(row.original)}
+      </div>
+    ),
     enableSorting: false,
   },
   {
@@ -90,7 +86,7 @@ export const createAdminsTableColumns = ({
     header: 'Date registered',
     cell: ({ row }) => (
       <div className="text-sm text-gray-600 dark:text-gray-400">
-        {formatRegisteredDate(row.original.createdAt as string | undefined)}
+        {formatRegisteredDate(row.original.createdAt)}
       </div>
     ),
     enableSorting: false,
@@ -116,7 +112,12 @@ export const createAdminsTableColumns = ({
     id: 'actions',
     header: '',
     cell: ({ row }) => {
-      const member = row.original;
+      const admin = row.original;
+      const active = isAdminActive(admin);
+      // Deactivating yourself locks you out of the console you are standing in,
+      // so the API refuses it — don't offer it either.
+      const isSelf = Boolean(currentUserId && admin._id === currentUserId);
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -126,11 +127,15 @@ export const createAdminsTableColumns = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-44">
-            <DropdownMenuItem onClick={() => onEdit(member)}>
+            <DropdownMenuItem onClick={() => onEdit(admin)}>
               Edit admin
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onDeactivate(member)}>
-              Deactivate admin
+            <DropdownMenuItem
+              disabled={isSelf}
+              onClick={() => onToggleStatus(admin)}
+              className={active ? 'text-destructive' : undefined}
+            >
+              {active ? 'Deactivate admin' : 'Activate admin'}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

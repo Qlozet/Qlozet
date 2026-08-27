@@ -1,6 +1,7 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { RoleCard, type RoleCardData } from '../molecules/role-card';
 
@@ -8,9 +9,11 @@ interface RolesGridProps {
   roles: RoleCardData[];
   isLoading?: boolean;
   isError?: boolean;
-  activeRoleId?: string | null;
   onSelect?: (role: RoleCardData) => void;
   onEditAccess?: (role: RoleCardData) => void;
+  /** Offered when there are no roles yet — seeds the standard platform set. */
+  onCreateDefaults?: () => void;
+  isCreatingDefaults?: boolean;
 }
 
 const GRID_CLASS =
@@ -20,9 +23,10 @@ export const RolesGrid = ({
   roles,
   isLoading = false,
   isError = false,
-  activeRoleId,
   onSelect,
   onEditAccess,
+  onCreateDefaults,
+  isCreatingDefaults = false,
 }: RolesGridProps) => {
   if (isLoading) {
     return (
@@ -37,7 +41,7 @@ export const RolesGrid = ({
   if (isError) {
     return (
       <div className="flex h-64 flex-col items-center justify-center gap-2 text-center">
-        <Loader2 className="size-6 text-muted-foreground" />
+        <AlertCircle className="size-6 text-destructive" />
         <p className="text-sm text-muted-foreground">
           Couldn&apos;t load roles. Please try again.
         </p>
@@ -47,8 +51,20 @@ export const RolesGrid = ({
 
   if (roles.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <p className="text-sm text-muted-foreground">No roles yet.</p>
+      <div className="flex h-64 flex-col items-center justify-center gap-3 text-center">
+        <p className="text-sm text-muted-foreground">
+          No platform roles yet. Every administrator needs one, so start with
+          the standard set and adjust their access from there.
+        </p>
+        {onCreateDefaults && (
+          <Button
+            variant="outline"
+            onClick={onCreateDefaults}
+            disabled={isCreatingDefaults}
+          >
+            {isCreatingDefaults ? 'Creating...' : 'Create the default roles'}
+          </Button>
+        )}
       </div>
     );
   }
@@ -59,7 +75,6 @@ export const RolesGrid = ({
         <RoleCard
           key={role.id}
           role={role}
-          active={role.id === activeRoleId}
           onSelect={onSelect}
           onEditAccess={onEditAccess}
         />

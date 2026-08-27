@@ -22,8 +22,9 @@ export interface TicketReply {
  * documents the request params for this endpoint but no response schema.
  *
  * Two things to know about the shape:
- *  - `business` and `assigned_to` are bare ObjectIds, never populated. A vendor
- *    name has to be resolved separately (see useBusinessNames).
+ *  - `business` is a bare ObjectId; a vendor name has to be resolved separately
+ *    (see useBusinessNames). `assigned_to` IS populated — it refs a User, and
+ *    the admin who owns the ticket is read straight off the row.
  *  - `replies` is populated with full objects on the *list* endpoint but comes
  *    back as an array of id strings from GET /tickets/{id}. Normalise with
  *    `populatedReplies` instead of indexing into it.
@@ -31,6 +32,13 @@ export interface TicketReply {
  * There is no `reference`, `subject`, `title` or `due_date` field — the UI
  * derives a display id and subject from `_id` and `description`.
  */
+/** The populated `assigned_to` — a platform administrator. */
+export interface TicketAssignee {
+  _id: string;
+  full_name?: string | null;
+  email?: string | null;
+}
+
 export interface Ticket {
   _id: string;
   /** Owning business id. Resolve to a name via GET /admin/businesses. */
@@ -40,8 +48,14 @@ export interface Ticket {
   attachments?: string[];
   /** Observed value: 'open'. The backend has no endpoint that changes it yet. */
   status?: string;
-  /** Support-team id, or null when nobody owns the ticket. */
-  assigned_to?: string | null;
+  /**
+   * The administrator who owns the ticket, or null when nobody does.
+   *
+   * Populated by the backend from the User ref. Older responses (and the write
+   * endpoints' echoes) can still be a bare id, so read it through
+   * `assigneeId` / `assigneeName` rather than indexing into it.
+   */
+  assigned_to?: string | TicketAssignee | null;
   is_resolved?: boolean;
   replies?: Array<TicketReply | string>;
   createdAt?: string;

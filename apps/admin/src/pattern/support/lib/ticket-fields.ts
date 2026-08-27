@@ -46,11 +46,30 @@ export const ticketCategory = (ticket?: Ticket): string =>
   str(ticket?.issue_type) ?? EM_DASH;
 
 /**
- * Reads the assignee id. `assigned_to` is a bare support-team ObjectId (or
- * null); it is never populated, so a caller that wants a name must resolve it.
+ * Reads the assignee's id.
+ *
+ * `assigned_to` refs a User and comes back populated from the ticket reads, but
+ * the write endpoints echo a bare id — so both shapes have to be read here.
  */
-export const assigneeId = (ticket?: Ticket): string | null =>
-  str(ticket?.assigned_to) ?? null;
+export const assigneeId = (ticket?: Ticket): string | null => {
+  const assigned = ticket?.assigned_to;
+  if (typeof assigned === 'string') return str(assigned) ?? null;
+  if (assigned && typeof assigned === 'object')
+    return str(assigned._id) ?? null;
+  return null;
+};
+
+/**
+ * The assignee's name, or null when the row carries only an id.
+ *
+ * Null rather than a placeholder: the caller falls back to a short id, and a
+ * dash here would claim the ticket is unassigned when it is not.
+ */
+export const assigneeName = (ticket?: Ticket): string | null => {
+  const assigned = ticket?.assigned_to;
+  if (!assigned || typeof assigned !== 'object') return null;
+  return str(assigned.full_name) ?? str(assigned.email) ?? null;
+};
 
 /** Generic first-non-blank-key reader, still used by the live-chat columns. */
 export const readField = (row: Row, ...keys: string[]): string => {
