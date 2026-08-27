@@ -54,7 +54,7 @@ export const InfoCard = ({
           <a
             href={href}
             className={cn(
-              'truncate text-sm font-semibold text-primary underline underline-offset-2 hover:opacity-80',
+              'truncate text-sm font-semibold text-link underline underline-offset-2 hover:opacity-80',
               valueClassName
             )}
           >
@@ -86,7 +86,7 @@ export const InfoCard = ({
           <button
             type="button"
             onClick={onLinkClick}
-            className="shrink-0 text-xs font-medium text-primary underline underline-offset-2 hover:opacity-80 cursor-pointer"
+            className="shrink-0 text-xs font-medium text-link underline underline-offset-2 hover:opacity-80 cursor-pointer"
           >
             {linkLabel}
           </button>

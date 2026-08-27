@@ -26,6 +26,15 @@ import { cn } from '@/lib/utils';
 const DRAWER_WIDTH = 440;
 const DRAWER_OFFSET = 24;
 
+// Shown when there is nothing to display: no media on the order at all, or a
+// URL the browser could not fetch.
+const MediaPlaceholder = ({ message }: { message: string }) => (
+  <div className="flex size-full flex-col items-center justify-center gap-2 rounded-2xl bg-[#E5E7EB] dark:bg-[#4A4949]">
+    <ImageOff className="size-8 text-gray-400" />
+    <p className="text-sm text-gray-500 dark:text-gray-400">{message}</p>
+  </div>
+);
+
 interface OrderMediaPanelProps {
   images: string[];
   title?: string;
@@ -49,8 +58,15 @@ export const OrderMediaPanel = ({
 }: OrderMediaPanelProps) => {
   const [index, setIndex] = useState(0);
 
+  // Keyed by URL rather than a single flag, so stepping back to an image that
+  // has already been fetched doesn't flash the skeleton again: the browser
+  // serves it from cache, but a reset flag would still paint a frame of grey.
+  const [status, setStatus] = useState<Record<string, 'loaded' | 'failed'>>({});
+
   const count = images.length;
   const hasMultiple = count > 1;
+  const src = images[index];
+  const state = status[src];
   const step = (delta: number) =>
     setIndex((prev) => (prev + delta + count) % count);
 
@@ -86,23 +102,47 @@ export const OrderMediaPanel = ({
         {/* 469 × 559, per the design. */}
         <div className="relative aspect-[469/559] w-full rounded-2xl bg-[#F5F2EE] dark:bg-[#4A4949]">
           {count === 0 ? (
-            <div className="flex size-full flex-col items-center justify-center gap-2 rounded-2xl bg-[#E5E7EB] dark:bg-[#4A4949]">
-              <ImageOff className="size-8 text-gray-400" />
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                No media for this order
-              </p>
-            </div>
+            <MediaPlaceholder message="No media for this order" />
           ) : (
-            <Image
-              key={images[index]}
-              data-testid="order-media-panel-image"
-              src={images[index]}
-              alt={title}
-              fill
-              className="rounded-2xl object-cover"
-              sizes="469px"
-              priority
-            />
+            <>
+              <Image
+                key={src}
+                data-testid="order-media-panel-image"
+                src={src}
+                alt={title}
+                fill
+                // Faded in behind the skeleton, so the swap reads as the photo
+                // arriving rather than one surface being cut for another.
+                className={cn(
+                  'rounded-2xl object-cover transition-opacity duration-300',
+                  state === 'loaded' ? 'opacity-100' : 'opacity-0'
+                )}
+                sizes="469px"
+                priority
+                onLoad={() =>
+                  setStatus((prev) => ({ ...prev, [src]: 'loaded' }))
+                }
+                onError={() =>
+                  setStatus((prev) => ({ ...prev, [src]: 'failed' }))
+                }
+              />
+
+              {/* A broken URL never fires `onLoad`, so without this branch the
+                  skeleton would pulse forever on an image that is never coming. */}
+              {state === 'failed' && (
+                <div className="absolute inset-0">
+                  <MediaPlaceholder message="This image could not be loaded" />
+                </div>
+              )}
+
+              {!state && (
+                <div
+                  aria-hidden
+                  data-testid="order-media-panel-skeleton"
+                  className="absolute inset-0 animate-pulse rounded-2xl bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 dark:from-[#3A3A3A] dark:via-[#525151] dark:to-[#3A3A3A]"
+                />
+              )}
+            </>
           )}
 
           {hasMultiple && (

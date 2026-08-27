@@ -12,6 +12,10 @@
   --popover-foreground: hsla(222.2, 84%, 4.9%);
   --primary: hsla(27, 97%, 12%, 1);
   --primary-foreground: hsla(210, 40%, 98%);
+  /* Brand colour for inline links and text buttons. `--primary` is a near-black
+     brown: right on a white card, all but invisible on the dark canvas, so it
+     lightens in .dark below rather than every link carrying its own override. */
+  --link: hsla(27, 97%, 12%, 1);
   --secondary: hsla(22, 15%, 54%, 0.44);
   --secondary-foreground: hsla(222.2, 84%, 4.9%);
   --muted: hsla(210, 40%, 96%);
@@ -74,6 +78,8 @@
   --popover-foreground: hsl(0, 0%, 98%);
   --primary: hsla(27, 97%, 12%, 1);
   --primary-foreground: hsl(0, 0%, 98%);
+  /* Same hue, lifted well clear of the #303030 card. */
+  --link: hsla(27, 90%, 70%, 1);
   --secondary: hsl(240, 4%, 16%);
   --secondary-foreground: hsl(0, 0%, 98%);
   --muted: #404040;
@@ -128,6 +134,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-link: var(--link);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);

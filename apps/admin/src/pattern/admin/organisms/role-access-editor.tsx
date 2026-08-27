@@ -163,9 +163,10 @@ export const RoleAccessEditor = ({ roleId }: RoleAccessEditorProps) => {
 
       toast.success(isEdit ? 'Role updated successfully' : 'Role created');
 
-      // Land on the saved role, so the next Save edits it rather than trying to
-      // create a second role of the same name.
-      if (!isEdit) router.replace(`${APP_ROUTES.adminManageRoles}/${id}`);
+      // Back to the roles list, where the role now appears. `replace`, not
+      // `push`: Back must not return to a create form that has already saved,
+      // where the next Save would try to create the same role a second time.
+      if (!isEdit) router.replace(APP_ROUTES.adminManageRoles);
     } catch (error) {
       // e.g. 'A platform role called "operations" already exists.'
       toast.error(readApiError(error));

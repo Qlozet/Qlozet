@@ -58,7 +58,7 @@ describe('SidebarNav', () => {
     const onNavigate = vi.fn();
     renderNav({ expanded: true, onNavigate });
 
-    await userEvent.click(screen.getByRole('button', { name: /payment/i }));
+    await userEvent.click(screen.getByRole('button', { name: /settings/i }));
     expect(onNavigate).toHaveBeenCalled();
   });
 });

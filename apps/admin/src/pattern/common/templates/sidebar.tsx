@@ -12,17 +12,18 @@ import { ProductsAccessoriesNavIcon } from '../atoms/nav-icons/products-accessor
 import { ProductsFabricsNavIcon } from '../atoms/nav-icons/products-fabrics-nav-icon';
 import { CollectionsNavIcon } from '../atoms/nav-icons/collections-nav-icon';
 import { ProductsAddNavIcon } from '../atoms/nav-icons/products-add-nav-icon';
-import { StaticPageNavIcon } from '../atoms/nav-icons/static-page-nav-icon';
-import { MarketingNavIcon } from '../atoms/nav-icons/marketing-nav-icon';
+// Hidden from the nav for now — see the commented-out entries in `menuItems`.
+// import { StaticPageNavIcon } from '../atoms/nav-icons/static-page-nav-icon';
+// import { MarketingNavIcon } from '../atoms/nav-icons/marketing-nav-icon';
 import { AdminNavIcon } from '../atoms/nav-icons/admin-nav-icon';
-import { PaymentNavIcon } from '../atoms/nav-icons/payment-nav-icon';
+// import { PaymentNavIcon } from '../atoms/nav-icons/payment-nav-icon';
 import { DisputesNavIcon } from '../atoms/nav-icons/disputes-nav-icon';
 import { NotificationsNavIcon } from '../atoms/nav-icons/notifications-nav-icon';
-import { PerformanceNavIcon } from '../atoms/nav-icons/performance-nav-icon';
+// import { PerformanceNavIcon } from '../atoms/nav-icons/performance-nav-icon';
 import { SupportNavIcon } from '../atoms/nav-icons/support-nav-icon';
 import { SettingsNavIcon } from '../atoms/nav-icons/settings-nav-icon';
-import { FeedbackNavIcon } from '../atoms/nav-icons/feedback-nav-icon';
-import { HelpNavIcon } from '../atoms/nav-icons/help-nav-icon';
+// import { FeedbackNavIcon } from '../atoms/nav-icons/feedback-nav-icon';
+// import { HelpNavIcon } from '../atoms/nav-icons/help-nav-icon';
 import LogoutBtn from '../molecules/logout-btn';
 import { ThemeToggle } from '../molecules/theme-toggle';
 import { ThemeToggleSwitch } from '../molecules/theme-toggle-switch';
@@ -32,7 +33,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Tooltip,
   TooltipContent,
@@ -129,184 +130,190 @@ export const SidebarNav = ({
         },
       ],
     },
-    {
-      icon: StaticPageNavIcon,
-      label: 'Static Page',
-      href: APP_ROUTES.staticPage,
-    },
-    {
-      // TODO: replace placeholder sub-pages with the real Marketing sections
-      icon: MarketingNavIcon,
-      label: 'Marketing',
-      href: APP_ROUTES.marketing,
-      subItems: [
-        {
-          icon: MarketingNavIcon,
-          label: 'Campaigns',
-          href: `${APP_ROUTES.marketing}/campaigns`,
-        },
-        {
-          icon: MarketingNavIcon,
-          label: 'Promotions',
-          href: `${APP_ROUTES.marketing}/promotions`,
-        },
-      ],
-    },
+    // Static Page, Marketing, Payment, Performance, Feedback and Help are
+    // hidden until those sections exist. Restore the commented-out entries
+    // (and their icon imports above) to bring them back.
+    // {
+    //   icon: StaticPageNavIcon,
+    //   label: 'Static Page',
+    //   href: APP_ROUTES.staticPage,
+    // },
+    // {
+    //   // TODO: replace placeholder sub-pages with the real Marketing sections
+    //   icon: MarketingNavIcon,
+    //   label: 'Marketing',
+    //   href: APP_ROUTES.marketing,
+    //   subItems: [
+    //     {
+    //       icon: MarketingNavIcon,
+    //       label: 'Campaigns',
+    //       href: `${APP_ROUTES.marketing}/campaigns`,
+    //     },
+    //     {
+    //       icon: MarketingNavIcon,
+    //       label: 'Promotions',
+    //       href: `${APP_ROUTES.marketing}/promotions`,
+    //     },
+    //   ],
+    // },
     { icon: AdminNavIcon, label: 'Admin', href: APP_ROUTES.admin },
     { icon: DisputesNavIcon, label: 'Disputes', href: APP_ROUTES.disputes },
-    { icon: PaymentNavIcon, label: 'Payment', href: APP_ROUTES.payment },
+    // { icon: PaymentNavIcon, label: 'Payment', href: APP_ROUTES.payment },
     {
       icon: NotificationsNavIcon,
       label: 'Notifications',
       href: APP_ROUTES.notifications,
     },
-    {
-      // TODO: replace placeholder sub-pages with the real Performance sections
-      icon: PerformanceNavIcon,
-      label: 'Performance',
-      href: APP_ROUTES.performance,
-      subItems: [
-        {
-          icon: PerformanceNavIcon,
-          label: 'Overview',
-          href: APP_ROUTES.performance,
-        },
-        {
-          icon: PerformanceNavIcon,
-          label: 'Reports',
-          href: `${APP_ROUTES.performance}/reports`,
-        },
-      ],
-    },
+    // {
+    //   // TODO: replace placeholder sub-pages with the real Performance sections
+    //   icon: PerformanceNavIcon,
+    //   label: 'Performance',
+    //   href: APP_ROUTES.performance,
+    //   subItems: [
+    //     {
+    //       icon: PerformanceNavIcon,
+    //       label: 'Overview',
+    //       href: APP_ROUTES.performance,
+    //     },
+    //     {
+    //       icon: PerformanceNavIcon,
+    //       label: 'Reports',
+    //       href: `${APP_ROUTES.performance}/reports`,
+    //     },
+    //   ],
+    // },
     { icon: SupportNavIcon, label: 'Support', href: APP_ROUTES.support },
     { icon: SettingsNavIcon, label: 'Settings', href: APP_ROUTES.settings },
-    { icon: FeedbackNavIcon, label: 'Feedback', href: APP_ROUTES.feedback },
-    { icon: HelpNavIcon, label: 'Help', href: APP_ROUTES.help },
+    // { icon: FeedbackNavIcon, label: 'Feedback', href: APP_ROUTES.feedback },
+    // { icon: HelpNavIcon, label: 'Help', href: APP_ROUTES.help },
   ];
 
   return (
     <div
       className={cn(
-        'lg:w-[78px] xl:w-full bg-sidebar flex flex-col gap-y-10 py-6 pl-[14px] pr-3 rounded-xl transition-all duration-300',
-        expanded && 'w-full lg:w-full h-full rounded-none'
+        'lg:w-[78px] xl:w-full h-full bg-sidebar flex flex-col gap-y-10 py-6 pl-[14px] pr-3 rounded-xl transition-all duration-300',
+        expanded && 'w-full lg:w-full rounded-none'
       )}
     >
       {/* Logo */}
-      <div className="2xl:pl-4">
+      <div className="2xl:pl-4 shrink-0">
         <BrandLogo />
       </div>
 
-      <div className="h-full flex flex-col justify-between items-center gap-y-9">
-        {/* Menu Items */}
-        <nav
+      <div className="flex-1 min-h-0 flex flex-col items-center gap-y-9">
+        {/* Menu Items. Only this list scrolls, so the theme toggle and log out
+            below stay pinned to the bottom of the sidebar. */}
+        <ScrollArea
           className={cn(
-            'w-[47px] 2xl:w-full flex-1 space-y-1',
+            'w-[47px] 2xl:w-full flex-1 min-h-0 [&>div>div]:w-full',
             expanded && 'w-full'
           )}
         >
-          {menuItems?.map((item, idx) => {
-            return item.subItems ? (
-              <Accordion key={idx} type="single" collapsible>
-                <AccordionItem value="item-1" className="border-none">
-                  <AccordionTrigger
+          <nav className="w-full space-y-1">
+            {menuItems?.map((item, idx) => {
+              return item.subItems ? (
+                <Accordion key={idx} type="single" collapsible>
+                  <AccordionItem value="item-1" className="border-none">
+                    <AccordionTrigger
+                      className={cn(
+                        'flex items-center justify-center 2xl:justify-start gap-x-0 2xl:gap-x-3 px-2 2xl:px-4 py-2 2xl:py-3 text-grey4 dark:text-gray-400 hover:text-secondary dark:hover:text-white transition-colors text-sm font-normal data-[state=open]:text-primary dark:data-[state=open]:text-white hover:no-underline cursor-pointer border-none outline-none shadow-none duration-300',
+                        expanded && 'w-full justify-start gap-x-3 px-4 py-3'
+                      )}
+                    >
+                      <span>
+                        {' '}
+                        <item.icon className="w-5 h-5 transition-colors duration-75" />
+                      </span>
+                      <span className={labelClass}>{item.label}</span>
+                    </AccordionTrigger>
+                    <AccordionContent
+                      className={cn(
+                        'pl-2 2xl:pl-[30px] pb-0',
+                        expanded && 'pl-[30px]'
+                      )}
+                    >
+                      {item.subItems?.map((subItem) => (
+                        <Tooltip key={subItem.label}>
+                          <TooltipTrigger asChild>
+                            {ENABLED_ROUTES.includes(subItem.href) ? (
+                              <NavLink
+                                href={subItem.href}
+                                className={itemWidthClass}
+                                onToggle={onNavigate}
+                              >
+                                <subItem.icon className="w-5 h-5 transition-colors duration-75 " />
+                                <span className={labelClass}>
+                                  {subItem.label}
+                                </span>
+                              </NavLink>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={showWorkInProgress}
+                                className={cn(navItemClass, itemWidthClass)}
+                              >
+                                <subItem.icon className="w-5 h-5 transition-colors duration-75 " />
+                                <span className={labelClass}>
+                                  {subItem.label}
+                                </span>
+                              </button>
+                            )}
+                          </TooltipTrigger>
+                          <TooltipContent
+                            className={cn(
+                              '2xl:hidden 2xl:invisible',
+                              expanded && 'hidden'
+                            )}
+                          >
+                            {subItem.label}
+                          </TooltipContent>
+                        </Tooltip>
+                      ))}
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              ) : (
+                <Tooltip key={item.label}>
+                  <TooltipTrigger asChild>
+                    {ENABLED_ROUTES.includes(item.href) ? (
+                      <NavLink
+                        href={item.href}
+                        exact={item.href === APP_ROUTES.dashboard}
+                        className={itemWidthClass}
+                        onToggle={onNavigate}
+                      >
+                        <item.icon className="w-5 h-5" />
+                        <span className={labelClass}>{item.label}</span>
+                      </NavLink>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={showWorkInProgress}
+                        className={cn(navItemClass, itemWidthClass)}
+                      >
+                        <item.icon className="w-5 h-5" />
+                        <span className={labelClass}>{item.label}</span>
+                      </button>
+                    )}
+                  </TooltipTrigger>
+                  <TooltipContent
                     className={cn(
-                      'flex items-center justify-center 2xl:justify-start gap-x-0 2xl:gap-x-3 px-2 2xl:px-4 py-2 2xl:py-3 text-grey4 dark:text-gray-400 hover:text-secondary dark:hover:text-white transition-colors text-sm font-normal data-[state=open]:text-primary dark:data-[state=open]:text-white hover:no-underline cursor-pointer border-none outline-none shadow-none duration-300',
-                      expanded && 'w-full justify-start gap-x-3 px-4 py-3'
+                      '2xl:hidden 2xl:invisible',
+                      expanded && 'hidden'
                     )}
                   >
-                    <span>
-                      {' '}
-                      <item.icon className="w-5 h-5 transition-colors duration-75" />
-                    </span>
-                    <span className={labelClass}>{item.label}</span>
-                  </AccordionTrigger>
-                  <AccordionContent
-                    className={cn(
-                      'pl-2 2xl:pl-[30px] pb-0',
-                      expanded && 'pl-[30px]'
-                    )}
-                  >
-                    {item.subItems?.map((subItem) => (
-                      <Tooltip key={subItem.label}>
-                        <TooltipTrigger asChild>
-                          {ENABLED_ROUTES.includes(subItem.href) ? (
-                            <NavLink
-                              href={subItem.href}
-                              className={itemWidthClass}
-                              onToggle={onNavigate}
-                            >
-                              <subItem.icon className="w-5 h-5 transition-colors duration-75 " />
-                              <span className={labelClass}>
-                                {subItem.label}
-                              </span>
-                            </NavLink>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={showWorkInProgress}
-                              className={cn(navItemClass, itemWidthClass)}
-                            >
-                              <subItem.icon className="w-5 h-5 transition-colors duration-75 " />
-                              <span className={labelClass}>
-                                {subItem.label}
-                              </span>
-                            </button>
-                          )}
-                        </TooltipTrigger>
-                        <TooltipContent
-                          className={cn(
-                            '2xl:hidden 2xl:invisible',
-                            expanded && 'hidden'
-                          )}
-                        >
-                          {subItem.label}
-                        </TooltipContent>
-                      </Tooltip>
-                    ))}
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            ) : (
-              <Tooltip key={item.label}>
-                <TooltipTrigger asChild>
-                  {ENABLED_ROUTES.includes(item.href) ? (
-                    <NavLink
-                      href={item.href}
-                      exact={item.href === APP_ROUTES.dashboard}
-                      className={itemWidthClass}
-                      onToggle={onNavigate}
-                    >
-                      <item.icon className="w-5 h-5" />
-                      <span className={labelClass}>{item.label}</span>
-                    </NavLink>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={showWorkInProgress}
-                      className={cn(navItemClass, itemWidthClass)}
-                    >
-                      <item.icon className="w-5 h-5" />
-                      <span className={labelClass}>{item.label}</span>
-                    </button>
-                  )}
-                </TooltipTrigger>
-                <TooltipContent
-                  className={cn(
-                    '2xl:hidden 2xl:invisible',
-                    expanded && 'hidden'
-                  )}
-                >
-                  {item.label}
-                </TooltipContent>
-              </Tooltip>
-            );
-          })}
-        </nav>
+                    {item.label}
+                  </TooltipContent>
+                </Tooltip>
+              );
+            })}
+          </nav>
+        </ScrollArea>
 
-        {/* Bottom Section */}
+        {/* Bottom Section, pinned below the scrolling menu. */}
         <div
           className={cn(
-            'w-[47px] 2xl:w-full flex flex-col items-center gap-y-2',
+            'w-[47px] 2xl:w-full shrink-0 flex flex-col items-center gap-y-2',
             expanded && 'w-full'
           )}
         >
@@ -338,9 +345,6 @@ export const SidebarNav = ({
 // Desktop rail. Hidden below lg, where the drawer in the top bar takes over.
 export const Sidebar = () => (
   <div className="invisible hidden lg:block lg:visible lg:w-fit 2xl:w-[260px] lg:h-screen lg:pl-6 lg:py-6 lg:pr-1 transition-all duration-300">
-    <ScrollArea className="flex-1 w-full h-full flex justify-center [&>div>div]:w-full">
-      <SidebarNav />
-      <ScrollBar orientation="vertical" />
-    </ScrollArea>
+    <SidebarNav />
   </div>
 );

@@ -17,7 +17,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { SidebarNav } from '@/pattern/common/templates/sidebar';
 import { ProfileSheet } from './profile-sheet';
 
@@ -115,9 +114,7 @@ export const DashboardTopBar = ({ title }: DashboardTopBarProps) => {
             {/* Required for the dialog's accessible name; the rail shows the
                 brand logo instead, so it stays visually hidden here. */}
             <SheetTitle className="sr-only">Navigation</SheetTitle>
-            <ScrollArea className="h-full w-full [&>div>div]:h-full [&>div>div]:w-full">
-              <SidebarNav expanded onNavigate={() => setShowNav(false)} />
-            </ScrollArea>
+            <SidebarNav expanded onNavigate={() => setShowNav(false)} />
           </SheetContent>
         </Sheet>
 
