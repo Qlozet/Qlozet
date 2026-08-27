@@ -46,6 +46,33 @@ export interface VendorComplaint {
   [key: string]: unknown;
 }
 
+/** The `{ chartType, title, series }` bundle GET /admin/businesses/:id/chart returns. */
+export interface VendorChart {
+  summary?: {
+    totalOrders?: number;
+    totalOrdersChange?: string;
+    totalEarnings?: number;
+    totalEarningsChange?: string;
+    averageOrdersPerDay?: number;
+    averageOrdersChange?: string;
+    totalReturns?: number;
+    totalReturnsChange?: string;
+  };
+  charts?: Record<
+    string,
+    {
+      chartType?: string;
+      title?: string;
+      series?: {
+        key?: string;
+        name?: string;
+        color?: string;
+        data?: { label: string; value: number }[];
+      }[];
+    }
+  >;
+}
+
 export interface VendorTableParams {
   businessId: string;
   page?: number;
@@ -56,6 +83,32 @@ export interface VendorTableParams {
 
 export const vendorDetailsApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
+    // Vendor wallet ledger (Activity Log table).
+    //
+    // /transactions/vendor cannot serve this: it derives the business from the
+    // caller's own token, so an admin calling it dereferenced an absent
+    // business and got a 500. This route takes the id in the path.
+    getVendorTransactions: builder.query<
+      ApiResponse<PaginatedData<VendorActivity>>,
+      VendorTableParams
+    >({
+      query: ({ businessId, ...params }) => ({
+        url: `/admin/businesses/${businessId}/transactions${buildQueryString(params)}`,
+        method: 'GET',
+      }),
+      providesTags: ['Transactions'],
+    }),
+
+    // Vendor charts — the same bundle the vendor app reads at /orders/chart,
+    // scoped to the business in the path rather than the caller's token.
+    getVendorChart: builder.query<ApiResponse<VendorChart>, string>({
+      query: (businessId) => ({
+        url: `/admin/businesses/${businessId}/chart`,
+        method: 'GET',
+      }),
+      providesTags: ['VendorDashboard'],
+    }),
+
     // Products belonging to a vendor (Top Products table)
     //
     // NOT /products/by-vendor: that endpoint takes no business id at all (its
@@ -146,4 +199,6 @@ export const {
   useGetVendorProductsQuery,
   useGetVendorActivityLogQuery,
   useGetVendorComplaintsQuery,
+  useGetVendorTransactionsQuery,
+  useGetVendorChartQuery,
 } = vendorDetailsApiSlice;

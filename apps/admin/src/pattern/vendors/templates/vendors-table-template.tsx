@@ -2,6 +2,7 @@
 
 import type { PaginationState, OnChangeFn } from '@tanstack/react-table';
 import type { Business } from '@/redux/services/businesses/businesses.api-slice';
+import { VendorSearchInput } from '../molecules/vendor-search-input';
 import { VendorStatusFilter } from '../molecules/vendor-status-filter';
 import { VendorsTable } from '../organisms/vendors-table';
 
@@ -17,6 +18,11 @@ interface VendorsTableTemplateProps {
   pagination: PaginationState;
   setPagination: OnChangeFn<PaginationState>;
   pageCount: number;
+  totalRows?: number;
+  search: string;
+  onSearchChange: (search: string) => void;
+  revenueSort?: 'asc' | 'desc';
+  onToggleRevenueSort: () => void;
 }
 
 export const VendorsTableTemplate = ({
@@ -31,6 +37,11 @@ export const VendorsTableTemplate = ({
   pagination,
   setPagination,
   pageCount,
+  totalRows,
+  search,
+  onSearchChange,
+  revenueSort,
+  onToggleRevenueSort,
 }: VendorsTableTemplateProps) => {
   return (
     <div className="space-y-4">
@@ -38,7 +49,10 @@ export const VendorsTableTemplate = ({
         <h2 className="text-xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white">
           Vendors
         </h2>
-        <VendorStatusFilter value={status} onChange={onStatusChange} />
+        <div className="flex items-center gap-3">
+          <VendorSearchInput value={search} onChange={onSearchChange} />
+          <VendorStatusFilter value={status} onChange={onStatusChange} />
+        </div>
       </div>
 
       <VendorsTable
@@ -51,6 +65,9 @@ export const VendorsTableTemplate = ({
         pagination={pagination}
         setPagination={setPagination}
         pageCount={pageCount}
+        totalRows={totalRows}
+        revenueSort={revenueSort}
+        onToggleRevenueSort={onToggleRevenueSort}
       />
     </div>
   );

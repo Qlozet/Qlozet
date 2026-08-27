@@ -34,6 +34,11 @@ export interface DataTableProps<TData> {
   pagination: PaginationState;
   setPagination: OnChangeFn<PaginationState>;
   pageCount: number;
+  /**
+   * Rows across every page. Without it the footer can only count the rows it
+   * was handed, so a paginated table reports its page size as the total.
+   */
+  totalRows?: number;
   /** Rendered inside the card, above the table (e.g. a TableToolbar). */
   toolbar?: ReactNode;
   onRowClick?: (row: TData) => void;
@@ -56,6 +61,7 @@ export function DataTable<TData>({
   pagination,
   setPagination,
   pageCount,
+  totalRows,
   toolbar,
   onRowClick,
   emptyMessage = 'Nothing here yet.',
@@ -67,7 +73,7 @@ export function DataTable<TData>({
     data: data ?? defaultData,
     columns,
     pageCount,
-    rowCount: data?.length,
+    rowCount: totalRows ?? data?.length,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     state: { pagination },

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { ColumnDef } from '@tanstack/react-table';
 import {
   MoreHorizontal,
@@ -7,6 +8,9 @@ import {
   CheckCircle2,
   BadgeCheck,
   XCircle,
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,6 +27,7 @@ import {
   getVendorName,
   getVendorEmail,
   getVendorInitial,
+  getVendorLogo,
   getVendorStatus,
   formatCount,
   formatNaira,
@@ -46,6 +51,10 @@ interface VendorsTableColumnsProps {
   onApprove: (vendorId: string) => void;
   onVerify: (vendorId: string) => void;
   onReject: (vendorId: string) => void;
+  /** Current revenue sort, or undefined when the table is in its default order. */
+  revenueSort?: 'asc' | 'desc';
+  /** Cycles desc -> asc -> off. */
+  onToggleRevenueSort: () => void;
 }
 
 export const createVendorsTableColumns = ({
@@ -53,20 +62,37 @@ export const createVendorsTableColumns = ({
   onApprove,
   onVerify,
   onReject,
+  revenueSort,
+  onToggleRevenueSort,
 }: VendorsTableColumnsProps): ColumnDef<Business>[] => [
   {
     id: 'name',
     header: "Vendor's name",
     cell: ({ row }) => {
       const vendor = row.original;
+      const name = getVendorName(vendor);
+      const logo = getVendorLogo(vendor);
+
       return (
         <div className="flex items-center gap-3">
-          <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-            {getVendorInitial(vendor)}
+          {/* The logo when the vendor has uploaded one; the initial is the
+              fallback, not the default. `unoptimized` because these are
+              arbitrary Cloudinary URLs the image config does not whitelist. */}
+          <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-xs font-semibold text-primary">
+            {logo ? (
+              <Image
+                src={logo}
+                alt={name}
+                fill
+                sizes="32px"
+                className="object-cover"
+                unoptimized
+              />
+            ) : (
+              getVendorInitial(vendor)
+            )}
           </span>
-          <span className="text-sm font-medium text-gray-900">
-            {getVendorName(vendor)}
-          </span>
+          <span className="text-sm font-medium text-gray-900">{name}</span>
         </div>
       );
     },
@@ -114,7 +140,29 @@ export const createVendorsTableColumns = ({
   },
   {
     id: 'revenue',
-    header: 'Revenue',
+    // Sorted server-side: revenue is a computed column, so the page being shown
+    // is not enough to order the whole table by it.
+    header: () => (
+      <button
+        type="button"
+        onClick={onToggleRevenueSort}
+        className="flex items-center gap-1 text-inherit transition-colors hover:text-foreground"
+        aria-label={
+          revenueSort
+            ? `Revenue, sorted ${revenueSort === 'asc' ? 'ascending' : 'descending'}`
+            : 'Sort by revenue'
+        }
+      >
+        Revenue
+        {revenueSort === 'asc' ? (
+          <ArrowUp className="size-3.5" />
+        ) : revenueSort === 'desc' ? (
+          <ArrowDown className="size-3.5" />
+        ) : (
+          <ArrowUpDown className="size-3.5 opacity-40" />
+        )}
+      </button>
+    ),
     cell: ({ row }) => (
       <div className="text-sm text-gray-600">
         {formatNaira(row.original.total_revenue)}
