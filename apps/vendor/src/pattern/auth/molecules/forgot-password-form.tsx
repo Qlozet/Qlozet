@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { AUTH_ROUTES } from '@/lib/routes';
 import { useRouter } from 'next/navigation';
 import useCreateSearchQuery from '@/lib/hooks/useCreateSearchQuery';
+import { readApiError } from '@/redux/services/types';
 
 const forgotPasswordSchema = z.object({
   businessEmail: z
@@ -51,9 +52,10 @@ export const ForgotPasswordForm = () => {
         });
       })
       .catch((error) => {
-        const errorMessage =
-          error?.data?.message ||
-          'Failed to send reset code. Please try again.';
+        const errorMessage = readApiError(
+          error,
+          'Failed to send reset code. Please try again.'
+        );
         toast.error(errorMessage);
       });
   };

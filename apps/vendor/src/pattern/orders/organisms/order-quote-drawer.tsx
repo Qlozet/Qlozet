@@ -54,6 +54,7 @@ import { OrderAccessoriesCard } from '../molecules/order-accessories-card';
 import { OverlayScroll } from '@/components/OverlayScroll';
 import { OrderEarningsCard } from '../molecules/order-earnings-card';
 import { VendorGuidelinesCard } from '../molecules/vendor-guidelines-card';
+import { readApiError } from '@/redux/services/types';
 
 interface OrderQuoteDrawerProps {
   order: Order;
@@ -204,15 +205,6 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
     vendor_notes: notes || undefined,
   });
 
-  // Pull the backend's real validation message out of an RTK Query error so the
-  // vendor sees *what* was wrong instead of a generic "please try again".
-  const apiError = (err: unknown, fallback: string): string => {
-    const msg = (err as { data?: { message?: unknown } })?.data?.message;
-    if (Array.isArray(msg) && msg.length) return String(msg[0]);
-    if (typeof msg === 'string' && msg) return msg;
-    return fallback;
-  };
-
   // Everything the backend requires to *submit* (not just save a draft).
   const validateForSubmit = (): string | null => {
     if (total <= 0) return 'Add at least one price before submitting.';
@@ -228,7 +220,9 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
       await saveDraft({ id: quoteId, data: payload() }).unwrap();
       toast.success('Quote saved as draft');
     } catch (err) {
-      toast.error(apiError(err, 'Could not save the quote. Please try again.'));
+      toast.error(
+        readApiError(err, 'Could not save the quote. Please try again.')
+      );
     }
   };
 
@@ -247,7 +241,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
       // a stale, editable, zeroed quote in cache.)
     } catch (err) {
       toast.error(
-        apiError(err, 'Could not submit the quote. Please try again.')
+        readApiError(err, 'Could not submit the quote. Please try again.')
       );
     }
   };

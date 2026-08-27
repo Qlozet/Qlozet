@@ -10,6 +10,7 @@ import { useResetPasswordMutation } from '@/redux/services/auth/auth.api-slice';
 import { toast } from 'sonner';
 import { AUTH_ROUTES } from '@/lib/routes';
 import { AuthFormCard } from '../molecules/auth-form-card';
+import { readApiError } from '@/redux/services/types';
 
 export const ResetPasswordTemplate = () => {
   const { push } = useRouter();
@@ -46,8 +47,10 @@ export const ResetPasswordTemplate = () => {
         push(AUTH_ROUTES.signIn);
       })
       .catch((error) => {
-        const errorMessage =
-          error?.data?.message || 'Failed to reset password. Please try again.';
+        const errorMessage = readApiError(
+          error,
+          'Failed to reset password. Please try again.'
+        );
         toast.error(errorMessage);
       });
   };

@@ -32,6 +32,7 @@ import {
   type Dispute,
 } from '@/redux/services/disputes/disputes.api-slice';
 import { readDisputeRef, readDisputeReason } from '../lib/dispute-fields';
+import { readApiError } from '@/redux/services/types';
 
 const respondSchema = z.object({
   vendor_response: z
@@ -83,9 +84,10 @@ export const RespondDisputeModal = create<RespondDisputeModalProps>(
         toast.success(res?.message || 'Response submitted.');
         handleClose();
       } catch (error) {
-        const message =
-          (error as { data?: { message?: string } })?.data?.message ||
-          'Could not submit your response. Please try again.';
+        const message = readApiError(
+          error,
+          'Could not submit your response. Please try again.'
+        );
         toast.error(message);
       }
     };

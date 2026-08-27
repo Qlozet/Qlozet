@@ -29,6 +29,7 @@ import { DisputesPanel } from '../organisms/disputes-panel';
 import { QuoteRequestsTemplate } from '@/pattern/bespoke/templates/quote-requests-template';
 import { useAppSelector } from '@/redux/store';
 import { selectActiveBusiness } from '@/redux/slices/auth-slice';
+import { readPageCount } from '@/redux/services/types';
 
 const PAGE_SIZE = 7;
 
@@ -75,7 +76,7 @@ export const OrdersPageTemplate: React.FC = () => {
     [businessId]
   );
 
-  const pageCount = data?.total_pages ?? 1;
+  const pageCount = readPageCount(data, pagination.pageSize);
 
   const notReady = (label: string) => () =>
     toast.info(`${label} is coming soon.`);

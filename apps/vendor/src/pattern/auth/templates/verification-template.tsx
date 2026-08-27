@@ -20,6 +20,7 @@ import {
   useVerifyEmailMutation,
 } from '@/redux/services/auth/auth.api-slice';
 import useCreateSearchQuery from '@/lib/hooks/useCreateSearchQuery';
+import { readApiError } from '@/redux/services/types';
 
 const verificationSchema = z.object({
   verificationCode: z
@@ -110,8 +111,10 @@ export const VerificationTemplate = () => {
         start();
       })
       .catch((error: any) => {
-        const errorMessage =
-          error?.data?.message || 'Failed to resend code. Please try again.';
+        const errorMessage = readApiError(
+          error,
+          'Failed to resend code. Please try again.'
+        );
 
         toast.error(errorMessage);
       });

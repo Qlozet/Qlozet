@@ -6,6 +6,20 @@ import { cleanup } from '@testing-library/react';
 // Unmount anything mounted during a test so the DOM is clean for the next one.
 afterEach(() => {
   cleanup();
+
+  // cleanup() unmounts React trees but cannot undo what Radix writes onto
+  // <body> itself: an open Dialog/Sheet sets `pointer-events: none` (via
+  // react-remove-scroll) and aria-hidden bookkeeping there, and a suite that
+  // ends with one open leaves those behind. jsdom is shared between files in a
+  // worker, so the NEXT file inherits an inert body — every userEvent click is
+  // refused and inputs "could not be focused", with nothing in that file to
+  // explain it.
+  document.body.style.pointerEvents = '';
+  document.body.removeAttribute('aria-hidden');
+  document.body.removeAttribute('data-scroll-locked');
+  for (const node of Array.from(document.body.children)) {
+    node.removeAttribute('aria-hidden');
+  }
 });
 
 // next/image runs its URLs through the Next image optimizer, so `src` in the

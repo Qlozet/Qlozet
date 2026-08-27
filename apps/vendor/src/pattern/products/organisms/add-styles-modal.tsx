@@ -31,6 +31,7 @@ import {
   useCreateVendorStyleMutation,
   useGenerateStyleImageMutation,
 } from '@/redux/services/style-library/style-library.api-slice';
+import { readApiError } from '@/redux/services/types';
 
 export interface CreatedStyle {
   id?: string;
@@ -153,7 +154,7 @@ export const AddStylesModal = NiceModal.create(() => {
       setImageUrl(res.url);
       toast.success(res.message);
     } catch (err: any) {
-      toast.error(err?.data?.message || 'Failed to generate AI image');
+      toast.error(readApiError(err, 'Failed to generate AI image'));
     }
   };
 
@@ -195,7 +196,7 @@ export const AddStylesModal = NiceModal.create(() => {
       modal.remove();
       toast.success('Style successfully added to your library!');
     } catch (err: any) {
-      toast.error(err?.data?.message || 'Failed to upload style.');
+      toast.error(readApiError(err, 'Failed to upload style.'));
     }
   };
 

@@ -26,6 +26,7 @@ import {
   useLinkPayoutAccountMutation,
   type Bank,
 } from '@/redux/services/wallet/wallet.api-slice';
+import { readApiError } from '@/redux/services/types';
 
 // ─── Searchable bank picker ──────────────────────────────────────────────────
 const BankPicker: React.FC<{
@@ -150,8 +151,10 @@ export const PayoutContent: React.FC = () => {
       } catch (err: any) {
         if (!cancelled)
           setResolveError(
-            err?.data?.message ||
+            readApiError(
+              err,
               'Could not verify that account. Check the number and bank.'
+            )
           );
       }
     })();
@@ -180,7 +183,7 @@ export const PayoutContent: React.FC = () => {
       setAccountNumber('');
       setResolvedName(null);
     } catch (err: any) {
-      toast.error(err?.data?.message || 'Failed to link payout account');
+      toast.error(readApiError(err, 'Failed to link payout account'));
     }
   };
 

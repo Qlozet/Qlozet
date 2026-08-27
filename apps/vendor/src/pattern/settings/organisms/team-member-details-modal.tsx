@@ -38,6 +38,7 @@ import {
   useGetVendorRolesQuery,
   useUpdateTeamMemberMutation,
 } from '@/redux/services/users/users.api-slice';
+import { readApiError } from '@/redux/services/types';
 
 export interface TeamMemberDetails {
   _id: string;
@@ -106,7 +107,7 @@ export const TeamMemberDetailsModal = create<{ member: TeamMemberDetails }>(
         toast.success('Team member updated');
         close();
       } catch (error: any) {
-        toast.error(error?.data?.message || 'Failed to update team member');
+        toast.error(readApiError(error, 'Failed to update team member'));
       }
     };
 

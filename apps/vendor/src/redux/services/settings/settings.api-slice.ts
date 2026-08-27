@@ -4,8 +4,6 @@
 import type {
   CompanyDetailsData,
   BillingInvoiceData,
-  WarehouseData,
-  UserPermissionData,
   OrderSettingsData,
 } from '@/lib/validations/settings';
 import { baseAPI } from '@/redux/api/base-api';
@@ -138,26 +136,6 @@ export interface UpdateUserProfilePayload {
   dob?: string;
 }
 
-interface WarehouseResponse {
-  id: string;
-  name: string;
-  address: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-  isDefault: boolean;
-}
-
-interface UserResponse {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  permissions: string[];
-  isActive: boolean;
-}
-
 // API Slice
 export const settingsApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
@@ -231,14 +209,16 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // ─── Legacy: Company Details ───
-    getVendorDetails: builder.query<ApiResponse<VendorDetailsResponse>, void>({
-      query: () => ({
-        url: '/vendor/settings/vendor-details',
-        method: 'GET',
-      }),
-      providesTags: ['VendorDetails'],
-    }),
-
+    //
+    // getVendorDetails is gone: /vendor/settings/vendor-details does not exist
+    // and nothing read it. updateVendorDetails stays only because the Shop
+    // details tab still calls it — see the note at the foot of this file.
+    // FIXME(api): PUT /vendor/settings does not exist either — the Shop details
+    // tab has been posting into a 404. The real writes are PATCH
+    // /business/profile and PATCH /business/address, which the Profile tab
+    // already uses (updateBusinessProfileDetails / updateBusinessProfile
+    // above). Left wired rather than silently deleted, because the tab is a
+    // live screen and rerouting it changes which fields it may send.
     updateVendorDetails: builder.mutation<
       ApiResponse<VendorDetailsResponse>,
       CompanyDetailsData
@@ -264,87 +244,18 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // NOTE: the real warehouse endpoints live in business.api-slice
-    // (getBusinessWarehouses / create / update / delete / activate). They were
-    // duplicated here, which collided on the endpoint names.
+    // (getBusinessWarehouses / getBusinessWarehouse / create / update / delete /
+    // activate), against /business/warehouse. The six that used to sit here —
+    // getWarehouses, getWarehouse, createWarehouse, addWarehouse,
+    // updateWarehouse, deleteWarehouse — were duplicates pointed at
+    // /vendor/warehouses, a path with no controller behind it, and none of them
+    // had a consumer. Their WarehouseResponse described a record the backend
+    // has never sent: city, state, zipCode, country and isDefault are not on
+    // the Warehouse schema, which carries address, contact_* and status.
 
-    // Legacy (fictional paths — kept only because older components import them)
-    getWarehouses: builder.query<ApiResponse<WarehouseResponse[]>, void>({
-      query: () => '/vendor/warehouses',
-      providesTags: ['Warehouse'],
-    }),
-
-    getWarehouse: builder.query<any, void>({
-      query: () => '/vendor/warehouse',
-      providesTags: ['Warehouse'],
-    }),
-
-    createWarehouse: builder.mutation<
-      ApiResponse<WarehouseResponse>,
-      WarehouseData
-    >({
-      query: (data) => ({
-        url: '/vendor/warehouses',
-        method: 'POST',
-        body: data,
-      }),
-      invalidatesTags: ['Warehouse'],
-    }),
-
-    addWarehouse: builder.mutation<any, any>({
-      query: (data) => ({
-        url: '/vendor/warehouse/add',
-        method: 'POST',
-        body: data,
-      }),
-      invalidatesTags: ['Warehouse'],
-    }),
-
-    updateWarehouse: builder.mutation<
-      ApiResponse<WarehouseResponse>,
-      { id: string; data: WarehouseData }
-    >({
-      query: ({ id, data }) => ({
-        url: `/vendor/warehouses/${id}`,
-        method: 'PUT',
-        body: data,
-      }),
-      invalidatesTags: ['Warehouse'],
-    }),
-
-    deleteWarehouse: builder.mutation<ApiResponse<null>, string>({
-      query: (id) => ({ url: `/vendor/warehouses/${id}`, method: 'DELETE' }),
-      invalidatesTags: ['Warehouse'],
-    }),
-
-    // Users and Permissions
-    getUsers: builder.query<ApiResponse<UserResponse[]>, void>({
-      query: () => '/vendor/users',
-      providesTags: ['User'],
-    }),
-
-    createUser: builder.mutation<ApiResponse<UserResponse>, UserPermissionData>(
-      {
-        query: (data) => ({ url: '/vendor/users', method: 'POST', body: data }),
-        invalidatesTags: ['User'],
-      }
-    ),
-
-    updateUser: builder.mutation<
-      ApiResponse<UserResponse>,
-      { id: string; data: UserPermissionData }
-    >({
-      query: ({ id, data }) => ({
-        url: `/vendor/users/${id}`,
-        method: 'PUT',
-        body: data,
-      }),
-      invalidatesTags: ['User'],
-    }),
-
-    deleteUser: builder.mutation<ApiResponse<null>, string>({
-      query: (id) => ({ url: `/vendor/users/${id}`, method: 'DELETE' }),
-      invalidatesTags: ['User'],
-    }),
+    // NOTE: team members live in users.api-slice. The getUsers / createUser /
+    // updateUser / deleteUser pair-set that used to sit here spoke to
+    // /vendor/users, which does not exist, and nothing imported them.
 
     // NOTE: categories live in products.api-slice (`getCategories`). The
     // `/vendor/categories` endpoints that used to sit here didn't exist on the
@@ -358,6 +269,12 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
     // backend and always 404'd.
 
     // Verify vendor account
+    //
+    // FIXME(api): /vendor/verify/{userid} does not exist. The backend verifies
+    // by TOKEN, not by user id — POST /auth/verify-email with { token } — so
+    // /verify/[userid] cannot be made to work by correcting the path alone; the
+    // link the email sends has to carry a token and the page has to read it.
+    // Until then this always lands in the catch and shows "An error occurred".
     verifyVendorAccount: builder.query<ApiResponse<any>, string>({
       query: (userid) => `/vendor/verify/${userid}`,
     }),
@@ -371,18 +288,7 @@ export const {
   useUpdateBusinessProfileDetailsMutation,
   useGetUserProfileQuery,
   useUpdateUserProfileMutation,
-  useGetVendorDetailsQuery,
   useUpdateVendorDetailsMutation,
-  useGetWarehousesQuery,
-  useGetWarehouseQuery,
-  useCreateWarehouseMutation,
-  useAddWarehouseMutation,
-  useUpdateWarehouseMutation,
-  useDeleteWarehouseMutation,
-  useGetUsersQuery,
-  useCreateUserMutation,
-  useUpdateUserMutation,
-  useDeleteUserMutation,
   useLazyVerifyVendorAccountQuery,
   useUpdateBusinessSettingsMutation,
 } = settingsApiSlice;

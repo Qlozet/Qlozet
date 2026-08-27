@@ -30,6 +30,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { BoldBoxRemoveIcon } from '@/pattern/common/atoms/bold-box-remove-icon';
 import { Pagination } from '@/pattern/common/organisms/table/pagination';
+import { readApiError } from '@/redux/services/types';
 
 export interface DataTableProps<TData> {
   columns: ColumnDef<TData, any>[];
@@ -95,9 +96,7 @@ export function DataTable<TData>({
     ...(totalCount !== undefined ? { rowCount: totalCount } : {}),
   });
 
-  const errorMessage =
-    (error as { data?: { message?: string } })?.data?.message ??
-    'Something went wrong';
+  const errorMessage = readApiError(error, 'Something went wrong');
 
   const rows = table.getRowModel().rows;
   const showLoader = isLoading || isFetching;

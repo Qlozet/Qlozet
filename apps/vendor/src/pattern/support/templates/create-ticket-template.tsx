@@ -16,6 +16,7 @@ import {
 } from '@/redux/services/tickets/tickets.api-slice';
 import { SupportForm } from '../molecules/support-form';
 import { SupportSuccess } from '../organisms/support-success';
+import { readApiError } from '@/redux/services/types';
 
 export const CreateTicketTemplate: React.FC = () => {
   const router = useRouter();
@@ -38,9 +39,10 @@ export const CreateTicketTemplate: React.FC = () => {
       setSubmitted(true);
       return true;
     } catch (error) {
-      const message =
-        (error as { data?: { message?: string } })?.data?.message ??
-        'Could not submit your request. Please try again.';
+      const message = readApiError(
+        error,
+        'Could not submit your request. Please try again.'
+      );
       toast.error(message);
       return false;
     }

@@ -17,6 +17,7 @@ import {
   type Warehouse as BusinessWarehouse,
 } from '@/redux/services/business/business.api-slice';
 import { AddWarehouseModal } from './add-warehouse-modal';
+import { readApiError } from '@/redux/services/types';
 
 const text = (value: unknown): string =>
   typeof value === 'string' && value.trim() ? value.trim() : '—';
@@ -49,7 +50,9 @@ export const WarehouseContent: React.FC = () => {
         contactName: text(item.contact_name),
         phoneNumber: text(item.contact_phone),
         email: text(item.contact_email),
-        status: item.is_active ? 'default' : 'alternate',
+        // The record carries `status`, not `is_active`. It defaults to
+        // 'active' server-side, so an absent value is active, not inactive.
+        status: item.status === 'inactive' ? 'alternate' : 'default',
       })),
     [warehouseData, business?.business_name]
   );
@@ -67,7 +70,7 @@ export const WarehouseContent: React.FC = () => {
       await deleteWarehouse(warehouseId).unwrap();
       toast.success('Warehouse deleted');
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to delete warehouse');
+      toast.error(readApiError(error, 'Failed to delete warehouse'));
     }
   };
 
@@ -76,7 +79,7 @@ export const WarehouseContent: React.FC = () => {
       await activateWarehouse(warehouseId).unwrap();
       toast.success('Default warehouse updated');
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to set default warehouse');
+      toast.error(readApiError(error, 'Failed to set default warehouse'));
     }
   };
 

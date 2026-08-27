@@ -24,6 +24,7 @@ import {
   FilterMenu,
   type FilterOption,
 } from '@/pattern/common/molecules/filter-menu';
+import { readApiError } from '@/redux/services/types';
 
 const UNIT_OPTIONS: FilterOption[] = [
   { value: 'all', label: 'All Units' },
@@ -113,9 +114,7 @@ const SizeGuidesTableTemplate = () => {
         is_active ? 'Size guide activated.' : 'Size guide deactivated.'
       );
     } catch (err) {
-      toast.error(
-        (err as any)?.data?.message || 'Could not update size guide.'
-      );
+      toast.error(readApiError(err, 'Could not update size guide.'));
     }
   };
 
@@ -134,7 +133,7 @@ const SizeGuidesTableTemplate = () => {
         .unwrap()
         .then(() => toast.success('Size guide deleted successfully.'))
         .catch((err) =>
-          toast.error(err?.data?.message || 'Failed to delete size guide.')
+          toast.error(readApiError(err, 'Failed to delete size guide.'))
         );
     });
   };
@@ -152,7 +151,7 @@ const SizeGuidesTableTemplate = () => {
           'Size guide applied to matching products.'
       );
     } catch (err) {
-      toast.error((err as any)?.data?.message || 'Failed to apply size guide.');
+      toast.error(readApiError(err, 'Failed to apply size guide.'));
     }
   };
 

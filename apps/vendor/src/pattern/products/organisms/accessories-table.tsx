@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils';
 import { BoldBoxRemoveIcon } from '@/pattern/common/atoms/bold-box-remove-icon';
 import { AccessoriesTableColumns } from '../molecules/accessories-table-column';
 import { Skeleton } from '@/components/ui/skeleton';
+import { readApiError } from '@/redux/services/types';
 
 interface IClothingTableProps {
   data: Product[];
@@ -243,7 +244,7 @@ export const AccessoriesTable = ({
                       Error loading accesories
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {error?.data?.message || 'Something went wrong'}
+                      {readApiError(error, 'Something went wrong')}
                     </p>
                   </div>
                 </TableCell>

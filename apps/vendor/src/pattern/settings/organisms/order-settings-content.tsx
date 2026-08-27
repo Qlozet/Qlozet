@@ -28,6 +28,7 @@ import {
 } from '@/redux/services/settings/settings.api-slice';
 import type { OrderSettingsData } from '@/lib/validations/settings';
 import Loader from '@/components/Loader';
+import { readApiError } from '@/redux/services/types';
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface ToggleSettingItem {
@@ -319,7 +320,7 @@ export const OrderSettingsContent = () => {
       toast.success('Order settings saved successfully');
       setHasChanges(false);
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to save settings');
+      toast.error(readApiError(error, 'Failed to save settings'));
     }
   };
 
@@ -334,7 +335,7 @@ export const OrderSettingsContent = () => {
       );
     } catch (error: any) {
       setAcceptsExternalFabric(!value); // revert on error
-      toast.error(error?.data?.message || 'Failed to update setting');
+      toast.error(readApiError(error, 'Failed to update setting'));
     }
   };
 

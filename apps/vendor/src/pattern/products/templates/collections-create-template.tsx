@@ -54,6 +54,7 @@ import {
   STATIC_VALUE_OPTIONS,
   FREE_TEXT_FIELDS,
 } from '../lib/collection-condition-options';
+import { readApiError } from '@/redux/services/types';
 
 const conditionSchema = z.object({
   field: z.string().min(1, 'Select a field'),
@@ -231,9 +232,10 @@ export const CollectionsCreateTemplate = () => {
       }
       router.push(APP_ROUTES.productsCollections);
     } catch (err) {
-      const message =
-        (err as { data?: { message?: string } })?.data?.message ||
-        `Could not ${isEditing ? 'update' : 'create'} the collection. Please try again.`;
+      const message = readApiError(
+        err,
+        `Could not ${isEditing ? 'update' : 'create'} the collection. Please try again.`
+      );
       toast.error(message);
     }
   };

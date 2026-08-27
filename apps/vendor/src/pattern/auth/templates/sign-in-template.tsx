@@ -27,6 +27,7 @@ import { useAppDispatch } from '@/redux/store';
 import { setCredentials, setActiveBusiness } from '@/redux/slices/auth-slice';
 import { BusinessPicker } from '../organisms/business-picker';
 import { baseAPI } from '@/redux/api/base-api';
+import { readApiError } from '@/redux/services/types';
 
 export const SignInTemplate = () => {
   const { push } = useRouter();
@@ -112,7 +113,7 @@ export const SignInTemplate = () => {
     } catch (err: any) {
       const errorMessage = PAGES_IN_PROGRESS
         ? 'Something went wrong'
-        : err?.data?.message || 'Sign in failed. Please try again.';
+        : readApiError(err, 'Sign in failed. Please try again.');
       toast.error(errorMessage);
     }
   };
@@ -140,7 +141,7 @@ export const SignInTemplate = () => {
       setShowBusinessPicker(false);
       goToDashboard();
     } catch (err: any) {
-      toast.error(err?.data?.message || 'Failed to switch business');
+      toast.error(readApiError(err, 'Failed to switch business'));
     } finally {
       setSwitchingId(null);
     }

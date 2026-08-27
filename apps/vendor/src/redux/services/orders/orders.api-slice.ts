@@ -510,14 +510,40 @@ export function getIncomingFabricTransfers(
   );
 }
 
+/**
+ * One of this vendor's most-ordered products, from GET /orders/dashboard.
+ *
+ * `name` is resolved server-side from the product's kind subdocument
+ * (clothing/accessory/fabric) — a product carries no top-level name — and is
+ * null when the product carries none under its kind either.
+ */
+export interface MostPurchasedProduct {
+  product_id: string;
+  totalOrdered: number;
+  name?: string | null;
+}
+
+/**
+ * GET /orders/dashboard.
+ *
+ * snake_case throughout, like the rest of this backend. Every key below is one
+ * the endpoint actually sends — `total_sales` and `recent_activity` used to be
+ * declared here and never arrived, which is how a card reading them renders a
+ * permanent zero with nothing to explain it.
+ */
 export interface DashboardMetricsResponse {
   message?: string;
   data: {
     total_orders: number;
     orders_delivered: number;
     orders_in_transit: number;
-    total_sales?: number;
-    recent_activity?: any[];
+    /** Naira paid on this vendor's orders, before refunds and commission. */
+    gross_sales: number;
+    total_products: number;
+    /** Distinct buyers, not orders — five orders from one person is one. */
+    total_customers: number;
+    /** Top five by quantity ordered, highest first. */
+    must_purchase_products?: MostPurchasedProduct[];
   };
 }
 

@@ -22,6 +22,32 @@ import type {
 } from '@/redux/services/settings/settings.api-slice';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
+import { readApiError } from '@/redux/services/types';
+
+/**
+ * Only the fields this save actually changed.
+ *
+ * The form seeds every input from the record with `|| ''`, so a field the
+ * business has never set arrives blank and, untouched, submits blank. Sending
+ * the whole object would write that blank back as an explicit empty string, and
+ * would overwrite anything changed on the record — by an admin, or in another
+ * tab — between the load and the save. Comparing against the loaded value,
+ * normalised the same way the form normalised it, keeps a save to what the
+ * person in front of it actually edited.
+ */
+const changedFields = <T extends object>(
+  next: T,
+  current: Record<string, unknown>
+): Partial<T> => {
+  const patch: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(next)) {
+    // The form has no input for this one; absent is not the same as cleared.
+    if (value === undefined) continue;
+    if ((value ?? '') === (current[key] ?? '')) continue;
+    patch[key] = value;
+  }
+  return patch as Partial<T>;
+};
 
 interface ProfileContentProps {
   shopDetails?: any; // kept for backward compat, but no longer used
@@ -125,51 +151,94 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
 
   const handleOrganizationSubmit = async (formData: any) => {
     try {
-      // Address fields go to PATCH /business/address
-      const addressPayload: UpdateBusinessProfilePayload = {
-        address: formData.address,
-        country: formData.country,
-        state: formData.state,
-        city: formData.city,
-        zip_code: formData.zipCode || '',
-        latitude: formData.latitude,
-        longitude: formData.longitude,
-      };
+      // Address fields go to PATCH /business/address, the rest to
+      // PATCH /business/profile. Both are diffed against the loaded record —
+      // see changedFields.
+      const addressPatch = changedFields<UpdateBusinessProfilePayload>(
+        {
+          address: formData.address,
+          country: formData.country,
+          state: formData.state,
+          city: formData.city,
+          zip_code: formData.zipCode,
+          latitude: formData.latitude,
+          longitude: formData.longitude,
+        },
+        {
+          address: businessData?.business_address,
+          country: businessData?.country,
+          state: businessData?.state,
+          city: businessData?.city,
+          zip_code: businessData?.zip_code,
+        }
+      );
 
-      // Other fields go to PATCH /business/profile
-      const detailsPayload: UpdateBusinessProfileDetailsPayload = {
-        business_name: formData.businessName,
-        business_email: formData.email,
-        business_phone_number: formData.phoneNumber,
-        website: formData.website,
-        description: formData.about,
-        year_founded: formData.yearFounded,
-        nin: formData.nin,
-        bvn: formData.bvn,
-      };
+      const detailsPatch = changedFields<UpdateBusinessProfileDetailsPayload>(
+        {
+          business_name: formData.businessName,
+          business_email: formData.email,
+          business_phone_number: formData.phoneNumber,
+          website: formData.website,
+          description: formData.about,
+          year_founded: formData.yearFounded,
+          nin: formData.nin,
+          bvn: formData.bvn,
+        },
+        {
+          business_name: businessData?.business_name,
+          business_email: businessData?.business_email,
+          business_phone_number: businessData?.business_phone_number,
+          website: businessData?.website,
+          description: businessData?.description,
+          year_founded: businessData?.year_founded,
+          nin: businessData?.nin,
+          bvn: businessData?.bvn,
+        }
+      );
 
-      await Promise.all([
-        updateBusiness(addressPayload).unwrap(),
-        updateBusinessDetails(detailsPayload).unwrap(),
-      ]);
+      const requests = [
+        ...(Object.keys(addressPatch).length
+          ? [updateBusiness(addressPatch).unwrap()]
+          : []),
+        ...(Object.keys(detailsPatch).length
+          ? [updateBusinessDetails(detailsPatch).unwrap()]
+          : []),
+      ];
+
+      if (!requests.length) {
+        toast.info('No changes to save');
+        return;
+      }
+
+      await Promise.all(requests);
       toast.success('Organization profile updated successfully');
     } catch (error: any) {
-      toast.error(
-        error?.data?.message || 'Failed to update organization profile'
-      );
+      toast.error(readApiError(error, 'Failed to update organization profile'));
     }
   };
 
   const handleUserProfileSubmit = async (formData: any) => {
     try {
-      const payload: UpdateUserProfilePayload = {
-        phone_number: formData.phoneNumber,
-        username: formData.username,
-      };
-      await updateUser(payload).unwrap();
+      const patch = changedFields<UpdateUserProfilePayload>(
+        {
+          phone_number: formData.phoneNumber,
+          username: formData.username,
+        },
+        {
+          phone_number: userData?.phone_number,
+          username: userData?.username,
+        }
+      );
+
+      if (!Object.keys(patch).length) {
+        toast.info('No changes to save');
+        return;
+      }
+
+      await updateUser(patch).unwrap();
       toast.success('User profile updated successfully');
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to update user profile');
+      toast.error(readApiError(error, 'Failed to update user profile'));
     }
   };
 

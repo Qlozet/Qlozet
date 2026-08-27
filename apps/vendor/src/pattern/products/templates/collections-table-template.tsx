@@ -24,6 +24,7 @@ import {
   FilterMenu,
   type FilterOption,
 } from '@/pattern/common/molecules/filter-menu';
+import { readApiError } from '@/redux/services/types';
 
 const COLLECTION_OPTIONS: FilterOption[] = [
   { value: 'all', label: 'All Collections' },
@@ -111,9 +112,10 @@ const CollectionsTableTemplate = ({
         is_active ? 'Collection activated.' : 'Collection deactivated.'
       );
     } catch (err) {
-      const message =
-        (err as { data?: { message?: string } })?.data?.message ||
-        'Could not update the collection. Please try again.';
+      const message = readApiError(
+        err,
+        'Could not update the collection. Please try again.'
+      );
       toast.error(message);
     }
   };
@@ -135,7 +137,7 @@ const CollectionsTableTemplate = ({
         .unwrap()
         .then(() => toast.success('Collection deleted successfully.'))
         .catch((err) => {
-          toast.error(err?.data?.message || 'Failed to delete collection.');
+          toast.error(readApiError(err, 'Failed to delete collection.'));
         });
     });
   };

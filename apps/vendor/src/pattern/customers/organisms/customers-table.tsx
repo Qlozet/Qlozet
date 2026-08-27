@@ -27,6 +27,7 @@ import {
   createCustomersTableColumns,
   type CustomersTableActions,
 } from '../molecules/customers-table-columns';
+import { readApiError } from '@/redux/services/types';
 
 interface CustomersTableProps {
   data: VendorCustomer[];
@@ -75,9 +76,7 @@ export const CustomersTable = ({
   const { pageIndex, pageSize } = pagination;
   const totalRows = data?.length ?? 0;
   const rows = table.getRowModel().rows;
-  const errorMessage =
-    (error as { data?: { message?: string } })?.data?.message ??
-    'Something went wrong';
+  const errorMessage = readApiError(error, 'Something went wrong');
 
   return (
     <div>

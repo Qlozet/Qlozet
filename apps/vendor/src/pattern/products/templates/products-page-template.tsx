@@ -26,6 +26,12 @@ import {
   useGetCategoriesQuery,
   useUpdateProductMutation,
 } from '@/redux/services/products/products.api-slice';
+import {
+  readApiError,
+  readPageCount,
+  readTotalItems,
+  type PaginatedData,
+} from '@/redux/services/types';
 import { Plus, Download, Upload, FileText } from 'lucide-react';
 import Typography from '@/components/compat/Typography';
 import { toast } from 'sonner';
@@ -79,14 +85,17 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
     : productsResponse?.data?.data) ||
     productsResponse?.products ||
     []) as any[];
-  const totalPages =
-    productsResponse?.data?.total_pages ||
-    (productsResponse as any)?.totalPages ||
-    1;
-  const totalCount =
-    productsResponse?.data?.total_items ||
-    (productsResponse as any)?.totalCount ||
-    0;
+  // Some product endpoints answer with a bare array under `data`, others with
+  // the paginated envelope. Normalise to the envelope so one reader covers
+  // both — and so the totals come off `total_items` / `total_pages`, the keys
+  // the backend actually sends.
+  const paginated = (
+    Array.isArray(productsResponse?.data)
+      ? { data: products }
+      : productsResponse?.data
+  ) as PaginatedData<any> | undefined;
+  const totalCount = readTotalItems(paginated);
+  const totalPages = readPageCount(paginated, filters.size);
   const categories = categoriesResponse || [];
 
   // Handle filter changes
@@ -170,7 +179,7 @@ export const ProductsPageTemplate: React.FC<ProductsPageTemplateProps> = ({
       );
       refetchProducts();
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to update product status');
+      toast.error(readApiError(error, 'Failed to update product status'));
     }
   };
 

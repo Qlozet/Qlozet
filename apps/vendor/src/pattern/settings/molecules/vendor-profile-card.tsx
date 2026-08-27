@@ -72,6 +72,7 @@ const THEME_PRESETS = [
 import { useUploadProfileImageMutation } from '@/redux/services/uploads/uploads.api-slice';
 import { useUpdateBusinessProfileDetailsMutation } from '@/redux/services/settings/settings.api-slice';
 import { toast } from 'sonner';
+import { readApiError } from '@/redux/services/types';
 
 interface VendorProfileCardProps {
   vendorName: string;
@@ -225,7 +226,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
       toast.success('Storefront theme colour updated');
     } catch (error: any) {
       setLocalTheme(prev); // revert on failure
-      toast.error(error?.data?.message || 'Failed to update theme colour');
+      toast.error(readApiError(error, 'Failed to update theme colour'));
     } finally {
       setSavingTheme(false);
     }
@@ -262,7 +263,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
         toast.success('CAC document uploaded successfully!');
       }
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to upload image');
+      toast.error(readApiError(error, 'Failed to upload image'));
     } finally {
       setUploadingType(null);
     }
@@ -284,7 +285,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
 
       toast.success(`${label} removed`);
     } catch (error: any) {
-      toast.error(error?.data?.message || `Failed to remove ${label}`);
+      toast.error(readApiError(error, `Failed to remove ${label}`));
     } finally {
       setRemovingType(null);
     }

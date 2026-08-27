@@ -25,6 +25,7 @@ import {
   CollectionsTableColumns,
   CollectionsTableActions,
 } from '../molecules/collections-table-column';
+import { readApiError } from '@/redux/services/types';
 
 interface ICollectionsTableProps extends CollectionsTableActions {
   data: Collection[];
@@ -247,7 +248,7 @@ export const CollectionsTable = ({
                       Error loading collections
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {error?.data?.message || 'Something went wrong'}
+                      {readApiError(error, 'Something went wrong')}
                     </p>
                   </div>
                 </TableCell>

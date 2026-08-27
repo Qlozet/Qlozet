@@ -25,6 +25,11 @@ import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delet
 import { ManageStylesModal } from '@/pattern/products/organisms/manage-styles-modal';
 import { ProductsStats } from './products-stats';
 import { DonutDatum } from '@/pattern/dashboard/molecules/donut-chart';
+import {
+  readApiError,
+  readTotalItems,
+  readPageCount,
+} from '@/redux/services/types';
 
 const SALES_BY_CATEGORY_FALLBACK: DonutDatum[] = [
   { name: 'Suite', value: 30 },
@@ -113,7 +118,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
         refetch();
       })
       .catch((error) => {
-        toast.error(error?.data?.message || 'Failed to update product status');
+        toast.error(readApiError(error, 'Failed to update product status'));
         console.error('Error updating product status:', error);
       });
   };
@@ -172,16 +177,11 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     productsResponse?.products ||
     []) as any[];
   const products = rawProducts.map(transformProduct);
-  const totalProducts =
-    productsResponse?.data?.total_items ||
-    productsResponse?.totalCount ||
-    productsResponse?.total ||
-    0;
-  const totalPagesFromAPI =
-    productsResponse?.data?.total_pages ||
-    productsResponse?.totalPages ||
-    Math.ceil(totalProducts / pagination.pageSize) ||
-    1;
+  const totalProducts = readTotalItems(productsResponse?.data);
+  const totalPagesFromAPI = readPageCount(
+    productsResponse?.data,
+    pagination.pageSize
+  );
 
   useEffect(() => {
     if (productsResponse) {
@@ -240,7 +240,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
           refetch();
         })
         .catch((error) => {
-          toast.error(error?.data?.message || 'Failed to delete product');
+          toast.error(readApiError(error, 'Failed to delete product'));
           console.error('Error deleting product:', error);
         });
     });

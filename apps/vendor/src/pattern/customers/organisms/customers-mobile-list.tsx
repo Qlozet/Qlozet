@@ -21,6 +21,7 @@ import {
   type CustomerStatusVariant,
 } from '@/lib/customers';
 import type { VendorCustomer } from '@/redux/services/customers/customers.api-slice';
+import { readApiError } from '@/redux/services/types';
 
 // The accent bar is the mobile stand-in for the table's Status badge, so it
 // uses the same colours those Badge variants resolve to.
@@ -66,9 +67,7 @@ export const CustomersMobileList: React.FC<CustomersMobileListProps> = ({
   const rows = customers.slice(start, start + pageSize);
 
   const showLoader = isLoading || isFetching;
-  const errorMessage =
-    (error as { data?: { message?: string } })?.data?.message ??
-    'Something went wrong';
+  const errorMessage = readApiError(error, 'Something went wrong');
 
   const goToPage = (next: number) =>
     setPagination((prev) => ({ ...prev, pageIndex: next }));

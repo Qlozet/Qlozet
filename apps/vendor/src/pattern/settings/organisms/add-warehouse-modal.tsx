@@ -33,6 +33,7 @@ import {
   type Warehouse as BusinessWarehouse,
 } from '@/redux/services/business/business.api-slice';
 import { toast } from 'sonner';
+import { readApiError } from '@/redux/services/types';
 
 const warehouseSchema = z.object({
   name: z.string().min(1, 'Warehouse name is required'),
@@ -97,8 +98,10 @@ export const AddWarehouseModal = create<AddWarehouseModalProps>(
         remove();
       } catch (error: any) {
         toast.error(
-          error?.data?.message ||
+          readApiError(
+            error,
             `Failed to ${isEditing ? 'update' : 'add'} warehouse`
+          )
         );
       }
     };
