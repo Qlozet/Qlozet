@@ -47,6 +47,7 @@ export const baseAPI = createApi({
     'Collections',
     'Dispute',
     'Disputes',
+    'OrderMessages',
     // Notification feed + AI assistant (ported from the vendor app)
     'Notification',
     'AssistantConversations',
