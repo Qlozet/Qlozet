@@ -1,7 +1,8 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import { Pencil, Trash2, Power } from 'lucide-react';
+import { Pencil, Trash2, Power, PowerOff } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import type { Collection } from '@/redux/services/collections/collections.api-slice';
 import { formatCondition } from '../lib/collection-condition-options';
@@ -131,18 +132,36 @@ export function createCollectionsColumns(
         const c = row.original;
         return (
           <div className="flex items-center justify-end gap-1">
+            {/* The icon shows what the click DOES, not what the row is: the
+                same grey power symbol on every row meant you could not tell an
+                activate from a deactivate without hovering for the tooltip. */}
             <button
               type="button"
               onClick={() => actions.onToggleActive(c)}
-              title={c.is_active ? 'Deactivate' : 'Activate'}
-              className="rounded-md p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-100"
+              title={
+                c.is_active ? 'Deactivate collection' : 'Activate collection'
+              }
+              aria-label={
+                c.is_active ? 'Deactivate collection' : 'Activate collection'
+              }
+              className={cn(
+                'rounded-md p-2 transition-colors',
+                c.is_active
+                  ? 'text-gray-500 hover:bg-gray-100 hover:text-destructive dark:hover:bg-gray-800'
+                  : 'text-success hover:bg-success/10'
+              )}
             >
-              <Power className="size-4" />
+              {c.is_active ? (
+                <PowerOff className="size-4" />
+              ) : (
+                <Power className="size-4" />
+              )}
             </button>
             <button
               type="button"
               onClick={() => actions.onEdit(c._id)}
-              title="Edit"
+              title="Edit collection"
+              aria-label="Edit collection"
               className="rounded-md p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-100"
             >
               <Pencil className="size-4" />
@@ -150,7 +169,8 @@ export function createCollectionsColumns(
             <button
               type="button"
               onClick={() => actions.onDelete(c)}
-              title="Delete"
+              title="Delete collection"
+              aria-label="Delete collection"
               className="rounded-md p-2 text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/40"
             >
               <Trash2 className="size-4" />

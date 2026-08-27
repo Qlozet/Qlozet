@@ -2,10 +2,10 @@
 
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
+import { ProductThumbnail } from '../atoms/product-thumbnail';
 import {
   formatProductPrice,
   getProductCategory,
-  getProductImage,
   getProductName,
   getProductQuantity,
   getProductTag,
@@ -30,19 +30,7 @@ export const createVariantProductsColumns = ({
     id: 'picture',
     header: 'Picture',
     cell: ({ row }) => {
-      const img = getProductImage(row.original);
-      return (
-        <div className="h-[31px] w-[51px] overflow-hidden rounded-[8px] border border-border bg-gray-50 dark:bg-muted">
-          {img ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={img}
-              alt={getProductName(row.original)}
-              className="h-full w-full object-cover"
-            />
-          ) : null}
-        </div>
-      );
+      return <ProductThumbnail product={row.original} />;
     },
     enableSorting: false,
   },
@@ -80,7 +68,7 @@ export const createVariantProductsColumns = ({
     id: 'productType',
     header: 'Product type',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-700 dark:text-gray-200">
+      <span className="text-sm capitalize text-gray-700 dark:text-gray-200">
         {getProductType(row.original)}
       </span>
     ),

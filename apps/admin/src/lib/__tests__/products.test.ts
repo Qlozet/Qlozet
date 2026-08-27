@@ -9,11 +9,13 @@ import {
   getProductModeration,
   getProductName,
   getProductQuantity,
+  getProductImages,
   getProductStatus,
   getProductTag,
   getProductTags,
   getProductType,
   getProductVendorName,
+  getStorefrontVisibility,
 } from '../products';
 
 const product = (patch: Record<string, unknown> = {}) =>
@@ -251,5 +253,112 @@ describe('fabric rows', () => {
   it('reports remaining yardage as the stock figure', () => {
     expect(getFabricYards(FABRIC)).toBe(30);
     expect(getProductQuantity(FABRIC)).toEqual({ stock: 30, variantCount: 1 });
+  });
+});
+
+describe('getStorefrontVisibility', () => {
+  const visible = (patch: Record<string, unknown> = {}) =>
+    getStorefrontVisibility(
+      product({
+        status: 'active',
+        business: { business_name: 'Garm island', status: 'approved' },
+        ...patch,
+      })
+    );
+
+  it('passes an active listing from an approved vendor', () => {
+    expect(visible()).toEqual({ visible: true, reasons: [] });
+  });
+
+  // The API gate is three independent conditions; each has to fail on its own.
+  it('fails a listing the vendor has not published', () => {
+    const result = visible({ status: 'draft' });
+    expect(result.visible).toBe(false);
+    expect(result.reasons[0]).toContain('"draft"');
+  });
+
+  it('explains a scheduled listing as scheduled, not as a draft', () => {
+    const result = visible({
+      status: 'scheduled',
+      scheduled_activation_date: '2027-01-01T00:00:00Z',
+    });
+    expect(result.reasons[0]).toContain('scheduled to go live');
+  });
+
+  it('fails a listing the platform rejected, whatever the vendor set', () => {
+    const result = visible({ moderation: { status: 'rejected' } });
+    expect(result.visible).toBe(false);
+    expect(result.reasons).toContain('The platform rejected this listing.');
+  });
+
+  it('fails a listing whose vendor is not approved to sell', () => {
+    const result = visible({
+      business: { business_name: 'Garm island', status: 'pending' },
+    });
+    expect(result.visible).toBe(false);
+    expect(result.reasons[0]).toContain('"pending"');
+  });
+
+  it('fails a listing whose vendor is deactivated', () => {
+    const result = visible({
+      business: {
+        business_name: 'Garm island',
+        status: 'approved',
+        is_active: false,
+      },
+    });
+    expect(result.reasons).toContain('Its vendor is deactivated.');
+  });
+
+  it('does not treat an unpopulated vendor as a failing one', () => {
+    // A list response may not select `status`; absent is unknown, not rejected.
+    expect(visible({ business: '6a7f5a8adcacda7acc6beef7' }).visible).toBe(
+      true
+    );
+    expect(
+      visible({ business: { business_name: 'Garm island' } }).visible
+    ).toBe(true);
+  });
+
+  it('reports every failing gate, not just the first', () => {
+    const result = visible({
+      status: 'draft',
+      moderation: { status: 'rejected' },
+      business: { status: 'pending', is_active: false },
+    });
+    expect(result.reasons).toHaveLength(4);
+  });
+});
+
+describe('getProductImages', () => {
+  it("lists product shots first, then each colour's", () => {
+    expect(
+      getProductImages(
+        product({
+          kind: 'clothing',
+          clothing: {
+            images: [{ url: 'a.png' }],
+            color_variants: [
+              { images: [{ url: 'b.png' }] },
+              { images: [{ url: 'c.png' }] },
+            ],
+          },
+        })
+      )
+    ).toEqual(['a.png', 'b.png', 'c.png']);
+  });
+
+  it('does not repeat a colour swatch that is also a product shot', () => {
+    expect(
+      getProductImages(
+        product({
+          kind: 'clothing',
+          clothing: {
+            images: [{ url: 'a.png' }],
+            color_variants: [{ images: [{ url: 'a.png' }] }],
+          },
+        })
+      )
+    ).toEqual(['a.png']);
   });
 });

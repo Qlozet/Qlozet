@@ -40,6 +40,8 @@ export const baseAPI = createApi({
     'Products',
     'ProductStats',
     'ProductFilters',
+    'ProductReviews',
+    'ProductNotes',
     'Transaction',
     'Transactions',
     'Vendors',

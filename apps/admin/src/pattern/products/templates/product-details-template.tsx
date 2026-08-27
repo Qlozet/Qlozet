@@ -17,8 +17,16 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { GoBackButton } from '@/pattern/admin/atoms/go-back-button';
 import { APP_ROUTES } from '@/lib/routes';
+import { readApiError } from '@/redux/services/types';
 import { cn } from '@/lib/utils';
+import NiceModal from '@ebay/nice-modal-react';
 import { useDeleteProductMutation } from '@/redux/services/products/products.api-slice';
+import { ConfirmActionModal } from '@/pattern/common/organisms/confirm-action-modal';
+import { ProductReviewsDrawer } from '../organisms/product-reviews-drawer';
+import { ProductNotesSection } from '../organisms/product-notes-section';
+import { EscalateProductModal } from '../organisms/escalate-product-modal';
+import { ProductPreviewModal } from '../organisms/product-preview-modal';
+import { useAddProductNoteMutation } from '@/redux/services/products/admin-products.api-slice';
 import { useGetAdminProductQuery } from '@/redux/services/products/admin-products.api-slice';
 import { getKindDetail, getProductPrice } from '@/lib/products';
 
@@ -139,7 +147,8 @@ export const ProductDetailsTemplate = ({
   const { data, isLoading, isError } = useGetAdminProductQuery(productId, {
     skip: !productId,
   });
-  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
+  const [deleteProduct] = useDeleteProductMutation();
+  const [addNote] = useAddProductNoteMutation();
   const [activeImage, setActiveImage] = useState(0);
 
   // The API nests the sellable detail under `clothing` / `accessory` / `fabric`
@@ -219,17 +228,75 @@ export const ProductDetailsTemplate = ({
     .map((v) => ({ size: v.size, measurement: v.measurement }));
   const accQuantity = accVariants.reduce((s, v) => s + (v.stock ?? 0), 0);
 
-  const handleDelete = async () => {
+  // Ratings are embedded on the product, so the count is the array's length —
+  // there is no separate reviews collection to ask.
+  const reviewCount = Array.isArray(raw?.ratings) ? raw.ratings.length : 0;
+  const productName = product.name ?? 'this product';
+
+  const openReviews = () =>
+    NiceModal.show(ProductReviewsDrawer, { productId, productName });
+
+  const handleDelete = () =>
+    NiceModal.show(ConfirmActionModal, {
+      title: 'Are you sure you want to delete this product?',
+      description:
+        'Removing this product will erase all stored information about it from your dashboard.',
+      confirmLabel: 'Delete Product',
+      destructive: true,
+      onConfirm: async () => {
+        try {
+          await deleteProduct(productId).unwrap();
+          toast.success('Product deleted.');
+          router.push(APP_ROUTES.productsCloth);
+        } catch (error) {
+          toast.error(readApiError(error, 'Failed to delete product.'));
+          throw error; // keeps the dialog open
+        }
+      },
+    });
+
+  /** Copy a link straight to this page, for pasting into a ticket or a chat. */
+  const handleCopyLink = async () => {
+    const link = `${window.location.origin}${APP_ROUTES.productDetails}?id=${productId}`;
     try {
-      await deleteProduct(productId).unwrap();
-      toast.success('Product deleted.');
-      router.push(APP_ROUTES.productsCloth);
+      await navigator.clipboard.writeText(link);
+      toast.success('Link copied');
     } catch {
-      toast.error('Failed to delete product.');
+      toast.error('Could not copy the link.');
     }
   };
 
-  const wip = () => toast.info('This action is coming soon.');
+  // Flagging writes a note of kind 'flag' — the same record the Notes & flags
+  // panel below lists, so a flag raised here shows up there with its reason.
+  const handleFlag = () =>
+    NiceModal.show(ConfirmActionModal, {
+      title: 'Flag this product?',
+      description:
+        'The flag is recorded against this listing in Notes & flags, and stays open until an admin clears it. The vendor never sees it.',
+      confirmLabel: 'Flag product',
+      destructive: true,
+      reason: {
+        label: 'What is wrong with it?',
+        placeholder: 'e.g. images do not match the description',
+        required: true,
+      },
+      onConfirm: async (reason?: string) => {
+        try {
+          await addNote({
+            productId,
+            body: reason ?? '',
+            kind: 'flag',
+          }).unwrap();
+          toast.success('Product flagged');
+        } catch (error) {
+          toast.error(readApiError(error, 'Could not flag this product.'));
+          throw error;
+        }
+      },
+    });
+
+  const handleEscalate = () =>
+    NiceModal.show(EscalateProductModal, { productId, productName });
 
   if (isLoading) return <ProductDetailsSkeleton />;
 
@@ -250,7 +317,18 @@ export const ProductDetailsTemplate = ({
         {/* Header */}
         <div className="flex items-center justify-between">
           <GoBackButton />
-          <Button variant="outline" onClick={wip} className="gap-2">
+          {/* No customer storefront exists in this repo to link out to, so the
+              shopper's view is rendered from the same document this page
+              already holds — and the preview says whether a customer could see
+              the listing at all, which a rendering alone cannot. */}
+          <Button
+            variant="outline"
+            onClick={() =>
+              raw && NiceModal.show(ProductPreviewModal, { product: raw })
+            }
+            disabled={!raw}
+            className="gap-2"
+          >
             <Monitor className="size-4" />
             Preview
           </Button>
@@ -326,10 +404,17 @@ export const ProductDetailsTemplate = ({
               {hasMetrics && (
                 <div className="mt-3 flex flex-wrap items-center gap-6 text-sm font-semibold text-grey-black dark:text-white">
                   {product.rating !== undefined && (
-                    <span className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={openReviews}
+                      aria-label={`Read ${reviewCount} ${
+                        reviewCount === 1 ? 'review' : 'reviews'
+                      }`}
+                      className="flex cursor-pointer items-center gap-1.5 rounded-md px-1 -mx-1 transition-colors hover:bg-accent"
+                    >
                       <Star className="size-4 fill-yellow-400 text-yellow-400" />
                       {product.rating}
-                    </span>
+                    </button>
                   )}
                   {product.likes !== undefined && (
                     <span className="flex items-center gap-1.5">
@@ -343,8 +428,8 @@ export const ProductDetailsTemplate = ({
                       {product.reviews_count}
                       <button
                         type="button"
-                        onClick={wip}
-                        className="ml-1 text-xs font-normal text-muted-foreground underline"
+                        onClick={openReviews}
+                        className="ml-1 cursor-pointer text-xs font-normal text-muted-foreground underline"
                       >
                         Read reviews
                       </button>
@@ -369,23 +454,25 @@ export const ProductDetailsTemplate = ({
               <div className="mt-5 flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={wip}
-                  className="flex size-9 items-center justify-center rounded-md bg-accent text-grey-black hover:opacity-80 dark:text-white"
-                  aria-label="Copy"
+                  onClick={() => void handleCopyLink()}
+                  className="flex size-9 cursor-pointer items-center justify-center rounded-md bg-accent text-grey-black hover:opacity-80 dark:text-white"
+                  aria-label="Copy link to this product"
+                  title="Copy link to this product"
                 >
                   <Clipboard className="size-4" />
                 </button>
                 <button
                   type="button"
-                  onClick={wip}
-                  className="flex size-9 items-center justify-center rounded-md bg-accent text-destructive hover:opacity-80"
-                  aria-label="Flag"
+                  onClick={handleFlag}
+                  className="flex size-9 cursor-pointer items-center justify-center rounded-md bg-accent text-destructive hover:opacity-80"
+                  aria-label="Flag this product"
+                  title="Flag this product"
                 >
                   <Flag className="size-4" />
                 </button>
                 <Button
                   variant="outline"
-                  onClick={wip}
+                  onClick={handleEscalate}
                   className="text-destructive"
                 >
                   Escalate to support
@@ -563,18 +650,24 @@ export const ProductDetailsTemplate = ({
               )}
             </div>
 
+            {/* Internal record — notes and flags on this listing. */}
+            <ProductNotesSection productId={productId} />
+
             {/* Footer actions */}
             <div className="flex items-center justify-end gap-6">
               <button
                 type="button"
                 onClick={handleDelete}
-                disabled={isDeleting}
-                className="text-sm font-medium text-destructive hover:underline disabled:opacity-50"
+                className="cursor-pointer text-sm font-medium text-destructive hover:underline"
               >
-                {isDeleting ? 'Deleting…' : 'Delete'}
+                Delete
               </button>
               <Button
-                onClick={() => router.push(APP_ROUTES.productsAdd)}
+                onClick={() =>
+                  // `?id=` puts the shared product form into edit mode. Without
+                  // it this opened an empty "add product" form.
+                  router.push(`${APP_ROUTES.productsAdd}?id=${productId}`)
+                }
                 className="px-8"
               >
                 Edit
