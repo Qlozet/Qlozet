@@ -157,6 +157,59 @@ export const getProductStatus = (product: Product): ProductStatusInfo => {
 };
 
 /* -------------------------------------------------------------------------- */
+/* Storefront visibility                                                      */
+/* -------------------------------------------------------------------------- */
+
+export interface StorefrontVisibility {
+  visible: boolean;
+  /** Why a customer can't see it — one line per failing gate, in plain words. */
+  reasons: string[];
+}
+
+/**
+ * Whether a customer would find this listing in the shop.
+ *
+ * Mirrors the gate the API applies in `findAll` and on the PDP, which is three
+ * independent conditions: the product is ACTIVE, the platform has not rejected
+ * it, and its vendor is approved and not deactivated. A moderator opening the
+ * preview needs all three — "it looks fine but nobody can see it" is the
+ * question the preview exists to answer.
+ */
+export const getStorefrontVisibility = (
+  product: Product
+): StorefrontVisibility => {
+  const reasons: string[] = [];
+
+  const status = (product.status ?? '').toString().toLowerCase();
+  if (status !== 'active') {
+    reasons.push(
+      product.scheduled_activation_date
+        ? 'It is scheduled to go live, and is not active yet.'
+        : `The vendor has it set to "${status || 'draft'}", not active.`
+    );
+  }
+
+  if (getProductModeration(product) === 'rejected') {
+    reasons.push('The platform rejected this listing.');
+  }
+
+  const business = asRecord(product.business);
+  if (business) {
+    const vendorStatus = (business.status ?? '').toString().toLowerCase();
+    // Only approved/verified vendors reach customers. A missing status on a
+    // populated business means the field wasn't selected, not that it failed.
+    if (vendorStatus && !['approved', 'verified'].includes(vendorStatus)) {
+      reasons.push(`Its vendor is "${vendorStatus}", not approved to sell.`);
+    }
+    if (business.is_active === false) {
+      reasons.push('Its vendor is deactivated.');
+    }
+  }
+
+  return { visible: reasons.length === 0, reasons };
+};
+
+/* -------------------------------------------------------------------------- */
 /* Columns                                                                    */
 /* -------------------------------------------------------------------------- */
 
@@ -226,6 +279,53 @@ export const getProductTags = (product: Product): string[] => {
 
 export const getProductTag = (product: Product): string =>
   getProductTags(product)[0] ?? DASH;
+
+/**
+ * Every image on the listing, product-level shots first then each colour's —
+ * the order a customer scrolls them in. De-duplicated: a colour whose swatch
+ * repeats a product shot shouldn't appear twice in the gallery.
+ */
+export const getProductImages = (product: Product): string[] => {
+  const detail = getKindDetail(product);
+  const urls = [
+    ...(detail.images ?? []),
+    ...(detail.color_variants ?? []).flatMap((colour) => colour.images ?? []),
+    ...(product.images ?? []),
+  ]
+    .map((image) => image?.url)
+    .filter((url): url is string => Boolean(url));
+
+  return [...new Set(urls)];
+};
+
+/** The colours a customer can pick, with the sizes in stock for each. */
+export interface ColourOption {
+  name: string;
+  hex: string;
+  sizes: { size: string; stock: number }[];
+}
+
+export const getColourOptions = (product: Product): ColourOption[] =>
+  (getKindDetail(product).color_variants ?? []).map((colour) => ({
+    name: colour.name ?? colour.hex ?? 'Colour',
+    hex: colour.hex ?? '#e5e7eb',
+    sizes: (colour.variants ?? [])
+      .filter((variant) => variant.size)
+      .map((variant) => ({
+        size: variant.size as string,
+        stock: Number(variant.stock) || 0,
+      })),
+  }));
+
+export const getProductDescription = (product: Product): string | undefined =>
+  firstNonEmpty(getKindDetail(product).description, product.description);
+
+/** Made-to-order lead time, in days, when the vendor set one. */
+export const getTurnaroundDays = (product: Product): number | undefined => {
+  const value = (getKindDetail(product) as { turnaround_days?: unknown })
+    .turnaround_days;
+  return typeof value === 'number' && value > 0 ? value : undefined;
+};
 
 /** Product-level image, falling back to the first colour variant's own shots. */
 export const getProductImage = (product: Product): string | undefined => {

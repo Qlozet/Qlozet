@@ -25,6 +25,7 @@ import { ConfirmActionModal } from '@/pattern/common/organisms/confirm-action-mo
 import { ProductReviewsDrawer } from '../organisms/product-reviews-drawer';
 import { ProductNotesSection } from '../organisms/product-notes-section';
 import { EscalateProductModal } from '../organisms/escalate-product-modal';
+import { ProductPreviewModal } from '../organisms/product-preview-modal';
 import { useAddProductNoteMutation } from '@/redux/services/products/admin-products.api-slice';
 import { useGetAdminProductQuery } from '@/redux/services/products/admin-products.api-slice';
 import { getKindDetail, getProductPrice } from '@/lib/products';
@@ -316,13 +317,16 @@ export const ProductDetailsTemplate = ({
         {/* Header */}
         <div className="flex items-center justify-between">
           <GoBackButton />
-          {/* The storefront that would render this listing does not exist in
-              this repo yet, so there is nowhere to preview it — the button
-              stays, disabled and saying so, rather than lying about it. */}
+          {/* No customer storefront exists in this repo to link out to, so the
+              shopper's view is rendered from the same document this page
+              already holds — and the preview says whether a customer could see
+              the listing at all, which a rendering alone cannot. */}
           <Button
             variant="outline"
-            disabled
-            title="No customer storefront to preview into yet"
+            onClick={() =>
+              raw && NiceModal.show(ProductPreviewModal, { product: raw })
+            }
+            disabled={!raw}
             className="gap-2"
           >
             <Monitor className="size-4" />

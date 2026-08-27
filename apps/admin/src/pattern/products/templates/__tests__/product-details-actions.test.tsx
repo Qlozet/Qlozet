@@ -169,8 +169,47 @@ describe('ProductDetailsTemplate — actions', () => {
     expect(push).toHaveBeenCalledWith(`/products/add-product?id=${PRODUCT_ID}`);
   });
 
-  it('says plainly that there is nothing to preview into', () => {
+  it('opens the customer preview', async () => {
+    const user = userEvent.setup();
     renderPage();
-    expect(screen.getByRole('button', { name: /preview/i })).toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: /preview/i }));
+
+    const preview = await screen.findByRole('dialog', {
+      name: /customer preview of garm forest t-shirt/i,
+    });
+    // The shopper's view: the sale price, with the original struck through.
+    // Naira symbol, via the shared formatCurrency the tables use — the detail
+    // page behind it writes "NGN 32,000" from a local helper.
+    expect(within(preview).getByText('₦32,000')).toBeInTheDocument();
+    expect(within(preview).getByText('₦40,000')).toBeInTheDocument();
+    // Nothing in a preview is clickable for the customer.
+    expect(
+      within(preview).getByRole('button', { name: 'Add to cart' })
+    ).toBeDisabled();
+  });
+
+  it('warns in the preview when no customer could see the listing', async () => {
+    const user = userEvent.setup();
+    useGetAdminProductQuery.mockReturnValue({
+      data: { data: { ...PRODUCT, status: 'draft' } },
+      isLoading: false,
+      isError: false,
+    });
+    renderPage();
+
+    await user.click(screen.getByRole('button', { name: /preview/i }));
+
+    const preview = await screen.findByRole('dialog', {
+      name: /customer preview/i,
+    });
+    // A rendering alone can't answer "is this live?" — the gate is three
+    // conditions and a draft fails the first.
+    expect(
+      within(preview).getByText('No customer can see this listing right now.')
+    ).toBeInTheDocument();
+    expect(
+      within(preview).getByText(/set to "draft", not active/i)
+    ).toBeInTheDocument();
   });
 });
