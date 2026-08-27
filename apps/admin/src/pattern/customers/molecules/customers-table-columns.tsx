@@ -1,8 +1,9 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
+import { Copy, Eye, ShoppingBag, Trash2, UserCheck, UserX } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { RowActionsMenu } from '@/pattern/common/molecules/row-actions-menu';
 import type { Customer } from '@/redux/services/customers/customers.api-slice';
 import {
   getCustomerName,
@@ -47,10 +48,21 @@ const CustomerAvatar = ({ customer }: { customer: Customer }) => {
 
 interface CustomersTableColumnsProps {
   onViewDetails: (customerId: string) => void;
+  onCopyEmail: (email: string) => void;
+  onViewOrders: (customerId: string) => void;
+  onSetStatus: (customer: Customer, status: 'active' | 'suspended') => void;
+  onDelete: (customer: Customer) => void;
+  /** Disables the state-changing items while a mutation is in flight. */
+  isUpdating?: boolean;
 }
 
 export const createCustomersTableColumns = ({
   onViewDetails,
+  onCopyEmail,
+  onViewOrders,
+  onSetStatus,
+  onDelete,
+  isUpdating,
 }: CustomersTableColumnsProps): ColumnDef<Customer>[] => [
   {
     id: 'picture',
@@ -128,16 +140,60 @@ export const createCustomersTableColumns = ({
   {
     id: 'actions',
     header: '',
-    cell: ({ row }) => (
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => onViewDetails(row.original._id)}
-        className="h-9 rounded-lg text-sm font-normal text-gray-700 dark:text-gray-200"
-      >
-        View details
-      </Button>
-    ),
+    cell: ({ row }) => {
+      const customer = row.original;
+      const email = getCustomerEmail(customer);
+      const isSuspended = getCustomerStatus(customer).variant === 'inactive';
+
+      return (
+        <RowActionsMenu
+          title="Customer actions"
+          triggerLabel={`Actions for ${getCustomerName(customer)}`}
+          actions={[
+            {
+              label: 'View details',
+              icon: <Eye className="size-4" />,
+              onSelect: () => onViewDetails(customer._id),
+            },
+            {
+              label: 'Copy email',
+              icon: <Copy className="size-4" />,
+              // Disabled rather than hidden, so the menu keeps a stable shape
+              // from row to row.
+              disabled: email === '—',
+              onSelect: () => onCopyEmail(email),
+            },
+            {
+              label: 'View orders',
+              icon: <ShoppingBag className="size-4" />,
+              onSelect: () => onViewOrders(customer._id),
+            },
+            // One item, not both: offering "Suspend" on an already-suspended
+            // account is a no-op the admin has to reason about.
+            isSuspended
+              ? {
+                  label: 'Reactivate',
+                  icon: <UserCheck className="size-4" />,
+                  disabled: isUpdating,
+                  onSelect: () => onSetStatus(customer, 'active'),
+                }
+              : {
+                  label: 'Suspend',
+                  icon: <UserX className="size-4" />,
+                  disabled: isUpdating,
+                  onSelect: () => onSetStatus(customer, 'suspended'),
+                },
+            {
+              label: 'Delete',
+              icon: <Trash2 className="size-4" />,
+              destructive: true,
+              disabled: isUpdating,
+              onSelect: () => onDelete(customer),
+            },
+          ]}
+        />
+      );
+    },
     enableSorting: false,
   },
 ];

@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import type { PaginationState } from '@tanstack/react-table';
 import { OrderStatsCards } from '@/pattern/orders/templates/order-stats-cards';
 import { OrdersTableTemplate } from '@/pattern/orders/templates/orders-table-template';
@@ -14,7 +15,12 @@ import { useGetAdminOrdersQuery } from '@/redux/services/orders/orders.api-slice
 
 const PAGE_SIZE = 7;
 
-export default function OrdersPage() {
+function OrdersPageContent() {
+  // Deep-link from a customer row's "View orders". The endpoint filters by
+  // buyer server-side; without reading it back here the link would land on an
+  // unfiltered list and quietly claim to have filtered.
+  const customerId = useSearchParams().get('customerId') ?? '';
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
@@ -39,6 +45,7 @@ export default function OrdersPage() {
       status: status || undefined,
       page: pagination.pageIndex + 1,
       size: pagination.pageSize,
+      customerId: customerId || undefined,
     });
 
   const orders = useMemo(() => data?.data ?? [], [data]);
@@ -124,5 +131,14 @@ export default function OrdersPage() {
         pageCount={pageCount}
       />
     </div>
+  );
+}
+
+export default function OrdersPage() {
+  // useSearchParams needs a Suspense boundary in the App Router.
+  return (
+    <Suspense fallback={null}>
+      <OrdersPageContent />
+    </Suspense>
   );
 }

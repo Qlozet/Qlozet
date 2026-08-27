@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { readPageCount, readTotalItems } from '../types';
+import { readApiError, readPageCount, readTotalItems } from '../types';
 
 // The backend sends snake_case pagination keys. Reading the camelCase ones the
 // shared type used to assume made every table fall back to `data.length`,
@@ -46,5 +46,40 @@ describe('readPageCount', () => {
 
   it('tolerates a zero page size', () => {
     expect(readPageCount({ data: [], total_items: 3 }, 0)).toBe(3);
+  });
+});
+
+describe('readApiError', () => {
+  it('surfaces the server’s own message', () => {
+    // An endpoint that refuses usefully — "this customer has 3 orders, suspend
+    // instead" — is worth showing verbatim.
+    expect(
+      readApiError({ data: { message: 'Suspend the account instead.' } })
+    ).toBe('Suspend the account instead.');
+  });
+
+  it('joins a validation-pipe message array', () => {
+    // Nest returns an array when class-validator rejects a body.
+    expect(
+      readApiError({ data: { message: ['status must be one of', 'active'] } })
+    ).toBe('status must be one of, active');
+  });
+
+  it('accepts a bare string body', () => {
+    expect(readApiError({ data: 'Forbidden' })).toBe('Forbidden');
+  });
+
+  it('falls back when there is no message to show', () => {
+    expect(readApiError(undefined)).toBe(
+      'Something went wrong. Please try again.'
+    );
+    expect(readApiError({})).toBe('Something went wrong. Please try again.');
+    expect(readApiError({ data: { message: '   ' } })).toBe(
+      'Something went wrong. Please try again.'
+    );
+  });
+
+  it('takes a caller-supplied fallback', () => {
+    expect(readApiError(null, "Couldn't delete.")).toBe("Couldn't delete.");
   });
 });

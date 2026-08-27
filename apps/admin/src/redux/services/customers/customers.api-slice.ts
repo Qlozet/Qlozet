@@ -86,8 +86,38 @@ export const customersApiSlice = baseAPI.injectEndpoints({
       }),
       providesTags: ['Customers'],
     }),
+    // Set a customer's account state. Sign-in requires 'active', so both
+    // 'inactive' and 'suspended' lock them out — the difference is intent.
+    setCustomerStatus: builder.mutation<
+      ApiResponse<Customer>,
+      { customerId: string; status: 'active' | 'inactive' | 'suspended' }
+    >({
+      query: ({ customerId, status }) => ({
+        url: `/admin/customer/${customerId}/status`,
+        method: 'PATCH',
+        body: { status },
+      }),
+      invalidatesTags: ['Customers', 'Customer'],
+    }),
+
+    // Permanent. The endpoint refuses with a 409 when the customer has orders,
+    // and the message says to suspend instead.
+    deleteCustomer: builder.mutation<
+      ApiResponse<{ deleted: boolean; id: string }>,
+      string
+    >({
+      query: (customerId) => ({
+        url: `/admin/customer/${customerId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Customers'],
+    }),
   }),
 });
 
 // Export hooks
-export const { useGetCustomersQuery } = customersApiSlice;
+export const {
+  useGetCustomersQuery,
+  useSetCustomerStatusMutation,
+  useDeleteCustomerMutation,
+} = customersApiSlice;

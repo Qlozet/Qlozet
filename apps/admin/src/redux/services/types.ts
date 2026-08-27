@@ -75,3 +75,31 @@ export const buildQueryString = (
   const qs = searchParams.toString();
   return qs ? `?${qs}` : '';
 };
+
+/**
+ * The server's message for a failed RTK Query call, or a generic fallback.
+ *
+ * Nine call sites had reached into `error.data.message` inline, each with its
+ * own fallback wording. That matters beyond tidiness: an endpoint that returns
+ * a *useful* refusal — "this customer has 3 orders, suspend instead" — is worth
+ * showing verbatim, and a hand-rolled reader that misses the shape shows
+ * "Something went wrong" instead.
+ */
+export const readApiError = (
+  error: unknown,
+  fallback = 'Something went wrong. Please try again.'
+): string => {
+  const data = (error as { data?: unknown })?.data;
+
+  if (typeof data === 'string' && data.trim()) return data;
+
+  const message = (data as { message?: unknown })?.message;
+  if (typeof message === 'string' && message.trim()) return message;
+  // Nest's ValidationPipe returns message as an array of strings.
+  if (Array.isArray(message)) {
+    const joined = message.filter((m) => typeof m === 'string').join(', ');
+    if (joined) return joined;
+  }
+
+  return fallback;
+};
