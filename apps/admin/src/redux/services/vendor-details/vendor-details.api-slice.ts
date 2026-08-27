@@ -73,6 +73,56 @@ export interface VendorChart {
   >;
 }
 
+// Mirrors the Warehouse schema. This previously declared city/state/country
+// and is_active — none of which the API sends, so the address line was always
+// bare and the status was always absent.
+export interface VendorWarehouse {
+  _id: string;
+  name?: string;
+  address?: string;
+  contact_name?: string;
+  contact_phone?: string;
+  contact_email?: string;
+  status?: 'active' | 'inactive';
+  [key: string]: unknown;
+}
+
+/** Fields an admin may edit on a vendor. Mirrors AdminUpdateBusinessDto. */
+export interface AdminVendorUpdate {
+  business_name?: string;
+  business_email?: string;
+  business_phone_number?: string;
+  description?: string;
+  website?: string;
+  year_founded?: string;
+  business_logo_url?: string;
+  business_logo_svg_url?: string;
+  cover_image_url?: string;
+  /** Replaces the whole stored list, which is how the API treats it. */
+  cac_document_url?: string[];
+  business_address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  zip_code?: string;
+  payout_bank_name?: string;
+  payout_account_number?: string;
+  payout_account_name?: string;
+}
+
+export type VendorNoteKind = 'note' | 'flag';
+
+export interface VendorNote {
+  _id: string;
+  body: string;
+  kind: VendorNoteKind;
+  resolved: boolean;
+  author?: { _id?: string; full_name?: string; email?: string };
+  resolved_by?: { _id?: string; full_name?: string; email?: string } | null;
+  resolved_at?: string | null;
+  createdAt?: string;
+}
+
 export interface VendorTableParams {
   businessId: string;
   page?: number;
@@ -107,6 +157,89 @@ export const vendorDetailsApiSlice = baseAPI.injectEndpoints({
         method: 'GET',
       }),
       providesTags: ['VendorDashboard'],
+    }),
+
+    // A vendor's warehouses. /business/warehouse is scoped to the caller, so
+    // the console could only show a count with nothing behind it.
+    getVendorWarehouses: builder.query<
+      ApiResponse<PaginatedData<VendorWarehouse>>,
+      VendorTableParams
+    >({
+      query: ({ businessId, ...params }) => ({
+        url: `/admin/businesses/${businessId}/warehouses${buildQueryString(params)}`,
+        method: 'GET',
+      }),
+      providesTags: ['Business'],
+    }),
+
+    // Edit another business's profile. PATCH /business/profile only ever
+    // updates the caller's own, so an admin had no way to correct a record.
+    updateVendorProfile: builder.mutation<
+      ApiResponse<unknown>,
+      { businessId: string; patch: AdminVendorUpdate }
+    >({
+      query: ({ businessId, patch }) => ({
+        url: `/admin/businesses/${businessId}`,
+        method: 'PATCH',
+        body: patch,
+      }),
+      invalidatesTags: ['Business', 'Businesses'],
+    }),
+
+    // Internal notes and flags. Never shown to the vendor.
+    getVendorNotes: builder.query<
+      ApiResponse<PaginatedData<VendorNote>>,
+      VendorTableParams
+    >({
+      query: ({ businessId, ...params }) => ({
+        url: `/admin/businesses/${businessId}/notes${buildQueryString(params)}`,
+        method: 'GET',
+      }),
+      providesTags: ['VendorNotes'],
+    }),
+
+    addVendorNote: builder.mutation<
+      ApiResponse<VendorNote>,
+      { businessId: string; body: string; kind?: VendorNoteKind }
+    >({
+      query: ({ businessId, ...payload }) => ({
+        url: `/admin/businesses/${businessId}/notes`,
+        method: 'POST',
+        body: payload,
+      }),
+      // A flag also flips the vendor's is_flagged, so the record and the list
+      // both go stale.
+      invalidatesTags: ['VendorNotes', 'Business', 'Businesses'],
+    }),
+
+    resolveVendorNote: builder.mutation<ApiResponse<VendorNote>, string>({
+      query: (noteId) => ({
+        url: `/admin/vendor-notes/${noteId}/resolve`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['VendorNotes', 'Business', 'Businesses'],
+    }),
+
+    deleteVendorNote: builder.mutation<ApiResponse<unknown>, string>({
+      query: (noteId) => ({
+        url: `/admin/vendor-notes/${noteId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['VendorNotes', 'Business', 'Businesses'],
+    }),
+
+    // Raises a support ticket against the vendor — the console already has a
+    // queue and a detail screen for tickets.
+    escalateVendor: builder.mutation<
+      ApiResponse<{ _id?: string }>,
+      { businessId: string; issue_type: string; description: string }
+    >({
+      query: ({ businessId, ...payload }) => ({
+        url: `/admin/businesses/${businessId}/escalate`,
+        method: 'POST',
+        body: payload,
+      }),
+      invalidatesTags: ['Tickets'],
     }),
 
     // Products belonging to a vendor (Top Products table)
@@ -201,4 +334,11 @@ export const {
   useGetVendorComplaintsQuery,
   useGetVendorTransactionsQuery,
   useGetVendorChartQuery,
+  useGetVendorWarehousesQuery,
+  useUpdateVendorProfileMutation,
+  useGetVendorNotesQuery,
+  useAddVendorNoteMutation,
+  useResolveVendorNoteMutation,
+  useDeleteVendorNoteMutation,
+  useEscalateVendorMutation,
 } = vendorDetailsApiSlice;

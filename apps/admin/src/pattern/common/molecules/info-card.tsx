@@ -11,6 +11,11 @@ export interface InfoCardProps {
   onLinkClick?: () => void;
   /** When set, renders the value as an anchor (e.g. a mailto: email link). */
   href?: string;
+  /**
+   * When set, the value itself becomes the action — used where the value IS
+   * the affordance ("View document"), rather than a label with a link beside it.
+   */
+  onValueClick?: () => void;
   /** When set, renders a pencil affordance to the right that calls this. */
   onEdit?: () => void;
   /** When set, applies emphasis colour to the value (e.g. green "Verified"). */
@@ -31,6 +36,7 @@ export const InfoCard = ({
   linkLabel,
   onLinkClick,
   href,
+  onValueClick,
   onEdit,
   valueClassName,
   className,
@@ -54,6 +60,17 @@ export const InfoCard = ({
           >
             {value || '—'}
           </a>
+        ) : onValueClick ? (
+          <button
+            type="button"
+            onClick={onValueClick}
+            className={cn(
+              'cursor-pointer truncate text-left text-sm font-semibold text-[hsla(210,9%,31%,1)] underline underline-offset-2 hover:opacity-80 dark:text-white',
+              valueClassName
+            )}
+          >
+            {value || '—'}
+          </button>
         ) : (
           <p
             className={cn(

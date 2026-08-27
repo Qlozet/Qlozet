@@ -1,6 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
+import NiceModal from '@ebay/nice-modal-react';
 import { toast } from 'sonner';
 import { APP_ROUTES } from '@/lib/routes';
 import { useGetCustomerQuery } from '@/redux/services/customers/customers.api-slice';
@@ -10,6 +11,9 @@ import { CustomerInfoGrid } from '@/pattern/customers/details/organisms/customer
 import { CustomerAnalyticsSection } from '@/pattern/customers/details/organisms/customer-analytics-section';
 import { CustomerWalletSection } from '@/pattern/customers/details/organisms/customer-wallet-section';
 import { CustomerTicketsTable } from '@/pattern/customers/details/organisms/customer-tickets-table';
+import { CustomerMeasurementsDrawer } from '@/pattern/customers/details/organisms/customer-measurements-drawer';
+import { CustomerReviewsDrawer } from '@/pattern/customers/details/organisms/customer-reviews-drawer';
+import { getCustomerName } from '@/lib/customers';
 
 const CustomerDetailsPage = () => {
   const params = useParams<{ id: string }>();
@@ -30,6 +34,23 @@ const CustomerDetailsPage = () => {
 
   const notImplemented = () => toast.info('This action is coming soon');
 
+  // Their saved measurement sets and body type, from
+  // GET /admin/customer/:id/measurements — fetched by the drawer itself, so
+  // the page does not pay for a panel nobody opened.
+  const openMeasurements = () =>
+    NiceModal.show(CustomerMeasurementsDrawer, {
+      customerId: id,
+      customerName: customer ? getCustomerName(customer) : undefined,
+    });
+
+  // The reviews they wrote — the same figure the header button counts, from
+  // GET /admin/customer/:id/reviews.
+  const openReviews = () =>
+    NiceModal.show(CustomerReviewsDrawer, {
+      customerId: id,
+      customerName: customer ? getCustomerName(customer) : undefined,
+    });
+
   return (
     <div className="w-full min-h-screen h-fit space-y-8 pb-16">
       <GoBackButton href={APP_ROUTES.customers} />
@@ -40,7 +61,8 @@ const CustomerDetailsPage = () => {
         isLoading={isBusy}
         onEscalate={notImplemented}
         onEdit={notImplemented}
-        onViewReviews={notImplemented}
+        onViewReviews={openReviews}
+        onViewMeasurements={openMeasurements}
       />
 
       {/* 2. Info grid */}

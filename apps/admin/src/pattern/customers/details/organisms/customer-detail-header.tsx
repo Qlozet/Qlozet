@@ -20,6 +20,7 @@ interface CustomerDetailHeaderProps {
   onEscalate?: () => void;
   onEdit?: () => void;
   onViewReviews?: () => void;
+  onViewMeasurements?: () => void;
 }
 
 export const CustomerDetailHeader = ({
@@ -28,6 +29,7 @@ export const CustomerDetailHeader = ({
   onEscalate,
   onEdit,
   onViewReviews,
+  onViewMeasurements,
 }: CustomerDetailHeaderProps) => {
   const c = customer ?? ({} as Customer);
   const avatar = getCustomerAvatar(c);
@@ -90,7 +92,8 @@ export const CustomerDetailHeader = ({
       <div className="flex items-center gap-3">
         <button
           type="button"
-          aria-label="Notes"
+          aria-label="Body measurements"
+          onClick={onViewMeasurements}
           className="flex size-10 items-center justify-center rounded-lg border border-border text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-muted/80 cursor-pointer"
         >
           <ClipboardList className="size-5" />

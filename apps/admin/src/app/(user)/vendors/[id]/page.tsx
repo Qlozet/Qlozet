@@ -17,6 +17,7 @@ import { VendorInfoGrid } from '@/pattern/vendors/details/organisms/vendor-info-
 import { VendorAnalyticsSection } from '@/pattern/vendors/details/organisms/vendor-analytics-section';
 import { TopProductsTable } from '@/pattern/vendors/details/organisms/top-products-table';
 import { WalletDetailsSection } from '@/pattern/vendors/details/organisms/wallet-details-section';
+import { VendorNotesSection } from '@/pattern/vendors/details/organisms/vendor-notes-section';
 import { ActivityLogTable } from '@/pattern/vendors/details/organisms/activity-log-table';
 import { ComplaintTable } from '@/pattern/vendors/details/organisms/complaint-table';
 
@@ -94,10 +95,11 @@ const VendorDetailsPage = () => {
             runStatusChange(setInReview, 'Vendor marked in review')
           }
           onViewProducts={scrollTo(PRODUCTS_ANCHOR)}
-          // The admin orders and customers pages are platform-wide; neither
-          // endpoint accepts a business filter yet.
-          // TODO(api): pass ?business_id= once /admin/vendor/orders and
-          // /admin/customers support it, and deep-link instead.
+          // Both land on the platform-wide list. /admin/vendor/orders now
+          // takes a `businessId`, so orders could deep-link to just this
+          // vendor's — the admin orders page has no such filter yet.
+          // TODO(ui): give the orders page a businessId filter and pass it.
+          // TODO(api): /admin/customer has no business filter at all.
           onViewOrders={() => router.push(APP_ROUTES.orders)}
           onViewCustomers={() => router.push(APP_ROUTES.customers)}
         />
@@ -114,7 +116,10 @@ const VendorDetailsPage = () => {
       {/* 5. Wallet details */}
       <WalletDetailsSection vendor={vendor} metrics={metrics} />
 
-      {/* 6. Activity log + complaints */}
+      {/* 6. Internal notes and flags */}
+      <VendorNotesSection businessId={id} />
+
+      {/* 7. Activity log + complaints */}
       <ActivityLogTable businessId={id} />
       <ComplaintTable businessId={id} />
     </div>
