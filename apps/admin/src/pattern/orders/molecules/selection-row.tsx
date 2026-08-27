@@ -20,7 +20,7 @@ export const Thumb = ({
   alt: string;
 }) => (
   <div
-    className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#E5E7EB] bg-gray-100"
+    className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#E5E7EB] dark:border-white/10 bg-gray-100 dark:bg-muted"
     style={swatch ? { backgroundColor: swatch } : undefined}
   >
     {url ? (
@@ -34,7 +34,9 @@ export const Thumb = ({
         loading="lazy"
       />
     ) : swatch ? null : (
-      (fallbackIcon ?? <Package className="size-4 text-gray-400" />)
+      (fallbackIcon ?? (
+        <Package className="size-4 text-gray-400 dark:text-gray-500" />
+      ))
     )}
   </div>
 );
@@ -61,17 +63,23 @@ export const SelectionRow = ({
     <div className="flex items-center gap-3 px-3 py-2.5">
       <Thumb url={url} swatch={swatch} fallbackIcon={icon} alt={title} />
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-[#333333]">{title}</p>
-        {subtitle && <p className="truncate text-xs text-grey3">{subtitle}</p>}
+        <p className="truncate text-sm font-medium text-[#333333] dark:text-white">
+          {title}
+        </p>
+        {subtitle && (
+          <p className="truncate text-xs text-grey3 dark:text-gray-400">
+            {subtitle}
+          </p>
+        )}
       </div>
       <div className="shrink-0 text-right">
         {hasPrice && (
-          <p className="text-sm font-semibold text-[#333333]">
+          <p className="text-sm font-semibold text-[#333333] dark:text-white">
             {formatNaira(price)}
           </p>
         )}
         {typeof qty === 'number' && qty > 0 && (
-          <p className="text-[11px] text-grey3">×{qty}</p>
+          <p className="text-[11px] text-grey3 dark:text-gray-400">×{qty}</p>
         )}
       </div>
     </div>
@@ -90,11 +98,11 @@ export const Section = ({
   <div className="space-y-2">
     <div className="flex items-center gap-1.5">
       {icon}
-      <h4 className="text-xs font-semibold uppercase tracking-wider text-grey3">
+      <h4 className="text-xs font-semibold uppercase tracking-wider text-grey3 dark:text-gray-400">
         {title}
       </h4>
     </div>
-    <div className="divide-y divide-[#F1F3F5] rounded-xl border border-[#E5E7EB] bg-[hsla(0,0%,96%,1)]">
+    <div className="divide-y divide-[#F1F3F5] dark:divide-white/10 rounded-xl border border-[#E5E7EB] dark:border-white/10 bg-[hsla(0,0%,96%,1)] dark:bg-muted">
       {children}
     </div>
   </div>

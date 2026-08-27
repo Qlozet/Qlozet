@@ -27,12 +27,12 @@ export const ChatComposer = ({
   };
 
   return (
-    <div className="flex items-center gap-2 border-t border-border bg-white px-4 py-3">
+    <div className="flex items-center gap-2 border-t border-border bg-white dark:bg-card px-4 py-3">
       <button
         type="button"
         onClick={onAttach}
         aria-label="Attach file"
-        className="flex size-9 shrink-0 items-center justify-center rounded-full text-grey3 hover:bg-gray-100 transition-colors cursor-pointer"
+        className="flex size-9 shrink-0 items-center justify-center rounded-full text-grey3 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors cursor-pointer"
       >
         <Link2 className="size-5" />
       </button>
@@ -40,7 +40,7 @@ export const ChatComposer = ({
         type="button"
         onClick={onEmoji}
         aria-label="Add emoji"
-        className="flex size-9 shrink-0 items-center justify-center rounded-full text-grey3 hover:bg-gray-100 transition-colors cursor-pointer"
+        className="flex size-9 shrink-0 items-center justify-center rounded-full text-grey3 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors cursor-pointer"
       >
         <Smile className="size-5" />
       </button>
@@ -55,7 +55,7 @@ export const ChatComposer = ({
           }
         }}
         placeholder="Type a message"
-        className="h-10 flex-1 rounded-full bg-[#F1F1F1] px-4 text-sm text-grey-black placeholder:text-grey2 focus:outline-none focus:ring-2 focus:ring-ring"
+        className="h-10 flex-1 rounded-full bg-[#F1F1F1] dark:bg-muted px-4 text-sm text-grey-black dark:text-white placeholder:text-grey2 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-ring"
       />
 
       {/* Send when there's text, otherwise the mic affordance. */}
@@ -73,7 +73,7 @@ export const ChatComposer = ({
           type="button"
           onClick={onMic}
           aria-label="Record voice message"
-          className="flex size-9 shrink-0 items-center justify-center rounded-full text-grey3 hover:bg-gray-100 transition-colors cursor-pointer"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full text-grey3 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors cursor-pointer"
         >
           <Mic className="size-5" />
         </button>

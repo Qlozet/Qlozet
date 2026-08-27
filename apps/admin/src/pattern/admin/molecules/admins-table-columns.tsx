@@ -47,7 +47,7 @@ export const createAdminsTableColumns = ({
           <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
             {getAdminInitial(member)}
           </span>
-          <span className="text-sm font-medium text-gray-900">
+          <span className="text-sm font-medium text-gray-900 dark:text-white">
             {getAdminName(member)}
           </span>
         </div>
@@ -59,7 +59,9 @@ export const createAdminsTableColumns = ({
     id: 'email',
     header: 'Email address',
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600">{getAdminEmail(row.original)}</div>
+      <div className="text-sm text-gray-600 dark:text-gray-400">
+        {getAdminEmail(row.original)}
+      </div>
     ),
     enableSorting: false,
   },
@@ -67,7 +69,9 @@ export const createAdminsTableColumns = ({
     id: 'phone',
     header: 'Phone number',
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600">{getAdminPhone(row.original)}</div>
+      <div className="text-sm text-gray-600 dark:text-gray-400">
+        {getAdminPhone(row.original)}
+      </div>
     ),
     enableSorting: false,
   },
@@ -75,7 +79,9 @@ export const createAdminsTableColumns = ({
     id: 'role',
     header: 'Role',
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600">{getAdminRole(row.original)}</div>
+      <div className="text-sm text-gray-600 dark:text-gray-400">
+        {getAdminRole(row.original)}
+      </div>
     ),
     enableSorting: false,
   },
@@ -83,7 +89,7 @@ export const createAdminsTableColumns = ({
     accessorKey: 'createdAt',
     header: 'Date registered',
     cell: ({ row }) => (
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-gray-600 dark:text-gray-400">
         {formatRegisteredDate(row.original.createdAt as string | undefined)}
       </div>
     ),

@@ -62,7 +62,7 @@ export const AuthLayout = ({
         </div>
 
         {/* Form column */}
-        <div className="w-full max-w-[424px] rounded-[12px] bg-white px-5 py-12 lg:bg-transparent lg:p-0">
+        <div className="w-full max-w-[424px] rounded-[12px] bg-white dark:bg-card px-5 py-12 lg:bg-transparent lg:p-0">
           {/* Desktop logo */}
           <div className="mb-8 hidden lg:block">
             <BrandLogo href={null} width="70" height="42" />
@@ -71,11 +71,13 @@ export const AuthLayout = ({
           {isError && (
             <div
               role="alert"
-              className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3"
+              className="mb-6 rounded-lg border border-red-200 bg-red-50 dark:border-red-400/30 dark:bg-red-950/30 px-4 py-3"
             >
-              <p className="text-sm font-medium text-red-800">{alertTitle}</p>
+              <p className="text-sm font-medium text-red-800 dark:text-red-400">
+                {alertTitle}
+              </p>
               {alertDescription && (
-                <p className="mt-0.5 text-sm text-red-700">
+                <p className="mt-0.5 text-sm text-red-700 dark:text-red-400">
                   {alertDescription}
                 </p>
               )}
@@ -86,7 +88,11 @@ export const AuthLayout = ({
             <h1 className="mb-2 text-[2rem] font-medium text-primary">
               {title}
             </h1>
-            {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
+            {subtitle && (
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {subtitle}
+              </p>
+            )}
           </div>
 
           {children}

@@ -28,7 +28,7 @@ export const createOrdersTableColumns = ({
     id: 'date',
     header: 'Date',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-600">
+      <span className="text-sm text-gray-600 dark:text-gray-400">
         {formatOrderDate(row.original.createdAt)}
       </span>
     ),
@@ -38,7 +38,9 @@ export const createOrdersTableColumns = ({
     id: 'orderId',
     header: 'Order ID',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-600">{readOrderId(row.original)}</span>
+      <span className="text-sm text-gray-600 dark:text-gray-400">
+        {readOrderId(row.original)}
+      </span>
     ),
     enableSorting: false,
   },
@@ -46,7 +48,7 @@ export const createOrdersTableColumns = ({
     id: 'productPrice',
     header: 'Product price',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-600">
+      <span className="text-sm text-gray-600 dark:text-gray-400">
         {formatNaira(readProductPrice(row.original))}
       </span>
     ),
@@ -56,7 +58,7 @@ export const createOrdersTableColumns = ({
     id: 'customerName',
     header: 'Customer name',
     cell: ({ row }) => (
-      <span className="text-sm font-medium text-gray-900">
+      <span className="text-sm font-medium text-gray-900 dark:text-white">
         {readCustomerName(row.original)}
       </span>
     ),
@@ -66,7 +68,7 @@ export const createOrdersTableColumns = ({
     id: 'amountPaid',
     header: 'Amount paid',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-600">
+      <span className="text-sm text-gray-600 dark:text-gray-400">
         {formatNaira(readAmountPaid(row.original))}
       </span>
     ),
@@ -76,7 +78,7 @@ export const createOrdersTableColumns = ({
     id: 'items',
     header: 'Items',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-600">
+      <span className="text-sm text-gray-600 dark:text-gray-400">
         {formatItemsCount(readItemsCount(row.original))}
       </span>
     ),
@@ -108,7 +110,7 @@ export const createOrdersTableColumns = ({
         type="button"
         variant="outline"
         onClick={() => onViewDetails(row.original)}
-        className="h-9 rounded-lg text-sm font-normal text-gray-700"
+        className="h-9 rounded-lg text-sm font-normal text-gray-700 dark:text-gray-200"
       >
         View details
       </Button>

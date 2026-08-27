@@ -135,7 +135,7 @@ export function createCollectionsColumns(
               type="button"
               onClick={() => actions.onToggleActive(c)}
               title={c.is_active ? 'Deactivate' : 'Activate'}
-              className="rounded-md p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800"
+              className="rounded-md p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-100"
             >
               <Power className="size-4" />
             </button>
@@ -143,7 +143,7 @@ export function createCollectionsColumns(
               type="button"
               onClick={() => actions.onEdit(c._id)}
               title="Edit"
-              className="rounded-md p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800"
+              className="rounded-md p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-100"
             >
               <Pencil className="size-4" />
             </button>

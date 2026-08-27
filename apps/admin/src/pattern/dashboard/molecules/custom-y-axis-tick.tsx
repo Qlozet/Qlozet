@@ -17,12 +17,24 @@ export const CustomYAxisTick = ({
   const value = payload.value;
   if (value === 0)
     return (
-      <text x={x} y={y} textAnchor="end" fontSize={10} fill="#000">
+      <text
+        x={x}
+        y={y}
+        textAnchor="end"
+        fontSize={10}
+        fill="var(--muted-foreground)"
+      >
         {value}
       </text>
     );
   return (
-    <text x={x} y={y} textAnchor="end" fontSize={10} fill="#000">
+    <text
+      x={x}
+      y={y}
+      textAnchor="end"
+      fontSize={10}
+      fill="var(--muted-foreground)"
+    >
       {value / 1000}k
     </text>
   );

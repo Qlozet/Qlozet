@@ -39,7 +39,7 @@ export default function ForgotPasswordPage() {
         <div className="space-y-1.5">
           <label
             htmlFor="forgot-email"
-            className="text-sm font-medium text-grey-black"
+            className="text-sm font-medium text-grey-black dark:text-white"
           >
             Email address
           </label>

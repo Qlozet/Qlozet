@@ -77,7 +77,9 @@ export const NotificationInbox = () => {
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-grey-black">Inbox</h2>
+          <h2 className="text-lg font-semibold text-grey-black dark:text-white">
+            Inbox
+          </h2>
           {unreadCount > 0 && (
             <span className="rounded-full bg-error px-2.5 py-0.5 text-xs font-medium text-white">
               {unreadCount} unread
@@ -90,7 +92,7 @@ export const NotificationInbox = () => {
             type="button"
             onClick={handleMarkAllRead}
             disabled={isMarkingAll}
-            className="flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10 disabled:opacity-50"
+            className="flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-primary dark:text-white transition-colors hover:bg-primary/10 dark:hover:bg-white/10 disabled:opacity-50"
           >
             <CheckCheck className="size-4" />
             Mark all read
@@ -118,8 +120,8 @@ export const NotificationInbox = () => {
                 className={cn(
                   'flex shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap border-b-2 px-1 pb-1.5 text-sm transition-colors',
                   isActive
-                    ? 'border-primary font-semibold text-primary'
-                    : 'border-transparent text-grey3 hover:text-grey-black'
+                    ? 'border-primary dark:border-white font-semibold text-primary dark:text-white'
+                    : 'border-transparent text-grey3 dark:text-gray-400 hover:text-grey-black dark:hover:text-white'
                 )}
               >
                 <Icon className="size-3.5" />
@@ -136,7 +138,7 @@ export const NotificationInbox = () => {
       </div>
 
       {/* List */}
-      <div className="overflow-hidden rounded-xl border border-border bg-white custom-card-shadow">
+      <div className="overflow-hidden rounded-xl border border-border bg-white dark:bg-card custom-card-shadow">
         {showLoader ? (
           <div className="divide-y divide-border">
             {Array.from({ length: 5 }).map((_, index) => (
@@ -152,11 +154,13 @@ export const NotificationInbox = () => {
           </div>
         ) : isError ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <Bell className="mb-3 size-10 text-grey2" />
+            <Bell className="mb-3 size-10 text-grey2 dark:text-gray-400" />
             <p className="text-sm font-medium text-destructive">
               Error loading notifications
             </p>
-            <p className="mt-1 text-xs text-grey3">Please try again later.</p>
+            <p className="mt-1 text-xs text-grey3 dark:text-gray-400">
+              Please try again later.
+            </p>
           </div>
         ) : notifications.length > 0 ? (
           <div className="divide-y divide-border">
@@ -174,11 +178,11 @@ export const NotificationInbox = () => {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <Bell className="mb-3 size-10 text-grey2" />
-            <p className="text-sm font-medium text-grey-black">
+            <Bell className="mb-3 size-10 text-grey2 dark:text-gray-400" />
+            <p className="text-sm font-medium text-grey-black dark:text-white">
               No notifications
             </p>
-            <p className="mt-1 text-xs text-grey3">
+            <p className="mt-1 text-xs text-grey3 dark:text-gray-400">
               {category
                 ? `No ${category} notifications yet.`
                 : "You're all caught up."}
@@ -194,18 +198,18 @@ export const NotificationInbox = () => {
             type="button"
             onClick={() => setPage((prev) => Math.max(1, prev - 1))}
             disabled={page <= 1}
-            className="cursor-pointer rounded-lg border border-input px-3 py-1.5 text-sm font-medium text-grey-black transition-colors hover:bg-[#F8F9FA] disabled:cursor-not-allowed disabled:opacity-50"
+            className="cursor-pointer rounded-lg border border-input px-3 py-1.5 text-sm font-medium text-grey-black dark:text-white transition-colors hover:bg-[#F8F9FA] dark:hover:bg-muted/80 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Previous
           </button>
-          <span className="text-sm text-grey3">
+          <span className="text-sm text-grey3 dark:text-gray-400">
             Page {page} of {totalPages}
           </span>
           <button
             type="button"
             onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
             disabled={page >= totalPages}
-            className="cursor-pointer rounded-lg border border-input px-3 py-1.5 text-sm font-medium text-grey-black transition-colors hover:bg-[#F8F9FA] disabled:cursor-not-allowed disabled:opacity-50"
+            className="cursor-pointer rounded-lg border border-input px-3 py-1.5 text-sm font-medium text-grey-black dark:text-white transition-colors hover:bg-[#F8F9FA] dark:hover:bg-muted/80 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Next
           </button>

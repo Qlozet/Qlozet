@@ -22,7 +22,7 @@ export const TicketReplyThread = ({
 }: TicketReplyThreadProps) => {
   if (replies.length === 0) {
     return (
-      <p className="text-sm text-grey3">
+      <p className="text-sm text-grey3 dark:text-gray-400">
         {unresolved
           ? 'This ticket has replies, but they could not be loaded.'
           : 'No replies yet.'}
@@ -40,21 +40,21 @@ export const TicketReplyThread = ({
         {replies.map((reply) => (
           <li
             key={reply._id}
-            className="rounded-xl border border-border bg-[#F8F9FA] p-4"
+            className="rounded-xl border border-border bg-[#F8F9FA] dark:bg-muted p-4"
           >
             <div className="mb-1 flex items-center justify-between gap-3">
-              <span className="text-xs font-medium text-grey-black">
+              <span className="text-xs font-medium text-grey-black dark:text-white">
                 {reply.sender_type
                   ? reply.sender_type.charAt(0).toUpperCase() +
                     reply.sender_type.slice(1)
                   : 'Support'}
               </span>
-              <span className="shrink-0 text-xs text-grey3">
+              <span className="shrink-0 text-xs text-grey3 dark:text-gray-400">
                 {formatDateTime(reply.createdAt)}
               </span>
             </div>
 
-            <p className="whitespace-pre-wrap text-sm leading-relaxed text-grey3">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-grey3 dark:text-gray-400">
               {reply.message}
             </p>
 

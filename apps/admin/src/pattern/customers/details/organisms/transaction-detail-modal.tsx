@@ -30,8 +30,10 @@ const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'error'> = {
 const Row = ({ label, value }: { label: string; value?: React.ReactNode }) =>
   value === undefined || value === null || value === '' ? null : (
     <div className="flex items-start justify-between gap-4 border-b border-border py-2.5 last:border-b-0">
-      <span className="shrink-0 text-xs text-grey3">{label}</span>
-      <span className="break-all text-right text-sm font-medium text-grey-black">
+      <span className="shrink-0 text-xs text-grey3 dark:text-gray-400">
+        {label}
+      </span>
+      <span className="break-all text-right text-sm font-medium text-grey-black dark:text-white">
         {value}
       </span>
     </div>
@@ -63,11 +65,11 @@ export const TransactionDetailModal = create<TransactionDetailModalProps>(
           role="dialog"
           aria-modal="true"
           aria-label="Transaction details"
-          className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+          className="relative z-10 w-full max-w-md rounded-2xl bg-white dark:bg-card p-6 shadow-2xl"
         >
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-lg font-semibold text-grey-black">
+              <h2 className="text-lg font-semibold text-grey-black dark:text-white">
                 Transaction
               </h2>
               {status && (
@@ -84,7 +86,7 @@ export const TransactionDetailModal = create<TransactionDetailModalProps>(
               type="button"
               onClick={close}
               aria-label="Close"
-              className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-grey3 transition-colors hover:bg-gray-100"
+              className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-grey3 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-muted/80"
             >
               <X className="size-4" />
             </button>

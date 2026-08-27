@@ -52,7 +52,7 @@ export const EditTargetModal = NiceModal.create(
             type="button"
             onClick={handleClose}
             aria-label="Close"
-            className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 transition"
+            className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-muted/80 transition"
           >
             <X className="size-4" />
           </button>
@@ -63,7 +63,7 @@ export const EditTargetModal = NiceModal.create(
           >
             Edit Target
           </h2>
-          <p className="mt-1 text-sm text-grey3">
+          <p className="mt-1 text-sm text-grey3 dark:text-gray-400">
             Choose who receives the <span className="font-medium">{title}</span>{' '}
             notification.
           </p>
@@ -79,8 +79,8 @@ export const EditTargetModal = NiceModal.create(
                   className={cn(
                     'flex w-full items-center justify-between rounded-xl border px-4 py-3 text-sm transition-colors cursor-pointer',
                     active
-                      ? 'border-primary bg-primary/5 text-grey-black'
-                      : 'border-border text-grey3 hover:bg-gray-50'
+                      ? 'border-primary bg-primary/5 text-grey-black dark:text-white'
+                      : 'border-border text-grey3 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-muted/80'
                   )}
                 >
                   <span>{option.label}</span>

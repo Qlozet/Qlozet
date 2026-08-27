@@ -77,7 +77,7 @@ export const RecentOrders = ({ customerId }: RecentOrdersProps = {}) => {
       <CardHeader className="flex shrink-0 flex-row items-center justify-between pb-3">
         <div className="flex items-center gap-2">
           <ShoppingBag className="size-4 text-muted-foreground" />
-          <CardTitle className="m-0 text-sm font-medium text-[hsla(210,9%,31%,1)]">
+          <CardTitle className="m-0 text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-white">
             Recent orders
           </CardTitle>
           {!isEmpty && (
@@ -125,7 +125,7 @@ export const RecentOrders = ({ customerId }: RecentOrdersProps = {}) => {
                 type="button"
                 key={order._id}
                 onClick={() => NiceModal.show(OrderDetailsDrawer, { order })}
-                className="group flex w-full cursor-pointer items-center justify-between rounded-xl bg-gray-50 p-3 text-left transition hover:bg-gray-100"
+                className="group flex w-full cursor-pointer items-center justify-between rounded-xl bg-gray-50 dark:bg-muted p-3 text-left transition hover:bg-gray-100 dark:hover:bg-muted/80"
               >
                 <div className="flex min-w-0 flex-1 items-center gap-3">
                   {/* Thumbnail stack — tight by default, fans out on hover. */}
@@ -135,7 +135,7 @@ export const RecentOrders = ({ customerId }: RecentOrdersProps = {}) => {
                         <div
                           key={index}
                           className={cn(
-                            'relative size-11 overflow-hidden rounded-lg bg-gray-200 ring-2 ring-gray-50 transition-all duration-200 ease-out',
+                            'relative size-11 overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700 ring-2 ring-gray-50 dark:ring-muted transition-all duration-200 ease-out',
                             index !== 0 && '-ml-8 group-hover:-ml-4'
                           )}
                           style={{ zIndex: images.length - index }}
@@ -151,7 +151,7 @@ export const RecentOrders = ({ customerId }: RecentOrdersProps = {}) => {
                         </div>
                       ))
                     ) : (
-                      <div className="relative flex size-11 items-center justify-center overflow-hidden rounded-lg bg-gray-200">
+                      <div className="relative flex size-11 items-center justify-center overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700">
                         <Package className="size-4 text-gray-400" />
                       </div>
                     )}
@@ -159,7 +159,7 @@ export const RecentOrders = ({ customerId }: RecentOrdersProps = {}) => {
 
                   <div className="flex min-w-0 flex-col gap-0.5">
                     <div className="flex items-center gap-2">
-                      <p className="truncate text-sm font-medium text-gray-900 transition-colors group-hover:text-primary">
+                      <p className="truncate text-sm font-medium text-gray-900 dark:text-white transition-colors group-hover:text-primary">
                         {productName}
                       </p>
                       {itemsCount > 1 && (
@@ -169,10 +169,12 @@ export const RecentOrders = ({ customerId }: RecentOrdersProps = {}) => {
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <p className="truncate text-xs text-gray-500">
+                      <p className="truncate text-xs text-gray-500 dark:text-gray-400">
                         {readCustomerName(order)}
                       </p>
-                      <span className="text-gray-300">&middot;</span>
+                      <span className="text-gray-300 dark:text-gray-600">
+                        &middot;
+                      </span>
                       <span className="shrink-0 font-mono text-[11px] text-muted-foreground">
                         #{orderId.slice(-6).toUpperCase()}
                       </span>
@@ -182,7 +184,7 @@ export const RecentOrders = ({ customerId }: RecentOrdersProps = {}) => {
 
                 <div className="ml-3 flex shrink-0 items-center gap-3">
                   <div className="flex flex-col items-end gap-1">
-                    <p className="text-sm font-semibold text-gray-900">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
                       {formatNaira(readAmountPaid(order))}
                     </p>
                     <span

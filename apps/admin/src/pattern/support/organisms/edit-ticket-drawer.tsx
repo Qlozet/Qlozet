@@ -80,21 +80,21 @@ export const EditTicketDrawer = NiceModal.create(
       <Sheet open={visible} onOpenChange={handleOpenChange}>
         <SheetContent
           side="right"
-          className="flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white"
+          className="flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white dark:bg-card"
           style={{
             height: 'calc(100vh - 3rem)',
             maxHeight: 'calc(100vh - 3rem)',
           }}
         >
           <SheetHeader className="shrink-0 border-b border-border py-5 pl-6 pr-12">
-            <SheetTitle className="text-lg font-semibold text-[#0C0C0D]">
+            <SheetTitle className="text-lg font-semibold text-[#0C0C0D] dark:text-white">
               Edit Ticket
             </SheetTitle>
           </SheetHeader>
 
           <div className="flex-1 min-h-0 space-y-5 overflow-y-auto px-6 py-5">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-grey-black">
+              <label className="text-sm font-medium text-grey-black dark:text-white">
                 Category
               </label>
               <Select value={issue} onValueChange={setIssue}>
@@ -112,7 +112,7 @@ export const EditTicketDrawer = NiceModal.create(
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-grey-black">
+              <label className="text-sm font-medium text-grey-black dark:text-white">
                 Description<span className="text-error"> *</span>
               </label>
               <Textarea

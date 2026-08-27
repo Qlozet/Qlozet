@@ -64,7 +64,7 @@ export const ScheduleProductActivationModal =
               type="button"
               onClick={handleClose}
               aria-label="Close"
-              className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 transition"
+              className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 transition dark:text-gray-400 dark:hover:bg-muted/80"
             >
               <X className="size-4" />
             </button>
@@ -78,7 +78,7 @@ export const ScheduleProductActivationModal =
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
                   Date
                 </label>
                 <div className="relative">
@@ -93,7 +93,7 @@ export const ScheduleProductActivationModal =
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
                   Time
                 </label>
                 <div className="relative">

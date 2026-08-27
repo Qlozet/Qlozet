@@ -22,7 +22,7 @@ export const createActivityLogColumns = (): ColumnDef<VendorActivity>[] => [
     id: 'date',
     header: 'Date',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-700 whitespace-nowrap">
+      <span className="text-sm text-gray-700 dark:text-gray-200 whitespace-nowrap">
         {row.original.date ?? row.original.createdAt ?? '—'}
       </span>
     ),
@@ -32,7 +32,7 @@ export const createActivityLogColumns = (): ColumnDef<VendorActivity>[] => [
     accessorKey: 'user',
     header: 'User',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-700 whitespace-nowrap">
+      <span className="text-sm text-gray-700 dark:text-gray-200 whitespace-nowrap">
         {row.original.user ?? '—'}
       </span>
     ),
@@ -42,7 +42,7 @@ export const createActivityLogColumns = (): ColumnDef<VendorActivity>[] => [
     id: 'activityType',
     header: 'Activity Type',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-700 whitespace-nowrap">
+      <span className="text-sm text-gray-700 dark:text-gray-200 whitespace-nowrap">
         {row.original.activityType ?? row.original.type ?? '—'}
       </span>
     ),
@@ -52,7 +52,7 @@ export const createActivityLogColumns = (): ColumnDef<VendorActivity>[] => [
     accessorKey: 'description',
     header: 'Description',
     cell: ({ row }) => (
-      <span className="block max-w-[160px] text-sm text-gray-700 line-clamp-2">
+      <span className="block max-w-[160px] text-sm text-gray-700 dark:text-gray-200 line-clamp-2">
         {row.original.description ?? '—'}
       </span>
     ),
@@ -62,7 +62,7 @@ export const createActivityLogColumns = (): ColumnDef<VendorActivity>[] => [
     accessorKey: 'amount',
     header: 'Amount',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-700 whitespace-nowrap">
+      <span className="text-sm text-gray-700 dark:text-gray-200 whitespace-nowrap">
         {typeof row.original.amount === 'number'
           ? `$${row.original.amount.toLocaleString()}`
           : '—'}
@@ -88,7 +88,7 @@ export const createActivityLogColumns = (): ColumnDef<VendorActivity>[] => [
     accessorKey: 'remarks',
     header: 'Remarks',
     cell: ({ row }) => (
-      <span className="block max-w-[160px] text-sm text-gray-700 line-clamp-2">
+      <span className="block max-w-[160px] text-sm text-gray-700 dark:text-gray-200 line-clamp-2">
         {row.original.remarks ?? '—'}
       </span>
     ),

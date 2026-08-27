@@ -51,16 +51,18 @@ export const ExpectedEarningsChart = () => {
 
   return (
     <Card className="relative w-full h-[450px] overflow-hidden rounded-[12px] custom-card-shadow">
-      <span className="absolute top-5 right-5 z-10 flex size-9 items-center justify-center rounded-lg bg-gray-100">
-        <BarChart3 className="size-4 text-gray-700" />
+      <span className="absolute top-5 right-5 z-10 flex size-9 items-center justify-center rounded-lg bg-gray-100 dark:bg-muted">
+        <BarChart3 className="size-4 text-gray-700 dark:text-gray-200" />
       </span>
 
       <CardContent className="flex h-full flex-col px-6 pt-7">
-        <p className="text-sm text-[hsla(210,9%,31%,1)]">Expected earnings</p>
+        <p className="text-sm text-[hsla(210,9%,31%,1)] dark:text-white">
+          Expected earnings
+        </p>
 
         {hasMoney && (
           <>
-            <p className="mt-2 text-2xl font-bold text-[hsla(210,9%,31%,1)]">
+            <p className="mt-2 text-2xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white">
               {formatNaira(total)}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -102,8 +104,8 @@ export const ExpectedEarningsChart = () => {
                       key={`cell-${index}`}
                       fill={
                         entry.value === maxValue && maxValue > 0
-                          ? '#3d2817'
-                          : '#d4c5b9'
+                          ? 'var(--chart-primary)'
+                          : 'var(--chart-4)'
                       }
                     />
                   ))}

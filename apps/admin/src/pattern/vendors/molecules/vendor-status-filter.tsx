@@ -64,14 +64,16 @@ export const VendorStatusFilter = ({
         aria-haspopup="listbox"
         aria-expanded={open}
         className={cn(
-          'flex h-10 w-[180px] items-center justify-between gap-2 rounded-lg border border-border bg-white px-4 text-sm transition-colors hover:bg-gray-50 cursor-pointer',
-          selected?.value ? 'text-grey-black' : 'text-gray-500'
+          'flex h-10 w-[180px] items-center justify-between gap-2 rounded-lg border border-border bg-white dark:bg-muted px-4 text-sm transition-colors hover:bg-gray-50 dark:hover:bg-muted/80 cursor-pointer',
+          selected?.value
+            ? 'text-grey-black dark:text-white'
+            : 'text-gray-500 dark:text-gray-400'
         )}
       >
         <span className="truncate">{triggerLabel}</span>
         <ChevronDown
           className={cn(
-            'size-4 shrink-0 text-gray-500 transition-transform',
+            'size-4 shrink-0 text-gray-500 dark:text-gray-400 transition-transform',
             open && 'rotate-180'
           )}
         />
@@ -81,7 +83,7 @@ export const VendorStatusFilter = ({
         <ul
           role="listbox"
           aria-label="Filter by vendor status"
-          className="absolute right-0 z-20 mt-1 w-[180px] overflow-hidden rounded-lg border border-border bg-white py-1 shadow-lg"
+          className="absolute right-0 z-20 mt-1 w-[180px] overflow-hidden rounded-lg border border-border bg-white dark:bg-card py-1 shadow-lg"
         >
           {OPTIONS.map((option) => {
             const isSelected = option.value === value;
@@ -98,8 +100,10 @@ export const VendorStatusFilter = ({
                     setOpen(false);
                   }}
                   className={cn(
-                    'flex w-full cursor-pointer items-center justify-between gap-2 px-4 py-2 text-left text-sm transition-colors hover:bg-gray-50',
-                    isSelected ? 'font-medium text-grey-black' : 'text-gray-700'
+                    'flex w-full cursor-pointer items-center justify-between gap-2 px-4 py-2 text-left text-sm transition-colors hover:bg-gray-50 dark:hover:bg-muted/80',
+                    isSelected
+                      ? 'font-medium text-grey-black dark:text-white'
+                      : 'text-gray-700 dark:text-gray-200'
                   )}
                 >
                   <span className="truncate">{option.label}</span>

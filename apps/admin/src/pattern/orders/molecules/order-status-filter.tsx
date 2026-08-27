@@ -29,19 +29,19 @@ export const OrderStatusFilter = ({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-10 w-[160px] items-center justify-between gap-2 rounded-lg border border-border bg-white px-4 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+        className="flex h-10 w-[160px] items-center justify-between gap-2 rounded-lg border border-border bg-white dark:bg-card px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-muted/80 transition-colors cursor-pointer"
       >
         <span className="truncate">{selected.label}</span>
         <ChevronDown
           className={cn(
-            'size-4 shrink-0 text-gray-500 transition-transform',
+            'size-4 shrink-0 text-gray-500 dark:text-gray-400 transition-transform',
             open && 'rotate-180'
           )}
         />
       </button>
 
       {open && (
-        <div className="absolute left-0 z-20 mt-1 w-[180px] overflow-hidden rounded-lg border border-border bg-white py-1 shadow-lg">
+        <div className="absolute left-0 z-20 mt-1 w-[180px] overflow-hidden rounded-lg border border-border bg-white dark:bg-card py-1 shadow-lg">
           {OPTIONS.map((option) => (
             <button
               key={option.value || 'all'}
@@ -50,7 +50,7 @@ export const OrderStatusFilter = ({
                 onChange(option.value);
                 setOpen(false);
               }}
-              className="flex w-full items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+              className="flex w-full items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-muted/80 cursor-pointer"
             >
               <span>{option.value ? option.label : 'All statuses'}</span>
               {option.value === value && (

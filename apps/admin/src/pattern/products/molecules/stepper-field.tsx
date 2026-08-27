@@ -28,25 +28,27 @@ export const StepperField = ({
 
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
-      <label className="text-sm font-medium text-gray-700">{label}</label>
+      <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
+        {label}
+      </label>
       <div className="flex h-10 items-center justify-between rounded-md border border-input bg-background px-2">
         <button
           type="button"
           aria-label={`Decrease ${label}`}
           onClick={() => onChange(clamp(value - step))}
-          className="flex size-6 items-center justify-center rounded text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+          className="flex size-6 items-center justify-center rounded text-gray-600 hover:bg-gray-100 disabled:opacity-40 dark:text-gray-400 dark:hover:bg-muted/80"
           disabled={value <= min}
         >
           <Minus className="size-4" />
         </button>
-        <span className="min-w-[24px] text-center text-sm text-gray-900">
+        <span className="min-w-[24px] text-center text-sm text-gray-900 dark:text-white">
           {value}
         </span>
         <button
           type="button"
           aria-label={`Increase ${label}`}
           onClick={() => onChange(clamp(value + step))}
-          className="flex size-6 items-center justify-center rounded text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+          className="flex size-6 items-center justify-center rounded text-gray-600 hover:bg-gray-100 disabled:opacity-40 dark:text-gray-400 dark:hover:bg-muted/80"
           disabled={value >= max}
         >
           <Plus className="size-4" />

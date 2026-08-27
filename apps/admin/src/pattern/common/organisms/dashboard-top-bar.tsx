@@ -90,7 +90,7 @@ export const DashboardTopBar = ({ title }: DashboardTopBarProps) => {
   const digestUnread = digestData?.data?.unread ?? 0;
 
   return (
-    <div className="w-full flex items-center justify-between gap-4 bg-white py-3 px-5 lg:px-6 rounded-2xl shadow-[0px_4px_10px_#AEAEC026]">
+    <div className="w-full flex items-center justify-between gap-4 bg-white dark:bg-card py-3 px-5 lg:px-6 rounded-2xl shadow-[0px_4px_10px_#AEAEC026]">
       {/* Title, preceded on small screens by the drawer trigger */}
       <div className="flex min-w-0 items-center gap-3">
         <Sheet open={showNav} onOpenChange={setShowNav}>
@@ -121,7 +121,7 @@ export const DashboardTopBar = ({ title }: DashboardTopBarProps) => {
           </SheetContent>
         </Sheet>
 
-        <h1 className="text-[18px] font-semibold text-grey-black truncate">
+        <h1 className="text-[18px] font-semibold text-grey-black dark:text-white truncate">
           {pageTitle}
         </h1>
       </div>
@@ -133,7 +133,7 @@ export const DashboardTopBar = ({ title }: DashboardTopBarProps) => {
           type="button"
           onClick={() => setShowAssistant(true)}
           aria-label="Ask the assistant"
-          className="relative flex h-9 w-9 items-center justify-center rounded-[10px] bg-[#F8F9FA] text-primary hover:bg-gray-100 transition-colors cursor-pointer"
+          className="relative flex h-9 w-9 items-center justify-center rounded-[10px] bg-[#F8F9FA] dark:bg-muted text-primary hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors cursor-pointer"
         >
           <Sparkles className="h-5 w-5" />
           {digestUnread > 0 && (
@@ -150,7 +150,7 @@ export const DashboardTopBar = ({ title }: DashboardTopBarProps) => {
               ? `Notifications, ${unreadCount} unread`
               : 'Notifications'
           }
-          className="relative flex h-9 w-9 items-center justify-center rounded-[10px] bg-[#F8F9FA] text-grey3 hover:bg-gray-100 transition-colors cursor-pointer"
+          className="relative flex h-9 w-9 items-center justify-center rounded-[10px] bg-[#F8F9FA] dark:bg-muted text-grey3 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors cursor-pointer"
         >
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
@@ -164,7 +164,7 @@ export const DashboardTopBar = ({ title }: DashboardTopBarProps) => {
         {isLoadingUser && !userName ? (
           <Skeleton className="hidden h-4 w-28 rounded md:block" />
         ) : userName ? (
-          <span className="hidden md:block text-sm font-medium text-grey-black max-w-45 truncate">
+          <span className="hidden md:block text-sm font-medium text-grey-black dark:text-white max-w-45 truncate">
             {userName}
           </span>
         ) : null}
@@ -174,7 +174,7 @@ export const DashboardTopBar = ({ title }: DashboardTopBarProps) => {
           type="button"
           onClick={() => setShowProfile(true)}
           aria-label="Open profile"
-          className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border bg-[#F8F9FA] text-grey3 hover:bg-gray-100 transition-colors cursor-pointer"
+          className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border bg-[#F8F9FA] dark:bg-muted text-grey3 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors cursor-pointer"
         >
           {avatarUrl ? (
             <Image
@@ -186,7 +186,7 @@ export const DashboardTopBar = ({ title }: DashboardTopBarProps) => {
               unoptimized
             />
           ) : userName ? (
-            <span className="text-xs font-semibold text-grey-black">
+            <span className="text-xs font-semibold text-grey-black dark:text-white">
               {initialsFrom(userName)}
             </span>
           ) : (

@@ -34,22 +34,22 @@ export const TargetFilter = ({ value, onChange }: TargetFilterProps) => {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center justify-between gap-2 rounded-lg border border-border bg-white px-4 py-2.5 text-sm text-grey3 hover:bg-gray-50 transition-colors cursor-pointer"
+        className="flex items-center justify-between gap-2 rounded-lg border border-border bg-white dark:bg-muted px-4 py-2.5 text-sm text-grey3 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-muted/80 transition-colors cursor-pointer"
       >
-        <ListFilter className="size-4 shrink-0 text-grey3" />
+        <ListFilter className="size-4 shrink-0 text-grey3 dark:text-gray-400" />
         <span className="truncate">
           {value ? selected.label : 'Filter By Target'}
         </span>
         <ChevronDown
           className={cn(
-            'size-4 shrink-0 text-gray-500 transition-transform',
+            'size-4 shrink-0 text-gray-500 dark:text-gray-400 transition-transform',
             open && 'rotate-180'
           )}
         />
       </button>
 
       {open && (
-        <div className="absolute right-0 z-20 mt-1 w-[180px] overflow-hidden rounded-lg border border-border bg-white py-1 shadow-lg">
+        <div className="absolute right-0 z-20 mt-1 w-[180px] overflow-hidden rounded-lg border border-border bg-white dark:bg-card py-1 shadow-lg">
           {OPTIONS.map((option) => (
             <button
               key={option.value || 'all'}
@@ -58,7 +58,7 @@ export const TargetFilter = ({ value, onChange }: TargetFilterProps) => {
                 onChange(option.value);
                 setOpen(false);
               }}
-              className="flex w-full items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              className="flex w-full items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-muted/80"
             >
               <span>{option.label}</span>
               {option.value === value && (

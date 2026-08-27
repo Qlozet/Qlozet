@@ -1,8 +1,10 @@
 export default function SettingsPage() {
   return (
     <section className="p-6">
-      <h1 className="text-2xl font-semibold text-gray-900">Settings</h1>
-      <p className="mt-1 text-sm text-gray-500">
+      <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+        Settings
+      </h1>
+      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Admin mirror of vendor /settings. Replace with admin configuration
         screens.
       </p>

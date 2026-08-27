@@ -65,11 +65,11 @@ const DetailRow = ({
   <div
     className={cn(
       'flex items-center justify-between gap-4 px-5 py-3.5',
-      !isLast && 'border-b border-[#DDE2E5]'
+      !isLast && 'border-b border-[#DDE2E5] dark:border-white/10'
     )}
   >
-    <span className="text-sm text-gray-500">{label}</span>
-    <span className="text-right text-sm font-medium text-[#333333]">
+    <span className="text-sm text-gray-500 dark:text-gray-400">{label}</span>
+    <span className="text-right text-sm font-medium text-[#333333] dark:text-white">
       {value}
     </span>
   </div>
@@ -83,13 +83,15 @@ const SectionTitle = ({
   trailing?: React.ReactNode;
 }) => (
   <div className="flex items-center justify-between gap-3">
-    <h3 className="text-sm font-semibold text-[#0C0C0D]">{children}</h3>
+    <h3 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
+      {children}
+    </h3>
     {trailing}
   </div>
 );
 
 const Panel = ({ children }: { children: React.ReactNode }) => (
-  <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)]">
+  <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-muted">
     {children}
   </div>
 );
@@ -119,12 +121,13 @@ const OrderItemRow = ({
       disabled={!interactive}
       className={cn(
         'group flex w-full items-start gap-3 px-5 py-4 text-left transition-colors',
-        interactive && 'hover:bg-black/[0.03] cursor-pointer',
-        !isLast && 'border-b border-[#DDE2E5]'
+        interactive &&
+          'hover:bg-black/[0.03] dark:hover:bg-white/[0.06] cursor-pointer',
+        !isLast && 'border-b border-[#DDE2E5] dark:border-white/10'
       )}
     >
       {/* Thumbnail */}
-      <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-200">
+      <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-200 dark:bg-muted">
         {imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -134,29 +137,31 @@ const OrderItemRow = ({
             loading="lazy"
           />
         ) : (
-          <Package className="size-5 text-gray-400" />
+          <Package className="size-5 text-gray-400 dark:text-gray-500" />
         )}
       </div>
 
       {/* Name, price, quantity */}
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-[#333333] group-hover:text-primary transition-colors">
+        <p className="truncate text-sm font-medium text-[#333333] dark:text-white group-hover:text-primary transition-colors">
           {name}
         </p>
 
         <div className="mt-0.5 flex flex-wrap items-baseline gap-2">
-          <span className="text-sm font-semibold text-[#0C0C0D]">
+          <span className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
             {formatNaira(final)}
           </span>
           {original !== undefined && (
-            <span className="text-xs text-gray-400 line-through">
+            <span className="text-xs text-gray-400 dark:text-gray-500 line-through">
               {formatNaira(original)}
             </span>
           )}
         </div>
 
         {quantity > 0 && (
-          <p className="mt-0.5 text-xs text-gray-500">QTY: {quantity}</p>
+          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+            QTY: {quantity}
+          </p>
         )}
 
         {/* The backend records a single discount amount per item, so one badge
@@ -169,7 +174,7 @@ const OrderItemRow = ({
       </div>
 
       {interactive && (
-        <span className="mt-1 flex size-6 shrink-0 items-center justify-center rounded-full bg-white text-gray-400 transition-colors group-hover:text-primary">
+        <span className="mt-1 flex size-6 shrink-0 items-center justify-center rounded-full bg-white dark:bg-muted text-gray-400 dark:text-gray-500 transition-colors group-hover:text-primary">
           <ChevronRight className="size-4" />
         </span>
       )}
@@ -243,7 +248,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
           // down with it. Escape still closes it, after any nested modal on top
           // has had its turn (see `useNestedModalDismiss`).
           onInteractOutside={(event) => event.preventDefault()}
-          className="flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white"
+          className="flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white dark:bg-card"
           style={{
             height: 'calc(100vh - 3rem)',
             maxHeight: 'calc(100vh - 3rem)',
@@ -251,7 +256,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
         >
           {/* pr-12 keeps the title clear of the Sheet's built-in close button. */}
           <SheetHeader className="shrink-0 py-5 pl-6 pr-12">
-            <SheetTitle className="text-xl font-semibold text-[#0C0C0D]">
+            <SheetTitle className="text-xl font-semibold text-[#0C0C0D] dark:text-white">
               Order details
             </SheetTitle>
           </SheetHeader>
@@ -301,8 +306,8 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     ))
                   ) : (
                     <div className="flex flex-col items-center justify-center gap-2 px-5 py-8 text-center">
-                      <Package className="size-8 text-gray-400" />
-                      <p className="text-sm text-gray-500">
+                      <Package className="size-8 text-gray-400 dark:text-gray-500" />
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
                         This order has no items.
                       </p>
                     </div>
@@ -318,7 +323,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                       type="button"
                       variant="outline"
                       onClick={handlePrintInvoice}
-                      className="h-8 gap-1.5 rounded-lg px-3 text-xs font-normal text-gray-700"
+                      className="h-8 gap-1.5 rounded-lg px-3 text-xs font-normal text-gray-700 dark:text-gray-200"
                     >
                       <Printer className="size-3.5" />
                       Print invoice
@@ -336,7 +341,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     label="Payment Status:"
                     value={
                       paymentStatus ? (
-                        <span className="capitalize text-[#0F973D]">
+                        <span className="capitalize text-[#0F973D] dark:text-green-400">
                           {paymentStatus}
                         </span>
                       ) : (
@@ -348,7 +353,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     label="Refund Status:"
                     value={
                       refundStatus ? (
-                        <span className="capitalize text-[#0F973D]">
+                        <span className="capitalize text-[#0F973D] dark:text-green-400">
                           {refundStatus}
                         </span>
                       ) : (

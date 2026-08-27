@@ -117,7 +117,7 @@ export const NotificationsTemplate = () => {
       </div>
 
       {/* Settings panel */}
-      <div className="rounded-2xl bg-white p-5 shadow-[0px_4px_10px_#AEAEC026] lg:p-6">
+      <div className="rounded-2xl bg-white dark:bg-card p-5 shadow-[0px_4px_10px_#AEAEC026] lg:p-6">
         {/* Toolbar: tabs + filter + search */}
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <ChannelTabs value={channel} onChange={setChannel} />
@@ -151,11 +151,11 @@ export const NotificationsTemplate = () => {
             ))}
           </div>
         ) : (
-          <div className="mt-6 flex min-h-[240px] flex-col items-center justify-center rounded-2xl bg-[#F8F9FA] text-center">
-            <p className="text-sm font-medium text-grey-black">
+          <div className="mt-6 flex min-h-[240px] flex-col items-center justify-center rounded-2xl bg-[#F8F9FA] dark:bg-muted text-center">
+            <p className="text-sm font-medium text-grey-black dark:text-white">
               No notifications found
             </p>
-            <p className="mt-1 text-sm text-grey3">
+            <p className="mt-1 text-sm text-grey3 dark:text-gray-400">
               {search || targetFilter
                 ? 'Try adjusting your search or target filter.'
                 : 'Add a notification to get started.'}

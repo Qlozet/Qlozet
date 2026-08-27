@@ -30,15 +30,20 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
-  order: 'bg-blue-100 text-blue-600',
-  shipping: 'bg-emerald-100 text-emerald-600',
-  payment: 'bg-amber-100 text-amber-600',
-  bespoke: 'bg-purple-100 text-purple-600',
-  product: 'bg-rose-100 text-rose-600',
-  team: 'bg-cyan-100 text-cyan-600',
-  system: 'bg-gray-100 text-gray-600',
-  fabric_transfer: 'bg-amber-100 text-amber-600',
-  fabric_transfer_incoming: 'bg-blue-100 text-blue-600',
+  order: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+  shipping:
+    'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
+  payment:
+    'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+  bespoke:
+    'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
+  product: 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400',
+  team: 'bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-400',
+  system: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
+  fabric_transfer:
+    'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+  fabric_transfer_incoming:
+    'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
 };
 
 interface NotificationRowProps {
@@ -94,7 +99,7 @@ export const NotificationRow = ({
         'flex w-full items-start gap-3 px-4 py-4 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
         !isRead
           ? 'cursor-pointer bg-primary/10 hover:bg-primary/15'
-          : 'hover:bg-[#F8F9FA]'
+          : 'hover:bg-[#F8F9FA] dark:hover:bg-muted/80'
       )}
     >
       <div
@@ -110,7 +115,7 @@ export const NotificationRow = ({
         <div className="flex items-start justify-between gap-2">
           <p
             className={cn(
-              'text-sm leading-snug text-grey-black',
+              'text-sm leading-snug text-grey-black dark:text-white',
               !isRead ? 'font-semibold' : 'font-medium'
             )}
           >
@@ -121,10 +126,14 @@ export const NotificationRow = ({
           )}
         </div>
 
-        <p className="mt-0.5 line-clamp-2 text-sm text-grey3">{body}</p>
+        <p className="mt-0.5 line-clamp-2 text-sm text-grey3 dark:text-gray-400">
+          {body}
+        </p>
 
         <div className="mt-1.5 flex items-center justify-between gap-3">
-          <p className="text-xs text-grey3">{timeAgo(date)}</p>
+          <p className="text-xs text-grey3 dark:text-gray-400">
+            {timeAgo(date)}
+          </p>
 
           {/* Explicit action for unread items — clicking the row does the same
               thing, so this stops propagation to avoid firing twice. */}

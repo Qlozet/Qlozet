@@ -64,8 +64,8 @@ export const WalletDetailsSection = ({
   ];
 
   return (
-    <div className="rounded-2xl bg-white p-5 custom-card-shadow">
-      <h2 className="mb-5 text-lg font-bold text-[hsla(210,9%,31%,1)]">
+    <div className="rounded-2xl bg-white dark:bg-card p-5 custom-card-shadow">
+      <h2 className="mb-5 text-lg font-bold text-[hsla(210,9%,31%,1)] dark:text-white">
         Wallet Details
       </h2>
 

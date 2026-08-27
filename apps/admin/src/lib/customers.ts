@@ -15,7 +15,8 @@ export interface CustomerStatusInfo {
 export const getCustomerStatus = (customer: Customer): CustomerStatusInfo => {
   const raw = (customer.status ?? '').toString().toLowerCase();
 
-  if (['inactive', 'disabled', 'suspended', 'blocked'].includes(raw)) {
+  if (raw === 'suspended') return { variant: 'inactive', label: 'Suspended' };
+  if (['inactive', 'disabled', 'blocked'].includes(raw)) {
     return { variant: 'inactive', label: 'Inactive' };
   }
   return { variant: 'active', label: 'Active' };
@@ -46,7 +47,7 @@ export const getCustomerEmail = (customer: Customer): string =>
   customer.email || '—';
 
 export const getCustomerPhone = (customer: Customer): string =>
-  customer.phone_number || customer.phone || '—';
+  customer.phone || customer.phone_number || '—';
 
 export const getCustomerAvatar = (customer: Customer): string | undefined =>
   customer.avatar || customer.image || customer.profile_picture || undefined;
@@ -55,40 +56,141 @@ export const getCustomerInitial = (customer: Customer): string =>
   getCustomerName(customer).replace(/^@/, '').charAt(0).toUpperCase() || 'C';
 
 /**
- * Orders placed. `total_orders` is joined onto each row by the list endpoint;
- * the camelCase names are kept as a fallback for deployments that predate it.
+ * First of `values` that is an actual number.
  *
  * 0 is a real answer and must survive — a customer with no orders has zero,
- * which is not the same as the figure being unknown.
+ * which is not the same as the figure being unknown. `null` is what the
+ * endpoint sends when there is no source for a figure at all, and is the only
+ * thing that may end up as a dash.
  */
-export const getCustomerTotalOrders = (
-  customer: Customer
-): number | undefined => {
-  for (const value of [
-    customer.total_orders,
-    customer.totalOrders,
-    customer.ordersCount,
-  ]) {
-    if (typeof value === 'number' && !Number.isNaN(value)) return value;
+const readNumber = (...values: unknown[]): number | undefined => {
+  for (const value of values) {
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
   }
   return undefined;
 };
 
-export const getCustomerLastOrderDate = (
-  customer: Customer
-): string | undefined => {
-  const raw =
-    customer.last_order_at ?? customer.lastOrderDate ?? customer.lastOrderAt;
-  return typeof raw === 'string' && raw.trim() ? raw : undefined;
+/**
+ * First of `values` that is a non-empty string.
+ */
+const readString = (...values: unknown[]): string | undefined => {
+  for (const value of values) {
+    if (typeof value === 'string' && value.trim()) return value.trim();
+  }
+  return undefined;
 };
 
-export const formatCount = (value?: number): string => {
-  if (typeof value !== 'number' || Number.isNaN(value)) return '—';
+/**
+ * Orders placed. `total_orders` is what both /admin/customer and
+ * /admin/customer/:id send; the camelCase names are kept as a fallback for
+ * deployments that predate it.
+ */
+export const getCustomerTotalOrders = (
+  customer: Customer
+): number | undefined =>
+  readNumber(customer.total_orders, customer.totalOrders, customer.ordersCount);
+
+/**
+ * "Ikeja, Lagos". The detail endpoint sends this ready-made in `location` and
+ * the structured parts in `address`; the list rows send neither, so this falls
+ * back through both rather than dashing a customer whose city we do have.
+ */
+export const getCustomerLocation = (customer: Customer): string | undefined => {
+  const direct = readString(customer.location);
+  if (direct) return direct;
+
+  const address = customer.address;
+  if (typeof address === 'string') return readString(address);
+  if (address && typeof address === 'object') {
+    const parts = [
+      readString((address as { city?: unknown }).city),
+      readString((address as { state?: unknown }).state),
+    ].filter(Boolean);
+    if (parts.length) return parts.join(', ');
+  }
+
+  return readString(customer.city, customer.state);
+};
+
+/** When the account was created — `created_at` on the detail endpoint. */
+export const getCustomerJoinedDate = (customer: Customer): string | undefined =>
+  readString(customer.created_at, customer.createdAt);
+
+/** Last sign-in — `last_login_at` on the detail endpoint. */
+export const getCustomerLastLoginAt = (
+  customer: Customer
+): string | undefined =>
+  readString(
+    customer.last_login_at,
+    customer.lastLoggedIn,
+    customer.lastLoginAt
+  );
+
+/** Reviews this customer has written. */
+export const getCustomerReviewsCount = (
+  customer: Customer
+): number | undefined =>
+  readNumber(customer.reviews_count, customer.reviewsCount);
+
+/** Vendors this customer follows. */
+export const getCustomerFollowedVendors = (
+  customer: Customer
+): number | undefined =>
+  readNumber(customer.followed_vendors, customer.followedVendorsCount);
+
+/** Fabrics this customer currently has reserved. */
+export const getCustomerReservedFabrics = (
+  customer: Customer
+): number | undefined =>
+  readNumber(customer.reserved_fabrics, customer.reservedFabricCount);
+
+/** Spendable wallet balance, in naira. */
+export const getCustomerWalletBalance = (
+  customer: Customer
+): number | undefined => readNumber(customer.wallet_balance);
+
+/** Balance not yet released to the wallet, in naira. */
+export const getCustomerPendingBalance = (
+  customer: Customer
+): number | undefined => readNumber(customer.pending_balance);
+
+/** Loyalty tokens held. */
+export const getCustomerTokenBalance = (
+  customer: Customer
+): number | undefined => readNumber(customer.token_balance);
+
+/** Value refunded to this customer, in naira. */
+export const getCustomerTotalReturns = (
+  customer: Customer
+): number | undefined => readNumber(customer.total_returns);
+
+/** Everything this customer has ever paid, in naira. */
+export const getCustomerLifetimeSpending = (
+  customer: Customer
+): number | undefined => readNumber(customer.lifetime_spending);
+
+export const getCustomerLastOrderDate = (
+  customer: Customer
+): string | undefined =>
+  readString(
+    customer.last_order_at,
+    customer.lastOrderDate,
+    customer.lastOrderAt
+  );
+
+export const formatCount = (value?: number | null): string => {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return '—';
   return value.toLocaleString();
 };
 
+/**
+ * Wallet-card amounts use the one canonical formatter, so the console never
+ * shows two different naira symbols on the same screen.
+ */
+export { formatNaira } from './orders';
+
 // DD/MM/YYYY to match the Figma "Last Order date" column.
-export const formatDate = (value?: string): string => {
+export const formatDate = (value?: string | null): string => {
   if (!value) return '—';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '—';
@@ -113,7 +215,7 @@ const ordinal = (day: number): string => {
 };
 
 // "10th Feb, 2015" to match the Figma "Date joined" card.
-export const formatJoinedDate = (value?: string): string => {
+export const formatJoinedDate = (value?: string | null): string => {
   if (!value) return '—';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '—';
@@ -124,7 +226,7 @@ export const formatJoinedDate = (value?: string): string => {
 // "10:45am - 24/02/2025" to match the Figma "Last logged in" card. Falls back to
 // the raw value when the backend already sends a preformatted string.
 export const formatLastLoggedIn = (customer: Customer): string => {
-  const raw = customer.lastLoggedIn || customer.lastLoginAt;
+  const raw = getCustomerLastLoginAt(customer);
   if (!raw) return '—';
   const date = new Date(raw);
   if (Number.isNaN(date.getTime())) return raw;

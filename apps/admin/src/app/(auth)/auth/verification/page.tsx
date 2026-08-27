@@ -7,7 +7,7 @@ export default function VerificationPage() {
       subtitle="Enter the code we sent to your email"
     >
       {/* TODO: build this screen — see the vendor app's equivalent template. */}
-      <p className="text-sm text-grey3">
+      <p className="text-sm text-grey3 dark:text-gray-400">
         Mirror of vendor /auth/verification. Replace with the admin verification
         flow.
       </p>

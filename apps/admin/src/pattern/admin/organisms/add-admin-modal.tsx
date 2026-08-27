@@ -56,14 +56,14 @@ const RoleSelect = ({ value, options, onChange }: RoleSelectProps) => {
         ref={triggerRef}
         type="button"
         onClick={handleToggle}
-        className="flex w-full items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+        className="flex w-full items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-muted/80 transition-colors cursor-pointer"
       >
         <span className={cn('truncate', !value && 'text-muted-foreground')}>
           {value || 'Select an option'}
         </span>
         <ChevronDown
           className={cn(
-            'size-4 shrink-0 text-gray-500 transition-transform',
+            'size-4 shrink-0 text-gray-500 dark:text-gray-400 transition-transform',
             open && 'rotate-180'
           )}
         />
@@ -73,7 +73,7 @@ const RoleSelect = ({ value, options, onChange }: RoleSelectProps) => {
         <div
           style={{ maxHeight: menuMaxHeight }}
           className={cn(
-            'absolute left-0 right-0 z-20 overflow-auto rounded-lg border border-border bg-white py-1 shadow-lg',
+            'absolute left-0 right-0 z-20 overflow-auto rounded-lg border border-border bg-white dark:bg-card py-1 shadow-lg',
             openUp ? 'bottom-full mb-1' : 'top-full mt-1'
           )}
         >
@@ -85,7 +85,7 @@ const RoleSelect = ({ value, options, onChange }: RoleSelectProps) => {
                 onChange(option);
                 setOpen(false);
               }}
-              className="flex w-full items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              className="flex w-full items-center justify-between px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-muted/80"
             >
               <span>{option}</span>
               {option === value && <Check className="size-4 text-success" />}
@@ -162,7 +162,7 @@ export const AddAdminModal = NiceModal.create(() => {
           type="button"
           onClick={handleClose}
           aria-label="Close"
-          className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 transition"
+          className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-muted/80 transition"
         >
           <X className="size-4" />
         </button>
@@ -176,7 +176,7 @@ export const AddAdminModal = NiceModal.create(() => {
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
               Full name
             </label>
             <Input
@@ -187,7 +187,7 @@ export const AddAdminModal = NiceModal.create(() => {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
               Email address
             </label>
             <Input
@@ -199,7 +199,7 @@ export const AddAdminModal = NiceModal.create(() => {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
               Phone number
             </label>
             <Input
@@ -210,7 +210,7 @@ export const AddAdminModal = NiceModal.create(() => {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
               Admin role
             </label>
             <RoleSelect value={role} options={roleOptions} onChange={setRole} />

@@ -33,14 +33,16 @@ interface ProfileSheetProps {
 // uppercase-caption style the vendor app uses.
 const Stat = ({ label, value }: { label: string; value: string }) => (
   <div className="flex flex-1 flex-col items-center px-2">
-    <p className="text-[13px] text-[#8E8E93]">{label}</p>
-    <p className="mt-1 text-[22px] font-bold tracking-tight text-[#1C1C1E]">
+    <p className="text-[13px] text-[#8E8E93] dark:text-gray-400">{label}</p>
+    <p className="mt-1 text-[22px] font-bold tracking-tight text-[#1C1C1E] dark:text-white">
       {value}
     </p>
   </div>
 );
 
-const StatDivider = () => <div className="h-10 w-px shrink-0 bg-[#DDE2E5]" />;
+const StatDivider = () => (
+  <div className="h-10 w-px shrink-0 bg-[#DDE2E5] dark:bg-white/10" />
+);
 
 /**
  * Profile drawer — the admin counterpart of the vendor app's Profile sheet,
@@ -101,11 +103,11 @@ export const ProfileSheet = ({ open, onOpenChange }: ProfileSheetProps) => {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="flex w-full flex-col overflow-hidden p-0 sm:max-w-md sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] sm:rounded-[15px] custom-card-shadow !bg-white border border-gray-100"
+        className="flex w-full flex-col overflow-hidden p-0 sm:max-w-md sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] sm:rounded-[15px] custom-card-shadow !bg-white dark:!bg-card border border-gray-100 dark:border-white/10"
       >
-        <div className="flex h-full flex-col rounded-[15px] bg-white">
+        <div className="flex h-full flex-col rounded-[15px] bg-white dark:bg-card">
           <SheetHeader className="shrink-0 border-b border-border px-4 py-5">
-            <SheetTitle className="w-full text-left text-lg font-semibold text-[#0C0C0D]">
+            <SheetTitle className="w-full text-left text-lg font-semibold text-[#0C0C0D] dark:text-white">
               Profile
             </SheetTitle>
           </SheetHeader>
@@ -121,10 +123,10 @@ export const ProfileSheet = ({ open, onOpenChange }: ProfileSheetProps) => {
                   <Skeleton className="h-4 w-48" />
                 </div>
               ) : (
-                <div className="overflow-hidden rounded-[20px] bg-white p-6">
+                <div className="overflow-hidden rounded-[20px] bg-white dark:bg-card p-6">
                   <div className="flex flex-col items-center">
                     {/* The card is white; the avatar sits on a grey circle. */}
-                    <div className="mb-4 size-40 overflow-hidden rounded-full bg-[hsla(0,0%,92%,1)]">
+                    <div className="mb-4 size-40 overflow-hidden rounded-full bg-[hsla(0,0%,92%,1)] dark:bg-muted">
                       {avatarUrl ? (
                         <Image
                           src={avatarUrl}
@@ -136,23 +138,23 @@ export const ProfileSheet = ({ open, onOpenChange }: ProfileSheetProps) => {
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center">
-                          <span className="text-5xl font-bold text-gray-500">
+                          <span className="text-5xl font-bold text-gray-500 dark:text-gray-400">
                             {name ? initialsFrom(name) : '?'}
                           </span>
                         </div>
                       )}
                     </div>
 
-                    <p className="text-center text-[20px] font-semibold tracking-tight text-[#1C1C1E]">
+                    <p className="text-center text-[20px] font-semibold tracking-tight text-[#1C1C1E] dark:text-white">
                       {name ?? 'Signed in'}
                     </p>
                     {roleName && (
-                      <p className="mt-0.5 text-center text-[15px] font-medium capitalize text-[#8E8E93]">
+                      <p className="mt-0.5 text-center text-[15px] font-medium capitalize text-[#8E8E93] dark:text-gray-400">
                         {roleName}
                       </p>
                     )}
                     {email && (
-                      <p className="mt-1 break-all text-center text-[13px] text-[#8E8E93]">
+                      <p className="mt-1 break-all text-center text-[13px] text-[#8E8E93] dark:text-gray-400">
                         {email}
                       </p>
                     )}
@@ -184,7 +186,7 @@ export const ProfileSheet = ({ open, onOpenChange }: ProfileSheetProps) => {
                         />
                       </div>
 
-                      <div className="my-4 h-px bg-[#DDE2E5]" />
+                      <div className="my-4 h-px bg-[#DDE2E5] dark:bg-white/10" />
 
                       <div className="flex items-center justify-center">
                         <Stat

@@ -22,7 +22,9 @@ interface FabricProductsColumnsProps {
 }
 
 const textCell = (value: string) => (
-  <span className="text-sm capitalize text-gray-700">{value}</span>
+  <span className="text-sm capitalize text-gray-700 dark:text-gray-200">
+    {value}
+  </span>
 );
 
 export const createFabricProductsColumns = ({
@@ -34,7 +36,7 @@ export const createFabricProductsColumns = ({
     cell: ({ row }) => {
       const img = getProductImage(row.original);
       return (
-        <div className="h-[31px] w-[51px] overflow-hidden rounded-[8px] border border-border bg-gray-50">
+        <div className="h-[31px] w-[51px] overflow-hidden rounded-[8px] border border-border bg-gray-50 dark:bg-muted">
           {img ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -52,7 +54,7 @@ export const createFabricProductsColumns = ({
     id: 'name',
     header: 'Product name',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-700">
+      <span className="text-sm text-gray-700 dark:text-gray-200">
         {getProductName(row.original)}
       </span>
     ),
@@ -62,7 +64,7 @@ export const createFabricProductsColumns = ({
     id: 'pricePerYard',
     header: 'Price per yard',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-700">
+      <span className="text-sm text-gray-700 dark:text-gray-200">
         {formatPricePerYard(row.original)}
       </span>
     ),
@@ -98,7 +100,7 @@ export const createFabricProductsColumns = ({
     cell: ({ row }) => {
       const yards = getFabricYards(row.original);
       return (
-        <div className="flex items-center gap-2 text-sm text-gray-700">
+        <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
           <Badge
             variant={stockBadgeVariant(yards)}
             shape="square"

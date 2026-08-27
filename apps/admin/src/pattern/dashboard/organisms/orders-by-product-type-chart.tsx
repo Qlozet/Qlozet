@@ -10,7 +10,12 @@ import { useGetAdminDashboardChartsQuery } from '@/redux/services/dashboard/dash
 import { DonutChart, type DonutDatum } from '../molecules/donut-chart';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
 
-const COLORS = ['#3d2817', '#5b4636', '#8a7060', '#d4c5b9'];
+const COLORS = [
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)',
+];
 
 interface OrdersByProductTypeChartProps {
   /**

@@ -88,24 +88,24 @@ export const ReassignTicketModal = NiceModal.create(
           role="dialog"
           aria-modal="true"
           aria-labelledby="reassign-title"
-          className="relative z-10 w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl"
+          className="relative z-10 w-full max-w-sm rounded-2xl bg-white dark:bg-card p-6 shadow-2xl"
         >
           <button
             type="button"
             onClick={handleClose}
             aria-label="Close"
-            className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full text-grey3 hover:bg-gray-100 transition"
+            className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full text-grey3 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-muted/80 transition"
           >
             <X className="size-4" />
           </button>
 
           <h2
             id="reassign-title"
-            className="text-lg font-semibold text-grey-black"
+            className="text-lg font-semibold text-grey-black dark:text-white"
           >
             Reassign Ticket
           </h2>
-          <p className="mt-1 text-sm text-grey3">
+          <p className="mt-1 text-sm text-grey3 dark:text-gray-400">
             Choose the support team member who should own this ticket.
           </p>
 
@@ -117,7 +117,7 @@ export const ReassignTicketModal = NiceModal.create(
           )}
 
           <div className="mt-5 space-y-1.5">
-            <label className="text-sm font-medium text-grey-black">
+            <label className="text-sm font-medium text-grey-black dark:text-white">
               Assign To
             </label>
             <Select

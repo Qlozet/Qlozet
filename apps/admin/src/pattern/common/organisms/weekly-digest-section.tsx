@@ -38,29 +38,29 @@ export const WeeklyDigestSection = () => {
   }, [digest, unread, markRead]);
 
   return (
-    <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)]">
-      <div className="flex items-center gap-2 border-b border-[#DDE2E5] px-5 py-4">
+    <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-muted">
+      <div className="flex items-center gap-2 border-b border-[#DDE2E5] dark:border-white/10 px-5 py-4">
         <span className="flex size-6 items-center justify-center rounded-md bg-primary/10">
           <Sparkles className="size-3.5 text-primary" />
         </span>
-        <span className="text-[15px] font-semibold text-[#1C1C1E]">
+        <span className="text-[15px] font-semibold text-[#1C1C1E] dark:text-white">
           Weekly Digest
         </span>
       </div>
 
       {isLoading ? (
-        <p className="px-5 py-6 text-center text-[13px] text-[#8E8E93]">
+        <p className="px-5 py-6 text-center text-[13px] text-[#8E8E93] dark:text-gray-400">
           Loading your digest…
         </p>
       ) : !digest ? (
-        <p className="px-5 py-6 text-center text-[13px] text-[#8E8E93]">
+        <p className="px-5 py-6 text-center text-[13px] text-[#8E8E93] dark:text-gray-400">
           Your weekly digest will appear here once there&apos;s marketplace
           activity to summarise.
         </p>
       ) : (
         <div className="flex flex-col">
           {digest.summary && (
-            <div className="border-b border-[#DDE2E5] px-5 py-4 text-[13px] leading-relaxed text-[#3A3A3C]">
+            <div className="border-b border-[#DDE2E5] dark:border-white/10 px-5 py-4 text-[13px] leading-relaxed text-[#3A3A3C] dark:text-gray-200">
               <Markdown content={digest.summary} />
             </div>
           )}
@@ -70,10 +70,10 @@ export const WeeklyDigestSection = () => {
               const route = ACTION_ROUTE[recommendation.action];
               const isLast = index === digest.recommendations.length - 1;
               const rowClass = `flex items-center justify-between gap-3 px-5 py-3.5 ${
-                isLast ? '' : 'border-b border-[#DDE2E5]'
+                isLast ? '' : 'border-b border-[#DDE2E5] dark:border-white/10'
               }`;
               const label = (
-                <span className="text-[14px] font-medium text-[#1C1C1E]">
+                <span className="text-[14px] font-medium text-[#1C1C1E] dark:text-white">
                   {recommendation.label}
                 </span>
               );
@@ -82,10 +82,10 @@ export const WeeklyDigestSection = () => {
                 <Link
                   key={index}
                   href={route}
-                  className={`${rowClass} transition-colors hover:bg-black/[0.03]`}
+                  className={`${rowClass} transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.06]`}
                 >
                   {label}
-                  <ChevronRight className="size-4 shrink-0 text-[#8E8E93]" />
+                  <ChevronRight className="size-4 shrink-0 text-[#8E8E93] dark:text-gray-400" />
                 </Link>
               ) : (
                 <div key={index} className={rowClass}>
@@ -94,7 +94,7 @@ export const WeeklyDigestSection = () => {
               );
             })
           ) : (
-            <p className="px-5 py-4 text-[13px] text-[#8E8E93]">
+            <p className="px-5 py-4 text-[13px] text-[#8E8E93] dark:text-gray-400">
               No action items this week.
             </p>
           )}

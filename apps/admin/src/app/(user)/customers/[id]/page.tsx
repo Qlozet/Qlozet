@@ -1,10 +1,9 @@
 'use client';
 
-import { useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { APP_ROUTES } from '@/lib/routes';
-import { useGetCustomersQuery } from '@/redux/services/customers/customers.api-slice';
+import { useGetCustomerQuery } from '@/redux/services/customers/customers.api-slice';
 import { GoBackButton } from '@/pattern/admin/atoms/go-back-button';
 import { CustomerDetailHeader } from '@/pattern/customers/details/organisms/customer-detail-header';
 import { CustomerInfoGrid } from '@/pattern/customers/details/organisms/customer-info-grid';
@@ -16,17 +15,14 @@ const CustomerDetailsPage = () => {
   const params = useParams<{ id: string }>();
   const id = params?.id ?? '';
 
-  // The backend has no single-customer endpoint, so resolve the record from the
-  // (cached) customers list by id. A large page size covers deep-links where the
-  // user lands here without the list having been paged to this customer.
-  const { data, isLoading, isFetching } = useGetCustomersQuery({
-    page: 1,
-    size: 200,
+  // One record, straight from GET /admin/customer/:id — profile, activity and
+  // wallet figures in a single payload. This used to pull the customers list at
+  // size:200 and scan it for a matching _id, which found nothing for a customer
+  // past the 200th and carried none of the detail-only fields.
+  const { data, isLoading, isFetching } = useGetCustomerQuery(id, {
+    skip: !id,
   });
-  const customer = useMemo(
-    () => (data?.data?.data ?? []).find((c) => c._id === id),
-    [data, id]
-  );
+  const customer = data?.data;
 
   const notImplemented = () => toast.info('This action is coming soon');
 
@@ -57,7 +53,7 @@ const CustomerDetailsPage = () => {
       <CustomerAnalyticsSection customerId={id} />
 
       {/* 4. Wallet details + recent transactions */}
-      <CustomerWalletSection customer={customer} />
+      <CustomerWalletSection customer={customer} customerId={id} />
 
       {/* 5. Tickets */}
       <CustomerTicketsTable customerId={id} />

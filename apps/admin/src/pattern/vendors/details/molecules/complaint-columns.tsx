@@ -60,11 +60,13 @@ export const createComplaintColumns = ({
           <div className="flex flex-col gap-1">
             {/* Tickets carry no reference/subject fields — the id tail and the
                 issue type stand in for them. */}
-            <span className="text-sm font-semibold text-[hsla(210,9%,31%,1)]">
+            <span className="text-sm font-semibold text-[hsla(210,9%,31%,1)] dark:text-white">
               {shortTicketId(c._id)}
             </span>
-            <span className="text-xs text-gray-500">{ticketCategory(c)}</span>
-            <span className="max-w-[420px] text-xs text-gray-500">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {ticketCategory(c)}
+            </span>
+            <span className="max-w-[420px] text-xs text-gray-500 dark:text-gray-400">
               {ticketSubject(c)}
             </span>
           </div>
@@ -77,7 +79,7 @@ export const createComplaintColumns = ({
     id: 'date',
     header: 'Date',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-600 whitespace-nowrap">
+      <span className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
         {formatDate(row.original.createdAt)}
       </span>
     ),

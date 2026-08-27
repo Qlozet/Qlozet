@@ -8,7 +8,11 @@ import CollectionsCreateTemplate from '@/pattern/collections/templates/collectio
 export default function CollectionsCreatePage() {
   return (
     <Suspense
-      fallback={<div className="p-6 text-sm text-gray-500">Loading…</div>}
+      fallback={
+        <div className="p-6 text-sm text-gray-500 dark:text-gray-400">
+          Loading…
+        </div>
+      }
     >
       <CollectionsCreateTemplate />
     </Suspense>

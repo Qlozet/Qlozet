@@ -21,7 +21,7 @@ export const CustomXAxisTick = ({
       textAnchor="middle"
       dominantBaseline="hanging"
       fontSize={10}
-      fill="#00"
+      fill="var(--muted-foreground)"
     >
       {payload.value}
     </text>

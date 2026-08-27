@@ -42,13 +42,15 @@ export const PasswordRules = ({ rules }: { rules: PasswordRule[] }) => (
           aria-hidden
           className={cn(
             'size-4 shrink-0 rounded-full transition-colors',
-            rule.met ? 'bg-primary' : 'bg-[#E5E5E5]'
+            rule.met ? 'bg-primary' : 'bg-[#E5E5E5] dark:bg-muted'
           )}
         />
         <span
           className={cn(
             'text-sm transition-colors',
-            rule.met ? 'text-grey-black' : 'text-grey3'
+            rule.met
+              ? 'text-grey-black dark:text-white'
+              : 'text-grey3 dark:text-gray-400'
           )}
         >
           {rule.label}

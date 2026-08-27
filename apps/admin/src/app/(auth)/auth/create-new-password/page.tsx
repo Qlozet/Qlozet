@@ -29,7 +29,10 @@ const PasswordField = ({
   const [show, setShow] = useState(false);
   return (
     <div className="space-y-1.5">
-      <label htmlFor={id} className="text-sm font-medium text-grey-black">
+      <label
+        htmlFor={id}
+        className="text-sm font-medium text-grey-black dark:text-white"
+      >
         {label}
       </label>
       <div className="relative">
@@ -47,7 +50,7 @@ const PasswordField = ({
           type="button"
           onClick={() => setShow((prev) => !prev)}
           aria-label={show ? `Hide ${label}` : `Show ${label}`}
-          className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-grey3 transition-colors hover:text-grey-black"
+          className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-grey3 transition-colors hover:text-grey-black dark:text-gray-400 dark:hover:text-white"
           tabIndex={-1}
         >
           {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -100,7 +103,7 @@ const CreateNewPasswordForm = () => {
         <div className="space-y-1.5">
           <label
             htmlFor="reset-code"
-            className="text-sm font-medium text-grey-black"
+            className="text-sm font-medium text-grey-black dark:text-white"
           >
             Reset code
           </label>

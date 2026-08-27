@@ -24,6 +24,22 @@ describe('readSeries', () => {
     ]);
   });
 
+  // A blank label still plots a bar, so it rendered as a bar with no tick
+  // beneath it — a silent gap in the axis rather than a visible category.
+  it('names an unlabelled point rather than plotting a bar with no tick', () => {
+    expect(
+      readSeries(
+        chart([
+          { label: '', value: 12 },
+          { label: '   ', value: 4 },
+        ])
+      )
+    ).toEqual([
+      { name: 'Unknown', value: 12 },
+      { name: 'Unknown', value: 4 },
+    ]);
+  });
+
   it('carries a point colour through when the API sets one', () => {
     expect(
       readSeries(chart([{ label: 'Processing', value: 48, color: '#9C8578' }]))

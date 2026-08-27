@@ -14,7 +14,7 @@ const initials = (name: string): string =>
 export const ActivityItem = ({ activity }: { activity: TicketActivity }) => (
   <div className="flex gap-4">
     {/* Date column */}
-    <span className="w-[140px] shrink-0 pt-1 text-xs text-grey2">
+    <span className="w-[140px] shrink-0 pt-1 text-xs text-grey2 dark:text-gray-400">
       {activity.time}
     </span>
 
@@ -35,7 +35,7 @@ export const ActivityItem = ({ activity }: { activity: TicketActivity }) => (
     {/* Body */}
     <div className="flex-1 space-y-1 pb-2">
       <p className="text-sm font-semibold text-[#3387CC]">{activity.actor}</p>
-      <p className="text-sm text-grey-black">
+      <p className="text-sm text-grey-black dark:text-white">
         {activity.action}
         {activity.highlight && (
           <span className="text-[#3387CC]"> {activity.highlight}</span>
