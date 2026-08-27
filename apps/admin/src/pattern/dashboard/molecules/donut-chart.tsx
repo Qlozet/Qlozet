@@ -61,7 +61,61 @@ interface DonutChartProps {
    * placeholder distribution.
    */
   emptyDescription?: string;
+  /**
+   * Short line shown in place of the legend when the "right" layout has nothing
+   * to plot, e.g. "No sales yet".
+   */
+  emptyMessage?: string;
 }
+
+/**
+ * The donut's own outline with nothing in it — one unbroken track ring in the
+ * muted colour, at the exact geometry of the real chart (outer 40, inner 23).
+ *
+ * Drawn as plain SVG rather than a recharts Pie fed a synthetic slice: a fake
+ * datum would carry a hover tooltip reading "1", and the ring is the one thing
+ * here that must never look like data.
+ */
+const EmptyDonutRing = () => (
+  <svg
+    viewBox="0 0 88 88"
+    className="size-full"
+    role="presentation"
+    aria-hidden="true"
+  >
+    <circle
+      cx="44"
+      cy="44"
+      r="31.5"
+      fill="none"
+      stroke="var(--muted)"
+      strokeWidth="17"
+    />
+  </svg>
+);
+
+/**
+ * The legend, empty: the same two-column grid of dot + label the populated
+ * chart draws, with the labels as blank muted bars. Keeping the shape means the
+ * card reads as "this chart has no data" rather than as a broken or
+ * still-loading card, and nothing moves when real data lands.
+ */
+const EmptyDonutLegend = () => (
+  <ul
+    className="grid w-fit grid-cols-2 gap-x-10 gap-y-2 p-0 m-0"
+    aria-hidden="true"
+  >
+    {Array.from({ length: 4 }, (_, index) => (
+      <li
+        key={`legend-placeholder-${index}`}
+        className="flex items-center gap-x-2"
+      >
+        <span className="size-[9px] shrink-0 rounded-full bg-muted" />
+        <span className="h-2 w-14 rounded-full bg-muted" />
+      </li>
+    ))}
+  </ul>
+);
 
 // Reusable donut chart (Card + Pie + legend). Backs "Orders by gender",
 // "Returns rate", "Orders by product type", etc. so the donut markup lives in
@@ -73,6 +127,7 @@ export const DonutChart = ({
   className,
   legendPosition = 'bottom',
   emptyDescription,
+  emptyMessage = 'No sales yet',
 }: DonutChartProps) => {
   const isEmpty =
     data.length === 0 || !data.some((datum) => (datum.value ?? 0) > 0);
@@ -84,48 +139,62 @@ export const DonutChart = ({
       >
         <CardContent className="flex h-full items-center gap-4 p-3 2xl:p-5">
           <div className="size-[88px] shrink-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-                <Pie
-                  data={data}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={23}
-                  outerRadius={40}
-                  paddingAngle={2}
-                  dataKey="value"
-                >
-                  {data.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={colors[index % colors.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip content={<CustomChartTooltip />} cursor={false} />
-              </PieChart>
-            </ResponsiveContainer>
+            {isEmpty ? (
+              <EmptyDonutRing />
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                  <Pie
+                    data={data}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={23}
+                    outerRadius={40}
+                    paddingAngle={2}
+                    dataKey="value"
+                  >
+                    {data.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={colors[index % colors.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomChartTooltip />} cursor={false} />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
           </div>
 
-          <div className="flex-1 space-y-3">
+          <div className={isEmpty ? 'flex-1 space-y-2' : 'flex-1 space-y-3'}>
             <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-white">
               {title}
             </CardTitle>
-            <ul className="grid w-fit grid-cols-2 gap-x-10 gap-y-2 p-0 m-0 text-xs capitalize">
-              {data.map((entry, index) => (
-                <li
-                  key={`legend-${index}`}
-                  className="flex items-center gap-x-2"
-                >
-                  <span className="shrink-0">
-                    <ChartLegendIcon color={colors[index % colors.length]} />
-                  </span>
-                  <span className="truncate text-black dark:text-white">
-                    {entry.name}
-                  </span>
-                </li>
-              ))}
-            </ul>
+
+            {isEmpty ? (
+              <>
+                <p className="text-[11px] leading-none text-muted-foreground">
+                  {emptyMessage}
+                </p>
+                <EmptyDonutLegend />
+              </>
+            ) : (
+              <ul className="grid w-fit grid-cols-2 gap-x-10 gap-y-2 p-0 m-0 text-xs capitalize">
+                {data.map((entry, index) => (
+                  <li
+                    key={`legend-${index}`}
+                    className="flex items-center gap-x-2"
+                  >
+                    <span className="shrink-0">
+                      <ChartLegendIcon color={colors[index % colors.length]} />
+                    </span>
+                    <span className="truncate text-black dark:text-white">
+                      {entry.name}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </CardContent>
       </Card>

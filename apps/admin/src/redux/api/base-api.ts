@@ -38,6 +38,8 @@ export const baseAPI = createApi({
     // Reconciled read surfaces (Qlozet backend)
     'Product',
     'Products',
+    'ProductStats',
+    'ProductFilters',
     'Transaction',
     'Transactions',
     'Vendors',

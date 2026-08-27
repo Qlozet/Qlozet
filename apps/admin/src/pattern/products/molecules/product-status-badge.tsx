@@ -6,8 +6,8 @@ import { getProductStatus, type ProductStatusKey } from '@/lib/products';
 import type { Product } from '@/redux/services/products/products.api-slice';
 
 // Badge variant (and any extra classes) for each product status. Active/Inactive/
-// Draft/Scheduled map onto existing Badge variants; Archived is a neutral grey
-// pill that the variants don't cover.
+// Draft/Scheduled/Rejected map onto existing Badge variants; Archived is a
+// neutral grey pill that the variants don't cover.
 const STATUS_STYLES: Record<
   ProductStatusKey,
   { variant: BadgeProps['variant']; className?: string }
@@ -16,6 +16,7 @@ const STATUS_STYLES: Record<
   inactive: { variant: 'error' },
   draft: { variant: 'warning' },
   scheduled: { variant: 'blue' },
+  rejected: { variant: 'error' },
   archived: {
     variant: 'secondary',
     className:

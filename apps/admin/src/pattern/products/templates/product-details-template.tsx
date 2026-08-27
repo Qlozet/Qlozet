@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import {
@@ -18,10 +18,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { GoBackButton } from '@/pattern/admin/atoms/go-back-button';
 import { APP_ROUTES } from '@/lib/routes';
 import { cn } from '@/lib/utils';
-import {
-  useGetProductQuery,
-  useDeleteProductMutation,
-} from '@/redux/services/products/products.api-slice';
+import { useDeleteProductMutation } from '@/redux/services/products/products.api-slice';
+import { useGetAdminProductQuery } from '@/redux/services/products/admin-products.api-slice';
+import { getKindDetail, getProductPrice } from '@/lib/products';
 
 // Defensive view over the clothing product shape (the catalogue Product carries
 // these nested fields via its index signature).
@@ -134,13 +133,37 @@ export const ProductDetailsTemplate = ({
   productId,
 }: ProductDetailsTemplateProps) => {
   const router = useRouter();
-  const { data, isLoading, isError } = useGetProductQuery(productId, {
+  // The admin read, not GET /products/{id}: that one is the customer PDP and
+  // 404s on anything that isn't live from an approved vendor — which is exactly
+  // the set an admin opens this page to look at.
+  const { data, isLoading, isError } = useGetAdminProductQuery(productId, {
     skip: !productId,
   });
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
   const [activeImage, setActiveImage] = useState(0);
 
-  const product = (data?.data ?? {}) as ClothingView;
+  // The API nests the sellable detail under `clothing` / `accessory` / `fabric`
+  // and keeps only the envelope at the top level. Flatten the two into the one
+  // view this page reads, with the envelope's own fields winning where they
+  // overlap (`status`, `kind`).
+  const raw = data?.data;
+  const product = useMemo<ClothingView>(() => {
+    if (!raw) return {};
+    const detail = getKindDetail(raw) as Record<string, unknown>;
+    const business =
+      raw.business && typeof raw.business === 'object'
+        ? raw.business
+        : undefined;
+    return {
+      ...detail,
+      _id: raw._id,
+      kind: raw.kind,
+      status: raw.status,
+      price: getProductPrice(raw),
+      rating: raw.average_rating,
+      business: business ? { name: business.business_name } : undefined,
+    } as ClothingView;
+  }, [raw]);
   const images = (product.images ?? [])
     .map((i) => i?.url)
     .filter((u): u is string => Boolean(u));
