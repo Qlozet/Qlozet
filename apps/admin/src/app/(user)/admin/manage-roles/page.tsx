@@ -1,24 +1,32 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import NiceModal from '@ebay/nice-modal-react';
-import { WorkInProgressModal } from '@/pattern/common/organisms/work-in-progress-modal';
+import { toast } from 'sonner';
 import { RolesManagementTemplate } from '@/pattern/admin/templates/roles-management-template';
 import type { RoleCardData } from '@/pattern/admin/molecules/role-card';
 import { APP_ROUTES } from '@/lib/routes';
-import { useGetRolesQuery } from '@/redux/services/users/users.api-slice';
+import { formatRoleName } from '@/lib/admins';
+import { readApiError } from '@/redux/services/types';
+import {
+  useGetRolesQuery,
+  useCreateDefaultRolesMutation,
+} from '@/redux/services/users/users.api-slice';
 
 const ManageRolesPage = () => {
   const router = useRouter();
-  const { data, isLoading, isError } = useGetRolesQuery();
-  const [activeRoleId, setActiveRoleId] = useState<string | null>(null);
+  // Platform roles only: the console grants access to the console, and a vendor
+  // role listed here could never be held by an administrator.
+  const { data, isLoading, isError } = useGetRolesQuery({ type: 'platform' });
+  const [createDefaults, { isLoading: isCreatingDefaults }] =
+    useCreateDefaultRolesMutation();
 
   const roles = useMemo<RoleCardData[]>(
     () =>
       (data?.data ?? []).map((role) => ({
         id: role._id,
-        name: role.name ?? 'Untitled role',
+        // Stored lowercased with underscores ('super_admin').
+        name: formatRoleName(role.name) || 'Untitled role',
         description:
           role.description ||
           'Ideal for individuals who need access to platform features.',
@@ -26,21 +34,39 @@ const ManageRolesPage = () => {
     [data]
   );
 
-  // Editing access and creating a role have no backing screen yet, so both use
-  // the shared "Work in Progress" modal (the app's convention for un-built flows).
-  const showWorkInProgress = () => NiceModal.show(WorkInProgressModal);
+  const goToEditAccess = (roleId: string) =>
+    router.push(`${APP_ROUTES.adminManageRoles}/${roleId}`);
+
+  // Creating a role is the same screen as editing one — role details on the
+  // left, the permission grid on the right — so it is a route, not a dialog.
+  const goToCreateRole = () =>
+    router.push(`${APP_ROUTES.adminManageRoles}/new`);
+
+  const handleCreateDefaults = async () => {
+    try {
+      const result = await createDefaults().unwrap();
+      const created = result?.data?.created ?? [];
+      toast.success(
+        created.length
+          ? `Created ${created.length} role${created.length === 1 ? '' : 's'}.`
+          : 'Every default role already exists.'
+      );
+    } catch (error) {
+      toast.error(readApiError(error));
+    }
+  };
 
   return (
     <RolesManagementTemplate
       roles={roles}
       isLoading={isLoading}
       isError={isError}
-      activeRoleId={activeRoleId}
-      onSelect={(role) => setActiveRoleId(role.id)}
-      onEditAccess={(role) =>
-        router.push(`${APP_ROUTES.adminManageRoles}/${role.id}`)
-      }
-      onCreateRole={showWorkInProgress}
+      // The whole card opens the role, not just the button on it.
+      onSelect={(role) => goToEditAccess(role.id)}
+      onEditAccess={(role) => goToEditAccess(role.id)}
+      onCreateRole={goToCreateRole}
+      onCreateDefaults={handleCreateDefaults}
+      isCreatingDefaults={isCreatingDefaults}
     />
   );
 };

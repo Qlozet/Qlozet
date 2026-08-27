@@ -7,6 +7,7 @@ import type { Ticket } from '@/redux/services/tickets/tickets.api-slice';
 import {
   EM_DASH,
   assigneeId,
+  assigneeName,
   formatDate,
   shortTicketId,
   statusLabel,
@@ -71,17 +72,27 @@ export const createSupportTicketsColumns = ({
     id: 'assigned_to',
     header: 'Assigned To',
     cell: ({ row }) => {
-      // `assigned_to` is a bare support-team id and GET /users/team/members
-      // currently 500s, so there is no name to show — surface the id rather
-      // than inventing a person.
+      // `assigned_to` refs a User and comes back populated, so this is the
+      // admin's own name. A row that still carries a bare id falls back to a
+      // short form of it rather than inventing a person.
       const id = assigneeId(row.original);
-      return id ? (
+      const name = assigneeName(row.original);
+
+      if (!id) {
+        return (
+          <span className="whitespace-nowrap text-sm text-error">
+            Unassigned
+          </span>
+        );
+      }
+
+      return (
         <span
           title={id}
           className="whitespace-nowrap text-sm text-grey3 dark:text-gray-400"
-        >{`#${id.slice(-6).toUpperCase()}`}</span>
-      ) : (
-        <span className="whitespace-nowrap text-sm text-error">Unassigned</span>
+        >
+          {name ?? `#${id.slice(-6).toUpperCase()}`}
+        </span>
       );
     },
     enableSorting: false,

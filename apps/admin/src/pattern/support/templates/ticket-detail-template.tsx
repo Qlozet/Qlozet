@@ -11,6 +11,7 @@ import {
   useGetTicketsQuery,
   useReplyToTicketMutation,
 } from '@/redux/services/tickets/tickets.api-slice';
+import { assigneeId } from '../lib/ticket-fields';
 import { useBusinessNames } from '../lib/use-business-names';
 import { ReassignTicketModal } from '../organisms/reassign-ticket-modal';
 import { EditTicketDrawer } from '../organisms/edit-ticket-drawer';
@@ -82,7 +83,8 @@ export const TicketDetailTemplate = () => {
   const handleReassign = () =>
     NiceModal.show(ReassignTicketModal, {
       ticketId: id,
-      currentAssigneeId: ticket?.assigned_to ?? undefined,
+      // `assigned_to` arrives populated, so read the id out of it.
+      currentAssigneeId: assigneeId(ticket) ?? undefined,
     });
 
   const handleEdit = () =>

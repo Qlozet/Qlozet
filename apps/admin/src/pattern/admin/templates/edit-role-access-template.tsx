@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { APP_ROUTES } from '@/lib/routes';
 import type { PermissionAction, PermissionMatrix } from '@/lib/admins';
+import type { ConsolePermissionGroup } from '@/redux/services/users/users.api-slice';
 import { GoBackButton } from '../atoms/go-back-button';
 import { RoleDetailsForm } from '../molecules/role-details-form';
 import { PermissionsTable } from '../organisms/permissions-table';
@@ -11,7 +12,9 @@ interface EditRoleAccessTemplateProps {
   title: string;
   name: string;
   description: string;
+  catalogue: ConsolePermissionGroup[];
   matrix: PermissionMatrix;
+  isLoading?: boolean;
   isSaving?: boolean;
   onNameChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
@@ -23,7 +26,9 @@ export const EditRoleAccessTemplate = ({
   title,
   name,
   description,
+  catalogue,
   matrix,
+  isLoading,
   isSaving,
   onNameChange,
   onDescriptionChange,
@@ -52,7 +57,12 @@ export const EditRoleAccessTemplate = ({
         </div>
 
         <div className="lg:col-span-2">
-          <PermissionsTable matrix={matrix} onToggle={onToggle} />
+          <PermissionsTable
+            catalogue={catalogue}
+            matrix={matrix}
+            isLoading={isLoading}
+            onToggle={onToggle}
+          />
         </div>
       </div>
 

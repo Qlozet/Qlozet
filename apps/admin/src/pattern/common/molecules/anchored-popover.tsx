@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { cn } from '@/lib/utils';
 
 interface AnchoredPopoverProps {
   open: boolean;
@@ -19,7 +20,10 @@ interface AnchoredPopoverProps {
   /** Panel width in px. Clamped to the viewport on narrow screens. */
   width?: number;
   label: string;
+  /** Classes for the anchor element that wraps the trigger. */
   className?: string;
+  /** Classes for the portalled panel — e.g. tighter padding for a menu. */
+  panelClassName?: string;
 }
 
 const GAP = 8;
@@ -48,6 +52,7 @@ export const AnchoredPopover = ({
   width = 320,
   label,
   className,
+  panelClassName,
 }: AnchoredPopoverProps) => {
   const anchorRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -147,7 +152,10 @@ export const AnchoredPopover = ({
             role="dialog"
             aria-label={label}
             style={style}
-            className="z-[120] overflow-y-auto overscroll-contain rounded-xl border border-border bg-white p-4 shadow-xl dark:bg-card"
+            className={cn(
+              'z-[120] overflow-y-auto overscroll-contain rounded-xl border border-border bg-white p-4 shadow-xl dark:bg-card',
+              panelClassName
+            )}
           >
             {children}
           </div>,
