@@ -6,7 +6,6 @@ import type {
 import {
   ORDER_PERIOD_OPTIONS,
   ORDER_STATUS_OPTIONS,
-  computeOrderMetrics,
   filterOrdersByPeriod,
   formatItemsCount,
   formatNaira,
@@ -347,43 +346,5 @@ describe('searchOrders', () => {
 
   it('returns nothing when there is no match', () => {
     expect(searchOrders(orders, 'zzz')).toHaveLength(0);
-  });
-});
-
-describe('computeOrderMetrics', () => {
-  it('counts totals, delivered and in-transit orders', () => {
-    const metrics = computeOrderMetrics([
-      order({ status: 'completed' }),
-      order({ status: 'completed' }),
-      order({ status: 'in_transit' }),
-      order({ status: 'pending' }),
-    ]);
-    expect(metrics).toMatchObject({ total: 4, delivered: 2, inTransit: 1 });
-  });
-
-  it('picks the most frequently ordered product', () => {
-    const withProduct = (name: string) =>
-      order({ items: [{ product: { clothing: { name } } }] });
-    const metrics = computeOrderMetrics([
-      withProduct('Kaftan'),
-      withProduct('Kaftan'),
-      withProduct('Cap'),
-    ]);
-    expect(metrics.mostPurchased).toBe('Kaftan');
-  });
-
-  it('leaves mostPurchased undefined when no product is populated', () => {
-    expect(
-      computeOrderMetrics([order({ items: [] })]).mostPurchased
-    ).toBeUndefined();
-  });
-
-  it('handles an empty list', () => {
-    expect(computeOrderMetrics([])).toEqual({
-      total: 0,
-      delivered: 0,
-      inTransit: 0,
-      mostPurchased: undefined,
-    });
   });
 });

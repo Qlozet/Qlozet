@@ -4,6 +4,7 @@ import { ExpectedEarningsChart } from '../organisms/expected-earnings-chart';
 import { MonthlyRevenueChart } from '../organisms/monthly-revenue-chart';
 import { OrdersByGender } from '../organisms/orders-by-gender';
 import { OrdersByLocation } from '../organisms/orders-by-location';
+import { OrdersByProductTypeChart } from '../organisms/orders-by-product-type-chart';
 import { OrdersByStatus } from '../organisms/orders-by-status';
 import { EarningsChart } from '../organisms/earnings-chart';
 import { OrderCountChart } from '../organisms/order-count-chart';
@@ -22,19 +23,26 @@ export function ChartsSection() {
         </div>
       </div>
 
-      {/* Orders breakdowns. The third slot used to be a second copy of
-          OrdersByLocation — replaced with the status split, which is real. */}
+      {/* Order breakdowns, matching the design's three-up row. */}
       <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
         <OrdersByGender />
+        <OrdersByProductTypeChart />
         <OrdersByLocation />
-        <OrdersByStatus />
       </div>
 
-      {/* Earnings, order count, recent orders */}
+      {/* Earnings and order count by day of the week, plus recent orders.
+          These are the weekly cut; the monthly cut is the revenue card above. */}
       <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
         <EarningsChart />
         <OrderCountChart />
         <RecentOrders />
+      </div>
+
+      {/* Status split. Not in the original design, but it is the one breakdown
+          the order data supports directly and it replaced a duplicated
+          OrdersByLocation card. */}
+      <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <OrdersByStatus />
       </div>
     </div>
   );

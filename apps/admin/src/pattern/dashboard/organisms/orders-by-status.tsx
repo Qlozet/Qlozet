@@ -1,18 +1,26 @@
 'use client';
 
 import { useMemo } from 'react';
-import { statusBreakdown } from '@/lib/dashboard-series';
-import { useGetAdminOrdersQuery } from '@/redux/services/orders/orders.api-slice';
+import { readSeries, withoutZeroes } from '@/lib/dashboard-series';
+import { useGetAdminDashboardChartsQuery } from '@/redux/services/dashboard/dashboard.api-slice';
 import { DonutChart } from '../molecules/donut-chart';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
 
 const COLORS = ['#3d2817', '#8a6f52', '#c4b5a0', '#d4c5b9', '#e8ded4'];
 
-// Real breakdown of every marketplace order by delivery status.
+// Every marketplace order by delivery status, from
+// GET /admin/dashboard/charts → charts.ordersByStatus.
 export const OrdersByStatus = () => {
-  const { data, isLoading } = useGetAdminOrdersQuery();
-  const orders = useMemo(() => data?.data ?? [], [data]);
-  const series = useMemo(() => statusBreakdown(orders), [orders]);
+  const { data, isLoading } = useGetAdminDashboardChartsQuery();
+
+  // The endpoint ships all seven statuses — including the ones at zero — so the
+  // legend is stable between refreshes. A donut shouldn't draw invisible slices
+  // with visible legend rows, so the zeroes are dropped here rather than
+  // server-side, where another consumer may want them.
+  const series = useMemo(
+    () => withoutZeroes(readSeries(data?.data?.charts?.ordersByStatus)),
+    [data]
+  );
 
   if (isLoading) return <ChartSkeleton />;
 

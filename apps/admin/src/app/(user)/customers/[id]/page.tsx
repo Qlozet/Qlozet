@@ -54,7 +54,7 @@ const CustomerDetailsPage = () => {
       />
 
       {/* 3. Analytics */}
-      <CustomerAnalyticsSection />
+      <CustomerAnalyticsSection customerId={id} />
 
       {/* 4. Wallet details + recent transactions */}
       <CustomerWalletSection customer={customer} />

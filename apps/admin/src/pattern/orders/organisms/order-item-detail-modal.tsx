@@ -13,7 +13,7 @@
 // no shared Dialog primitive, so this uses the same fixed-overlay pattern as the
 // other admin modals.
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
 import {
   Gem,
@@ -26,6 +26,10 @@ import {
   X,
 } from 'lucide-react';
 import { formatNaira } from '@/lib/orders';
+import {
+  NESTED_MODAL_LAYER,
+  useNestedModalDismiss,
+} from '@/lib/hooks/useNestedModalDismiss';
 import type {
   AdminOrder,
   AdminOrderItem,
@@ -382,13 +386,19 @@ export const OrderItemDetailModal = create<OrderItemDetailModalProps>(
   ({ item }) => {
     const modal = useModal();
 
-    if (!modal.visible) return null;
+    const close = useCallback(() => modal.remove(), [modal]);
 
-    const close = () => modal.remove();
+    // Opened from inside the order drawer (a Radix Sheet), which locks pointer
+    // events on <body> and owns Escape. See the hook for why both are needed.
+    useNestedModalDismiss(close, modal.visible);
+
+    if (!modal.visible) return null;
 
     return (
       // z-[110] clears the order drawer sheet this opens from.
-      <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+      <div
+        className={`fixed inset-0 z-[110] flex items-center justify-center p-4 ${NESTED_MODAL_LAYER}`}
+      >
         <div
           className="absolute inset-0 bg-black/40 backdrop-blur-sm"
           onClick={close}

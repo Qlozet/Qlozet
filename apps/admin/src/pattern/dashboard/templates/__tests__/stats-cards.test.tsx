@@ -33,7 +33,7 @@ describe('admin StatsCards', () => {
     );
   });
 
-  it('renders every metric card', () => {
+  it('renders every card in the design', () => {
     withMetrics({});
     render(<StatsCards />);
     for (const title of [
@@ -48,26 +48,64 @@ describe('admin StatsCards', () => {
     }
   });
 
+  // The one metric this endpoint actually returns today, in the snake_case the
+  // backend really sends.
+  it('reads the live order count from total_orders', () => {
+    withMetrics({ total_orders: 131 });
+    render(<StatsCards />);
+    expect(screen.getByText('131')).toBeInTheDocument();
+    expect(screen.getAllByText('—').length).toBe(5);
+  });
+
   it('formats counts, currency and percentages', () => {
     withMetrics({
-      totalVendors: 1200,
-      verifiedVendors: 900,
-      totalCustomers: 45000,
-      totalOrders: 320,
-      grossSales: 1250000,
-      measurementAccuracy: 92,
+      total_vendors: 1200,
+      verified_vendors: 900,
+      total_customers: 45000,
+      total_orders: 320,
+      gross_sales: 1250000,
+      measurement_accuracy: 92,
     });
     render(<StatsCards />);
     expect(screen.getByText('1,200')).toBeInTheDocument();
-    expect(screen.getByText('N 45,000')).toBeInTheDocument();
+    // A head count, never money — the design's naira prefix here is a slip.
+    expect(screen.getByText('45,000')).toBeInTheDocument();
     expect(screen.getByText('N 1,250,000')).toBeInTheDocument();
     expect(screen.getByText('92%')).toBeInTheDocument();
+  });
+
+  // measurement_accuracy has no backend definition yet, so which casing it
+  // arrives in is still unknown; both spellings light the card up.
+  it('accepts either casing for measurement accuracy', () => {
+    withMetrics({ measurementAccuracy: 92 });
+    render(<StatsCards />);
+    expect(screen.getByText('92%')).toBeInTheDocument();
+  });
+
+  // The keys this file used to read. They are not what the backend sends, and
+  // must never resurface as a fallback that masks a real mismatch.
+  it('ignores the camelCase keys the backend does not send', () => {
+    withMetrics({
+      totalVendors: 1200,
+      totalOrders: 320,
+      grossSales: 1250000,
+    });
+    render(<StatsCards />);
+    expect(screen.getAllByText('—').length).toBe(6);
+  });
+
+  // A zero is a real figure and must not be shown as a dash.
+  it('renders a zero metric as 0, not a dash', () => {
+    withMetrics({ total_orders: 0 });
+    render(<StatsCards />);
+    expect(screen.getByText('0')).toBeInTheDocument();
+    expect(screen.getAllByText('—').length).toBe(5);
   });
 
   // The backend sends no metric for some fields; showing a dash beats
   // rendering a zero the data never supported.
   it('dashes metrics the API did not return', () => {
-    withMetrics({ totalVendors: 5 });
+    withMetrics({ total_vendors: 5 });
     render(<StatsCards />);
     expect(screen.getAllByText('—').length).toBe(5);
   });

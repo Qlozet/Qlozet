@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils';
 import { periodChangeLabel } from '@/lib/metric-change';
 import { MetricCard } from '@/pattern/common/molecules/metric-card';
 import { StatsCardSkeleton } from '@/pattern/dashboard/molecules/stats-card-skeleton';
-import { useGetAdminDashboardQuery } from '@/redux/services/dashboard/dashboard.api-slice';
 import { useGetNewVendorsThisWeekQuery } from '@/redux/services/users/users.api-slice';
 
 const formatValue = (value: number | undefined, fallback: string): string =>
@@ -28,14 +27,15 @@ interface VendorStatsCardsProps {
 }
 
 export const VendorStatsCards = ({ totalFromList }: VendorStatsCardsProps) => {
-  const { data, isLoading } = useGetAdminDashboardQuery();
-  const metrics = data?.data;
-
+  // /admin/dashboard used to be read here, but it returns order figures only —
+  // no vendor counts — so every value it supplied was undefined. The vendors
+  // list total is the real source.
+  //
   // Real week-over-week movement: /users/vendors/new-week returns the vendors
   // onboarded this week, so the total's growth can be derived from it. There is
   // no equivalent source for the active/inactive splits, so those cards show no
   // change widget rather than an invented one.
-  const { data: newThisWeekData } = useGetNewVendorsThisWeekQuery();
+  const { data: newThisWeekData, isLoading } = useGetNewVendorsThisWeekQuery();
   const newThisWeek = Array.isArray(newThisWeekData?.data)
     ? newThisWeekData.data.length
     : undefined;
@@ -50,13 +50,11 @@ export const VendorStatsCards = ({ totalFromList }: VendorStatsCardsProps) => {
     );
   }
 
-  const total = metrics?.totalVendors ?? totalFromList;
-  const active = metrics?.activeVendors ?? metrics?.verifiedVendors;
-  const inactive =
-    metrics?.inactiveVendors ??
-    (typeof total === 'number' && typeof active === 'number'
-      ? Math.max(total - active, 0)
-      : undefined);
+  const total = totalFromList;
+  // No endpoint exposes the active/inactive split yet, so these stay dashed
+  // rather than showing an invented figure.
+  const active: number | undefined = undefined;
+  const inactive: number | undefined = undefined;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

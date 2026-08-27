@@ -8,6 +8,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { create, useModal } from '@ebay/nice-modal-react';
 import { ChevronLeft, ChevronRight, ImageOff, X } from 'lucide-react';
+import {
+  NESTED_MODAL_LAYER,
+  useNestedModalDismiss,
+} from '@/lib/hooks/useNestedModalDismiss';
 
 interface OrderMediaPreviewModalProps {
   images: string[];
@@ -30,15 +34,21 @@ export const OrderMediaPreviewModal = create<OrderMediaPreviewModalProps>(
       [count]
     );
 
+    // Escape is handled by the shared hook: this opens from the item modal,
+    // which opens from the order drawer, so the key has to be consumed before
+    // the Sheet behind sees it and closes the drawer instead.
+    useNestedModalDismiss(close, modal.visible);
+
     useEffect(() => {
+      if (!modal.visible) return;
+
       const onKeyDown = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') close();
         if (event.key === 'ArrowRight') step(1);
         if (event.key === 'ArrowLeft') step(-1);
       };
       document.addEventListener('keydown', onKeyDown);
       return () => document.removeEventListener('keydown', onKeyDown);
-    }, [close, step]);
+    }, [modal.visible, step]);
 
     if (!modal.visible) return null;
 
@@ -46,7 +56,9 @@ export const OrderMediaPreviewModal = create<OrderMediaPreviewModalProps>(
 
     return (
       // Above the item detail modal (z-110) it opens from.
-      <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+      <div
+        className={`fixed inset-0 z-[120] flex items-center justify-center p-4 ${NESTED_MODAL_LAYER}`}
+      >
         <div className="absolute inset-0 bg-black/80" onClick={close} />
 
         <div

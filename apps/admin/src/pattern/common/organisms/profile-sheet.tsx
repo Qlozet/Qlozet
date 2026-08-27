@@ -14,13 +14,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AUTH_ROUTES } from '@/lib/routes';
 import { SESSION_COOKIE_KEY } from '@/lib/constants';
 import { removeCookie } from '@/lib/helpers/cookies-manager';
-import { formatNaira } from '@/lib/orders';
 import { initialsFrom, readUserAvatar, readUserName } from '@/lib/current-user';
 import {
   useGetCurrentUserQuery,
   useGetRolesQuery,
 } from '@/redux/services/users/users.api-slice';
-import { useGetAdminDashboardQuery } from '@/redux/services/dashboard/dashboard.api-slice';
+import { useGetAdminProfileOverviewQuery } from '@/redux/services/dashboard/dashboard.api-slice';
+import { AdminMetricsSection } from './admin-metrics-section';
+import { AdminTasksSection } from './admin-tasks-section';
 import { WeeklyDigestSection } from './weekly-digest-section';
 
 interface ProfileSheetProps {
@@ -28,16 +29,18 @@ interface ProfileSheetProps {
   onOpenChange: (open: boolean) => void;
 }
 
+// The design puts the label above the value, in sentence case — not the
+// uppercase-caption style the vendor app uses.
 const Stat = ({ label, value }: { label: string; value: string }) => (
-  <div className="flex flex-1 flex-col items-center">
-    <p className="text-[22px] font-bold tracking-tight text-[#1C1C1E]">
+  <div className="flex flex-1 flex-col items-center px-2">
+    <p className="text-[13px] text-[#8E8E93]">{label}</p>
+    <p className="mt-1 text-[22px] font-bold tracking-tight text-[#1C1C1E]">
       {value}
-    </p>
-    <p className="mt-1 text-[10px] font-semibold uppercase tracking-widest text-[#8E8E93]">
-      {label}
     </p>
   </div>
 );
+
+const StatDivider = () => <div className="h-10 w-px shrink-0 bg-[#DDE2E5]" />;
 
 /**
  * Profile drawer — the admin counterpart of the vendor app's Profile sheet,
@@ -57,8 +60,12 @@ export const ProfileSheet = ({ open, onOpenChange }: ProfileSheetProps) => {
   );
   // `/users/me` returns `role` as an id, so resolve it to a display name.
   const { data: rolesData } = useGetRolesQuery(undefined, skip);
-  const { data: metricsData, isLoading: isLoadingMetrics } =
-    useGetAdminDashboardQuery(undefined, skip);
+  const {
+    data: overviewData,
+    isLoading: isLoadingOverview,
+    isFetching: isFetchingOverview,
+    refetch: refetchOverview,
+  } = useGetAdminProfileOverviewQuery(undefined, skip);
 
   const user = userData?.data;
   const name = readUserName(user);
@@ -80,7 +87,7 @@ export const ProfileSheet = ({ open, onOpenChange }: ProfileSheetProps) => {
     return /^[a-f0-9]{24}$/i.test(raw.trim()) ? null : raw.trim();
   }, [user, rolesData]);
 
-  const metrics = metricsData?.data;
+  const overview = overviewData?.data;
 
   const handleLogout = () => {
     removeCookie(SESSION_COOKIE_KEY);
@@ -151,33 +158,74 @@ export const ProfileSheet = ({ open, onOpenChange }: ProfileSheetProps) => {
                     )}
                   </div>
 
-                  {/* The design's Items / Profit row, with the platform-level
-                      equivalents an admin actually has. */}
-                  <div className="mt-8 flex items-center justify-center">
-                    {isLoadingMetrics ? (
-                      <>
-                        <Skeleton className="h-12 flex-1" />
-                        <div className="mx-4 h-10 w-px bg-[#DDE2E5]" />
-                        <Skeleton className="h-12 flex-1" />
-                      </>
-                    ) : (
-                      <>
+                  {/* Two rows of two, split by a horizontal rule — the
+                      marketplace this admin oversees on top, their own
+                      workload underneath. */}
+                  {isLoadingOverview ? (
+                    <div className="mt-8 space-y-4">
+                      <Skeleton className="h-12 w-full" />
+                      <Skeleton className="h-12 w-full" />
+                    </div>
+                  ) : (
+                    <div className="mt-8">
+                      <div className="flex items-center justify-center">
                         <Stat
-                          label="Orders"
-                          value={(metrics?.totalOrders ?? 0).toLocaleString()}
+                          label="Customers"
+                          value={(
+                            overview?.stats.customers ?? 0
+                          ).toLocaleString()}
                         />
-                        <div className="mx-4 h-10 w-px bg-[#DDE2E5]" />
+                        <StatDivider />
                         <Stat
-                          label="Gross Sales"
-                          value={formatNaira(metrics?.grossSales ?? 0)}
+                          label="Vendors"
+                          value={(
+                            overview?.stats.vendors ?? 0
+                          ).toLocaleString()}
                         />
-                      </>
-                    )}
-                  </div>
+                      </div>
+
+                      <div className="my-4 h-px bg-[#DDE2E5]" />
+
+                      <div className="flex items-center justify-center">
+                        <Stat
+                          label="Task Completed"
+                          value={(
+                            overview?.stats.tasksCompleted ?? 0
+                          ).toLocaleString()}
+                        />
+                        <StatDivider />
+                        <Stat
+                          label="Tickets closed"
+                          value={(
+                            overview?.stats.ticketsClosed ?? 0
+                          ).toLocaleString()}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
-              {/* ── Weekly digest (design's "Task Last Month" slot) ── */}
+              {/* ── Metrics ── */}
+              <AdminMetricsSection
+                overview={overview}
+                isLoading={isLoadingOverview}
+                isFetching={isFetchingOverview}
+                onRefresh={refetchOverview}
+              />
+
+              {/* ── Task Last Month ── */}
+              <AdminTasksSection
+                tasks={overview?.tasks}
+                windowDays={overview?.taskWindowDays}
+                isLoading={isLoadingOverview}
+                isFetching={isFetchingOverview}
+                onRefresh={refetchOverview}
+              />
+
+              {/* Kept below the design's panels rather than in place of them:
+                  the digest is a real AI summary the drawer already had, and
+                  the task list no longer needs its slot. */}
               <WeeklyDigestSection />
             </div>
           </div>

@@ -289,39 +289,28 @@ export const searchOrders = (
   );
 };
 
-// ──────────────── Metrics ────────────────
+/**
+ * Relative time string ("Just now", "12m ago", "3d ago"), falling back to a
+ * short date past a week.
+ *
+ * Lives here rather than in each card: the orders list, the notification rows
+ * and the profile drawer all render the same thing, and two of them had drifted
+ * to slightly different wording and locales.
+ */
+export const timeAgo = (value?: string | Date | null): string => {
+  if (!value) return DASH;
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return DASH;
 
-export interface OrderMetrics {
-  total: number;
-  delivered: number;
-  inTransit: number;
-  /** Most frequently ordered product name, when products are populated. */
-  mostPurchased?: string;
-}
+  const minutes = Math.floor((Date.now() - date.getTime()) / 60000);
+  if (minutes < 1) return 'Just now';
+  if (minutes < 60) return `${minutes}m ago`;
 
-export const computeOrderMetrics = (orders: AdminOrder[]): OrderMetrics => {
-  const counts = new Map<string, number>();
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
 
-  let delivered = 0;
-  let inTransit = 0;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
 
-  for (const order of orders) {
-    const status = readStatus(order);
-    if (status === 'completed') delivered += 1;
-    if (status === 'in_transit') inTransit += 1;
-
-    const product = readFirstProductName(order);
-    if (product) counts.set(product, (counts.get(product) ?? 0) + 1);
-  }
-
-  let mostPurchased: string | undefined;
-  let topCount = 0;
-  for (const [name, count] of counts) {
-    if (count > topCount) {
-      topCount = count;
-      mostPurchased = name;
-    }
-  }
-
-  return { total: orders.length, delivered, inTransit, mostPurchased };
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 };
