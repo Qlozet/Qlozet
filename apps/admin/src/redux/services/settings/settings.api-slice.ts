@@ -70,6 +70,19 @@ export interface PlatformSettings {
   analyze_reference_token_price: number;
   ai_ask_requires_auth: boolean;
 
+  // Multi-currency & international payments. Optional because backends
+  // deployed before the feature don't return them.
+  /** Group/consolidation currency for platform revenue. */
+  base_currency?: string;
+  /** Currencies customers can browse/pay in (config-level; no UI editor yet). */
+  supported_currencies?: string[];
+  /** FX spread over mid-market locked into international checkout rates. */
+  fx_markup_percent?: number;
+  /** Charge processor per currency (config-level; no UI editor yet). */
+  currency_processor_map?: Record<string, string>;
+  /** Kill-switch: routes non-NGN card charges to Stripe when on. */
+  stripe_enabled?: boolean;
+
   createdAt?: string;
   updatedAt?: string;
 }
