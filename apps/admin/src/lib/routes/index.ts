@@ -20,6 +20,8 @@ export const APP_ROUTES = {
   productsFabrics: '/products/fabrics',
   productsCollections: '/products/collections',
   productsCollectionsCreate: '/products/collections/create',
+  productsStyles: '/products/styles',
+  productsStylesBulk: '/products/styles/bulk',
   productsAdd: '/products/add-product',
   staticPage: '/static-page',
   marketing: '/marketing',
