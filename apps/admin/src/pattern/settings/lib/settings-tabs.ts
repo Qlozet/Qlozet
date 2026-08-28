@@ -20,7 +20,13 @@ export const TOKEN_PRICE_USD_KEY = 'token_price.usd.amount';
 export type SettingsFieldKey =
   | Exclude<
       keyof PlatformSettings,
-      '_id' | 'createdAt' | 'updatedAt' | 'token_price'
+      | '_id'
+      | 'createdAt'
+      | 'updatedAt'
+      | 'token_price'
+      // Non-scalar multi-currency config — API-editable, no field editor yet.
+      | 'supported_currencies'
+      | 'currency_processor_map'
     >
   | typeof TOKEN_PRICE_USD_KEY;
 
@@ -235,6 +241,52 @@ export const SETTINGS_TABS: SettingsTab[] = [
     ],
   },
   {
+    label: 'Payments',
+    slug: 'payments',
+    description:
+      'International card payments: whether non-naira charges route to Stripe, and the FX spread locked into their checkout rate.',
+    sections: [
+      {
+        id: 'international-payments',
+        title: 'International payments',
+        description:
+          'Customers browsing in USD pay by card through Stripe when this is on; when off (or if Stripe is unreachable) their card is charged in naira via Paystack instead — checkout never blocks.',
+        fields: [
+          {
+            key: 'stripe_enabled',
+            label: 'Enable Stripe (international cards)',
+            help: 'On, USD card payments charge through Stripe. Off is the kill-switch — every charge routes to Paystack in naira. Requires the Stripe keys to be configured on the backend.',
+            kind: 'switch',
+          },
+          {
+            key: 'fx_markup_percent',
+            label: 'FX markup',
+            help: 'Spread over the mid-market rate locked into an international checkout. Covers rate movement and is kept by the platform.',
+            ...PERCENT,
+          },
+        ],
+      },
+      {
+        id: 'reporting-currency',
+        title: 'Reporting',
+        description:
+          'How platform revenue is consolidated across the Nigerian and US entities.',
+        fields: [
+          {
+            key: 'base_currency',
+            label: 'Group currency',
+            help: 'The currency platform revenue (commission + FX spread) is consolidated in for reporting. Does not affect what customers or vendors see.',
+            kind: 'select',
+            options: [
+              { value: 'USD', label: 'US Dollar (USD)' },
+              { value: 'NGN', label: 'Naira (NGN)' },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
     label: 'Orders',
     slug: 'orders',
     description:
@@ -399,6 +451,21 @@ export const SETTINGS_TABS: SettingsTab[] = [
     ],
   },
 ];
+
+/**
+ * Draft fallbacks for fields a deployed backend may not return yet (the
+ * multi-currency additions). Without these, a missing value reads as an empty
+ * required number — a phantom "unsaved change" plus a validation error on a
+ * form the administrator never touched. Values mirror the backend schema
+ * defaults so the draft shows what the backend will use.
+ */
+export const FIELD_FALLBACKS: Partial<
+  Record<SettingsFieldKey, string | boolean>
+> = {
+  stripe_enabled: false,
+  fx_markup_percent: '2',
+  base_currency: 'USD',
+};
 
 export const SETTINGS_TAB_PARAM = 'tab';
 

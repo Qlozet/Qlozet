@@ -12,6 +12,7 @@ import type {
 } from '@/redux/services/settings/settings.api-slice';
 import {
   ALL_SETTINGS_FIELDS,
+  FIELD_FALLBACKS,
   TOKEN_PRICE_USD_KEY,
   type SettingsFieldKey,
   type SettingsFieldSpec,
@@ -31,7 +32,12 @@ export const readSettingValue = (
   }
   const value = settings[key as keyof PlatformSettings];
   if (typeof value === 'boolean') return value;
-  if (value === null || value === undefined) return '';
+  if (value === null || value === undefined) {
+    // A backend deployed before a field existed doesn't return it — fall back
+    // to the schema default so the draft is clean instead of showing a phantom
+    // change + "Required." on an untouched form.
+    return FIELD_FALLBACKS[key] ?? '';
+  }
   return String(value);
 };
 
