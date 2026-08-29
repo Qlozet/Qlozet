@@ -200,7 +200,7 @@ export const SidebarNav = ({
   return (
     <div
       className={cn(
-        'lg:w-[78px] xl:w-full h-full bg-sidebar flex flex-col gap-y-10 py-6 pl-[14px] pr-3 rounded-xl transition-all duration-300',
+        'lg:w-[78px] xl:w-full h-full bg-sidebar flex flex-col gap-y-10 py-6 pl-[14px] pr-3 rounded-xl shadow-[0px_4px_10px_#AEAEC026] transition-all duration-300',
         expanded && 'w-full lg:w-full rounded-none'
       )}
     >
