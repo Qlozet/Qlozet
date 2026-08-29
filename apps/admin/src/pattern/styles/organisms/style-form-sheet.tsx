@@ -130,7 +130,11 @@ export function StyleFormSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-lg">
+      {/* Floats inset from the viewport edges, matching the profile sheet. */}
+      <SheetContent
+        side="right"
+        className="w-full overflow-y-auto sm:max-w-lg sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] sm:rounded-[15px] custom-card-shadow !bg-white dark:!bg-card border border-gray-100 dark:border-white/10"
+      >
         <SheetHeader>
           <SheetTitle>{editing ? 'Edit style' : 'Add style'}</SheetTitle>
           <SheetDescription>
