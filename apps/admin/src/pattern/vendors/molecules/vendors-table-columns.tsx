@@ -144,7 +144,7 @@ export const createVendorsTableColumns = ({
           {/* The logo when the vendor has uploaded one; the initial is the
               fallback, not the default. `unoptimized` because these are
               arbitrary Cloudinary URLs the image config does not whitelist. */}
-          <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-xs font-semibold text-primary">
+          <span className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10 dark:bg-gray-400 text-xs font-semibold text-primary">
             {logo ? (
               <Image
                 src={logo}
