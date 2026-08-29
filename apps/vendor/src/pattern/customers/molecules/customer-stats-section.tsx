@@ -38,7 +38,7 @@ interface MetricCardProps {
 }
 
 const MetricCard = ({ title, value, icon, viewAllLink }: MetricCardProps) => (
-  <Card className="h-[120px] p-3 2xl:p-5 rounded-[12px] custom-card-shadow">
+  <Card className="h-[120px] max-2xl:p-3 2xl:p-4 rounded-[12px] custom-card-shadow">
     <CardContent className="h-full p-0">
       <div className="flex items-start justify-start gap-x-4">
         <div className="shrink-0">{icon}</div>

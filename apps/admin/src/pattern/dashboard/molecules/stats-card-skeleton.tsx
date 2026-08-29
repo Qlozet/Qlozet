@@ -2,7 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 
 export const StatsCardSkeleton = () => {
   return (
-    <Card className="h-[120px] p-3 2xl:p-5 rounded-[12px] custom-card-shadow animate-pulse">
+    <Card className="h-[120px] max-2xl:p-3 2xl:p-4 rounded-[12px] custom-card-shadow animate-pulse">
       <CardContent className="h-full p-0">
         <div className="flex items-start justify-start gap-x-4">
           <div className="size-12 bg-gray-300 dark:bg-gray-600 rounded-lg" />
