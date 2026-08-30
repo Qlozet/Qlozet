@@ -653,8 +653,48 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
       query: () => ({ url: '/orders/dashboard', method: 'GET' }),
       providesTags: ['OrderStats'],
     }),
+
+    // GET /orders/:reference/measurements — the customer's measurement set for
+    // THIS order. Returns the order-time snapshot when present (snapshot: true,
+    // name = the chosen set, e.g. "For Tolu"); legacy orders without a snapshot
+    // fall back to the customer's live active set.
+    getOrderMeasurements: builder.query<OrderMeasurements | null, string>({
+      query: (reference) => ({
+        url: `/orders/${reference}/measurements`,
+        method: 'GET',
+      }),
+      transformResponse: (res: any) => {
+        // Envelope walk: interceptor wraps the service's { data } again.
+        let cur = res;
+        for (let i = 0; i < 3; i++) {
+          if (
+            cur &&
+            typeof cur === 'object' &&
+            'data' in cur &&
+            !('measurements' in cur)
+          ) {
+            cur = cur.data;
+          } else break;
+        }
+        return cur && typeof cur === 'object' && 'measurements' in cur
+          ? (cur as OrderMeasurements)
+          : null;
+      },
+    }),
   }),
 });
+
+export interface OrderMeasurements {
+  full_name?: string;
+  /** Set name — the snapshot's chosen set (e.g. "For Tolu") or the live set. */
+  name?: string;
+  unit?: 'cm' | 'inch';
+  active?: boolean;
+  /** true → frozen at order time; absent/false → live profile (legacy order). */
+  snapshot?: boolean;
+  updatedAt?: string | null;
+  measurements: Record<string, number>;
+}
 
 export const {
   useGetVendorOrdersQuery,
@@ -665,4 +705,5 @@ export const {
   useRejectOrderItemMutation,
   useGetOrdersChartQuery,
   useGetVendorDashboardMetricsQuery,
+  useGetOrderMeasurementsQuery,
 } = ordersApiSlice;

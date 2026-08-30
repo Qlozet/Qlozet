@@ -46,6 +46,7 @@ import type {
   AdminOrder,
   AdminOrderItem,
 } from '@/redux/services/orders/orders.api-slice';
+import { useGetOrderMeasurementsQuery } from '@/redux/services/orders/orders.api-slice';
 
 interface OrderDetailsDrawerProps {
   order: AdminOrder;
@@ -210,6 +211,26 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     const paymentStatus = readPaymentStatus(order);
     const refundStatus = readRefundStatus(order);
 
+    // Body measurements for THIS order — the order-time snapshot when present
+    // (what the tailor sews to), or the live active set for legacy orders.
+    // Key evidence when arbitrating measurement disputes.
+    const { data: bodyMeasurements } = useGetOrderMeasurementsQuery(
+      (order as { reference?: string }).reference ?? '',
+      { skip: !(order as { reference?: string }).reference || !visible }
+    );
+    const measurementRows = useMemo(() => {
+      const m = bodyMeasurements?.measurements ?? {};
+      return Object.entries(m)
+        .filter(([, v]) => typeof v === 'number' && !Number.isNaN(v) && v > 0)
+        .map(([key, v]) => ({
+          key,
+          label: key
+            .replace(/[_-]+/g, ' ')
+            .replace(/\b\w/g, (c) => c.toUpperCase()),
+          value: v,
+        }));
+    }, [bodyMeasurements]);
+
     // Companion media panel — mirrors the vendor drawer: it opens alongside the
     // drawer showing the order's garments, and the handle closes both.
     // Below `sm` there's no room beside a full-width drawer.
@@ -314,6 +335,45 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   )}
                 </Panel>
               </section>
+
+              {/* ── Body Measurement (custom/bespoke orders) ── */}
+              {measurementRows.length > 0 && (
+                <section className="space-y-3">
+                  <SectionTitle
+                    trailing={
+                      bodyMeasurements?.snapshot ? (
+                        <span className="rounded-md bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
+                          Locked at order time
+                        </span>
+                      ) : (
+                        <span className="rounded-md bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:text-amber-300">
+                          Live profile
+                        </span>
+                      )
+                    }
+                  >
+                    Body Measurement
+                  </SectionTitle>
+                  <Panel>
+                    <DetailRow
+                      label="Set:"
+                      value={bodyMeasurements?.name || '—'}
+                    />
+                    {measurementRows.map((row, index) => (
+                      <DetailRow
+                        key={row.key}
+                        label={`${row.label}:`}
+                        value={`${
+                          Number.isInteger(row.value)
+                            ? row.value
+                            : row.value.toFixed(1)
+                        } ${bodyMeasurements?.unit === 'inch' ? 'in' : 'cm'}`}
+                        isLast={index === measurementRows.length - 1}
+                      />
+                    ))}
+                  </Panel>
+                </section>
+              )}
 
               {/* ── Payment and Invoice ── */}
               <section className="space-y-3">

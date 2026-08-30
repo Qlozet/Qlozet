@@ -25,6 +25,11 @@ vi.mock('@/redux/services/orders/orders.api-slice', async (importOriginal) => {
     useFulfillOrderMutation: noopMutation,
     useConfirmOrderMutation: noopMutation,
     useRejectOrderMutation: noopMutation,
+    // Added with per-item rejection — unmocked it is a real RTK hook and
+    // crashes the render with "could not find react-redux context".
+    useRejectOrderItemMutation: noopMutation,
+    // Order-scoped measurements card (order-quote-drawer); harmless here.
+    useGetOrderMeasurementsQuery: () => ({ data: null, isLoading: false }),
   };
 });
 
@@ -33,6 +38,24 @@ vi.mock(
   async (importOriginal) => ({
     ...(await importOriginal<Record<string, unknown>>()),
     useGetOrderEarningsQuery: () => ({ data: undefined, isLoading: false }),
+  })
+);
+
+// Bespoke order chat — real RTK hooks otherwise, which need a store Provider.
+vi.mock(
+  '@/redux/services/messaging/messaging.api-slice',
+  async (importOriginal) => ({
+    ...(await importOriginal<Record<string, unknown>>()),
+    useGetOrderMessagesQuery: () => ({
+      data: undefined,
+      isLoading: false,
+      isFetching: false,
+      refetch: vi.fn(),
+    }),
+    useSendOrderMessageMutation: () => [
+      vi.fn().mockResolvedValue({}),
+      { isLoading: false },
+    ],
   })
 );
 
@@ -178,11 +201,18 @@ describe('OrderDetailsDrawer — large image preview', () => {
     ],
   };
 
-  it('shows no large image when the drawer first opens', async () => {
+  it('opens the media panel alongside the drawer with the order media', async () => {
     await renderDrawer(twoItemOrder);
 
     expect(screen.getByText('Your items (2)')).toBeInTheDocument();
-    expect(panelImage()).not.toBeInTheDocument();
+    // The panel auto-opens seeded with the vendor's item images so the vendor
+    // sees what was ordered without an extra click.
+    await waitFor(() =>
+      expect(panelImage()).toHaveAttribute(
+        'src',
+        'https://cdn.test/kaftan-1.png'
+      )
+    );
   });
 
   it('shows the large image only after an item thumbnail is clicked', async () => {
@@ -234,11 +264,9 @@ describe('OrderDetailsDrawer — large image preview', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('dismisses the preview without closing the drawer', async () => {
-    const user = userEvent.setup();
+  it('the panel handle closes the drawer and panel together', async () => {
     await renderDrawer(twoItemOrder);
 
-    await user.click(screen.getByRole('button', { name: 'View Kaftan media' }));
     await waitFor(() => expect(panelImage()).toBeInTheDocument());
 
     // The panel sits outside SheetContent by design, so Radix marks it
@@ -247,15 +275,16 @@ describe('OrderDetailsDrawer — large image preview', () => {
     // Tailwind class that jsdom never applies, so fireEvent is used instead of
     // userEvent's pointer simulation here.
     fireEvent.click(
-      screen.getByRole('button', { name: 'Close image preview', hidden: true })
+      screen.getByRole('button', { name: 'Close order details', hidden: true })
     );
 
     await waitFor(() => expect(panelImage()).not.toBeInTheDocument());
-    expect(screen.getByText('Order details')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByText('Order details')).not.toBeInTheDocument()
+    );
   });
 
-  it('opens the preview for a bespoke design thumbnail too', async () => {
-    const user = userEvent.setup();
+  it('seeds the panel with the bespoke design media', async () => {
     await renderDrawer({
       ...baseOrder,
       type: 'bespoke',
@@ -266,11 +295,8 @@ describe('OrderDetailsDrawer — large image preview', () => {
       },
     });
 
-    expect(panelImage()).not.toBeInTheDocument();
-    await user.click(
-      screen.getByRole('button', { name: 'View Royal Agbada media' })
-    );
-
+    // Bespoke orders have no catalogue items — the design IS the garment, so
+    // the auto-opened panel shows the design images.
     await waitFor(() =>
       expect(panelImage()).toHaveAttribute('src', 'https://cdn.test/d1.png')
     );
