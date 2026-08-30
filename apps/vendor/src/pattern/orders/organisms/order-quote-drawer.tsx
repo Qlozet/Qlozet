@@ -51,6 +51,7 @@ import { DesignDetailModal } from './design-detail-modal';
 import { readBespokeDesign } from '../lib/bespoke-design';
 import { OrderFabricCard } from '../molecules/order-fabric-card';
 import { OrderAccessoriesCard } from '../molecules/order-accessories-card';
+import { OrderMeasurementsCard } from '../molecules/order-measurements-card';
 import { OverlayScroll } from '@/components/OverlayScroll';
 import { OrderEarningsCard } from '../molecules/order-earnings-card';
 import { VendorGuidelinesCard } from '../molecules/vendor-guidelines-card';
@@ -593,10 +594,10 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
               </button>
             </section>
 
-            {/* TODO(api): Body Measurement sits here — blocked on an endpoint that
-              can return the customer's measurement set for this order.
-              GET /measurements/users/active takes no params and only ever
-              returns the caller's own set. */}
+            {/* Body Measurement — the set this order must be sewn to. Snapshot
+              taken at acceptance when available; live active set for legacy
+              orders (badged accordingly). */}
+            <OrderMeasurementsCard reference={(order as any).reference} />
 
             {/* Fabric */}
             {(() => {

@@ -322,7 +322,47 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
       },
       providesTags: ['VendorOrders'],
     }),
+
+    // GET /orders/:reference/measurements — the customer's measurement set for
+    // THIS order. Order-time snapshot when present (snapshot: true, name = the
+    // chosen set, e.g. "For Tolu"); live active set for legacy orders. Admin
+    // reads it unscoped — useful when arbitrating measurement disputes.
+    getOrderMeasurements: builder.query<OrderMeasurements | null, string>({
+      query: (reference) => ({
+        url: `/orders/${reference}/measurements`,
+        method: 'GET',
+      }),
+      transformResponse: (res: unknown): OrderMeasurements | null => {
+        let cur: any = res;
+        for (let i = 0; i < 3; i++) {
+          if (
+            cur &&
+            typeof cur === 'object' &&
+            'data' in cur &&
+            !('measurements' in cur)
+          ) {
+            cur = cur.data;
+          } else break;
+        }
+        return cur && typeof cur === 'object' && 'measurements' in cur
+          ? (cur as OrderMeasurements)
+          : null;
+      },
+    }),
   }),
 });
 
-export const { useGetAdminOrdersQuery } = ordersApiSlice;
+export interface OrderMeasurements {
+  full_name?: string;
+  /** Set name — the snapshot's chosen set (e.g. "For Tolu") or the live set. */
+  name?: string;
+  unit?: 'cm' | 'inch';
+  active?: boolean;
+  /** true → frozen at order time; absent/false → live profile (legacy order). */
+  snapshot?: boolean;
+  updatedAt?: string | null;
+  measurements: Record<string, number>;
+}
+
+export const { useGetAdminOrdersQuery, useGetOrderMeasurementsQuery } =
+  ordersApiSlice;
