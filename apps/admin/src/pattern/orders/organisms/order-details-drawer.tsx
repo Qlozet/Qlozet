@@ -218,9 +218,8 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       (order as { reference?: string }).reference ?? '',
       { skip: !(order as { reference?: string }).reference || !visible }
     );
-    const measurementRows = useMemo(() => {
-      const m = bodyMeasurements?.measurements ?? {};
-      return Object.entries(m)
+    const toMeasurementRows = (m?: Record<string, number>) =>
+      Object.entries(m ?? {})
         .filter(([, v]) => typeof v === 'number' && !Number.isNaN(v) && v > 0)
         .map(([key, v]) => ({
           key,
@@ -229,6 +228,23 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
             .replace(/\b\w/g, (c) => c.toUpperCase()),
           value: v,
         }));
+    const measurementRows = useMemo(
+      () => toMeasurementRows(bodyMeasurements?.measurements),
+
+      [bodyMeasurements]
+    );
+    // Per-garment profiles: one order can carry items for different bodies.
+    const measurementItemGroups = useMemo(() => {
+      const groups = (bodyMeasurements?.items ?? [])
+        .map((i) => ({
+          set_name: i.set_name ?? null,
+          product_name: i.product_name ?? null,
+          unit: i.unit === 'inch' ? 'in' : 'cm',
+          rows: toMeasurementRows(i.measurements),
+        }))
+        .filter((g) => g.rows.length > 0);
+      const distinct = new Set(groups.map((g) => g.set_name ?? ''));
+      return distinct.size > 1 ? groups : [];
     }, [bodyMeasurements]);
 
     // Companion media panel — mirrors the vendor drawer: it opens alongside the
@@ -337,11 +353,13 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               </section>
 
               {/* ── Body Measurement (custom/bespoke orders) ── */}
-              {measurementRows.length > 0 && (
+              {(measurementRows.length > 0 ||
+                measurementItemGroups.length > 0) && (
                 <section className="space-y-3">
                   <SectionTitle
                     trailing={
-                      bodyMeasurements?.snapshot ? (
+                      bodyMeasurements?.snapshot ||
+                      measurementItemGroups.length > 0 ? (
                         <span className="rounded-md bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
                           Locked at order time
                         </span>
@@ -354,24 +372,57 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   >
                     Body Measurement
                   </SectionTitle>
-                  <Panel>
-                    <DetailRow
-                      label="Set:"
-                      value={bodyMeasurements?.name || '—'}
-                    />
-                    {measurementRows.map((row, index) => (
+                  {measurementItemGroups.length > 0 ? (
+                    /* Different bodies in one order — one panel per garment. */
+                    measurementItemGroups.map((group, gi) => (
+                      <Panel key={gi}>
+                        <DetailRow
+                          label="Set:"
+                          value={
+                            <>
+                              {group.set_name || '—'}
+                              {group.product_name && (
+                                <span className="ml-1 text-gray-400">
+                                  · {group.product_name}
+                                </span>
+                              )}
+                            </>
+                          }
+                        />
+                        {group.rows.map((row, index) => (
+                          <DetailRow
+                            key={row.key}
+                            label={`${row.label}:`}
+                            value={`${
+                              Number.isInteger(row.value)
+                                ? row.value
+                                : row.value.toFixed(1)
+                            } ${group.unit}`}
+                            isLast={index === group.rows.length - 1}
+                          />
+                        ))}
+                      </Panel>
+                    ))
+                  ) : (
+                    <Panel>
                       <DetailRow
-                        key={row.key}
-                        label={`${row.label}:`}
-                        value={`${
-                          Number.isInteger(row.value)
-                            ? row.value
-                            : row.value.toFixed(1)
-                        } ${bodyMeasurements?.unit === 'inch' ? 'in' : 'cm'}`}
-                        isLast={index === measurementRows.length - 1}
+                        label="Set:"
+                        value={bodyMeasurements?.name || '—'}
                       />
-                    ))}
-                  </Panel>
+                      {measurementRows.map((row, index) => (
+                        <DetailRow
+                          key={row.key}
+                          label={`${row.label}:`}
+                          value={`${
+                            Number.isInteger(row.value)
+                              ? row.value
+                              : row.value.toFixed(1)
+                          } ${bodyMeasurements?.unit === 'inch' ? 'in' : 'cm'}`}
+                          isLast={index === measurementRows.length - 1}
+                        />
+                      ))}
+                    </Panel>
+                  )}
                 </section>
               )}
 

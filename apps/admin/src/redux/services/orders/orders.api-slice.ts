@@ -352,6 +352,14 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
   }),
 });
 
+export interface OrderItemMeasurements {
+  product_name?: string | null;
+  set_name?: string | null;
+  unit?: 'cm' | 'inch';
+  snapshot?: boolean;
+  measurements: Record<string, number>;
+}
+
 export interface OrderMeasurements {
   full_name?: string;
   /** Set name — the snapshot's chosen set (e.g. "For Tolu") or the live set. */
@@ -362,6 +370,8 @@ export interface OrderMeasurements {
   snapshot?: boolean;
   updatedAt?: string | null;
   measurements: Record<string, number>;
+  /** Per-garment snapshots — one order can carry items for different bodies. */
+  items?: OrderItemMeasurements[];
 }
 
 export const { useGetAdminOrdersQuery, useGetOrderMeasurementsQuery } =
