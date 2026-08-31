@@ -60,6 +60,38 @@ interface OrderMeasurementsCardProps {
   reference: string;
 }
 
+const recordedRows = (m: Record<string, number> | undefined) =>
+  Object.entries(m ?? {})
+    .filter(([, v]) => typeof v === 'number' && !Number.isNaN(v) && v > 0)
+    .map(([key, v]) => ({ key, label: prettify(key), value: v }));
+
+const MeasurementGrid = ({
+  measurements,
+  fromUnit,
+  unit,
+}: {
+  measurements: Record<string, number> | undefined;
+  fromUnit: 'cm' | 'inch';
+  unit: Unit;
+}) => (
+  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+    {recordedRows(measurements).map((row) => (
+      <div
+        key={row.key}
+        className="flex items-center justify-between gap-2 rounded-xl border border-[#E5E7EB] dark:border-border bg-white dark:bg-[#404040] px-3.5 py-2.5"
+      >
+        <span className="truncate text-sm text-gray-600 dark:text-gray-300">
+          {row.label}
+        </span>
+        <span className="shrink-0 text-sm font-semibold text-grey-black dark:text-white">
+          {formatValue(convert(row.value, fromUnit, unit))}
+          <span className="ml-0.5 text-xs font-normal text-grey3">{unit}</span>
+        </span>
+      </div>
+    ))}
+  </div>
+);
+
 export const OrderMeasurementsCard = ({
   reference,
 }: OrderMeasurementsCardProps) => {
@@ -68,13 +100,20 @@ export const OrderMeasurementsCard = ({
   });
   const [unit, setUnit] = useState<Unit>('cm');
 
+  // Per-garment profiles when the order carries items for different bodies
+  // (asoebi/family orders). Falls back to the single order-level profile.
+  const itemProfiles = useMemo(
+    () =>
+      (data?.items ?? []).filter(
+        (i) => recordedRows(i.measurements).length > 0
+      ),
+    [data]
+  );
+  const distinctSets = new Set(itemProfiles.map((i) => i.set_name ?? ''));
+  const perGarment = itemProfiles.length > 0 && distinctSets.size > 1;
+
   // Only the measurements that are actually recorded (present + non-zero).
-  const rows = useMemo(() => {
-    const m = data?.measurements ?? {};
-    return Object.entries(m)
-      .filter(([, v]) => typeof v === 'number' && !Number.isNaN(v) && v > 0)
-      .map(([key, v]) => ({ key, label: prettify(key), value: v }));
-  }, [data]);
+  const rows = useMemo(() => recordedRows(data?.measurements), [data]);
 
   if (isLoading) {
     return (
@@ -93,7 +132,7 @@ export const OrderMeasurementsCard = ({
   }
 
   // No measurements recorded — the section has no place in the drawer.
-  if (!data || rows.length === 0) return null;
+  if (!data || (rows.length === 0 && itemProfiles.length === 0)) return null;
 
   return (
     <section className="space-y-4 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
@@ -121,40 +160,57 @@ export const OrderMeasurementsCard = ({
         </div>
       </div>
 
-      {/* Whose measurements + whether they're frozen to this order. */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-sm font-medium text-grey-black dark:text-white">
-          {data.name || 'Measurements'}
-        </span>
-        {data.snapshot ? (
-          <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
-            <Lock className="size-3" /> Locked at order time
-          </span>
-        ) : (
-          <span className="rounded-md bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:text-amber-300">
-            Live profile — may change
-          </span>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        {rows.map((row) => (
-          <div
-            key={row.key}
-            className="flex items-center justify-between gap-2 rounded-xl border border-[#E5E7EB] dark:border-border bg-white dark:bg-[#404040] px-3.5 py-2.5"
-          >
-            <span className="truncate text-sm text-gray-600 dark:text-gray-300">
-              {row.label}
+      {perGarment ? (
+        /* Different bodies in one order — one block per garment. */
+        <div className="space-y-4">
+          {itemProfiles.map((item, idx) => (
+            <div key={idx} className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-medium text-grey-black dark:text-white">
+                  {item.set_name || 'Measurements'}
+                </span>
+                {item.product_name && (
+                  <span className="text-xs text-grey3 dark:text-gray-400">
+                    · {item.product_name}
+                  </span>
+                )}
+                <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
+                  <Lock className="size-3" /> Locked at order time
+                </span>
+              </div>
+              <MeasurementGrid
+                measurements={item.measurements}
+                fromUnit={item.unit ?? 'cm'}
+                unit={unit}
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <>
+          {/* Whose measurements + whether they're frozen to this order. */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-medium text-grey-black dark:text-white">
+              {data.name || 'Measurements'}
             </span>
-            <span className="shrink-0 text-sm font-semibold text-grey-black dark:text-white">
-              {formatValue(convert(row.value, data.unit ?? 'cm', unit))}
-              <span className="ml-0.5 text-xs font-normal text-grey3">
-                {unit}
+            {data.snapshot ? (
+              <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
+                <Lock className="size-3" /> Locked at order time
               </span>
-            </span>
+            ) : (
+              <span className="rounded-md bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:text-amber-300">
+                Live profile — may change
+              </span>
+            )}
           </div>
-        ))}
-      </div>
+
+          <MeasurementGrid
+            measurements={data.measurements}
+            fromUnit={data.unit ?? 'cm'}
+            unit={unit}
+          />
+        </>
+      )}
     </section>
   );
 };
