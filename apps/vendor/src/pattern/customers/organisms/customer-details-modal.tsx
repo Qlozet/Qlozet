@@ -9,7 +9,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { create, useModal } from '@ebay/nice-modal-react';
 import NiceModal from '@ebay/nice-modal-react';
-import { useRouter } from 'next/navigation';
 import {
   Ruler,
   ChevronRight,
@@ -17,6 +16,7 @@ import {
   Mail,
   Phone,
   ShoppingBag,
+  Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -41,8 +41,9 @@ import {
   formatCount,
   type CustomerStatusVariant,
 } from '@/lib/customers';
-import { APP_ROUTES } from '@/lib/routes';
 import { OverlayScroll } from '@/components/OverlayScroll';
+import { useLazyGetVendorOrderQuery } from '@/redux/services/orders/orders.api-slice';
+import { OrderDetailsDrawer } from '../../orders/organisms/order-details-drawer';
 import { CustomerMeasurementsModal } from '../details/organisms/customer-measurements-modal';
 import { CustomerAvatar } from '../atoms/customer-avatar';
 
@@ -137,10 +138,13 @@ const OrderHistoryTable = ({
   orders,
   loading,
   onView,
+  viewingId,
 }: {
   orders: CustomerOrderPreview[];
   loading: boolean;
   onView: (o: CustomerOrderPreview) => void;
+  /** Row whose full order is being fetched for the drawer. */
+  viewingId?: string | null;
 }) => {
   const [page, setPage] = useState(0);
   const pageCount = Math.max(1, Math.ceil(orders.length / ORDERS_PER_PAGE));
@@ -218,8 +222,12 @@ const OrderHistoryTable = ({
                       variant="outline"
                       size="sm"
                       onClick={() => onView(o)}
-                      className="text-xs"
+                      disabled={!!viewingId}
+                      className="gap-1.5 text-xs"
                     >
+                      {viewingId === o._id && (
+                        <Loader2 className="size-3 animate-spin" />
+                      )}
                       View
                     </Button>
                   </td>
@@ -278,7 +286,6 @@ interface CustomerDetailsModalProps {
 export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
   ({ customerId }) => {
     const { visible, resolve, hide, remove } = useModal();
-    const router = useRouter();
 
     const { data, isLoading, isFetching } = useGetVendorCustomersQuery(
       { page: 1, limit: 200, orders_limit: 50 },
@@ -317,17 +324,28 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
       });
     };
 
+    // Fetch the full order (list-row shape) and open the REAL order drawer on
+    // top of this modal — no more "go find it in the orders list yourself".
+    const [fetchOrder] = useLazyGetVendorOrderQuery();
+    const [viewingId, setViewingId] = useState<string | null>(null);
+
     const handleViewOrder = useCallback(
-      (order: CustomerOrderPreview) => {
-        resolve({ resolved: true });
-        hide();
-        setTimeout(() => remove(), 300);
-        router.push(APP_ROUTES.orders);
-        toast.info(
-          `Navigated to orders — look for ${shortRef(order.reference)}`
-        );
+      async (order: CustomerOrderPreview) => {
+        if (!order.reference || viewingId) return;
+        setViewingId(order._id);
+        try {
+          const full = await fetchOrder(order.reference).unwrap();
+          if (!full) throw new Error('not found');
+          NiceModal.show(OrderDetailsDrawer, { order: full });
+        } catch {
+          toast.error(
+            `Could not open order ${shortRef(order.reference)}. Please try again.`
+          );
+        } finally {
+          setViewingId(null);
+        }
       },
-      [resolve, hide, remove, router]
+      [fetchOrder, viewingId]
     );
 
     return (
@@ -439,6 +457,7 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
                   orders={orders}
                   loading={loading}
                   onView={handleViewOrder}
+                  viewingId={viewingId}
                 />
               </div>
             </div>
