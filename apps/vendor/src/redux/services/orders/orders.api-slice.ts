@@ -654,6 +654,32 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
       providesTags: ['OrderStats'],
     }),
 
+    // GET /orders/vendor/:reference — ONE order in the exact list-row shape
+    // (same populates + vendor scoping), so the order drawer can open from
+    // surfaces outside the orders list (e.g. a customer's order history).
+    getVendorOrder: builder.query<Order | null, string>({
+      query: (reference) => ({
+        url: `/orders/vendor/${encodeURIComponent(reference)}`,
+        method: 'GET',
+      }),
+      transformResponse: (res: any): Order | null => {
+        let cur: any = res;
+        for (let i = 0; i < 3; i++) {
+          if (
+            cur &&
+            typeof cur === 'object' &&
+            'data' in cur &&
+            !('_id' in cur)
+          ) {
+            cur = cur.data;
+          } else break;
+        }
+        return cur && typeof cur === 'object' && '_id' in cur
+          ? (cur as Order)
+          : null;
+      },
+    }),
+
     // GET /orders/:reference/measurements — the customer's measurement set for
     // THIS order. Returns the order-time snapshot when present (snapshot: true,
     // name = the chosen set, e.g. "For Tolu"); legacy orders without a snapshot
@@ -716,4 +742,5 @@ export const {
   useGetOrdersChartQuery,
   useGetVendorDashboardMetricsQuery,
   useGetOrderMeasurementsQuery,
+  useLazyGetVendorOrderQuery,
 } = ordersApiSlice;

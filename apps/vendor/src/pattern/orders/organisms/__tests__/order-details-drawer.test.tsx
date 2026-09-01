@@ -282,6 +282,13 @@ describe('OrderDetailsDrawer — large image preview', () => {
     await waitFor(() =>
       expect(screen.queryByText('Order details')).not.toBeInTheDocument()
     );
+
+    // handleClose schedules NiceModal's remove() 300ms out; let it fire while
+    // the test environment is still alive, or it lands after teardown as an
+    // unhandled "window is not defined" and fails the whole run.
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 350));
+    });
   });
 
   it('seeds the panel with the bespoke design media', async () => {
