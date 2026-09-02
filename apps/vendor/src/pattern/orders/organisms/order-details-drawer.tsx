@@ -755,13 +755,17 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     const canChat = order.type === 'bespoke' && !isFabricTransferOnly;
     const chatCanSend = ['processing', 'in_transit'].includes(order.status);
 
-    // Event fabric claims (guests buying yards from a reservation) carry NO
-    // shipment — the guest collects their cut, so confirm/fulfill never apply.
-    // Their whole lifecycle is: paid → vendor hands the yards over → completed.
+    // Event fabric claims (guests buying yards from a reservation). A PICKUP
+    // claim carries no shipment — the guest collects their cut, so its whole
+    // lifecycle is: paid → vendor hands the yards over → completed. A claim
+    // with delivery chosen DOES carry a shipment and flows through the normal
+    // confirm → fulfill → courier pipeline like any fabric order.
     const isReservationClaim = (order as any).type === 'reservation_claim';
+    const isPickupClaim =
+      isReservationClaim && (order.shipments ?? []).length === 0;
     const claimPaid = (order as any).payment_status === 'paid';
     const canHandover =
-      isReservationClaim &&
+      isPickupClaim &&
       claimPaid &&
       ['pending', 'in_review', 'processing'].includes(order.status);
 
@@ -1918,9 +1922,11 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               <div className="mb-3 flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 dark:border-blue-800/50 dark:bg-blue-900/20">
                 <AlertTriangle className="mt-0.5 size-4 shrink-0 text-blue-600 dark:text-blue-400" />
                 <p className="text-xs text-blue-700 dark:text-blue-300">
-                  {claimPaid
-                    ? 'Event fabric claim — the guest collects these yards, no courier shipment is needed. Mark it handed over once the fabric is given out.'
-                    : 'Event fabric claim awaiting payment — if the guest doesn’t complete payment it will be released automatically.'}
+                  {!claimPaid
+                    ? 'Event fabric claim awaiting payment — if the guest doesn’t complete payment it will be released automatically.'
+                    : isPickupClaim
+                      ? 'Event fabric claim — the guest collects these yards, no courier shipment is needed. Mark it handed over once the fabric is given out.'
+                      : 'Event fabric claim with delivery — confirm and fulfil it like a normal fabric order; the courier ships it to the guest.'}
                 </p>
               </div>
             )}
