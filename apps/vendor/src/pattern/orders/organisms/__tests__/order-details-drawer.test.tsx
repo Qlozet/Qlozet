@@ -28,6 +28,8 @@ vi.mock('@/redux/services/orders/orders.api-slice', async (importOriginal) => {
     // Added with per-item rejection — unmocked it is a real RTK hook and
     // crashes the render with "could not find react-redux context".
     useRejectOrderItemMutation: noopMutation,
+    // Reservation-claim handover action (event fabric claims).
+    useHandoverClaimMutation: noopMutation,
     // Order-scoped measurements card (order-quote-drawer); harmless here.
     useGetOrderMeasurementsQuery: () => ({ data: null, isLoading: false }),
   };

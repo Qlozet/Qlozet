@@ -53,6 +53,7 @@ import {
   extractFabricName,
   useFulfillOrderMutation,
   useConfirmOrderMutation,
+  useHandoverClaimMutation,
   useRejectOrderMutation,
   useRejectOrderItemMutation,
 } from '@/redux/services/orders/orders.api-slice';
@@ -737,6 +738,8 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     const [confirmOrder, { isLoading: isConfirming }] =
       useConfirmOrderMutation();
     const [rejectOrder, { isLoading: isRejecting }] = useRejectOrderMutation();
+    const [handoverClaim, { isLoading: isHandingOver }] =
+      useHandoverClaimMutation();
     const [rejectOrderItem, { isLoading: isRejectingItem }] =
       useRejectOrderItemMutation();
 
@@ -751,6 +754,36 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     // sending is open only while the order is in production or transit.
     const canChat = order.type === 'bespoke' && !isFabricTransferOnly;
     const chatCanSend = ['processing', 'in_transit'].includes(order.status);
+
+    // Event fabric claims (guests buying yards from a reservation) carry NO
+    // shipment — the guest collects their cut, so confirm/fulfill never apply.
+    // Their whole lifecycle is: paid → vendor hands the yards over → completed.
+    const isReservationClaim = (order as any).type === 'reservation_claim';
+    const claimPaid = (order as any).payment_status === 'paid';
+    const canHandover =
+      isReservationClaim &&
+      claimPaid &&
+      ['pending', 'in_review', 'processing'].includes(order.status);
+
+    const handleHandover = async () => {
+      try {
+        await handoverClaim({ reference: order.reference }).unwrap();
+        setOrder((prev) => ({
+          ...prev,
+          status: 'completed' as Order['status'],
+        }));
+        toast.success(
+          'Marked as handed over — your earnings are scheduled for release.'
+        );
+      } catch (err: any) {
+        toast.error(
+          readApiError(
+            err,
+            'Could not complete the handover. Please try again.'
+          )
+        );
+      }
+    };
 
     // Confirmation state derived from shipment
     const isConfirmed = vendorShipment?.confirmed === true;
@@ -1881,6 +1914,16 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
 
           {/* Footer */}
           <div className="shrink-0 border-t border-border px-4 py-4 sm:px-6">
+            {isReservationClaim && order.status !== 'completed' && (
+              <div className="mb-3 flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 dark:border-blue-800/50 dark:bg-blue-900/20">
+                <AlertTriangle className="mt-0.5 size-4 shrink-0 text-blue-600 dark:text-blue-400" />
+                <p className="text-xs text-blue-700 dark:text-blue-300">
+                  {claimPaid
+                    ? 'Event fabric claim — the guest collects these yards, no courier shipment is needed. Mark it handed over once the fabric is given out.'
+                    : 'Event fabric claim awaiting payment — if the guest doesn’t complete payment it will be released automatically.'}
+                </p>
+              </div>
+            )}
             {isRetryFulfill && canFulfill && (
               <div className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-800/50 dark:bg-amber-900/20">
                 <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
@@ -1965,11 +2008,24 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   Order Rejected
                 </div>
               )}
+              {/* Handover — the entire fulfilment for an event fabric claim */}
+              {canHandover && (
+                <Button
+                  type="button"
+                  onClick={handleHandover}
+                  disabled={isHandingOver}
+                  className="flex-1 h-11 gap-2 text-sm bg-[#0F973D] hover:bg-[#0D8534] text-white"
+                >
+                  <CheckCircle className="size-4" />
+                  {isHandingOver ? 'Completing...' : 'Mark Handed Over'}
+                </Button>
+              )}
               {/* Print invoice fallback — not shown for a fabric transfer,
                   which has no customer invoice to print. */}
               {!isFabricTransferOnly &&
                 !needsConfirmation &&
                 !canFulfill &&
+                !canHandover &&
                 !hasLabel &&
                 !isRejected && (
                   <Button
@@ -1985,7 +2041,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               <Button
                 type="button"
                 variant={
-                  needsConfirmation || canFulfill || hasLabel
+                  needsConfirmation || canFulfill || canHandover || hasLabel
                     ? 'outline'
                     : 'default'
                 }

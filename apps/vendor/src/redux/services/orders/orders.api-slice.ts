@@ -612,6 +612,21 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Orders'],
     }),
 
+    // POST /orders/:reference/handover — mark a reservation fabric CLAIM as
+    // handed over. Claim orders carry no shipment (the guest collects their
+    // yards), so this replaces confirm+fulfill for them and schedules the
+    // vendor's earnings release.
+    handoverClaim: builder.mutation<
+      { message: string; data: unknown },
+      { reference: string }
+    >({
+      query: ({ reference }) => ({
+        url: `/orders/${reference}/handover`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Orders'],
+    }),
+
     // PATCH /orders/:reference/reject — vendor rejects their portion (partial refund)
     rejectOrder: builder.mutation<
       { message: string; data: unknown },
@@ -737,6 +752,7 @@ export const {
   useFulfillOrderMutation,
   useCancelOrderMutation,
   useConfirmOrderMutation,
+  useHandoverClaimMutation,
   useRejectOrderMutation,
   useRejectOrderItemMutation,
   useGetOrdersChartQuery,
