@@ -86,6 +86,8 @@ export const SelectionRow = ({
   );
 };
 
+// Styled to match the order drawer's SectionTitle + Panel idiom, so the item
+// detail sheet and the order sheet read as one surface.
 export const Section = ({
   title,
   icon,
@@ -95,14 +97,14 @@ export const Section = ({
   icon: React.ReactNode;
   children: React.ReactNode;
 }) => (
-  <div className="space-y-2">
+  <div className="space-y-3">
     <div className="flex items-center gap-1.5">
       {icon}
-      <h4 className="text-xs font-semibold uppercase tracking-wider text-grey3 dark:text-gray-400">
+      <h3 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
         {title}
-      </h4>
+      </h3>
     </div>
-    <div className="divide-y divide-[#F1F3F5] dark:divide-white/10 rounded-xl border border-[#E5E7EB] dark:border-white/10 bg-[hsla(0,0%,96%,1)] dark:bg-muted">
+    <div className="divide-y divide-[#DDE2E5] dark:divide-white/10 rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-muted overflow-hidden">
       {children}
     </div>
   </div>
