@@ -285,7 +285,7 @@ interface CustomerDetailsModalProps {
 
 export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
   ({ customerId }) => {
-    const { visible, resolve, hide, remove } = useModal();
+    const { visible, resolve, hide, remove, show } = useModal();
 
     const { data, isLoading, isFetching } = useGetVendorCustomersQuery(
       { page: 1, limit: 200, orders_limit: 50 },
@@ -336,7 +336,17 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
         try {
           const full = await fetchOrder(order.reference).unwrap();
           if (!full) throw new Error('not found');
-          NiceModal.show(OrderDetailsDrawer, { order: full });
+          // The order drawer is a Sheet (z-50) and this modal is a Dialog
+          // (z-60), so opened on top it actually rendered BEHIND this modal's
+          // blurred overlay. Step aside while the drawer is open and come
+          // back when it closes (its handleClose resolves the promise) —
+          // cleaner than a z-index war with the drawer's own nested dialogs.
+          hide();
+          try {
+            await NiceModal.show(OrderDetailsDrawer, { order: full });
+          } finally {
+            show();
+          }
         } catch {
           toast.error(
             `Could not open order ${shortRef(order.reference)}. Please try again.`
@@ -345,7 +355,7 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
           setViewingId(null);
         }
       },
-      [fetchOrder, viewingId]
+      [fetchOrder, viewingId, hide, show]
     );
 
     return (
