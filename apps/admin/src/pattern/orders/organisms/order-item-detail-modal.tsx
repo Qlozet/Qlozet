@@ -13,15 +13,17 @@
 // no shared Dialog primitive, so this uses the same fixed-overlay pattern as the
 // other admin modals.
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
 import {
   Gem,
   Layers,
+  Lock,
   Maximize2,
   Package,
   Palette,
   PlusCircle,
+  Ruler,
   Scissors,
   X,
 } from 'lucide-react';
@@ -54,6 +56,91 @@ const KIND_LABEL: Record<string, string> = {
   clothing: 'Clothing',
   fabric: 'Fabric',
   accessory: 'Accessory',
+};
+
+/* ── Per-item body measurements ──
+   The garment's ORDER-TIME snapshot, straight off the item's embedded
+   body_profile — admin sees every body on the order (dispute evidence),
+   and each grid lives with its garment so a family order (Dad, Mum,
+   Sister) is never ambiguous about which measurements are whose. */
+const ItemBodyMeasurements = ({
+  profile,
+}: {
+  profile: {
+    set_name?: string | null;
+    unit?: string;
+    measurements?: Record<string, number>;
+  };
+}) => {
+  const [unit, setUnit] = useState<'cm' | 'in'>('cm');
+  const rows = Object.entries(profile?.measurements ?? {})
+    .filter(([, v]) => typeof v === 'number' && !Number.isNaN(v) && v > 0)
+    .map(([key, v]) => ({
+      key,
+      label: key
+        .replace(/[_-]+/g, ' ')
+        .replace(/\b\w/g, (c) => c.toUpperCase()),
+      value: v,
+    }));
+  if (rows.length === 0) return null;
+
+  const fromInch = profile.unit === 'inch' || profile.unit === 'in';
+  const show = (v: number) => {
+    const cm = fromInch ? v * 2.54 : v;
+    const out = unit === 'in' ? cm / 2.54 : cm;
+    return Number.isInteger(out) ? `${out}` : out.toFixed(1);
+  };
+
+  return (
+    <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 dark:border-emerald-400/30 dark:bg-emerald-400/10 p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <h4 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+            <Ruler className="size-3.5" />
+            Sewn to
+            {profile.set_name ? `: ${profile.set_name}` : ' these measurements'}
+          </h4>
+          <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 dark:bg-emerald-400/20 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
+            <Lock className="size-3" /> Locked at order time
+          </span>
+        </div>
+        <div className="inline-flex items-center rounded-full bg-white dark:bg-muted p-0.5 text-xs font-semibold">
+          {(['cm', 'in'] as const).map((u) => (
+            <button
+              key={u}
+              type="button"
+              onClick={() => setUnit(u)}
+              className={
+                unit === u
+                  ? 'cursor-pointer rounded-full bg-gray-100 dark:bg-white/10 px-2.5 py-0.5 uppercase text-gray-900 dark:text-white shadow-sm'
+                  : 'cursor-pointer rounded-full px-2.5 py-0.5 uppercase text-gray-500'
+              }
+            >
+              {u}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+        {rows.map((row) => (
+          <div
+            key={row.key}
+            className="flex items-center justify-between gap-2 rounded-xl border border-[#E5E7EB] dark:border-white/10 bg-white dark:bg-muted px-3.5 py-2.5"
+          >
+            <span className="truncate text-sm text-gray-600 dark:text-gray-300">
+              {row.label}
+            </span>
+            <span className="shrink-0 text-sm font-semibold text-grey-black dark:text-white">
+              {show(row.value)}
+              <span className="ml-0.5 text-xs font-normal text-grey3">
+                {unit}
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
@@ -166,6 +253,12 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Body measurements THIS garment is sewn to — the item's order-time
+          snapshot (admin sees every body; key dispute evidence). */}
+      {(item as any).body_profile?.measurements && (
+        <ItemBodyMeasurements profile={(item as any).body_profile} />
       )}
 
       {/* Colour & size */}
@@ -406,11 +499,18 @@ export const OrderItemDetailModal = create<OrderItemDetailModalProps>(
 
     if (!modal.visible) return null;
 
+    const itemName =
+      asProduct(item.product)?.clothing?.name ??
+      asProduct(item.product)?.fabric?.name ??
+      asProduct(item.product)?.accessory?.name ??
+      asProduct(item.product)?.name;
+
     return (
-      // z-[110] clears the order drawer sheet this opens from.
-      <div
-        className={`fixed inset-0 z-[110] flex items-center justify-center p-4 ${NESTED_MODAL_LAYER}`}
-      >
+      // z-[110] clears the order drawer sheet this opens from. Rendered as a
+      // right-side SHEET with the drawer's exact geometry (inset 24px, rounded,
+      // 440px), stacked one layer above it — the item view reads as a deeper
+      // page of the same surface, not a different kind of window.
+      <div className={`fixed inset-0 z-[110] ${NESTED_MODAL_LAYER}`}>
         <div
           className="absolute inset-0 bg-black/40 backdrop-blur-sm"
           onClick={close}
@@ -420,12 +520,19 @@ export const OrderItemDetailModal = create<OrderItemDetailModalProps>(
           role="dialog"
           aria-modal="true"
           aria-label="Item details"
-          className="relative z-10 flex max-h-[85vh] w-full max-w-[520px] flex-col overflow-hidden rounded-2xl bg-white dark:bg-card shadow-2xl"
+          className="absolute right-6 top-6 bottom-6 z-10 flex w-full max-w-[440px] flex-col overflow-hidden rounded-2xl bg-white dark:bg-card shadow-2xl"
         >
-          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-5 py-4">
-            <h2 className="text-base font-semibold text-[#0C0C0D] dark:text-white">
-              Item details
-            </h2>
+          <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border py-5 pl-6 pr-4">
+            <div className="min-w-0">
+              <h2 className="text-lg font-semibold text-[#0C0C0D] dark:text-white">
+                Item details
+              </h2>
+              {itemName && (
+                <p className="truncate text-sm text-grey3 dark:text-gray-400">
+                  {itemName}
+                </p>
+              )}
+            </div>
             <button
               type="button"
               onClick={close}
@@ -436,7 +543,7 @@ export const OrderItemDetailModal = create<OrderItemDetailModalProps>(
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-5 py-5">
+          <div className="flex-1 overflow-y-auto px-6 py-5">
             <ItemDetailContent item={item} />
           </div>
         </div>

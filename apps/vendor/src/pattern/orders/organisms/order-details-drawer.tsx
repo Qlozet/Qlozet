@@ -79,7 +79,6 @@ import { OverlayScroll } from '@/components/OverlayScroll';
 import {
   allProductImages,
   asProduct,
-  findFabricItem,
   readOrderFabric,
 } from '../lib/item-resolvers';
 import { readBespokeDesign } from '../lib/bespoke-design';
@@ -470,7 +469,21 @@ const OrderItemRow: React.FC<{
     );
   if (item.addon_selections?.length)
     summaryBits.push(plural(item.addon_selections.length, 'add-on', 'add-ons'));
-  if (item.applied_fabric) summaryBits.push('external fabric');
+  // Name the customer's fabric in the row — with several custom garments each
+  // carrying a different (possibly cross-vendor) fabric, a generic "external
+  // fabric" chip can't tell them apart.
+  if (item.applied_fabric) {
+    const afName =
+      typeof item.applied_fabric === 'object'
+        ? ((item.applied_fabric as any)?.fabric?.name ??
+          (item.applied_fabric as any)?.name)
+        : undefined;
+    summaryBits.push(afName ? `Fabric: ${afName}` : 'external fabric');
+  }
+  // Who this garment is sewn FOR — from the item's order-time snapshot.
+  const rowBodyProfile = (item as any).body_profile;
+  if (rowBodyProfile?.set_name)
+    summaryBits.push(`Sewn to ${rowBodyProfile.set_name}`);
 
   const hasDetails = !!(
     item.color_variant_selections?.length ||
@@ -480,6 +493,7 @@ const OrderItemRow: React.FC<{
     item.addon_selections?.length ||
     item.note ||
     item.applied_fabric ||
+    rowBodyProfile?.measurements ||
     product?.clothing?.description
   );
 
@@ -1439,20 +1453,16 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   </section>
                 )}
 
-              {/* ── Body Measurements ──
-                  Tailored work only (bespoke orders / customize garments):
-                  the customer's order-time measurement snapshot, per garment
-                  when the order mixes bodies. The card fetches and renders
-                  null when the backend has nothing (it also gates
-                  server-side, so fabric/accessory orders never show this). */}
-              {!isFabricTransferOnly &&
-                (order.type === 'bespoke' ||
-                  vendorItems.some(
-                    (i: any) =>
-                      i.clothing_type === 'customize' ||
-                      (typeof i.product === 'object' &&
-                        (i.product as any)?.clothing?.type === 'customize')
-                  )) && <OrderMeasurementsCard reference={order.reference} />}
+              {/* ── Body Measurements (order-level) ──
+                  BESPOKE only: one design, one body, and the design card
+                  replaces item rows. Custom (customize) orders show
+                  measurements PER ITEM instead — a "Sewn to <name>" chip on
+                  each row and the full grid in the item detail modal — so an
+                  order carrying garments for different bodies (Dad, Mum,
+                  Sister) is never ambiguous about which grid is whose. */}
+              {!isFabricTransferOnly && order.type === 'bespoke' && (
+                <OrderMeasurementsCard reference={order.reference} />
+              )}
 
               {/* ── Confirmation Status ── */}
               {vendorShipment && (
@@ -1640,31 +1650,52 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               )}
 
               {/* ── Applied / external fabric (what the customer supplied) ──
-                  Shows the fabric identity — name, image, source vendor, yards,
-                  price — even when no transfer shipment exists yet. The card
-                  self-hides when the order has no fabric item. The logistics /
+                  ONE CARD PER FABRIC-CARRYING ITEM: an order can hold several
+                  custom garments each with a different (possibly cross-vendor)
+                  fabric, and the old first-item lookup hid all but the first.
+                  Each card names its garment when there's more than one, and
+                  matches the transfer status to ITS fabric. The logistics /
                   fulfillment-gating view lives in the section below. */}
               {(() => {
-                const fItem = findFabricItem(order);
-                const fabric = fItem
-                  ? readOrderFabric(fItem, asProduct(fItem.product))
-                  : null;
-                const img = fabric?.imageUrl;
-                return (
-                  <OrderFabricCard
-                    order={order}
-                    businessId={businessId}
-                    onViewFabric={
-                      img
-                        ? () =>
-                            NiceModal.show(MediaPreviewModal, {
-                              images: [img],
-                              title: fabric?.name ?? 'Fabric',
-                            })
-                        : undefined
-                    }
-                  />
+                const fabricItems = (order.items ?? []).filter(
+                  (i) =>
+                    i.applied_fabric ||
+                    i.applied_fabric_yards ||
+                    i.fabric_selections?.length
                 );
+                return fabricItems.map((fItem, idx) => {
+                  const fabric = readOrderFabric(
+                    fItem,
+                    asProduct(fItem.product)
+                  );
+                  const img = fabric?.imageUrl;
+                  const garment =
+                    fabricItems.length > 1
+                      ? getProductName(
+                          typeof fItem.product === 'object'
+                            ? (fItem.product as PopulatedProduct)
+                            : null
+                        )
+                      : undefined;
+                  return (
+                    <OrderFabricCard
+                      key={idx}
+                      order={order}
+                      item={fItem}
+                      garmentName={garment}
+                      businessId={businessId}
+                      onViewFabric={
+                        img
+                          ? () =>
+                              NiceModal.show(MediaPreviewModal, {
+                                images: [img],
+                                title: fabric?.name ?? 'Fabric',
+                              })
+                          : undefined
+                      }
+                    />
+                  );
+                });
               })()}
 
               {/* ── Incoming Fabric (You are the tailor/receiver) ── */}

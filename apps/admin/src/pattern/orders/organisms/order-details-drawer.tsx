@@ -165,6 +165,26 @@ const OrderItemRow = ({
           </p>
         )}
 
+        {/* Per-item facts at a glance: whose body the garment is sewn to and
+            which (possibly cross-vendor) fabric it uses — a family order with
+            several custom garments is ambiguous without them. */}
+        {(() => {
+          const bits: string[] = [];
+          const bp = (item as any).body_profile;
+          if (bp?.set_name) bits.push(`Sewn to ${bp.set_name}`);
+          const af = (item as any).applied_fabric;
+          if (af) {
+            const afName =
+              typeof af === 'object' ? (af.fabric?.name ?? af.name) : undefined;
+            bits.push(afName ? `Fabric: ${afName}` : 'External fabric');
+          }
+          return bits.length > 0 ? (
+            <p className="mt-0.5 truncate text-xs text-gray-500 dark:text-gray-400">
+              {bits.join(' · ')}
+            </p>
+          ) : null;
+        })()}
+
         {/* The backend records a single discount amount per item, so one badge
             is all we can honestly show. */}
         {discount !== undefined && (
@@ -352,44 +372,69 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                 </Panel>
               </section>
 
-              {/* ── Body Measurement (custom/bespoke orders) ── */}
-              {(measurementRows.length > 0 ||
-                measurementItemGroups.length > 0) && (
-                <section className="space-y-3">
-                  <SectionTitle
-                    trailing={
-                      bodyMeasurements?.snapshot ||
-                      measurementItemGroups.length > 0 ? (
-                        <span className="rounded-md bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
-                          Locked at order time
-                        </span>
-                      ) : (
-                        <span className="rounded-md bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:text-amber-300">
-                          Live profile
-                        </span>
-                      )
-                    }
-                  >
-                    Body Measurement
-                  </SectionTitle>
-                  {measurementItemGroups.length > 0 ? (
-                    /* Different bodies in one order — one panel per garment. */
-                    measurementItemGroups.map((group, gi) => (
-                      <Panel key={gi}>
+              {/* ── Body Measurement (order-level) ──
+                  BESPOKE only: one design, one body. Custom orders show
+                  measurements PER ITEM instead — a "Sewn to <name>" line on
+                  each row and the full grid in the item detail sheet — so a
+                  family order is never ambiguous about which grid is whose. */}
+              {(order as { type?: string }).type === 'bespoke' &&
+                (measurementRows.length > 0 ||
+                  measurementItemGroups.length > 0) && (
+                  <section className="space-y-3">
+                    <SectionTitle
+                      trailing={
+                        bodyMeasurements?.snapshot ||
+                        measurementItemGroups.length > 0 ? (
+                          <span className="rounded-md bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
+                            Locked at order time
+                          </span>
+                        ) : (
+                          <span className="rounded-md bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:text-amber-300">
+                            Live profile
+                          </span>
+                        )
+                      }
+                    >
+                      Body Measurement
+                    </SectionTitle>
+                    {measurementItemGroups.length > 0 ? (
+                      /* Different bodies in one order — one panel per garment. */
+                      measurementItemGroups.map((group, gi) => (
+                        <Panel key={gi}>
+                          <DetailRow
+                            label="Set:"
+                            value={
+                              <>
+                                {group.set_name || '—'}
+                                {group.product_name && (
+                                  <span className="ml-1 text-gray-400">
+                                    · {group.product_name}
+                                  </span>
+                                )}
+                              </>
+                            }
+                          />
+                          {group.rows.map((row, index) => (
+                            <DetailRow
+                              key={row.key}
+                              label={`${row.label}:`}
+                              value={`${
+                                Number.isInteger(row.value)
+                                  ? row.value
+                                  : row.value.toFixed(1)
+                              } ${group.unit}`}
+                              isLast={index === group.rows.length - 1}
+                            />
+                          ))}
+                        </Panel>
+                      ))
+                    ) : (
+                      <Panel>
                         <DetailRow
                           label="Set:"
-                          value={
-                            <>
-                              {group.set_name || '—'}
-                              {group.product_name && (
-                                <span className="ml-1 text-gray-400">
-                                  · {group.product_name}
-                                </span>
-                              )}
-                            </>
-                          }
+                          value={bodyMeasurements?.name || '—'}
                         />
-                        {group.rows.map((row, index) => (
+                        {measurementRows.map((row, index) => (
                           <DetailRow
                             key={row.key}
                             label={`${row.label}:`}
@@ -397,34 +442,14 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                               Number.isInteger(row.value)
                                 ? row.value
                                 : row.value.toFixed(1)
-                            } ${group.unit}`}
-                            isLast={index === group.rows.length - 1}
+                            } ${bodyMeasurements?.unit === 'inch' ? 'in' : 'cm'}`}
+                            isLast={index === measurementRows.length - 1}
                           />
                         ))}
                       </Panel>
-                    ))
-                  ) : (
-                    <Panel>
-                      <DetailRow
-                        label="Set:"
-                        value={bodyMeasurements?.name || '—'}
-                      />
-                      {measurementRows.map((row, index) => (
-                        <DetailRow
-                          key={row.key}
-                          label={`${row.label}:`}
-                          value={`${
-                            Number.isInteger(row.value)
-                              ? row.value
-                              : row.value.toFixed(1)
-                          } ${bodyMeasurements?.unit === 'inch' ? 'in' : 'cm'}`}
-                          isLast={index === measurementRows.length - 1}
-                        />
-                      ))}
-                    </Panel>
-                  )}
-                </section>
-              )}
+                    )}
+                  </section>
+                )}
 
               {/* ── Payment and Invoice ── */}
               <section className="space-y-3">

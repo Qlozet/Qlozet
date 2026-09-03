@@ -1,13 +1,12 @@
 'use client';
 
-// Order Item Detail Modal — Organism
+// Order Item Detail Sheet — Organism
 // Rich, image-forward breakdown of a single order item: the product, the chosen
 // styles / fabric / accessories / add-ons (each with a thumbnail, name + price),
-// the cross-vendor "external fabric" applied to a custom outfit, the pricing
-// ladder and the customer note. Opened from the order drawer's item row.
-//
-// Responsive by construction: the shared Dialog renders a centered modal on
-// desktop and a bottom sheet on mobile.
+// the cross-vendor "external fabric" applied to a custom outfit, the garment's
+// order-time body measurements, the pricing ladder and the customer note.
+// Opened from the order drawer's item row as a right-side Sheet with the SAME
+// geometry and section idiom as the drawer, stacked one layer above it.
 
 import React from 'react';
 import Image from 'next/image';
@@ -22,12 +21,13 @@ import {
   Maximize2,
 } from 'lucide-react';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
+import { ItemBodyMeasurements } from '../molecules/order-measurements-card';
 import type {
   Order,
   OrderItem,
@@ -180,6 +180,13 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
             )}
           </div>
         </div>
+      )}
+
+      {/* Body measurements THIS garment is sewn to — the item's order-time
+          snapshot. Lives here (not just order-level) so an order carrying
+          garments for different bodies is never ambiguous. */}
+      {(item as any).body_profile?.measurements && (
+        <ItemBodyMeasurements profile={(item as any).body_profile} />
       )}
 
       {/* Colour / size variants */}
@@ -342,91 +349,96 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
         </Section>
       )}
 
-      {/* Pricing ladder */}
+      {/* Pricing ladder — drawer Card idiom */}
       {item.pricing && (
-        <div className="rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] px-3.5 py-3 space-y-1.5">
-          {(
-            [
-              ['Base', item.pricing.base],
-              ['Styles', item.pricing.styles_total],
-              ['Fabric', item.pricing.fabric_total],
-              ['Variant', item.pricing.variant_total],
-              ['Accessories', item.pricing.accessories_total],
-              ['Add-ons', item.pricing.addons_total],
-            ] as [string, number][]
-          )
-            .filter(([label, v]) => label === 'Base' || v > 0)
-            .map(([label, v]) => (
-              <div
-                key={label}
-                className="flex items-center justify-between text-xs"
-              >
-                <span className="text-grey3 dark:text-gray-400">{label}</span>
-                <span className="text-[#333333] dark:text-gray-200">
-                  {formatNaira(v)}
-                </span>
-              </div>
-            ))}
-          <div className="flex items-center justify-between border-t border-[#DDE2E5] dark:border-border pt-1.5 text-xs">
-            <span className="font-medium text-[#333333] dark:text-gray-200">
-              Before discount
-            </span>
-            <span className="font-medium text-[#333333] dark:text-gray-200">
-              {formatNaira(item.pricing.before_discount)}
-            </span>
-          </div>
-          {item.pricing.discount > 0 && (
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-grey3 dark:text-gray-400">Discount</span>
-              <span className="font-semibold text-red-600">
-                -{formatNaira(item.pricing.discount)}
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
+            Pricing
+          </h3>
+          <div className="rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] dark:border dark:border-border px-4 py-3.5 space-y-1.5">
+            {(
+              [
+                ['Base', item.pricing.base],
+                ['Styles', item.pricing.styles_total],
+                ['Fabric', item.pricing.fabric_total],
+                ['Variant', item.pricing.variant_total],
+                ['Accessories', item.pricing.accessories_total],
+                ['Add-ons', item.pricing.addons_total],
+              ] as [string, number][]
+            )
+              .filter(([label, v]) => label === 'Base' || v > 0)
+              .map(([label, v]) => (
+                <div
+                  key={label}
+                  className="flex items-center justify-between text-xs"
+                >
+                  <span className="text-grey3 dark:text-gray-400">{label}</span>
+                  <span className="text-[#333333] dark:text-gray-200">
+                    {formatNaira(v)}
+                  </span>
+                </div>
+              ))}
+            <div className="flex items-center justify-between border-t border-[#DDE2E5] dark:border-border pt-1.5 text-xs">
+              <span className="font-medium text-[#333333] dark:text-gray-200">
+                Before discount
+              </span>
+              <span className="font-medium text-[#333333] dark:text-gray-200">
+                {formatNaira(item.pricing.before_discount)}
               </span>
             </div>
-          )}
-          <div className="flex items-center justify-between border-t border-[#DDE2E5] dark:border-border pt-1.5">
-            <span className="text-xs font-semibold text-[#333333] dark:text-gray-200">
-              Final item total
-            </span>
-            <span className="text-sm font-bold text-[#0C0C0D] dark:text-white">
-              {formatNaira(item.pricing.final)}
-            </span>
-          </div>
-          {/* External fabric is the customer's "use my own fabric" charge — the
+            {item.pricing.discount > 0 && (
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-grey3 dark:text-gray-400">Discount</span>
+                <span className="font-semibold text-red-600">
+                  -{formatNaira(item.pricing.discount)}
+                </span>
+              </div>
+            )}
+            <div className="flex items-center justify-between border-t border-[#DDE2E5] dark:border-border pt-1.5">
+              <span className="text-xs font-semibold text-[#333333] dark:text-gray-200">
+                Final item total
+              </span>
+              <span className="text-sm font-bold text-[#0C0C0D] dark:text-white">
+                {formatNaira(item.pricing.final)}
+              </span>
+            </div>
+            {/* External fabric is the customer's "use my own fabric" charge — the
               fabric vendor's revenue, not part of the tailor's item total above.
               Shown here so the amount the customer actually paid reconciles. */}
-          {externalFabricCost > 0 && (
-            <>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-grey3 dark:text-gray-400">
-                  External fabric
-                  <span className="text-[10px] text-grey3/70 dark:text-gray-500">
-                    {' '}
-                    (to fabric vendor)
+            {externalFabricCost > 0 && (
+              <>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-grey3 dark:text-gray-400">
+                    External fabric
+                    <span className="text-[10px] text-grey3/70 dark:text-gray-500">
+                      {' '}
+                      (to fabric vendor)
+                    </span>
                   </span>
-                </span>
-                <span className="text-[#333333] dark:text-gray-200">
-                  {formatNaira(externalFabricCost)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between border-t border-[#DDE2E5] dark:border-border pt-1.5">
-                <span className="text-xs font-semibold text-[#333333] dark:text-gray-200">
-                  Customer paid
-                </span>
-                <span className="text-sm font-bold text-[#0C0C0D] dark:text-white">
-                  {formatNaira(item.pricing.final + externalFabricCost)}
-                </span>
-              </div>
-            </>
-          )}
+                  <span className="text-[#333333] dark:text-gray-200">
+                    {formatNaira(externalFabricCost)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between border-t border-[#DDE2E5] dark:border-border pt-1.5">
+                  <span className="text-xs font-semibold text-[#333333] dark:text-gray-200">
+                    Customer paid
+                  </span>
+                  <span className="text-sm font-bold text-[#0C0C0D] dark:text-white">
+                    {formatNaira(item.pricing.final + externalFabricCost)}
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
 
       {/* Customer note */}
       {item.note && (
-        <div>
-          <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-grey3 dark:text-gray-400">
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
             Customer note
-          </h4>
+          </h3>
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 dark:border-amber-800/50 dark:bg-amber-900/20">
             <p className="text-xs italic leading-relaxed text-amber-800 dark:text-amber-200">
               &ldquo;{item.note}&rdquo;
@@ -458,25 +470,41 @@ export const OrderItemDetailModal = create<OrderItemDetailModalProps>(
       }
     };
 
+    const itemName = getProductName(asProduct(item.product));
+
+    // Same shell + geometry as the order details drawer it opens from, stacked
+    // one layer above it — the item view reads as a deeper page of the same
+    // surface, not a different kind of window.
     return (
-      <Dialog open={visible} onOpenChange={onOpenChange}>
-        <DialogContent
+      <Sheet open={visible} onOpenChange={onOpenChange}>
+        <SheetContent
+          side="right"
           className={cn(
-            'sm:max-w-[520px] p-0 gap-0 bg-white dark:bg-card',
-            // z-index above the order drawer sheet it opens from.
+            'flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white dark:bg-card',
+            // Above the order drawer sheet it opens from.
             'z-[60]'
           )}
+          style={{
+            height: 'calc(100vh - 3rem)',
+            maxHeight: 'calc(100vh - 3rem)',
+          }}
         >
-          <DialogHeader className="border-b border-border px-4 py-4 sm:px-5">
-            <DialogTitle className="text-base font-semibold text-[#0C0C0D] dark:text-white">
+          {/* pr-12 reserves room for the Sheet's built-in close (X). */}
+          <SheetHeader className="shrink-0 border-b border-border py-5 pl-4 pr-12 sm:pl-6">
+            <SheetTitle className="text-lg font-semibold text-[#0C0C0D] dark:text-white">
               Item details
-            </DialogTitle>
-          </DialogHeader>
-          <OverlayScroll className="max-h-[70vh] px-4 py-5 sm:px-5 sm:max-h-[65vh]">
+            </SheetTitle>
+            {itemName && (
+              <p className="truncate text-sm text-grey3 dark:text-gray-400">
+                {itemName}
+              </p>
+            )}
+          </SheetHeader>
+          <OverlayScroll className="flex-1 px-4 py-5 sm:px-6">
             <ItemDetailContent item={item} />
           </OverlayScroll>
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
     );
   }
 );
