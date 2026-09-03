@@ -1,13 +1,12 @@
 'use client';
 
-// Order Item Detail Modal — Organism
+// Order Item Detail Sheet — Organism
 // Rich, image-forward breakdown of a single order item: the product, the chosen
 // styles / fabric / accessories / add-ons (each with a thumbnail, name + price),
-// the cross-vendor "external fabric" applied to a custom outfit, the pricing
-// ladder and the customer note. Opened from the order drawer's item row.
-//
-// Responsive by construction: the shared Dialog renders a centered modal on
-// desktop and a bottom sheet on mobile.
+// the cross-vendor "external fabric" applied to a custom outfit, the garment's
+// order-time body measurements, the pricing ladder and the customer note.
+// Opened from the order drawer's item row as a right-side Sheet with the SAME
+// geometry and section idiom as the drawer, stacked one layer above it.
 
 import React from 'react';
 import Image from 'next/image';
