@@ -74,6 +74,7 @@ import {
 import { DesignDetailModal } from './design-detail-modal';
 import { MediaPreviewModal } from './media-preview-modal';
 import { OrderFabricCard } from '../molecules/order-fabric-card';
+import { OrderMeasurementsCard } from '../molecules/order-measurements-card';
 import { OverlayScroll } from '@/components/OverlayScroll';
 import {
   allProductImages,
@@ -1437,6 +1438,21 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     )}
                   </section>
                 )}
+
+              {/* ── Body Measurements ──
+                  Tailored work only (bespoke orders / customize garments):
+                  the customer's order-time measurement snapshot, per garment
+                  when the order mixes bodies. The card fetches and renders
+                  null when the backend has nothing (it also gates
+                  server-side, so fabric/accessory orders never show this). */}
+              {!isFabricTransferOnly &&
+                (order.type === 'bespoke' ||
+                  vendorItems.some(
+                    (i: any) =>
+                      i.clothing_type === 'customize' ||
+                      (typeof i.product === 'object' &&
+                        (i.product as any)?.clothing?.type === 'customize')
+                  )) && <OrderMeasurementsCard reference={order.reference} />}
 
               {/* ── Confirmation Status ── */}
               {vendorShipment && (
