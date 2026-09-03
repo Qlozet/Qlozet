@@ -92,6 +92,68 @@ const MeasurementGrid = ({
   </div>
 );
 
+/**
+ * Per-item measurements block — for the item DETAIL modal. Renders straight
+ * from the order item's embedded `body_profile` snapshot (no fetch): who the
+ * garment is sewn to, a lock badge, and the grid with a cm/in toggle. With
+ * several custom garments for different bodies in one order, this is the
+ * unambiguous home for "which measurements belong to which garment".
+ */
+export const ItemBodyMeasurements = ({
+  profile,
+}: {
+  profile: {
+    set_name?: string | null;
+    unit?: string;
+    measurements?: Record<string, number>;
+  };
+}) => {
+  const [unit, setUnit] = useState<Unit>('cm');
+  const rows = recordedRows(profile?.measurements);
+  if (rows.length === 0) return null;
+
+  return (
+    <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 dark:border-emerald-800/50 dark:bg-emerald-950/20 p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <h4 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+            <Ruler className="size-3.5" />
+            Sewn to
+            {profile.set_name ? `: ${profile.set_name}` : ' these measurements'}
+          </h4>
+          <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 dark:bg-emerald-900/40 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
+            <Lock className="size-3" /> Locked at order time
+          </span>
+        </div>
+        <div className="inline-flex items-center rounded-full bg-white dark:bg-[#404040] p-0.5 text-xs font-semibold">
+          {(['cm', 'in'] as const).map((u) => (
+            <button
+              key={u}
+              type="button"
+              onClick={() => setUnit(u)}
+              className={cn(
+                'cursor-pointer rounded-full px-2.5 py-0.5 uppercase transition-colors',
+                unit === u
+                  ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                  : 'text-gray-500'
+              )}
+            >
+              {u}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="mt-2">
+        <MeasurementGrid
+          measurements={profile.measurements}
+          fromUnit={(profile.unit as 'cm' | 'inch') ?? 'cm'}
+          unit={unit}
+        />
+      </div>
+    </div>
+  );
+};
+
 export const OrderMeasurementsCard = ({
   reference,
 }: OrderMeasurementsCardProps) => {

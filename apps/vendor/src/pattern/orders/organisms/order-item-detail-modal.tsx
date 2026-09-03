@@ -28,6 +28,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
+import { ItemBodyMeasurements } from '../molecules/order-measurements-card';
 import type {
   Order,
   OrderItem,
@@ -180,6 +181,13 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
             )}
           </div>
         </div>
+      )}
+
+      {/* Body measurements THIS garment is sewn to — the item's order-time
+          snapshot. Lives here (not just order-level) so an order carrying
+          garments for different bodies is never ambiguous. */}
+      {(item as any).body_profile?.measurements && (
+        <ItemBodyMeasurements profile={(item as any).body_profile} />
       )}
 
       {/* Colour / size variants */}

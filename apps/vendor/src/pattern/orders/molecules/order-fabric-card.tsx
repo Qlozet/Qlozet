@@ -50,25 +50,49 @@ interface OrderFabricCardProps {
   order: Order;
   /** Active vendor business — used to find the transfer shipping fabric to them. */
   businessId?: string;
+  /** Render THIS item's fabric — required for orders where several garments
+   *  carry different fabrics (the old first-item lookup hid the rest). */
+  item?: Order['items'][number];
+  /** Garment name shown in the heading when the order has several fabrics. */
+  garmentName?: string;
   onViewFabric?: () => void;
 }
 
 export const OrderFabricCard = ({
   order,
   businessId,
+  item: itemProp,
+  garmentName,
   onViewFabric,
 }: OrderFabricCardProps) => {
-  const item = findFabricItem(order);
+  const item = itemProp ?? findFabricItem(order);
   if (!item) return null;
 
   const fabric = readOrderFabric(item, asProduct(item.product));
   if (!fabric) return null;
 
   // Status comes from the transfer shipping the fabric to this vendor, which
-  // only exists when another vendor supplies it.
-  const transfer = businessId
-    ? getIncomingFabricTransfers(order, businessId)[0]
-    : undefined;
+  // only exists when another vendor supplies it. With several external fabrics
+  // on one order, match the transfer to THIS item's fabric product — the first
+  // transfer regardless could show another garment's shipping status.
+  const transfers = businessId
+    ? getIncomingFabricTransfers(order, businessId)
+    : [];
+  const appliedFabricId =
+    item.applied_fabric && typeof item.applied_fabric === 'object'
+      ? String((item.applied_fabric as any)._id)
+      : item.applied_fabric
+        ? String(item.applied_fabric)
+        : undefined;
+  const transfer =
+    (appliedFabricId
+      ? transfers.find((t: any) => {
+          const fp = t.fabric_product;
+          const fpId =
+            fp && typeof fp === 'object' ? String(fp._id) : String(fp ?? '');
+          return fpId === appliedFabricId;
+        })
+      : undefined) ?? (transfers.length === 1 ? transfers[0] : undefined);
   const statusBadge = transfer ? shipmentStatusBadge(transfer.status) : null;
 
   const metres =
@@ -78,6 +102,11 @@ export const OrderFabricCard = ({
     <section className="space-y-3 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
       <h3 className="text-sm font-bold uppercase tracking-wide text-grey-black dark:text-white">
         Fabric
+        {garmentName && (
+          <span className="ml-1.5 font-medium normal-case text-grey3 dark:text-gray-400">
+            — {garmentName}
+          </span>
+        )}
       </h3>
 
       {/* Yardage header */}
