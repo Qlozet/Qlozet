@@ -56,7 +56,7 @@ export const SelectionRow: React.FC<{
 }) => {
   const hasPrice = typeof price === 'number' && price > 0;
   return (
-    <div className="flex items-center gap-3 px-3 py-2.5">
+    <div className="flex items-center gap-3 px-4 py-3">
       <Thumb url={url} swatch={swatch} fallbackIcon={icon} alt={title} />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-[#333333] dark:text-white">
@@ -88,19 +88,21 @@ export const SelectionRow: React.FC<{
   );
 };
 
+// Styled to match the order drawer's SectionTitle + Card idiom, so the item
+// detail sheet and the order sheet read as one surface.
 export const Section: React.FC<{
   title: string;
   icon: React.ReactNode;
   children: React.ReactNode;
 }> = ({ title, icon, children }) => (
-  <div className="space-y-2">
+  <div className="space-y-3">
     <div className="flex items-center gap-1.5">
       {icon}
-      <h4 className="text-xs font-semibold uppercase tracking-wider text-grey3 dark:text-gray-400">
+      <h3 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
         {title}
-      </h4>
+      </h3>
     </div>
-    <div className="divide-y divide-[#F1F3F5] dark:divide-border rounded-xl border border-[#E5E7EB] dark:border-border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]">
+    <div className="divide-y divide-[#DDE2E5] dark:divide-border rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] dark:border dark:border-border overflow-hidden">
       {children}
     </div>
   </div>
