@@ -59,6 +59,7 @@ export const baseAPI = createApi({
     'Disputes',
     'OrderMessages',
     'StyleLibrary',
+    'Taxonomy',
     // Notification feed + AI assistant (ported from the vendor app)
     'Notification',
     'AssistantConversations',
