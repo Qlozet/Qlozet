@@ -345,7 +345,10 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
           try {
             await NiceModal.show(OrderDetailsDrawer, { order: full });
           } finally {
-            show();
+            // Re-pass the args: NiceModal's show() replaces the stored args
+            // with whatever is given, so a bare show() wiped customerId and
+            // the modal came back EMPTY (query skipped, no name/header).
+            show({ customerId });
           }
         } catch {
           toast.error(
@@ -355,7 +358,7 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
           setViewingId(null);
         }
       },
-      [fetchOrder, viewingId, hide, show]
+      [fetchOrder, viewingId, hide, show, customerId]
     );
 
     return (

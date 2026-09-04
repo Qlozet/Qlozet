@@ -22,6 +22,7 @@ export const APP_ROUTES = {
   productsCollectionsCreate: '/products/collections/create',
   productsStyles: '/products/styles',
   productsStylesBulk: '/products/styles/bulk',
+  productsTaxonomy: '/products/taxonomy',
   productsAdd: '/products/add-product',
   staticPage: '/static-page',
   marketing: '/marketing',

@@ -12,6 +12,7 @@ import { ProductsAccessoriesNavIcon } from '../atoms/nav-icons/products-accessor
 import { ProductsFabricsNavIcon } from '../atoms/nav-icons/products-fabrics-nav-icon';
 import { CollectionsNavIcon } from '../atoms/nav-icons/collections-nav-icon';
 import { StylesNavIcon } from '../atoms/nav-icons/styles-nav-icon';
+import { TaxonomyNavIcon } from '../atoms/nav-icons/taxonomy-nav-icon';
 import { ProductsAddNavIcon } from '../atoms/nav-icons/products-add-nav-icon';
 // Hidden from the nav for now — see the commented-out entries in `menuItems`.
 // import { StaticPageNavIcon } from '../atoms/nav-icons/static-page-nav-icon';
@@ -64,6 +65,7 @@ const ENABLED_ROUTES: string[] = [
   APP_ROUTES.productsCollectionsCreate,
   APP_ROUTES.productsStyles,
   APP_ROUTES.productsStylesBulk,
+  APP_ROUTES.productsTaxonomy,
   APP_ROUTES.productsAdd,
   APP_ROUTES.notifications,
   APP_ROUTES.support,
@@ -131,6 +133,11 @@ export const SidebarNav = ({
           icon: StylesNavIcon,
           label: 'Styles',
           href: APP_ROUTES.productsStyles,
+        },
+        {
+          icon: TaxonomyNavIcon,
+          label: 'Taxonomy',
+          href: APP_ROUTES.productsTaxonomy,
         },
         {
           icon: ProductsAddNavIcon,
