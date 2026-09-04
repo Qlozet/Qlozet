@@ -13,7 +13,7 @@
 // no shared Dialog primitive, so this uses the same fixed-overlay pattern as the
 // other admin modals.
 
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
 import {
   Gem,
@@ -25,13 +25,15 @@ import {
   PlusCircle,
   Ruler,
   Scissors,
-  X,
 } from 'lucide-react';
-import { formatNaira } from '@/lib/orders';
 import {
-  NESTED_MODAL_LAYER,
-  useNestedModalDismiss,
-} from '@/lib/hooks/useNestedModalDismiss';
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import { cn } from '@/lib/utils';
+import { formatNaira } from '@/lib/orders';
 import type {
   AdminOrder,
   AdminOrderItem,
@@ -489,15 +491,14 @@ interface OrderItemDetailModalProps {
 
 export const OrderItemDetailModal = create<OrderItemDetailModalProps>(
   ({ item }) => {
-    const modal = useModal();
+    const { visible, hide, remove } = useModal();
 
-    const close = useCallback(() => modal.remove(), [modal]);
-
-    // Opened from inside the order drawer (a Radix Sheet), which locks pointer
-    // events on <body> and owns Escape. See the hook for why both are needed.
-    useNestedModalDismiss(close, modal.visible);
-
-    if (!modal.visible) return null;
+    const onOpenChange = (open: boolean) => {
+      if (!open) {
+        hide();
+        setTimeout(() => remove(), 300);
+      }
+    };
 
     const itemName =
       asProduct(item.product)?.clothing?.name ??
@@ -505,49 +506,42 @@ export const OrderItemDetailModal = create<OrderItemDetailModalProps>(
       asProduct(item.product)?.accessory?.name ??
       asProduct(item.product)?.name;
 
+    // Same shell + geometry as the order drawer it opens from (and the vendor
+    // console's item sheet), stacked one layer above it: right sheet on
+    // desktop, floating bottom card below `sm` — the item view reads as a
+    // deeper page of the same surface. Radix's dismissable-layer stack routes
+    // Escape/outside-clicks to this top sheet; the drawer beneath prevents its
+    // own interact-outside, so closing this never takes the drawer with it.
     return (
-      // z-[110] clears the order drawer sheet this opens from. Rendered as a
-      // right-side SHEET with the drawer's exact geometry (inset 24px, rounded,
-      // 440px), stacked one layer above it — the item view reads as a deeper
-      // page of the same surface, not a different kind of window.
-      <div className={`fixed inset-0 z-[110] ${NESTED_MODAL_LAYER}`}>
-        <div
-          className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-          onClick={close}
-        />
-
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Item details"
-          className="absolute right-6 top-6 bottom-6 z-10 flex w-full max-w-[440px] flex-col overflow-hidden rounded-2xl bg-white dark:bg-card shadow-2xl"
+      <Sheet open={visible} onOpenChange={onOpenChange}>
+        <SheetContent
+          side="right"
+          className={cn(
+            // sm+: drawer geometry (inset 24px, pinned top+bottom). The
+            // primitive's right-variant `h-full` would otherwise win over the
+            // top/bottom pin, so the height is set explicitly at sm too.
+            'flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] rounded-2xl custom-card-shadow bg-white dark:bg-card',
+            // Above the order drawer sheet (z-50); below the media preview
+            // (z-[120]) that can open on top of this.
+            'z-[110]'
+          )}
         >
-          <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border py-5 pl-6 pr-4">
-            <div className="min-w-0">
-              <h2 className="text-lg font-semibold text-[#0C0C0D] dark:text-white">
-                Item details
-              </h2>
-              {itemName && (
-                <p className="truncate text-sm text-grey3 dark:text-gray-400">
-                  {itemName}
-                </p>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={close}
-              aria-label="Close"
-              className="flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md border border-border text-grey-black dark:text-white transition-colors hover:bg-gray-100 dark:hover:bg-muted/80"
-            >
-              <X className="size-4" />
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-y-auto px-6 py-5">
+          {/* pr-12 reserves room for the Sheet's built-in close (X). */}
+          <SheetHeader className="shrink-0 border-b border-border py-5 pl-4 pr-12 sm:pl-6">
+            <SheetTitle className="text-lg font-semibold text-[#0C0C0D] dark:text-white">
+              Item details
+            </SheetTitle>
+            {itemName && (
+              <p className="truncate text-sm text-grey3 dark:text-gray-400">
+                {itemName}
+              </p>
+            )}
+          </SheetHeader>
+          <div className="flex-1 min-h-0 overflow-y-auto px-4 py-5 sm:px-6">
             <ItemDetailContent item={item} />
           </div>
-        </div>
-      </div>
+        </SheetContent>
+      </Sheet>
     );
   }
 );
