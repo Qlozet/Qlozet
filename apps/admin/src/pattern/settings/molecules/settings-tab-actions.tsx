@@ -33,7 +33,7 @@ export const SettingsTabActions = ({
   const blocked = errorCount > 0;
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-border bg-white dark:bg-card p-4 max-sm:items-stretch sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3 rounded-xl bg-white p-4 custom-card-shadow dark:border dark:border-white/10 dark:bg-card max-sm:items-stretch sm:flex-row sm:items-center sm:justify-between">
       <p className="text-sm" aria-live="polite">
         {blocked ? (
           <span className="font-medium text-error">
