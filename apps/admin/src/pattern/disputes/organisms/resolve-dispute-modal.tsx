@@ -263,7 +263,7 @@ export function ResolveDisputeModal({
                 type="button"
                 onClick={submit}
                 disabled={isLoading}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 {isLoading && <Loader2 className="size-4 animate-spin" />}
                 {isLoading ? 'Resolving…' : 'Resolve dispute'}

@@ -425,7 +425,7 @@ export default function CollectionsCreateTemplate() {
                     onClick={() => toggleKind(k)}
                     className={`rounded-full border px-3.5 py-1.5 text-xs font-medium capitalize transition-colors ${
                       active
-                        ? 'border-primary bg-primary text-white'
+                        ? 'border-primary bg-primary text-primary-foreground'
                         : 'border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800'
                     }`}
                   >
@@ -504,7 +504,7 @@ export default function CollectionsCreateTemplate() {
               type="button"
               onClick={handleSubmit}
               disabled={saving}
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
             >
               {saving && <Loader2 className="size-4 animate-spin" />}
               {isEditing ? 'Save changes' : 'Create collection'}

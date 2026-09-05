@@ -207,7 +207,7 @@ export function ProductPreviewCard({
                   <button
                     type="button"
                     onClick={() => handleInclude(p._id)}
-                    className="rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-white hover:opacity-90"
+                    className="rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground hover:opacity-90"
                   >
                     Include
                   </button>

@@ -76,8 +76,11 @@
   --card-foreground: hsl(0, 0%, 98%);
   --popover: #303030;
   --popover-foreground: hsl(0, 0%, 98%);
-  --primary: hsla(27, 97%, 12%, 1);
-  --primary-foreground: hsl(0, 0%, 98%);
+  /* Matches the vendor app: the brown primary flips to WHITE in dark mode,
+     with near-black text on it. Anything sitting on bg-primary must use
+     text-primary-foreground, never a hardcoded text-white. */
+  --primary: hsl(0, 0%, 98%);
+  --primary-foreground: hsl(240, 5.9%, 10%);
   /* Same hue, lifted well clear of the #303030 card. */
   --link: hsla(27, 90%, 70%, 1);
   --secondary: hsl(240, 4%, 16%);
@@ -96,8 +99,10 @@
      the navigation and the content it sits beside. */
   --sidebar: #303030;
   --sidebar-foreground: hsl(0, 0%, 98%);
-  --sidebar-primary: hsl(225, 84%, 49%);
-  --sidebar-primary-foreground: hsl(0, 0%, 98%);
+  /* Was a stray blue (hsl 225 84% 49%) — matched to the vendor app's
+     white-on-dark primary instead. */
+  --sidebar-primary: hsl(0, 0%, 98%);
+  --sidebar-primary-foreground: hsl(240, 5.9%, 10%);
   --sidebar-accent: hsl(240, 4%, 16%);
   --sidebar-accent-foreground: hsl(0, 0%, 98%);
   --sidebar-border: hsl(0, 0%, 15%);
@@ -202,6 +207,11 @@
   }
   body {
     @apply bg-background max-w-[3024px] text-foreground my-0 mx-auto;
+    /* Native inputs (checkboxes on the collections/styles/taxonomy pages,
+       radios, ranges) otherwise render in the browser's default BLUE, in
+       whatever shade the platform picks. Tie them to the brand primary —
+       brown in light mode, white in dark — matching the vendor app. */
+    accent-color: var(--primary);
   }
 }
 
