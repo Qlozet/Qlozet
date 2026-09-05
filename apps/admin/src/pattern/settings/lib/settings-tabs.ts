@@ -436,6 +436,32 @@ export const SETTINGS_TABS: SettingsTab[] = [
         ],
       },
       {
+        id: 'token-rewards',
+        title: 'Token rewards',
+        description:
+          'Free tokens granted at signup and on paid orders. Zero turns a reward off.',
+        fields: [
+          {
+            key: 'customer_signup_token_reward',
+            label: 'Customer signup',
+            help: 'Granted to every new customer at registration.',
+            ...TOKENS,
+          },
+          {
+            key: 'vendor_signup_token_reward',
+            label: 'Vendor approval',
+            help: 'Granted once, when a vendor business is first approved — not at raw signup, so throwaway registrations can’t farm tokens.',
+            ...TOKENS,
+          },
+          {
+            key: 'order_payment_token_reward',
+            label: 'Paid order',
+            help: 'Granted to the customer each time an order settles as paid.',
+            ...TOKENS,
+          },
+        ],
+      },
+      {
         id: 'ai-access',
         title: 'Access',
         description: 'Who can reach the assistant.',
@@ -465,6 +491,11 @@ export const FIELD_FALLBACKS: Partial<
   stripe_enabled: false,
   fx_markup_percent: '2',
   base_currency: 'USD',
+  // Token rewards — defaults mirror the backend schema (which in turn
+  // preserves the amounts registration used to hardcode).
+  customer_signup_token_reward: '100',
+  vendor_signup_token_reward: '250',
+  order_payment_token_reward: '0',
 };
 
 export const SETTINGS_TAB_PARAM = 'tab';
