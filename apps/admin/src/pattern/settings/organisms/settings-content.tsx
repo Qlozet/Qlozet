@@ -83,16 +83,21 @@ export const SettingsContent = ({
         />
       )}
 
-      {tab.sections.map((section) => (
-        <SettingsSection
-          key={section.id}
-          section={section}
-          draft={draft}
-          errors={errors}
-          disabled={isLocked}
-          onChange={onChange}
-        />
-      ))}
+      {/* Cards grid — mirrors the vendor console's order settings layout.
+          items-start keeps a short card from stretching to its neighbour's
+          height, which would strand its rows above dead space. */}
+      <div className="grid grid-cols-1 items-start gap-5 md:grid-cols-2">
+        {tab.sections.map((section) => (
+          <SettingsSection
+            key={section.id}
+            section={section}
+            draft={draft}
+            errors={errors}
+            disabled={isLocked}
+            onChange={onChange}
+          />
+        ))}
+      </div>
 
       <SettingsTabActions
         tabLabel={tab.label}

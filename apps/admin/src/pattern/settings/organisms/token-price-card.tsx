@@ -4,10 +4,11 @@
 // The token price is a pair, not a field: an administrator sets it in USD, and
 // the backend converts to naira — nightly at 3AM, or on demand here. So USD is
 // an input and NGN is a readout with a refresh, rather than two inputs that can
-// disagree.
+// disagree. Styled to match the settings cards: tinted icon header, divided
+// rows, control on the right.
 
 import React from 'react';
-import { RefreshCw } from 'lucide-react';
+import { Coins, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatNaira } from '@/lib/orders';
 import { formatDate } from '@/lib/customers';
@@ -42,18 +43,24 @@ export const TokenPriceCard = ({
   const lastUpdated = tokenPrice?.ngn?.last_updated;
 
   return (
-    <section className="rounded-2xl border border-border bg-white dark:bg-card p-5">
-      <header className="space-y-1">
-        <h2 className="text-base font-bold text-grey-black dark:text-white">
-          Token price
-        </h2>
-        <p className="text-sm text-grey3 dark:text-gray-400">
-          Customers buy tokens in naira. The naira price is converted from the
-          USD price at the day’s rate, automatically each night.
-        </p>
-      </header>
+    <section className="rounded-xl bg-white p-5 custom-card-shadow dark:border dark:border-white/10 dark:bg-card lg:p-6">
+      {/* Card Header */}
+      <div className="mb-5 flex items-start gap-2.5 border-b border-border/60 pb-4">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary dark:bg-white/10 dark:text-white">
+          <Coins className="size-4" />
+        </div>
+        <div className="min-w-0">
+          <h3 className="text-sm font-semibold text-grey-black dark:text-white">
+            Token price
+          </h3>
+          <p className="mt-0.5 text-xs text-grey3 dark:text-gray-400">
+            Customers buy tokens in naira. The naira price is converted from the
+            USD price at the day’s rate, automatically each night.
+          </p>
+        </div>
+      </div>
 
-      <div className="mt-5 grid gap-x-6 gap-y-5 sm:grid-cols-2">
+      <div className="divide-y divide-border/40">
         <SettingsField
           spec={TOKEN_PRICE_USD_FIELD}
           value={value}
@@ -62,23 +69,24 @@ export const TokenPriceCard = ({
           onChange={onChange}
         />
 
-        <div className="space-y-1.5">
-          <span className="block text-sm font-medium text-grey-black dark:text-white">
-            Naira price
-          </span>
-          <div className="flex h-10 items-center rounded-md border border-input bg-muted/40 px-3">
-            <span className="text-sm font-semibold text-grey-black dark:text-white">
-              {typeof ngnAmount === 'number' ? formatNaira(ngnAmount) : '—'}
-            </span>
+        {/* Naira readout row — derived, so it renders as a value, not an input. */}
+        <div className="flex items-center justify-between gap-4 py-4 last:pb-0">
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium text-grey-black dark:text-white">
+              Naira price
+            </p>
+            <p className="mt-0.5 text-xs text-grey3 dark:text-gray-400">
+              Derived from the USD price — last refreshed{' '}
+              {formatDate(lastUpdated)}.
+            </p>
           </div>
-          <p className="text-xs text-grey3 dark:text-gray-400">
-            Derived from the USD price — last refreshed{' '}
-            {formatDate(lastUpdated)}.
-          </p>
+          <span className="shrink-0 rounded-lg bg-gray-50 px-3 py-1.5 text-sm font-semibold text-grey-black dark:bg-muted dark:text-white">
+            {typeof ngnAmount === 'number' ? formatNaira(ngnAmount) : '—'}
+          </span>
         </div>
       </div>
 
-      <div className="mt-5 flex flex-col gap-2 border-t border-border pt-4 max-sm:items-start sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-5 flex flex-col gap-2 border-t border-border/60 pt-4 max-sm:items-start sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-grey3 dark:text-gray-400">
           {isDirty
             ? 'Save your changes first — the conversion runs off the saved USD price.'

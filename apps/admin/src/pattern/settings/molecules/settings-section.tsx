@@ -1,9 +1,24 @@
 'use client';
 
 // Settings Section - Molecule
-// A titled card of related fields, rendered straight from the catalogue.
+// A card of related setting rows, styled like the vendor console's order
+// settings cards: a tinted icon header over a divided list of rows.
 
 import React from 'react';
+import {
+  Banknote,
+  Boxes,
+  Clock,
+  CreditCard,
+  Landmark,
+  Lock,
+  Package,
+  Percent,
+  ReceiptText,
+  Scissors,
+  Sparkles,
+  type LucideIcon,
+} from 'lucide-react';
 import { SettingsField } from './settings-field';
 import type { SettingsSectionSpec } from '../lib/settings-tabs';
 import type {
@@ -11,6 +26,21 @@ import type {
   SettingsDraft,
   SettingsErrors,
 } from '../lib/settings-form';
+
+// Icons keyed by section id, so the catalogue itself stays JSX-free.
+const SECTION_ICONS: Record<string, LucideIcon> = {
+  'payout-schedule': Banknote,
+  'custom-order-milestones': Scissors,
+  'platform-commission': Percent,
+  'fees-and-tax': ReceiptText,
+  'international-payments': CreditCard,
+  'reporting-currency': Landmark,
+  'order-lifecycle': Package,
+  'late-penalties': Clock,
+  'availability-thresholds': Boxes,
+  'token-cost-per-action': Sparkles,
+  'ai-access': Lock,
+};
 
 interface SettingsSectionProps {
   section: SettingsSectionSpec;
@@ -27,18 +57,27 @@ export const SettingsSection = ({
   disabled,
   onChange,
 }: SettingsSectionProps) => {
-  return (
-    <section className="rounded-2xl border border-border bg-white dark:bg-card p-5">
-      <header className="space-y-1">
-        <h2 className="text-base font-bold text-grey-black dark:text-white">
-          {section.title}
-        </h2>
-        <p className="text-sm text-grey3 dark:text-gray-400">
-          {section.description}
-        </p>
-      </header>
+  const Icon = SECTION_ICONS[section.id] ?? Banknote;
 
-      <div className="mt-5 grid gap-x-6 gap-y-5 sm:grid-cols-2">
+  return (
+    <section className="rounded-xl bg-white p-5 custom-card-shadow dark:border dark:border-white/10 dark:bg-card lg:p-6">
+      {/* Card Header */}
+      <div className="mb-5 flex items-start gap-2.5 border-b border-border/60 pb-4">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary dark:bg-white/10 dark:text-white">
+          <Icon className="size-4" />
+        </div>
+        <div className="min-w-0">
+          <h3 className="text-sm font-semibold text-grey-black dark:text-white">
+            {section.title}
+          </h3>
+          <p className="mt-0.5 text-xs text-grey3 dark:text-gray-400">
+            {section.description}
+          </p>
+        </div>
+      </div>
+
+      {/* Setting rows */}
+      <div className="divide-y divide-border/40">
         {section.fields.map((field) => (
           <SettingsField
             key={field.key}
