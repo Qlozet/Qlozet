@@ -121,7 +121,7 @@ export default function CollectionsTableTemplate() {
             <button
               type="button"
               onClick={() => router.push(APP_ROUTES.productsCollectionsCreate)}
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
             >
               <Plus className="size-4" />
               Create Collection
