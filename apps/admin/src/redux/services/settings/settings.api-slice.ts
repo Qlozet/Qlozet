@@ -70,6 +70,15 @@ export interface PlatformSettings {
   analyze_reference_token_price: number;
   ai_ask_requires_auth: boolean;
 
+  // Token rewards (0 = off). Optional because backends deployed before the
+  // feature don't return them.
+  /** Tokens granted to a customer at registration. */
+  customer_signup_token_reward?: number;
+  /** Tokens granted to a vendor business on its first approval. */
+  vendor_signup_token_reward?: number;
+  /** Tokens granted to the customer each time an order settles as paid. */
+  order_payment_token_reward?: number;
+
   // Multi-currency & international payments. Optional because backends
   // deployed before the feature don't return them.
   /** Group/consolidation currency for platform revenue. */

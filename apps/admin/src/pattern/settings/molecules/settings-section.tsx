@@ -10,6 +10,7 @@ import {
   Boxes,
   Clock,
   CreditCard,
+  Gift,
   Landmark,
   Lock,
   Package,
@@ -39,6 +40,7 @@ const SECTION_ICONS: Record<string, LucideIcon> = {
   'late-penalties': Clock,
   'availability-thresholds': Boxes,
   'token-cost-per-action': Sparkles,
+  'token-rewards': Gift,
   'ai-access': Lock,
 };
 
