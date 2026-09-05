@@ -99,8 +99,10 @@
      the navigation and the content it sits beside. */
   --sidebar: #303030;
   --sidebar-foreground: hsl(0, 0%, 98%);
-  --sidebar-primary: hsl(225, 84%, 49%);
-  --sidebar-primary-foreground: hsl(0, 0%, 98%);
+  /* Was a stray blue (hsl 225 84% 49%) — matched to the vendor app's
+     white-on-dark primary instead. */
+  --sidebar-primary: hsl(0, 0%, 98%);
+  --sidebar-primary-foreground: hsl(240, 5.9%, 10%);
   --sidebar-accent: hsl(240, 4%, 16%);
   --sidebar-accent-foreground: hsl(0, 0%, 98%);
   --sidebar-border: hsl(0, 0%, 15%);
@@ -205,6 +207,11 @@
   }
   body {
     @apply bg-background max-w-[3024px] text-foreground my-0 mx-auto;
+    /* Native inputs (checkboxes on the collections/styles/taxonomy pages,
+       radios, ranges) otherwise render in the browser's default BLUE, in
+       whatever shade the platform picks. Tie them to the brand primary —
+       brown in light mode, white in dark — matching the vendor app. */
+    accent-color: var(--primary);
   }
 }
 
