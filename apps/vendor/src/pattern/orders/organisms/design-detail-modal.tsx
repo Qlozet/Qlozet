@@ -12,7 +12,7 @@
 import React, { useMemo } from 'react';
 import Image from 'next/image';
 import { create, useModal } from '@ebay/nice-modal-react';
-import { Shirt, Scissors, Palette, ImageIcon } from 'lucide-react';
+import { Shirt, Scissors, Palette, ImageIcon, Sparkles } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -132,6 +132,20 @@ const DesignDetailContent: React.FC<{ design: any }> = ({ design }) => {
     image?: string;
     emoji?: string;
   }[];
+
+  // Embellishments — tailor-applied finishing work the customer requested
+  // (embroidery, beadwork, trims…). Saved enriched as {id, name, emoji}[];
+  // these carry no fixed price: the vendor prices them in the quote.
+  const embellishments = (
+    Array.isArray(selections?.accessories) ? selections.accessories : []
+  )
+    .map((a: any) =>
+      // Raw ids (unresolved strings like "a3") are skipped, same as styleRows.
+      a && typeof a === 'object' && a.name
+        ? { name: a.name as string, emoji: a.emoji as string | undefined }
+        : null
+    )
+    .filter(Boolean) as { name: string; emoji?: string }[];
 
   return (
     <div className="space-y-5">
@@ -291,6 +305,32 @@ const DesignDetailContent: React.FC<{ design: any }> = ({ design }) => {
                 swatch={selections.color}
               />
             )}
+          </div>
+        </Section>
+      )}
+
+      {/* Embellishments — requested finishing work, priced in the quote */}
+      {embellishments.length > 0 && (
+        <Section
+          title="Embellishments"
+          icon={<Sparkles className="size-3.5 text-grey3" />}
+        >
+          <div className="rounded-xl border border-[#E5E7EB] bg-[hsla(0,0%,96%,1)] px-3 py-2.5 dark:border-border dark:bg-[#4A4949]">
+            <div className="flex flex-wrap gap-1.5">
+              {embellishments.map((e) => (
+                <span
+                  key={e.name}
+                  className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-xs font-medium text-[#333333] shadow-sm dark:bg-gray-700 dark:text-white"
+                >
+                  {e.emoji && <span aria-hidden>{e.emoji}</span>}
+                  {e.name}
+                </span>
+              ))}
+            </div>
+            <p className="mt-2 text-[11px] text-grey3 dark:text-gray-400">
+              Finishing work the customer requested — include it in your quote
+              price.
+            </p>
           </div>
         </Section>
       )}
