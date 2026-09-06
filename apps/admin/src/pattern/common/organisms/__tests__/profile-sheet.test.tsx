@@ -104,11 +104,13 @@ describe('ProfileSheet', () => {
       'Customers',
       'Vendors',
       'Task Completed',
-      'Tickets closed',
+      // The fourth tile is the admin's LIVE workload, not the platform-wide
+      // closed count (which nobody owns).
+      'Active Tickets',
     ]) {
       expect(screen.getByText(label)).toBeInTheDocument();
     }
-    expect(screen.getAllByText('20,000')).toHaveLength(2); // vendors + tickets
+    expect(screen.getByText('20,000')).toBeInTheDocument(); // vendors
     expect(screen.getByText('10,000')).toBeInTheDocument();
   });
 
@@ -199,9 +201,11 @@ describe('AdminTasksSection', () => {
     ).toBeInTheDocument();
   });
 
-  it('follows the API’s window rather than hardcoding a month', () => {
+  it('is headed as the admin’s current work, not a calendar window', () => {
+    // Active tickets are listed regardless of age, so a windowed heading
+    // ("Task Last Month") would under-promise what the list shows.
     render(<AdminTasksSection {...props} windowDays={7} />);
-    expect(screen.getByText('Tasks (last 7 days)')).toBeInTheDocument();
+    expect(screen.getByText('My Tickets')).toBeInTheDocument();
   });
 
   it('refreshes on demand and locks the button while in flight', async () => {
