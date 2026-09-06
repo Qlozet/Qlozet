@@ -196,10 +196,12 @@ export const ProfileSheet = ({ open, onOpenChange }: ProfileSheetProps) => {
                           ).toLocaleString()}
                         />
                         <StatDivider />
+                        {/* The admin's LIVE workload — more useful here than
+                            the platform-wide closed count, which nobody owns. */}
                         <Stat
-                          label="Tickets closed"
+                          label="Active Tickets"
                           value={(
-                            overview?.stats.ticketsClosed ?? 0
+                            overview?.stats.activeTickets ?? 0
                           ).toLocaleString()}
                         />
                       </div>

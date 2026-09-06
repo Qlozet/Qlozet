@@ -1,7 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Link from 'next/link';
 import { RefreshCw } from 'lucide-react';
+import { APP_ROUTES } from '@/lib/routes';
 import { Skeleton } from '@/components/ui/skeleton';
 import { timeAgo } from '@/lib/orders';
 import type { AdminProfileTask } from '@/redux/services/dashboard/dashboard.api-slice';
@@ -48,12 +50,11 @@ export const AdminTasksSection = ({
     [tasks, filter]
   );
 
-  // "Task Last Month" is the design's wording; the API decides the actual
-  // window, so the heading follows it rather than hardcoding a month.
-  const heading =
-    windowDays && windowDays !== 30
-      ? `Tasks (last ${windowDays} days)`
-      : 'Task Last Month';
+  // The list is the admin's CURRENT assigned work: every still-open ticket
+  // (no time window) plus what they completed recently — so the old
+  // "Task Last Month" label would under-promise what it shows.
+  const heading = 'My Tickets';
+  void windowDays;
 
   return (
     <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-muted">
@@ -119,23 +120,26 @@ export const AdminTasksSection = ({
       ) : (
         <ul className="divide-y divide-[#DDE2E5] dark:divide-white/10 border-t border-[#DDE2E5] dark:border-white/10">
           {visible.map((task) => (
-            <li
-              key={task.id}
-              className="flex items-start justify-between gap-3 px-5 py-3.5"
-            >
-              <div className="min-w-0">
-                <p className="truncate text-[14px] font-medium text-[#1C1C1E] dark:text-white">
-                  {task.title}
-                </p>
-                {task.vendor && (
-                  <p className="mt-0.5 truncate text-[12px] text-[#8E8E93] dark:text-gray-400">
-                    {task.vendor}
+            <li key={task.id}>
+              {/* A task IS a ticket — the row opens it. */}
+              <Link
+                href={`${APP_ROUTES.support}/${task.id}`}
+                className="flex items-start justify-between gap-3 px-5 py-3.5 transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-[14px] font-medium text-[#1C1C1E] dark:text-white">
+                    {task.title}
                   </p>
-                )}
-              </div>
-              <span className="shrink-0 whitespace-nowrap text-[12px] text-[#8E8E93] dark:text-gray-400">
-                {timeAgo(task.at)}
-              </span>
+                  {task.vendor && (
+                    <p className="mt-0.5 truncate text-[12px] text-[#8E8E93] dark:text-gray-400">
+                      {task.vendor}
+                    </p>
+                  )}
+                </div>
+                <span className="shrink-0 whitespace-nowrap text-[12px] text-[#8E8E93] dark:text-gray-400">
+                  {timeAgo(task.at)}
+                </span>
+              </Link>
             </li>
           ))}
         </ul>

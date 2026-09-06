@@ -194,6 +194,8 @@ export interface AdminProfileOverview {
     vendors: number;
     /** This admin's tickets finished within the window. */
     tasksCompleted: number;
+    /** Assigned to this admin and still open/in progress — live workload. */
+    activeTickets?: number;
     /** Platform-wide, all-time, across every admin. */
     ticketsClosed: number;
   };
