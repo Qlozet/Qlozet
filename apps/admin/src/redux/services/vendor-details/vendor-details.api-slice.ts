@@ -21,6 +21,20 @@ export interface VendorProduct {
   [key: string]: unknown;
 }
 
+/** One row of the admin "Top Products" table — sales stats + product facts. */
+export interface VendorTopProduct {
+  _id: string;
+  name?: string;
+  image?: string;
+  kind?: string;
+  status?: string;
+  base_price?: number;
+  discounted_price?: number | null;
+  units_sold: number;
+  orders: number;
+  revenue: number;
+}
+
 export interface VendorActivity {
   _id: string;
   date?: string;
@@ -280,6 +294,20 @@ export const vendorDetailsApiSlice = baseAPI.injectEndpoints({
       providesTags: ['Products'],
     }),
 
+    // TOP products for a vendor, ranked by real sales (aggregated from order
+    // items server-side — products carry no sold counter, so the plain
+    // /products listing cannot rank them).
+    getVendorTopProducts: builder.query<
+      ApiResponse<VendorTopProduct[]>,
+      { businessId: string; limit?: number }
+    >({
+      query: ({ businessId, limit = 25 }) => ({
+        url: `/admin/businesses/${businessId}/top-products${buildQueryString({ limit })}`,
+        method: 'GET',
+      }),
+      providesTags: ['Products'],
+    }),
+
     // Wallet activity / transactions for a vendor (Activity Log table)
     //
     // TODO(api): there is no admin-visible endpoint for another vendor's
@@ -342,6 +370,7 @@ export const vendorDetailsApiSlice = baseAPI.injectEndpoints({
 
 export const {
   useGetVendorProductsQuery,
+  useGetVendorTopProductsQuery,
   useGetVendorActivityLogQuery,
   useGetVendorComplaintsQuery,
   useGetVendorTransactionsQuery,
