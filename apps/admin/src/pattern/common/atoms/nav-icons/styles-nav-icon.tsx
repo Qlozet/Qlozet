@@ -32,14 +32,14 @@ export const StylesNavIcon = ({ width, height }: IIconProps) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Layered swatches — a style library */}
-      <rect x="4" y="3" width="16" height="5.4" rx="1.8" fill={displayColor} />
+      <rect x="4" y="3" width="16" height="5.4" rx="1.8" fill="currentColor" />
       <rect
         x="4"
         y="9.8"
         width="16"
         height="5.4"
         rx="1.8"
-        fill={displayColor}
+        fill="currentColor"
         opacity="0.65"
       />
       <rect
@@ -48,7 +48,7 @@ export const StylesNavIcon = ({ width, height }: IIconProps) => {
         width="16"
         height="5.4"
         rx="1.8"
-        fill={displayColor}
+        fill="currentColor"
         opacity="0.35"
       />
     </svg>

@@ -38,11 +38,11 @@ export const TaxonomyNavIcon = ({ width, height }: IIconProps) => {
         width="5.2"
         height="5.2"
         rx="1.6"
-        fill={displayColor}
+        fill="currentColor"
       />
       <path
         d="M12 8.2v3M12 11.2H5.4v2.2M12 11.2h6.6v2.2M12 11.2v2.2"
-        stroke={displayColor}
+        stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
@@ -52,7 +52,7 @@ export const TaxonomyNavIcon = ({ width, height }: IIconProps) => {
         width="4.8"
         height="4.8"
         rx="1.5"
-        fill={displayColor}
+        fill="currentColor"
         opacity="0.65"
       />
       <rect
@@ -61,7 +61,7 @@ export const TaxonomyNavIcon = ({ width, height }: IIconProps) => {
         width="4.8"
         height="4.8"
         rx="1.5"
-        fill={displayColor}
+        fill="currentColor"
         opacity="0.65"
       />
       <rect
@@ -70,7 +70,7 @@ export const TaxonomyNavIcon = ({ width, height }: IIconProps) => {
         width="4.8"
         height="4.8"
         rx="1.5"
-        fill={displayColor}
+        fill="currentColor"
         opacity="0.65"
       />
     </svg>

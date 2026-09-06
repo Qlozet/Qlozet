@@ -26,7 +26,7 @@ export const AdminNavIcon = ({ className }: IIconProps) => {
   return (
     <User
       className={className}
-      color={displayColor}
+      color="currentColor"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     />

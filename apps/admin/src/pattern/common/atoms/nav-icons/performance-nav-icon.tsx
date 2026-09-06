@@ -26,7 +26,7 @@ export const PerformanceNavIcon = ({ className }: IIconProps) => {
   return (
     <Activity
       className={className}
-      color={displayColor}
+      color="currentColor"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     />

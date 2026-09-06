@@ -26,7 +26,7 @@ export const StaticPageNavIcon = ({ className }: IIconProps) => {
   return (
     <FileText
       className={className}
-      color={displayColor}
+      color="currentColor"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     />

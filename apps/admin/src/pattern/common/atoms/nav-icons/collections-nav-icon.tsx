@@ -31,14 +31,14 @@ export const CollectionsNavIcon = ({ width, height }: IIconProps) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <rect x="3" y="3" width="8.2" height="8.2" rx="2.2" fill={displayColor} />
+      <rect x="3" y="3" width="8.2" height="8.2" rx="2.2" fill="currentColor" />
       <rect
         x="12.8"
         y="3"
         width="8.2"
         height="8.2"
         rx="2.2"
-        fill={displayColor}
+        fill="currentColor"
         opacity="0.6"
       />
       <rect
@@ -47,7 +47,7 @@ export const CollectionsNavIcon = ({ width, height }: IIconProps) => {
         width="8.2"
         height="8.2"
         rx="2.2"
-        fill={displayColor}
+        fill="currentColor"
         opacity="0.6"
       />
       <rect
@@ -56,7 +56,7 @@ export const CollectionsNavIcon = ({ width, height }: IIconProps) => {
         width="8.2"
         height="8.2"
         rx="2.2"
-        fill={displayColor}
+        fill="currentColor"
       />
     </svg>
   );

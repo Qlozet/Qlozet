@@ -26,7 +26,7 @@ export const VendorsNavIcon = ({ className }: IIconProps) => {
   return (
     <Store
       className={className}
-      color={displayColor}
+      color="currentColor"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     />
