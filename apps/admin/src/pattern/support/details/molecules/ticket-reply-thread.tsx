@@ -12,9 +12,9 @@ interface TicketReplyThreadProps {
 /**
  * The support conversation on a ticket.
  *
- * `sender` is a bare user id — the backend populates neither it nor a
- * `sender_type`, so replies are labelled generically rather than attributed to
- * a named person we'd have to invent.
+ * `sender` arrives populated from /admin/tickets/:id/replies; older sources
+ * still send a bare id, so the label falls back generically rather than
+ * inventing a name.
  */
 export const TicketReplyThread = ({
   replies,
@@ -44,10 +44,12 @@ export const TicketReplyThread = ({
           >
             <div className="mb-1 flex items-center justify-between gap-3">
               <span className="text-xs font-medium text-grey-black dark:text-white">
-                {reply.sender_type
-                  ? reply.sender_type.charAt(0).toUpperCase() +
-                    reply.sender_type.slice(1)
-                  : 'Support'}
+                {(typeof reply.sender === 'object' &&
+                  reply.sender?.full_name) ||
+                  (reply.sender_type
+                    ? reply.sender_type.charAt(0).toUpperCase() +
+                      reply.sender_type.slice(1)
+                    : 'Support')}
               </span>
               <span className="shrink-0 text-xs text-grey3 dark:text-gray-400">
                 {formatDateTime(reply.createdAt)}

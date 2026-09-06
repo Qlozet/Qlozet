@@ -7,8 +7,8 @@ import { ApiResponse, PaginatedData, buildQueryString } from '../types';
 export interface TicketReply {
   _id: string;
   ticket_id: string;
-  /** Author's user id. Not populated — the backend sends a bare ObjectId. */
-  sender: string;
+  /** Author — populated on /admin/tickets/:id/replies; bare id elsewhere. */
+  sender: string | { _id: string; full_name?: string; email?: string };
   /** Documented in Swagger (TicketReplyResponseDto) but absent from the live payload. */
   sender_type?: string;
   message: string;
@@ -75,6 +75,34 @@ export const populatedReplies = (ticket?: Ticket): TicketReply[] =>
       typeof reply === 'object' && reply !== null && 'message' in reply
   );
 
+export type TicketActivityType =
+  | 'created'
+  | 'replied'
+  | 'attachment_added'
+  | 'note_added'
+  | 'assigned'
+  | 'status_changed'
+  | 'resolved';
+
+/** One timeline row from GET /admin/tickets/:id/activities. */
+export interface TicketActivityRow {
+  _id: string;
+  type: TicketActivityType;
+  /** Action sentence; reply and note bodies live here. */
+  description: string;
+  /** Populated user, or null for system/legacy events. */
+  actor?: { _id: string; full_name?: string; email?: string } | null;
+  /** Fallback display name (e.g. the vendor business) when actor is null. */
+  actor_label?: string | null;
+  metadata?: {
+    attachments?: string[];
+    from?: string;
+    to?: string;
+    assignee_name?: string;
+  };
+  createdAt: string;
+}
+
 export interface GetTicketsParams {
   /** Matches `description` and `issue_type`. Does NOT match a ticket id. */
   search?: string;
@@ -109,14 +137,13 @@ export interface CreateTicketRequest {
   images?: string[];
 }
 
-// Mirrors UpdateTicketDto. Note there is deliberately no `status` here: the
-// backend's PATCH /tickets/{id} does not accept one, so tickets can't be
-// resolved from the admin app yet.
+// Mirrors UpdateTicketDto — status included, so the admin can resolve/close.
 export interface UpdateTicketRequest {
   id: string;
   issue_type?: string;
   description?: string;
   images?: string[];
+  status?: 'open' | 'in_progress' | 'resolved' | 'closed';
 }
 
 export interface ReplyToTicketRequest {
@@ -140,13 +167,52 @@ export const ticketsApiSlice = baseAPI.injectEndpoints({
       providesTags: ['Tickets'],
     }),
 
-    // Get a single ticket by id
+    // Get a single ticket by id (admin route — /tickets/:id is vendor-gated)
     getTicketById: builder.query<ApiResponse<Ticket>, string>({
       query: (id) => ({
-        url: `/tickets/${id}`,
+        url: `/admin/tickets/${id}`,
         method: 'GET',
       }),
       providesTags: ['Ticket'],
+    }),
+
+    // Replies for a ticket, sender populated — replaces the old workaround of
+    // scanning the whole admin list for populated reply bodies.
+    getTicketReplies: builder.query<
+      ApiResponse<PaginatedData<TicketReply>>,
+      string
+    >({
+      query: (id) => ({
+        url: `/admin/tickets/${id}/replies?size=100`,
+        method: 'GET',
+      }),
+      providesTags: ['Ticket'],
+    }),
+
+    // Activity timeline: stored audit rows + synthesized baseline for tickets
+    // that predate the log. Oldest first.
+    getTicketActivities: builder.query<
+      ApiResponse<TicketActivityRow[]>,
+      string
+    >({
+      query: (id) => ({
+        url: `/admin/tickets/${id}/activities`,
+        method: 'GET',
+      }),
+      providesTags: ['Ticket'],
+    }),
+
+    // Internal note — appears only in the activity timeline.
+    addTicketNote: builder.mutation<
+      ApiResponse<TicketActivityRow>,
+      { id: string; body: string }
+    >({
+      query: ({ id, body }) => ({
+        url: `/admin/tickets/${id}/notes`,
+        method: 'POST',
+        body: { body },
+      }),
+      invalidatesTags: ['Ticket'],
     }),
 
     // Create a ticket
@@ -159,10 +225,10 @@ export const ticketsApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Tickets'],
     }),
 
-    // Update a ticket's issue type / description / images
+    // Update a ticket — issue type / description / status (admin route).
     updateTicket: builder.mutation<ApiResponse<Ticket>, UpdateTicketRequest>({
       query: ({ id, ...body }) => ({
-        url: `/tickets/${id}`,
+        url: `/admin/tickets/${id}`,
         method: 'PATCH',
         body,
       }),
@@ -210,6 +276,9 @@ export const ticketsApiSlice = baseAPI.injectEndpoints({
 export const {
   useGetTicketsQuery,
   useGetTicketByIdQuery,
+  useGetTicketRepliesQuery,
+  useGetTicketActivitiesQuery,
+  useAddTicketNoteMutation,
   useCreateTicketMutation,
   useUpdateTicketMutation,
   useGetAssignedTicketsQuery,
