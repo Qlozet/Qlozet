@@ -238,7 +238,10 @@ export const dashboardApiSlice = baseAPI.injectEndpoints({
       void
     >({
       query: () => ({ url: '/admin/me/overview', method: 'GET' }),
-      providesTags: ['DashboardMetrics'],
+      // 'Tickets' too: the sheet's stats and task list are ticket-derived, so
+      // assigning/resolving/replying must refresh it — without this the sheet
+      // served a stale snapshot until the manual refresh button was pressed.
+      providesTags: ['DashboardMetrics', 'Tickets'],
     }),
 
     // Get admin dashboard chart series. Separate from /admin/dashboard: the
