@@ -26,7 +26,7 @@ export const PaymentNavIcon = ({ className }: IIconProps) => {
   return (
     <CreditCard
       className={className}
-      color={displayColor}
+      color="currentColor"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     />

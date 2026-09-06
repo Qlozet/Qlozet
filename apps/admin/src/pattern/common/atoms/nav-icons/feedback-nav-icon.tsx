@@ -26,7 +26,7 @@ export const FeedbackNavIcon = ({ className }: IIconProps) => {
   return (
     <MessageSquare
       className={className}
-      color={displayColor}
+      color="currentColor"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     />

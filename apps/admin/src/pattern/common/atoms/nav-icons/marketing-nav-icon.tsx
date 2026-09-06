@@ -26,7 +26,7 @@ export const MarketingNavIcon = ({ className }: IIconProps) => {
   return (
     <Megaphone
       className={className}
-      color={displayColor}
+      color="currentColor"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     />

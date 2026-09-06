@@ -38,7 +38,7 @@ export const DisputesNavIcon = ({ width, height }: IIconProps) => {
         width="12"
         height="2.6"
         rx="1.3"
-        fill={displayColor}
+        fill="currentColor"
       />
       <rect
         x="12.2"
@@ -47,7 +47,7 @@ export const DisputesNavIcon = ({ width, height }: IIconProps) => {
         height="8"
         rx="1.5"
         transform="rotate(45 12.2 3.1)"
-        fill={displayColor}
+        fill="currentColor"
       />
       <rect
         x="15.4"
@@ -56,7 +56,7 @@ export const DisputesNavIcon = ({ width, height }: IIconProps) => {
         height="8"
         rx="1.5"
         transform="rotate(45 15.4 9.4)"
-        fill={displayColor}
+        fill="currentColor"
         opacity="0.6"
       />
     </svg>

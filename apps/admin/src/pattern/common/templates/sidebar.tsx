@@ -47,7 +47,7 @@ import { WorkInProgressModal } from '../organisms/work-in-progress-modal';
 
 // Shared styling so the "Work in Progress" trigger buttons match NavLink
 const navItemClass =
-  'w-fit 2xl:w-full flex items-center gap-3 px-2 2xl:px-4 py-2 2xl:py-3 text-grey4 dark:text-gray-400 hover:text-secondary dark:hover:text-white transition-colors text-sm font-normal duration-300 cursor-pointer text-left outline-none';
+  'w-fit 2xl:w-full flex items-center gap-3 px-2 2xl:px-4 py-2 2xl:py-3 text-grey4 dark:text-gray-400 [&_svg]:text-[#ACB5BD] hover:text-secondary dark:hover:text-white hover:[&_svg]:text-secondary dark:hover:[&_svg]:text-white transition-colors text-sm font-normal duration-300 cursor-pointer text-left outline-none';
 
 // Routes whose pages are built and should navigate normally; everything else
 // still opens the "Work in Progress" modal.
@@ -232,7 +232,7 @@ export const SidebarNav = ({
                   <AccordionItem value="item-1" className="border-none">
                     <AccordionTrigger
                       className={cn(
-                        'flex items-center justify-center 2xl:justify-start gap-x-0 2xl:gap-x-3 px-2 2xl:px-4 py-2 2xl:py-3 text-grey4 dark:text-gray-400 hover:text-secondary dark:hover:text-white transition-colors text-sm font-normal data-[state=open]:text-primary dark:data-[state=open]:text-white hover:no-underline cursor-pointer border-none outline-none shadow-none duration-300',
+                        'flex items-center justify-center 2xl:justify-start gap-x-0 2xl:gap-x-3 px-2 2xl:px-4 py-2 2xl:py-3 text-grey4 dark:text-gray-400 [&_svg]:text-[#ACB5BD] hover:text-secondary dark:hover:text-white hover:[&_svg]:text-secondary dark:hover:[&_svg]:text-white transition-colors text-sm font-normal data-[state=open]:text-primary dark:data-[state=open]:text-white data-[state=open]:[&_svg]:text-primary dark:data-[state=open]:[&_svg]:text-white hover:no-underline cursor-pointer border-none outline-none shadow-none duration-300',
                         expanded && 'w-full justify-start gap-x-3 px-4 py-3'
                       )}
                     >

@@ -16,7 +16,10 @@ interface INavLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   onToggle?: () => void;
 }
 
-const activeStyle = `font-semibold text-primary dark:text-white font-normal`;
+// The nav icons draw with `currentColor`, so the icon shade is set on the link
+// rather than inside each SVG — matching the vendor app: inactive icons stay
+// lighter than the label, active ones go primary (white in dark mode).
+const activeStyle = `font-semibold text-primary dark:text-white font-normal [&_svg]:text-primary dark:[&_svg]:text-white`;
 
 const NavLink = ({
   href,
@@ -49,7 +52,7 @@ const NavLink = ({
         {...props}
         href={href}
         className={cn(
-          'w-fit 2xl:w-full flex items-center gap-3 px-2 2xl:px-4 py-2 2xl:py-3 text-grey4 dark:text-gray-400 hover:text-secondary dark:hover:text-white transition-colors text-sm font-normal duration-300',
+          'w-fit 2xl:w-full flex items-center gap-3 px-2 2xl:px-4 py-2 2xl:py-3 text-grey4 dark:text-gray-400 [&_svg]:text-[#ACB5BD] hover:text-secondary dark:hover:text-white hover:[&_svg]:text-secondary dark:hover:[&_svg]:text-white transition-colors text-sm font-normal duration-300',
           (isActiveState() || isActive) && activeStyle,
           className
         )}
