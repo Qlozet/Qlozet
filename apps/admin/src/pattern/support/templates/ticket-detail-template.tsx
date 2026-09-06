@@ -8,8 +8,10 @@ import { GoBackButton } from '@/pattern/admin/atoms/go-back-button';
 import {
   populatedReplies,
   useGetTicketByIdQuery,
+  useGetTicketRepliesQuery,
   useGetTicketsQuery,
   useReplyToTicketMutation,
+  useUpdateTicketMutation,
 } from '@/redux/services/tickets/tickets.api-slice';
 import { assigneeId } from '../lib/ticket-fields';
 import { useBusinessNames } from '../lib/use-business-names';
@@ -46,7 +48,12 @@ export const TicketDetailTemplate = () => {
   const listTicket = (listData?.data?.data ?? []).find((row) => row._id === id);
   const ticket = data?.data ?? listTicket;
 
-  const replies = populatedReplies(listTicket);
+  // Preferred source: the dedicated replies endpoint (sender populated).
+  // The list-scan stays as a fallback for backends deployed before it existed.
+  const { data: repliesData } = useGetTicketRepliesQuery(id, { skip: !id });
+  const fetchedReplies = repliesData?.data?.data ?? [];
+  const replies =
+    fetchedReplies.length > 0 ? fetchedReplies : populatedReplies(listTicket);
 
   // The ticket claims replies exist but none came back with a body.
   const repliesUnresolved =
@@ -56,6 +63,16 @@ export const TicketDetailTemplate = () => {
   const vendorName = businessName(ticket?.business);
 
   const [reply, { isLoading: isSending }] = useReplyToTicketMutation();
+  const [updateTicket, { isLoading: isResolving }] = useUpdateTicketMutation();
+
+  const handleResolve = async () => {
+    try {
+      await updateTicket({ id, status: 'resolved' }).unwrap();
+      toast.success('Ticket resolved');
+    } catch {
+      toast.error('Could not resolve the ticket.');
+    }
+  };
 
   const handleSendReply = async (message: string): Promise<boolean> => {
     try {
@@ -148,11 +165,13 @@ export const TicketDetailTemplate = () => {
                 isLoading={loading}
                 onReassign={handleReassign}
                 onEdit={handleEdit}
+                onResolve={handleResolve}
+                isResolving={isResolving}
               />
             </div>
           </div>
 
-          <TicketActivities />
+          <TicketActivities ticketId={id} />
         </>
       )}
     </div>

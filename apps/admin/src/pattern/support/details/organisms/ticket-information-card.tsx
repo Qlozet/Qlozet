@@ -19,6 +19,9 @@ interface TicketInformationCardProps {
   isLoading?: boolean;
   onReassign: () => void;
   onEdit: () => void;
+  /** Marks the ticket resolved (PATCH /admin/tickets/:id { status }). */
+  onResolve: () => void;
+  isResolving?: boolean;
 }
 
 const Field = ({ label, value }: { label: string; value: string }) => (
@@ -36,6 +39,8 @@ export const TicketInformationCard = ({
   isLoading,
   onReassign,
   onEdit,
+  onResolve,
+  isResolving,
 }: TicketInformationCardProps) => {
   if (isLoading || !ticket) {
     return (
@@ -96,13 +101,15 @@ export const TicketInformationCard = ({
       <Field label="Created" value={formatDateTime(ticket.createdAt)} />
       <Field label="Last Updated" value={formatDateTime(ticket.updatedAt)} />
 
-      {/* No Resolve action: PATCH /tickets/{id} accepts only issue_type,
-          description and images — there is no way to change a ticket's status
-          from any client. */}
       <div className="flex justify-end gap-3 pt-2">
         <Button type="button" variant="outline" onClick={onEdit}>
           Edit
         </Button>
+        {!['resolved', 'closed'].includes(ticket.status ?? '') && (
+          <Button type="button" onClick={onResolve} disabled={isResolving}>
+            {isResolving ? 'Resolving…' : 'Resolve'}
+          </Button>
+        )}
       </div>
     </div>
   );
