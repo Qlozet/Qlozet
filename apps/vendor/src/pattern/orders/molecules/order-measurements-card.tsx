@@ -77,30 +77,66 @@ const recordedRows = (m: Record<string, number> | undefined) =>
     .filter(([, v]) => typeof v === 'number' && !Number.isNaN(v) && v > 0)
     .map(([key, v]) => ({ key, label: prettify(key), value: v }));
 
+/** Per-measurement provenance saved with the snapshot (schema v2 sets). */
+export type TailoringMeta = Record<
+  string,
+  { tier?: string; mae_cm?: number | null; method?: string }
+>;
+
 const MeasurementGrid = ({
   measurements,
   fromUnit,
   unit,
+  meta,
 }: {
   measurements: Record<string, number> | undefined;
   fromUnit: 'cm' | 'inch';
   unit: Unit;
+  /** When present, rough values get a "Verify" badge — measure the customer. */
+  meta?: TailoringMeta | null;
 }) => (
   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-    {recordedRows(measurements).map((row) => (
-      <div
-        key={row.key}
-        className="flex items-center justify-between gap-2 rounded-xl border border-[#E5E7EB] dark:border-border bg-white dark:bg-[#404040] px-3.5 py-2.5"
-      >
-        <span className="truncate text-sm text-gray-600 dark:text-gray-300">
-          {row.label}
-        </span>
-        <span className="shrink-0 text-sm font-semibold text-grey-black dark:text-white">
-          {formatValue(convert(row.value, fromUnit, unit))}
-          <span className="ml-0.5 text-xs font-normal text-grey3">{unit}</span>
-        </span>
-      </div>
-    ))}
+    {recordedRows(measurements).map((row) => {
+      const m = meta?.[row.key];
+      const rough = m?.tier === 'rough';
+      const estimated = m?.tier === 'estimated';
+      const hint = [
+        rough
+          ? 'Rough estimate — verify with the customer before cutting.'
+          : estimated
+            ? 'Derived from other measurements, not measured directly.'
+            : undefined,
+        typeof m?.mae_cm === 'number'
+          ? `Typical error: ±${m.mae_cm} cm.`
+          : undefined,
+      ]
+        .filter(Boolean)
+        .join(' ');
+      return (
+        <div
+          key={row.key}
+          className="flex items-center justify-between gap-2 rounded-xl border border-[#E5E7EB] dark:border-border bg-white dark:bg-[#404040] px-3.5 py-2.5"
+          title={hint || undefined}
+        >
+          <span className="flex min-w-0 items-center gap-1.5">
+            <span className="truncate text-sm text-gray-600 dark:text-gray-300">
+              {row.label}
+            </span>
+            {rough && (
+              <span className="shrink-0 rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                Verify
+              </span>
+            )}
+          </span>
+          <span className="shrink-0 text-sm font-semibold text-grey-black dark:text-white">
+            {formatValue(convert(row.value, fromUnit, unit))}
+            <span className="ml-0.5 text-xs font-normal text-grey3">
+              {unit}
+            </span>
+          </span>
+        </div>
+      );
+    })}
   </div>
 );
 
@@ -118,6 +154,7 @@ export const ItemBodyMeasurements = ({
     set_name?: string | null;
     unit?: string;
     measurements?: Record<string, number>;
+    tailoring_meta?: TailoringMeta | null;
   };
 }) => {
   const [unit, setUnit] = useState<Unit>('cm');
@@ -160,6 +197,7 @@ export const ItemBodyMeasurements = ({
           measurements={profile.measurements}
           fromUnit={(profile.unit as 'cm' | 'inch') ?? 'cm'}
           unit={unit}
+          meta={profile.tailoring_meta}
         />
       </div>
     </div>
