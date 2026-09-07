@@ -41,6 +41,18 @@ const LABELS: Record<string, string> = {
   height: 'Height',
   back_length: 'Back Length',
   front_length: 'Front Length',
+  // Tailoring measurements derived by the AI prediction and saved on the
+  // customer's set — the snapshot copies them wholesale, so they land here.
+  nape_to_waist: 'Back Length (Nape–Waist)',
+  neck_base: 'Neck Base',
+  mid_thigh: 'Mid Thigh',
+  lower_thigh: 'Lower Thigh (Above Knee)',
+  belly_waist: 'Belly Waist',
+  top_hip: 'High Hip',
+  under_bust: 'Under Bust',
+  waist_height: 'Waist Height (Floor–Waist)',
+  ankle_height: 'Ankle Height',
+  neck_height: 'Neck Height (Floor–Nape)',
 };
 
 const prettify = (key: string): string =>
