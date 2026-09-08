@@ -291,19 +291,28 @@ export default function TaxonomyTemplate() {
         }}
         className="w-full"
       >
-        <TabsList>
-          <TabsTrigger value="categories">
+        {/* Segmented pill switch — same treatment as the Support page tabs.
+            Counts inherit the tab colour so they stay legible on the active
+            primary fill. */}
+        <TabsList className="h-auto rounded-xl bg-[#F8F9FA] dark:bg-muted p-1">
+          <TabsTrigger
+            value="categories"
+            className="rounded-lg px-5 py-2.5 text-sm font-medium text-grey3 dark:text-gray-400 hover:text-grey-black dark:hover:text-white data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
+          >
             Product types
             {data && (
-              <span className="ml-1.5 text-xs text-gray-400">
+              <span className="ml-1.5 text-xs opacity-60">
                 {data.categories.length}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="tags">
+          <TabsTrigger
+            value="tags"
+            className="rounded-lg px-5 py-2.5 text-sm font-medium text-grey3 dark:text-gray-400 hover:text-grey-black dark:hover:text-white data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
+          >
             Tags
             {data && (
-              <span className="ml-1.5 text-xs text-gray-400">
+              <span className="ml-1.5 text-xs opacity-60">
                 {data.tags.length}
               </span>
             )}
