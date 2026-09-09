@@ -323,6 +323,36 @@ export const SETTINGS_TABS: SettingsTab[] = [
         ],
       },
       {
+        id: 'delivery-estimate',
+        title: 'Delivery estimate',
+        description:
+          'The courier-transit buffer behind the product page’s “Estimated delivery” date range — added on top of each garment’s making time. Display-only.',
+        fields: [
+          {
+            key: 'delivery_transit_min_days',
+            label: 'Transit, optimistic',
+            help: 'Fastest courier transit you’re comfortable promising.',
+            kind: 'number',
+            unit: 'days',
+            min: 0,
+            max: 30,
+            step: 1,
+            integer: true,
+          },
+          {
+            key: 'delivery_transit_max_days',
+            label: 'Transit, conservative',
+            help: 'Slow end of the range — keep it honest; the estimate is what customers hold you to.',
+            kind: 'number',
+            unit: 'days',
+            min: 0,
+            max: 30,
+            step: 1,
+            integer: true,
+          },
+        ],
+      },
+      {
         id: 'late-penalties',
         title: 'Late delivery penalties',
         description:
@@ -493,6 +523,8 @@ export const FIELD_FALLBACKS: Partial<
   base_currency: 'USD',
   // Token rewards — defaults mirror the backend schema (which in turn
   // preserves the amounts registration used to hardcode).
+  delivery_transit_min_days: '2',
+  delivery_transit_max_days: '5',
   customer_signup_token_reward: '100',
   vendor_signup_token_reward: '250',
   order_payment_token_reward: '0',
