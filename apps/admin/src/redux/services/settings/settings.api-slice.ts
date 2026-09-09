@@ -79,6 +79,10 @@ export interface PlatformSettings {
   /** Tokens granted to the customer each time an order settles as paid. */
   order_payment_token_reward?: number;
 
+  /** Courier transit buffer behind the PDP "Estimated delivery" range. */
+  delivery_transit_min_days?: number;
+  delivery_transit_max_days?: number;
+
   // Multi-currency & international payments. Optional because backends
   // deployed before the feature don't return them.
   /** Group/consolidation currency for platform revenue. */
