@@ -323,6 +323,25 @@ export const SETTINGS_TABS: SettingsTab[] = [
         ],
       },
       {
+        id: 'bespoke-quotes',
+        title: 'Bespoke quotes',
+        description:
+          'Limits on the quote-request flow between customers and tailors.',
+        fields: [
+          {
+            key: 'max_quote_vendors_per_design',
+            label: 'Vendors per design',
+            help: 'How many tailors can hold an active quote request on one design at a time. Expired or declined quotes free their slot.',
+            kind: 'number',
+            unit: 'units',
+            min: 1,
+            max: 20,
+            step: 1,
+            integer: true,
+          },
+        ],
+      },
+      {
         id: 'delivery-estimate',
         title: 'Delivery estimate',
         description:
@@ -523,6 +542,7 @@ export const FIELD_FALLBACKS: Partial<
   base_currency: 'USD',
   // Token rewards — defaults mirror the backend schema (which in turn
   // preserves the amounts registration used to hardcode).
+  max_quote_vendors_per_design: '5',
   delivery_transit_min_days: '2',
   delivery_transit_max_days: '5',
   customer_signup_token_reward: '100',
