@@ -60,6 +60,7 @@ export const baseAPI = createApi({
     'OrderMessages',
     'StyleLibrary',
     'Taxonomy',
+    'BespokeTemplates',
     // Notification feed + AI assistant (ported from the vendor app)
     'Notification',
     'AssistantConversations',

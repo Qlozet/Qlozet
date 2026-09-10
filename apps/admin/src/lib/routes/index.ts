@@ -23,6 +23,8 @@ export const APP_ROUTES = {
   productsStyles: '/products/styles',
   productsStylesBulk: '/products/styles/bulk',
   productsTaxonomy: '/products/taxonomy',
+  productsTemplates: '/products/templates',
+  productsTemplateStudio: '/products/templates/studio',
   productsAdd: '/products/add-product',
   staticPage: '/static-page',
   marketing: '/marketing',
