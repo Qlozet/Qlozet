@@ -173,6 +173,7 @@ export const NotificationInbox = () => {
                 body={item.body}
                 date={item.createdAt}
                 category={item.category}
+                actionUrl={item.action_url}
               />
             ))}
           </div>

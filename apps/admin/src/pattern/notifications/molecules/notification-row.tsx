@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
+  ArrowUpRight,
   Bell,
   Check,
   CreditCard,
@@ -53,6 +55,8 @@ interface NotificationRowProps {
   body: string;
   date: string;
   category?: string;
+  /** In-app destination (e.g. /disputes). Internal paths only. */
+  actionUrl?: string;
 }
 
 export const NotificationRow = ({
@@ -62,7 +66,9 @@ export const NotificationRow = ({
   body,
   date,
   category,
+  actionUrl,
 }: NotificationRowProps) => {
+  const router = useRouter();
   const [isRead, setIsRead] = useState(read);
   const [markAsViewed, { isLoading: isMarking }] =
     useMarkNotificationAsViewedMutation();
@@ -78,6 +84,18 @@ export const NotificationRow = ({
     }
   };
 
+  // Only same-app paths — an absolute URL in the payload is ignored rather
+  // than becoming an open redirect out of the console.
+  const destination =
+    actionUrl && actionUrl.startsWith('/') && !actionUrl.startsWith('//')
+      ? actionUrl
+      : null;
+
+  const handleClick = () => {
+    markRead();
+    if (destination) router.push(destination);
+  };
+
   const Icon = (category && CATEGORY_ICONS[category]) || Bell;
   const colorClass =
     (category && CATEGORY_COLORS[category]) || CATEGORY_COLORS.system;
@@ -88,15 +106,16 @@ export const NotificationRow = ({
     <div
       role="button"
       tabIndex={0}
-      onClick={markRead}
+      onClick={handleClick}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
-          markRead();
+          handleClick();
         }
       }}
       className={cn(
-        'flex w-full items-start gap-3 px-4 py-4 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        'group flex w-full items-start gap-3 px-4 py-4 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        destination && 'cursor-pointer',
         !isRead
           ? 'cursor-pointer bg-primary/10 hover:bg-primary/15'
           : 'hover:bg-[#F8F9FA] dark:hover:bg-muted/80'
@@ -121,9 +140,14 @@ export const NotificationRow = ({
           >
             {title}
           </p>
-          {!isRead && (
-            <span className="mt-1.5 size-2 shrink-0 rounded-full bg-primary" />
-          )}
+          <span className="flex shrink-0 items-center gap-1.5">
+            {destination && (
+              <ArrowUpRight className="mt-1 size-3.5 text-grey3 opacity-0 transition-opacity group-hover:opacity-100 dark:text-gray-400" />
+            )}
+            {!isRead && (
+              <span className="mt-1.5 size-2 shrink-0 rounded-full bg-primary" />
+            )}
+          </span>
         </div>
 
         <p className="mt-0.5 line-clamp-2 text-sm text-grey3 dark:text-gray-400">
