@@ -12,6 +12,8 @@ export interface BespokeTemplate {
   category: string;
   gender: 'men' | 'women';
   design_images: string[];
+  /** Admin-uploaded inspiration photos — seed the customer's Photo & Notes. */
+  reference_images?: string[];
   /** Same JSON contract as a design's description: { selections, userPrompt } */
   description?: string | null;
   status: 'active' | 'inactive';
@@ -27,7 +29,13 @@ export interface BespokeTemplate {
 export type SaveTemplateRequest = Partial<
   Pick<
     BespokeTemplate,
-    'name' | 'category' | 'gender' | 'design_images' | 'description' | 'status'
+    | 'name'
+    | 'category'
+    | 'gender'
+    | 'design_images'
+    | 'reference_images'
+    | 'description'
+    | 'status'
   >
 >;
 
@@ -110,6 +118,19 @@ export const bespokeTemplatesApiSlice = baseAPI.injectEndpoints({
       // Polled — never cache.
       keepUnusedDataFor: 0,
     }),
+
+    // Reference photo → suggested prompt + matched style ids (job-based,
+    // same pipeline the shop studio uses; free for platform users).
+    analyzeReference: builder.mutation<
+      ApiResponse<{ jobId?: string; job_id?: string }>,
+      { image_url: string }
+    >({
+      query: (body) => ({
+        url: '/measurements/analyze-reference',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
@@ -121,4 +142,5 @@ export const {
   useDeleteBespokeTemplateMutation,
   useGenerateTemplateOutfitMutation,
   useLazyGetGenerationJobQuery,
+  useAnalyzeReferenceMutation,
 } = bespokeTemplatesApiSlice;
