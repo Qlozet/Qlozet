@@ -116,7 +116,7 @@ export const TicketActivities = ({ ticketId }: { ticketId: string }) => {
         showExport={false}
       />
 
-      <div className="px-6 pb-6">
+      <div className="px-4 pb-5 sm:px-6 sm:pb-6">
         {/* Internal note composer — notes live only in this timeline. */}
         <div className="mb-5 flex items-center gap-2">
           <StickyNote className="size-4 shrink-0 text-grey3 dark:text-gray-400" />
