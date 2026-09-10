@@ -83,6 +83,9 @@ export interface PlatformSettings {
   delivery_transit_min_days?: number;
   delivery_transit_max_days?: number;
 
+  /** Max vendors with an active quote request per bespoke design. */
+  max_quote_vendors_per_design?: number;
+
   // Multi-currency & international payments. Optional because backends
   // deployed before the feature don't return them.
   /** Group/consolidation currency for platform revenue. */
