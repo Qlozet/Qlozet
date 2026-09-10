@@ -12,9 +12,10 @@ const initials = (name: string): string =>
 // A single row in the ticket activity timeline: date column + avatar + actor +
 // action, with optional highlighted note and image attachments.
 export const ActivityItem = ({ activity }: { activity: TicketActivity }) => (
-  <div className="flex gap-4">
-    {/* Date column */}
-    <span className="w-[140px] shrink-0 pt-1 text-xs text-grey2 dark:text-gray-400">
+  <div className="flex gap-3 sm:gap-4">
+    {/* Date column — desktop only; on mobile the 140px column would squeeze
+        the content into a sliver, so the time moves next to the actor. */}
+    <span className="hidden w-[140px] shrink-0 pt-1 text-xs text-grey2 dark:text-gray-400 sm:block">
       {activity.time}
     </span>
 
@@ -33,9 +34,16 @@ export const ActivityItem = ({ activity }: { activity: TicketActivity }) => (
     )}
 
     {/* Body */}
-    <div className="flex-1 space-y-1 pb-2">
-      <p className="text-sm font-semibold text-[#3387CC]">{activity.actor}</p>
-      <p className="text-sm text-grey-black dark:text-white">
+    <div className="min-w-0 flex-1 space-y-1 pb-2">
+      <div className="flex items-baseline justify-between gap-2">
+        <p className="truncate text-sm font-semibold text-[#3387CC]">
+          {activity.actor}
+        </p>
+        <span className="shrink-0 text-[11px] text-grey2 dark:text-gray-400 sm:hidden">
+          {activity.time}
+        </span>
+      </div>
+      <p className="break-words text-sm text-grey-black dark:text-white">
         {activity.action}
         {activity.highlight && (
           <span className="text-[#3387CC]"> {activity.highlight}</span>
