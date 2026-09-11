@@ -29,14 +29,15 @@ import { AssistantMiniChart } from '../molecules/assistant-mini-chart';
 import { streamChat } from '../lib/stream-chat';
 import { Markdown } from '@/components/ui/markdown';
 
-// Marketplace-wide prompts — the admin console's framing, not a single
-// vendor's. NOTE: /assistant/* is undocumented in Swagger and was built for the
-// vendor app, so answers may still be scoped to the signed-in user's own data.
+// Marketplace-wide prompts. The backend routes platform users to the admin
+// analyst: marketplace-wide tools, gated by the admin's role permissions —
+// an admin without e.g. financial_management gets no revenue/payout tools
+// and the model says so instead of guessing.
 const SUGGESTIONS = [
   'How did the marketplace perform this month?',
   'Which vendors are driving the most revenue?',
-  'What are the top selling products right now?',
-  'How many orders are still awaiting fulfilment?',
+  'What is waiting on admin action right now?',
+  'How is the support workload looking this week?',
 ];
 
 interface Props {
@@ -184,7 +185,7 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
                     Business Assistant
                   </SheetTitle>
                   <SheetDescription className="text-[10px] text-muted-foreground">
-                    Insights on your store · beta
+                    Marketplace insights · beta
                   </SheetDescription>
                 </div>
               </div>
@@ -254,7 +255,7 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
                   <Sparkles className="h-6 w-6 text-primary" />
                 </span>
                 <p className="text-sm font-medium text-foreground">
-                  Ask me about your business
+                  Ask me about the marketplace
                 </p>
                 <p className="mb-4 mt-1 text-xs text-muted-foreground">
                   Sales, earnings, payouts, top products and more.
