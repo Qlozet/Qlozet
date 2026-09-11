@@ -124,8 +124,14 @@ function StudioInner() {
   const [prompt, setPrompt] = useState('');
 
   // Drawer: which tool is open (null = closed). Desktop slides from the
-  // right; mobile rises as a bottom sheet like the shop studio.
+  // right; mobile rises as a bottom sheet like the shop studio. lastTool
+  // keeps the panel content rendered through the CLOSE animation.
   const [openTool, setOpenTool] = useState<ToolKey | null>('basics');
+  const [lastTool, setLastTool] = useState<ToolKey>('basics');
+  useEffect(() => {
+    if (openTool) setLastTool(openTool);
+  }, [openTool]);
+  const displayTool = openTool ?? lastTool;
   const [styleSection, setStyleSection] = useState<string>('full_body');
 
   // ── Load when editing ──
@@ -415,12 +421,12 @@ function StudioInner() {
   };
 
   const activeImage = images[activeIdx];
-  const openToolMeta = TOOLS.find((t) => t.key === openTool);
+  const openToolMeta = TOOLS.find((t) => t.key === displayTool);
 
   // ── Drawer content (shared between desktop drawer + mobile sheet) ──
   const drawerContent = (
     <>
-      {openTool === 'basics' && (
+      {displayTool === 'basics' && (
         <div className="space-y-5">
           <div>
             <p className="mb-2 text-xs font-bold uppercase tracking-wide text-grey3 dark:text-gray-400">
@@ -480,7 +486,7 @@ function StudioInner() {
         </div>
       )}
 
-      {openTool === 'styles' && (
+      {displayTool === 'styles' && (
         <div className="space-y-4">
           <div className="flex flex-wrap gap-1.5">
             {STYLE_SECTIONS.map((s) => (
@@ -567,7 +573,7 @@ function StudioInner() {
         </div>
       )}
 
-      {openTool === 'finishing' && (
+      {displayTool === 'finishing' && (
         <div className="space-y-3">
           <p className="text-xs text-grey3 dark:text-gray-400">
             Tailor-applied finishing — customers inherit these and the tailor
@@ -620,7 +626,7 @@ function StudioInner() {
         </div>
       )}
 
-      {openTool === 'reference' && (
+      {displayTool === 'reference' && (
         <div className="space-y-4">
           {/* Upload zone — the shop's dashed drop area */}
           <button
@@ -716,7 +722,7 @@ function StudioInner() {
         </div>
       )}
 
-      {openTool === 'colour' && (
+      {displayTool === 'colour' && (
         <div className="space-y-5">
           <div>
             <p className="mb-2 text-xs font-bold uppercase tracking-wide text-grey3 dark:text-gray-400">
@@ -749,7 +755,7 @@ function StudioInner() {
   );
 
   return (
-    <div className="flex min-h-[calc(100vh-120px)] flex-col gap-4">
+    <div className="flex h-full min-h-0 flex-col gap-4 pb-6">
       {/* ── Top bar ── */}
       <div className="flex flex-wrap items-center gap-3">
         <button
@@ -794,10 +800,10 @@ function StudioInner() {
         </button>
       </div>
 
-      <div className="relative flex flex-1 gap-4">
+      <div className="relative flex min-h-0 flex-1 gap-4">
         {/* ── Canvas ── */}
         <div
-          className="relative flex flex-1 flex-col items-center justify-center rounded-xl border border-border p-6 pb-24 lg:pb-6"
+          className="relative flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden rounded-xl border border-border p-6 pb-24 lg:pb-6"
           style={{
             backgroundImage:
               'radial-gradient(rgba(128,128,128,0.18) 1.5px, transparent 1.5px)',
@@ -921,10 +927,24 @@ function StudioInner() {
           </div>
         </div>
 
-        {/* ── Desktop: toolbar rail + slide-in drawer ── */}
-        <div className="hidden shrink-0 lg:flex lg:gap-3">
-          {openTool && (
-            <div className="flex w-[380px] flex-col rounded-xl border border-border bg-white custom-card-shadow dark:bg-card">
+        {/* ── Desktop: toolbar rail + slide-in drawer. Same motion as the
+            console's order/profile side sheets: in 0.4s cubic-bezier(0.16,1,
+            0.3,1), out 0.25s cubic-bezier(0.4,0,0.2,1). Kept mounted so the
+            exit actually animates. ── */}
+        <div className="hidden h-full min-h-0 shrink-0 lg:flex lg:gap-3">
+          <div
+            className="h-full min-h-0 overflow-hidden"
+            style={{
+              width: openTool ? 380 : 0,
+              opacity: openTool ? 1 : 0,
+              transform: openTool ? 'translateX(0)' : 'translateX(24px)',
+              transition: openTool
+                ? 'width 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease, transform 0.4s cubic-bezier(0.16,1,0.3,1)'
+                : 'width 0.25s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease, transform 0.25s cubic-bezier(0.4,0,0.2,1)',
+            }}
+            aria-hidden={!openTool}
+          >
+            <div className="flex h-full w-[380px] flex-col rounded-xl border border-border bg-white custom-card-shadow dark:bg-card">
               <div className="flex items-center justify-between border-b border-border/60 px-4 py-3">
                 <p className="text-sm font-bold uppercase tracking-wide text-grey-black dark:text-white">
                   {openToolMeta?.label}
@@ -939,7 +959,7 @@ function StudioInner() {
               </div>
               <div className="flex-1 overflow-y-auto p-4">{drawerContent}</div>
             </div>
-          )}
+          </div>
           <div className="flex h-fit flex-col gap-1.5 rounded-2xl border border-border bg-white p-1.5 shadow-sm dark:bg-card">
             {TOOLS.map((t) => {
               const Icon = t.icon;
@@ -965,35 +985,49 @@ function StudioInner() {
         </div>
       </div>
 
-      {/* ── Mobile: bottom-sheet drawer (the shop's MobileBottomSheet) ── */}
-      {openTool && (
-        <div className="fixed inset-x-0 bottom-0 z-50 lg:hidden">
-          <div
-            className="absolute inset-0 -top-[100vh] bg-black/30"
-            onClick={() => setOpenTool(null)}
-          />
-          <div className="relative flex max-h-[70vh] flex-col rounded-t-[28px] bg-white shadow-[0_-8px_40px_rgba(0,0,0,0.18)] dark:bg-card">
-            <div className="flex justify-center pt-3">
-              <div className="h-[5px] w-10 rounded-full bg-gray-300 dark:bg-gray-600" />
-            </div>
-            <div className="flex items-center justify-between px-5 pb-2 pt-3">
-              <p className="text-base font-black uppercase tracking-wide text-grey-black dark:text-white">
-                {openToolMeta?.label}
-              </p>
-              <button
-                type="button"
-                onClick={() => setOpenTool(null)}
-                className="flex size-8 cursor-pointer items-center justify-center rounded-full border border-border text-grey3 transition-colors hover:text-grey-black dark:hover:text-white"
-              >
-                <X className="size-4" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto px-5 pb-8 pt-1">
-              {drawerContent}
-            </div>
+      {/* ── Mobile: bottom-sheet drawer — the shop studio's sheet motion
+          (slide up 0.4s cubic-bezier(0.16,1,0.3,1), settle down on close). ── */}
+      <div
+        className={cn(
+          'fixed inset-x-0 bottom-0 z-50 lg:hidden',
+          !openTool && 'pointer-events-none'
+        )}
+        aria-hidden={!openTool}
+      >
+        <div
+          className="absolute inset-0 -top-[100vh] bg-black/30 transition-opacity duration-300"
+          style={{ opacity: openTool ? 1 : 0 }}
+          onClick={() => setOpenTool(null)}
+        />
+        <div
+          className="relative flex max-h-[70vh] flex-col rounded-t-[28px] bg-white shadow-[0_-8px_40px_rgba(0,0,0,0.18)] dark:bg-card"
+          style={{
+            transform: openTool ? 'translateY(0)' : 'translateY(110%)',
+            transition: openTool
+              ? 'transform 0.4s cubic-bezier(0.16,1,0.3,1)'
+              : 'transform 0.3s cubic-bezier(0.32,0.72,0,1)',
+          }}
+        >
+          <div className="flex justify-center pt-3">
+            <div className="h-[5px] w-10 rounded-full bg-gray-300 dark:bg-gray-600" />
+          </div>
+          <div className="flex items-center justify-between px-5 pb-2 pt-3">
+            <p className="text-base font-black uppercase tracking-wide text-grey-black dark:text-white">
+              {openToolMeta?.label}
+            </p>
+            <button
+              type="button"
+              onClick={() => setOpenTool(null)}
+              className="flex size-8 cursor-pointer items-center justify-center rounded-full border border-border text-grey3 transition-colors hover:text-grey-black dark:hover:text-white"
+            >
+              <X className="size-4" />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto px-5 pb-8 pt-1">
+            {drawerContent}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
