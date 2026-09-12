@@ -87,6 +87,7 @@ export const Sidebar = () => {
     { icon: CustomersNavIcon, label: 'Customers', href: APP_ROUTES.customers },
     { icon: SettingsNavIcon, label: 'Settings', href: APP_ROUTES.settings },
     { icon: SupportNavIcon, label: 'Support', href: APP_ROUTES.support },
+    { icon: SupportNavIcon, label: 'Help Center', href: APP_ROUTES.helpCenter },
   ];
 
   const pathname = usePathname();
