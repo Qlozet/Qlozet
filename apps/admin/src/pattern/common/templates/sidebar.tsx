@@ -24,6 +24,7 @@ import { DisputesNavIcon } from '../atoms/nav-icons/disputes-nav-icon';
 import { NotificationsNavIcon } from '../atoms/nav-icons/notifications-nav-icon';
 // import { PerformanceNavIcon } from '../atoms/nav-icons/performance-nav-icon';
 import { SupportNavIcon } from '../atoms/nav-icons/support-nav-icon';
+import { HelpCenterNavIcon } from '../atoms/nav-icons/help-center-nav-icon';
 import { SettingsNavIcon } from '../atoms/nav-icons/settings-nav-icon';
 // import { FeedbackNavIcon } from '../atoms/nav-icons/feedback-nav-icon';
 // import { HelpNavIcon } from '../atoms/nav-icons/help-nav-icon';
@@ -71,6 +72,7 @@ const ENABLED_ROUTES: string[] = [
   APP_ROUTES.productsAdd,
   APP_ROUTES.notifications,
   APP_ROUTES.support,
+  APP_ROUTES.helpCenter,
   APP_ROUTES.settings,
 ];
 
@@ -206,6 +208,11 @@ export const SidebarNav = ({
     //   ],
     // },
     { icon: SupportNavIcon, label: 'Support', href: APP_ROUTES.support },
+    {
+      icon: HelpCenterNavIcon,
+      label: 'Help Center',
+      href: APP_ROUTES.helpCenter,
+    },
     { icon: SettingsNavIcon, label: 'Settings', href: APP_ROUTES.settings },
     // { icon: FeedbackNavIcon, label: 'Feedback', href: APP_ROUTES.feedback },
     // { icon: HelpNavIcon, label: 'Help', href: APP_ROUTES.help },
