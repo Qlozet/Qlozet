@@ -14,12 +14,22 @@ import {
   statusVariant,
   ticketCategory,
   ticketSubject,
+  ticketRequesterName,
 } from '../lib/ticket-fields';
 
 interface SupportTicketsColumnsOptions {
   /** Resolves a ticket's `business` id to a vendor name. */
   businessName: (id?: string | null) => string;
 }
+
+/** Who raised the ticket — customers are personal, vendors are businesses. */
+const requester = (
+  t: Ticket,
+  businessName: (id?: string | null) => string
+): { name: string; origin: 'customer' | 'vendor' } => ({
+  name: ticketRequesterName(t, businessName),
+  origin: t.customer ? 'customer' : 'vendor',
+});
 
 export const createSupportTicketsColumns = ({
   businessName,
@@ -50,12 +60,24 @@ export const createSupportTicketsColumns = ({
   },
   {
     id: 'name',
-    header: 'User/Vendor Name',
-    cell: ({ row }) => (
-      <span className="whitespace-nowrap text-sm font-medium text-[#3387CC]">
-        {businessName(row.original.business)}
-      </span>
-    ),
+    header: 'Requester',
+    cell: ({ row }) => {
+      const r = requester(row.original, businessName);
+      return (
+        <span className="flex items-center gap-2 whitespace-nowrap">
+          <span className="text-sm font-medium text-[#3387CC]">{r.name}</span>
+          <span
+            className={
+              r.origin === 'customer'
+                ? 'rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-bold uppercase text-purple-700 dark:bg-purple-900/40 dark:text-purple-300'
+                : 'rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold uppercase text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+            }
+          >
+            {r.origin}
+          </span>
+        </span>
+      );
+    },
     enableSorting: false,
   },
   {

@@ -41,8 +41,15 @@ export interface TicketAssignee {
 
 export interface Ticket {
   _id: string;
-  /** Owning business id. Resolve to a name via GET /admin/businesses. */
-  business?: string;
+  /** Vendor originator. Newer backends populate {business_name}; older
+   *  responses carry a bare id (resolve via GET /admin/businesses). Null on
+   *  customer-raised tickets. */
+  business?: string | { _id: string; business_name?: string } | null;
+  /** Customer originator (populated). Null on vendor-raised tickets. */
+  customer?:
+    | { _id: string; full_name?: string; email?: string }
+    | string
+    | null;
   issue_type?: string;
   description?: string;
   attachments?: string[];
