@@ -34,6 +34,7 @@ export const APP_ROUTES = {
   notifications: '/notifications',
   performance: '/performance',
   support: '/support',
+  helpCenter: '/help-center',
   settings: '/settings',
   feedback: '/feedback',
   help: '/help',

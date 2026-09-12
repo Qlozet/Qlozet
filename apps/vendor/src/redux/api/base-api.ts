@@ -70,6 +70,7 @@ export const baseAPI = createApi({
     'Courier',
     'Shipment',
     'Ticket',
+    'HelpArticles',
     'Tickets',
     'Vendors',
     'FollowingBusinesses',
