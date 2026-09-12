@@ -27,6 +27,7 @@ import {
   shortTicketId,
   statusLabel,
   ticketCategory,
+  ticketRequesterName,
   ticketSubject,
 } from '../lib/ticket-fields';
 import { useBusinessNames } from '../lib/use-business-names';
@@ -97,7 +98,7 @@ export const TicketsTable = () => {
     (ticket: Ticket) => [
       shortTicketId(ticket._id),
       ticketSubject(ticket),
-      businessName(ticket.business),
+      ticketRequesterName(ticket, businessName),
       ticketCategory(ticket),
       assigneeId(ticket) ?? 'Unassigned',
       statusLabel(ticket.status),

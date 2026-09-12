@@ -114,3 +114,26 @@ export const statusLabel = (status?: string): string => {
   if (!s) return 'Pending';
   return s.charAt(0).toUpperCase() + s.slice(1);
 };
+
+/**
+ * Who raised the ticket, tolerant of both backend shapes: populated
+ * originator objects (new) or a bare business id (old — resolve via the
+ * businessName lookup).
+ */
+export const ticketRequesterName = (
+  t: {
+    customer?: { full_name?: string; email?: string } | string | null;
+    business?: { business_name?: string } | string | null;
+  },
+  businessName: (id?: string | null) => string
+): string => {
+  if (t.customer) {
+    return typeof t.customer === 'object'
+      ? (t.customer.full_name ?? t.customer.email ?? 'Customer')
+      : 'Customer';
+  }
+  if (typeof t.business === 'object' && t.business) {
+    return t.business.business_name ?? 'Vendor';
+  }
+  return businessName((t.business as string | undefined) ?? undefined);
+};

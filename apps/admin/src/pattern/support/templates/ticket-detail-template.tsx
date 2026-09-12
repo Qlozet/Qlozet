@@ -13,7 +13,7 @@ import {
   useReplyToTicketMutation,
   useUpdateTicketMutation,
 } from '@/redux/services/tickets/tickets.api-slice';
-import { assigneeId } from '../lib/ticket-fields';
+import { assigneeId, ticketRequesterName } from '../lib/ticket-fields';
 import { useBusinessNames } from '../lib/use-business-names';
 import { ReassignTicketModal } from '../organisms/reassign-ticket-modal';
 import { EditTicketDrawer } from '../organisms/edit-ticket-drawer';
@@ -60,7 +60,9 @@ export const TicketDetailTemplate = () => {
     (ticket?.replies?.length ?? 0) > 0 && replies.length === 0;
 
   const { businessName } = useBusinessNames();
-  const vendorName = businessName(ticket?.business);
+  const vendorName = ticket
+    ? ticketRequesterName(ticket, businessName)
+    : businessName(undefined);
 
   const [reply, { isLoading: isSending }] = useReplyToTicketMutation();
   const [updateTicket, { isLoading: isResolving }] = useUpdateTicketMutation();
