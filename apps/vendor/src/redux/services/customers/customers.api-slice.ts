@@ -159,6 +159,27 @@ export const customersApiSlice = baseAPI.injectEndpoints({
         url: '/business/customers/demographics',
         method: 'GET',
       }),
+      // The backend wraps responses in a { message, data } envelope; without
+      // unwrapping, the charts read topLocations off the envelope, get
+      // undefined and permanently show their empty states.
+      transformResponse: (response: unknown): CustomerDemographicsResponse => {
+        let v: any = response;
+        while (
+          v &&
+          typeof v === 'object' &&
+          !('topLocations' in v) &&
+          'data' in v
+        ) {
+          v = v.data;
+        }
+        return {
+          totalCustomers: v?.totalCustomers ?? 0,
+          topLocations: v?.topLocations ?? [],
+          genderDistribution: v?.genderDistribution ?? [],
+          wearsDistribution: v?.wearsDistribution ?? [],
+          ageGenderDistribution: v?.ageGenderDistribution ?? [],
+        };
+      },
       providesTags: ['CustomerStats'],
     }),
 
