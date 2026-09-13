@@ -24,8 +24,7 @@ import {
 import { CustomerStatsSection } from '../molecules/customer-stats-section';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { createCustomersTableColumns } from '../molecules/customers-table-columns';
-import { CustomerDemographicsChart } from '../organisms/customer-demographics-chart';
-import { CustomerAgeGenderChart } from '../organisms/customer-demographics-chart';
+import { CustomerInsightsSection } from '../organisms/customer-demographics-chart';
 import { CustomerDetailsModal } from '../organisms/customer-details-modal';
 import { CustomersMobileList } from '../organisms/customers-mobile-list';
 
@@ -217,11 +216,8 @@ export const CustomersPageTemplate: React.FC<CustomersPageTemplateProps> = ({
           </div>
         </div>
 
-        {/* Customer Locations + Demographics */}
-        <div className="flex flex-col gap-6">
-          <CustomerDemographicsChart />
-          <CustomerAgeGenderChart />
-        </div>
+        {/* Customer insights — locations, gender, wears, age (when present) */}
+        <CustomerInsightsSection />
       </div>
     </div>
   );
