@@ -5,6 +5,7 @@ import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { Check, Info, Layers, Plus, Search, X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetProductsQuery } from '@/redux/services/products/products.api-slice';
+import { useGetTaxonomyTreeQuery } from '@/redux/services/taxonomy/taxonomy.api-slice';
 import { AddFabricModal } from './add-fabric-modal';
 import { cn } from '@/lib/utils';
 
@@ -15,22 +16,20 @@ export interface SelectedFabric {
   yards?: number;
 }
 
-// Fabric material families → their materials (sub-tabs). Used purely to filter
-// the real fabric catalogue by each fabric's `material`.
-const FAMILIES: { label: string; materials: string[] }[] = [
-  {
-    label: 'Natural',
-    materials: ['Cotton', 'Linen', 'Silk', 'Wool', 'Canvas', 'Sateen'],
-  },
-  {
-    label: 'Synthetic',
-    materials: ['Polyester', 'Nylon', 'Acrylic', 'Spandex'],
-  },
-  { label: 'Blends', materials: ['Viscose', 'Rayon', 'Modal'] },
-  { label: 'Knits', materials: ['Jersey', 'Rib', 'Interlock'] },
-  { label: 'Woven', materials: ['Twill', 'Denim', 'Poplin'] },
-  { label: 'Specialty', materials: ['Lace', 'Velvet', 'Chiffon', 'Satin'] },
-];
+// Tabs come from the platform fabric taxonomy (Material → Pattern):
+// GET /taxonomy/tree?kind=fabric. A fabric's type lives at
+// fabric.product_type and its pattern at fabric.pattern — the previous
+// hardcoded Natural/Synthetic families matched neither field, and fabrics
+// without a `material` were filtered out entirely.
+const ALL = 'All';
+
+const fabricTypeOf = (f: any): string =>
+  String(
+    f?.fabric?.product_type ?? f?.product_type ?? f?.material ?? ''
+  ).trim();
+
+const fabricPatternOf = (f: any): string =>
+  String(f?.fabric?.pattern ?? f?.pattern ?? '').trim();
 
 const num = (value: unknown): number | undefined =>
   typeof value === 'number' && !Number.isNaN(value) ? value : undefined;
@@ -40,8 +39,8 @@ const num = (value: unknown): number | undefined =>
 export const SelectFabricModal = NiceModal.create(() => {
   const modal = useModal();
 
-  const [family, setFamily] = useState('Natural');
-  const [material, setMaterial] = useState('Linen');
+  const [type, setType] = useState(ALL);
+  const [pattern, setPattern] = useState(ALL);
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Record<string, SelectedFabric>>({});
 
@@ -50,23 +49,38 @@ export const SelectFabricModal = NiceModal.create(() => {
     page: 1,
     size: 100,
   });
+  const { data: taxonomyTree } = useGetTaxonomyTreeQuery('fabric');
 
   const fabrics = useMemo(() => data?.data?.data ?? [], [data]);
-  const subTabs = FAMILIES.find((f) => f.label === family)?.materials ?? [];
+
+  // Material tabs from the taxonomy; "All" first so nothing hides by default.
+  const fabricTaxonomy = taxonomyTree?.fabric?.product_types ?? [];
+  const typeTabs = [ALL, ...fabricTaxonomy.map((t) => t.name)];
+  const subTabs =
+    type === ALL
+      ? []
+      : [
+          ALL,
+          ...(fabricTaxonomy.find((t) => t.name === type)?.categories ?? []),
+        ];
 
   const visibleFabrics = useMemo(() => {
     const query = search.trim().toLowerCase();
     return fabrics.filter((fabric) => {
-      const mat = String(fabric.material ?? '').toLowerCase();
-      const matchesMaterial = !material || mat === material.toLowerCase();
+      const matchesType =
+        type === ALL ||
+        fabricTypeOf(fabric).toLowerCase() === type.toLowerCase();
+      const matchesPattern =
+        pattern === ALL ||
+        fabricPatternOf(fabric).toLowerCase() === pattern.toLowerCase();
       const matchesSearch =
         !query ||
         String(fabric.name ?? '')
           .toLowerCase()
           .includes(query);
-      return matchesMaterial && matchesSearch;
+      return matchesType && matchesPattern && matchesSearch;
     });
-  }, [fabrics, material, search]);
+  }, [fabrics, type, pattern, search]);
 
   if (!modal.visible) return null;
 
@@ -90,9 +104,9 @@ export const SelectFabricModal = NiceModal.create(() => {
     modal.remove();
   };
 
-  const changeFamily = (fam: string) => {
-    setFamily(fam);
-    setMaterial(FAMILIES.find((f) => f.label === fam)?.materials[0] ?? '');
+  const changeType = (next: string) => {
+    setType(next);
+    setPattern(ALL);
   };
 
   const loading = isLoading || isFetching;
@@ -152,41 +166,41 @@ export const SelectFabricModal = NiceModal.create(() => {
             </p>
           </div>
 
-          {/* Family tabs */}
+          {/* Material tabs — platform fabric taxonomy */}
           <div className="flex flex-wrap gap-4 border-b border-border">
-            {FAMILIES.map((fam) => (
+            {typeTabs.map((t) => (
               <button
-                key={fam.label}
+                key={t}
                 type="button"
-                onClick={() => changeFamily(fam.label)}
+                onClick={() => changeType(t)}
                 className={cn(
                   '-mb-px border-b-2 pb-2 text-sm transition-colors',
-                  family === fam.label
+                  type === t
                     ? 'border-foreground font-medium text-foreground'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 )}
               >
-                {fam.label}
+                {t}
               </button>
             ))}
           </div>
 
-          {/* Material sub-tabs */}
-          {subTabs.length > 0 && (
+          {/* Pattern sub-tabs (taxonomy categories for the material) */}
+          {subTabs.length > 1 && (
             <div className="flex flex-wrap gap-2 rounded-lg bg-accent p-1">
-              {subTabs.map((mat) => (
+              {subTabs.map((p) => (
                 <button
-                  key={mat}
+                  key={p}
                   type="button"
-                  onClick={() => setMaterial(mat)}
+                  onClick={() => setPattern(p)}
                   className={cn(
                     'rounded-md px-3 py-1.5 text-sm transition-colors',
-                    material === mat
+                    pattern === p
                       ? 'bg-background font-medium text-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
-                  {mat}
+                  {p}
                 </button>
               ))}
             </div>
@@ -265,7 +279,7 @@ export const SelectFabricModal = NiceModal.create(() => {
             </div>
           ) : (
             <div className="flex h-40 items-center justify-center rounded-lg border border-dashed border-border text-center text-sm text-muted-foreground">
-              No fabrics found for this material.
+              No fabrics match this filter — try All, or add a fabric.
             </div>
           )}
         </div>
