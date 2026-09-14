@@ -35,12 +35,11 @@ import { readApiError, readTotalItems } from '@/redux/services/types';
 import {
   formatDateTime,
   issueTypeLabel,
+  issueTypeVisual,
   readField,
 } from '../lib/ticket-fields';
 
 const PAGE_SIZE = 5;
-
-const ICON_BG = ['#3387CC', '#E8A33D', '#E4572E', '#2EA86A', '#8B5CF6'];
 
 const STATUS_OPTIONS = [
   { value: 'all', label: 'All' },
@@ -171,12 +170,20 @@ export const SupportTicketsList = ({
               }}
               className="flex cursor-pointer items-start gap-4 rounded-xl bg-[#F8F9FA] dark:bg-[#4A4949] p-4 transition-colors hover:bg-[#F1F2F4] dark:hover:bg-[#525151] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <span
-                className="flex size-9 shrink-0 items-center justify-center rounded-full text-white"
-                style={{ backgroundColor: ICON_BG[index % ICON_BG.length] }}
-              >
-                <Ticket className="size-4" />
-              </span>
+              {(() => {
+                const visual = issueTypeVisual(
+                  readField(ticket, 'category', 'issue_type')
+                );
+                const CategoryIcon = visual.icon;
+                return (
+                  <span
+                    className="flex size-9 shrink-0 items-center justify-center rounded-full text-white"
+                    style={{ backgroundColor: visual.color }}
+                  >
+                    <CategoryIcon className="size-4" />
+                  </span>
+                );
+              })()}
 
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-grey-black dark:text-white">

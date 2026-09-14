@@ -6,6 +6,15 @@
 // null rather than fabricating values.
 
 import type { BadgeProps } from '@/components/ui/badge';
+import {
+  Bug,
+  CreditCard,
+  Lightbulb,
+  Package,
+  Ticket,
+  UserRound,
+  type LucideIcon,
+} from 'lucide-react';
 
 export type Row = Record<string, unknown>;
 
@@ -90,6 +99,28 @@ export const ISSUE_TYPES = [
   { value: 'bugs', label: 'Bugs and Issues' },
   { value: 'others', label: 'Others' },
 ];
+
+// Category → icon + colour. Keyword-matched so free-text issue types
+// ("Delivery Delay", "Payment or wallet") land in the right bucket too;
+// anything unrecognised gets the neutral ticket look. Deterministic per
+// category — the old list coloured icons by row INDEX, so the same ticket
+// changed colour whenever the list reordered.
+export const issueTypeVisual = (
+  value: unknown
+): { icon: LucideIcon; color: string } => {
+  const v = (str(value) ?? '').toLowerCase();
+  if (/pricing|payment|wallet|payout|billing|refund/.test(v))
+    return { icon: CreditCard, color: '#E8A33D' };
+  if (/bug|issue|error|technical|broken|crash/.test(v))
+    return { icon: Bug, color: '#E4572E' };
+  if (/feature|request|suggestion|idea/.test(v))
+    return { icon: Lightbulb, color: '#8B5CF6' };
+  if (/deliver|shipping|order|logistics|courier/.test(v))
+    return { icon: Package, color: '#3387CC' };
+  if (/account|login|profile|verification/.test(v))
+    return { icon: UserRound, color: '#2EA86A' };
+  return { icon: Ticket, color: '#64748B' };
+};
 
 // Tickets can also be created outside this form (the Swagger example is free
 // text, e.g. "Delivery Delay"), so unknown values pass through untouched.

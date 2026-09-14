@@ -12,6 +12,7 @@ import { useGetTicketQuery } from '@/redux/services/tickets/tickets.api-slice';
 import {
   formatDateTime,
   issueTypeLabel,
+  issueTypeVisual,
   readField,
   statusLabel,
   statusVariant,
@@ -85,16 +86,32 @@ export const TicketDetailTemplate = () => {
               <Skeleton className="h-4 w-32" />
             </div>
           ) : (
-            <div>
-              <h1 className="text-base font-bold text-grey-black dark:text-white">
-                Ticket {ticketTitle}
-              </h1>
-              <p className="text-xs text-grey2 dark:text-gray-400">
-                {issueTypeLabel(
-                  readField(ticket ?? {}, 'category', 'issue_type')
-                )}
-              </p>
-            </div>
+            (() => {
+              const visual = issueTypeVisual(
+                readField(ticket ?? {}, 'category', 'issue_type')
+              );
+              const CategoryIcon = visual.icon;
+              return (
+                <div className="flex items-center gap-3">
+                  <span
+                    className="flex size-10 shrink-0 items-center justify-center rounded-xl text-white"
+                    style={{ backgroundColor: visual.color }}
+                  >
+                    <CategoryIcon className="size-5" />
+                  </span>
+                  <div>
+                    <h1 className="text-base font-bold text-grey-black dark:text-white">
+                      Ticket {ticketTitle}
+                    </h1>
+                    <p className="text-xs text-grey2 dark:text-gray-400">
+                      {issueTypeLabel(
+                        readField(ticket ?? {}, 'category', 'issue_type')
+                      )}
+                    </p>
+                  </div>
+                </div>
+              );
+            })()
           )}
 
           {!loading && ticket && (
