@@ -24,6 +24,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Form } from '@/components/ui/form';
 import { AuthInput } from '../atoms/auth-input';
+import { AuthPhoneInput } from '../atoms/auth-phone-input';
 import { PasswordInput } from '../atoms/password-input';
 import { AuthLink } from '../atoms/auth-link';
 import { SubmitButton } from '@/pattern/common/molecules/submit-button';
@@ -44,21 +45,12 @@ const signupSchema = z
       .min(2, 'Business name must be at least 2 characters'),
     personalName: z.string().min(1, 'Full name is required'),
     personalEmail: z.string().email('Please enter a valid email address'),
+    // AuthPhoneInput always emits "+<dial><digits>" (dial code from the
+    // dropdown, digits-only local part, leading zeros stripped).
     personalPhone: z
       .string()
       .min(1, 'Phone number is required')
-      .refine((val) => {
-        // Clean up for validation
-        const cleanVal = val.replace(/[\s\-\(\)]/g, '');
-
-        if (cleanVal.startsWith('+')) {
-          // International format: + followed by 10 to 15 digits
-          return /^\+\d{10,15}$/.test(cleanVal);
-        } else {
-          // Local Nigerian number format (usually 10 or 11 digits like 080... or 80...)
-          return /^\d{10,11}$/.test(cleanVal);
-        }
-      }, 'Please enter a valid phone number (e.g., 08012345678 or +447700900077)'),
+      .regex(/^\+\d{9,15}$/, 'Please enter a valid phone number'),
     password: z
       .string()
       .min(8, 'Password must be at least 8 characters')
@@ -436,12 +428,10 @@ export const SignupTemplate = () => {
                 type="email"
                 placeholder="you@example.com"
               />
-              <AuthInput
+              <AuthPhoneInput
                 control={form.control as any}
                 name="personalPhone"
                 label="Phone Number"
-                type="tel"
-                placeholder="08012345679"
               />
 
               <div className="pt-2 space-y-5">
