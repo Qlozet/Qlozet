@@ -114,6 +114,15 @@ export const SignInTemplate = () => {
       const errorMessage = PAGES_IN_PROGRESS
         ? 'Something went wrong'
         : readApiError(err, 'Sign in failed. Please try again.');
+      // Unverified account (fresh or expired code): the backend has already
+      // (re)sent a code — take the vendor straight to the code-entry page.
+      if (/verify your email|verification code expired/i.test(errorMessage)) {
+        toast.info(errorMessage);
+        push(
+          `${AUTH_ROUTES.verification}?email=${encodeURIComponent(data.email)}`
+        );
+        return;
+      }
       toast.error(errorMessage);
     }
   };
