@@ -29,14 +29,14 @@ import { ChartEmptyState } from '@/pattern/dashboard/molecules/chart-empty-state
 // (until then the donuts carry the slot instead of a permanent empty state).
 // ─────────────────────────────────────────────────────────────────────
 
-// Segment palette: theme-aware tokens first, then hues that read on both
-// light and dark grounds.
+// Segment palette: the same theme-aware --chart-N ramp the dashboard's
+// donut charts use (brown scale in light mode, grayscale in dark).
 const SEGMENT_COLORS = [
-  'var(--chart-primary)',
-  '#D4AF37',
-  'var(--chart-secondary)',
-  '#7A8CA3',
-  '#8A9B6E',
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)',
+  'var(--chart-5)',
 ];
 
 const prettyLabel = (label: string) =>
@@ -274,8 +274,8 @@ const DistributionDonut = ({
 
 // ── Age × gender — renders ONLY once real age data exists ──
 
-const MALE_COLOR = 'var(--chart-primary)';
-const FEMALE_COLOR = '#D4AF37';
+const MALE_COLOR = 'var(--chart-1)';
+const FEMALE_COLOR = 'var(--chart-3)';
 
 export const CustomerAgeGenderChart = ({
   className,
