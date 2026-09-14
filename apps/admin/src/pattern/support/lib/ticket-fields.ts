@@ -6,6 +6,15 @@
 // none of those fields exist, which is why several columns rendered "—".
 
 import type { BadgeProps } from '@/components/ui/badge';
+import {
+  Bug,
+  CreditCard,
+  Lightbulb,
+  Package,
+  Ticket as TicketIcon,
+  UserRound,
+  type LucideIcon,
+} from 'lucide-react';
 import type { Ticket } from '@/redux/services/tickets/tickets.api-slice';
 
 export const EM_DASH = '—';
@@ -44,6 +53,28 @@ export const ticketSubject = (ticket?: Ticket): string => {
 /** Category column — the backend stores this free-form via CreateTicketDto. */
 export const ticketCategory = (ticket?: Ticket): string =>
   str(ticket?.issue_type) ?? EM_DASH;
+
+/**
+ * Category → icon + colour (mirrors the vendor console). Keyword-matched so
+ * free-form issue types land in the right bucket; unrecognised ones get the
+ * neutral ticket look instead of the old fixed red shopping cart.
+ */
+export const issueTypeVisual = (
+  value: unknown
+): { icon: LucideIcon; color: string } => {
+  const v = (str(value) ?? '').toLowerCase();
+  if (/pricing|payment|wallet|payout|billing|refund/.test(v))
+    return { icon: CreditCard, color: '#E8A33D' };
+  if (/bug|issue|error|technical|broken|crash/.test(v))
+    return { icon: Bug, color: '#E4572E' };
+  if (/feature|request|suggestion|idea/.test(v))
+    return { icon: Lightbulb, color: '#8B5CF6' };
+  if (/deliver|shipping|order|logistics|courier/.test(v))
+    return { icon: Package, color: '#3387CC' };
+  if (/account|login|profile|verification/.test(v))
+    return { icon: UserRound, color: '#2EA86A' };
+  return { icon: TicketIcon, color: '#64748B' };
+};
 
 /**
  * Reads the assignee's id.
