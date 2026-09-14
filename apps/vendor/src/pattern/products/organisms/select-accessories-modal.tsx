@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Check, Info, Package, Plus, Search } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetProductsByVendorQuery } from '@/redux/services/products/products.api-slice';
+import { useGetTaxonomyTreeQuery } from '@/redux/services/taxonomy/taxonomy.api-slice';
 import { AddAccessoryModal } from './add-accessories-modal';
 import { cn } from '@/lib/utils';
 
@@ -46,26 +47,22 @@ const accessoryType = (a: AccessoryLike): string => {
   return a.taxonomy?.product_type || a.accessory?.taxonomy?.product_type || '';
 };
 
-// Product type categories for accessory filtering
-const ACCESSORY_TYPES = [
-  'All',
-  'Buttons',
-  'Threads',
-  'Zippers',
-  'Buckles',
-  'Beads',
-  'Lining',
-  'Patches',
-  'Ribbons',
-  'Embellishments',
-];
+// Tabs come from the platform accessory taxonomy (Bag, Jewelry, Footwear,
+// Headwear, ...) via GET /taxonomy/tree?kind=accessory — the previous
+// hardcoded haberdashery list (Buttons/Threads/Zippers...) matched no real
+// product_type, so every tab except All showed nothing.
+const ALL = 'All';
+
+const accessoryCategoriesOf = (a: AccessoryLike): string[] =>
+  a.taxonomy?.categories ?? a.accessory?.taxonomy?.categories ?? [];
 
 // "Select Accessories" picker — data-driven from the accessory catalogue
 // (GET /products/by-vendor?kind=accessory). Resolves with the chosen accessories, or null.
 export const SelectAccessoriesModal = NiceModal.create(() => {
   const modal = useModal();
 
-  const [typeFilter, setTypeFilter] = useState('All');
+  const [typeFilter, setTypeFilter] = useState(ALL);
+  const [categoryFilter, setCategoryFilter] = useState(ALL);
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Record<string, SelectedAccessory>>(
     {}
@@ -76,29 +73,48 @@ export const SelectAccessoriesModal = NiceModal.create(() => {
     page: 1,
     size: 100,
   });
+  const { data: taxonomyTree } = useGetTaxonomyTreeQuery('accessory');
 
   const accessories = useMemo(
     () => (data?.data?.data ?? []) as AccessoryLike[],
     [data]
   );
 
+  // Type tabs from the taxonomy; "All" first so nothing hides by default.
+  const accessoryTaxonomy = taxonomyTree?.accessory?.product_types ?? [];
+  const typeTabs = [ALL, ...accessoryTaxonomy.map((t) => t.name)];
+  const categoryTabs =
+    typeFilter === ALL
+      ? []
+      : [
+          ALL,
+          ...(accessoryTaxonomy.find((t) => t.name === typeFilter)
+            ?.categories ?? []),
+        ];
+
   const visibleAccessories = useMemo(() => {
     const query = search.trim().toLowerCase();
     const filterType = typeFilter.toLowerCase();
+    const filterCategory = categoryFilter.toLowerCase();
 
     return accessories.filter((acc) => {
       const name = accessoryName(acc).toLowerCase();
       const type = accessoryType(acc).toLowerCase();
 
-      // Type filter
-      if (typeFilter !== 'All' && type !== filterType) return false;
-
-      // Search
+      if (typeFilter !== ALL && type !== filterType) return false;
+      if (
+        categoryFilter !== ALL &&
+        !accessoryCategoriesOf(acc).some(
+          (c) => c.toLowerCase() === filterCategory
+        )
+      ) {
+        return false;
+      }
       if (query && !name.includes(query)) return false;
 
       return true;
     });
-  }, [accessories, typeFilter, search]);
+  }, [accessories, typeFilter, categoryFilter, search]);
 
   if (!modal.visible) return null;
 
@@ -167,13 +183,16 @@ export const SelectAccessoriesModal = NiceModal.create(() => {
               </p>
             </div>
 
-            {/* Type filter tabs */}
+            {/* Type tabs — platform accessory taxonomy */}
             <div className="flex flex-wrap gap-4 border-b border-border">
-              {ACCESSORY_TYPES.map((type) => (
+              {typeTabs.map((type) => (
                 <button
                   key={type}
                   type="button"
-                  onClick={() => setTypeFilter(type)}
+                  onClick={() => {
+                    setTypeFilter(type);
+                    setCategoryFilter(ALL);
+                  }}
                   className={cn(
                     '-mb-px border-b-2 pb-2 text-sm transition-colors',
                     typeFilter === type
@@ -185,6 +204,27 @@ export const SelectAccessoriesModal = NiceModal.create(() => {
                 </button>
               ))}
             </div>
+
+            {/* Category sub-tabs (taxonomy categories for the type) */}
+            {categoryTabs.length > 1 && (
+              <div className="flex flex-wrap gap-2 rounded-lg bg-accent p-1">
+                {categoryTabs.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setCategoryFilter(c)}
+                    className={cn(
+                      'rounded-md px-3 py-1.5 text-sm transition-colors',
+                      categoryFilter === c
+                        ? 'bg-background font-medium text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Accessory grid */}
             {loading ? (
@@ -253,8 +293,8 @@ export const SelectAccessoriesModal = NiceModal.create(() => {
               <div className="flex h-40 flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border text-center">
                 <Package className="size-8 text-muted-foreground/40" />
                 <p className="text-sm text-muted-foreground">
-                  {typeFilter !== 'All'
-                    ? `No ${typeFilter.toLowerCase()} found.`
+                  {typeFilter !== ALL
+                    ? `No ${typeFilter.toLowerCase()} accessories match — try All.`
                     : 'No accessories found. Create one first.'}
                 </p>
               </div>
