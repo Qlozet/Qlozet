@@ -3,6 +3,7 @@
 import React from 'react';
 import { Control } from 'react-hook-form';
 import { AuthInput } from '../atoms/auth-input';
+import { AuthPhoneInput } from '../atoms/auth-phone-input';
 import { cn } from '@/lib/utils';
 
 export interface PersonalInfoData {
@@ -47,13 +48,11 @@ export const SignupStepPersonal: React.FC<SignupStepPersonalProps> = ({
         placeholder="johnDoe@company.com"
       />
 
-      {/* Personal Phone number */}
-      <AuthInput
+      {/* Personal Phone number — dial-code dropdown keeps the format right */}
+      <AuthPhoneInput
         control={control}
         name="phoneName"
         label="Personal Phone Number"
-        type="tel"
-        placeholder="+1 (555) 000-0000"
       />
 
       {/* National Identity Number */}

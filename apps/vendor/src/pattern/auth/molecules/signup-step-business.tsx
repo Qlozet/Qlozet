@@ -3,6 +3,7 @@
 import React from 'react';
 import { Control } from 'react-hook-form';
 import { AuthInput } from '../atoms/auth-input';
+import { AuthPhoneInput } from '../atoms/auth-phone-input';
 import { cn } from '@/lib/utils';
 
 export interface BusinessInfoData {
@@ -46,13 +47,11 @@ export const SignupStepBusiness: React.FC<SignupStepBusinessProps> = ({
         placeholder="business@company.com"
       />
 
-      {/* Business Phone number */}
-      <AuthInput
+      {/* Business Phone number — dial-code dropdown keeps the format right */}
+      <AuthPhoneInput
         control={control}
         name="businessPhoneNumber"
         label="Business Phone Number"
-        type="tel"
-        placeholder="+1 (555) 000-0000"
       />
 
       {/* Business Address */}
