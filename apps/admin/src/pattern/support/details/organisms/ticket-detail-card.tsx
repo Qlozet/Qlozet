@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ClipboardList, ShoppingCart } from 'lucide-react';
+import { ClipboardList } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import {
   EM_DASH,
   shortTicketId,
   statusLabel,
+  issueTypeVisual,
   statusVariant,
   ticketCategory,
   ticketSubject,
@@ -88,9 +89,18 @@ export const TicketDetailCard = ({
     <div className="space-y-5 rounded-2xl bg-white dark:bg-card p-6 custom-card-shadow">
       {/* Header */}
       <div className="flex items-start gap-4">
-        <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-[#B42318] text-white">
-          <ShoppingCart className="size-6" />
-        </div>
+        {(() => {
+          const visual = issueTypeVisual(ticket.issue_type);
+          const CategoryIcon = visual.icon;
+          return (
+            <div
+              className="flex size-14 shrink-0 items-center justify-center rounded-2xl text-white"
+              style={{ backgroundColor: visual.color }}
+            >
+              <CategoryIcon className="size-6" />
+            </div>
+          );
+        })()}
 
         <div className="flex-1">
           <h2 className="text-lg font-bold text-grey-black dark:text-white">
