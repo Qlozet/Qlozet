@@ -357,14 +357,26 @@ input[type='number'] {
     @apply bg-background max-w-[3024px] text-foreground my-0 mx-auto;
   }
 
-  /* Fix for browser autofill styles (e.g., Chrome making inputs white) */
+  /* Fix for browser autofill styles (e.g., Chrome making inputs white).
+     caret-color matters too: on autofilled fields Chrome's UA styles win,
+     and without this the caret rendered black — invisible on dark inputs
+     whenever the field already had (autofilled) text in it. */
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,
-  input:-webkit-autofill:active {
+  input:-webkit-autofill:active,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 50px var(--background) inset !important;
     -webkit-text-fill-color: var(--foreground) !important;
+    caret-color: var(--foreground) !important;
     transition: background-color 5000s ease-in-out 0s;
+  }
+
+  /* Belt-and-braces: the caret always follows the theme text colour. */
+  input,
+  textarea {
+    caret-color: var(--foreground);
   }
 }
 
