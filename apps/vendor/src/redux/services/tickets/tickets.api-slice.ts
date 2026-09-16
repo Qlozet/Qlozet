@@ -67,6 +67,19 @@ export const ticketsApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Tickets'],
     }),
 
+    // POST /tickets/{id}/replies — vendor replies on their own ticket
+    replyToTicket: builder.mutation<
+      ApiResponse<unknown>,
+      { id: string; message: string; attachments?: string[] }
+    >({
+      query: ({ id, ...body }) => ({
+        url: `/tickets/${id}/replies`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Ticket'],
+    }),
+
     // PATCH /tickets/{id} — update a ticket
     updateTicket: builder.mutation<
       ApiResponse<Ticket>,
@@ -87,5 +100,6 @@ export const {
   useGetTicketsQuery,
   useGetTicketQuery,
   useCreateTicketMutation,
+  useReplyToTicketMutation,
   useUpdateTicketMutation,
 } = ticketsApiSlice;
