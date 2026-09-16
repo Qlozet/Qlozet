@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Clock } from 'lucide-react';
 import { toast } from 'sonner';
@@ -8,7 +8,10 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { APP_ROUTES } from '@/lib/routes';
 import { GoBackButton } from '@/pattern/common/atoms/go-back-button';
-import { useGetTicketQuery } from '@/redux/services/tickets/tickets.api-slice';
+import {
+  useGetTicketQuery,
+  useReplyToTicketMutation,
+} from '@/redux/services/tickets/tickets.api-slice';
 import {
   formatDateTime,
   issueTypeLabel,
@@ -45,22 +48,77 @@ export const TicketDetailTemplate = () => {
   const ticket = data?.data;
   const loading = isLoading || isFetching;
 
-  // No vendor ticket-message/reply endpoint exists (verified against Swagger —
-  // reply is admin-only). So the thread starts honestly empty; composed
-  // messages append locally. TODO(api): swap to a real messages query/mutation.
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [replyToTicket] = useReplyToTicketMutation();
 
-  const handleSend = (text: string) => {
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: `${prev.length}`,
+  // The ticket document carries its populated reply thread (each sender
+  // includes its user type), so the chat is rebuilt from the server on every
+  // fetch. The ticket's own description opens the thread as the first message.
+  const timeOf = (iso?: string) =>
+    iso
+      ? new Date(iso).toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      : '';
+
+  const serverMessages = useMemo<ChatMessage[]>(() => {
+    if (!ticket) return [];
+    const thread: ChatMessage[] = [];
+    const description = readField(ticket, 'description');
+    if (description !== '—') {
+      thread.push({
+        id: 'description',
         kind: 'text',
         direction: 'out',
-        text,
-        time: nowTime(),
-      },
+        text: description,
+        time: timeOf(ticket.createdAt),
+      });
+    }
+    const rawReplies = (ticket as { replies?: unknown }).replies;
+    const replies = Array.isArray(rawReplies) ? rawReplies : [];
+    replies.forEach((reply, index) => {
+      if (!reply || typeof reply !== 'object') return;
+      const entry = reply as {
+        _id?: string;
+        message?: string;
+        createdAt?: string;
+        sender?: { type?: string } | string;
+      };
+      if (!entry.message) return;
+      const senderType =
+        typeof entry.sender === 'object' ? entry.sender?.type : undefined;
+      thread.push({
+        id: String(entry._id ?? `reply-${index}`),
+        kind: 'text',
+        direction: senderType === 'vendor' ? 'out' : 'in',
+        text: String(entry.message),
+        time: timeOf(entry.createdAt),
+      });
+    });
+    return thread;
+  }, [ticket]);
+
+  // Optimistic copies of replies still in flight; the refetch that follows a
+  // successful send carries the real entry, so pending clears on arrival.
+  const [pending, setPending] = useState<ChatMessage[]>([]);
+  useEffect(() => {
+    setPending([]);
+  }, [serverMessages.length]);
+
+  const messages = [...serverMessages, ...pending];
+
+  const handleSend = async (text: string) => {
+    const tempId = `pending-${Date.now()}`;
+    setPending((prev) => [
+      ...prev,
+      { id: tempId, kind: 'text', direction: 'out', text, time: nowTime() },
     ]);
+    try {
+      await replyToTicket({ id, message: text }).unwrap();
+    } catch {
+      toast.error('Could not send your reply — please try again.');
+      setPending((prev) => prev.filter((message) => message.id !== tempId));
+    }
   };
 
   const comingSoon = () => toast.info('This action is coming soon.');
