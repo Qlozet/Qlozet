@@ -67,6 +67,7 @@ export default function DisputesTableTemplate() {
       <DataTable<Dispute>
         columns={columns}
         data={pageData}
+        onRowClick={(d) => setActive(d)}
         isLoading={isLoading}
         isFetching={isFetching}
         isSuccess={isSuccess}
