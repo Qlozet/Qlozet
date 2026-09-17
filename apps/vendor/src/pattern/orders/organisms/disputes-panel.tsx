@@ -51,7 +51,16 @@ export const DisputesPanel: React.FC = () => {
       status: statusFilter === 'all' ? undefined : statusFilter,
     });
 
-  const disputes = useMemo<Dispute[]>(() => data?.data?.data ?? [], [data]);
+  // GET /disputes/vendor returns a bare array in the envelope ({ data: [...] }),
+  // not the paginated { data: { data: [...] } } shape — accept both.
+  const disputes = useMemo<Dispute[]>(() => {
+    const payload = data?.data as unknown;
+    if (Array.isArray(payload)) return payload as Dispute[];
+    const nested = payload as
+      | { data?: Dispute[]; rows?: Dispute[] }
+      | undefined;
+    return nested?.data ?? nested?.rows ?? [];
+  }, [data]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
