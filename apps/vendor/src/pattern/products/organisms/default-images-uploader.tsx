@@ -93,7 +93,7 @@ export const DefaultImagesUploader = ({
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/jpeg,image/png"
+            accept="image/jpeg,image/png,image/webp"
             multiple
             onChange={handleFiles}
             className="hidden"

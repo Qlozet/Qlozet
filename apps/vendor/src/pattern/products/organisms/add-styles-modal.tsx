@@ -425,7 +425,7 @@ export const AddStylesModal = NiceModal.create<{ editStyle?: EditStyleSeed }>(
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/jpeg,image/png"
+                accept="image/jpeg,image/png,image/webp"
                 onChange={(e) => handleFile(e.target.files?.[0])}
                 className="hidden"
               />

@@ -81,7 +81,7 @@ export const FileUploadWidget = ({
           ref={fileInputRef}
           type="file"
           multiple
-          accept="image/jpeg,image/png,video/mp4"
+          accept="image/jpeg,image/png,image/webp,video/mp4"
           onChange={handleFileChange}
           className="hidden"
         />
@@ -94,7 +94,7 @@ export const FileUploadWidget = ({
               Drag your images here
             </p>
             <p className="text-xs text-muted-foreground">
-              (Only *.jpeg, *.png, *.mp4 be accepted)
+              (Only *.jpeg, *.png, *.webp and *.mp4 are accepted)
             </p>
           </div>
         </div>
