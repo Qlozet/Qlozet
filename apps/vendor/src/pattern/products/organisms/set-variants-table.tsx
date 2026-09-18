@@ -186,7 +186,7 @@ export const SetVariantsTable = ({
                   <div className="flex w-[260px] items-center gap-1.5 relative">
                     <input
                       type="file"
-                      accept="image/jpeg,image/png"
+                      accept="image/jpeg,image/png,image/webp"
                       multiple
                       className="hidden"
                       id={`file-${variant.id}`}
