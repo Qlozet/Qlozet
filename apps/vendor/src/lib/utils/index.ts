@@ -207,17 +207,34 @@ export const uploadSingleImage = async (
   }
 };
 
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+const isRateLimited = (e: unknown): boolean =>
+  (e as { status?: number })?.status === 429 ||
+  (e as { response?: { status?: number } })?.response?.status === 429;
+
 export const uploadSequentially = async <T, R>(
   items: T[],
   uploadFn: (item: T) => Promise<R>
 ): Promise<R[]> => {
   const results: R[] = [];
   for (const item of items) {
-    try {
-      results.push(await uploadFn(item));
-    } catch (e) {
-      console.error('Sequential upload failed for an item:', e);
-      throw e;
+    // Retry rate-limited uploads with backoff: multi-image products (default
+    // images + one per size variant) can trip the API's per-second limit.
+    let attempt = 0;
+    for (;;) {
+      try {
+        results.push(await uploadFn(item));
+        break;
+      } catch (e) {
+        if (isRateLimited(e) && attempt < 3) {
+          attempt += 1;
+          await wait(1000 * attempt);
+          continue;
+        }
+        console.error('Sequential upload failed for an item:', e);
+        throw e;
+      }
     }
   }
   return results;
