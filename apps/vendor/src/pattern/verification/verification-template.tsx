@@ -54,6 +54,11 @@ const BANKS: { name: string; code: string }[] = [
   { name: 'Unity Bank', code: '215' },
   { name: 'Wema Bank', code: '035' },
   { name: 'Zenith Bank', code: '057' },
+  // QoreID's sandbox pairs its test NUBAN with dummy bank code 062 — only
+  // shown when the test flag is set, so live vendors never see it.
+  ...(process.env.NEXT_PUBLIC_QOREID_TEST === 'true'
+    ? [{ name: 'QoreID Test Bank (sandbox)', code: '062' }]
+    : []),
 ];
 
 const errText = (err: unknown, fallback: string) => {
