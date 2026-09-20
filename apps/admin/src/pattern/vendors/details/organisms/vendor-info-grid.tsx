@@ -73,7 +73,20 @@ export const VendorInfoGrid = ({
   const rating = num(v.rating) ?? num(v.averageRating);
   const reviews = num(v.reviewsCount) ?? num(v.totalReviews);
 
-  const idVerified = Boolean(v.id_verified ?? v.isVerified ?? v.kyc_verified);
+  // QoreID verification results live under business.verification — the old
+  // id_verified/isVerified/kyc_verified fields never existed on the document,
+  // so this card used to read "Unverified" for everyone.
+  const verification = (v.verification ?? {}) as {
+    identity?: Record<string, any> | null;
+    business?: Record<string, any> | null;
+    bank?: Record<string, any> | null;
+  };
+  const identityCheck = verification.identity ?? null;
+  const bankCheck = verification.bank ?? null;
+  const cacCheck = verification.business ?? null;
+  const idVerified =
+    identityCheck?.status === 'verified' ||
+    Boolean(v.id_verified ?? v.isVerified ?? v.kyc_verified);
   const status = str(v.status);
 
   // A "View all" link is only offered when there's somewhere to go.
@@ -249,11 +262,51 @@ export const VendorInfoGrid = ({
         />
         <VendorInfoCard
           label="ID Check"
-          value={idVerified ? 'Verified' : 'Unverified'}
+          value={
+            idVerified
+              ? `Verified · ${identityCheck?.verified_name ?? 'vNIN'}${identityCheck?.masked_id ? ` (${identityCheck.masked_id})` : ''}`
+              : identityCheck?.status === 'failed'
+                ? 'Failed — name mismatch'
+                : 'Unverified'
+          }
           valueClassName={
             idVerified
               ? 'text-[#0F973D] dark:text-green-400'
               : 'text-destructive'
+          }
+        />
+        <VendorInfoCard
+          label="Payout Account Check"
+          value={
+            bankCheck?.status === 'verified'
+              ? `Matched · ${bankCheck?.account_name ?? 'account holder'}`
+              : bankCheck?.status === 'failed'
+                ? 'Failed — name mismatch'
+                : 'Not checked'
+          }
+          valueClassName={
+            bankCheck?.status === 'verified'
+              ? 'text-[#0F973D] dark:text-green-400'
+              : bankCheck?.status === 'failed'
+                ? 'text-destructive'
+                : undefined
+          }
+        />
+        <VendorInfoCard
+          label="CAC Registry"
+          value={
+            cacCheck?.status === 'verified'
+              ? `${cacCheck?.company_name ?? 'Confirmed'}${cacCheck?.rc_number ? ` (RC ${cacCheck.rc_number})` : ''}`
+              : cacCheck?.status === 'failed'
+                ? 'Not found in registry'
+                : 'Not checked'
+          }
+          valueClassName={
+            cacCheck?.status === 'verified'
+              ? 'text-[#0F973D] dark:text-green-400'
+              : cacCheck?.status === 'failed'
+                ? 'text-destructive'
+                : undefined
           }
         />
         {/* The value is the affordance: "View document" when a file is on
