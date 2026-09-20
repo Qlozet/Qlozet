@@ -34,7 +34,7 @@ export const APP_ROUTES = {
   wallet: '/wallet',
   users: '/users',
   settings: '/settings',
-  verification: '/verification',
+  verification: '/settings?tab=verification',
   support: '/support',
   helpCenter: '/help',
   supportCreateTicket: '/support/create-ticket',

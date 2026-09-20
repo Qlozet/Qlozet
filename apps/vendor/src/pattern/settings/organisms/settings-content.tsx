@@ -16,6 +16,7 @@ import UserAndPermission from '@/components/Settings/UserAndPermission/UserAndPe
 import Category from '@/components/Settings/Category/Category';
 import { OrderSettingsContent } from './order-settings-content';
 import { PayoutContent } from './payout-content';
+import { VerificationTemplate } from '@/pattern/verification/verification-template';
 import { readApiError } from '@/redux/services/types';
 
 interface SettingsContentProps {
@@ -104,6 +105,8 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
       case 'Order Settings':
         return <OrderSettingsContent />;
 
+      case 'Verification':
+        return <VerificationTemplate />;
       case 'Payout':
         return <PayoutContent />;
 

@@ -11,7 +11,6 @@ import { ProductsNavIcon } from '../atoms/nav-icons/products-nav-icon';
 import { WalletNavIcon } from '../atoms/nav-icons/wallet-nav-icon';
 import { CustomersNavIcon } from '../atoms/nav-icons/customers-nav-icon';
 import { SettingsNavIcon } from '../atoms/nav-icons/settings-nav-icon';
-import { VerificationNavIcon } from '../atoms/nav-icons/verification-nav-icon';
 import { SupportNavIcon } from '../atoms/nav-icons/support-nav-icon';
 import LogoutBtn from '../molecules/logout-btn';
 import { ThemeToggle } from '../molecules/theme-toggle';
@@ -86,11 +85,6 @@ export const Sidebar = () => {
     },
     { icon: WalletNavIcon, label: 'Wallet', href: APP_ROUTES.wallet },
     { icon: CustomersNavIcon, label: 'Customers', href: APP_ROUTES.customers },
-    {
-      icon: VerificationNavIcon,
-      label: 'Get Verified',
-      href: APP_ROUTES.verification,
-    },
     { icon: SettingsNavIcon, label: 'Settings', href: APP_ROUTES.settings },
     { icon: SupportNavIcon, label: 'Support', href: APP_ROUTES.support },
     { icon: SupportNavIcon, label: 'Help Center', href: APP_ROUTES.helpCenter },
