@@ -76,6 +76,16 @@ export const verificationApiSlice = verificationAPI.injectEndpoints({
       invalidatesTags: ['Verification'],
     }),
 
+    // Verify the already-linked payout account (no body — the backend reads
+    // the saved account and matches it against the verified identity name).
+    verifyPayoutBank: builder.mutation<
+      ApiResponse<{ verified: boolean; bank: BankVerification }>,
+      void
+    >({
+      query: () => ({ url: '/verification/bank/payout', method: 'POST' }),
+      invalidatesTags: ['Verification'],
+    }),
+
     verifyBank: builder.mutation<
       ApiResponse<{ verified: boolean; bank: BankVerification }>,
       { account_number: string; bank_code: string; bank_name?: string }
@@ -91,4 +101,5 @@ export const {
   useVerifyVninMutation,
   useVerifyCacMutation,
   useVerifyBankMutation,
+  useVerifyPayoutBankMutation,
 } = verificationApiSlice;

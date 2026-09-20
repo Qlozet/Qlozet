@@ -20,12 +20,15 @@ import {
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
 import {
   useGetVerificationQuery,
   useVerifyBankMutation,
   useVerifyCacMutation,
+  useVerifyPayoutBankMutation,
   useVerifyVninMutation,
 } from '@/redux/services/verification/verification.api-slice';
+import { useGetPayoutAccountQuery } from '@/redux/services/wallet/wallet.api-slice';
 
 // CBN bank codes for NUBAN resolution.
 const BANKS: { name: string; code: string }[] = [
@@ -134,6 +137,11 @@ export const VerificationTemplate = () => {
 
   const [verifyVnin, vninState] = useVerifyVninMutation();
   const [verifyBank, bankState] = useVerifyBankMutation();
+  const [verifyPayoutBank, payoutBankState] = useVerifyPayoutBankMutation();
+  // The payout account (Settings → Payout) is the single source of truth for
+  // bank details — when one is linked, verification runs against it directly.
+  const { data: payoutRes } = useGetPayoutAccountQuery();
+  const payout = payoutRes?.data;
   const [verifyCac, cacState] = useVerifyCacMutation();
 
   const [vnin, setVnin] = useState('');
@@ -161,6 +169,21 @@ export const VerificationTemplate = () => {
       }
     } catch (err) {
       toast.error(errText(err, 'Identity verification failed — try again.'));
+    }
+  };
+
+  const submitPayoutBank = async () => {
+    try {
+      const res = await verifyPayoutBank().unwrap();
+      if (res.data?.verified) {
+        toast.success(
+          `Account confirmed: ${res.data.bank?.account_name ?? 'name matched'}.`
+        );
+      } else {
+        toast.error('The account name did not match your verified identity.');
+      }
+    } catch (err) {
+      toast.error(errText(err, 'Bank verification failed — try again.'));
     }
   };
 
@@ -310,8 +333,46 @@ export const VerificationTemplate = () => {
             <SummaryRow label="Account" value={bank.account_number} />
             <SummaryRow label="Bank" value={bank.bank_name} />
           </div>
+        ) : payout?.linked ? (
+          <div className="space-y-4">
+            <div className="space-y-2 rounded-lg bg-[#F8F9FA] p-4 dark:bg-muted/60">
+              <SummaryRow
+                label="Linked account"
+                value={payout.account_number}
+              />
+              <SummaryRow label="Account name" value={payout.account_name} />
+              <SummaryRow label="Bank" value={payout.bank_name} />
+            </div>
+            <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
+              This is the account your withdrawals go to (from Settings ·
+              Payout). One tap checks it belongs to your verified identity.
+            </p>
+            <button
+              type="button"
+              className={buttonCls}
+              disabled={payoutBankState.isLoading}
+              onClick={submitPayoutBank}
+            >
+              {payoutBankState.isLoading && (
+                <Loader2 className="size-4 animate-spin" />
+              )}
+              {payoutBankState.isLoading
+                ? 'Checking…'
+                : 'Verify my payout account'}
+            </button>
+          </div>
         ) : (
           <div className="space-y-4">
+            <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
+              No payout account linked yet —{' '}
+              <Link
+                href="/settings?tab=payout"
+                className="font-semibold underline underline-offset-2"
+              >
+                link one under Payout
+              </Link>{' '}
+              (recommended), or verify an account directly below.
+            </p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Input
                 className={inputCls}
@@ -370,7 +431,8 @@ export const VerificationTemplate = () => {
           <div className="space-y-4">
             <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
               Registered with the Corporate Affairs Commission? Confirm your
-              RC/BN number to show customers you run a registered business.
+              RC/BN number for instant registry confirmation — the CAC document
+              you uploaded stays on file as supporting evidence.
             </p>
             <Input
               className={inputCls}

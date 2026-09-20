@@ -11,6 +11,7 @@ export interface SettingsTab {
 
 export const SETTINGS_TABS: SettingsTab[] = [
   { label: 'Profile', slug: 'profile' },
+  { label: 'Verification', slug: 'verification' },
   { label: 'Warehouses', slug: 'warehouses' },
   { label: 'Users and permissions', slug: 'users-and-permissions' },
   { label: 'Order Settings', slug: 'order-settings' },

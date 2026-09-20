@@ -1,12 +1,6 @@
-import { Metadata } from 'next';
-import { VerificationTemplate } from '@/pattern/verification/verification-template';
+import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'Get Verified',
-  description:
-    'Verify your identity, payout account and business registration.',
-};
-
+// Verification lives in Settings now; keep old links working.
 export default function VerificationPage() {
-  return <VerificationTemplate />;
+  redirect('/settings?tab=verification');
 }
