@@ -574,6 +574,19 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
       transformResponse: (res: any) => res?.data ?? res,
     }),
 
+    // POST /orders/:reference/preship — submit finished-piece photos for the
+    // customer's pre-ship approval (bespoke only).
+    submitPreship: builder.mutation<
+      { message: string; data: unknown },
+      { reference: string; photos: string[]; note?: string }
+    >({
+      query: ({ reference, ...body }) => ({
+        url: `/orders/${reference}/preship`,
+        method: 'POST',
+        body,
+      }),
+    }),
+
     // POST /orders/:reference/fulfill — create Shipbubble shipping label
     fulfillOrder: builder.mutation<
       { message: string; data: unknown },
@@ -750,6 +763,7 @@ export interface OrderMeasurements {
 export const {
   useGetVendorOrdersQuery,
   useFulfillOrderMutation,
+  useSubmitPreshipMutation,
   useCancelOrderMutation,
   useConfirmOrderMutation,
   useHandoverClaimMutation,
