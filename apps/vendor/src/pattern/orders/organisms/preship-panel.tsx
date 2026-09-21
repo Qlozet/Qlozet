@@ -7,8 +7,8 @@
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { BadgeCheck, Camera, Clock, Loader2, RotateCcw, X } from 'lucide-react';
-import { uploadSingleImage } from '@/lib/utils';
 import { useSubmitPreshipMutation } from '@/redux/services/orders/orders.api-slice';
+import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
 
 export interface PreshipState {
   photos: string[];
@@ -42,17 +42,23 @@ export const PreshipPanel = ({
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const [submitPreship, { isLoading }] = useSubmitPreshipMutation();
+  const [uploadImage] = useUploadProductImageMutation();
 
   const addPhotos = async (files: FileList | null) => {
     if (!files?.length) return;
     setUploading(true);
     try {
       for (const file of Array.from(files).slice(0, 8 - photos.length)) {
-        const res = await uploadSingleImage(file);
-        if (res?.secure_url) {
-          setPhotos((prev) => [...prev, res.secure_url]);
+        const res = await uploadImage(file).unwrap();
+        const url = res?.data?.url;
+        if (url) {
+          setPhotos((prev) => [...prev, url]);
+        } else {
+          toast.error(`Could not upload ${file.name} — try again.`);
         }
       }
+    } catch {
+      toast.error('Photo upload failed — try again.');
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = '';
