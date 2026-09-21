@@ -75,6 +75,7 @@ import { DesignDetailModal } from './design-detail-modal';
 import { MediaPreviewModal } from './media-preview-modal';
 import { OrderFabricCard } from '../molecules/order-fabric-card';
 import { OrderMeasurementsCard } from '../molecules/order-measurements-card';
+import { PreshipPanel } from './preship-panel';
 import { OverlayScroll } from '@/components/OverlayScroll';
 import {
   allProductImages,
@@ -1463,6 +1464,22 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               {!isFabricTransferOnly && order.type === 'bespoke' && (
                 <OrderMeasurementsCard reference={order.reference} />
               )}
+
+              {/* ── Pre-ship approval (bespoke) ──
+                  The customer signs off on photos of the finished piece
+                  before fulfil unlocks — the checkpoint that catches
+                  problems while they're still fixable at the workshop. */}
+              {!isFabricTransferOnly &&
+                order.type === 'bespoke' &&
+                !isRejected &&
+                ['processing', 'in_review', 'pending'].includes(
+                  order.status
+                ) && (
+                  <PreshipPanel
+                    reference={order.reference}
+                    initial={(order as any).preship ?? null}
+                  />
+                )}
 
               {/* ── Confirmation Status ── */}
               {vendorShipment && (
