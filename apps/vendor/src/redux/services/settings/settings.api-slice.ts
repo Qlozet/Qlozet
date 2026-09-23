@@ -30,6 +30,16 @@ interface VendorDetailsResponse {
 }
 
 // Business profile as returned by GET /business
+export interface VendorCapacity {
+  /** The vendor's cap. 0 = unlimited. */
+  max_open_orders: number;
+  /** Paid orders they still owe work on. */
+  open_orders: number;
+  at_capacity: boolean;
+  /** Slots left, or null when no cap is set. */
+  remaining: number | null;
+}
+
 export interface BusinessProfileResponse {
   _id: string;
   business_name: string;
@@ -145,6 +155,13 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
     // ─── Business/Organization Profile ───
     getBusinessProfile: builder.query<BusinessProfileResponse, void>({
       query: () => '/business',
+      transformResponse: (res: any) => res?.data ?? res,
+      providesTags: ['VendorDetails'],
+    }),
+
+    /** Live order capacity: how much work this vendor already owes. */
+    getBusinessCapacity: builder.query<VendorCapacity, void>({
+      query: () => '/business/capacity',
       transformResponse: (res: any) => res?.data ?? res,
       providesTags: ['VendorDetails'],
     }),
@@ -287,6 +304,7 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
 // Export hooks
 export const {
   useGetBusinessProfileQuery,
+  useGetBusinessCapacityQuery,
   useUpdateBusinessProfileMutation,
   useUpdateBusinessProfileDetailsMutation,
   useGetUserProfileQuery,

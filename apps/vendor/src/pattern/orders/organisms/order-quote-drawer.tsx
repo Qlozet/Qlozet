@@ -26,6 +26,7 @@ import {
   useSubmitQuoteMutation,
   type QuoteLineItem,
 } from '@/redux/services/bespoke/bespoke.api-slice';
+import { useGetBusinessCapacityQuery } from '@/redux/services/settings/settings.api-slice';
 import {
   formatLongDate,
   readOrderId,
@@ -207,6 +208,12 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
   });
 
   // Everything the backend requires to *submit* (not just save a draft).
+  // Bespoke bypasses the capacity gate on purpose — a quote the tailor sent is
+  // a promise, so the customer is never refused at acceptance. The honest
+  // place to surface a full bench is here, while they are deciding to quote.
+  const { data: capacity } = useGetBusinessCapacityQuery();
+  const isFull = Boolean(capacity?.at_capacity);
+
   const validateForSubmit = (): string | null => {
     if (total <= 0) return 'Add at least one price before submitting.';
     if (fabricYards < 0.1)
@@ -231,6 +238,17 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
     const problem = validateForSubmit();
     if (problem) {
       toast.error(problem);
+      return;
+    }
+    // Their call, made with open eyes — quoting while full is allowed, but
+    // never by accident.
+    if (
+      isFull &&
+      !window.confirm(
+        `You already have ${capacity?.open_orders} of ${capacity?.max_open_orders} orders in progress. ` +
+          'If this quote is accepted it joins that queue. Send it anyway?'
+      )
+    ) {
       return;
     }
     try {
@@ -506,6 +524,18 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
 
               {isDraft && (
                 <div className="space-y-3">
+                  {isFull && (
+                    <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-900/50 dark:bg-amber-950/40">
+                      <p className="text-xs font-semibold text-amber-900 dark:text-amber-300">
+                        Your bench is full
+                      </p>
+                      <p className="mt-1 text-xs leading-relaxed text-amber-800 dark:text-amber-400">
+                        {capacity?.open_orders} of {capacity?.max_open_orders}{' '}
+                        orders are still in progress. You can still quote — but
+                        if it&apos;s accepted, it joins that queue.
+                      </p>
+                    </div>
+                  )}
                   <Button
                     type="button"
                     onClick={handleSubmit}
