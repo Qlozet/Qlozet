@@ -63,8 +63,10 @@ export interface BusinessProfileResponse {
   order_confirmation?: boolean;
   order_notifications?: boolean;
   order_tracking?: boolean;
-  /** 0 = no limit. */
+  /** @deprecated arrivals cap — superseded by max_open_orders. */
   daily_order_limit?: number;
+  /** Orders this vendor can have in flight at once. 0 = no limit. */
+  max_open_orders?: number;
   automatic_refunds?: boolean;
   /** 0 | 7 | 14 | 30 | 60 — 0 means returns are not accepted. */
   return_window_days?: number;
@@ -122,6 +124,7 @@ export interface UpdateBusinessProfileDetailsPayload {
   order_notifications?: boolean;
   order_tracking?: boolean;
   daily_order_limit?: number;
+  max_open_orders?: number;
   automatic_refunds?: boolean;
   return_window_days?: number;
   custom_order_options?: boolean;
@@ -177,7 +180,7 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
         | 'order_confirmation'
         | 'order_notifications'
         | 'order_tracking'
-        | 'daily_order_limit'
+        | 'max_open_orders'
         | 'automatic_refunds'
         | 'return_window_days'
         | 'custom_order_options'
