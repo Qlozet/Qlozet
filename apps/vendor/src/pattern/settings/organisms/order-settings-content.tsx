@@ -58,7 +58,7 @@ interface SettingsSection {
 // the settings request fails; see the unavailable notice below.
 const BLANK_SETTINGS: OrderSettingsData = {
   orderConfirmation: false,
-  dailyOrderLimit: 0,
+  maxOpenOrders: 0,
 };
 
 // ─── Setting Row Component ──────────────────────────────────────────
@@ -208,8 +208,8 @@ export const OrderSettingsContent = () => {
     setSettings({
       orderConfirmation:
         businessProfile.order_confirmation ?? BLANK_SETTINGS.orderConfirmation,
-      dailyOrderLimit:
-        businessProfile.daily_order_limit ?? BLANK_SETTINGS.dailyOrderLimit,
+      maxOpenOrders:
+        businessProfile.max_open_orders ?? BLANK_SETTINGS.maxOpenOrders,
     });
     setHasChanges(false);
   }, [businessProfile]);
@@ -221,7 +221,7 @@ export const OrderSettingsContent = () => {
   };
 
   const handleInputChange = (id: string, value: string) => {
-    const parsedValue = id === 'dailyOrderLimit' ? Number(value) || 0 : value;
+    const parsedValue = id === 'maxOpenOrders' ? Number(value) || 0 : value;
     setSettings((prev) => ({ ...prev, [id]: parsedValue }));
     setHasChanges(true);
   };
@@ -232,7 +232,7 @@ export const OrderSettingsContent = () => {
       // fields (UpdateBusinessProfileDto).
       await updateBusinessSettings({
         order_confirmation: settings.orderConfirmation,
-        daily_order_limit: Number(settings.dailyOrderLimit) || 0,
+        max_open_orders: Number(settings.maxOpenOrders) || 0,
       }).unwrap();
       toast.success('Order settings saved successfully');
       setHasChanges(false);
@@ -277,11 +277,11 @@ export const OrderSettingsContent = () => {
         },
         {
           type: 'input',
-          id: 'dailyOrderLimit',
-          label: 'Daily Order Limit',
+          id: 'maxOpenOrders',
+          label: 'Order Capacity',
           description:
-            'Stop taking new orders once you hit this many in a day. 0 means no limit.',
-          value: String(settings.dailyOrderLimit ?? ''),
+            'How many orders you can have in progress at once. Customers see “fully booked” until you finish one. 0 means no limit.',
+          value: String(settings.maxOpenOrders ?? ''),
           inputType: 'number',
           placeholder: '0',
         },

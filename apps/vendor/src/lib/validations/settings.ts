@@ -70,8 +70,8 @@ export const categorySchema = z.object({
 export const orderSettingsSchema = z.object({
   /** Auto-confirm stock-goods orders (tailored items always need a human). */
   orderConfirmation: z.boolean(),
-  /** Max PAID orders accepted per calendar day. 0 = unlimited. */
-  dailyOrderLimit: z.number().min(0),
+  /** Max orders in flight at once (paid, not finished). 0 = unlimited. */
+  maxOpenOrders: z.number().min(0),
 });
 
 // Type exports
