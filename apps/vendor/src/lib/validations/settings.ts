@@ -63,20 +63,15 @@ export const categorySchema = z.object({
 });
 
 // Order Settings Schema
+// Only settings the backend actually enforces live here. Order notifications,
+// order tracking, automatic refunds, custom order options, default currency and
+// the per-vendor return window were removed: each saved a value nothing ever
+// read (returns use the PLATFORM window; customisation is per product).
 export const orderSettingsSchema = z.object({
-  // Order Processing
+  /** Auto-confirm stock-goods orders (tailored items always need a human). */
   orderConfirmation: z.boolean(),
-  orderNotifications: z.boolean(),
-  orderTracking: z.boolean(),
-  dailyOrderLimit: z.number().min(0).optional(),
-
-  // Returns & Customization
-  automaticRefunds: z.boolean(),
-  returnWindow: z.number().min(0),
-  customOrderOptions: z.boolean(),
-
-  // Payment & Currency
-  defaultCurrency: z.string(),
+  /** Max PAID orders accepted per calendar day. 0 = unlimited. */
+  dailyOrderLimit: z.number().min(0),
 });
 
 // Type exports

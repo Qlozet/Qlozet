@@ -4,22 +4,9 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { APP_ROUTES } from '@/lib/routes';
 import { Switch } from '@/components/ui/switch';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Package,
-  RotateCcw,
-  Wallet,
-  ChevronRight,
-  Loader2,
-} from 'lucide-react';
+import { Package, Wallet, ChevronRight, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import {
@@ -37,15 +24,6 @@ interface ToggleSettingItem {
   label: string;
   description: string;
   value: boolean;
-}
-
-interface SelectSettingItem {
-  type: 'select';
-  id: string;
-  label: string;
-  description: string;
-  value: string;
-  options: { label: string; value: string }[];
 }
 
 interface InputSettingItem {
@@ -67,11 +45,7 @@ interface LinkSettingItem {
   href: string;
 }
 
-type SettingItem =
-  | ToggleSettingItem
-  | SelectSettingItem
-  | InputSettingItem
-  | LinkSettingItem;
+type SettingItem = ToggleSettingItem | InputSettingItem | LinkSettingItem;
 
 interface SettingsSection {
   title: string;
@@ -84,13 +58,7 @@ interface SettingsSection {
 // the settings request fails; see the unavailable notice below.
 const BLANK_SETTINGS: OrderSettingsData = {
   orderConfirmation: false,
-  orderNotifications: false,
-  orderTracking: false,
   dailyOrderLimit: 0,
-  automaticRefunds: false,
-  returnWindow: 0,
-  customOrderOptions: false,
-  defaultCurrency: 'NGN',
 };
 
 // ─── Setting Row Component ──────────────────────────────────────────
@@ -98,14 +66,12 @@ const SettingRow = ({
   item,
   disabled = false,
   onToggle,
-  onSelectChange,
   onInputChange,
 }: {
   item: SettingItem;
   /** True when the backing endpoint is unavailable — link rows stay usable. */
   disabled?: boolean;
   onToggle?: (id: string, value: boolean) => void;
-  onSelectChange?: (id: string, value: string) => void;
   onInputChange?: (id: string, value: string) => void;
 }) => {
   // Link rows never depend on the settings endpoint, so they stay live.
@@ -134,25 +100,6 @@ const SettingRow = ({
             disabled={rowDisabled}
             onCheckedChange={(checked) => onToggle?.(item.id, checked)}
           />
-        )}
-
-        {item.type === 'select' && (
-          <Select
-            value={item.value}
-            disabled={rowDisabled}
-            onValueChange={(val) => onSelectChange?.(item.id, val)}
-          >
-            <SelectTrigger className="w-[130px] h-9 text-xs bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {item.options.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         )}
 
         {item.type === 'input' && (
@@ -194,13 +141,11 @@ const SettingsCard = ({
   section,
   disabled = false,
   onToggle,
-  onSelectChange,
   onInputChange,
 }: {
   section: SettingsSection;
   disabled?: boolean;
   onToggle: (id: string, value: boolean) => void;
-  onSelectChange: (id: string, value: string) => void;
   onInputChange: (id: string, value: string) => void;
 }) => {
   return (
@@ -223,7 +168,6 @@ const SettingsCard = ({
             item={item}
             disabled={disabled}
             onToggle={onToggle}
-            onSelectChange={onSelectChange}
             onInputChange={onInputChange}
           />
         ))}
@@ -264,22 +208,8 @@ export const OrderSettingsContent = () => {
     setSettings({
       orderConfirmation:
         businessProfile.order_confirmation ?? BLANK_SETTINGS.orderConfirmation,
-      orderNotifications:
-        businessProfile.order_notifications ??
-        BLANK_SETTINGS.orderNotifications,
-      orderTracking:
-        businessProfile.order_tracking ?? BLANK_SETTINGS.orderTracking,
       dailyOrderLimit:
         businessProfile.daily_order_limit ?? BLANK_SETTINGS.dailyOrderLimit,
-      automaticRefunds:
-        businessProfile.automatic_refunds ?? BLANK_SETTINGS.automaticRefunds,
-      returnWindow:
-        businessProfile.return_window_days ?? BLANK_SETTINGS.returnWindow,
-      customOrderOptions:
-        businessProfile.custom_order_options ??
-        BLANK_SETTINGS.customOrderOptions,
-      defaultCurrency:
-        businessProfile.default_currency ?? BLANK_SETTINGS.defaultCurrency,
     });
     setHasChanges(false);
   }, [businessProfile]);
@@ -290,15 +220,8 @@ export const OrderSettingsContent = () => {
     setHasChanges(true);
   };
 
-  const handleSelectChange = (id: string, value: string) => {
-    setSettings((prev) => ({ ...prev, [id]: value }));
-    setHasChanges(true);
-  };
-
   const handleInputChange = (id: string, value: string) => {
-    // For numeric fields, parse to number
-    const numericFields = ['dailyOrderLimit', 'returnWindow'];
-    const parsedValue = numericFields.includes(id) ? Number(value) || 0 : value;
+    const parsedValue = id === 'dailyOrderLimit' ? Number(value) || 0 : value;
     setSettings((prev) => ({ ...prev, [id]: parsedValue }));
     setHasChanges(true);
   };
@@ -309,13 +232,7 @@ export const OrderSettingsContent = () => {
       // fields (UpdateBusinessProfileDto).
       await updateBusinessSettings({
         order_confirmation: settings.orderConfirmation,
-        order_notifications: settings.orderNotifications,
-        order_tracking: settings.orderTracking,
         daily_order_limit: Number(settings.dailyOrderLimit) || 0,
-        automatic_refunds: settings.automaticRefunds,
-        return_window_days: Number(settings.returnWindow) || 0,
-        custom_order_options: settings.customOrderOptions,
-        default_currency: settings.defaultCurrency,
       }).unwrap();
       toast.success('Order settings saved successfully');
       setHasChanges(false);
@@ -353,86 +270,27 @@ export const OrderSettingsContent = () => {
         {
           type: 'toggle',
           id: 'orderConfirmation',
-          label: 'Order Confirmation',
-          description: 'Automatically confirm incoming orders',
+          label: 'Auto-confirm Orders',
+          description:
+            'Skip the confirm step for fabric, accessories and ready-to-wear. Tailored orders always wait for you.',
           value: settings.orderConfirmation,
-        },
-        {
-          type: 'toggle',
-          id: 'orderNotifications',
-          label: 'Order Notifications',
-          description: 'Notify on order status changes',
-          value: settings.orderNotifications,
-        },
-        {
-          type: 'toggle',
-          id: 'orderTracking',
-          label: 'Order Tracking',
-          description: 'Enable customer order tracking',
-          value: settings.orderTracking,
         },
         {
           type: 'input',
           id: 'dailyOrderLimit',
           label: 'Daily Order Limit',
-          description: 'Maximum orders accepted per day',
+          description:
+            'Stop taking new orders once you hit this many in a day. 0 means no limit.',
           value: String(settings.dailyOrderLimit ?? ''),
           inputType: 'number',
-          placeholder: '50',
+          placeholder: '0',
         },
       ],
     },
     {
-      title: 'Returns & Customization',
-      icon: <RotateCcw className="size-4" />,
-      items: [
-        {
-          type: 'toggle',
-          id: 'automaticRefunds',
-          label: 'Automatic Refunds',
-          description: 'Process refunds automatically on returns',
-          value: settings.automaticRefunds,
-        },
-        {
-          type: 'select',
-          id: 'returnWindow',
-          label: 'Return Window',
-          description: 'Days customers can return items',
-          value: String(settings.returnWindow),
-          options: [
-            { label: '7 days', value: '7' },
-            { label: '14 days', value: '14' },
-            { label: '30 days', value: '30' },
-            { label: '60 days', value: '60' },
-            { label: 'No returns', value: '0' },
-          ],
-        },
-        {
-          type: 'toggle',
-          id: 'customOrderOptions',
-          label: 'Custom Order Options',
-          description: 'Allow add-ons & customization on orders',
-          value: settings.customOrderOptions,
-        },
-      ],
-    },
-    {
-      title: 'Payment & Currency',
+      title: 'Pricing & Sizing',
       icon: <Wallet className="size-4" />,
       items: [
-        {
-          type: 'select',
-          id: 'defaultCurrency',
-          label: 'Default Currency',
-          description: 'Platform display currency',
-          value: settings.defaultCurrency,
-          options: [
-            { label: 'NGN ₦', value: 'NGN' },
-            { label: 'USD $', value: 'USD' },
-            { label: 'GBP £', value: 'GBP' },
-            { label: 'EUR €', value: 'EUR' },
-          ],
-        },
         {
           type: 'link',
           id: 'pricingRules',
@@ -461,7 +319,6 @@ export const OrderSettingsContent = () => {
             section={section}
             disabled={settingsUnavailable}
             onToggle={handleToggle}
-            onSelectChange={handleSelectChange}
             onInputChange={handleInputChange}
           />
         ))}
