@@ -160,20 +160,28 @@ export const HotspotEditorModal = NiceModal.create(
             <div className="flex items-center justify-between p-4 border-b border-border bg-card">
               <h2 className="font-semibold text-foreground">Edit Hotspots</h2>
               <div className="text-xs text-muted-foreground flex items-center gap-2">
-                <Info className="size-4" /> Click to place, drag to move
+                <Info className="size-4" /> Click to place, drag to move — this
+                frame is the 3:4 crop customers see
               </div>
             </div>
             <div className="relative flex-1 overflow-auto p-4 flex items-center justify-center bg-[url('/checkered.png')]">
+              {/* The shop shows product photos in a fixed 3:4 box with
+                  object-cover, so anything outside that crop is never seen.
+                  Editing against the full image put pins at coordinates that
+                  resolved somewhere else once cropped — worst at the edges,
+                  exactly where collar and hem markers sit. This canvas mirrors
+                  the shop's frame, so a pin lands where it was placed and a
+                  vendor can't mark a spot that gets cropped away. */}
               <div
                 ref={containerRef}
-                className="relative cursor-crosshair max-w-full max-h-full shadow-md select-none rounded-md overflow-hidden bg-background"
+                className="relative cursor-crosshair h-[75vh] max-w-full aspect-[3/4] shadow-md select-none rounded-md overflow-hidden bg-background"
                 onClick={handleContainerClick}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={imageUrl}
                   alt="Style view"
-                  className="max-w-full max-h-[75vh] object-contain pointer-events-none"
+                  className="absolute inset-0 h-full w-full object-cover pointer-events-none"
                 />
                 {hotspots.map((h, i) => (
                   <div
