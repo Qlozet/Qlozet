@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import type { PaginationState } from '@tanstack/react-table';
 import { CustomerStatsCards } from '@/pattern/customers/templates/customer-stats-cards';
@@ -17,7 +17,7 @@ import {
 
 const PAGE_SIZE = 5;
 
-export default function CustomersPage() {
+function CustomersPageContent() {
   // Present when a vendor's "Total customers → View all" sent us here, which
   // scopes the list to that vendor's buyers.
   const businessId = useSearchParams().get('businessId') ?? '';
@@ -93,5 +93,15 @@ export default function CustomersPage() {
         onDateRangeChange={handleDateRangeChange}
       />
     </div>
+  );
+}
+
+export default function CustomersPage() {
+  // useSearchParams needs a Suspense boundary in the App Router — without one
+  // the static prerender of /customers fails the build.
+  return (
+    <Suspense fallback={null}>
+      <CustomersPageContent />
+    </Suspense>
   );
 }
