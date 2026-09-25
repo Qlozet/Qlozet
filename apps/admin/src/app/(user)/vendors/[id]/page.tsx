@@ -19,7 +19,7 @@ import { TopProductsTable } from '@/pattern/vendors/details/organisms/top-produc
 import { WalletDetailsSection } from '@/pattern/vendors/details/organisms/wallet-details-section';
 import { VendorNotesSection } from '@/pattern/vendors/details/organisms/vendor-notes-section';
 import { ActivityLogTable } from '@/pattern/vendors/details/organisms/activity-log-table';
-import { ComplaintTable } from '@/pattern/vendors/details/organisms/complaint-table';
+import { VendorTicketsTable } from '@/pattern/vendors/details/organisms/vendor-tickets-table';
 
 // Anchors for the "View all" links on the info cards — the tables they point at
 // are further down this same page.
@@ -95,13 +95,16 @@ const VendorDetailsPage = () => {
             runStatusChange(setInReview, 'Vendor marked in review')
           }
           onViewProducts={scrollTo(PRODUCTS_ANCHOR)}
-          // Both land on the platform-wide list. /admin/vendor/orders now
-          // takes a `businessId`, so orders could deep-link to just this
-          // vendor's — the admin orders page has no such filter yet.
-          // TODO(ui): give the orders page a businessId filter and pass it.
-          // TODO(api): /admin/customer has no business filter at all.
-          onViewOrders={() => router.push(APP_ROUTES.orders)}
-          onViewCustomers={() => router.push(APP_ROUTES.customers)}
+          // Orders deep-link to just this vendor's — the endpoint has always
+          // taken a businessId, the page now reads one off the URL.
+          onViewOrders={() =>
+            router.push(`${APP_ROUTES.orders}?businessId=${id}`)
+          }
+          // /admin/customer now takes a businessId — "this vendor's
+          // customers" being whoever has actually bought from them.
+          onViewCustomers={() =>
+            router.push(`${APP_ROUTES.customers}?businessId=${id}`)
+          }
         />
       </div>
 
@@ -121,7 +124,7 @@ const VendorDetailsPage = () => {
 
       {/* 7. Activity log + complaints */}
       <ActivityLogTable businessId={id} />
-      <ComplaintTable businessId={id} />
+      <VendorTicketsTable businessId={id} />
     </div>
   );
 };

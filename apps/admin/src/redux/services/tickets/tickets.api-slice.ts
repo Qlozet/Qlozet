@@ -121,6 +121,8 @@ export interface GetTicketsParams {
    * Kept only because the customer detail table still sends it.
    */
   customer_id?: string;
+  /** Narrow to one vendor's tickets — backs the vendor detail page. */
+  business_id?: string;
   /**
    * Compared against `createdAt` as a timestamp, so a bare 'YYYY-MM-DD' end
    * date resolves to midnight and excludes that whole day. Send full ISO

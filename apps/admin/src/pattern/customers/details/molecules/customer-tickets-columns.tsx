@@ -42,8 +42,10 @@ export const createCustomerTicketsColumns = ({
   onViewDetails,
 }: CustomerTicketsColumnsProps): ColumnDef<Ticket>[] => [
   {
-    id: 'complaint',
-    header: 'Complaint',
+    // Tickets cover questions and requests, not only complaints — and this
+    // table is shared by the customer and vendor detail pages.
+    id: 'subject',
+    header: 'Subject',
     cell: ({ row, table }) => {
       const t = row.original;
       const index = table.getRowModel().rows.findIndex((r) => r.id === row.id);

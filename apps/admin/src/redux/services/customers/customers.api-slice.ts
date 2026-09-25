@@ -199,6 +199,8 @@ export interface GetCustomersParams {
   status?: string;
   startDate?: string;
   endDate?: string;
+  /** Narrow to the buyers of one vendor — the vendor page links here. */
+  businessId?: string;
 }
 
 export interface GetCustomerTransactionsParams {

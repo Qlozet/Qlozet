@@ -19,7 +19,10 @@ function OrdersPageContent() {
   // Deep-link from a customer row's "View orders". The endpoint filters by
   // buyer server-side; without reading it back here the link would land on an
   // unfiltered list and quietly claim to have filtered.
-  const customerId = useSearchParams().get('customerId') ?? '';
+  const searchParams = useSearchParams();
+  const customerId = searchParams.get('customerId') ?? '';
+  // Set when arriving from a vendor's "Total orders → View all".
+  const businessId = searchParams.get('businessId') ?? '';
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -46,6 +49,7 @@ function OrdersPageContent() {
       page: pagination.pageIndex + 1,
       size: pagination.pageSize,
       customerId: customerId || undefined,
+      businessId: businessId || undefined,
     });
 
   const orders = useMemo(() => data?.data ?? [], [data]);

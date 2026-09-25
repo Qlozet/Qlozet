@@ -333,38 +333,6 @@ export const vendorDetailsApiSlice = baseAPI.injectEndpoints({
     }),
 
     // Complaints / tickets raised against a vendor (Complaint table)
-    getVendorComplaints: builder.query<
-      ApiResponse<PaginatedData<VendorComplaint>>,
-      VendorTableParams
-    >({
-      // /admin/tickets has no business filter — its params are search, status,
-      // assigned_to, start_date, end_date, page, size — but every ticket does
-      // carry a `business` id, so the scoping is done here instead.
-      //
-      // The previous approach passed the business id as `search`, which can
-      // never match: search compares against `description` and `issue_type`
-      // only, so the table was always empty. A page is fetched and filtered by
-      // the real field instead.
-      query: () => ({
-        url: `/admin/tickets${buildQueryString({ page: 1, size: 200 })}`,
-        method: 'GET',
-      }),
-      transformResponse: (
-        response: ApiResponse<PaginatedData<VendorComplaint>>,
-        _meta,
-        arg: VendorTableParams
-      ) => {
-        const all = response?.data?.data ?? [];
-        const mine = all.filter(
-          (ticket) => String(ticket.business ?? '') === String(arg.businessId)
-        );
-        return {
-          ...response,
-          data: { ...response.data, data: mine, total_items: mine.length },
-        };
-      },
-      providesTags: ['Tickets'],
-    }),
   }),
 });
 
@@ -372,7 +340,6 @@ export const {
   useGetVendorProductsQuery,
   useGetVendorTopProductsQuery,
   useGetVendorActivityLogQuery,
-  useGetVendorComplaintsQuery,
   useGetVendorTransactionsQuery,
   useGetVendorChartQuery,
   useGetVendorWarehousesQuery,
