@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import type { PaginationState } from '@tanstack/react-table';
 import { CustomerStatsCards } from '@/pattern/customers/templates/customer-stats-cards';
 import { CustomersTableTemplate } from '@/pattern/customers/templates/customers-table-template';
@@ -17,6 +18,9 @@ import {
 const PAGE_SIZE = 5;
 
 export default function CustomersPage() {
+  // Present when a vendor's "Total customers → View all" sent us here, which
+  // scopes the list to that vendor's buyers.
+  const businessId = useSearchParams().get('businessId') ?? '';
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
@@ -45,6 +49,8 @@ export default function CustomersPage() {
       // End of the chosen day, so a single-day range includes that whole day
       // rather than only midnight.
       endDate: dateRange.end ? `${dateRange.end}T23:59:59.999Z` : undefined,
+      // Set when arriving from a vendor's "Total customers → View all".
+      businessId: businessId || undefined,
     });
 
   const paginated = data?.data;

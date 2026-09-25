@@ -100,10 +100,11 @@ const VendorDetailsPage = () => {
           onViewOrders={() =>
             router.push(`${APP_ROUTES.orders}?businessId=${id}`)
           }
-          // Still the platform-wide list: /admin/customer has no business
-          // filter, so there is nothing to narrow by yet.
-          // TODO(api): add a business filter to /admin/customer.
-          onViewCustomers={() => router.push(APP_ROUTES.customers)}
+          // /admin/customer now takes a businessId — "this vendor's
+          // customers" being whoever has actually bought from them.
+          onViewCustomers={() =>
+            router.push(`${APP_ROUTES.customers}?businessId=${id}`)
+          }
         />
       </div>
 
