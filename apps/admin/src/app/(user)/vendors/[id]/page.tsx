@@ -19,7 +19,7 @@ import { TopProductsTable } from '@/pattern/vendors/details/organisms/top-produc
 import { WalletDetailsSection } from '@/pattern/vendors/details/organisms/wallet-details-section';
 import { VendorNotesSection } from '@/pattern/vendors/details/organisms/vendor-notes-section';
 import { ActivityLogTable } from '@/pattern/vendors/details/organisms/activity-log-table';
-import { ComplaintTable } from '@/pattern/vendors/details/organisms/complaint-table';
+import { VendorTicketsTable } from '@/pattern/vendors/details/organisms/vendor-tickets-table';
 
 // Anchors for the "View all" links on the info cards — the tables they point at
 // are further down this same page.
@@ -123,7 +123,7 @@ const VendorDetailsPage = () => {
 
       {/* 7. Activity log + complaints */}
       <ActivityLogTable businessId={id} />
-      <ComplaintTable businessId={id} />
+      <VendorTicketsTable businessId={id} />
     </div>
   );
 };
