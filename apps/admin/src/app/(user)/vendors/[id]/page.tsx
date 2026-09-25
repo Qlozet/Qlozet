@@ -95,12 +95,14 @@ const VendorDetailsPage = () => {
             runStatusChange(setInReview, 'Vendor marked in review')
           }
           onViewProducts={scrollTo(PRODUCTS_ANCHOR)}
-          // Both land on the platform-wide list. /admin/vendor/orders now
-          // takes a `businessId`, so orders could deep-link to just this
-          // vendor's — the admin orders page has no such filter yet.
-          // TODO(ui): give the orders page a businessId filter and pass it.
-          // TODO(api): /admin/customer has no business filter at all.
-          onViewOrders={() => router.push(APP_ROUTES.orders)}
+          // Orders deep-link to just this vendor's — the endpoint has always
+          // taken a businessId, the page now reads one off the URL.
+          onViewOrders={() =>
+            router.push(`${APP_ROUTES.orders}?businessId=${id}`)
+          }
+          // Still the platform-wide list: /admin/customer has no business
+          // filter, so there is nothing to narrow by yet.
+          // TODO(api): add a business filter to /admin/customer.
           onViewCustomers={() => router.push(APP_ROUTES.customers)}
         />
       </div>

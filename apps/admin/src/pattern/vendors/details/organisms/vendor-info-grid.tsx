@@ -31,6 +31,17 @@ interface VendorInfoGridProps {
 const num = (value: unknown): number | undefined =>
   typeof value === 'number' ? value : undefined;
 
+/**
+ * Registry numbers are stored however the vendor typed them — "RC100001" or
+ * "100001". Prefixing unconditionally produced "(RC RC100001)".
+ */
+const formatRcNumber = (value: unknown): string => {
+  const rc = typeof value === 'string' ? value.trim() : '';
+  if (!rc) return '';
+  const bare = rc.replace(/^RC[\s-]*/i, '');
+  return bare ? ` (RC ${bare})` : '';
+};
+
 const str = (value: unknown): string | undefined =>
   typeof value === 'string' && value.length > 0 ? value : undefined;
 
@@ -69,6 +80,14 @@ export const VendorInfoGrid = ({
 }: VendorInfoGridProps) => {
   const m = (metrics ?? {}) as Record<string, unknown>;
   const v = (vendor ?? {}) as Record<string, unknown>;
+
+  // The account owner — what this page labels "Admin". Business has no
+  // personal_name / personal_phone_number / principal_email fields, so those
+  // three cards read undefined and rendered a dash. The detail endpoint joins
+  // the owning user in as `vendor`; `created_by` is the copy stamped on the
+  // business at signup, covering rows whose user record has since gone.
+  const owner = (v.vendor ?? {}) as Record<string, unknown>;
+  const createdBy = (v.created_by ?? {}) as Record<string, unknown>;
 
   const rating = num(v.rating) ?? num(v.averageRating);
   const reviews = num(v.reviewsCount) ?? num(v.totalReviews);
@@ -200,19 +219,19 @@ export const VendorInfoGrid = ({
         />
         <VendorInfoCard
           label="Total products"
-          value={formatCount(num(m.totalProducts) ?? num(v.productsCount))}
+          value={formatCount(num(m.total_products) ?? num(v.total_products))}
           linkLabel="View all"
           onLinkClick={onViewProducts}
         />
         <VendorInfoCard
           label="Total orders"
-          value={formatCount(num(m.totalOrders) ?? num(v.ordersCount))}
+          value={formatCount(num(m.total_orders) ?? num(v.total_orders))}
           linkLabel="View all"
           onLinkClick={onViewOrders}
         />
         <VendorInfoCard
           label="Total customers"
-          value={formatCount(num(m.totalCustomers))}
+          value={formatCount(num(m.total_customers))}
           linkLabel="View all"
           onLinkClick={onViewCustomers}
         />
@@ -229,15 +248,15 @@ export const VendorInfoGrid = ({
         />
         <VendorInfoCard
           label="Admin"
-          value={str(v.personal_name) ?? str(v.full_name)}
+          value={str(owner.full_name) ?? str(createdBy.name)}
         />
         <VendorInfoCard
           label="Admin phone number"
-          value={str(v.personal_phone_number)}
+          value={str(owner.phone_number)}
         />
         <VendorInfoCard
           label="Principal's email address"
-          value={str(v.principal_email) ?? str(v.email)}
+          value={str(owner.email) ?? str(createdBy.email)}
         />
 
         {/* The count opens the list, now that GET
@@ -245,7 +264,7 @@ export const VendorInfoGrid = ({
             could never resolve for an admin. */}
         <VendorInfoCard
           label="Warehouses"
-          value={formatCount(num(m.warehouses) ?? num(v.warehousesCount))}
+          value={formatCount(num(v.total_warehouses))}
           linkLabel={vendor?._id ? 'View warehouses' : undefined}
           onLinkClick={
             vendor?._id
@@ -258,7 +277,7 @@ export const VendorInfoGrid = ({
         />
         <VendorInfoCard
           label="Achieved custom orders / day"
-          value={formatCount(num(m.customOrdersPerDay))}
+          value={formatCount(num(v.custom_orders_per_day))}
         />
         <VendorInfoCard
           label="ID Check"
@@ -296,7 +315,7 @@ export const VendorInfoGrid = ({
           label="CAC Registry"
           value={
             cacCheck?.status === 'verified'
-              ? `${cacCheck?.company_name ?? 'Confirmed'}${cacCheck?.rc_number ? ` (RC ${cacCheck.rc_number})` : ''}`
+              ? `${str(cacCheck?.company_name) ?? 'Confirmed'}${formatRcNumber(cacCheck?.rc_number)}`
               : cacCheck?.status === 'failed'
                 ? 'Not found in registry'
                 : 'Not checked'

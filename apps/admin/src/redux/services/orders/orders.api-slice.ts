@@ -245,6 +245,8 @@ export interface GetAdminOrdersParams {
   size?: number;
   /** Narrow to one buyer's orders, for the admin customer detail page. */
   customerId?: string;
+  /** Narrow to one vendor's orders, for the vendor detail page's View all. */
+  businessId?: string;
 }
 
 /**
@@ -274,6 +276,7 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
         const search = new URLSearchParams();
         if (params?.status) search.set('status', params.status);
         if (params?.customerId) search.set('customerId', params.customerId);
+        if (params?.businessId) search.set('businessId', params.businessId);
         if (params?.page) search.set('page', String(params.page));
         if (params?.size) search.set('size', String(params.size));
         const qs = search.toString();
