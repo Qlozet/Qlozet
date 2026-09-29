@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Loader2, Upload, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { IMAGE_RULES, checkImageFile } from '@/lib/image-checks';
 import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
 import { readApiError } from '@/redux/services/types';
 
@@ -76,9 +77,14 @@ export const AddAddonVariantModal = NiceModal.create(
       modal.remove();
     };
 
-    const handleFileSelect = (file: File) => {
-      if (!file.type.startsWith('image/')) {
-        toast.error('Please select an image file');
+    // Was a bare "is it an image?" test, which let through files the upload
+    // endpoint then refused. Same check as every other picker now.
+    const handleFileSelect = async (file: File) => {
+      const problem = await checkImageFile(file, {
+        minShortEdge: IMAGE_RULES.DEFAULT_MIN_SHORT_EDGE,
+      });
+      if (problem) {
+        toast.error(problem);
         return;
       }
       setImageFile(file);
@@ -255,7 +261,7 @@ export const AddAddonVariantModal = NiceModal.create(
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/*"
+                    accept={IMAGE_RULES.ACCEPT_ATTR}
                     className="hidden"
                     onChange={(e) => {
                       const file = e.target.files?.[0];

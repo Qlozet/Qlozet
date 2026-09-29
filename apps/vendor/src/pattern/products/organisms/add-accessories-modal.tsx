@@ -35,6 +35,7 @@ import {
 } from '@/redux/services/products/products.api-slice';
 import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
 import { toast } from 'sonner';
+import { IMAGE_RULES, checkImageFile } from '@/lib/image-checks';
 import {
   AUDIENCE_OPTIONS,
   type Audience,
@@ -580,12 +581,20 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                     type="file"
                     id="accessory-image"
                     className="hidden"
-                    accept="image/*"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        setImageFile(e.target.files[0]);
-                        setPreviewUrl(URL.createObjectURL(e.target.files[0]));
+                    accept={IMAGE_RULES.ACCEPT_ATTR}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      e.target.value = '';
+                      if (!file) return;
+                      const problem = await checkImageFile(file, {
+                        minShortEdge: IMAGE_RULES.DEFAULT_MIN_SHORT_EDGE,
+                      });
+                      if (problem) {
+                        toast.error(problem);
+                        return;
                       }
+                      setImageFile(file);
+                      setPreviewUrl(URL.createObjectURL(file));
                     }}
                   />
                   {previewUrl ? (
