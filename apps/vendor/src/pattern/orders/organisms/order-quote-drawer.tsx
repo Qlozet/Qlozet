@@ -333,11 +333,16 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
 
         <div className="flex items-center justify-between px-4 sm:px-6">
           <div>
+            {/* "Quote", not "Order #...": this drawer is only ever opened
+                from Quote requests, and the vendor is deciding whether to
+                price the job, not looking at something they already sold. The
+                reference is still here, just demoted to the line that already
+                carries the date - it is a lookup key for support, not a name. */}
             <SheetTitle className="text-lg font-bold text-grey-black dark:text-white">
-              Order #{readOrderId(order)}
+              Quote
             </SheetTitle>
             <SheetDescription className="text-xs text-grey2 dark:text-gray-400">
-              {formatLongDate(order.createdAt)}
+              #{readOrderId(order)} &middot; {formatLongDate(order.createdAt)}
             </SheetDescription>
           </div>
           {/* Delivery badge only once the quote is accepted (a real, fulfillable
