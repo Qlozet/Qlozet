@@ -533,7 +533,11 @@ export const AddClothingTemplate = ({
         </div>
 
         {/* Set Variants — full-width section at the bottom */}
-        <SetVariantsTable variants={variants} onChange={setVariants} />
+        <SetVariantsTable
+          variants={variants}
+          onChange={setVariants}
+          productName={title}
+        />
       </div>
     </div>
   );

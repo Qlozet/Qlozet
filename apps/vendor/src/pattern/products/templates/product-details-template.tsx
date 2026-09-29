@@ -33,7 +33,7 @@ interface ColorVariantView {
   name?: string;
   hex?: string;
   images?: { url?: string }[];
-  variants?: { size?: string; stock?: number }[];
+  variants?: { size?: string; stock?: number; sku?: string }[];
 }
 interface ComponentView {
   name?: string;
@@ -43,7 +43,6 @@ interface ComponentView {
 interface ClothingView {
   _id?: string;
   name?: string;
-  sku?: string;
   status?: string;
   price?: number;
   type?: string;
@@ -71,6 +70,7 @@ interface ClothingView {
     size?: string;
     measurement?: string;
     stock?: number;
+    sku?: string;
     color?: { name?: string; hex?: string };
   }[];
   // Fabric-specific fields (kind === 'fabric').
@@ -258,6 +258,21 @@ export const ProductDetailsTemplate = ({
     .map((v) => ({ size: v.size, measurement: v.measurement }));
   const accQuantity = accVariants.reduce((s, v) => s + (v.stock ?? 0), 0);
 
+  // SKUs live on VARIANTS, never on the product — `product.sku` was always
+  // undefined, so this page fell back to six characters of the Mongo id and
+  // presented them as a SKU. Scoped to the selected colour, like the sizes and
+  // stock above.
+  const variantSkus = Array.from(
+    new Set(
+      (isFabric || isAccessory
+        ? accVariants
+        : stockColorVariants.flatMap((c) => c.variants ?? [])
+      )
+        .map((v) => (typeof v?.sku === 'string' ? v.sku.trim() : ''))
+        .filter(Boolean)
+    )
+  );
+
   const handleDelete = async () => {
     try {
       await deleteProduct(productId).unwrap();
@@ -384,8 +399,12 @@ export const ProductDetailsTemplate = ({
               <div className="flex items-center justify-between gap-4">
                 <p className="text-sm font-medium uppercase text-grey-black/60 dark:text-white/60">
                   SKU:{' '}
-                  <span className="opacity-70">
-                    {product.sku ?? product._id?.slice(-6).toUpperCase()}
+                  <span className="opacity-70" title={variantSkus.join(', ')}>
+                    {variantSkus.length === 0
+                      ? '—'
+                      : variantSkus.length === 1
+                        ? variantSkus[0]
+                        : `${variantSkus[0]} +${variantSkus.length - 1} more`}
                   </span>
                 </p>
                 {product.status && (
