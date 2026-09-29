@@ -849,6 +849,7 @@ export default function AddClothingTemplate() {
                   <SetVariantsTable
                     variants={variants}
                     onChange={setVariants}
+                    productName={title}
                   />
                 )}
               </div>

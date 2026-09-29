@@ -526,6 +526,7 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                       <SetVariantsTable
                         variants={variants}
                         onChange={setVariants}
+                        productName={accessoryName}
                       />
                     )}
 
