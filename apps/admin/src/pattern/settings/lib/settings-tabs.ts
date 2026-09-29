@@ -41,7 +41,9 @@ export type SettingsUnit =
   | 'hours'
   | 'units'
   | 'yards'
-  | 'tokens';
+  | 'tokens'
+  | 'pixels'
+  | 'megabytes';
 
 export interface SettingsFieldOption {
   value: string;
@@ -394,11 +396,39 @@ export const SETTINGS_TABS: SettingsTab[] = [
     ],
   },
   {
-    label: 'Inventory',
+    label: 'Catalogue',
     slug: 'inventory',
     description:
-      'The thresholds behind the “low stock” flag vendors see on their catalogue.',
+      'Stock thresholds, and the rules an uploaded product photo must meet.',
     sections: [
+      {
+        id: 'product-images',
+        title: 'Product photos',
+        description:
+          'Checked when a vendor uploads. A rejected upload blocks them mid-flow, so these are here to be relaxed quickly if they catch legitimate photos.',
+        fields: [
+          {
+            key: 'product_image_min_short_edge',
+            label: 'Minimum photo size',
+            help: 'Shortest side of a product photo, in pixels. Anything smaller looks soft on a product page. Set to 0 to turn the check off entirely. Does not apply to logos or AI reference images.',
+            kind: 'number',
+            unit: 'pixels',
+            min: 0,
+            step: 100,
+            integer: true,
+          },
+          {
+            key: 'product_image_max_mb',
+            label: 'Maximum file size',
+            help: 'Largest image a vendor can upload. A hard ceiling above this still applies to protect server memory.',
+            kind: 'number',
+            unit: 'megabytes',
+            min: 1,
+            step: 1,
+            integer: true,
+          },
+        ],
+      },
       {
         id: 'availability-thresholds',
         title: 'Availability thresholds',

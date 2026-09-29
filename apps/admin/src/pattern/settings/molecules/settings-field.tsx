@@ -32,6 +32,8 @@ const SUFFIX_UNITS: Partial<Record<SettingsUnit, string>> = {
   units: 'units',
   yards: 'yards',
   tokens: 'tokens',
+  pixels: 'px',
+  megabytes: 'MB',
 };
 
 interface SettingsFieldProps {
