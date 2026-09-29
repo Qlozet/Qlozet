@@ -12,6 +12,7 @@ import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { toast } from 'sonner';
+import { IMAGE_RULES, checkImageFile } from '@/lib/image-checks';
 import { Loader2, ImageIcon } from 'lucide-react';
 import { useProductConditions } from '../hooks/use-product-conditions';
 import { ConditionsCard } from '../organisms/conditions-card';
@@ -180,12 +181,22 @@ export const CollectionsCreateTemplate = () => {
 
   const handleImageEdit = () => fileInputRef.current?.click();
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
+    // Reset so re-picking a corrected file still fires a change event.
+    e.target.value = '';
+    if (!file) return;
+    // A collection cover is a banner, not a product photo, but it goes through
+    // the same /uploads/product endpoint and so meets the same floor.
+    const problem = await checkImageFile(file, {
+      minShortEdge: IMAGE_RULES.DEFAULT_MIN_SHORT_EDGE,
+    });
+    if (problem) {
+      toast.error(problem);
+      return;
     }
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
   };
 
   const onSubmit = async (values: CreateCollectionForm) => {
@@ -407,7 +418,7 @@ export const CollectionsCreateTemplate = () => {
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/*"
+                    accept={IMAGE_RULES.ACCEPT_ATTR}
                     onChange={handleImageChange}
                     className="hidden"
                   />

@@ -14,6 +14,7 @@ import {
   X,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { IMAGE_RULES, checkImageFile } from '@/lib/image-checks';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -174,6 +175,15 @@ export const AddStylesModal = NiceModal.create<{ editStyle?: EditStyleSeed }>(
 
     const handleFile = async (file?: File) => {
       if (!file) return;
+      // This picker uploads straight away, so check first rather than spend a
+      // round trip on a file the server will refuse.
+      const problem = await checkImageFile(file, {
+        minShortEdge: IMAGE_RULES.DEFAULT_MIN_SHORT_EDGE,
+      });
+      if (problem) {
+        toast.error(problem);
+        return;
+      }
       // Upload for a REAL Cloudinary URL - a blob: object URL dies with the tab,
       // so persisting it left styles with permanently broken images.
       try {

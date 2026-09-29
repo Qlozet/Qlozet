@@ -1,6 +1,8 @@
 'use client';
 
 import { ChevronDown, ImageIcon, Info, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { IMAGE_RULES, partitionValidImages } from '@/lib/image-checks';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { NumberStepper } from '../molecules/number-stepper';
@@ -190,27 +192,35 @@ export const SetVariantsTable = ({
                       multiple
                       className="hidden"
                       id={`file-${variant.id}`}
-                      onChange={(e) => {
-                        if (e.target.files) {
-                          const files = Array.from(e.target.files).slice(
-                            0,
-                            5 - variant.images.length
-                          );
-                          if (files.length > 0) {
-                            const newImages = [
-                              ...variant.images,
-                              ...files.map((f) => URL.createObjectURL(f)),
-                            ];
-                            const newFiles = [
-                              ...(variant.imageFiles || []),
-                              ...files,
-                            ];
-                            patchVariant(variant.id, {
-                              images: newImages,
-                              imageFiles: newFiles,
-                            });
-                          }
-                        }
+                      onChange={async (e) => {
+                        if (!e.target.files) return;
+                        const picked = Array.from(e.target.files).slice(
+                          0,
+                          5 - variant.images.length
+                        );
+                        // Same pick-time check as the default-images picker:
+                        // these are uploaded in the form's save handler, so
+                        // without this a bad photo is only rejected once the
+                        // whole product is submitted. Valid files still go in.
+                        const { accepted, errors } = await partitionValidImages(
+                          picked,
+                          { minShortEdge: IMAGE_RULES.DEFAULT_MIN_SHORT_EDGE }
+                        );
+                        errors.forEach((message) => toast.error(message));
+                        // Reset so re-picking a corrected file still fires.
+                        e.target.value = '';
+                        if (!accepted.length) return;
+
+                        patchVariant(variant.id, {
+                          images: [
+                            ...variant.images,
+                            ...accepted.map((f) => URL.createObjectURL(f)),
+                          ],
+                          imageFiles: [
+                            ...(variant.imageFiles || []),
+                            ...accepted,
+                          ],
+                        });
                       }}
                     />
                     {Array.from({ length: 5 }).map((_, i) => (

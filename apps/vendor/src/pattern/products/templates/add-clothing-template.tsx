@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
+import { readApiError } from '@/redux/services/types';
 import { Button } from '@/components/ui/button';
 import { GoBackButton } from '@/pattern/common/atoms/go-back-button';
 import { Input } from '@/components/ui/input';
@@ -741,8 +742,13 @@ export default function AddClothingTemplate() {
 
       toast.success('Clothing product created successfully.');
       router.push(APP_ROUTES.productsCloth);
-    } catch {
-      toast.error('Failed to create product. Please try again.');
+    } catch (err) {
+      // The server explains WHY (an image too small, a field rejected). A bare
+      // catch turned every one of those into "try again", which fails
+      // identically forever and tells the vendor nothing.
+      toast.error(
+        readApiError(err, 'Failed to create product. Please try again.')
+      );
     }
   };
 
