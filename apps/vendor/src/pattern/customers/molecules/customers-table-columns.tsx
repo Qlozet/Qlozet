@@ -31,11 +31,14 @@ export const createCustomersTableColumns = ({
 }: CustomersTableActions): ColumnDef<VendorCustomer>[] => [
   {
     id: 'picture',
+    size: 76,
     header: 'Picture',
     cell: ({ row }) => <CustomerAvatar customer={row.original} />,
     enableSorting: false,
   },
   {
+    // No size: the username is the variable-length value, so it is the column
+    // that takes whatever width is left over.
     id: 'username',
     header: 'Username',
     cell: ({ row }) => (
@@ -47,6 +50,7 @@ export const createCustomersTableColumns = ({
   },
   {
     id: 'totalOrders',
+    size: 140,
     header: 'Total orders',
     cell: ({ row }) => (
       <div className="text-sm text-gray-600 dark:text-gray-300">
@@ -57,6 +61,7 @@ export const createCustomersTableColumns = ({
   },
   {
     id: 'status',
+    size: 140,
     header: 'Status',
     cell: ({ row }) => {
       const status = getCustomerStatus(row.original);
@@ -74,6 +79,7 @@ export const createCustomersTableColumns = ({
   },
   {
     id: 'actions',
+    size: 110,
     header: '',
     cell: ({ row }) => (
       <Button

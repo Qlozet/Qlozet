@@ -65,12 +65,14 @@ export const createCustomersTableColumns = ({
 }: CustomersTableColumnsProps): ColumnDef<Customer>[] => [
   {
     id: 'picture',
+    size: 76,
     header: 'Picture',
     cell: ({ row }) => <CustomerAvatar customer={row.original} />,
     enableSorting: false,
   },
   {
     id: 'name',
+    size: 180,
     header: 'Customer name',
     cell: ({ row }) => (
       <span className="text-sm font-medium text-gray-900 dark:text-white">
@@ -80,6 +82,8 @@ export const createCustomersTableColumns = ({
     enableSorting: false,
   },
   {
+    // No size: email is the longest and most variable value, so it is the
+    // column that takes whatever width is left over.
     id: 'email',
     header: 'Email address',
     cell: ({ row }) => (
@@ -91,6 +95,7 @@ export const createCustomersTableColumns = ({
   },
   {
     id: 'phone',
+    size: 150,
     header: 'Phone number',
     cell: ({ row }) => (
       <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -101,6 +106,7 @@ export const createCustomersTableColumns = ({
   },
   {
     id: 'totalOrders',
+    size: 110,
     header: 'Total orders',
     cell: ({ row }) => (
       <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -111,6 +117,7 @@ export const createCustomersTableColumns = ({
   },
   {
     id: 'lastOrderDate',
+    size: 130,
     header: 'Last Order date',
     cell: ({ row }) => (
       <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -121,6 +128,7 @@ export const createCustomersTableColumns = ({
   },
   {
     id: 'status',
+    size: 120,
     header: 'Status',
     cell: ({ row }) => {
       const status = getCustomerStatus(row.original);
@@ -138,6 +146,7 @@ export const createCustomersTableColumns = ({
   },
   {
     id: 'actions',
+    size: 64,
     header: '',
     cell: ({ row }) => {
       const customer = row.original;

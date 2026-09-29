@@ -111,9 +111,15 @@ export function DataTable<TData>({
               {headerGroup.headers.map((header, index) => {
                 const isFirst = index === 0;
                 const isLast = index === headerGroup.headers.length - 1;
+                // A column that declares `size` is pinned to it; the columns
+                // that declare none absorb the leftover width. Leaving EVERY
+                // column unsized spreads the surplus across all of them, which
+                // is what pushes the content apart.
+                const width = header.column.columnDef.size;
                 return (
                   <TableHead
                     key={header.id}
+                    style={width ? { width, minWidth: width } : undefined}
                     className={cn(
                       'h-[52px] pt-7 pb-4 whitespace-nowrap text-sm font-medium text-grey-black dark:text-white',
                       isFirst && 'pl-6',
