@@ -46,7 +46,19 @@ export const makeSizeDetail = (): SizeDetail => ({
 interface SetVariantsTableProps {
   variants: VariantRow[];
   onChange: (next: VariantRow[]) => void;
+  /** Product title, so generated SKUs identify THIS product. */
+  productName?: string;
 }
+
+/** Uppercase alphanumerics from the first word(s), for a readable code. */
+const codeFrom = (value: string | undefined, length: number): string =>
+  (value ?? '')
+    .trim()
+    .split(/\s+/)
+    .join('')
+    .replace(/[^a-z0-9]/gi, '')
+    .slice(0, length)
+    .toUpperCase();
 
 const HeaderInfo = ({ label }: { label: string }) => (
   <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
@@ -60,6 +72,7 @@ const HeaderInfo = ({ label }: { label: string }) => (
 export const SetVariantsTable = ({
   variants,
   onChange,
+  productName,
 }: SetVariantsTableProps) => {
   if (variants.length === 0) return null;
 
@@ -81,21 +94,62 @@ export const SetVariantsTable = ({
       )
     );
 
-  const generateSkus = (id: string) =>
+  /**
+   * Fills empty SKUs for one variant row.
+   *
+   * The old scheme was `CLO-{first 4 hex digits}-{size}`, which had three
+   * problems: it identified no product (so every navy medium a vendor sold
+   * got the same code), it was unreadable to anyone picking stock, and
+   * fabric-based rows carry no colorHex so it produced "CLO--M".
+   *
+   * Now: PRODUCT-COLOUR-SIZE from the human-readable names, e.g.
+   * "AGBADA-NAVY-M". Existing SKUs are left alone — a vendor may have typed
+   * codes that match their own inventory system, and silently replacing them
+   * was destructive.
+   */
+  const generateSkus = (id: string) => {
+    const productCode = codeFrom(productName, 6) || 'PROD';
+
+    // Every SKU already in use anywhere in this product, so a generated one
+    // can't collide — two colours can easily share a prefix ("Navy Blue" and
+    // "Navy Dark" both shorten to NAVY).
+    const taken = new Set<string>();
+    variants.forEach((v) =>
+      Object.values(v.details).forEach((d) => {
+        if (d.sku?.trim()) taken.add(d.sku.trim().toUpperCase());
+      })
+    );
+
     onChange(
       variants.map((v) => {
         if (v.id !== id) return v;
-        const colorCode = v.colorHex.replace('#', '').slice(0, 4).toUpperCase();
+
+        // Prefer the colour or fabric NAME; fall back to the hex only when
+        // there is no label at all.
+        const variantCode =
+          codeFrom(v.label, 4) ||
+          codeFrom(v.colorHex.replace('#', ''), 4) ||
+          'VAR';
+
         const details = { ...v.details };
         v.availableSizes.forEach((size) => {
-          details[size] = {
-            ...(details[size] ?? makeSizeDetail()),
-            sku: `CLO-${colorCode}-${size}`,
-          };
+          const current = details[size] ?? makeSizeDetail();
+          if (current.sku?.trim()) return; // never overwrite
+
+          const base = `${productCode}-${variantCode}-${size}`;
+          let candidate = base;
+          let suffix = 2;
+          while (taken.has(candidate.toUpperCase())) {
+            candidate = `${base}-${suffix++}`;
+          }
+          taken.add(candidate.toUpperCase());
+          details[size] = { ...current, sku: candidate };
         });
+
         return { ...v, details };
       })
     );
+  };
 
   const deleteSelected = () => {
     const anySelected = variants.some((v) => v.selected);
