@@ -1,6 +1,8 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { IMAGE_RULES, partitionValidImages } from '@/lib/image-checks';
 import type React from 'react';
 import { Upload, X, Layers } from 'lucide-react';
 
@@ -30,9 +32,24 @@ export const DefaultImagesUploader = ({
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [urlValue, setUrlValue] = useState('');
 
-  const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Checked here rather than on save: this form defers every upload to its
+  // save handler, so an unchecked bad photo would only be rejected after the
+  // vendor had filled in the entire product. Good files are still accepted —
+  // one wrong photo shouldn't discard the rest of the selection. The server
+  // re-checks on upload and stays the authority.
+  const handleFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-    const next = Array.from(e.target.files).map((file) => ({
+    const picked = Array.from(e.target.files);
+    const { accepted, errors } = await partitionValidImages(picked, {
+      minShortEdge: IMAGE_RULES.DEFAULT_MIN_SHORT_EDGE,
+    });
+    errors.forEach((message) => toast.error(message));
+    // Reset first: without this, re-picking the SAME file after fixing it
+    // fires no change event and looks like the picker is broken.
+    e.target.value = '';
+    if (!accepted.length) return;
+
+    const next = accepted.map((file) => ({
       url: URL.createObjectURL(file),
       isLocal: true,
       file,

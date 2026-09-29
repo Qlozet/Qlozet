@@ -6,6 +6,8 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Check, Info, Upload, X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
+import { readApiError } from '@/redux/services/types';
+import { IMAGE_RULES, checkImageFile } from '@/lib/image-checks';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -124,8 +126,18 @@ export const AddFabricModal = NiceModal.create(
       yardsLength > 0 &&
       width >= 10;
 
-    const handleFile = (file?: File) => {
+    // Checked at pick time so the vendor hears about a bad photo here, rather
+    // than when the upload is attempted on save. The server re-checks and
+    // remains the authority.
+    const handleFile = async (file?: File) => {
       if (!file) return;
+      const problem = await checkImageFile(file, {
+        minShortEdge: IMAGE_RULES.DEFAULT_MIN_SHORT_EDGE,
+      });
+      if (problem) {
+        toast.error(problem);
+        return;
+      }
       setPreviewUrl(URL.createObjectURL(file));
       setImageFile(file);
       setHostedUrl('');
@@ -187,8 +199,11 @@ export const AddFabricModal = NiceModal.create(
         }).unwrap();
         toast.success('Fabric uploaded successfully');
         handleClose();
-      } catch {
-        toast.error('Failed to upload fabric. Please try again.');
+      } catch (err) {
+        // Surface the server's reason — see add-clothing-template.
+        toast.error(
+          readApiError(err, 'Failed to upload fabric. Please try again.')
+        );
       }
     };
 
@@ -425,7 +440,7 @@ export const AddFabricModal = NiceModal.create(
                   <input
                     id="fabric-image"
                     type="file"
-                    accept="image/*"
+                    accept={IMAGE_RULES.ACCEPT_ATTR}
                     className="hidden"
                     onChange={(e) => handleFile(e.target.files?.[0])}
                   />
