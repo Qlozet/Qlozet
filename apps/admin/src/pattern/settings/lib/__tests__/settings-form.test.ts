@@ -36,6 +36,8 @@ const SETTINGS: PlatformSettings = {
   late_penalty_max_percent: 25,
   low_stock_threshold: 5,
   low_fabric_yards: 0,
+  product_image_min_short_edge: 800,
+  product_image_max_mb: 10,
   token_price: {
     usd: { amount: 0.01, currency: 'USD' },
     ngn: { amount: 15, currency: 'NGN', last_updated: '2026-08-27T02:00:00Z' },

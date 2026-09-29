@@ -8,9 +8,10 @@ import { downloadCsv, toCsv } from '@/lib/csv';
 import {
   formatPricePerYard,
   getFabricColour,
+  getFabricMaterial,
   getFabricPattern,
-  getFabricSubCategory,
   getFabricYards,
+  getProductCategory,
   getProductName,
   getProductStatus,
   getProductVendorName,
@@ -44,12 +45,14 @@ interface FabricProductsTemplateProps {
   isLoadingFilters?: boolean;
 }
 
+// Mirrors the on-screen columns, in the same order.
 const CSV_HEADERS = [
   'Product name',
   'Vendor',
   'Price per yard',
-  'Sub category',
   'Pattern',
+  'Material',
+  'Category',
   'Colour',
   'Yards',
   'Status',
@@ -59,8 +62,9 @@ const toCsvRow = (product: Product) => [
   getProductName(product),
   getProductVendorName(product),
   formatPricePerYard(product),
-  getFabricSubCategory(product),
   getFabricPattern(product),
+  getFabricMaterial(product),
+  getProductCategory(product),
   getFabricColour(product),
   String(getFabricYards(product)),
   getProductStatus(product).label,

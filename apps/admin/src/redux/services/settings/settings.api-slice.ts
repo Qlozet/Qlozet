@@ -55,6 +55,10 @@ export interface PlatformSettings {
   late_penalty_percent_per_day: number;
   late_penalty_max_percent: number;
 
+  // Product image rules (enforced by the upload endpoints)
+  product_image_min_short_edge: number;
+  product_image_max_mb: number;
+
   // Availability
   low_stock_threshold: number;
   low_fabric_yards: number;

@@ -463,6 +463,11 @@ export const getFabricSubCategory = (product: Product): string =>
     getTaxonomy(product).categories?.[0]
   ) ?? DASH;
 
+/** What the fabric is made of (Cotton, Silk, Ankara…). The vendor console has
+ *  always shown this; the admin table had no column for it. */
+export const getFabricMaterial = (product: Product): string =>
+  firstNonEmpty(getKindDetail(product).material) ?? DASH;
+
 export const getFabricColour = (product: Product): string =>
   firstNonEmpty(
     getKindDetail(product).colour,

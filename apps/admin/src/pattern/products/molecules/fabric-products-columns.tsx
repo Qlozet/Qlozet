@@ -5,11 +5,12 @@ import { Badge } from '@/components/ui/badge';
 import {
   formatPricePerYard,
   getFabricColour,
+  getFabricMaterial,
   getFabricPattern,
-  getFabricSubCategory,
   getFabricYards,
   getProductCategory,
   getProductName,
+  getProductVendorName,
   stockBadgeVariant,
 } from '@/lib/products';
 import { ProductStatusBadge } from './product-status-badge';
@@ -47,6 +48,18 @@ export const createFabricProductsColumns = ({
     enableSorting: false,
   },
   {
+    // This table spans every vendor on the platform, so whose fabric a row is
+    // belongs beside the name. The CSV export has always included it.
+    id: 'vendor',
+    header: 'Vendor',
+    cell: ({ row }) => (
+      <span className="text-sm text-gray-700 dark:text-gray-200">
+        {getProductVendorName(row.original)}
+      </span>
+    ),
+    enableSorting: false,
+  },
+  {
     id: 'pricePerYard',
     header: 'Price per yard',
     cell: ({ row }) => (
@@ -63,9 +76,13 @@ export const createFabricProductsColumns = ({
     enableSorting: false,
   },
   {
-    id: 'subCategory',
-    header: 'Sub-category',
-    cell: ({ row }) => textCell(getFabricSubCategory(row.original)),
+    // What the fabric IS — cotton, silk, ankara. The vendor console has always
+    // shown this; admin had no column for it. It replaces Sub-category, which
+    // read overlapping fields to Category (`taxonomy.categories[0]` in both)
+    // and so usually rendered the same text twice.
+    id: 'material',
+    header: 'Material',
+    cell: ({ row }) => textCell(getFabricMaterial(row.original)),
     enableSorting: false,
   },
   {
@@ -102,7 +119,7 @@ export const createFabricProductsColumns = ({
   },
   {
     id: 'status',
-    header: 'Product Status',
+    header: 'Status',
     cell: ({ row }) => <ProductStatusBadge product={row.original} />,
     enableSorting: false,
   },
