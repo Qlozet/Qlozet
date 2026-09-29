@@ -50,7 +50,7 @@ export const createCustomersTableColumns = ({
   },
   {
     id: 'totalOrders',
-    size: 140,
+    size: 116,
     header: 'Total orders',
     cell: ({ row }) => (
       <div className="text-sm text-gray-600 dark:text-gray-300">
@@ -61,7 +61,7 @@ export const createCustomersTableColumns = ({
   },
   {
     id: 'status',
-    size: 140,
+    size: 104,
     header: 'Status',
     cell: ({ row }) => {
       const status = getCustomerStatus(row.original);
