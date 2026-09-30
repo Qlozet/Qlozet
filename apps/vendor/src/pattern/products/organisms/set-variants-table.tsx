@@ -50,6 +50,20 @@ interface SetVariantsTableProps {
   productName?: string;
 }
 
+/**
+ * The sizes to show for a row: the standard ones in their proper order,
+ * followed by anything else the row carries.
+ *
+ * Both render sites used to iterate ALL_SIZES and keep the matches, which
+ * silently hid any other size - it stayed in availableSizes, got submitted,
+ * and could not be seen or removed. Sizes do not all come from the picker:
+ * older products and imports carry their own labels.
+ */
+const orderedSizes = (availableSizes: string[]): string[] => [
+  ...ALL_SIZES.filter((s) => availableSizes.includes(s)),
+  ...availableSizes.filter((s) => !ALL_SIZES.includes(s as SizeKey)),
+];
+
 /** Uppercase alphanumerics from the first word(s), for a readable code. */
 const codeFrom = (value: string | undefined, length: number): string =>
   (value ?? '')
@@ -227,9 +241,7 @@ export const SetVariantsTable = ({
                   {/* Available sizes are read-only here — set when the variant was
                   added in Select Options. */}
                   <div className="flex flex-1 flex-wrap gap-2">
-                    {ALL_SIZES.filter((s) =>
-                      variant.availableSizes.includes(s)
-                    ).map((size) => (
+                    {orderedSizes(variant.availableSizes).map((size) => (
                       <span
                         key={size}
                         className="min-w-[44px] rounded-md border border-input px-3 py-1.5 text-center text-sm text-foreground"
@@ -346,9 +358,7 @@ export const SetVariantsTable = ({
                     </div>
 
                     <div className="space-y-3 pt-3">
-                      {ALL_SIZES.filter((s) =>
-                        variant.availableSizes.includes(s)
-                      ).map((size) => {
+                      {orderedSizes(variant.availableSizes).map((size) => {
                         const detail =
                           variant.details[size] ?? makeSizeDetail();
                         return (
