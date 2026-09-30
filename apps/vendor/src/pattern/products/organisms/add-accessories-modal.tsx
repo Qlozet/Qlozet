@@ -25,6 +25,7 @@ import NiceModal, { create, useModal } from '@ebay/nice-modal-react';
 import { VariantSelectOptions } from './variant-select-options';
 import { AVAILABLE_COLORS, ColorOption } from '../types/variant.types';
 import {
+  ALL_SIZES,
   SetVariantsTable,
   VariantRow,
   makeSizeDetail,
@@ -194,10 +195,16 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
             .map((r) => palette.find((c) => c.hex === r.colorHex)?.value)
             .filter(Boolean) as string[]
         );
+        // Only sizes the picker actually offers. The neutral label given to
+        // a size-less legacy row is not one of them, and seeding it here made
+        // "Add variants" stamp that phantom size onto every other colour.
+        const offered = new Set<string>(
+          ALL_SIZES.map((size) => size.toLowerCase())
+        );
         setSelectedSizes(
-          Array.from(new Set(loaded.flatMap((r) => r.availableSizes))).map(
-            (size) => size.toLowerCase()
-          )
+          Array.from(new Set(loaded.flatMap((r) => r.availableSizes)))
+            .map((size) => size.toLowerCase())
+            .filter((size) => offered.has(size))
         );
       }
     }
