@@ -123,6 +123,83 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
         setPreviewUrl(imgObj.url);
         setExistingImage(imgObj);
       }
+
+      // Variants. This effect used to stop at the image above, so opening an
+      // accessory to edit it showed an EMPTY variants table - and because the
+      // save builds its payload from that table, the next save posted
+      // `variants: []` and deleted the ones already stored.
+      //
+      // The API keeps accessory variants as a flat list, one row per
+      // colour+size; this table is grouped by colour with the sizes inside, so
+      // they are regrouped on the way in.
+      const rawVariants: any[] = inner?.variants ?? [];
+      if (rawVariants.length > 0) {
+        const rows = new Map<string, VariantRow>();
+        const extraColors: ColorOption[] = [];
+
+        rawVariants.forEach((v: any, idx: number) => {
+          const hex = v?.color?.hex || '';
+          const name = v?.color?.name || '';
+          const key = (hex || name || 'unspecified').toLowerCase();
+
+          let row = rows.get(key);
+          if (!row) {
+            row = {
+              id: `loaded-acc-${idx}`,
+              colorHex: hex,
+              label: name,
+              availableSizes: [],
+              details: {},
+              images: (v?.images ?? [])
+                .map((i: any) => (typeof i === 'string' ? i : i?.url))
+                .filter(Boolean),
+              expanded: false,
+              selected: false,
+            };
+            rows.set(key, row);
+
+            // A colour the vendor typed in themselves is not in
+            // AVAILABLE_COLORS, so it has to be re-registered or the picker
+            // shows it unselected and "Add variants" offers it all over again.
+            if (hex && !AVAILABLE_COLORS.find((c) => c.hex === hex)) {
+              extraColors.push({
+                value: (name || hex).toLowerCase().replace(/\s+/g, '-'),
+                label: name || hex,
+                hex,
+              });
+            }
+          }
+
+          // Rows written before the size field was fixed come back without
+          // one; they are still real stock, so they load under a neutral
+          // label rather than being dropped.
+          const size =
+            typeof v?.size === 'string' && v.size.trim()
+              ? v.size.trim()
+              : 'One size';
+          if (!row.availableSizes.includes(size)) row.availableSizes.push(size);
+          row.details[size] = {
+            ...makeSizeDetail(),
+            stock: v?.stock || 0,
+            sku: v?.sku || '',
+          };
+        });
+
+        const loaded = Array.from(rows.values());
+        const palette = [...AVAILABLE_COLORS, ...extraColors];
+        setVariants(loaded);
+        if (extraColors.length > 0) setCustomColors(extraColors);
+        setSelectedColors(
+          loaded
+            .map((r) => palette.find((c) => c.hex === r.colorHex)?.value)
+            .filter(Boolean) as string[]
+        );
+        setSelectedSizes(
+          Array.from(new Set(loaded.flatMap((r) => r.availableSizes))).map(
+            (size) => size.toLowerCase()
+          )
+        );
+      }
     }
   }, [productData]);
 
