@@ -68,6 +68,18 @@ export interface BusinessProfileResponse {
   accepts_external_fabric?: boolean;
   /** Whether this vendor takes bespoke / made-to-measure work. */
   accepts_bespoke?: boolean;
+  /**
+   * Vendor social handles - handles, never URLs. The backend reduces a pasted
+   * profile URL to its handle; the storefront builds the link.
+   */
+  social_links?: {
+    instagram?: string;
+    twitter?: string;
+    tiktok?: string;
+    youtube?: string;
+    pinterest?: string;
+  };
+
   // ─── Order settings ───
   // Flat fields, exactly like accepts_external_fabric. The backend also returns
   // a nested `order_settings` object with similarly-named fields — read these
@@ -118,6 +130,17 @@ export interface UpdateBusinessProfilePayload {
 
 export interface UpdateBusinessProfileDetailsPayload {
   business_name?: string;
+  /**
+   * Vendor social handles - handles, never URLs. The backend reduces a pasted
+   * profile URL to its handle; the storefront builds the link.
+   */
+  social_links?: {
+    instagram?: string;
+    twitter?: string;
+    tiktok?: string;
+    youtube?: string;
+    pinterest?: string;
+  };
   business_email?: string;
   business_phone_number?: string;
   website?: string;

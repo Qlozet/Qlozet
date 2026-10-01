@@ -40,6 +40,14 @@ const organizationProfileSchema = z.object({
   email: z.string().email('Invalid email address'),
   phoneNumber: z.string().min(1, 'Phone number is required'),
   website: z.string().optional(),
+  // Handles, not URLs. The backend reduces a pasted profile URL to its
+  // handle and the storefront builds the link, so a vendor can paste
+  // whatever their share sheet gave them.
+  instagram: z.string().optional(),
+  twitter: z.string().optional(),
+  tiktok: z.string().optional(),
+  youtube: z.string().optional(),
+  pinterest: z.string().optional(),
   timeZone: z.string().optional(),
   registrationId: z.string().optional(),
   about: z.string().optional(),
@@ -73,6 +81,11 @@ export const OrganizationProfileForm: React.FC<
       email: initialData?.email || '',
       phoneNumber: initialData?.phoneNumber || '',
       website: initialData?.website || '',
+      instagram: initialData?.instagram || '',
+      twitter: initialData?.twitter || '',
+      tiktok: initialData?.tiktok || '',
+      youtube: initialData?.youtube || '',
+      pinterest: initialData?.pinterest || '',
       timeZone: initialData?.timeZone || '',
       registrationId: initialData?.registrationId || '',
       about: initialData?.about || '',
@@ -97,6 +110,11 @@ export const OrganizationProfileForm: React.FC<
         email: initialData.email || '',
         phoneNumber: initialData.phoneNumber || '',
         website: initialData.website || '',
+        instagram: initialData.instagram || '',
+        twitter: initialData.twitter || '',
+        tiktok: initialData.tiktok || '',
+        youtube: initialData.youtube || '',
+        pinterest: initialData.pinterest || '',
         timeZone: initialData.timeZone || '',
         registrationId: initialData.registrationId || '',
         about: initialData.about || '',
@@ -347,6 +365,136 @@ export const OrganizationProfileForm: React.FC<
                       className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
                       {...field}
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Instagram */}
+            <FormField
+              control={form.control}
+              name="instagram"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Instagram
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+                        @
+                      </span>
+                      <Input
+                        placeholder="yourhandle"
+                        className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 pl-7"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Twitter / X */}
+            <FormField
+              control={form.control}
+              name="twitter"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Twitter / X
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+                        @
+                      </span>
+                      <Input
+                        placeholder="yourhandle"
+                        className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 pl-7"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* TikTok */}
+            <FormField
+              control={form.control}
+              name="tiktok"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    TikTok
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+                        @
+                      </span>
+                      <Input
+                        placeholder="yourhandle"
+                        className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 pl-7"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* YouTube */}
+            <FormField
+              control={form.control}
+              name="youtube"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    YouTube
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+                        @
+                      </span>
+                      <Input
+                        placeholder="yourhandle"
+                        className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 pl-7"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Pinterest */}
+            <FormField
+              control={form.control}
+              name="pinterest"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Pinterest
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+                        @
+                      </span>
+                      <Input
+                        placeholder="yourhandle"
+                        className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 pl-7"
+                        {...field}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
