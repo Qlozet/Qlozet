@@ -14,7 +14,11 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 
-type UploadType = 'logo' | 'svg_logo' | 'cover' | 'cac';
+// No 'cac'. The CAC certificate is evidence for verification, not a
+// storefront asset, and is filed from Get Verified - beside the RC number
+// check it supports, through an endpoint that accepts a PDF. This card only
+// handles the three images the storefront renders.
+type UploadType = 'logo' | 'svg_logo' | 'cover';
 
 // Local overrides: `null` = no local change yet (use whatever the API returned),
 // `''` = the vendor removed the file, anything else = just-uploaded URL.
@@ -26,9 +30,7 @@ const payloadKeyFor = (type: UploadType): string =>
     ? 'business_logo_url'
     : type === 'svg_logo'
       ? 'business_logo_svg_url'
-      : type === 'cover'
-        ? 'cover_image_url'
-        : 'cac_document_url';
+      : 'cover_image_url';
 
 // Cloudinary URLs end in the stored file name — good enough to confirm to the
 // vendor *which* file is on record.
@@ -82,8 +84,6 @@ interface VendorProfileCardProps {
   logoUrl?: string;
   svgLogoUrl?: string;
   coverImageUrl?: string;
-  /** CAC documents already on the business profile (`cac_document_url`). */
-  cacDocumentUrls?: string[];
   themeColor?: string;
   className?: string;
 }
@@ -187,20 +187,17 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   logoUrl,
   svgLogoUrl,
   coverImageUrl,
-  cacDocumentUrls,
   themeColor,
   className,
 }) => {
   const logoInputRef = useRef<HTMLInputElement>(null);
   const svgLogoInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
-  const cacInputRef = useRef<HTMLInputElement>(null);
 
   // Local state for uploaded images (shown immediately after upload)
   const [localLogo, setLocalLogo] = useState<string | null>(null);
   const [localSvgLogo, setLocalSvgLogo] = useState<string | null>(null);
   const [localCover, setLocalCover] = useState<string | null>(null);
-  const [localCac, setLocalCac] = useState<string | null>(null);
   // Which upload is in flight — the mutation's own isLoading is shared by all
   // four, which would otherwise spin every control at once.
   const [uploadingType, setUploadingType] = useState<UploadType | null>(null);
@@ -245,7 +242,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
 
       // Save URL to business profile
       await updateBusinessDetails({
-        [payloadKeyFor(type)]: type === 'cac' ? [imageUrl] : imageUrl,
+        [payloadKeyFor(type)]: imageUrl,
       } as any).unwrap();
 
       // Update local state to show the image immediately
@@ -255,12 +252,9 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
       } else if (type === 'svg_logo') {
         setLocalSvgLogo(imageUrl);
         toast.success('SVG/PNG logo uploaded successfully!');
-      } else if (type === 'cover') {
+      } else {
         setLocalCover(imageUrl);
         toast.success('Cover image uploaded successfully!');
-      } else {
-        setLocalCac(imageUrl);
-        toast.success('CAC document uploaded successfully!');
       }
     } catch (error: any) {
       toast.error(readApiError(error, 'Failed to upload image'));
@@ -269,19 +263,17 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
     }
   };
 
-  // Clearing sends the empty value for that field — [] for the CAC list, '' for
-  // the single-URL fields.
+  // Clearing sends '' for that field.
   const handleRemove = async (type: UploadType, label: string) => {
     setRemovingType(type);
     try {
       await updateBusinessDetails({
-        [payloadKeyFor(type)]: type === 'cac' ? [] : '',
+        [payloadKeyFor(type)]: '',
       } as any).unwrap();
 
       if (type === 'logo') setLocalLogo('');
       else if (type === 'svg_logo') setLocalSvgLogo('');
-      else if (type === 'cover') setLocalCover('');
-      else setLocalCac('');
+      else setLocalCover('');
 
       toast.success(`${label} removed`);
     } catch (error: any) {
@@ -307,11 +299,6 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   const displayLogo = resolveFile(localLogo, logoUrl);
   const displaySvgLogo = resolveFile(localSvgLogo, svgLogoUrl);
   const displayCover = resolveFile(localCover, coverImageUrl);
-  // The API stores CAC as a list; the most recent upload is the one to show.
-  const displayCac = resolveFile(
-    localCac,
-    cacDocumentUrls?.[cacDocumentUrls.length - 1]
-  );
 
   const getStatusColor = () => {
     switch (status) {
@@ -362,13 +349,6 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
           accept="image/png,image/jpeg,image/webp"
           className="hidden"
           onChange={(e) => handleFileChange(e, 'cover')}
-        />
-        <input
-          ref={cacInputRef}
-          type="file"
-          accept="image/png,image/jpeg,application/pdf"
-          className="hidden"
-          onChange={(e) => handleFileChange(e, 'cac')}
         />
 
         {/* Cover Image Section (Touches edges). Backed by the theme colour so it
@@ -558,16 +538,6 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
           disabled={busy}
           onSelect={() => coverInputRef.current?.click()}
           onRemove={() => handleRemove('cover', 'Cover image')}
-        />
-
-        <UploadRow
-          label="CAC Document"
-          fileUrl={displayCac}
-          uploading={uploadingType === 'cac'}
-          removing={removingType === 'cac'}
-          disabled={busy}
-          onSelect={() => cacInputRef.current?.click()}
-          onRemove={() => handleRemove('cac', 'CAC document')}
         />
       </div>
     </div>

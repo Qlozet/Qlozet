@@ -6,7 +6,7 @@
 // Registered Business credential). Each card collapses into a summary once
 // its check passes.
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import {
   BadgeCheck,
@@ -25,9 +25,12 @@ import {
   useGetVerificationQuery,
   useVerifyBankMutation,
   useVerifyCacMutation,
+  useFileCacDocumentMutation,
   useVerifyPayoutBankMutation,
   useVerifyVninMutation,
 } from '@/redux/services/verification/verification.api-slice';
+import { useUploadDocumentMutation } from '@/redux/services/uploads/uploads.api-slice';
+import { readApiError } from '@/redux/services/types';
 import { useGetPayoutAccountQuery } from '@/redux/services/wallet/wallet.api-slice';
 
 // CBN bank codes for NUBAN resolution.
@@ -143,6 +146,9 @@ export const VerificationTemplate = () => {
   const { data: payoutRes } = useGetPayoutAccountQuery();
   const payout = payoutRes?.data;
   const [verifyCac, cacState] = useVerifyCacMutation();
+  const [uploadDocument, uploadState] = useUploadDocumentMutation();
+  const [fileCacDocument, fileState] = useFileCacDocumentMutation();
+  const cacFileRef = useRef<HTMLInputElement>(null);
 
   const [vnin, setVnin] = useState('');
   const [firstname, setFirstname] = useState('');
@@ -204,6 +210,28 @@ export const VerificationTemplate = () => {
       }
     } catch (err) {
       toast.error(errText(err, 'Bank verification failed — try again.'));
+    }
+  };
+
+  /**
+   * Upload the certificate, then file it against the business.
+   *
+   * Two steps because the upload returns a URL the API then records - and
+   * deliberately independent of the RC-number check: the document matters
+   * most when that check cannot settle things.
+   */
+  const submitCacDocument = async (file: File) => {
+    try {
+      const uploaded = await uploadDocument(file).unwrap();
+      const url = uploaded?.data?.url;
+      if (!url) {
+        toast.error('Upload failed — no document URL returned.');
+        return;
+      }
+      await fileCacDocument({ document_url: url }).unwrap();
+      toast.success('Certificate filed.');
+    } catch (err) {
+      toast.error(readApiError(err, 'Could not save that document.'));
     }
   };
 
@@ -431,8 +459,9 @@ export const VerificationTemplate = () => {
           <div className="space-y-4">
             <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
               Registered with the Corporate Affairs Commission? Confirm your
-              RC/BN number for instant registry confirmation — the CAC document
-              you uploaded stays on file as supporting evidence.
+              RC/BN number for instant registry confirmation. You can also file
+              the certificate itself — we only need it if the registry lookup
+              cannot confirm your number.
             </p>
             <Input
               className={inputCls}
@@ -451,6 +480,44 @@ export const VerificationTemplate = () => {
               )}
               {cacState.isLoading ? 'Checking…' : 'Verify registration'}
             </button>
+
+            {/* The certificate itself. It used to be uploaded from Settings,
+                in the profile card beside the logo and cover image, where
+                nothing explained what it was for - a legal document on the
+                same footing as a branding asset. It belongs with the check it
+                supports. */}
+            <div className="border-t border-border/60 pt-4">
+              <input
+                ref={cacFileRef}
+                type="file"
+                accept="application/pdf,image/jpeg,image/png"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  // Reset first: picking the same file twice should re-upload.
+                  e.target.value = '';
+                  if (file) submitCacDocument(file);
+                }}
+              />
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-medium transition-colors hover:bg-muted disabled:opacity-50"
+                  disabled={uploadState.isLoading || fileState.isLoading}
+                  onClick={() => cacFileRef.current?.click()}
+                >
+                  {(uploadState.isLoading || fileState.isLoading) && (
+                    <Loader2 className="size-4 animate-spin" />
+                  )}
+                  {uploadState.isLoading || fileState.isLoading
+                    ? 'Saving…'
+                    : 'Attach CAC certificate'}
+                </button>
+                <span className="text-xs text-grey2 dark:text-gray-400">
+                  Optional · PDF, JPEG or PNG
+                </span>
+              </div>
+            </div>
           </div>
         )}
       </Card>
