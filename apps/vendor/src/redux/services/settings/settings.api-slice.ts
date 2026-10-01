@@ -66,6 +66,8 @@ export interface BusinessProfileResponse {
   /** Storefront accent colour (hex). */
   theme_color?: string;
   accepts_external_fabric?: boolean;
+  /** Whether this vendor takes bespoke / made-to-measure work. */
+  accepts_bespoke?: boolean;
   // ─── Order settings ───
   // Flat fields, exactly like accepts_external_fabric. The backend also returns
   // a nested `order_settings` object with similarly-named fields — read these
@@ -202,7 +204,10 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
         | 'return_window_days'
         | 'custom_order_options'
         | 'default_currency'
-      > & { accepts_external_fabric?: boolean }
+      > & {
+        accepts_external_fabric?: boolean;
+        accepts_bespoke?: boolean;
+      }
     >({
       query: (data) => ({
         url: '/business/profile',

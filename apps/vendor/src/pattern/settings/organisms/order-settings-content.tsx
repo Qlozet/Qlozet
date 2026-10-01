@@ -6,7 +6,7 @@ import { APP_ROUTES } from '@/lib/routes';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Package, Wallet, ChevronRight, Loader2 } from 'lucide-react';
+import { Package, Wallet, ChevronRight, Loader2, Scissors } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import {
@@ -192,12 +192,21 @@ export const OrderSettingsContent = () => {
   const [settings, setSettings] = useState<OrderSettingsData>(BLANK_SETTINGS);
   const [hasChanges, setHasChanges] = useState(false);
   const [acceptsExternalFabric, setAcceptsExternalFabric] = useState(true);
+  const [acceptsBespoke, setAcceptsBespoke] = useState(true);
   const isSavingFabric = isSaving;
 
   // Sync external fabric toggle from business profile
   useEffect(() => {
     if (businessProfile?.accepts_external_fabric !== undefined) {
       setAcceptsExternalFabric(businessProfile.accepts_external_fabric);
+    }
+  }, [businessProfile]);
+
+  // Same for bespoke. Undefined means a profile saved before the field
+  // existed, which the backend treats as eligible - so the toggle shows on.
+  useEffect(() => {
+    if (businessProfile?.accepts_bespoke !== undefined) {
+      setAcceptsBespoke(businessProfile.accepts_bespoke);
     }
   }, [businessProfile]);
 
@@ -252,6 +261,21 @@ export const OrderSettingsContent = () => {
       );
     } catch (error: any) {
       setAcceptsExternalFabric(!value); // revert on error
+      toast.error(readApiError(error, 'Failed to update setting'));
+    }
+  };
+
+  const handleBespokeToggle = async (value: boolean) => {
+    setAcceptsBespoke(value);
+    try {
+      await updateBusinessSettings({ accepts_bespoke: value }).unwrap();
+      toast.success(
+        value
+          ? 'You will now receive bespoke requests'
+          : 'You will no longer receive bespoke requests'
+      );
+    } catch (error: any) {
+      setAcceptsBespoke(!value); // revert on error
       toast.error(readApiError(error, 'Failed to update setting'));
     }
   };
@@ -348,6 +372,38 @@ export const OrderSettingsContent = () => {
           <Switch
             checked={acceptsExternalFabric}
             onCheckedChange={handleExternalFabricToggle}
+            disabled={isSavingFabric}
+          />
+        </div>
+      </div>
+
+      {/* Bespoke Work — saved via the business profile API, like the card
+          above. Deliberately NOT a "vendor type": what a vendor sells is
+          already visible from their catalogue, and the one thing it cannot
+          show is whether they take custom work. */}
+      <div className="bg-white dark:bg-card dark:border dark:border-white/10 rounded-xl p-5 lg:p-6 custom-card-shadow">
+        <div className="flex items-center gap-2.5 mb-5 pb-4 border-b border-border/60">
+          <div className="flex items-center justify-center size-8 rounded-lg bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400">
+            <Scissors className="size-4" />
+          </div>
+          <h3 className="text-sm font-semibold text-foreground">
+            Bespoke Work
+          </h3>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-foreground">
+              Accept bespoke requests
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {acceptsBespoke
+                ? 'Customers designing a garment in the studio can send you a quote request. You set the price and timeline before committing to anything.'
+                : 'You will not appear to customers looking for a tailor, and existing quotes are unaffected.'}
+            </p>
+          </div>
+          <Switch
+            checked={acceptsBespoke}
+            onCheckedChange={handleBespokeToggle}
             disabled={isSavingFabric}
           />
         </div>
