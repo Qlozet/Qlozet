@@ -28,6 +28,35 @@ interface VendorInfoGridProps {
   onViewCustomers?: () => void;
 }
 
+/**
+ * The vendor's social handles, as links.
+ *
+ * Stored as handles, never URLs, so the link is built here — the same rule the
+ * shop follows. Shown on this page because a vendor's feed of finished work is
+ * often the clearest evidence of whether they are real and whether the work is
+ * theirs, which is exactly the judgement this page exists to support.
+ */
+const SOCIAL_PLATFORMS = [
+  { key: 'instagram', label: 'Instagram', base: 'https://instagram.com/' },
+  { key: 'tiktok', label: 'TikTok', base: 'https://tiktok.com/@' },
+  { key: 'youtube', label: 'YouTube', base: 'https://youtube.com/@' },
+  { key: 'twitter', label: 'Twitter', base: 'https://x.com/' },
+  { key: 'pinterest', label: 'Pinterest', base: 'https://pinterest.com/' },
+] as const;
+
+const readSocials = (
+  value: unknown
+): { key: string; label: string; handle: string; url: string }[] => {
+  if (!value || typeof value !== 'object') return [];
+  const links = value as Record<string, unknown>;
+  return SOCIAL_PLATFORMS.flatMap(({ key, label, base }) => {
+    const raw = links[key];
+    const handle = typeof raw === 'string' ? raw.trim().replace(/^@+/, '') : '';
+    if (!handle) return [];
+    return [{ key, label, handle, url: `${base}${handle}` }];
+  });
+};
+
 const num = (value: unknown): number | undefined =>
   typeof value === 'number' ? value : undefined;
 
@@ -110,6 +139,7 @@ export const VendorInfoGrid = ({
 
   // A "View all" link is only offered when there's somewhere to go.
   const cacUrl = readFirstUrl(v.cac_document_url);
+  const socials = readSocials(v.social_links);
   const logoUrl =
     str(v.business_logo_svg_url) ?? str(v.business_logo_url) ?? str(v.logo);
   const vendorName = getVendorName(vendor ?? ({} as Business));
@@ -352,6 +382,19 @@ export const VendorInfoGrid = ({
               : undefined
           }
         />
+        {/* One card per handle the vendor filled in. Nothing renders when
+            they have added none — an empty "Social profiles" row would just
+            be noise on a page that is already dense. */}
+        {socials.map((social) => (
+          <VendorInfoCard
+            key={social.key}
+            label={social.label}
+            value={`@${social.handle}`}
+            onValueClick={() =>
+              window.open(social.url, '_blank', 'noopener,noreferrer')
+            }
+          />
+        ))}
         <VendorInfoCard
           label="Company PNG logo"
           value={logoUrl ? 'View logo' : 'Not uploaded'}

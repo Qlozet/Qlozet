@@ -16,6 +16,7 @@ import { VendorDetailHeader } from '@/pattern/vendors/details/organisms/vendor-d
 import { VendorInfoGrid } from '@/pattern/vendors/details/organisms/vendor-info-grid';
 import { VendorAnalyticsSection } from '@/pattern/vendors/details/organisms/vendor-analytics-section';
 import { TopProductsTable } from '@/pattern/vendors/details/organisms/top-products-table';
+import { VendorCatalogueSection } from '@/pattern/vendors/details/organisms/vendor-catalogue-section';
 import { WalletDetailsSection } from '@/pattern/vendors/details/organisms/wallet-details-section';
 import { VendorNotesSection } from '@/pattern/vendors/details/organisms/vendor-notes-section';
 import { ActivityLogTable } from '@/pattern/vendors/details/organisms/activity-log-table';
@@ -111,10 +112,15 @@ const VendorDetailsPage = () => {
       {/* 3. Analytics */}
       <VendorAnalyticsSection metrics={metrics} businessId={id} />
 
-      {/* 4. Top products */}
+      {/* 4. What they have listed.
+             The catalogue comes first and owns the anchor: "View all products"
+             from the info grid should land on everything they have made, not
+             on a sales ranking that is empty for every vendor still awaiting
+             approval. Top products stays below for vendors who are trading. */}
       <div id={PRODUCTS_ANCHOR} className="scroll-mt-24">
-        <TopProductsTable businessId={id} />
+        <VendorCatalogueSection businessId={id} />
       </div>
+      <TopProductsTable businessId={id} />
 
       {/* 5. Wallet details */}
       <WalletDetailsSection vendor={vendor} metrics={metrics} />
