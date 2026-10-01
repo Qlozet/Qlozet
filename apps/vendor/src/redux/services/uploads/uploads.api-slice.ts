@@ -41,6 +41,21 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
       },
     }),
 
+    // Documents, not images: /uploads/profile only admits JPEG, PNG and WebP,
+    // so a PDF certificate failed there with "Failed to upload image".
+    uploadDocument: builder.mutation<ApiResponse<UploadedImage>, File>({
+      query: (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        return {
+          url: '/uploads/document',
+          method: 'POST',
+          body: formData,
+          formData: true,
+        };
+      },
+    }),
+
     uploadProfileImage: builder.mutation<ApiResponse<UploadedImage>, File>({
       query: (file) => {
         const formData = new FormData();
@@ -95,5 +110,6 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
 export const {
   useUploadProductImageMutation,
   useUploadProfileImageMutation,
+  useUploadDocumentMutation,
   useUploadOutfitImagesMutation,
 } = uploadsApiSlice;

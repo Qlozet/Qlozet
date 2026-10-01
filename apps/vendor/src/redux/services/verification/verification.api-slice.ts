@@ -76,6 +76,21 @@ export const verificationApiSlice = verificationAPI.injectEndpoints({
       invalidatesTags: ['Verification'],
     }),
 
+    // File the CAC certificate as supporting evidence. Separate from the RC
+    // number check, and not conditional on it: the document matters most when
+    // the automated lookup cannot settle things.
+    fileCacDocument: builder.mutation<
+      ApiResponse<{ cac_document_url: string[] }>,
+      { document_url: string }
+    >({
+      query: (body) => ({
+        url: '/verification/business/cac/document',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Verification'],
+    }),
+
     // Verify the already-linked payout account (no body — the backend reads
     // the saved account and matches it against the verified identity name).
     verifyPayoutBank: builder.mutation<
@@ -100,6 +115,7 @@ export const {
   useGetVerificationQuery,
   useVerifyVninMutation,
   useVerifyCacMutation,
+  useFileCacDocumentMutation,
   useVerifyBankMutation,
   useVerifyPayoutBankMutation,
 } = verificationApiSlice;

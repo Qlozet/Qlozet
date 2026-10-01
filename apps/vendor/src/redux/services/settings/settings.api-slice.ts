@@ -125,6 +125,8 @@ export interface UpdateBusinessProfilePayload {
 }
 
 export interface UpdateBusinessProfileDetailsPayload {
+  // No cac_document_url: the certificate is filed through
+  // POST /verification/business/cac/document, not a profile update.
   business_name?: string;
   /**
    * Vendor social handles - handles, never URLs. The backend reduces a pasted
@@ -145,7 +147,6 @@ export interface UpdateBusinessProfileDetailsPayload {
   business_logo_url?: string;
   business_logo_svg_url?: string;
   cover_image_url?: string;
-  cac_document_url?: string[];
   /** Storefront accent colour (hex, e.g. '#8D7F72'). */
   theme_color?: string;
   // ─── Order settings (see BusinessProfileResponse) ───
