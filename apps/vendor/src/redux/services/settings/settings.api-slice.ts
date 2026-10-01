@@ -25,8 +25,6 @@ interface VendorDetailsResponse {
   country: string;
   timeZone: string;
   city: string;
-  bvn?: string;
-  nin?: string;
 }
 
 // Business profile as returned by GET /business
@@ -60,8 +58,6 @@ export interface BusinessProfileResponse {
   business_logo_svg_url?: string;
   cover_image_url?: string;
   cac_document_url?: string[];
-  bvn?: string;
-  nin?: string;
   status: string;
   /** Storefront accent colour (hex). */
   theme_color?: string;
@@ -150,8 +146,6 @@ export interface UpdateBusinessProfileDetailsPayload {
   business_logo_svg_url?: string;
   cover_image_url?: string;
   cac_document_url?: string[];
-  nin?: string;
-  bvn?: string;
   /** Storefront accent colour (hex, e.g. '#8D7F72'). */
   theme_color?: string;
   // ─── Order settings (see BusinessProfileResponse) ───
@@ -284,8 +278,6 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
           country: data.country,
           timeZone: data.timeZone,
           city: data.city,
-          bvn: data.bvn,
-          nin: data.nin,
         },
       }),
       invalidatesTags: ['VendorDetails'],

@@ -22,8 +22,6 @@ interface ShopDetails {
   email: string;
   city: string;
   country: string;
-  nin: string;
-  bvn: string;
   logo: string[];
   cacDocs: string[];
 }

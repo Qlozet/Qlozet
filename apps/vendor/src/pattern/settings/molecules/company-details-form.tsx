@@ -43,8 +43,6 @@ export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
       timeZone: initialData?.timeZone || '',
       phone: initialData?.phone || '',
       email: initialData?.email || '',
-      nin: initialData?.nin || '',
-      bvn: initialData?.bvn || '',
       logo: initialData?.logo || [],
       cacDocs: initialData?.cacDocs || [],
     },
@@ -181,34 +179,6 @@ export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
                   <FormLabel>Country</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter country" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="nin"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>NIN (Optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter NIN" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="bvn"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>BVN (Optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter BVN" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

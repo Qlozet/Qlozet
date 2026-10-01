@@ -181,8 +181,6 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
           website: formData.website,
           description: formData.about,
           year_founded: formData.yearFounded,
-          nin: formData.nin,
-          bvn: formData.bvn,
         },
         {
           business_name: businessData?.business_name,
@@ -191,8 +189,6 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
           website: businessData?.website,
           description: businessData?.description,
           year_founded: businessData?.year_founded,
-          nin: businessData?.nin,
-          bvn: businessData?.bvn,
         }
       );
 
@@ -351,8 +347,6 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
                 pinterest: businessData?.social_links?.pinterest || '',
                 registrationId: businessData?._id || '',
                 about: businessData?.description || '',
-                nin: businessData?.nin || '',
-                bvn: businessData?.bvn || '',
                 businessName: businessData?.business_name || '',
                 city: businessData?.city || '',
                 timeZone: businessData?.time_zone || '',
