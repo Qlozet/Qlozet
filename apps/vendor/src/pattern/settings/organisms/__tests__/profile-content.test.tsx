@@ -22,8 +22,6 @@ const business = {
   // Never set by this business: the form seeds these blank.
   website: undefined,
   year_founded: undefined,
-  nin: undefined,
-  bvn: undefined,
   zip_code: undefined,
 };
 
@@ -102,7 +100,7 @@ describe('ProfileContent — organization save', () => {
   });
 
   it('never writes a blank over a field the business never set', async () => {
-    // website, year_founded, nin and bvn are all unset, so the form submits ''.
+    // website and year_founded are unset, so the form submits ''.
     submitOverrides = { city: 'Yaba' };
     render(<ProfileContent />);
     await userEvent.click(screen.getByText('save-org'));

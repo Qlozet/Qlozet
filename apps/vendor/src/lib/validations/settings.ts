@@ -14,8 +14,8 @@ export const companyDetailsSchema = z.object({
   timeZone: z.string().min(1, 'Time zone is required'),
   phone: z.string().min(1, 'Phone number is required'),
   email: z.string().email('Invalid email address'),
-  nin: z.string().optional(),
-  bvn: z.string().optional(),
+  // No nin / bvn. The platform stored both in plaintext and never read
+  // them; identity is established by QoreID verification instead.
   logo: z.array(z.string()).optional(),
   cacDocs: z.array(z.string()).optional(),
 });

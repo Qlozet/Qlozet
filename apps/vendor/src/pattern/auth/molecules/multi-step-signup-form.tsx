@@ -24,12 +24,15 @@ const signupSchema = z
     // Personal Information
     personalName: z.string().min(1, 'Full name is required'),
     phoneName: z.string().min(1, 'Personal phone number is required'),
-    nationalIdentityNumber: z
-      .string()
-      .min(1, 'National Identity Number is required'),
-    bankVerificationNumber: z
-      .string()
-      .min(1, 'Bank Verification Number is required'),
+    // No NIN or BVN. Both were collected and never used, and identity is
+    // established by QoreID verification after signup - against a vNIN the
+    // vendor generates themselves, so the real number is never handled.
+    //
+    // bankVerificationNumber was the worse of the two: required here, listed
+    // in step 2's validation, and its only input commented out. form.trigger
+    // therefore always failed, "Next" did nothing, and no error could render
+    // because the field was not on screen - vendor signup could not be
+    // completed at all.
 
     // Password
     password: z
@@ -81,8 +84,6 @@ export const MultiStepSignupForm: React.FC<MultiStepSignupFormProps> = ({
       businessAddress: '',
       personalName: '',
       phoneName: '',
-      nationalIdentityNumber: '',
-      bankVerificationNumber: '',
       password: '',
       confirmPassword: '',
     },
@@ -101,12 +102,7 @@ export const MultiStepSignupForm: React.FC<MultiStepSignupFormProps> = ({
         ];
         break;
       case 2:
-        fieldsToValidate = [
-          'personalName',
-          'phoneName',
-          'nationalIdentityNumber',
-          'bankVerificationNumber',
-        ];
+        fieldsToValidate = ['personalName', 'phoneName'];
         break;
       case 3:
         fieldsToValidate = ['password', 'confirmPassword'];

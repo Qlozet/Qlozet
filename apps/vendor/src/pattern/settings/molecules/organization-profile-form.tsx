@@ -51,8 +51,8 @@ const organizationProfileSchema = z.object({
   timeZone: z.string().optional(),
   registrationId: z.string().optional(),
   about: z.string().optional(),
-  nin: z.string().optional(),
-  bvn: z.string().optional(),
+  // No nin / bvn. The platform stored both in plaintext and never read
+  // them; identity is established by QoreID verification instead.
 });
 
 type OrganizationProfileData = z.infer<typeof organizationProfileSchema>;
@@ -89,8 +89,6 @@ export const OrganizationProfileForm: React.FC<
       timeZone: initialData?.timeZone || '',
       registrationId: initialData?.registrationId || '',
       about: initialData?.about || '',
-      nin: initialData?.nin || '',
-      bvn: initialData?.bvn || '',
     },
   });
 
@@ -118,8 +116,6 @@ export const OrganizationProfileForm: React.FC<
         timeZone: initialData.timeZone || '',
         registrationId: initialData.registrationId || '',
         about: initialData.about || '',
-        nin: initialData.nin || '',
-        bvn: initialData.bvn || '',
       });
     }
   }, [initialData?.businessName, initialData?.email, initialData?.country]);
@@ -495,50 +491,6 @@ export const OrganizationProfileForm: React.FC<
                         {...field}
                       />
                     </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* NIN */}
-            <FormField
-              control={form.control}
-              name="nin"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
-                    National Identity Number (NIN)
-                    <span className="text-orange-500">ⓘ</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter your 11-digit NIN"
-                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* BVN */}
-            <FormField
-              control={form.control}
-              name="bvn"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
-                    Bank Verification Number (BVN)
-                    <span className="text-orange-500">ⓘ</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter your 11-digit BVN"
-                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
-                      {...field}
-                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

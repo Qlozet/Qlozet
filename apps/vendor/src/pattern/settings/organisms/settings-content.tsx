@@ -31,8 +31,6 @@ interface SettingsContentProps {
     email: string;
     city: string;
     country: string;
-    nin: string;
-    bvn: string;
     logo: string[];
     cacDocs: string[];
     vendorName?: string;
@@ -77,8 +75,6 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
               timeZone: shopDetails.timeZone,
               phone: shopDetails.Phone,
               email: shopDetails.email,
-              nin: shopDetails.nin,
-              bvn: shopDetails.bvn,
               logo: shopDetails.logo,
               cacDocs: shopDetails.cacDocs,
             }}

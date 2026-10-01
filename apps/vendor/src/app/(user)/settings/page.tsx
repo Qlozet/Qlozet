@@ -48,8 +48,6 @@ const SettingsPageContent: React.FC = () => {
         email: '',
         city: '',
         country: '',
-        nin: '',
-        bvn: '',
         logo: [''],
         cacDocs: [''],
       }}

@@ -10,8 +10,6 @@ export interface PersonalInfoData {
   personalName: string;
   personalEmail: string;
   phoneName: string;
-  nationalIdentityNumber: string;
-  bankVerificationNumber: string;
 }
 
 interface SignupStepPersonalProps {
@@ -54,23 +52,6 @@ export const SignupStepPersonal: React.FC<SignupStepPersonalProps> = ({
         name="phoneName"
         label="Personal Phone Number"
       />
-
-      {/* National Identity Number */}
-      <AuthInput
-        control={control}
-        name="nationalIdentityNumber"
-        label="National Identity Number (NIN)"
-        placeholder="Enter your NIN"
-      />
-
-      {/* Bank Verification Number */}
-      {/* <AuthInput
-        control={control}
-        name='bankVerificationNumber'
-        label='Bank Verification Number (BVN)'
-        placeholder='Enter your BVN'
-        description='Your Bank Verification Number for financial verification'
-      /> */}
     </div>
   );
 };
