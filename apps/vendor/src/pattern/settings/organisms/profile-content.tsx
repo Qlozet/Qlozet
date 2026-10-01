@@ -196,6 +196,31 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
         }
       );
 
+      // social_links is a sub-document, so changedFields (which diffs flat
+      // keys) cannot see into it. All five handles are sent together whenever
+      // any one of them changed: PATCH /business/profile does `$set`, which
+      // replaces the whole sub-document, so an omitted handle is a cleared
+      // handle - which is exactly what an emptied field should mean.
+      const SOCIAL_KEYS = [
+        'instagram',
+        'twitter',
+        'tiktok',
+        'youtube',
+        'pinterest',
+      ] as const;
+      const savedSocial = (businessData?.social_links ?? {}) as Record<
+        string,
+        string | undefined
+      >;
+      const nextSocial: Record<string, string> = {};
+      let socialChanged = false;
+      for (const key of SOCIAL_KEYS) {
+        const value = String(formData[key] ?? '').trim();
+        if (value) nextSocial[key] = value;
+        if (value !== (savedSocial[key] ?? '')) socialChanged = true;
+      }
+      if (socialChanged) detailsPatch.social_links = nextSocial;
+
       const requests = [
         ...(Object.keys(addressPatch).length
           ? [updateBusiness(addressPatch).unwrap()]
@@ -319,6 +344,11 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
                 email: businessData?.business_email || '',
                 phoneNumber: businessData?.business_phone_number || '',
                 website: businessData?.website || '',
+                instagram: businessData?.social_links?.instagram || '',
+                twitter: businessData?.social_links?.twitter || '',
+                tiktok: businessData?.social_links?.tiktok || '',
+                youtube: businessData?.social_links?.youtube || '',
+                pinterest: businessData?.social_links?.pinterest || '',
                 registrationId: businessData?._id || '',
                 about: businessData?.description || '',
                 nin: businessData?.nin || '',
