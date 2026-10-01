@@ -13,13 +13,15 @@ import { EscalateVendorModal } from './escalate-vendor-modal';
 import { EditVendorDrawer } from './edit-vendor-drawer';
 import { VendorInfoCard } from '../molecules/vendor-info-card';
 import { VendorDocumentModal } from './vendor-document-modal';
+import {
+  VerificationDecisionModal,
+  type VerificationDecision,
+} from './verification-decision-modal';
 
 interface VendorInfoGridProps {
   vendor?: Business;
   metrics?: VendorDashboardMetrics;
-  onApprove?: () => void;
   onVerify?: () => void;
-  onReject?: () => void;
   onSetInReview?: () => void;
   /** Disables every status button while one of the mutations is in flight. */
   isUpdatingStatus?: boolean;
@@ -98,9 +100,7 @@ const formatJoined = (value?: string): string => {
 export const VendorInfoGrid = ({
   vendor,
   metrics,
-  onApprove,
   onVerify,
-  onReject,
   onSetInReview,
   isUpdatingStatus = false,
   onViewProducts,
@@ -140,6 +140,23 @@ export const VendorInfoGrid = ({
   // A "View all" link is only offered when there's somewhere to go.
   const cacUrl = readFirstUrl(v.cac_document_url);
   const socials = readSocials(v.social_links);
+
+  /**
+   * Decide the verification rather than setting the status directly.
+   *
+   * The plain approve/reject routes move `status` alone and leave
+   * `verification_state` behind, so the two end up disagreeing about the same
+   * vendor — and neither can express "action required", which is the decision
+   * that lets a vendor fix a bad photo instead of being told no forever.
+   */
+  const decide = (decision: VerificationDecision) =>
+    businessId
+      ? NiceModal.show(VerificationDecisionModal, {
+          businessId,
+          vendorName,
+          decision,
+        })
+      : undefined;
   const logoUrl =
     str(v.business_logo_svg_url) ?? str(v.business_logo_url) ?? str(v.logo);
   const vendorName = getVendorName(vendor ?? ({} as Business));
@@ -183,15 +200,27 @@ export const VendorInfoGrid = ({
           <Button
             type="button"
             variant="outline"
-            onClick={onReject}
+            onClick={() => decide('rejected')}
             disabled={isUpdatingStatus || status === 'rejected'}
             className="h-10 cursor-pointer border-destructive/40 text-destructive hover:bg-destructive/5"
           >
             {status === 'rejected' ? 'Rejected' : 'Reject'}
           </Button>
+          {/* The third outcome, and the one the old two buttons could not
+              express: the vendor keeps everything, still cannot sell, and is
+              told in words what to fix. */}
           <Button
             type="button"
-            onClick={onApprove}
+            variant="outline"
+            onClick={() => decide('action_required')}
+            disabled={isUpdatingStatus}
+            className="h-10 cursor-pointer"
+          >
+            Needs fixing
+          </Button>
+          <Button
+            type="button"
+            onClick={() => decide('approved')}
             disabled={isUpdatingStatus || status === 'approved'}
             className="h-10 cursor-pointer gap-2"
           >

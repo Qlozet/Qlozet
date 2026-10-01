@@ -6,9 +6,7 @@ import { APP_ROUTES } from '@/lib/routes';
 import { GoBackButton } from '@/pattern/admin/atoms/go-back-button';
 import {
   useGetBusinessQuery,
-  useApproveBusinessMutation,
   useVerifyBusinessMutation,
-  useRejectBusinessMutation,
   useSetBusinessInReviewMutation,
 } from '@/redux/services/businesses/businesses.api-slice';
 import { useGetVendorDashboardQuery } from '@/redux/services/dashboard/dashboard.api-slice';
@@ -40,17 +38,14 @@ const VendorDetailsPage = () => {
     { skip: !id }
   );
 
-  const [approve, { isLoading: isApproving }] = useApproveBusinessMutation();
   const [verify, { isLoading: isVerifying }] = useVerifyBusinessMutation();
-  const [reject, { isLoading: isRejecting }] = useRejectBusinessMutation();
   const [setInReview, { isLoading: isReviewing }] =
     useSetBusinessInReviewMutation();
 
   const vendor = businessRes?.data;
   const metrics = dashboardRes?.data;
 
-  const isUpdatingStatus =
-    isApproving || isVerifying || isRejecting || isReviewing;
+  const isUpdatingStatus = isVerifying || isReviewing;
 
   // The four status mutations share the same shape; `getBusiness` is
   // invalidated by each, so the header re-renders with the new status.
@@ -89,9 +84,7 @@ const VendorDetailsPage = () => {
           vendor={vendor}
           metrics={metrics}
           isUpdatingStatus={isUpdatingStatus}
-          onApprove={() => runStatusChange(approve, 'Vendor approved')}
           onVerify={() => runStatusChange(verify, 'Vendor verified')}
-          onReject={() => runStatusChange(reject, 'Vendor rejected')}
           onSetInReview={() =>
             runStatusChange(setInReview, 'Vendor marked in review')
           }

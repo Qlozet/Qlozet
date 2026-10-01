@@ -132,6 +132,35 @@ export const businessesApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Business', 'Businesses'],
     }),
 
+    /**
+     * Decide a verification.
+     *
+     * Prefer this over approve/verify/reject for a vendor who has been
+     * through verification: those write the trading status alone and leave
+     * verification_state untouched, so the two fields end up disagreeing
+     * about the same vendor. This moves both, and it is the only route that
+     * can express "action required".
+     */
+    decideVendorVerification: builder.mutation<
+      ApiResponse<{
+        verification_state: string;
+        verification_message: string | null;
+      }>,
+      {
+        businessId: string;
+        decision: 'approved' | 'action_required' | 'rejected';
+        /** Required for anything but approval — the vendor sees only this. */
+        message?: string;
+      }
+    >({
+      query: ({ businessId, decision, message }) => ({
+        url: `/admin/${businessId}/verification-decision`,
+        method: 'POST',
+        body: { decision, message },
+      }),
+      invalidatesTags: ['Business', 'Businesses'],
+    }),
+
     // Set a business to in-review
     setBusinessInReview: builder.mutation<ApiResponse<Business>, string>({
       query: (id) => ({
@@ -148,6 +177,7 @@ export const {
   useGetBusinessesQuery,
   useGetBusinessQuery,
   useApproveBusinessMutation,
+  useDecideVendorVerificationMutation,
   useVerifyBusinessMutation,
   useRejectBusinessMutation,
   useSetBusinessInReviewMutation,
