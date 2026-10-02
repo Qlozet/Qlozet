@@ -11,6 +11,8 @@ import { toast } from 'sonner';
 import {
   BadgeCheck,
   Building2,
+  CheckCircle2,
+  ListChecks,
   Landmark,
   Loader2,
   ShieldCheck,
@@ -34,6 +36,40 @@ import {
 import { useUploadDocumentMutation } from '@/redux/services/uploads/uploads.api-slice';
 import { readApiError } from '@/redux/services/types';
 import { useGetPayoutAccountQuery } from '@/redux/services/wallet/wallet.api-slice';
+
+/**
+ * What a vendor needs in hand before starting.
+ *
+ * Deliberately not saved anywhere: a vNIN expires in about 72 hours, so
+ * storing one only guarantees it is stale when they come back, and an
+ * identity number we hold without a use for is the exact thing this module
+ * was built to avoid.
+ */
+const READINESS: { key: string; title: string; detail: string }[] = [
+  {
+    key: 'vnin',
+    title: 'A virtual NIN, generated today',
+    detail:
+      'Dial *346*3*YourNIN*AgentCode# or use the NIMC app. It expires after a few days, so generate it when you are ready to verify — not in advance.',
+  },
+  {
+    key: 'name',
+    title: 'Your name exactly as it appears on your NIN',
+    detail:
+      'Spelling and order must match the NIMC record, not your business name.',
+  },
+  {
+    key: 'rc',
+    title: 'Your CAC registration number',
+    detail: 'The RC or BN number from your certificate of incorporation.',
+  },
+  {
+    key: 'cac',
+    title: 'Your CAC certificate as a file',
+    detail:
+      'PDF, JPEG or PNG. Optional, but it is what we fall back on if the registry lookup cannot confirm your number.',
+  },
+];
 
 // CBN bank codes for NUBAN resolution.
 const BANKS: { name: string; code: string }[] = [
@@ -277,6 +313,12 @@ export const VerificationTemplate = () => {
     }
   };
 
+  // Nothing left to prepare once every check has passed.
+  const allChecksPassed =
+    identity?.status === 'verified' &&
+    business?.status === 'verified' &&
+    bank?.status === 'verified';
+
   const inputCls = 'h-11';
   const buttonCls =
     'inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50';
@@ -310,6 +352,88 @@ export const VerificationTemplate = () => {
           </Badge>
         )}
       </div>
+
+      {/* Before you start.
+          The failure this prevents: a vendor begins unprepared, fails a check
+          and spends a billed attempt on something they could have fixed in
+          two minutes. It deliberately does not offer to SAVE any of these -
+          a vNIN expires in about 72 hours, so a saved one fails later through
+          no fault of the vendor's, and holding identity numbers we have no
+          use for is the thing this module exists to avoid. Tell them what to
+          bring; hold none of it. */}
+      {!allChecksPassed && (
+        <div className="rounded-xl border border-border bg-[#F8F9FA] p-4 dark:bg-muted/40 sm:p-5">
+          <div className="flex items-center gap-2.5">
+            <ListChecks className="size-4 shrink-0 text-brown3" />
+            <h2 className="text-sm font-semibold text-grey-black dark:text-white">
+              Before you start
+            </h2>
+          </div>
+          <p className="mt-1 text-xs text-grey2 dark:text-gray-400">
+            Have these to hand. The checks run against live registries, so a
+            missing detail means starting over.
+          </p>
+
+          <ul className="mt-4 space-y-3">
+            {READINESS.map((item) => (
+              <li key={item.key} className="flex items-start gap-3">
+                <span
+                  className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border border-grey3/50 text-[10px] text-grey3"
+                  aria-hidden
+                >
+                  •
+                </span>
+                <div className="min-w-0">
+                  <p className="text-xs font-medium text-grey-black dark:text-white">
+                    {item.title}
+                  </p>
+                  <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
+                    {item.detail}
+                  </p>
+                </div>
+              </li>
+            ))}
+
+            {/* The one item we can actually check for them. */}
+            <li className="flex items-start gap-3">
+              {payout ? (
+                <CheckCircle2
+                  className="mt-0.5 size-4 shrink-0 text-emerald-600 dark:text-emerald-400"
+                  aria-hidden
+                />
+              ) : (
+                <span
+                  className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border border-amber-500/60 text-[10px] text-amber-600"
+                  aria-hidden
+                >
+                  !
+                </span>
+              )}
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-grey-black dark:text-white">
+                  A payout account linked
+                </p>
+                <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
+                  {payout ? (
+                    'Linked — we check this one against your verified name, so there is nothing to retype.'
+                  ) : (
+                    <>
+                      Not linked yet.{' '}
+                      <Link
+                        href="/settings?tab=payout"
+                        className="font-medium text-primary underline underline-offset-2"
+                      >
+                        Add it in Settings
+                      </Link>{' '}
+                      before you verify.
+                    </>
+                  )}
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      )}
 
       {/* 1 — Identity */}
       <Card
