@@ -26,6 +26,8 @@ import {
   useVerifyBankMutation,
   useVerifyCacMutation,
   useFileCacDocumentMutation,
+  useAcceptServiceAgreementMutation,
+  useSubmitForReviewMutation,
   useVerifyPayoutBankMutation,
   useVerifyVninMutation,
 } from '@/redux/services/verification/verification.api-slice';
@@ -137,6 +139,29 @@ export const VerificationTemplate = () => {
   const identity = state?.verification?.identity ?? null;
   const bank = state?.verification?.bank ?? null;
   const business = state?.verification?.business ?? null;
+  const agreement = state?.service_agreement;
+  const step = state?.verification_state ?? 'not_started';
+
+  const submit = async () => {
+    try {
+      await submitForReview().unwrap();
+      toast.success(
+        'Submitted. We will review your store and get back to you.'
+      );
+    } catch (err) {
+      toast.error(errText(err, 'Could not submit for review — try again.'));
+    }
+  };
+
+  const accept = async () => {
+    if (!agreement?.required_version) return;
+    try {
+      await acceptAgreement({ version: agreement.required_version }).unwrap();
+      toast.success('Agreement accepted');
+    } catch (err) {
+      toast.error(errText(err, 'Could not record your acceptance.'));
+    }
+  };
 
   const [verifyVnin, vninState] = useVerifyVninMutation();
   const [verifyBank, bankState] = useVerifyBankMutation();
@@ -147,6 +172,8 @@ export const VerificationTemplate = () => {
   const payout = payoutRes?.data;
   const [verifyCac, cacState] = useVerifyCacMutation();
   const [uploadDocument, uploadState] = useUploadDocumentMutation();
+  const [acceptAgreement, agreementState] = useAcceptServiceAgreementMutation();
+  const [submitForReview, submitState] = useSubmitForReviewMutation();
   const [fileCacDocument, fileState] = useFileCacDocumentMutation();
   const cacFileRef = useRef<HTMLInputElement>(null);
 
@@ -517,6 +544,111 @@ export const VerificationTemplate = () => {
                   Optional · PDF, JPEG or PNG
                 </span>
               </div>
+            </div>
+          </div>
+        )}
+      </Card>
+
+      {/* 4 — Agreement and submission.
+          The checks alone do not finish anything: until a vendor accepts the
+          agreement and submits, nobody is looking at their store. Before this
+          card existed a vendor could pass every check and then have nowhere
+          to go — the flow simply stopped. */}
+      <Card
+        icon={ShieldCheck}
+        title="Send your store for review"
+        tag={
+          step === 'awaiting_review'
+            ? 'Submitted · we are reviewing it'
+            : 'Required · the last step'
+        }
+        done={step === 'approved' || step === 'awaiting_review'}
+        failed={step === 'rejected'}
+      >
+        {step === 'approved' ? (
+          <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
+            Your store is approved. Your products are visible to customers and
+            you can take orders.
+          </p>
+        ) : step === 'awaiting_review' ? (
+          <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
+            We are checking your details and your products. Nothing is needed
+            from you — keep adding products while you wait.
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {/* The vendor's own words back to them, verbatim: this is the
+                only thing they are told about what went wrong. */}
+            {state?.verification_message && (
+              <div className="rounded-lg border border-amber-300/70 bg-amber-50 p-3 dark:border-amber-500/30 dark:bg-amber-950/30">
+                <p className="text-xs font-medium text-amber-900 dark:text-amber-200">
+                  {state.verification_message}
+                </p>
+              </div>
+            )}
+
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                className="mt-0.5 size-4 shrink-0 cursor-pointer accent-primary"
+                checked={Boolean(agreement?.accepted)}
+                // Acceptance is a record, not a toggle — unticking it would
+                // have to mean withdrawing consent, which is not what the
+                // backend stores or what the vendor means by clicking twice.
+                disabled={
+                  Boolean(agreement?.accepted) || agreementState.isLoading
+                }
+                onChange={(e) => {
+                  if (e.target.checked) accept();
+                }}
+              />
+              <span className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
+                I accept the{' '}
+                <a
+                  href={agreement?.url ?? '/legal/vendor-agreement'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-primary underline underline-offset-2"
+                >
+                  Qlozet vendor service agreement
+                </a>
+                {agreement?.outdated && (
+                  <span className="ml-1 font-medium text-amber-600 dark:text-amber-400">
+                    (updated since you last accepted — please read it again)
+                  </span>
+                )}
+              </span>
+            </label>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                className={buttonCls}
+                disabled={
+                  !agreement?.accepted ||
+                  step !== 'provider_complete' ||
+                  submitState.isLoading
+                }
+                onClick={submit}
+              >
+                {submitState.isLoading && (
+                  <Loader2 className="size-4 animate-spin" />
+                )}
+                {submitState.isLoading ? 'Submitting…' : 'Submit for review'}
+              </button>
+
+              {/* Say which precondition is missing rather than leaving a
+                  disabled button with no explanation. */}
+              {step !== 'provider_complete' && (
+                <span className="text-xs text-grey2 dark:text-gray-400">
+                  Finish the checks above first.
+                </span>
+              )}
+              {step === 'provider_complete' && !agreement?.accepted && (
+                <span className="text-xs text-grey2 dark:text-gray-400">
+                  Accept the agreement to continue.
+                </span>
+              )}
             </div>
           </div>
         )}

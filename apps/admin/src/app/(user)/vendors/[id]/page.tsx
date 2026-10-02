@@ -6,9 +6,7 @@ import { APP_ROUTES } from '@/lib/routes';
 import { GoBackButton } from '@/pattern/admin/atoms/go-back-button';
 import {
   useGetBusinessQuery,
-  useApproveBusinessMutation,
   useVerifyBusinessMutation,
-  useRejectBusinessMutation,
   useSetBusinessInReviewMutation,
 } from '@/redux/services/businesses/businesses.api-slice';
 import { useGetVendorDashboardQuery } from '@/redux/services/dashboard/dashboard.api-slice';
@@ -16,6 +14,7 @@ import { VendorDetailHeader } from '@/pattern/vendors/details/organisms/vendor-d
 import { VendorInfoGrid } from '@/pattern/vendors/details/organisms/vendor-info-grid';
 import { VendorAnalyticsSection } from '@/pattern/vendors/details/organisms/vendor-analytics-section';
 import { TopProductsTable } from '@/pattern/vendors/details/organisms/top-products-table';
+import { VendorCatalogueSection } from '@/pattern/vendors/details/organisms/vendor-catalogue-section';
 import { WalletDetailsSection } from '@/pattern/vendors/details/organisms/wallet-details-section';
 import { VendorNotesSection } from '@/pattern/vendors/details/organisms/vendor-notes-section';
 import { ActivityLogTable } from '@/pattern/vendors/details/organisms/activity-log-table';
@@ -39,17 +38,14 @@ const VendorDetailsPage = () => {
     { skip: !id }
   );
 
-  const [approve, { isLoading: isApproving }] = useApproveBusinessMutation();
   const [verify, { isLoading: isVerifying }] = useVerifyBusinessMutation();
-  const [reject, { isLoading: isRejecting }] = useRejectBusinessMutation();
   const [setInReview, { isLoading: isReviewing }] =
     useSetBusinessInReviewMutation();
 
   const vendor = businessRes?.data;
   const metrics = dashboardRes?.data;
 
-  const isUpdatingStatus =
-    isApproving || isVerifying || isRejecting || isReviewing;
+  const isUpdatingStatus = isVerifying || isReviewing;
 
   // The four status mutations share the same shape; `getBusiness` is
   // invalidated by each, so the header re-renders with the new status.
@@ -88,9 +84,7 @@ const VendorDetailsPage = () => {
           vendor={vendor}
           metrics={metrics}
           isUpdatingStatus={isUpdatingStatus}
-          onApprove={() => runStatusChange(approve, 'Vendor approved')}
           onVerify={() => runStatusChange(verify, 'Vendor verified')}
-          onReject={() => runStatusChange(reject, 'Vendor rejected')}
           onSetInReview={() =>
             runStatusChange(setInReview, 'Vendor marked in review')
           }
@@ -111,10 +105,15 @@ const VendorDetailsPage = () => {
       {/* 3. Analytics */}
       <VendorAnalyticsSection metrics={metrics} businessId={id} />
 
-      {/* 4. Top products */}
+      {/* 4. What they have listed.
+             The catalogue comes first and owns the anchor: "View all products"
+             from the info grid should land on everything they have made, not
+             on a sales ranking that is empty for every vendor still awaiting
+             approval. Top products stays below for vendors who are trading. */}
       <div id={PRODUCTS_ANCHOR} className="scroll-mt-24">
-        <TopProductsTable businessId={id} />
+        <VendorCatalogueSection businessId={id} />
       </div>
+      <TopProductsTable businessId={id} />
 
       {/* 5. Wallet details */}
       <WalletDetailsSection vendor={vendor} metrics={metrics} />

@@ -13,13 +13,15 @@ import { EscalateVendorModal } from './escalate-vendor-modal';
 import { EditVendorDrawer } from './edit-vendor-drawer';
 import { VendorInfoCard } from '../molecules/vendor-info-card';
 import { VendorDocumentModal } from './vendor-document-modal';
+import {
+  VerificationDecisionModal,
+  type VerificationDecision,
+} from './verification-decision-modal';
 
 interface VendorInfoGridProps {
   vendor?: Business;
   metrics?: VendorDashboardMetrics;
-  onApprove?: () => void;
   onVerify?: () => void;
-  onReject?: () => void;
   onSetInReview?: () => void;
   /** Disables every status button while one of the mutations is in flight. */
   isUpdatingStatus?: boolean;
@@ -27,6 +29,35 @@ interface VendorInfoGridProps {
   onViewOrders?: () => void;
   onViewCustomers?: () => void;
 }
+
+/**
+ * The vendor's social handles, as links.
+ *
+ * Stored as handles, never URLs, so the link is built here — the same rule the
+ * shop follows. Shown on this page because a vendor's feed of finished work is
+ * often the clearest evidence of whether they are real and whether the work is
+ * theirs, which is exactly the judgement this page exists to support.
+ */
+const SOCIAL_PLATFORMS = [
+  { key: 'instagram', label: 'Instagram', base: 'https://instagram.com/' },
+  { key: 'tiktok', label: 'TikTok', base: 'https://tiktok.com/@' },
+  { key: 'youtube', label: 'YouTube', base: 'https://youtube.com/@' },
+  { key: 'twitter', label: 'Twitter', base: 'https://x.com/' },
+  { key: 'pinterest', label: 'Pinterest', base: 'https://pinterest.com/' },
+] as const;
+
+const readSocials = (
+  value: unknown
+): { key: string; label: string; handle: string; url: string }[] => {
+  if (!value || typeof value !== 'object') return [];
+  const links = value as Record<string, unknown>;
+  return SOCIAL_PLATFORMS.flatMap(({ key, label, base }) => {
+    const raw = links[key];
+    const handle = typeof raw === 'string' ? raw.trim().replace(/^@+/, '') : '';
+    if (!handle) return [];
+    return [{ key, label, handle, url: `${base}${handle}` }];
+  });
+};
 
 const num = (value: unknown): number | undefined =>
   typeof value === 'number' ? value : undefined;
@@ -69,9 +100,7 @@ const formatJoined = (value?: string): string => {
 export const VendorInfoGrid = ({
   vendor,
   metrics,
-  onApprove,
   onVerify,
-  onReject,
   onSetInReview,
   isUpdatingStatus = false,
   onViewProducts,
@@ -110,6 +139,24 @@ export const VendorInfoGrid = ({
 
   // A "View all" link is only offered when there's somewhere to go.
   const cacUrl = readFirstUrl(v.cac_document_url);
+  const socials = readSocials(v.social_links);
+
+  /**
+   * Decide the verification rather than setting the status directly.
+   *
+   * The plain approve/reject routes move `status` alone and leave
+   * `verification_state` behind, so the two end up disagreeing about the same
+   * vendor — and neither can express "action required", which is the decision
+   * that lets a vendor fix a bad photo instead of being told no forever.
+   */
+  const decide = (decision: VerificationDecision) =>
+    businessId
+      ? NiceModal.show(VerificationDecisionModal, {
+          businessId,
+          vendorName,
+          decision,
+        })
+      : undefined;
   const logoUrl =
     str(v.business_logo_svg_url) ?? str(v.business_logo_url) ?? str(v.logo);
   const vendorName = getVendorName(vendor ?? ({} as Business));
@@ -153,15 +200,27 @@ export const VendorInfoGrid = ({
           <Button
             type="button"
             variant="outline"
-            onClick={onReject}
+            onClick={() => decide('rejected')}
             disabled={isUpdatingStatus || status === 'rejected'}
             className="h-10 cursor-pointer border-destructive/40 text-destructive hover:bg-destructive/5"
           >
             {status === 'rejected' ? 'Rejected' : 'Reject'}
           </Button>
+          {/* The third outcome, and the one the old two buttons could not
+              express: the vendor keeps everything, still cannot sell, and is
+              told in words what to fix. */}
           <Button
             type="button"
-            onClick={onApprove}
+            variant="outline"
+            onClick={() => decide('action_required')}
+            disabled={isUpdatingStatus}
+            className="h-10 cursor-pointer"
+          >
+            Needs fixing
+          </Button>
+          <Button
+            type="button"
+            onClick={() => decide('approved')}
             disabled={isUpdatingStatus || status === 'approved'}
             className="h-10 cursor-pointer gap-2"
           >
@@ -352,6 +411,19 @@ export const VendorInfoGrid = ({
               : undefined
           }
         />
+        {/* One card per handle the vendor filled in. Nothing renders when
+            they have added none — an empty "Social profiles" row would just
+            be noise on a page that is already dense. */}
+        {socials.map((social) => (
+          <VendorInfoCard
+            key={social.key}
+            label={social.label}
+            value={`@${social.handle}`}
+            onValueClick={() =>
+              window.open(social.url, '_blank', 'noopener,noreferrer')
+            }
+          />
+        ))}
         <VendorInfoCard
           label="Company PNG logo"
           value={logoUrl ? 'View logo' : 'Not uploaded'}
