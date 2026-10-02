@@ -31,13 +31,38 @@ export interface BankVerification {
   verified_at?: string | null;
 }
 
+/** Where the business is in getting cleared to sell. */
+export type VerificationStep =
+  | 'not_started'
+  | 'in_progress'
+  | 'provider_complete'
+  | 'awaiting_review'
+  | 'approved'
+  | 'action_required'
+  | 'rejected';
+
 export interface VerificationState {
   configured: boolean;
+  /** Trading status — only approved/verified may sell. */
   status: string;
   verification: {
     identity?: IdentityVerification | null;
     business?: BusinessVerification | null;
     bank?: BankVerification | null;
+  };
+  verification_state: VerificationStep;
+  /** Written for the vendor, and the only thing they are told. */
+  verification_message: string | null;
+  attempts_used: number;
+  attempts_allowed: number;
+  can_start: boolean;
+  service_agreement: {
+    required_version: string;
+    url: string;
+    accepted: boolean;
+    accepted_at: string | null;
+    /** Signed an older version, so it has to be signed again. */
+    outdated: boolean;
   };
 }
 
@@ -50,6 +75,27 @@ export const verificationApiSlice = verificationAPI.injectEndpoints({
     getVerification: builder.query<ApiResponse<VerificationState>, void>({
       query: () => ({ url: '/verification', method: 'GET' }),
       providesTags: ['Verification'],
+    }),
+
+    acceptServiceAgreement: builder.mutation<
+      ApiResponse<{ message: string }>,
+      { version: string }
+    >({
+      query: (body) => ({
+        url: '/verification/service-agreement',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Verification'],
+    }),
+
+    /** Hand the finished checks to the Qlozet review queue. */
+    submitForReview: builder.mutation<
+      ApiResponse<{ verification_state: VerificationStep }>,
+      void
+    >({
+      query: () => ({ url: '/verification/submit', method: 'POST' }),
+      invalidatesTags: ['Verification'],
     }),
 
     verifyVnin: builder.mutation<
@@ -115,6 +161,8 @@ export const {
   useGetVerificationQuery,
   useVerifyVninMutation,
   useVerifyCacMutation,
+  useAcceptServiceAgreementMutation,
+  useSubmitForReviewMutation,
   useFileCacDocumentMutation,
   useVerifyBankMutation,
   useVerifyPayoutBankMutation,
