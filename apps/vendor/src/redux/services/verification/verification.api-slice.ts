@@ -43,6 +43,8 @@ export type VerificationStep =
 
 export interface VerificationState {
   configured: boolean;
+  /** False until QOREID_WORKFLOW_ID is set; the older cards are used then. */
+  workflow_available: boolean;
   /** Trading status — only approved/verified may sell. */
   status: string;
   verification: {
@@ -88,6 +90,21 @@ export const verificationApiSlice = verificationAPI.injectEndpoints({
           : '/verification/service-agreement',
         method: 'GET',
       }),
+    }),
+
+    /** Mints a hosted-workflow session. The token is single-use and expires
+     *  in minutes, so it is fetched when the vendor clicks, not on page load. */
+    startVerificationSession: builder.mutation<
+      ApiResponse<{
+        session_id: string;
+        sdk_token: string;
+        expires_at: string | null;
+        reference: string;
+      }>,
+      void
+    >({
+      query: () => ({ url: '/verification/session', method: 'POST' }),
+      invalidatesTags: ['Verification'],
     }),
 
     acceptServiceAgreement: builder.mutation<
@@ -175,6 +192,7 @@ export const {
   useVerifyVninMutation,
   useVerifyCacMutation,
   useGetServiceAgreementQuery,
+  useStartVerificationSessionMutation,
   useAcceptServiceAgreementMutation,
   useSubmitForReviewMutation,
   useFileCacDocumentMutation,
