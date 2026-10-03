@@ -59,6 +59,30 @@ const readSocials = (
   });
 };
 
+/**
+ * How closely the name matched, when it was not exact.
+ *
+ * A check passes on anything but NO_MATCH, because a Nigerian bank account
+ * reading "ADEYEMI KEMI FUNMILAYO" against a NIMC record of "KEMI ADEYEMI"
+ * comes back PARTIAL_MATCH and is almost always the same person. Failing
+ * those automatically would reject legitimate vendors; passing them silently
+ * would hide the one thing worth a second look. So it passes, and says so
+ * here - this page is where that judgement actually gets made.
+ */
+const matchNote = (match: unknown): string => {
+  const value = typeof match === 'string' ? match.toUpperCase() : '';
+  if (!value || value === 'EXACT_MATCH') return '';
+  if (value === 'PARTIAL_MATCH') return ' (partial name match)';
+  if (value === 'TRANSPOSED_MATCH') return ' (names in a different order)';
+  return ` (${value.toLowerCase().replace(/_/g, ' ')})`;
+};
+
+/** Amber rather than green: it passed, but read it before approving. */
+const matchClass = (match: unknown): string =>
+  typeof match === 'string' && match.toUpperCase() !== 'EXACT_MATCH'
+    ? 'text-amber-600 dark:text-amber-400'
+    : '';
+
 const num = (value: unknown): number | undefined =>
   typeof value === 'number' ? value : undefined;
 
@@ -342,14 +366,15 @@ export const VendorInfoGrid = ({
           label="ID Check"
           value={
             idVerified
-              ? `Verified · ${identityCheck?.verified_name ?? 'vNIN'}${identityCheck?.masked_id ? ` (${identityCheck.masked_id})` : ''}`
+              ? `Verified · ${identityCheck?.verified_name ?? 'vNIN'}${identityCheck?.masked_id ? ` (${identityCheck.masked_id})` : ''}${matchNote(identityCheck?.match)}`
               : identityCheck?.status === 'failed'
                 ? 'Failed — name mismatch'
                 : 'Unverified'
           }
           valueClassName={
             idVerified
-              ? 'text-[#0F973D] dark:text-green-400'
+              ? matchClass(identityCheck?.match) ||
+                'text-[#0F973D] dark:text-green-400'
               : 'text-destructive'
           }
         />
@@ -357,14 +382,15 @@ export const VendorInfoGrid = ({
           label="Payout Account Check"
           value={
             bankCheck?.status === 'verified'
-              ? `Matched · ${bankCheck?.account_name ?? 'account holder'}`
+              ? `Matched · ${bankCheck?.account_name ?? 'account holder'}${matchNote(bankCheck?.name_match ?? bankCheck?.match)}`
               : bankCheck?.status === 'failed'
                 ? 'Failed — name mismatch'
                 : 'Not checked'
           }
           valueClassName={
             bankCheck?.status === 'verified'
-              ? 'text-[#0F973D] dark:text-green-400'
+              ? matchClass(bankCheck?.name_match ?? bankCheck?.match) ||
+                'text-[#0F973D] dark:text-green-400'
               : bankCheck?.status === 'failed'
                 ? 'text-destructive'
                 : undefined
