@@ -13,6 +13,7 @@ import {
   Building2,
   CheckCircle2,
   ListChecks,
+  ScanFace,
   Landmark,
   Loader2,
   ShieldCheck,
@@ -23,6 +24,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Markdown } from '@/components/ui/markdown';
+import { QoreIdSessionCard } from './qoreid-session-card';
 import Link from 'next/link';
 import {
   useGetVerificationQuery,
@@ -179,6 +181,12 @@ export const VerificationTemplate = () => {
   const business = state?.verification?.business ?? null;
   const agreement = state?.service_agreement;
   const step = state?.verification_state ?? 'not_started';
+  // One hosted run replaces the three separate cards. Until
+  // QOREID_WORKFLOW_ID is set the older cards are shown, so the console can
+  // ship ahead of the configuration rather than presenting a dead button.
+  const useWorkflow = Boolean(state?.workflow_available);
+  const attemptsLeft =
+    (state?.attempts_allowed ?? 1) - (state?.attempts_used ?? 0);
 
   const submit = async () => {
     try {
@@ -439,243 +447,287 @@ export const VerificationTemplate = () => {
         </div>
       )}
 
-      {/* 1 — Identity */}
-      <Card
-        icon={ShieldCheck}
-        title="Identity"
-        tag="Required · earns the Verified badge"
-        done={identity?.status === 'verified'}
-        failed={identity?.status === 'failed'}
-      >
-        {identity?.status === 'verified' ? (
-          <div className="space-y-2">
-            <SummaryRow label="Name" value={identity.verified_name} />
-            <SummaryRow label="ID" value={`vNIN ${identity.masked_id ?? ''}`} />
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex items-start gap-3 rounded-lg bg-[#F8F9FA] p-3 dark:bg-muted/60">
-              <Smartphone className="mt-0.5 size-4 shrink-0 text-brown3" />
-              <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
-                Generate a <span className="font-semibold">virtual NIN</span>{' '}
-                with the NIMC app, or dial{' '}
-                <span className="font-mono font-semibold">
-                  *346*3*YourNIN*AgentCode#
-                </span>
-                . It&apos;s a 16-character code that expires after a few days —
-                we check it and throw it away.
-              </p>
+      {useWorkflow ? (
+        <Card
+          icon={ScanFace}
+          title="Verify your business"
+          tag={
+            step === 'in_progress'
+              ? 'In progress'
+              : 'Required · one session, a few minutes'
+          }
+          done={
+            step === 'provider_complete' ||
+            step === 'awaiting_review' ||
+            step === 'approved'
+          }
+          failed={step === 'rejected'}
+        >
+          {step === 'provider_complete' ||
+          step === 'awaiting_review' ||
+          step === 'approved' ? (
+            <div className="space-y-2">
+              <SummaryRow label="Identity" value={identity?.verified_name} />
+              <SummaryRow label="Business" value={business?.company_name} />
+              <SummaryRow label="Payout account" value={bank?.account_name} />
             </div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Input
-                className={inputCls}
-                placeholder="First name (as on NIN)"
-                value={firstname}
-                onChange={(e) => setFirstname(e.target.value)}
-              />
-              <Input
-                className={inputCls}
-                placeholder="Last name (as on NIN)"
-                value={lastname}
-                onChange={(e) => setLastname(e.target.value)}
-              />
-            </div>
-            <Input
-              className={inputCls}
-              placeholder="Virtual NIN (16 characters)"
-              value={vnin}
-              maxLength={16}
-              onChange={(e) => setVnin(e.target.value.replace(/\s/g, ''))}
+          ) : (
+            <QoreIdSessionCard
+              canStart={Boolean(state?.can_start)}
+              attemptsLeft={attemptsLeft}
             />
-            <button
-              type="button"
-              className={buttonCls}
-              disabled={vnin.trim().length !== 16 || vninState.isLoading}
-              onClick={submitVnin}
-            >
-              {vninState.isLoading && (
-                <Loader2 className="size-4 animate-spin" />
-              )}
-              {vninState.isLoading ? 'Verifying…' : 'Verify my identity'}
-            </button>
-          </div>
-        )}
-      </Card>
+          )}
+        </Card>
+      ) : (
+        <>
+          {/* 1 — Identity */}
+          <Card
+            icon={ShieldCheck}
+            title="Identity"
+            tag="Required · earns the Verified badge"
+            done={identity?.status === 'verified'}
+            failed={identity?.status === 'failed'}
+          >
+            {identity?.status === 'verified' ? (
+              <div className="space-y-2">
+                <SummaryRow label="Name" value={identity.verified_name} />
+                <SummaryRow
+                  label="ID"
+                  value={`vNIN ${identity.masked_id ?? ''}`}
+                />
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-start gap-3 rounded-lg bg-[#F8F9FA] p-3 dark:bg-muted/60">
+                  <Smartphone className="mt-0.5 size-4 shrink-0 text-brown3" />
+                  <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
+                    Generate a{' '}
+                    <span className="font-semibold">virtual NIN</span> with the
+                    NIMC app, or dial{' '}
+                    <span className="font-mono font-semibold">
+                      *346*3*YourNIN*AgentCode#
+                    </span>
+                    . It&apos;s a 16-character code that expires after a few
+                    days — we check it and throw it away.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Input
+                    className={inputCls}
+                    placeholder="First name (as on NIN)"
+                    value={firstname}
+                    onChange={(e) => setFirstname(e.target.value)}
+                  />
+                  <Input
+                    className={inputCls}
+                    placeholder="Last name (as on NIN)"
+                    value={lastname}
+                    onChange={(e) => setLastname(e.target.value)}
+                  />
+                </div>
+                <Input
+                  className={inputCls}
+                  placeholder="Virtual NIN (16 characters)"
+                  value={vnin}
+                  maxLength={16}
+                  onChange={(e) => setVnin(e.target.value.replace(/\s/g, ''))}
+                />
+                <button
+                  type="button"
+                  className={buttonCls}
+                  disabled={vnin.trim().length !== 16 || vninState.isLoading}
+                  onClick={submitVnin}
+                >
+                  {vninState.isLoading && (
+                    <Loader2 className="size-4 animate-spin" />
+                  )}
+                  {vninState.isLoading ? 'Verifying…' : 'Verify my identity'}
+                </button>
+              </div>
+            )}
+          </Card>
 
-      {/* 2 — Payout bank account */}
-      <Card
-        icon={Landmark}
-        title="Payout account"
-        tag="Confirms your bank account matches your name"
-        done={bank?.status === 'verified'}
-        failed={bank?.status === 'failed'}
-      >
-        {bank?.status === 'verified' ? (
-          <div className="space-y-2">
-            <SummaryRow label="Account name" value={bank.account_name} />
-            <SummaryRow label="Account" value={bank.account_number} />
-            <SummaryRow label="Bank" value={bank.bank_name} />
-          </div>
-        ) : payout?.linked ? (
-          <div className="space-y-4">
-            <div className="space-y-2 rounded-lg bg-[#F8F9FA] p-4 dark:bg-muted/60">
-              <SummaryRow
-                label="Linked account"
-                value={payout.account_number}
-              />
-              <SummaryRow label="Account name" value={payout.account_name} />
-              <SummaryRow label="Bank" value={payout.bank_name} />
-            </div>
-            <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
-              This is the account your withdrawals go to (from Settings ·
-              Payout). One tap checks it belongs to your verified identity.
-            </p>
-            <button
-              type="button"
-              className={buttonCls}
-              disabled={payoutBankState.isLoading}
-              onClick={submitPayoutBank}
-            >
-              {payoutBankState.isLoading && (
-                <Loader2 className="size-4 animate-spin" />
-              )}
-              {payoutBankState.isLoading
-                ? 'Checking…'
-                : 'Verify my payout account'}
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
-              No payout account linked yet —{' '}
-              <Link
-                href="/settings?tab=payout"
-                className="font-semibold underline underline-offset-2"
-              >
-                link one under Payout
-              </Link>{' '}
-              (recommended), or verify an account directly below.
-            </p>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Input
-                className={inputCls}
-                placeholder="Account number (10 digits)"
-                inputMode="numeric"
-                maxLength={10}
-                value={accountNumber}
-                onChange={(e) =>
-                  setAccountNumber(e.target.value.replace(/\D/g, ''))
-                }
-              />
-              <select
-                value={bankCode}
-                onChange={(e) => setBankCode(e.target.value)}
-                className="h-11 rounded-lg border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring dark:bg-card [&>option]:dark:bg-card"
-              >
-                <option value="">Select bank…</option>
-                {BANKS.map((b) => (
-                  <option key={b.code} value={b.code}>
-                    {b.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <button
-              type="button"
-              className={buttonCls}
-              disabled={
-                accountNumber.length !== 10 || !bankCode || bankState.isLoading
-              }
-              onClick={submitBank}
-            >
-              {bankState.isLoading && (
-                <Loader2 className="size-4 animate-spin" />
-              )}
-              {bankState.isLoading ? 'Checking…' : 'Verify account'}
-            </button>
-          </div>
-        )}
-      </Card>
+          {/* 2 — Payout bank account */}
+          <Card
+            icon={Landmark}
+            title="Payout account"
+            tag="Confirms your bank account matches your name"
+            done={bank?.status === 'verified'}
+            failed={bank?.status === 'failed'}
+          >
+            {bank?.status === 'verified' ? (
+              <div className="space-y-2">
+                <SummaryRow label="Account name" value={bank.account_name} />
+                <SummaryRow label="Account" value={bank.account_number} />
+                <SummaryRow label="Bank" value={bank.bank_name} />
+              </div>
+            ) : payout?.linked ? (
+              <div className="space-y-4">
+                <div className="space-y-2 rounded-lg bg-[#F8F9FA] p-4 dark:bg-muted/60">
+                  <SummaryRow
+                    label="Linked account"
+                    value={payout.account_number}
+                  />
+                  <SummaryRow
+                    label="Account name"
+                    value={payout.account_name}
+                  />
+                  <SummaryRow label="Bank" value={payout.bank_name} />
+                </div>
+                <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
+                  This is the account your withdrawals go to (from Settings ·
+                  Payout). One tap checks it belongs to your verified identity.
+                </p>
+                <button
+                  type="button"
+                  className={buttonCls}
+                  disabled={payoutBankState.isLoading}
+                  onClick={submitPayoutBank}
+                >
+                  {payoutBankState.isLoading && (
+                    <Loader2 className="size-4 animate-spin" />
+                  )}
+                  {payoutBankState.isLoading
+                    ? 'Checking…'
+                    : 'Verify my payout account'}
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
+                  No payout account linked yet —{' '}
+                  <Link
+                    href="/settings?tab=payout"
+                    className="font-semibold underline underline-offset-2"
+                  >
+                    link one under Payout
+                  </Link>{' '}
+                  (recommended), or verify an account directly below.
+                </p>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Input
+                    className={inputCls}
+                    placeholder="Account number (10 digits)"
+                    inputMode="numeric"
+                    maxLength={10}
+                    value={accountNumber}
+                    onChange={(e) =>
+                      setAccountNumber(e.target.value.replace(/\D/g, ''))
+                    }
+                  />
+                  <select
+                    value={bankCode}
+                    onChange={(e) => setBankCode(e.target.value)}
+                    className="h-11 rounded-lg border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring dark:bg-card [&>option]:dark:bg-card"
+                  >
+                    <option value="">Select bank…</option>
+                    {BANKS.map((b) => (
+                      <option key={b.code} value={b.code}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <button
+                  type="button"
+                  className={buttonCls}
+                  disabled={
+                    accountNumber.length !== 10 ||
+                    !bankCode ||
+                    bankState.isLoading
+                  }
+                  onClick={submitBank}
+                >
+                  {bankState.isLoading && (
+                    <Loader2 className="size-4 animate-spin" />
+                  )}
+                  {bankState.isLoading ? 'Checking…' : 'Verify account'}
+                </button>
+              </div>
+            )}
+          </Card>
 
-      {/* 3 — Registered business (optional) */}
-      <Card
-        icon={Building2}
-        title="Registered business"
-        tag="Optional · CAC registration for a Registered Business credential"
-        done={business?.status === 'verified'}
-        failed={business?.status === 'failed'}
-      >
-        {business?.status === 'verified' ? (
-          <div className="space-y-2">
-            <SummaryRow label="Company" value={business.company_name} />
-            <SummaryRow label="RC number" value={business.rc_number} />
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
-              Registered with the Corporate Affairs Commission? Confirm your
-              RC/BN number for instant registry confirmation. You can also file
-              the certificate itself — we only need it if the registry lookup
-              cannot confirm your number.
-            </p>
-            <Input
-              className={inputCls}
-              placeholder="RC or BN number"
-              value={rcNumber}
-              onChange={(e) => setRcNumber(e.target.value)}
-            />
-            <button
-              type="button"
-              className={buttonCls}
-              disabled={!rcNumber.trim() || cacState.isLoading}
-              onClick={submitCac}
-            >
-              {cacState.isLoading && (
-                <Loader2 className="size-4 animate-spin" />
-              )}
-              {cacState.isLoading ? 'Checking…' : 'Verify registration'}
-            </button>
+          {/* 3 — Registered business (optional) */}
+          <Card
+            icon={Building2}
+            title="Registered business"
+            tag="Optional · CAC registration for a Registered Business credential"
+            done={business?.status === 'verified'}
+            failed={business?.status === 'failed'}
+          >
+            {business?.status === 'verified' ? (
+              <div className="space-y-2">
+                <SummaryRow label="Company" value={business.company_name} />
+                <SummaryRow label="RC number" value={business.rc_number} />
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
+                  Registered with the Corporate Affairs Commission? Confirm your
+                  RC/BN number for instant registry confirmation. You can also
+                  file the certificate itself — we only need it if the registry
+                  lookup cannot confirm your number.
+                </p>
+                <Input
+                  className={inputCls}
+                  placeholder="RC or BN number"
+                  value={rcNumber}
+                  onChange={(e) => setRcNumber(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className={buttonCls}
+                  disabled={!rcNumber.trim() || cacState.isLoading}
+                  onClick={submitCac}
+                >
+                  {cacState.isLoading && (
+                    <Loader2 className="size-4 animate-spin" />
+                  )}
+                  {cacState.isLoading ? 'Checking…' : 'Verify registration'}
+                </button>
 
-            {/* The certificate itself. It used to be uploaded from Settings,
+                {/* The certificate itself. It used to be uploaded from Settings,
                 in the profile card beside the logo and cover image, where
                 nothing explained what it was for - a legal document on the
                 same footing as a branding asset. It belongs with the check it
                 supports. */}
-            <div className="border-t border-border/60 pt-4">
-              <input
-                ref={cacFileRef}
-                type="file"
-                accept="application/pdf,image/jpeg,image/png"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  // Reset first: picking the same file twice should re-upload.
-                  e.target.value = '';
-                  if (file) submitCacDocument(file);
-                }}
-              />
-              <div className="flex flex-wrap items-center gap-3">
-                <button
-                  type="button"
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-medium transition-colors hover:bg-muted disabled:opacity-50"
-                  disabled={uploadState.isLoading || fileState.isLoading}
-                  onClick={() => cacFileRef.current?.click()}
-                >
-                  {(uploadState.isLoading || fileState.isLoading) && (
-                    <Loader2 className="size-4 animate-spin" />
-                  )}
-                  {uploadState.isLoading || fileState.isLoading
-                    ? 'Saving…'
-                    : 'Attach CAC certificate'}
-                </button>
-                <span className="text-xs text-grey2 dark:text-gray-400">
-                  Optional · PDF, JPEG or PNG
-                </span>
+                <div className="border-t border-border/60 pt-4">
+                  <input
+                    ref={cacFileRef}
+                    type="file"
+                    accept="application/pdf,image/jpeg,image/png"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      // Reset first: picking the same file twice should re-upload.
+                      e.target.value = '';
+                      if (file) submitCacDocument(file);
+                    }}
+                  />
+                  <div className="flex flex-wrap items-center gap-3">
+                    <button
+                      type="button"
+                      className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-medium transition-colors hover:bg-muted disabled:opacity-50"
+                      disabled={uploadState.isLoading || fileState.isLoading}
+                      onClick={() => cacFileRef.current?.click()}
+                    >
+                      {(uploadState.isLoading || fileState.isLoading) && (
+                        <Loader2 className="size-4 animate-spin" />
+                      )}
+                      {uploadState.isLoading || fileState.isLoading
+                        ? 'Saving…'
+                        : 'Attach CAC certificate'}
+                    </button>
+                    <span className="text-xs text-grey2 dark:text-gray-400">
+                      Optional · PDF, JPEG or PNG
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
-      </Card>
+            )}
+          </Card>
+        </>
+      )}
 
       {/* 4 — Agreement and submission.
           The checks alone do not finish anything: until a vendor accepts the
