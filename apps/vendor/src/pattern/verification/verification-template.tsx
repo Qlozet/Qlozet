@@ -22,12 +22,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Markdown } from '@/components/ui/markdown';
 import Link from 'next/link';
 import {
   useGetVerificationQuery,
   useVerifyBankMutation,
   useVerifyCacMutation,
   useFileCacDocumentMutation,
+  useGetServiceAgreementQuery,
   useAcceptServiceAgreementMutation,
   useSubmitForReviewMutation,
   useVerifyPayoutBankMutation,
@@ -209,6 +211,8 @@ export const VerificationTemplate = () => {
   const [verifyCac, cacState] = useVerifyCacMutation();
   const [uploadDocument, uploadState] = useUploadDocumentMutation();
   const [acceptAgreement, agreementState] = useAcceptServiceAgreementMutation();
+  const { data: agreementDoc, isLoading: isLoadingAgreement } =
+    useGetServiceAgreementQuery();
   const [submitForReview, submitState] = useSubmitForReviewMutation();
   const [fileCacDocument, fileState] = useFileCacDocumentMutation();
   const cacFileRef = useRef<HTMLInputElement>(null);
@@ -711,6 +715,42 @@ export const VerificationTemplate = () => {
               </div>
             )}
 
+            {/* The text itself, in the card.
+                A tick beside a link is weak evidence that anyone was shown
+                the terms, and that link pointed at a page which did not
+                exist. Rendering it here means the vendor accepts the exact
+                words their record will name, and removes a tab-switch from
+                the middle of the flow. */}
+            <div className="rounded-lg border border-border bg-[#F8F9FA] dark:bg-muted/40">
+              <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-2.5">
+                <span className="text-xs font-semibold text-grey-black dark:text-white">
+                  Qlozet Vendor Agreement
+                </span>
+                <span className="shrink-0 text-[11px] text-grey2 dark:text-gray-400">
+                  Version {agreement?.required_version}
+                </span>
+              </div>
+              <div className="max-h-72 overflow-y-auto px-4 py-3">
+                {isLoadingAgreement ? (
+                  <div className="space-y-2">
+                    <Skeleton className="h-3 w-3/4 rounded" />
+                    <Skeleton className="h-3 w-full rounded" />
+                    <Skeleton className="h-3 w-5/6 rounded" />
+                  </div>
+                ) : agreementDoc?.data?.body ? (
+                  <Markdown
+                    content={agreementDoc.data.body}
+                    className="text-xs leading-relaxed"
+                  />
+                ) : (
+                  <p className="text-xs text-grey2 dark:text-gray-400">
+                    The agreement could not be loaded. Reload the page before
+                    accepting.
+                  </p>
+                )}
+              </div>
+            </div>
+
             <label className="flex cursor-pointer items-start gap-3">
               <input
                 type="checkbox"
@@ -720,22 +760,17 @@ export const VerificationTemplate = () => {
                 // have to mean withdrawing consent, which is not what the
                 // backend stores or what the vendor means by clicking twice.
                 disabled={
-                  Boolean(agreement?.accepted) || agreementState.isLoading
+                  Boolean(agreement?.accepted) ||
+                  agreementState.isLoading ||
+                  // Nothing to accept until the words are on screen.
+                  !agreementDoc?.data?.body
                 }
                 onChange={(e) => {
                   if (e.target.checked) accept();
                 }}
               />
               <span className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
-                I accept the{' '}
-                <a
-                  href={agreement?.url ?? '/legal/vendor-agreement'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-primary underline underline-offset-2"
-                >
-                  Qlozet vendor service agreement
-                </a>
+                I have read and accept the Qlozet Vendor Agreement above
                 {agreement?.outdated && (
                   <span className="ml-1 font-medium text-amber-600 dark:text-amber-400">
                     (updated since you last accepted — please read it again)
