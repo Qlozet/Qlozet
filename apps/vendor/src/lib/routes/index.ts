@@ -42,5 +42,4 @@ export const APP_ROUTES = {
   details: '/details',
   cookiePolicy: '/cookie-policy',
   privacyPolicy: '/privacy-policy',
-  termsOfService: '/terms-of-service',
 } as const;

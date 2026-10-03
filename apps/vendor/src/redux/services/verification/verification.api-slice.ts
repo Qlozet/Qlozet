@@ -58,7 +58,6 @@ export interface VerificationState {
   can_start: boolean;
   service_agreement: {
     required_version: string;
-    url: string;
     accepted: boolean;
     accepted_at: string | null;
     /** Signed an older version, so it has to be signed again. */
@@ -75,6 +74,20 @@ export const verificationApiSlice = verificationAPI.injectEndpoints({
     getVerification: builder.query<ApiResponse<VerificationState>, void>({
       query: () => ({ url: '/verification', method: 'GET' }),
       providesTags: ['Verification'],
+    }),
+
+    /** The agreement text itself — served, not linked, so the words and the
+     *  version a vendor accepts can never drift apart. */
+    getServiceAgreement: builder.query<
+      ApiResponse<{ version: string; current: boolean; body: string }>,
+      string | void
+    >({
+      query: (version) => ({
+        url: version
+          ? `/verification/service-agreement?version=${encodeURIComponent(version)}`
+          : '/verification/service-agreement',
+        method: 'GET',
+      }),
     }),
 
     acceptServiceAgreement: builder.mutation<
@@ -161,6 +174,7 @@ export const {
   useGetVerificationQuery,
   useVerifyVninMutation,
   useVerifyCacMutation,
+  useGetServiceAgreementQuery,
   useAcceptServiceAgreementMutation,
   useSubmitForReviewMutation,
   useFileCacDocumentMutation,
