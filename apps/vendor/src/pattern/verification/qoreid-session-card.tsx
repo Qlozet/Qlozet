@@ -8,6 +8,7 @@ import {
   useStartVerificationSessionMutation,
   useGetVerificationQuery,
 } from '@/redux/services/verification/verification.api-slice';
+import { useGetUserProfileQuery } from '@/redux/services/settings/settings.api-slice';
 
 const SDK_SRC = 'https://dashboard.qoreid.com/qoreid-sdk/qoreid.js';
 
@@ -69,6 +70,7 @@ export const QoreIdSessionCard = ({
   const [startSession, { isLoading: isStarting }] =
     useStartVerificationSessionMutation();
   const { refetch } = useGetVerificationQuery();
+  const { data: profile } = useGetUserProfileQuery();
 
   const [running, setRunning] = useState(false);
   const [onPhone, setOnPhone] = useState(false);
@@ -99,9 +101,26 @@ export const QoreIdSessionCard = ({
 
       await loadSdk();
 
+      /**
+       * applicantData is documented as optional, and in practice is not.
+       * QoreID's own applicant-form template does
+       * `QoreIdSDK.initData?.applicantData[field.code]` — the optional chain
+       * guards initData but not applicantData, so passing nothing throws
+       * "Cannot read properties of null (reading 'firstname')" and the form
+       * never renders. Always send it, even if the fields are blank.
+       */
+      const fullName = (profile?.full_name ?? '').trim();
+      const [firstname = '', ...rest] = fullName.split(/\s+/);
+
       window.QoreIdSDK?.init({
         token,
         customerReference: reference,
+        applicantData: {
+          firstname,
+          lastname: rest.join(' '),
+          email: profile?.email ?? '',
+          phone: profile?.phone_number ?? '',
+        },
         submittedEventTrigger: () => {
           toast.success('Submitted — checking your results.');
           // Results arrive by webhook, not from the browser, so the page has
@@ -121,7 +140,7 @@ export const QoreIdSessionCard = ({
       setRunning(false);
       toast.error(readApiError(error, 'Could not start verification.'));
     }
-  }, [startSession, refetch]);
+  }, [startSession, refetch, profile]);
 
   const busy = isStarting || running;
 
