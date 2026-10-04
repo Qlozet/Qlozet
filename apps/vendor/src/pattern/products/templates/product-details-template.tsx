@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import NiceModal from '@ebay/nice-modal-react';
 import {
+  Camera,
   ChevronLeft,
   ChevronRight,
   Clipboard,
@@ -273,6 +274,24 @@ export const ProductDetailsTemplate = ({
     )
   );
 
+  /**
+   * Colourways with no photographs of their own.
+   *
+   * The shop falls back to the product's default images for these, which are
+   * of a different colour, and now tells the customer so. That is honest but
+   * it is not a sale — this is the other half: tell the vendor which ones to
+   * shoot. Colour mismatch is the biggest cause of fashion returns, and under
+   * the vendor agreement the refund comes out of their earnings.
+   */
+  const coloursWithoutPhotos = (product.color_variants ?? [])
+    .filter(
+      (c) =>
+        !(c.images ?? []).some((i) => Boolean(i?.url)) &&
+        !(c.variants ?? []).some((v) => Boolean((v as any)?.images?.length))
+    )
+    .map((c) => c.name || c.hex)
+    .filter(Boolean) as string[];
+
   const handleDelete = async () => {
     try {
       await deleteProduct(productId).unwrap();
@@ -425,6 +444,22 @@ export const ProductDetailsTemplate = ({
               <h1 className="mt-4 text-[28px] font-bold text-[#3d2817] dark:text-white">
                 {product.name ?? 'Untitled product'}
               </h1>
+
+              {coloursWithoutPhotos.length > 0 && (
+                <div className="mt-3 flex items-start gap-2.5 rounded-lg border border-amber-300/70 bg-amber-50 p-3 dark:border-amber-500/30 dark:bg-amber-950/30">
+                  <Camera className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                  <p className="text-xs leading-relaxed text-amber-900 dark:text-amber-200">
+                    <span className="font-semibold">
+                      No photos for {coloursWithoutPhotos.join(', ')}.
+                    </span>{' '}
+                    Customers choosing{' '}
+                    {coloursWithoutPhotos.length === 1 ? 'it' : 'them'} see your
+                    main photos, which are a different colour — and we tell them
+                    so. Add a photo of each colourway to sell it properly and
+                    cut returns.
+                  </p>
+                </div>
+              )}
 
               {hasMetrics && (
                 <div className="mt-3 flex flex-wrap items-center gap-4 text-sm font-bold text-grey-black dark:text-white">
