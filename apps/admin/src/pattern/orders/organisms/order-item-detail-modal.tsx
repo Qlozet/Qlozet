@@ -414,7 +414,7 @@ const ItemDetailContent = ({ item }: { item: AdminOrderItem }) => {
 
       {/* Pricing ladder — the snapshot frozen at order time. */}
       {item.pricing && (
-        <div className="space-y-1.5 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-muted px-3.5 py-3">
+        <div className="space-y-1.5 rounded-xl border bg-[hsla(0,0%,96%,1)] dark:bg-muted px-3.5 py-3">
           {(
             [
               ['Base', item.pricing.base],

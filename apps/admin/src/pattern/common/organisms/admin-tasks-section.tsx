@@ -57,7 +57,7 @@ export const AdminTasksSection = ({
   void windowDays;
 
   return (
-    <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-muted">
+    <div className="overflow-hidden rounded-[20px] border bg-[hsla(0,0%,96%,1)] dark:bg-muted">
       <div className="flex items-center justify-between border-b border-[#DDE2E5] dark:border-white/10 px-5 py-4">
         <span className="text-[15px] font-semibold text-[#1C1C1E] dark:text-white">
           {heading}

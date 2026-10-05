@@ -395,7 +395,7 @@ export const CustomerMeasurementsDrawer =
                   {cards.map((card) => (
                     <div
                       key={card[0].key}
-                      className="rounded-2xl bg-[hsla(0,0%,96%,1)] px-4 py-2 dark:bg-muted"
+                      className="rounded-2xl border bg-[hsla(0,0%,96%,1)] px-4 py-2 dark:bg-muted"
                     >
                       {card.map((row) => (
                         <div
