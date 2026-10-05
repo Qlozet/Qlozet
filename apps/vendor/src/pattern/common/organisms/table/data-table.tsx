@@ -8,7 +8,7 @@
 // error state, pagination, optional toolbar, optional row click handler.
 
 import type { ReactNode } from 'react';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   type ColumnDef,
   type PaginationState,
@@ -90,11 +90,34 @@ export function DataTable<TData>({
     state: { pagination },
     onPaginationChange: setPagination,
     manualPagination,
+    // TanStack queues a page-index reset whenever the `data` *reference*
+    // changes, and that reset calls onPaginationChange with a freshly built
+    // object, which re-renders. A caller that derives its rows inline rather
+    // than through useMemo hands us a new array on every render, so the reset
+    // fires on every render and the component re-renders forever: the page
+    // stays painted, the CPU pegs, and nothing on screen responds. It is not a
+    // hypothetical - `response?.data ?? []` is exactly that shape, and it is
+    // what an errored query leaves behind. Clamping below covers what the
+    // auto-reset was for without depending on a reference staying stable.
+    autoResetPageIndex: false,
     ...(manualPagination ? { pageCount } : {}),
     // Server-paginated tables only hold one page of rows, so the footer's
     // total has to come from the caller.
     ...(totalCount !== undefined ? { rowCount: totalCount } : {}),
   });
+
+  // With the auto-reset off, a data set that shrinks - a filter narrowing, a
+  // row deleted - can leave the table parked on a page that no longer exists,
+  // showing an empty grid with no way back. Clamp to the last real page, which
+  // is also less jarring than jumping to page one whenever the rows change.
+  // Server-paginated tables report a page count of -1 until it is known, and
+  // are skipped until then.
+  const resolvedPageCount = table.getPageCount();
+  useEffect(() => {
+    if (resolvedPageCount > 0 && pagination.pageIndex > resolvedPageCount - 1) {
+      setPagination((prev) => ({ ...prev, pageIndex: resolvedPageCount - 1 }));
+    }
+  }, [resolvedPageCount, pagination.pageIndex, setPagination]);
 
   const errorMessage = readApiError(error, 'Something went wrong');
 
