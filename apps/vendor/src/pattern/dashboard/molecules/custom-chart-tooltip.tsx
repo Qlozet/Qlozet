@@ -3,9 +3,12 @@ interface TooltipPayload {
   value: number;
   color: string;
   payload: {
-    label: string;
-    male: number;
-    female: number;
+    label?: string;
+    male?: number;
+    female?: number;
+    /** Donut slices may carry a formatted amount and a secondary figure. */
+    valueLabel?: string;
+    hint?: string;
   };
 }
 
@@ -27,7 +30,8 @@ export const CustomChartTooltip = ({ active, payload }: CustomTooltipProps) => {
             style={{ color: entry.color }}
             className="text-xs capitalize"
           >
-            {entry.name}: {entry.value}
+            {entry.name}: {entry.payload?.valueLabel ?? entry.value}
+            {entry.payload?.hint ? ` · ${entry.payload.hint}` : ''}
           </p>
         ))}
       </div>

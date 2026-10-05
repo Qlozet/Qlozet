@@ -39,11 +39,11 @@ interface ProductsStatsProps {
   totalProducts?: number;
   achievedProducts?: number;
   isLoading?: boolean;
-  /** Right-hand donut: title + data. Falls back to an even split until the
-   * backend supplies a real breakdown. */
+  /** Right-hand donut: title + the real breakdown. */
   salesTitle: string;
   salesData?: DonutDatum[];
-  salesFallback: DonutDatum[];
+  /** True while the breakdown is still loading. */
+  salesLoading?: boolean;
   /** Link target for the cards' "View All". */
   viewAllLink?: string;
 }
@@ -56,9 +56,10 @@ export const ProductsStats = ({
   isLoading = false,
   salesTitle,
   salesData,
-  salesFallback,
+  salesLoading = false,
   viewAllLink = APP_ROUTES.products,
 }: ProductsStatsProps) => {
+  const hasSales = Boolean(salesData?.length);
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
       {isLoading ? (
@@ -91,13 +92,29 @@ export const ProductsStats = ({
         </>
       )}
 
-      <DonutChart
-        title={salesTitle}
-        data={salesData?.length ? salesData : salesFallback}
-        colors={DONUT_COLORS}
-        legendPosition="right"
-        className="lg:col-span-2"
-      />
+      {/* No invented numbers here. A vendor with no sales in the window sees
+          that plainly - a donut of placeholder slices reads as real data and
+          is worse than an empty card. */}
+      {hasSales ? (
+        <DonutChart
+          title={salesTitle}
+          data={salesData as DonutDatum[]}
+          colors={DONUT_COLORS}
+          legendPosition="right"
+          className="lg:col-span-2"
+        />
+      ) : (
+        <div className="flex h-[120px] w-full flex-col justify-center gap-1 rounded-[12px] bg-card px-5 custom-card-shadow lg:col-span-2">
+          <p className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
+            {salesTitle}
+          </p>
+          <p className="text-xs text-grey2 dark:text-gray-400">
+            {salesLoading
+              ? 'Working out your breakdown…'
+              : 'No sales in this period yet. This fills in once your products start selling.'}
+          </p>
+        </div>
+      )}
     </div>
   );
 };

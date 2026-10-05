@@ -15,7 +15,15 @@ import ChartLegendIcon from '../atoms/chart-legend-icon';
 
 export interface DonutDatum {
   name: string;
+  /** Drives the slice size. */
   value: number;
+  /**
+   * What to print instead of the raw `value` - a formatted amount, say.
+   * Charts that pass plain numbers can leave both of these out.
+   */
+  valueLabel?: string;
+  /** A second figure for the tooltip, e.g. how many orders made up the slice. */
+  hint?: string;
 }
 
 interface LegendEntry {
@@ -115,6 +123,11 @@ export const DonutChart = ({
                   <span className="truncate text-black dark:text-white">
                     {entry.name}
                   </span>
+                  {entry.valueLabel && (
+                    <span className="shrink-0 text-grey2 dark:text-gray-400 tabular-nums">
+                      {entry.valueLabel}
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>

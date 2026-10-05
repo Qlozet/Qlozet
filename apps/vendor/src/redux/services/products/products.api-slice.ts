@@ -255,6 +255,24 @@ export interface ProductsFilters {
 }
 
 // API slice
+export interface SalesByTypeRow {
+  name: string;
+  revenue: number;
+  orders: number;
+}
+
+export interface SalesByTypeResponse {
+  data: SalesByTypeRow[];
+  meta: {
+    kind: string;
+    days: number;
+    from: string;
+    to: string;
+    total_revenue: number;
+    total_orders: number;
+  };
+}
+
 export const productsApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // Get all products with filters
@@ -628,6 +646,22 @@ export const productsApiSlice = baseAPI.injectEndpoints({
       query: (id) => ({ url: `/products/${id}/wishlist`, method: 'POST' }),
       invalidatesTags: ['ProductLikes'],
     }),
+
+    // GET /products/stats/sales-by-type — the catalogue page donut
+    getSalesByProductType: builder.query<
+      SalesByTypeResponse,
+      { kind: 'clothing' | 'fabric' | 'accessory'; days?: number }
+    >({
+      query: ({ kind, days }) => {
+        const searchParams = new URLSearchParams({ kind });
+        if (days) searchParams.append('days', String(days));
+        return {
+          url: `/products/stats/sales-by-type?${searchParams.toString()}`,
+          method: 'GET',
+        };
+      },
+      providesTags: ['Products'],
+    }),
   }),
 });
 
@@ -665,4 +699,5 @@ export const {
   useGetProductRatingsQuery,
   useGetVendorProductRatingsQuery,
   useToggleProductWishlistMutation,
+  useGetSalesByProductTypeQuery,
 } = productsApiSlice;

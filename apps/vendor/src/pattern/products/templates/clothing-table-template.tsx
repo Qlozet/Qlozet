@@ -9,10 +9,11 @@ import {
   useGetProductsByVendorQuery,
   useDeleteProductMutation,
   useUpdateProductStatusMutation,
+  useGetSalesByProductTypeQuery,
 } from '@/redux/services/products/products.api-slice';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { clearProductId } from '@/lib/utils';
+import { clearProductId, formatCurrency } from '@/lib/utils';
 import NiceModal, { show } from '@ebay/nice-modal-react';
 import { APP_ROUTES } from '@/lib/routes';
 import { toast } from 'sonner';
@@ -30,13 +31,6 @@ import {
   readTotalItems,
   readPageCount,
 } from '@/redux/services/types';
-
-const SALES_BY_CATEGORY_FALLBACK: DonutDatum[] = [
-  { name: 'Suite', value: 30 },
-  { name: 'Kaftan', value: 28 },
-  { name: 'Cargo', value: 22 },
-  { name: 'Abgada', value: 20 },
-];
 
 interface ClothingTableTemplateProps {
   onExport?: () => void;
@@ -266,6 +260,23 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     ]
   );
 
+  // Real breakdown, last 90 days. Revenue drives the slice; the order count
+  // rides along in the tooltip, so the chart answers both "what pays" and
+  // "what moves" without needing a toggle.
+  const { data: salesRes, isLoading: salesLoading } =
+    useGetSalesByProductTypeQuery({ kind: 'clothing' });
+
+  const salesData: DonutDatum[] = useMemo(
+    () =>
+      (salesRes?.data ?? []).map((row) => ({
+        name: row.name,
+        value: row.revenue,
+        valueLabel: formatCurrency(row.revenue),
+        hint: `${row.orders} ${row.orders === 1 ? 'order' : 'orders'}`,
+      })),
+    [salesRes]
+  );
+
   return (
     <div className="w-full bg-background">
       {/* Header Section */}
@@ -334,8 +345,9 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
           totalProducts={totalProducts}
           achievedProducts={0}
           isLoading={isLoading}
-          salesTitle="Sales By Product Category"
-          salesFallback={SALES_BY_CATEGORY_FALLBACK}
+          salesTitle="Sales by product type (90 days)"
+          salesData={salesData}
+          salesLoading={salesLoading}
           viewAllLink={'/products'}
         />
       </div>
