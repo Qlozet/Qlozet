@@ -269,16 +269,19 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   const { data: salesRes, isLoading: salesLoading } =
     useGetSalesByProductTypeQuery({ kind: 'clothing' });
 
-  const salesData: DonutDatum[] = useMemo(
-    () =>
-      (salesRes?.data ?? []).map((row) => ({
-        name: row.name,
-        value: row.revenue,
-        valueLabel: formatCurrency(row.revenue),
-        hint: `${row.orders} ${row.orders === 1 ? 'order' : 'orders'}`,
-      })),
-    [salesRes]
-  );
+  const salesData: DonutDatum[] = useMemo(() => {
+    // Array.isArray rather than `?? []`: the nullish default only covers null
+    // and undefined, so an unexpected shape reached .map and took the whole
+    // page down with it. An empty chart is the right way to fail here.
+    const rows = salesRes?.data?.rows;
+    if (!Array.isArray(rows)) return [];
+    return rows.map((row) => ({
+      name: row.name,
+      value: row.revenue,
+      valueLabel: formatCurrency(row.revenue),
+      hint: `${row.orders} ${row.orders === 1 ? 'order' : 'orders'}`,
+    }));
+  }, [salesRes]);
 
   return (
     <div className="w-full bg-background">
