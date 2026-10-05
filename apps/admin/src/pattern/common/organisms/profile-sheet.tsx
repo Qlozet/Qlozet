@@ -112,7 +112,7 @@ export const ProfileSheet = ({ open, onOpenChange }: ProfileSheetProps) => {
             </SheetTitle>
           </SheetHeader>
 
-          <div className="flex-1 overflow-y-auto">
+          <div className="min-h-0 flex-1 overflow-y-auto">
             <div className="space-y-5 px-4 py-5">
               {/* ── Identity + marketplace stats ── */}
               {isLoadingUser ? (
