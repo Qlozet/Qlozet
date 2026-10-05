@@ -76,24 +76,39 @@ const DetailRow = ({
   </div>
 );
 
-const SectionTitle = ({
-  children,
+/**
+ * A titled box.
+ *
+ * `title` puts the heading inside the box with its content, so the section
+ * reads as one object instead of a floating label above a panel. The body is
+ * deliberately unpadded - its rows are full-bleed and carry their own
+ * dividers - so the header gets its own padding and a rule beneath it.
+ */
+const Panel = ({
+  title,
   trailing,
+  children,
 }: {
-  children: React.ReactNode;
+  title?: React.ReactNode;
   trailing?: React.ReactNode;
+  children: React.ReactNode;
 }) => (
-  <div className="flex items-center justify-between gap-3">
-    <h3 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
-      {children}
-    </h3>
-    {trailing}
-  </div>
-);
-
-const Panel = ({ children }: { children: React.ReactNode }) => (
   <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-muted">
-    {children}
+    {title && (
+      <div className="flex items-center justify-between gap-3 px-5 pb-2.5 pt-3.5">
+        <h3 className="min-w-0 truncate text-sm font-semibold text-[#0C0C0D] dark:text-white">
+          {title}
+        </h3>
+        {trailing}
+      </div>
+    )}
+    <div
+      className={
+        title ? 'border-t border-[#DDE2E5] dark:border-white/10' : undefined
+      }
+    >
+      {children}
+    </div>
   </div>
 );
 
@@ -267,6 +282,20 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       return distinct.size > 1 ? groups : [];
     }, [bodyMeasurements]);
 
+    // Whether these numbers were frozen onto the order or are being read live
+    // off the customer's profile. Hoisted because the heading now sits inside
+    // each measurement panel, and there can be more than one.
+    const measurementBadge =
+      bodyMeasurements?.snapshot || measurementItemGroups.length > 0 ? (
+        <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+          Locked at order time
+        </span>
+      ) : (
+        <span className="rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
+          Live profile
+        </span>
+      );
+
     // Companion media panel — mirrors the vendor drawer: it opens alongside the
     // drawer showing the order's garments, and the handle closes both.
     // Below `sm` there's no room beside a full-width drawer.
@@ -322,8 +351,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
             <div className="space-y-6 px-6 pb-6">
               {/* ── Order Summary ── */}
               <section className="space-y-3">
-                <SectionTitle>Order Summary</SectionTitle>
-                <Panel>
+                <Panel title="Order Summary">
                   <DetailRow label="Order ID:" value={readOrderId(order)} />
                   <DetailRow
                     label="Order date:"
@@ -347,8 +375,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
 
               {/* ── Order items ── */}
               <section className="space-y-3">
-                <SectionTitle>Order items ({items.length})</SectionTitle>
-                <Panel>
+                <Panel title={`Order items (${items.length})`}>
                   {items.length > 0 ? (
                     items.map((item, index) => (
                       <OrderItemRow
@@ -381,26 +408,19 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                 (measurementRows.length > 0 ||
                   measurementItemGroups.length > 0) && (
                   <section className="space-y-3">
-                    <SectionTitle
-                      trailing={
-                        bodyMeasurements?.snapshot ||
-                        measurementItemGroups.length > 0 ? (
-                          <span className="rounded-md bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
-                            Locked at order time
-                          </span>
-                        ) : (
-                          <span className="rounded-md bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:text-amber-300">
-                            Live profile
-                          </span>
-                        )
-                      }
-                    >
-                      Body Measurement
-                    </SectionTitle>
+                    {/* The heading lives inside each panel. An order with
+                        different bodies renders one panel per garment, and a
+                        single heading cannot sit inside several boxes - so
+                        each box carries its own, with the Set row below
+                        telling them apart. */}
                     {measurementItemGroups.length > 0 ? (
                       /* Different bodies in one order — one panel per garment. */
                       measurementItemGroups.map((group, gi) => (
-                        <Panel key={gi}>
+                        <Panel
+                          key={gi}
+                          title="Body Measurement"
+                          trailing={measurementBadge}
+                        >
                           <DetailRow
                             label="Set:"
                             value={
@@ -429,7 +449,10 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                         </Panel>
                       ))
                     ) : (
-                      <Panel>
+                      <Panel
+                        title="Body Measurement"
+                        trailing={measurementBadge}
+                      >
                         <DetailRow
                           label="Set:"
                           value={bodyMeasurements?.name || '—'}
@@ -453,7 +476,8 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
 
               {/* ── Payment and Invoice ── */}
               <section className="space-y-3">
-                <SectionTitle
+                <Panel
+                  title="Payment and Invoice"
                   trailing={
                     <Button
                       type="button"
@@ -466,9 +490,6 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     </Button>
                   }
                 >
-                  Payment and Invoice
-                </SectionTitle>
-                <Panel>
                   <DetailRow
                     label="Total"
                     value={formatNaira(readAmountPaid(order))}
