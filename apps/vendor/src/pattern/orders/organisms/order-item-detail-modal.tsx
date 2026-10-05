@@ -83,6 +83,18 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
   // Cost of the customer's external fabric. Billed to the customer and paid to
   // the fabric vendor — NOT part of this item's `final` (the tailor's earnings).
   const externalFabricCost = item.pricing?.external_fabric ?? 0;
+  /**
+   * Whose fabric this is, decided by the API.
+   *
+   * "External fabric … to fabric vendor" is right when a customer brought
+   * another vendor's cloth. When the vendor supplied their OWN fabric it is
+   * their product and their money — and calling it external told them the
+   * charge belonged to someone else, which is why the earning seemed to come
+   * from nowhere.
+   */
+  const fabricIsOwn =
+    (item as { applied_fabric_is_own?: boolean }).applied_fabric_is_own ===
+    true;
 
   return (
     <div className="space-y-5">
@@ -144,14 +156,14 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
         </div>
       </div>
 
-      {/* External fabric (cross-vendor) — most important "what am I working
-          with" fact for a tailor, so it sits up top and is highlighted. */}
+      {/* Applied fabric — the most important "what am I working with" fact
+          for a tailor, so it sits up top and is highlighted. */}
       {(appliedFabric || item.applied_fabric_yards) && (
         <div className="rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-800/50 dark:bg-amber-900/20 p-3">
           <div className="flex items-center gap-1.5">
             <Scissors className="size-3.5 text-amber-600 dark:text-amber-400" />
             <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300">
-              External fabric
+              {fabricIsOwn ? 'Your fabric' : 'External fabric'}
             </h4>
           </div>
           <div className="mt-2 flex items-center gap-3">
@@ -409,10 +421,10 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
               <>
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-grey3 dark:text-gray-400">
-                    External fabric
+                    {fabricIsOwn ? 'Your fabric' : 'External fabric'}
                     <span className="text-[10px] text-grey3/70 dark:text-gray-500">
                       {' '}
-                      (to fabric vendor)
+                      {fabricIsOwn ? '(paid to you)' : '(to fabric vendor)'}
                     </span>
                   </span>
                   <span className="text-[#333333] dark:text-gray-200">
