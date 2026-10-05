@@ -63,7 +63,7 @@ interface ProfileContentProps {
 const ProfileContentSkeleton: React.FC = () => (
   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
     {/* Left — form card */}
-    <div className="lg:col-span-2 bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] p-4 lg:p-8 custom-card-shadow">
+    <div className="lg:col-span-2 bg-white dark:bg-card border dark:border-white/10 rounded-[12px] p-4 lg:p-8 custom-card-shadow">
       {/* Tab pill */}
       <Skeleton className="mb-8 h-11 w-full rounded-[10px]" />
 
@@ -89,7 +89,7 @@ const ProfileContentSkeleton: React.FC = () => (
 
     {/* Right — profile card + upload buttons */}
     <div className="lg:col-span-1 space-y-6">
-      <div className="overflow-hidden rounded-[12px] bg-white pb-6 custom-card-shadow dark:border dark:border-white/10 dark:bg-card">
+      <div className="overflow-hidden rounded-[12px] bg-white pb-6 custom-card-shadow border dark:border-white/10 dark:bg-card">
         {/* Cover */}
         <Skeleton className="h-32 w-full rounded-none" />
         {/* Avatar + info */}
@@ -279,7 +279,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
   // silent blank form.
   if (!hasBusiness) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 rounded-[12px] bg-white dark:bg-card dark:border dark:border-white/10 px-6 py-16 text-center custom-card-shadow">
+      <div className="flex flex-col items-center justify-center gap-3 rounded-[12px] bg-white dark:bg-card border dark:border-white/10 px-6 py-16 text-center custom-card-shadow">
         <p className="text-sm font-medium text-[#1C1C1E] dark:text-white">
           Couldn&apos;t load your profile
         </p>
@@ -303,7 +303,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Left Column - Form Card */}
-      <div className="lg:col-span-2 bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] p-4 lg:p-8 custom-card-shadow">
+      <div className="lg:col-span-2 bg-white dark:bg-card border dark:border-white/10 rounded-[12px] p-4 lg:p-8 custom-card-shadow">
         {/* Profile Tabs Pill Toggle */}
         <div className="flex w-full bg-[#F3F4F6] dark:bg-muted rounded-[10px] p-1 mb-8">
           <button

@@ -65,7 +65,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
   return (
     <div
       className={cn(
-        'bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] py-10 px-6 custom-card-shadow',
+        'bg-white dark:bg-card border dark:border-white/10 rounded-[12px] py-10 px-6 custom-card-shadow',
         className
       )}
     >

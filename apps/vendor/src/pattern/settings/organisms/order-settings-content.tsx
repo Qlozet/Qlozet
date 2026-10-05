@@ -149,7 +149,7 @@ const SettingsCard = ({
   onInputChange: (id: string, value: string) => void;
 }) => {
   return (
-    <div className="bg-white dark:bg-card dark:border dark:border-white/10 rounded-xl p-5 lg:p-6 custom-card-shadow">
+    <div className="bg-white dark:bg-card border dark:border-white/10 rounded-xl p-5 lg:p-6 custom-card-shadow">
       {/* Card Header */}
       <div className="flex items-center gap-2.5 mb-5 pb-4 border-b border-border/60">
         <div className="flex items-center justify-center size-8 rounded-lg bg-primary/10 text-primary">
@@ -349,7 +349,7 @@ export const OrderSettingsContent = () => {
       </div>
 
       {/* External Fabric Policy — dedicated card, saved via business profile API */}
-      <div className="bg-white dark:bg-card dark:border dark:border-white/10 rounded-xl p-5 lg:p-6 custom-card-shadow">
+      <div className="bg-white dark:bg-card border dark:border-white/10 rounded-xl p-5 lg:p-6 custom-card-shadow">
         <div className="flex items-center gap-2.5 mb-5 pb-4 border-b border-border/60">
           <div className="flex items-center justify-center size-8 rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
             <Package className="size-4" />
@@ -381,7 +381,7 @@ export const OrderSettingsContent = () => {
           above. Deliberately NOT a "vendor type": what a vendor sells is
           already visible from their catalogue, and the one thing it cannot
           show is whether they take custom work. */}
-      <div className="bg-white dark:bg-card dark:border dark:border-white/10 rounded-xl p-5 lg:p-6 custom-card-shadow">
+      <div className="bg-white dark:bg-card border dark:border-white/10 rounded-xl p-5 lg:p-6 custom-card-shadow">
         <div className="flex items-center gap-2.5 mb-5 pb-4 border-b border-border/60">
           <div className="flex items-center justify-center size-8 rounded-lg bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400">
             <Scissors className="size-4" />

@@ -38,7 +38,7 @@ export const AuthFormCard: React.FC<AuthFormCardProps> = ({
       {/* Form Card */}
       <div
         className={cn(
-          'relative bg-white dark:bg-card w-fit max-w-lg h-fit rounded-lg shadow-sm dark:shadow-none dark:border dark:border-white/10 p-6 md:p-8 z-20',
+          'relative bg-white dark:bg-card w-fit max-w-lg h-fit rounded-lg shadow-sm dark:shadow-none border dark:border-white/10 p-6 md:p-8 z-20',
           className
         )}
       >

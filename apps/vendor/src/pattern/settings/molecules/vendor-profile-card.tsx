@@ -118,7 +118,7 @@ const UploadRow = ({
   const busy = uploading || removing;
 
   return (
-    <div className="w-full px-6 py-4 bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] custom-card-shadow">
+    <div className="w-full px-6 py-4 bg-white dark:bg-card border dark:border-white/10 rounded-[12px] custom-card-shadow">
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -327,7 +327,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   return (
     <div className={cn('space-y-6', className)}>
       {/* Main Vendor Card */}
-      <div className="bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] custom-card-shadow overflow-hidden pb-6">
+      <div className="bg-white dark:bg-card border dark:border-white/10 rounded-[12px] custom-card-shadow overflow-hidden pb-6">
         {/* Hidden file inputs */}
         <input
           ref={logoInputRef}

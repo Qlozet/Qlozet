@@ -15,7 +15,7 @@ import { FormControl, FormField, FormItem } from '@/components/ui/form';
 import { cn } from '@/lib/utils';
 
 const cardClass =
-  'rounded-[10px] bg-card p-6 custom-card-shadow dark:border dark:border-white/10';
+  'rounded-[10px] bg-card p-6 custom-card-shadow border dark:border-white/10';
 
 interface FitTypesBuilderProps {
   /** Currently selected body parts (drives allowance rows) */
