@@ -25,7 +25,7 @@ export const SettingsSkeleton = () => (
       {[0, 1].map((card) => (
         <div
           key={card}
-          className="rounded-xl bg-white p-5 custom-card-shadow dark:border dark:border-white/10 dark:bg-card lg:p-6"
+          className="rounded-xl bg-white p-5 custom-card-shadow border dark:border-white/10 dark:bg-card lg:p-6"
         >
           <div className="mb-5 flex items-start gap-2.5 border-b border-border/60 pb-4">
             <Skeleton className="size-8 shrink-0 rounded-lg" />
