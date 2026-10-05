@@ -424,13 +424,29 @@ const OrderItemRow: React.FC<{
       totalAmount += ad.total_amount;
       totalQty += ad.quantity;
     });
-  } else {
-    item.color_variant_selections?.forEach((v) => (totalQty += v.quantity));
-    item.fabric_selections?.forEach((f) => (totalQty += f.quantity));
-    item.style_selections?.forEach((s) => (totalQty += s.quantity));
-    item.accessory_selections?.forEach((a) => (totalQty += a.quantity));
-    item.addon_selections?.forEach((ad) => (totalQty += ad.quantity));
   }
+
+  /**
+   * How many of the thing itself, not how many parts it has.
+   *
+   * This used to sum the quantity of every selection, so a single kaftan with
+   * one colour/size and one style read "QTY: 2", and each accessory added
+   * another. The garment's own count lives on the selection that identifies
+   * the unit - the colour variant for clothing, the fabric or accessory
+   * selection for those kinds. Styles and add-ons modify one garment; they are
+   * never units of it.
+   */
+  const unitSelections =
+    kind === 'fabric'
+      ? item.fabric_selections
+      : kind === 'accessory'
+        ? item.accessory_selections
+        : item.color_variant_selections;
+  totalQty =
+    (unitSelections ?? []).reduce(
+      (sum, sel: { quantity?: number }) => sum + (sel.quantity ?? 0),
+      0
+    ) || 1;
 
   // Discount taken from the frozen pricing snapshot. Only struck through when
   // the pre-discount figure actually differs from what was charged, so a row
@@ -703,9 +719,30 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     const vendorShipment = businessId
       ? getVendorShipment(order, businessId)
       : order.shipments?.[0];
-    const vendorSubtotal = businessId
-      ? getVendorSubtotal(order, businessId)
-      : order.subtotal;
+    /**
+     * Fabric of this vendor's own, applied to their own garment.
+     *
+     * It is billed as the item's pricing.external_fabric and kept out of the
+     * item total, because on a cross-vendor order it is the other vendor's
+     * money. When it is the vendor's own they were credited for it — but
+     * every figure below is derived from item goods totals and
+     * vendor_breakdown, neither of which includes it, so the fabric earning
+     * appeared nowhere and the payout did not match any order.
+     *
+     * Zero when the API has not sent these yet, so the figures are unchanged
+     * until the backend ships.
+     */
+    const ownFabricValue =
+      (order as { own_fabric_value?: number }).own_fabric_value ?? 0;
+    const ownFabricNet =
+      (order as { own_fabric_net?: number }).own_fabric_net ?? 0;
+    const ownFabricCommission =
+      (order as { own_fabric_commission?: number }).own_fabric_commission ?? 0;
+
+    const vendorSubtotal =
+      (businessId
+        ? getVendorSubtotal(order, businessId)
+        : (order.subtotal ?? 0)) + ownFabricValue;
 
     // This vendor's own order total: their goods + their delivery, NOT the whole
     // multi-vendor basket. (Kept in sync with the backend's per-vendor scoping;
@@ -730,7 +767,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     const isMultiVendor = distinctBusinesses.size > 1;
 
     const vendorEarnings = ((): number | undefined => {
-      if (breakdown) return breakdown.net;
+      if (breakdown) return breakdown.net + ownFabricNet;
       if (order.vendor_earnings === undefined) return undefined;
       if (!isMultiVendor) return order.vendor_earnings;
       const orderGoods = getOrderGoodsSubtotal(order);
@@ -741,7 +778,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     // Commission is the gap between this vendor's subtotal and their net
     // earnings — both on a per-vendor basis, so it stays non-negative.
     const vendorCommission = breakdown
-      ? breakdown.commission
+      ? breakdown.commission + ownFabricCommission
       : vendorEarnings !== undefined &&
           typeof vendorSubtotal === 'number' &&
           vendorSubtotal > vendorEarnings
@@ -1794,6 +1831,14 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                         vendorEarnings === undefined && !order.payout_status
                       }
                     />
+                    {/* Named, so the subtotal explains itself rather than
+                        being larger than the garment for no visible reason. */}
+                    {ownFabricValue > 0 && (
+                      <DetailRow
+                        label="Includes your fabric"
+                        value={formatNaira(ownFabricValue)}
+                      />
+                    )}
                     {vendorCommission !== undefined && (
                       <DetailRow
                         label="Platform commission"
