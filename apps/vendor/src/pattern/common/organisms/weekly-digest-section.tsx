@@ -38,7 +38,7 @@ const WeeklyDigestSection: FC = () => {
   }, [digest, unread, markRead]);
 
   return (
-    <div className="rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] overflow-hidden">
+    <div className="rounded-[20px] border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] overflow-hidden">
       <div className="px-5 py-4 border-b border-[#DDE2E5] dark:border-border flex items-center gap-2">
         <span className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10">
           <Sparkles className="h-3.5 w-3.5 text-primary" />

@@ -100,7 +100,7 @@ export const Section: React.FC<{
   /** Optional control shown on the right of the header, e.g. a link. */
   trailing?: React.ReactNode;
 }> = ({ title, icon, children, trailing }) => (
-  <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:border dark:border-border dark:bg-[#4A4949]">
+  <div className="overflow-hidden rounded-[20px] border bg-[hsla(0,0%,96%,1)] dark:border-border dark:bg-[#4A4949]">
     <div className="flex items-center justify-between gap-3 px-4 pb-2.5 pt-3.5">
       <div className="flex min-w-0 items-center gap-1.5">
         {icon}

@@ -69,7 +69,7 @@ export const TransactionDetailsModal = create<TransactionDetailsModalProps>(
           </DialogHeader>
 
           <OverlayScroll className="min-h-0 flex-1 pr-1">
-            <div className="bg-[#F7F7F7F8] dark:bg-[#404040] dark:border dark:border-border rounded-[20px]">
+            <div className="border bg-[#F7F7F7F8] dark:bg-[#404040] dark:border-border rounded-[20px]">
               <DetailRow
                 label="Transaction ID"
                 value={readTransactionId(transaction)}
