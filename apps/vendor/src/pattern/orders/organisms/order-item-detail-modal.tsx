@@ -516,7 +516,7 @@ export const OrderItemDetailModal = create<OrderItemDetailModalProps>(
               </p>
             )}
           </SheetHeader>
-          <OverlayScroll className="flex-1 px-4 py-5 sm:px-6">
+          <OverlayScroll className="min-h-0 flex-1 px-4 py-5 sm:px-6">
             <ItemDetailContent item={item} />
           </OverlayScroll>
         </SheetContent>
