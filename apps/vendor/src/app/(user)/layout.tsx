@@ -28,7 +28,10 @@ import {
   setFilter,
   reduxData,
 } from '@/redux/slices/filter-slice';
-import { selectMustChangePassword } from '@/redux/slices/auth-slice';
+import {
+  selectActiveBusiness,
+  selectMustChangePassword,
+} from '@/redux/slices/auth-slice';
 import { AUTH_ROUTES } from '@/lib/routes';
 
 import CompleteKycPopover from '@/pattern/common/organisms/complete-kyc-popover';
@@ -109,10 +112,18 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
   // Only nudge when: the profile has loaded, KYC is genuinely incomplete, and
   // the reminder isn't currently snoozed.
   const kycComplete = vendorProfileData?.data?.kycComplete ?? false;
+  // Completing KYC is an owner-only action, so only nudge someone who can
+  // actually do it. An unknown role still sees the nudge - the same fail-open
+  // rule the settings nav uses.
+  const activeBusiness = useAppSelector(selectActiveBusiness);
+  const isNotOwner = activeBusiness
+    ? !activeBusiness.is_owner && activeBusiness.role?.toLowerCase() !== 'owner'
+    : false;
   const showKycPopUp =
     !vendorProfileLoading &&
     !!vendorProfileData &&
     !kycComplete &&
+    !isNotOwner &&
     Date.now() > kycSnoozedUntil;
 
   const dismissKyc = () => {

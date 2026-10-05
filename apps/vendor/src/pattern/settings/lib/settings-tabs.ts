@@ -20,7 +20,7 @@ export interface SettingsTab {
 
 export const SETTINGS_TABS: SettingsTab[] = [
   { label: 'Profile', slug: 'profile' },
-  { label: 'Verification', slug: 'verification' },
+  { label: 'Verification', slug: 'verification', ownerOnly: true },
   { label: 'Warehouses', slug: 'warehouses' },
   {
     label: 'Users and permissions',
@@ -28,7 +28,7 @@ export const SETTINGS_TABS: SettingsTab[] = [
     ownerOnly: true,
   },
   { label: 'Order Settings', slug: 'order-settings' },
-  { label: 'Payout', slug: 'payout' },
+  { label: 'Payout', slug: 'payout', ownerOnly: true },
   // TODO(api): hidden until the backend supports them. Security had no content
   // beyond a "coming soon" placeholder, and Billing was a form whose inputs
   // were wired to empty handlers — neither reads or writes anything.
