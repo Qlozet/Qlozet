@@ -343,7 +343,7 @@ export const ProductDetailsTemplate = ({
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Image gallery */}
           <div className="flex flex-col gap-4">
-            <div className="relative overflow-hidden rounded-2xl bg-accent w-full">
+            <div className="relative overflow-hidden rounded-2xl border bg-accent w-full">
               <div className="relative aspect-[4/5] w-full">
                 {images[activeImage] ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -414,7 +414,7 @@ export const ProductDetailsTemplate = ({
           {/* Right column */}
           <div className="space-y-6">
             {/* Info card */}
-            <div className="rounded-2xl bg-card p-6 custom-card-shadow">
+            <div className="rounded-2xl border bg-card p-6 custom-card-shadow">
               <div className="flex items-center justify-between gap-4">
                 <p className="text-sm font-medium uppercase text-grey-black/60 dark:text-white/60">
                   SKU:{' '}
@@ -501,7 +501,7 @@ export const ProductDetailsTemplate = ({
             </div>
 
             {/* Detail card */}
-            <div className="rounded-2xl bg-card p-6 custom-card-shadow">
+            <div className="rounded-2xl border bg-card p-6 custom-card-shadow">
               {isFabric ? (
                 <>
                   {material ? (
@@ -704,13 +704,13 @@ const ProductDetailsSkeleton = () => (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <Skeleton className="aspect-[4/5] w-full rounded-2xl" />
       <div className="space-y-6">
-        <div className="space-y-3 rounded-2xl bg-card p-6 custom-card-shadow">
+        <div className="space-y-3 rounded-2xl border bg-card p-6 custom-card-shadow">
           <Skeleton className="h-4 w-32" />
           <Skeleton className="h-8 w-3/4" />
           <Skeleton className="h-4 w-40" />
           <Skeleton className="h-7 w-32" />
         </div>
-        <div className="space-y-3 rounded-2xl bg-card p-6 custom-card-shadow">
+        <div className="space-y-3 rounded-2xl border bg-card p-6 custom-card-shadow">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-5 w-full" />
           ))}

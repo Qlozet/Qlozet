@@ -6,8 +6,7 @@ import type { useProductConditions } from '../hooks/use-product-conditions';
 
 type ConditionState = ReturnType<typeof useProductConditions>;
 
-const cardCls =
-  'rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900';
+const cardCls = 'rounded-xl border bg-card p-5';
 
 function productName(p: any): string {
   return (
