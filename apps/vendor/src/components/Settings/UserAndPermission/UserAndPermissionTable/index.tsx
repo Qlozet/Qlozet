@@ -54,7 +54,10 @@ const UserAndPermissionTable: FC = () => {
     isError,
     error,
   } = useGetTeamMembersQuery();
-  const members = response?.data ?? [];
+  // Memoized on the response, not rebuilt inline: a team member without the
+  // owner role gets a 403 here, which leaves `response` undefined, and a fresh
+  // `[]` on every render used to drive the table into an endless re-render.
+  const members = useMemo(() => response?.data ?? [], [response]);
 
   const [updateMember] = useUpdateTeamMemberMutation();
 
