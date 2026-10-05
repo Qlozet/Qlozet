@@ -752,6 +752,56 @@ export default function AddClothingTemplate() {
     }
   };
 
+  /**
+   * The garment's bill of materials: yards of fabric per size.
+   *
+   * Hoisted so it can render whether or not customization is enabled. It
+   * used to sit inside the customization block, but the shop lets a
+   * customer apply their own fabric to any clothing item whose
+   * accepts_external_fabric is not false - and that defaults to true. A
+   * ready-to-wear garment therefore accepted supplied fabric with no way
+   * for the vendor to say how much it needs, and the order fell back to
+   * the fabric's min_cut: too little cloth for the tailor, too little
+   * money for the fabric vendor.
+   */
+  const yardageEditor = (() => {
+    const garmentSizes = Array.from(
+      new Set(variants.flatMap((v) => v.availableSizes || []))
+    );
+    if (garmentSizes.length === 0) return null;
+    return (
+      <div>
+        <FieldLabel
+          tooltip="Yards of fabric this garment uses per size. Drives fabric pricing and cross-vendor fabric mapping."
+          className="font-normal"
+        >
+          Fabric yardage per size
+        </FieldLabel>
+        <div className="grid grid-cols-3 gap-2">
+          {garmentSizes.map((size) => (
+            <div key={size}>
+              <span className="text-xs text-muted-foreground">{size}</span>
+              <Input
+                type="number"
+                min={0}
+                step={0.5}
+                placeholder="yds"
+                value={yardagePerSize[size] ?? ''}
+                onChange={(e) =>
+                  setYardagePerSize((prev) => ({
+                    ...prev,
+                    [size]: Number(e.target.value) || 0,
+                  }))
+                }
+                className="bg-background"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  })();
+
   return (
     <div className="w-full min-h-screen h-fit pb-10">
       <div className="mx-auto max-w-7xl space-y-6">
@@ -922,51 +972,16 @@ export default function AddClothingTemplate() {
                           />
                         </div>
 
-                        {/* Fabric yardage per size — garment bill of materials */}
-                        {(() => {
-                          const garmentSizes = Array.from(
-                            new Set(
-                              variants.flatMap((v) => v.availableSizes || [])
-                            )
-                          );
-                          if (garmentSizes.length === 0) return null;
-                          return (
-                            <div>
-                              <FieldLabel
-                                tooltip="Yards of fabric this garment uses per size. Drives fabric pricing and cross-vendor fabric mapping."
-                                className="font-normal"
-                              >
-                                Fabric yardage per size
-                              </FieldLabel>
-                              <div className="grid grid-cols-3 gap-2">
-                                {garmentSizes.map((size) => (
-                                  <div key={size}>
-                                    <span className="text-xs text-muted-foreground">
-                                      {size}
-                                    </span>
-                                    <Input
-                                      type="number"
-                                      min={0}
-                                      step={0.5}
-                                      placeholder="yds"
-                                      value={yardagePerSize[size] ?? ''}
-                                      onChange={(e) =>
-                                        setYardagePerSize((prev) => ({
-                                          ...prev,
-                                          [size]: Number(e.target.value) || 0,
-                                        }))
-                                      }
-                                      className="bg-background"
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          );
-                        })()}
+                        {yardageEditor}
                       </div>
                     )}
                   </div>
+
+                  {!customizationEnabled && (
+                    <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                      {yardageEditor}
+                    </div>
+                  )}
 
                   {/* External Fabric Override */}
                   <div className="rounded-lg bg-card p-6 custom-card-shadow">
