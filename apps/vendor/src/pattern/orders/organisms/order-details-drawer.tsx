@@ -130,24 +130,39 @@ const DetailRow = ({
   </div>
 );
 
-const SectionTitle = ({
-  children,
+/**
+ * A titled box.
+ *
+ * `title` puts the heading inside the box with its content, so the section
+ * reads as one object instead of a floating label above a panel. The body is
+ * deliberately unpadded - its rows are full-bleed and carry their own
+ * dividers - so the header gets its own padding and a rule beneath it.
+ */
+const Card = ({
+  title,
   trailing,
+  children,
 }: {
-  children: React.ReactNode;
+  title?: React.ReactNode;
   trailing?: React.ReactNode;
+  children: React.ReactNode;
 }) => (
-  <div className="flex items-center justify-between">
-    <h3 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
+  <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:border dark:border-border dark:bg-[#4A4949]">
+    {title && (
+      <div className="flex items-center justify-between gap-3 px-5 pb-2.5 pt-3.5">
+        <h3 className="min-w-0 truncate text-sm font-semibold text-[#0C0C0D] dark:text-white">
+          {title}
+        </h3>
+        {trailing}
+      </div>
+    )}
+    <div
+      className={
+        title ? 'border-t border-[#DDE2E5] dark:border-border' : undefined
+      }
+    >
       {children}
-    </h3>
-    {trailing}
-  </div>
-);
-
-const Card = ({ children }: { children: React.ReactNode }) => (
-  <div className="rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] dark:border dark:border-border overflow-hidden">
-    {children}
+    </div>
   </div>
 );
 
@@ -204,8 +219,7 @@ const EarningsMilestones = ({ orderId }: { orderId: string }) => {
 
   return (
     <section className="space-y-3">
-      <SectionTitle>Earnings Breakdown</SectionTitle>
-      <Card>
+      <Card title="Earnings Breakdown">
         {records.map((rec, i) => {
           const pct =
             typeof rec.percentage === 'number' ? ` (${rec.percentage}%)` : '';
@@ -1176,8 +1190,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
             <div className="space-y-5 px-4 py-5 sm:px-6">
               {/* ── Order Summary ── */}
               <section className="space-y-3">
-                <SectionTitle>Order Summary</SectionTitle>
-                <Card>
+                <Card title="Order Summary">
                   <DetailRow
                     label="Order ID"
                     value={
@@ -1259,8 +1272,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   fabric detail modal. */}
               {isFabricTransferOnly && outgoingFabricTransfers.length > 0 && (
                 <section className="space-y-3">
-                  <SectionTitle>Fabric</SectionTitle>
-                  <Card>
+                  <Card title="Fabric">
                     {outgoingFabricTransfers.map((transfer, index) => {
                       const fName = extractFabricName(transfer.fabric_product);
                       const fImg = fabricImageUrl(transfer);
@@ -1340,8 +1352,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   for the fabric the customer chose. */}
               {isFabricTransferOnly && (
                 <section className="space-y-3">
-                  <SectionTitle>Your fabric sale</SectionTitle>
-                  <Card>
+                  <Card title="Your fabric sale">
                     <DetailRow
                       label="Fabric value"
                       value={formatNaira(order.fabric_value)}
@@ -1398,8 +1409,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   design breakdown. */}
               {bespokeDesign && (
                 <section className="space-y-3">
-                  <SectionTitle>Design</SectionTitle>
-                  <Card>
+                  <Card title="Design">
                     <div className="flex w-full items-center gap-3 px-5 py-4">
                       <button
                         type="button"
@@ -1460,13 +1470,9 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               {!isFabricTransferOnly &&
                 !(bespokeDesign && vendorItems.length === 0) && (
                   <section className="space-y-3">
-                    <SectionTitle>
-                      Your items ({vendorItems.length})
-                    </SectionTitle>
-
-                    {vendorItems.length > 0 ? (
-                      <Card>
-                        {vendorItems.map((item, index) => (
+                    <Card title={`Your items (${vendorItems.length})`}>
+                      {vendorItems.length > 0 ? (
+                        vendorItems.map((item, index) => (
                           <OrderItemRow
                             key={index}
                             item={item}
@@ -1476,18 +1482,16 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                             canReject={canRejectItems && vendorItems.length > 1}
                             onReject={openRejectItem}
                           />
-                        ))}
-                      </Card>
-                    ) : (
-                      <Card>
+                        ))
+                      ) : (
                         <div className="flex flex-col items-center justify-center gap-2 px-5 py-8 text-center">
                           <Package className="size-8 text-grey3 dark:text-gray-500" />
                           <p className="text-sm text-grey3 dark:text-gray-400">
                             No items from your store in this order.
                           </p>
                         </div>
-                      </Card>
-                    )}
+                      )}
+                    </Card>
                   </section>
                 )}
 
@@ -1521,8 +1525,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               {/* ── Confirmation Status ── */}
               {vendorShipment && (
                 <section className="space-y-3">
-                  <SectionTitle>Confirmation</SectionTitle>
-                  <Card>
+                  <Card title="Confirmation">
                     <DetailRow
                       label="Status"
                       value={
@@ -1607,10 +1610,12 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                 </section>
               )}
 
-              {/* ── Fabric Transfer (Outgoing — You are the fabric vendor) ── */}
+              {/* ── Fabric Transfer (Outgoing — You are the fabric vendor) ──
+                  One titled box per transfer rather than a heading floating
+                  above a list of them, so these read like every other section
+                  here. Orders normally carry a single transfer. */}
               {outgoingFabricTransfers.length > 0 && (
                 <section className="space-y-3">
-                  <SectionTitle>📦 Fabric Transfer</SectionTitle>
                   {outgoingFabricTransfers.map((transfer) => {
                     const tailor = readTailorAddress(
                       transfer.destination_business
@@ -1623,7 +1628,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     );
                     const sBadge = shipmentStatusBadge(transfer.status);
                     return (
-                      <Card key={transfer._id}>
+                      <Card key={transfer._id} title="📦 Fabric Transfer">
                         <DetailRow
                           label="Ship to"
                           value={
@@ -1755,12 +1760,11 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               {/* ── Incoming Fabric (You are the tailor/receiver) ── */}
               {incomingFabricTransfers.length > 0 && (
                 <section className="space-y-3">
-                  <SectionTitle>
-                    {pendingIncomingFabric.length > 0
-                      ? '🧵 Incoming Fabric'
-                      : '🧵 Fabric Received ✓'}
-                  </SectionTitle>
                   {incomingFabricTransfers.map((transfer) => {
+                    const heading =
+                      pendingIncomingFabric.length > 0
+                        ? '🧵 Incoming Fabric'
+                        : '🧵 Fabric Received ✓';
                     const sourceName = extractBizName(transfer.business);
                     const fabricName = extractFabricName(
                       transfer.fabric_product
@@ -1768,7 +1772,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     const isDelivered = transfer.status === 'delivered';
                     const sBadge = shipmentStatusBadge(transfer.status);
                     return (
-                      <Card key={transfer._id}>
+                      <Card key={transfer._id} title={heading}>
                         <DetailRow label="From" value={sourceName} />
                         <DetailRow
                           label="Item"
@@ -1822,8 +1826,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   sale" card above — the order's own totals aren't this vendor's. */}
               {!isFabricTransferOnly && (
                 <section className="space-y-3">
-                  <SectionTitle>Payment</SectionTitle>
-                  <Card>
+                  <Card title="Payment">
                     <DetailRow
                       label="Items subtotal"
                       value={formatNaira(vendorSubtotal)}
@@ -1893,8 +1896,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                 vendorShipment &&
                 vendorShipment.status !== 'pending' && (
                   <section className="space-y-3">
-                    <SectionTitle>Shipment</SectionTitle>
-                    <Card>
+                    <Card title="Shipment">
                       <DetailRow
                         label="Status"
                         value={(() => {
@@ -1944,8 +1946,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               {/* ── Delivery Address ── */}
               {addressParts.length > 0 && (
                 <section className="space-y-3">
-                  <SectionTitle>Delivery address</SectionTitle>
-                  <Card>
+                  <Card title="Delivery address">
                     <div className="px-5 py-4">
                       {typeof addr.full_name === 'string' && addr.full_name && (
                         <p className="text-sm font-medium text-[#333333] dark:text-white">
