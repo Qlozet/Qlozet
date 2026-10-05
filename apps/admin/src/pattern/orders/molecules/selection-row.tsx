@@ -97,14 +97,14 @@ export const Section = ({
   icon: React.ReactNode;
   children: React.ReactNode;
 }) => (
-  <div className="space-y-3">
-    <div className="flex items-center gap-1.5">
+  <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-muted">
+    <div className="flex items-center gap-1.5 px-4 pb-2.5 pt-3.5">
       {icon}
-      <h3 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
+      <h3 className="truncate text-sm font-semibold text-[#0C0C0D] dark:text-white">
         {title}
       </h3>
     </div>
-    <div className="divide-y divide-[#DDE2E5] dark:divide-white/10 rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-muted overflow-hidden">
+    <div className="divide-y divide-[#DDE2E5] border-t border-[#DDE2E5] dark:divide-white/10 dark:border-white/10">
       {children}
     </div>
   </div>
