@@ -363,7 +363,7 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
 
       {/* Pricing ladder — drawer Card idiom, heading inside the box */}
       {item.pricing && (
-        <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:border dark:border-border dark:bg-[#4A4949]">
+        <div className="overflow-hidden rounded-[20px] border bg-[hsla(0,0%,96%,1)] dark:border-border dark:bg-[#4A4949]">
           <div className="px-4 pb-2.5 pt-3.5">
             <h3 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
               Pricing

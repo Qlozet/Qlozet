@@ -178,7 +178,7 @@ export const ConditionsCard = ({
   }, [taxonomyTree]);
 
   return (
-    <div className="rounded-[10px] bg-card p-6 custom-card-shadow dark:border dark:border-white/10">
+    <div className="rounded-[10px] bg-card p-6 custom-card-shadow border dark:border-white/10">
       <h3 className="text-base font-medium mb-2">Conditions</h3>
       <p className="text-sm text-muted-foreground mb-6">
         Products must match these rules to be included.

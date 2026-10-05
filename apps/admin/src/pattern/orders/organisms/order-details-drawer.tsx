@@ -93,7 +93,7 @@ const Panel = ({
   trailing?: React.ReactNode;
   children: React.ReactNode;
 }) => (
-  <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-muted">
+  <div className="overflow-hidden rounded-[20px] border bg-[hsla(0,0%,96%,1)] dark:bg-muted">
     {title && (
       <div className="flex items-center justify-between gap-3 px-5 pb-2.5 pt-3.5">
         <h3 className="min-w-0 truncate text-sm font-semibold text-[#0C0C0D] dark:text-white">

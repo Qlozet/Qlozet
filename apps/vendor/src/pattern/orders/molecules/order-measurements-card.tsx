@@ -229,7 +229,7 @@ export const OrderMeasurementsCard = ({
 
   if (isLoading) {
     return (
-      <section className="space-y-3 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
+      <section className="space-y-3 rounded-xl border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
         <div className="h-5 w-40 animate-pulse rounded bg-gray-200 dark:bg-[#404040]" />
         <div className="grid grid-cols-2 gap-2">
           {[0, 1, 2, 3].map((i) => (
@@ -247,7 +247,7 @@ export const OrderMeasurementsCard = ({
   if (!data || (rows.length === 0 && itemProfiles.length === 0)) return null;
 
   return (
-    <section className="space-y-4 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
+    <section className="space-y-4 rounded-xl border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
       <div className="flex items-center justify-between gap-3">
         <h3 className="flex items-center gap-2 text-base font-semibold text-grey-black dark:text-white">
           <Ruler className="size-4 text-primary" />

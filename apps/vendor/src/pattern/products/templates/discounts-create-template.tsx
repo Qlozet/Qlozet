@@ -98,7 +98,7 @@ const discountFormSchema = z.object({
 type DiscountForm = z.infer<typeof discountFormSchema>;
 
 const cardClass =
-  'rounded-[10px] bg-card p-6 custom-card-shadow dark:border dark:border-white/10';
+  'rounded-[10px] bg-card p-6 custom-card-shadow border dark:border-white/10';
 
 // ─── Helpers ─────────────────────────────────────────────────────────
 

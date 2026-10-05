@@ -130,7 +130,7 @@ const Profile = ({
                   </div>
 
                   {/* Box 2 Skeleton */}
-                  <div className="rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-5">
+                  <div className="rounded-[20px] border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-5">
                     <Skeleton className="h-5 w-32 mb-4" />
                     <Skeleton className="h-6 w-40 mb-2" />
                     <Skeleton className="h-4 w-full mb-6 max-w-[250px]" />
@@ -144,7 +144,7 @@ const Profile = ({
                   </div>
 
                   {/* Box 3 Skeleton */}
-                  <div className="rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-5">
+                  <div className="rounded-[20px] border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-5">
                     <Skeleton className="h-5 w-32 mb-6" />
                     <div className="space-y-4">
                       <Skeleton className="h-10 w-full" />
@@ -244,7 +244,7 @@ const Profile = ({
                   </div>
 
                   {/* Box 2: Customers Reviews */}
-                  <div className="rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] overflow-hidden p-5">
+                  <div className="rounded-[20px] border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] overflow-hidden p-5">
                     <div className="flex items-center justify-between mb-4">
                       <Typography
                         textColor="text-[#1C1C1E] dark:text-white"

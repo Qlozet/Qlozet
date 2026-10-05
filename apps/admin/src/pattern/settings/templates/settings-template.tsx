@@ -81,7 +81,7 @@ export const SettingsTemplate = ({
 
         <div className="mt-6">
           {isError ? (
-            <div className="rounded-xl bg-white p-8 text-center custom-card-shadow dark:border dark:border-white/10 dark:bg-card">
+            <div className="rounded-xl bg-white p-8 text-center custom-card-shadow border dark:border-white/10 dark:bg-card">
               <AlertCircle className="mx-auto size-6 text-error" />
               <p className="mt-3 text-sm font-medium text-grey-black dark:text-white">
                 We couldn’t load the platform settings.

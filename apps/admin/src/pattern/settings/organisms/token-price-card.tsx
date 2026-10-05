@@ -43,7 +43,7 @@ export const TokenPriceCard = ({
   const lastUpdated = tokenPrice?.ngn?.last_updated;
 
   return (
-    <section className="rounded-xl bg-white p-5 custom-card-shadow dark:border dark:border-white/10 dark:bg-card lg:p-6">
+    <section className="rounded-xl bg-white p-5 custom-card-shadow border dark:border-white/10 dark:bg-card lg:p-6">
       {/* Card Header */}
       <div className="mb-5 flex items-start gap-2.5 border-b border-border/60 pb-4">
         <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary dark:bg-white/10 dark:text-white">

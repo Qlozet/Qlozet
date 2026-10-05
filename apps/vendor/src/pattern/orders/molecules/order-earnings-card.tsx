@@ -34,7 +34,7 @@ export const OrderEarningsCard = ({
   const total = rows.reduce((sum, row) => sum + row.amount, 0);
 
   return (
-    <section className="space-y-3 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
+    <section className="space-y-3 rounded-xl border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
       <div>
         <h3 className="text-base font-semibold text-grey-black dark:text-white">
           Earnings

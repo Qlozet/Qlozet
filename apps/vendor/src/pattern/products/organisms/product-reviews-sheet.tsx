@@ -210,7 +210,7 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
                 {reviews.map((r) => (
                   <div
                     key={r.id}
-                    className="rounded-2xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] dark:border dark:border-border p-4"
+                    className="rounded-2xl border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] dark:border-border p-4"
                   >
                     {r.product && (
                       <p className="mb-3 truncate text-xs font-bold text-grey-black dark:text-white">

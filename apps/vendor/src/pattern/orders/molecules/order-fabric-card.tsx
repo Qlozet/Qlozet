@@ -99,7 +99,7 @@ export const OrderFabricCard = ({
     typeof fabric.yards === 'number' ? yardsToMetres(fabric.yards) : undefined;
 
   return (
-    <section className="space-y-3 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
+    <section className="space-y-3 rounded-xl border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
       <h3 className="text-sm font-bold uppercase tracking-wide text-grey-black dark:text-white">
         Fabric
         {garmentName && (

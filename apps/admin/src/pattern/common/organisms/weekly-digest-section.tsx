@@ -38,7 +38,7 @@ export const WeeklyDigestSection = () => {
   }, [digest, unread, markRead]);
 
   return (
-    <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-muted">
+    <div className="overflow-hidden rounded-[20px] border bg-[hsla(0,0%,96%,1)] dark:bg-muted">
       <div className="flex items-center gap-2 border-b border-[#DDE2E5] dark:border-white/10 px-5 py-4">
         <span className="flex size-6 items-center justify-center rounded-md bg-primary/10">
           <Sparkles className="size-3.5 text-primary" />

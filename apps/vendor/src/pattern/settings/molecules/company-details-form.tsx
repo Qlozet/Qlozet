@@ -49,7 +49,7 @@ export const CompanyDetailsForm: React.FC<CompanyDetailsFormProps> = ({
   });
 
   return (
-    <div className="bg-white dark:bg-card dark:border dark:border-white/10 rounded-[12px] p-6 shadow-sm">
+    <div className="bg-white dark:bg-card border dark:border-white/10 rounded-[12px] p-6 shadow-sm">
       <FormSectionHeader title="Shop Details" />
 
       <Form {...form}>

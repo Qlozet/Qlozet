@@ -97,7 +97,7 @@ export const Section = ({
   icon: React.ReactNode;
   children: React.ReactNode;
 }) => (
-  <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-muted">
+  <div className="overflow-hidden rounded-[20px] border bg-[hsla(0,0%,96%,1)] dark:bg-muted">
     <div className="flex items-center gap-1.5 px-4 pb-2.5 pt-3.5">
       {icon}
       <h3 className="truncate text-sm font-semibold text-[#0C0C0D] dark:text-white">

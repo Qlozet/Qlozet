@@ -75,7 +75,7 @@ export const ProductPreviewCard = ({
   return (
     <div
       className={cn(
-        'rounded-[10px] bg-card p-6 custom-card-shadow dark:border dark:border-white/10 flex flex-col',
+        'rounded-[10px] bg-card p-6 custom-card-shadow border dark:border-white/10 flex flex-col',
         className
       )}
     >
