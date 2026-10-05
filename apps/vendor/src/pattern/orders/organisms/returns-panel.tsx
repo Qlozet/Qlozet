@@ -130,7 +130,7 @@ export const ReturnsPanel: React.FC = () => {
   const totalPages = readPageCount(data?.data, pagination.pageSize);
 
   return (
-    <div className="bg-card w-full rounded-[10px] shadow-md">
+    <div className="bg-card w-full rounded-xl border custom-card-shadow">
       <TableToolbar
         title="Returns"
         search={search}

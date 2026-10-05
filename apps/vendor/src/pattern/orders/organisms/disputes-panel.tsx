@@ -83,7 +83,7 @@ export const DisputesPanel: React.FC = () => {
   const totalPages = data?.data?.total_pages ?? data?.data?.totalPages ?? 1;
 
   return (
-    <div className="bg-card w-full rounded-[10px] shadow-md">
+    <div className="bg-card w-full rounded-xl border custom-card-shadow">
       <TableToolbar
         title="Disputes"
         search={search}

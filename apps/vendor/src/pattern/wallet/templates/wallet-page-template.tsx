@@ -287,7 +287,7 @@ export const WalletPageTemplate: React.FC = () => {
       {/* Recent transactions */}
       <div
         id="recent-transactions"
-        className="bg-card w-full rounded-[10px] shadow-md"
+        className="bg-card w-full rounded-xl border custom-card-shadow"
       >
         <TableToolbar
           title="Recent Transactions"

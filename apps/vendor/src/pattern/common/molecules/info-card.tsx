@@ -34,7 +34,7 @@ export const InfoCard = ({
   return (
     <div
       className={cn(
-        'flex flex-col gap-2 rounded-xl bg-white p-4 custom-card-shadow',
+        'flex flex-col gap-2 rounded-xl border bg-white p-4 custom-card-shadow',
         className
       )}
     >

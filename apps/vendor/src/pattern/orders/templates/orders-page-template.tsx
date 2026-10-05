@@ -110,7 +110,7 @@ export const OrdersPageTemplate: React.FC = () => {
           <OrderStatsSection isLoading={isLoading} />
 
           {/* Orders table */}
-          <div className="bg-card w-full rounded-[10px] shadow-md">
+          <div className="bg-card w-full rounded-xl border custom-card-shadow">
             <TableToolbar
               title="Orders"
               search={search}

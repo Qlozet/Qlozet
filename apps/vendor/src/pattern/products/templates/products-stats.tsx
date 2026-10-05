@@ -108,7 +108,7 @@ export const ProductsStats = ({
           className="lg:col-span-2"
         />
       ) : (
-        <div className="flex h-[120px] w-full flex-col justify-center gap-1 rounded-[12px] bg-card px-5 custom-card-shadow lg:col-span-2">
+        <div className="flex h-[120px] w-full flex-col justify-center gap-1 rounded-[12px] border bg-card px-5 custom-card-shadow lg:col-span-2">
           <p className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
             {salesTitle}
           </p>

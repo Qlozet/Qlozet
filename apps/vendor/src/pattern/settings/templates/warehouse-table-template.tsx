@@ -213,7 +213,7 @@ const WarehouseTableTemplate = ({
       </div>
 
       {/* Table Section */}
-      <div className="bg-card w-full rounded-[10px] shadow-md">
+      <div className="bg-card w-full rounded-xl border custom-card-shadow">
         <TableToolbar
           title="Warehouses"
           search={searchQuery}
