@@ -112,7 +112,7 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-card rounded-xl border custom-card-shadow overflow-hidden">
         <div className="animate-pulse">
           <div className="h-12 bg-gray-100 border-b" />
           {[...Array(5)]?.map((_, index) => (
@@ -128,7 +128,7 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
 
   if (products?.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow p-12 text-center">
+      <div className="bg-card rounded-xl border custom-card-shadow p-12 text-center">
         <p className="text-gray-500 text-lg">No products found</p>
         <p className="text-gray-400 text-sm mt-2">
           Try adjusting your search or filter criteria
@@ -138,7 +138,7 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
+    <div className="bg-card rounded-xl border custom-card-shadow overflow-hidden">
       <Table>
         <TableHeader className="bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]">
           <TableRow>

@@ -74,7 +74,7 @@ export const SupportSuccess = ({
       : null;
 
   return (
-    <div className="mx-auto mt-6 w-full max-w-137 rounded-2xl bg-white dark:bg-card p-8 text-center shadow-sm">
+    <div className="mx-auto mt-6 w-full max-w-137 rounded-2xl border bg-white dark:bg-card p-8 text-center custom-card-shadow">
       <div className="flex justify-center">
         <span className="flex size-16 items-center justify-center rounded-full border-success text-success">
           <CheckCircleIcon
@@ -94,7 +94,7 @@ export const SupportSuccess = ({
           : 'Your support ticket has been received.'}
       </p>
 
-      <div className="bg-[#F8F8F8F8] dark:bg-[#4A4949] px-4 py-5 mt-6 rounded-xl">
+      <div className="bg-[#F8F8F8F8] dark:bg-[#4A4949] px-4 py-5 mt-6 rounded-xl border">
         {loading ? (
           <div className="space-y-3">
             <Skeleton className="mx-auto h-5 w-44" />

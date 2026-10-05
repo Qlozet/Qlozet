@@ -135,7 +135,7 @@ export const TicketDetailTemplate = () => {
     <div className="mx-auto w-full max-w-7xl min-h-screen h-fit space-y-6 pb-10">
       <GoBackButton href={APP_ROUTES.support} />
 
-      <div className="flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-card custom-card-shadow">
+      <div className="flex flex-col overflow-hidden rounded-2xl border bg-white dark:bg-card custom-card-shadow">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-4">
           {loading ? (
