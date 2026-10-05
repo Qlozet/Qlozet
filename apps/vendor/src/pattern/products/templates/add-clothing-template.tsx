@@ -469,6 +469,23 @@ export default function AddClothingTemplate() {
       return;
     }
 
+    // A draft may be unpriced — that is what an unfinished listing looks like.
+    // A published one may not: the API falls back to a price of 0 when none is
+    // sent, which would put a free, orderable garment in the catalogue.
+    if (!isDraft && !(Number(price) > 0)) {
+      toast.error(
+        'Enter a price above zero before publishing, or save this as a draft.'
+      );
+      return;
+    }
+
+    // The turnaround a vendor publishes is a commitment to the customer, so a
+    // made-to-order garment cannot promise same-day completion by default.
+    if (!isDraft && customizationEnabled && !(Number(turnaroundDays) >= 1)) {
+      toast.error('Enter how many days this garment takes to make.');
+      return;
+    }
+
     const colorVariants: ColorVariantDto[] = await Promise.all(
       variants.map(async (v) => {
         const name = v.label || v.colorHex || 'Unknown';
@@ -732,11 +749,6 @@ export default function AddClothingTemplate() {
           accepts_external_fabric: externalFabricOverride,
         },
       };
-
-      console.log(
-        'SENDING PAYLOAD TO BACKEND:',
-        JSON.stringify(payload.clothing.color_variants, null, 2)
-      );
 
       await createClothing(payload).unwrap();
 
