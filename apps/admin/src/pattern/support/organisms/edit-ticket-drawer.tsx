@@ -80,7 +80,7 @@ export const EditTicketDrawer = NiceModal.create(
       <Sheet open={visible} onOpenChange={handleOpenChange}>
         <SheetContent
           side="right"
-          className="flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white dark:bg-card"
+          className="flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl border custom-card-shadow bg-white dark:bg-card"
           style={{
             height: 'calc(100vh - 3rem)',
             maxHeight: 'calc(100vh - 3rem)',

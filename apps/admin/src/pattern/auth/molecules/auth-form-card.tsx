@@ -36,7 +36,7 @@ export const AuthFormCard = ({
 
       <div
         className={cn(
-          'relative z-20 h-fit w-full max-w-lg overflow-hidden rounded-lg bg-white dark:bg-card p-6 shadow-sm md:p-8',
+          'relative z-20 h-fit w-full max-w-lg overflow-hidden rounded-lg border bg-white dark:bg-card p-6 shadow-sm md:p-8',
           className
         )}
       >

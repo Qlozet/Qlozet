@@ -520,7 +520,7 @@ export const OrderItemDetailModal = create<OrderItemDetailModalProps>(
             // sm+: drawer geometry (inset 24px, pinned top+bottom). The
             // primitive's right-variant `h-full` would otherwise win over the
             // top/bottom pin, so the height is set explicitly at sm too.
-            'flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] rounded-2xl custom-card-shadow bg-white dark:bg-card',
+            'flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] rounded-2xl border custom-card-shadow bg-white dark:bg-card',
             // Above the order drawer sheet (z-50); below the media preview
             // (z-[120]) that can open on top of this.
             'z-[110]'
