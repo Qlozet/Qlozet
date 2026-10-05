@@ -37,7 +37,11 @@ const DONUT_COLORS = [
 interface ProductsStatsProps {
   /** Real total product count from the paginated list response. */
   totalProducts?: number;
-  achievedProducts?: number;
+  /**
+   * Products the vendor has archived. A vendor "delete" is a soft archive, so
+   * this is their retired listings rather than a count of nothing.
+   */
+  archivedProducts?: number;
   isLoading?: boolean;
   /** Right-hand donut: title + the real breakdown. */
   salesTitle: string;
@@ -52,7 +56,7 @@ interface ProductsStatsProps {
 // Fabric and Accessories catalogue pages — only the donut title/data differ.
 export const ProductsStats = ({
   totalProducts,
-  achievedProducts,
+  archivedProducts,
   isLoading = false,
   salesTitle,
   salesData,
@@ -80,8 +84,8 @@ export const ProductsStats = ({
             viewAllLink={viewAllLink}
           />
           <MetricCard
-            title="Achieved products"
-            value={showNum(achievedProducts)}
+            title="Archived products"
+            value={showNum(archivedProducts)}
             icon={
               <CardIcon bg="bg-[#5DDAB4]">
                 <ShoppingBag className="size-6" />

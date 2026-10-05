@@ -255,6 +255,14 @@ export interface ProductsFilters {
 }
 
 // API slice
+export interface CatalogueCounts {
+  total: number;
+  active: number;
+  draft: number;
+  archived: number;
+  scheduled: number;
+}
+
 export interface SalesByTypeRow {
   name: string;
   revenue: number;
@@ -662,6 +670,18 @@ export const productsApiSlice = baseAPI.injectEndpoints({
       },
       providesTags: ['Products'],
     }),
+
+    // GET /products/stats/counts — catalogue counts by status
+    getCatalogueCounts: builder.query<
+      { data: CatalogueCounts },
+      { kind: 'clothing' | 'fabric' | 'accessory' }
+    >({
+      query: ({ kind }) => ({
+        url: `/products/stats/counts?kind=${kind}`,
+        method: 'GET',
+      }),
+      providesTags: ['Products'],
+    }),
   }),
 });
 
@@ -700,4 +720,5 @@ export const {
   useGetVendorProductRatingsQuery,
   useToggleProductWishlistMutation,
   useGetSalesByProductTypeQuery,
+  useGetCatalogueCountsQuery,
 } = productsApiSlice;

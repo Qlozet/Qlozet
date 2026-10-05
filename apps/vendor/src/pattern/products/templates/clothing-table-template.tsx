@@ -10,6 +10,7 @@ import {
   useDeleteProductMutation,
   useUpdateProductStatusMutation,
   useGetSalesByProductTypeQuery,
+  useGetCatalogueCountsQuery,
 } from '@/redux/services/products/products.api-slice';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -263,6 +264,8 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   // Real breakdown, last 90 days. Revenue drives the slice; the order count
   // rides along in the tooltip, so the chart answers both "what pays" and
   // "what moves" without needing a toggle.
+  const { data: countsRes } = useGetCatalogueCountsQuery({ kind: 'clothing' });
+
   const { data: salesRes, isLoading: salesLoading } =
     useGetSalesByProductTypeQuery({ kind: 'clothing' });
 
@@ -343,7 +346,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
       <div className="mb-[21px]">
         <ProductsStats
           totalProducts={totalProducts}
-          achievedProducts={0}
+          archivedProducts={countsRes?.data?.archived}
           isLoading={isLoading}
           salesTitle="Sales by product type (90 days)"
           salesData={salesData}
