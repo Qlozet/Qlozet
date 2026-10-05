@@ -196,7 +196,7 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
           </div>
 
           {/* Individual reviews — each in its own card. */}
-          <OverlayScroll className="flex-1 px-4 py-5 sm:px-6">
+          <OverlayScroll className="min-h-0 flex-1 px-4 py-5 sm:px-6">
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
                 <Loader2 className="size-5 animate-spin text-grey3" />

@@ -107,7 +107,7 @@ const Profile = ({
           </SheetHeader>
 
           {/* Scrollable body */}
-          <OverlayScroll className="flex-1">
+          <OverlayScroll className="min-h-0 flex-1">
             <div className="space-y-5 px-4 py-5 sm:px-6">
               {isLoading ? (
                 <>
