@@ -361,13 +361,15 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
         </Section>
       )}
 
-      {/* Pricing ladder — drawer Card idiom */}
+      {/* Pricing ladder — drawer Card idiom, heading inside the box */}
       {item.pricing && (
-        <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
-            Pricing
-          </h3>
-          <div className="rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] dark:border dark:border-border px-4 py-3.5 space-y-1.5">
+        <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:border dark:border-border dark:bg-[#4A4949]">
+          <div className="px-4 pb-2.5 pt-3.5">
+            <h3 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
+              Pricing
+            </h3>
+          </div>
+          <div className="space-y-1.5 border-t border-[#DDE2E5] px-4 py-3.5 dark:border-border">
             {(
               [
                 ['Base', item.pricing.base],
@@ -445,13 +447,15 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
         </div>
       )}
 
-      {/* Customer note */}
+      {/* Customer note — keeps its amber treatment, heading inside the box */}
       {item.note && (
-        <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
-            Customer note
-          </h3>
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 dark:border-amber-800/50 dark:bg-amber-900/20">
+        <div className="overflow-hidden rounded-[20px] border border-amber-200 bg-amber-50 dark:border-amber-800/50 dark:bg-amber-900/20">
+          <div className="px-4 pb-2.5 pt-3.5">
+            <h3 className="text-sm font-semibold text-amber-900 dark:text-amber-200">
+              Customer note
+            </h3>
+          </div>
+          <div className="border-t border-amber-200 px-4 py-3 dark:border-amber-800/50">
             <p className="text-xs italic leading-relaxed text-amber-800 dark:text-amber-200">
               &ldquo;{item.note}&rdquo;
             </p>

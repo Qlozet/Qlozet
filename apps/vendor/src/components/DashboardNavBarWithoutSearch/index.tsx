@@ -12,10 +12,11 @@ import notificationIcon from '@/public/assets/svg/notification-bing.svg';
 import altireicon from '@/public/assets/svg/altire-icon.svg';
 import transformText from '@/public/assets/svg/textformat.size.svg';
 import clockwise from '@/public/assets/svg/arrow.clockwise.svg';
-import userIcon from '@/public/assets/svg/user-octagon.svg';
 import menuIcon from '@/public/assets/svg/menu-icon.svg';
 import mobileProfile from '@/public/assets/svg/mobile-oct-icon.svg';
 import { cn } from '@/lib/utils';
+import { UserAvatar } from '@/pattern/common/atoms/user-avatar';
+import { useGetUserProfileQuery } from '@/redux/services/settings/settings.api-slice';
 
 interface DashboardNavWithOutSearchProps {
   name?: string;
@@ -46,6 +47,16 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
   });
   const unreadCount = unreadData?.data?.total ?? 0;
   const { data: digestData } = useGetLatestDigestQuery();
+
+  /**
+   * The button that opens the profile sheet should show whose profile it is.
+   * This is the user's own picture - userDetails carries the *business*
+   * display picture, which is a different thing. The sheet reads the same
+   * endpoint, so the two share one cached request.
+   */
+  const { data: userProfile } = useGetUserProfileQuery();
+  const avatarSrc = userProfile?.profile_picture;
+  const avatarName = userProfile?.full_name || userDetails?.personalName || '';
   const digestUnread = digestData?.data?.unread ?? 0;
 
   const showProfileHandler = (): void => {
@@ -127,16 +138,14 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
                   </div>
                 </div>
                 <div
-                  className="relative rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors"
+                  className="relative cursor-pointer transition-opacity hover:opacity-90"
                   onClick={handleProfileClick}
+                  role="button"
+                  aria-label="Open profile"
                 >
-                  <Image
-                    alt="Profile icon"
-                    src={userIcon}
-                    className="size-5 dark:brightness-200"
-                  />
+                  <UserAvatar src={avatarSrc} name={avatarName} size="md" />
                   {digestUnread > 0 && (
-                    <span className="absolute -top-1 -right-1 size-2.5 rounded-full bg-primary" />
+                    <span className="absolute -top-1 -right-1 size-2.5 rounded-full bg-primary ring-2 ring-background" />
                   )}
                 </div>
               </div>
@@ -199,16 +208,14 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
                 {userDetails && userDetails.personalName}
               </Typography>
               <div
-                className="relative rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer"
+                className="relative cursor-pointer transition-opacity hover:opacity-90"
                 onClick={handleProfileClick}
+                role="button"
+                aria-label="Open profile"
               >
-                <Image
-                  alt="User icon"
-                  src={userIcon}
-                  className="cursor-pointer"
-                />
+                <UserAvatar src={avatarSrc} name={avatarName} size="md" />
                 {digestUnread > 0 && (
-                  <span className="absolute -top-1 -right-1 size-2.5 rounded-full bg-primary" />
+                  <span className="absolute -top-1 -right-1 size-2.5 rounded-full bg-primary ring-2 ring-background" />
                 )}
               </div>
             </div>

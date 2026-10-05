@@ -88,21 +88,29 @@ export const SelectionRow: React.FC<{
   );
 };
 
-// Styled to match the order drawer's SectionTitle + Card idiom, so the item
-// detail sheet and the order sheet read as one surface.
+// A titled box: the heading sits inside it with the content rather than
+// floating above, so the section reads as one object. Matches the order
+// drawer's Card idiom, so the item detail sheet and the order sheet read as
+// one surface. The body keeps its own dividers and is separated from the
+// header by a rule rather than by a gap.
 export const Section: React.FC<{
   title: string;
   icon: React.ReactNode;
   children: React.ReactNode;
-}> = ({ title, icon, children }) => (
-  <div className="space-y-3">
-    <div className="flex items-center gap-1.5">
-      {icon}
-      <h3 className="text-sm font-semibold text-[#0C0C0D] dark:text-white">
-        {title}
-      </h3>
+  /** Optional control shown on the right of the header, e.g. a link. */
+  trailing?: React.ReactNode;
+}> = ({ title, icon, children, trailing }) => (
+  <div className="overflow-hidden rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:border dark:border-border dark:bg-[#4A4949]">
+    <div className="flex items-center justify-between gap-3 px-4 pb-2.5 pt-3.5">
+      <div className="flex min-w-0 items-center gap-1.5">
+        {icon}
+        <h3 className="truncate text-sm font-semibold text-[#0C0C0D] dark:text-white">
+          {title}
+        </h3>
+      </div>
+      {trailing}
     </div>
-    <div className="divide-y divide-[#DDE2E5] dark:divide-border rounded-[20px] bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] dark:border dark:border-border overflow-hidden">
+    <div className="divide-y divide-[#DDE2E5] border-t border-[#DDE2E5] dark:divide-border dark:border-border">
       {children}
     </div>
   </div>

@@ -1,8 +1,5 @@
 // Trigger Vercel rebuild
 import Typography from '../Typography';
-import closeIcon from '@/public/assets/svg/close-square-icon.svg';
-import rotate from '@/public/assets/svg/rotate-icon.svg';
-import Image from 'next/image';
 import Performance from '../Performance';
 import Rating from '../Rating';
 import { ProfileProps } from '../../types';
@@ -21,6 +18,8 @@ import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 import NiceModal from '@ebay/nice-modal-react';
 import { ProductReviewsSheet } from '@/pattern/products/organisms/product-reviews-sheet';
 import { OverlayScroll } from '@/components/OverlayScroll';
+import { UserAvatar } from '@/pattern/common/atoms/user-avatar';
+import { useGetUserProfileQuery } from '@/redux/services/settings/settings.api-slice';
 
 // Bands rendered in the reviews breakdown, in display order.
 const RATING_BANDS = [
@@ -73,6 +72,22 @@ const Profile = ({
     skip: !showProfile,
   });
   const email = profileData?.data?.email;
+
+  /**
+   * The avatar is the *user's* picture. userDetails.profileImage is the
+   * business display picture - a different thing, and empty for most vendors,
+   * which is why this card only ever showed an initial. Prefer the signed-in
+   * user's own picture and keep the business one as a fallback.
+   */
+  const { data: userProfile } = useGetUserProfileQuery(undefined, {
+    skip: !showProfile,
+  });
+  const avatarSrc = userProfile?.profile_picture || userDetails?.profileImage;
+  const avatarName =
+    userProfile?.full_name ||
+    userDetails?.personalName ||
+    userDetails?.businessName ||
+    '';
 
   return (
     <Sheet
@@ -146,33 +161,12 @@ const Profile = ({
                   <div className="rounded-[20px] bg-white dark:bg-card overflow-hidden p-6">
                     <div className="flex flex-col items-center">
                       {/* Avatar */}
-                      <div className="size-40 rounded-full overflow-hidden bg-[hsla(0,0%,92%,1)] dark:bg-muted mb-4">
-                        {/* No <Image> without a src — next/image treats "" as a
-                            missing prop and re-requests the page. Fall back to
-                            the initial instead. */}
-                        {userDetails?.profileImage ? (
-                          <Image
-                            src={userDetails.profileImage}
-                            width={160}
-                            height={160}
-                            alt="Profile Image"
-                            className="w-full h-full object-cover"
-                            unoptimized
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center">
-                            <span className="text-5xl font-bold text-gray-500 dark:text-gray-300">
-                              {(
-                                userDetails?.personalName ||
-                                userDetails?.businessName ||
-                                ''
-                              )
-                                .charAt(0)
-                                .toUpperCase()}
-                            </span>
-                          </div>
-                        )}
-                      </div>
+                      <UserAvatar
+                        src={avatarSrc}
+                        name={avatarName}
+                        size="xl"
+                        className="mb-4"
+                      />
 
                       {/* Names */}
                       <Typography
