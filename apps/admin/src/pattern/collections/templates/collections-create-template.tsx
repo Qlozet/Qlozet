@@ -39,8 +39,7 @@ import { ProductPreviewCard } from '../organisms/product-preview-card';
 
 const selectCls =
   'h-10 w-full rounded-md border border-input bg-background px-3 text-sm text-gray-700 dark:text-gray-200 outline-none focus:border-primary';
-const cardCls =
-  'rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900';
+const cardCls = 'rounded-xl border bg-card p-5';
 const labelCls =
   'mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300';
 
