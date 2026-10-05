@@ -365,7 +365,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
         <OverlayScroll className="flex-1 min-h-0 px-4 py-5 sm:px-6">
           <div className="space-y-5">
             {/* Quote card */}
-            <section className="space-y-4 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
+            <section className="space-y-4 rounded-xl border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-semibold text-grey-black dark:text-white">
                   Quote
@@ -585,7 +585,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                   })
                 }
                 disabled={!bespokeDesign}
-                className="flex w-full items-center gap-3 rounded-xl bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4 text-left transition-colors enabled:hover:bg-[hsla(0,0%,92%,1)] enabled:cursor-pointer dark:enabled:hover:bg-[#525151]"
+                className="flex w-full items-center gap-3 rounded-xl border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4 text-left transition-colors enabled:hover:bg-[hsla(0,0%,92%,1)] enabled:cursor-pointer dark:enabled:hover:bg-[#525151]"
               >
                 <div className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gray-100">
                   {designImages[0] ? (
