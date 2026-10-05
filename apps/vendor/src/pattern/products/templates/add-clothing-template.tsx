@@ -836,7 +836,7 @@ export default function AddClothingTemplate() {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
               {/* Left column */}
               <div className="space-y-6 lg:col-span-2">
-                <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                <div className="rounded-lg border bg-card p-6 custom-card-shadow">
                   <FieldLabel htmlFor="product-title">Title</FieldLabel>
                   <Input
                     id="product-title"
@@ -847,7 +847,7 @@ export default function AddClothingTemplate() {
                   />
                 </div>
 
-                <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                <div className="rounded-lg border bg-card p-6 custom-card-shadow">
                   <FieldLabel tooltip="Enter product description">
                     Description
                   </FieldLabel>
@@ -860,7 +860,7 @@ export default function AddClothingTemplate() {
                   </p>
                 </div>
 
-                <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                <div className="rounded-lg border bg-card p-6 custom-card-shadow">
                   <FieldLabel>Upload Media</FieldLabel>
                   <FileUploadWidget
                     value={extraFiles}
@@ -868,7 +868,7 @@ export default function AddClothingTemplate() {
                   />
                 </div>
 
-                <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                <div className="rounded-lg border bg-card p-6 custom-card-shadow">
                   <h3 className="mb-4 text-sm font-semibold text-grey-black dark:text-white">
                     Upload Default Images
                   </h3>
@@ -895,7 +895,7 @@ export default function AddClothingTemplate() {
                   />
                 </div>
 
-                <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                <div className="rounded-lg border bg-card p-6 custom-card-shadow">
                   <h3 className="mb-4 text-sm font-semibold text-grey-black dark:text-white">
                     Customization
                   </h3>
@@ -919,7 +919,7 @@ export default function AddClothingTemplate() {
               {/* Right column */}
               <div className="lg:col-span-1">
                 <div className="sticky top-6 space-y-6">
-                  <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                  <div className="rounded-lg border bg-card p-6 custom-card-shadow">
                     <div className="mb-3 flex items-center justify-between">
                       <span className="text-sm font-semibold text-grey-black dark:text-white">
                         Status
@@ -941,7 +941,7 @@ export default function AddClothingTemplate() {
                     </Select>
                   </div>
 
-                  <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                  <div className="rounded-lg border bg-card p-6 custom-card-shadow">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-semibold text-grey-black dark:text-white">
                         Customization
@@ -990,13 +990,13 @@ export default function AddClothingTemplate() {
                   </div>
 
                   {!customizationEnabled && (
-                    <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                    <div className="rounded-lg border bg-card p-6 custom-card-shadow">
                       {yardageEditor}
                     </div>
                   )}
 
                   {/* External Fabric Override */}
-                  <div className="rounded-lg bg-card p-6 custom-card-shadow">
+                  <div className="rounded-lg border bg-card p-6 custom-card-shadow">
                     <div className="mb-3">
                       <span className="text-sm font-semibold text-grey-black dark:text-white">
                         External Fabric

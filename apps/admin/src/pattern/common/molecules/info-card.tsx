@@ -44,7 +44,7 @@ export const InfoCard = ({
   return (
     <div
       className={cn(
-        'flex flex-col gap-2 rounded-xl bg-white dark:bg-card p-4 custom-card-shadow',
+        'flex flex-col gap-2 rounded-xl border bg-white dark:bg-card p-4 custom-card-shadow',
         className
       )}
     >
@@ -111,7 +111,7 @@ export const InfoCard = ({
 export const InfoCardSkeleton = ({ className }: { className?: string }) => (
   <div
     className={cn(
-      'flex animate-pulse flex-col gap-3 rounded-xl bg-white dark:bg-card p-4 custom-card-shadow',
+      'flex animate-pulse flex-col gap-3 rounded-xl border bg-white dark:bg-card p-4 custom-card-shadow',
       className
     )}
   >

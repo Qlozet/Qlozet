@@ -384,7 +384,7 @@ export const AddClothingTemplate = ({
           {/* Left column */}
           <div className="space-y-6 lg:col-span-2">
             {/* Title */}
-            <div className="rounded-lg bg-card p-6 custom-card-shadow">
+            <div className="rounded-lg border bg-card p-6 custom-card-shadow">
               <FieldLabel htmlFor="product-title">Title</FieldLabel>
               <Input
                 id="product-title"
@@ -396,7 +396,7 @@ export const AddClothingTemplate = ({
             </div>
 
             {/* Description */}
-            <div className="rounded-lg bg-card p-6 custom-card-shadow">
+            <div className="rounded-lg border bg-card p-6 custom-card-shadow">
               <FieldLabel tooltip="Enter product description">
                 Description
               </FieldLabel>
@@ -407,13 +407,13 @@ export const AddClothingTemplate = ({
             </div>
 
             {/* Upload Media */}
-            <div className="rounded-lg bg-card p-6 custom-card-shadow">
+            <div className="rounded-lg border bg-card p-6 custom-card-shadow">
               <FieldLabel>Upload Media</FieldLabel>
               <FileUploadWidget onFilesChange={setMediaFiles} />
             </div>
 
             {/* Upload Default Images */}
-            <div className="rounded-lg bg-card p-6 custom-card-shadow">
+            <div className="rounded-lg border bg-card p-6 custom-card-shadow">
               <h3 className="mb-4 text-sm font-semibold text-grey-black dark:text-white">
                 Upload Default Images
               </h3>
@@ -424,7 +424,7 @@ export const AddClothingTemplate = ({
             </div>
 
             {/* Customization builder */}
-            <div className="rounded-lg bg-card p-6 custom-card-shadow">
+            <div className="rounded-lg border bg-card p-6 custom-card-shadow">
               <h3 className="mb-4 text-sm font-semibold text-grey-black dark:text-white">
                 Customization
               </h3>
@@ -441,7 +441,7 @@ export const AddClothingTemplate = ({
           {/* Right column */}
           <div className="space-y-6">
             {/* Status */}
-            <div className="rounded-lg bg-card p-6 custom-card-shadow">
+            <div className="rounded-lg border bg-card p-6 custom-card-shadow">
               <div className="mb-3 flex items-center justify-between">
                 <span className="text-sm font-semibold text-grey-black dark:text-white">
                   Status
@@ -464,7 +464,7 @@ export const AddClothingTemplate = ({
             </div>
 
             {/* Customization toggle */}
-            <div className="rounded-lg bg-card p-6 custom-card-shadow">
+            <div className="rounded-lg border bg-card p-6 custom-card-shadow">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold text-grey-black dark:text-white">
                   Customization

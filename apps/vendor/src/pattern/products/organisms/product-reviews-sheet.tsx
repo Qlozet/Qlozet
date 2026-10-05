@@ -151,7 +151,7 @@ export const ProductReviewsSheet = create<ProductReviewsSheetProps>(
       <Sheet open={visible} onOpenChange={close}>
         <SheetContent
           side="right"
-          className="flex w-full flex-col overflow-hidden p-0 sm:max-w-md sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] sm:rounded-[15px] custom-card-shadow bg-white dark:bg-card"
+          className="flex w-full flex-col overflow-hidden p-0 sm:max-w-md sm:!top-6 sm:!bottom-6 sm:!right-6 sm:!h-[calc(100vh-3rem)] sm:rounded-[15px] border custom-card-shadow bg-white dark:bg-card"
         >
           {/* Header */}
           <div className="shrink-0 flex items-center justify-between border-b border-border px-4 py-5 sm:px-6">

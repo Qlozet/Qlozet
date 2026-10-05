@@ -162,7 +162,7 @@ export const SetVariantsTable = ({
   };
 
   return (
-    <div className="rounded-lg bg-card p-6 custom-card-shadow">
+    <div className="rounded-lg border bg-card p-6 custom-card-shadow">
       <h3 className="mb-4 text-sm font-semibold text-grey-black dark:text-white">
         Set Variants
       </h3>

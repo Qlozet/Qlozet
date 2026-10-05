@@ -89,7 +89,7 @@ export const DashboardTopBar = ({ title }: DashboardTopBarProps) => {
   const digestUnread = digestData?.data?.unread ?? 0;
 
   return (
-    <div className="w-full flex items-center justify-between gap-4 bg-white dark:bg-card py-3 px-5 lg:px-6 rounded-2xl shadow-[0px_4px_10px_#AEAEC026]">
+    <div className="w-full flex items-center justify-between gap-4 bg-white dark:bg-card py-3 px-5 lg:px-6 rounded-2xl border shadow-[0px_4px_10px_#AEAEC026]">
       {/* Title, preceded on small screens by the drawer trigger */}
       <div className="flex min-w-0 items-center gap-3">
         <Sheet open={showNav} onOpenChange={setShowNav}>
