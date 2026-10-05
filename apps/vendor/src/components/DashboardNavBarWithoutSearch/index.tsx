@@ -153,7 +153,7 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
           )}
         </div>
 
-        <div className="hidden lg:w-full lg:flex items-center gap-6 bg-white dark:bg-card py-2 px-6 rounded-[12px]">
+        <div className="hidden lg:w-full lg:flex items-center gap-6 bg-white dark:bg-card py-2 px-6 rounded-[12px] border border-border">
           <div className="hidden md:block">
             <Typography
               textColor="text-dark dark:text-foreground"

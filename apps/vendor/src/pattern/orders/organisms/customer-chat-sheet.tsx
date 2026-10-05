@@ -75,7 +75,7 @@ export function CustomerChatSheet({
           typed in. Overlay/content are z-60/61, above the design media panel. */}
       <DialogContent
         showCloseButton={false}
-        className="flex h-[75vh] flex-col !gap-0 !overflow-hidden !p-0 sm:h-[600px] sm:!max-h-[85vh] sm:!w-[420px] sm:!max-w-[calc(100vw-2rem)] sm:!overflow-hidden"
+        className="flex h-[75vh] flex-col border !gap-0 !overflow-hidden !p-0 sm:h-[600px] sm:!max-h-[85vh] sm:!w-[420px] sm:!max-w-[calc(100vw-2rem)] sm:!overflow-hidden"
       >
         <DialogTitle className="sr-only">
           Chat with {customerName || 'the customer'}

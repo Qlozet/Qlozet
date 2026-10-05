@@ -496,7 +496,7 @@ export const OrderItemDetailModal = create<OrderItemDetailModalProps>(
         <SheetContent
           side="right"
           className={cn(
-            'flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl custom-card-shadow bg-white dark:bg-card',
+            'flex sm:flex w-full flex-col !overflow-hidden p-0 sm:max-w-[440px] !top-6 !bottom-6 !right-6 rounded-2xl border custom-card-shadow bg-white dark:bg-card',
             // Above the order drawer sheet it opens from.
             'z-[60]'
           )}
