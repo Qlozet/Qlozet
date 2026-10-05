@@ -270,14 +270,18 @@ export interface SalesByTypeRow {
 }
 
 export interface SalesByTypeResponse {
-  data: SalesByTypeRow[];
-  meta: {
-    kind: string;
-    days: number;
-    from: string;
-    to: string;
-    total_revenue: number;
-    total_orders: number;
+  // The API's global interceptor wraps every service envelope, so the rows
+  // sit one level in rather than at the top.
+  data: {
+    rows: SalesByTypeRow[];
+    meta: {
+      kind: string;
+      days: number;
+      from: string;
+      to: string;
+      total_revenue: number;
+      total_orders: number;
+    };
   };
 }
 
