@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { Package } from 'lucide-react';
+import { MessageSquare, Package } from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -24,7 +24,10 @@ export const createOrdersColumns = (
   onViewDetails: (order: Order) => void,
   // Active vendor business — scopes each row to THIS vendor's items so a shared
   // multi-vendor order doesn't surface another vendor's product/price/count.
-  businessId?: string
+  businessId?: string,
+  // Unread chat messages keyed by order reference. Without this the only way
+  // to find a customer's reply is to open every order in turn.
+  unreadByReference?: Record<string, number>
 ): ColumnDef<Order>[] => [
   {
     id: 'product',
@@ -78,11 +81,26 @@ export const createOrdersColumns = (
   {
     id: 'order_id',
     header: 'Order ID',
-    cell: ({ row }) => (
-      <span className="whitespace-nowrap text-sm font-medium text-grey-black dark:text-foreground">
-        {readOrderId(row.original)}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const reference = readOrderId(row.original);
+      const unread = unreadByReference?.[reference] ?? 0;
+      return (
+        <div className="flex items-center gap-2">
+          <span className="whitespace-nowrap text-sm font-medium text-grey-black dark:text-foreground">
+            {reference}
+          </span>
+          {unread > 0 && (
+            <span
+              title={`${unread} unread message${unread === 1 ? '' : 's'}`}
+              className="inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white"
+            >
+              <MessageSquare className="size-2.5" />
+              {unread > 9 ? '9+' : unread}
+            </span>
+          )}
+        </div>
+      );
+    },
     enableSorting: false,
   },
   {

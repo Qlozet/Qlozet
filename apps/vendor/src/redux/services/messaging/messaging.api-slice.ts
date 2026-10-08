@@ -27,8 +27,38 @@ function unwrap(response: unknown): OrderMessage[] {
   return [];
 }
 
+// Unread counts, total and keyed by order reference. One request serves both
+// the header badge and the per-row badges on the orders table.
+export interface UnreadMessageCounts {
+  total: number;
+  per_order: Record<string, number>;
+}
+
+function unwrapCounts(response: unknown): UnreadMessageCounts {
+  let node: any = response;
+  // Same envelope problem as unwrap() above, but the payload is an object, so
+  // recurse only while the thing we want is still nested.
+  for (let i = 0; i < 4; i += 1) {
+    if (node && typeof node === 'object' && 'total' in node) break;
+    if (node && typeof node === 'object' && 'data' in node) node = node.data;
+    else break;
+  }
+  return {
+    total: typeof node?.total === 'number' ? node.total : 0,
+    per_order:
+      node?.per_order && typeof node.per_order === 'object'
+        ? node.per_order
+        : {},
+  };
+}
+
 export const messagingApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
+    getUnreadMessageCounts: builder.query<UnreadMessageCounts, void>({
+      query: () => ({ url: '/orders/messages/unread', method: 'GET' }),
+      transformResponse: unwrapCounts,
+      providesTags: [{ type: 'OrderMessages', id: 'UNREAD' }],
+    }),
     getOrderMessages: builder.query<OrderMessage[], string>({
       query: (reference) => ({
         url: `/orders/${reference}/messages`,
@@ -38,6 +68,20 @@ export const messagingApiSlice = baseAPI.injectEndpoints({
       providesTags: (_res, _err, reference) => [
         { type: 'OrderMessages', id: reference },
       ],
+      // Reading a thread marks it read on the server, so the counts are now
+      // stale. A query cannot declare invalidatesTags, hence doing it here.
+      async onQueryStarted(_reference, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            baseAPI.util.invalidateTags([
+              { type: 'OrderMessages' as const, id: 'UNREAD' },
+            ])
+          );
+        } catch {
+          /* a failed read changes nothing */
+        }
+      },
     }),
     sendOrderMessage: builder.mutation<
       OrderMessage,
@@ -56,5 +100,8 @@ export const messagingApiSlice = baseAPI.injectEndpoints({
   }),
 });
 
-export const { useGetOrderMessagesQuery, useSendOrderMessageMutation } =
-  messagingApiSlice;
+export const {
+  useGetOrderMessagesQuery,
+  useSendOrderMessageMutation,
+  useGetUnreadMessageCountsQuery,
+} = messagingApiSlice;

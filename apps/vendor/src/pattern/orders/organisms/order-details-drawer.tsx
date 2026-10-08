@@ -66,6 +66,7 @@ import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import { CustomerDetailsModal } from '../../customers/organisms/customer-details-modal';
 import { CustomerChatSheet } from './customer-chat-sheet';
+import { useGetUnreadMessageCountsQuery } from '@/redux/services/messaging/messaging.api-slice';
 import { OrderItemDetailModal } from './order-item-detail-modal';
 import {
   FabricTransferDetailModal,
@@ -822,6 +823,16 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     const canChat = order.type === 'bespoke' && !isFabricTransferOnly;
     const chatCanSend = ['processing', 'in_transit'].includes(order.status);
 
+    // Reuses the list-wide counts already in the RTK cache rather than asking
+    // per order, so opening a drawer costs no extra request. Opening the thread
+    // invalidates the tag, which is what clears this.
+    const { data: unreadMessages } = useGetUnreadMessageCountsQuery(undefined, {
+      skip: !canChat,
+    });
+    const unreadForThisOrder = canChat
+      ? (unreadMessages?.per_order?.[order.reference] ?? 0)
+      : 0;
+
     // Event fabric claims (guests buying yards from a reservation). A PICKUP
     // claim carries no shipment — the guest collects their cut, so its whole
     // lifecycle is: paid → vendor hands the yards over → completed. A claim
@@ -1165,6 +1176,11 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   >
                     <MessageSquare className="size-3.5" />
                     Message
+                    {unreadForThisOrder > 0 && (
+                      <span className="ml-0.5 inline-flex min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold leading-[14px] text-white">
+                        {unreadForThisOrder > 9 ? '9+' : unreadForThisOrder}
+                      </span>
+                    )}
                   </button>
                 )}
                 {isEarningsFrozen(order) && (
