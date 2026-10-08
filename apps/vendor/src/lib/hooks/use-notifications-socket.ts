@@ -37,6 +37,14 @@ export function useNotificationsSocket(showToast = true) {
 
     const onNotification = (n: { title?: string; body?: string }) => {
       dispatch(baseAPI.util.invalidateTags(['Notification']));
+      // A chat reply raises a notification, so this is also the live trigger
+      // for the unread-message badges on the orders list. Cheap: one small
+      // request, and only when something actually arrived.
+      dispatch(
+        baseAPI.util.invalidateTags([
+          { type: 'OrderMessages' as const, id: 'UNREAD' },
+        ])
+      );
       if (showToast && n?.title) {
         toast(n.title, { description: n.body });
       }

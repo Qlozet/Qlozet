@@ -28,6 +28,7 @@ import { ReturnsPanel } from '../organisms/returns-panel';
 import { DisputesPanel } from '../organisms/disputes-panel';
 import { QuoteRequestsTemplate } from '@/pattern/bespoke/templates/quote-requests-template';
 import { useAppSelector } from '@/redux/store';
+import { useGetUnreadMessageCountsQuery } from '@/redux/services/messaging/messaging.api-slice';
 import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 import { readPageCount } from '@/redux/services/types';
 
@@ -36,6 +37,11 @@ const PAGE_SIZE = 7;
 export const OrdersPageTemplate: React.FC = () => {
   // Active vendor business — used to scope each order row to this vendor's items.
   const businessId = useAppSelector(selectActiveBusiness)?._id ?? '';
+
+  // Unread chat counts for every order at once. The notifications socket
+  // invalidates this tag when a message arrives, so the badges update live
+  // without this component holding a socket of its own.
+  const { data: unreadMessages } = useGetUnreadMessageCountsQuery();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<OrderStatusFilter>('all');
   const [pagination, setPagination] = useState<PaginationState>({
@@ -72,8 +78,9 @@ export const OrdersPageTemplate: React.FC = () => {
   };
 
   const columns = useMemo(
-    () => createOrdersColumns(openDetails, businessId),
-    [businessId]
+    () =>
+      createOrdersColumns(openDetails, businessId, unreadMessages?.per_order),
+    [businessId, unreadMessages?.per_order]
   );
 
   const pageCount = readPageCount(data, pagination.pageSize);
