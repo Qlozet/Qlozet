@@ -771,6 +771,7 @@ export const {
   useRejectOrderItemMutation,
   useGetOrdersChartQuery,
   useGetVendorDashboardMetricsQuery,
+  useGetVendorOrderQuery,
   useGetOrderMeasurementsQuery,
   useLazyGetVendorOrderQuery,
 } = ordersApiSlice;
