@@ -46,8 +46,93 @@ export interface UnreadCountResponse {
   byCategory: Record<string, number>;
 }
 
+export type BroadcastAudience = 'customers' | 'vendors' | 'admins';
+
+export type BroadcastStatus =
+  | 'scheduled'
+  | 'sending'
+  | 'sent'
+  | 'failed'
+  | 'cancelled';
+
+export interface Broadcast {
+  _id: string;
+  subject: string;
+  body: string;
+  audience: BroadcastAudience;
+  send_email: boolean;
+  status: BroadcastStatus;
+  scheduled_at: string | null;
+  sent_at: string | null;
+  created_by_name?: string;
+  recipient_count: number;
+  emails_sent: number;
+  emails_failed: number;
+  error: string | null;
+  createdAt: string;
+}
+
+export interface CreateBroadcastBody {
+  subject: string;
+  body: string;
+  audience: BroadcastAudience;
+  send_email: boolean;
+  scheduled_at?: string;
+}
+
+// The interceptor wraps the service's `{ data }` in its own, so the payload
+// sits a couple of levels down. Recurse to the object that has `rows`.
+function unwrapBroadcasts(response: unknown): {
+  rows: Broadcast[];
+  meta?: NotificationsMeta;
+} {
+  let node: any = response;
+  for (let i = 0; i < 4; i += 1) {
+    if (node && typeof node === 'object' && Array.isArray(node.rows)) break;
+    if (node && typeof node === 'object' && 'data' in node) node = node.data;
+    else break;
+  }
+  return {
+    rows: Array.isArray(node?.rows) ? node.rows : [],
+    meta: node?.meta,
+  };
+}
+
 export const notificationsApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
+    // ─── Admin announcements ───────────────────────────────────────────
+    getBroadcasts: builder.query<
+      { rows: Broadcast[]; meta?: NotificationsMeta },
+      { page?: number; limit?: number } | void
+    >({
+      query: (args) => ({
+        url: '/notifications/broadcasts',
+        method: 'GET',
+        params: {
+          page: (args as any)?.page ?? 1,
+          limit: (args as any)?.limit ?? 20,
+        },
+      }),
+      transformResponse: unwrapBroadcasts,
+      providesTags: ['Broadcast'],
+    }),
+    createBroadcast: builder.mutation<unknown, CreateBroadcastBody>({
+      query: (body) => ({
+        url: '/notifications/broadcasts',
+        method: 'POST',
+        body,
+      }),
+      // The send runs in the background, so the row's counters only move on a
+      // refetch — invalidate both the history and this admin's own bell.
+      invalidatesTags: ['Broadcast', 'Notification'],
+    }),
+    cancelBroadcast: builder.mutation<unknown, string>({
+      query: (id) => ({
+        url: `/notifications/broadcasts/${id}/cancel`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['Broadcast'],
+    }),
     // Paginated notifications, optionally filtered by category.
     getNotifications: builder.query<
       ApiResponse<AppNotification[]> & { meta?: NotificationsMeta },
@@ -99,4 +184,7 @@ export const {
   useGetUnreadCountQuery,
   useMarkNotificationAsViewedMutation,
   useMarkAllAsReadMutation,
+  useGetBroadcastsQuery,
+  useCreateBroadcastMutation,
+  useCancelBroadcastMutation,
 } = notificationsApiSlice;

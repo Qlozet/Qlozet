@@ -64,6 +64,7 @@ export const baseAPI = createApi({
     'HelpArticles',
     // Notification feed + AI assistant (ported from the vendor app)
     'Notification',
+    'Broadcast',
     'AssistantConversations',
     'AssistantConversation',
     'AssistantDigest',

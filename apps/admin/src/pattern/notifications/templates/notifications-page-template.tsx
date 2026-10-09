@@ -2,18 +2,26 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { NotificationInbox } from './notification-inbox';
-import { NotificationsTemplate } from './notifications-template';
+import { BroadcastsTemplate } from './broadcasts-template';
 
 const TABS = [
   { value: 'inbox', label: 'Inbox' },
-  { value: 'settings', label: 'Settings' },
+  { value: 'announcements', label: 'Announcements' },
 ];
 
 /**
- * Notifications has two distinct jobs: reading the notifications addressed to
- * you (Inbox, backed by /notifications) and configuring which notifications the
- * platform sends (Settings). They're tabbed rather than split across routes so
- * the top bar's bell has a single destination.
+ * Notifications has two jobs: reading the notifications addressed to you
+ * (Inbox, backed by /notifications) and telling a whole audience something
+ * (Announcements). Tabbed rather than split across routes so the top bar's
+ * bell has a single destination.
+ *
+ * The second tab used to be "Settings": a grid of per-type, per-channel
+ * toggles. It persisted nothing — every switch and every edit toasted success
+ * and reverted on refresh — and there were no endpoints behind it. It was also
+ * the wrong idea. A shipping notice is an obligation to the customer, not an
+ * admin preference, and the toggles that would make sense (marketing opt-outs)
+ * belong to the recipient. What was actually missing was the opposite of a
+ * mute switch, which is what this tab is now.
  */
 export const NotificationsPageTemplate = () => {
   return (
@@ -36,8 +44,8 @@ export const NotificationsPageTemplate = () => {
           <NotificationInbox />
         </TabsContent>
 
-        <TabsContent value="settings" className="space-y-6">
-          <NotificationsTemplate />
+        <TabsContent value="announcements" className="space-y-6">
+          <BroadcastsTemplate />
         </TabsContent>
       </Tabs>
     </div>
