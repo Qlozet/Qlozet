@@ -1,4 +1,9 @@
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  notificationDestination,
+  type RoutableNotification,
+} from '@/lib/notification-destination';
 import { useMarkNotificationAsViewedMutation } from '@/redux/services/notifications/notifications.api-slice';
 import {
   Package,
@@ -64,6 +69,10 @@ interface NotificationProps {
   desc: string;
   date: string;
   category?: string;
+  /** Drives where the row goes — see lib/notification-destination. */
+  type?: string;
+  metadata?: Record<string, unknown> | null;
+  actionUrl?: string;
 }
 
 const Notification = ({
@@ -73,10 +82,21 @@ const Notification = ({
   desc,
   date,
   category,
+  type,
+  metadata,
+  actionUrl,
 }: NotificationProps) => {
+  const router = useRouter();
   const [isRead, setIsRead] = useState(read);
   const [markAsViewed, { isLoading: isMarking }] =
     useMarkNotificationAsViewedMutation();
+
+  const destination = notificationDestination({
+    type,
+    category,
+    metadata,
+    action_url: actionUrl,
+  } as RoutableNotification);
 
   const markRead = async () => {
     if (isRead) return;
@@ -89,6 +109,13 @@ const Notification = ({
     }
   };
 
+  // Marking read is fire-and-forget: waiting on it before navigating would
+  // make the row feel slow for no benefit, and it reverts itself on failure.
+  const handleActivate = () => {
+    void markRead();
+    if (destination) router.push(destination);
+  };
+
   const Icon = (category && CATEGORY_ICONS[category]) || Bell;
   const colorClass =
     (category && CATEGORY_COLORS[category]) || CATEGORY_COLORS.system;
@@ -99,17 +126,18 @@ const Notification = ({
     <div
       role="button"
       tabIndex={0}
-      onClick={markRead}
+      onClick={handleActivate}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          markRead();
+          handleActivate();
         }
       }}
       className={cn(
         'flex items-start gap-3 w-full text-left px-4 py-4 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        destination && 'cursor-pointer',
         !isRead
-          ? 'cursor-pointer bg-primary/10 dark:bg-primary/15 hover:bg-primary/15 dark:hover:bg-primary/20'
+          ? 'bg-primary/10 dark:bg-primary/15 hover:bg-primary/15 dark:hover:bg-primary/20'
           : 'hover:bg-accent dark:hover:bg-muted/50'
       )}
     >

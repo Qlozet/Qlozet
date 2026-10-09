@@ -103,6 +103,12 @@ import { readApiError } from '@/redux/services/types';
 
 interface OrderDetailsDrawerProps {
   order: Order;
+  /**
+   * Open the customer chat sheet straight away. Set by a deep link from a
+   * new_message notification — that should land on the thread, not merely on
+   * the order the thread belongs to.
+   */
+  openChat?: boolean;
 }
 
 /* ------------------------------------------------------------------ */
@@ -704,7 +710,7 @@ function readTailorAddress(
 }
 
 export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
-  ({ order: orderProp }) => {
+  ({ order: orderProp, openChat }) => {
     const { visible, resolve, hide, remove } = useModal();
     const { copied, copy } = useCopyId();
 
@@ -816,7 +822,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     const [showRejectDialog, setShowRejectDialog] = useState(false);
     const [rejectReason, setRejectReason] = useState('');
     const [rejectItemId, setRejectItemId] = useState<string | null>(null);
-    const [chatOpen, setChatOpen] = useState(false);
+    const [chatOpen, setChatOpen] = useState(Boolean(openChat));
 
     // Bespoke customer chat: available on bespoke orders (not fabric transfers);
     // sending is open only while the order is in production or transit.

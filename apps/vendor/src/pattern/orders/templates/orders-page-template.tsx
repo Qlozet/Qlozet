@@ -4,7 +4,7 @@
 // Vendor orders: headline metrics + paginated orders table with status filter.
 // Uses the shared DataTable component.
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import NiceModal from '@ebay/nice-modal-react';
 import type { PaginationState } from '@tanstack/react-table';
 import { toast } from 'sonner';
@@ -31,12 +31,50 @@ import { useAppSelector } from '@/redux/store';
 import { useGetUnreadMessageCountsQuery } from '@/redux/services/messaging/messaging.api-slice';
 import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 import { readPageCount } from '@/redux/services/types';
+import { useSearchParams } from 'next/navigation';
+import { useGetVendorOrderQuery } from '@/redux/services/orders/orders.api-slice';
+
+const TAB_VALUES = ['orders', 'quotes', 'returns', 'disputes'] as const;
+type OrdersTab = (typeof TAB_VALUES)[number];
 
 const PAGE_SIZE = 7;
 
 export const OrdersPageTemplate: React.FC = () => {
   // Active vendor business — used to scope each order row to this vendor's items.
   const businessId = useAppSelector(selectActiveBusiness)?._id ?? '';
+
+  // Deep links. A notification about one order lands here with ?ref=<reference>
+  // (plus ?chat=1 for a message, and ?tab= for the disputes/quotes tabs), and
+  // the drawer opens on arrival — the point being that you should not have to
+  // find the order the notification was about.
+  const searchParams = useSearchParams();
+  const deepLinkRef = searchParams.get('ref');
+  const wantsChat = searchParams.get('chat') === '1';
+  const requestedTab = searchParams.get('tab');
+  const [tab, setTab] = useState<OrdersTab>(
+    TAB_VALUES.includes(requestedTab as OrdersTab)
+      ? (requestedTab as OrdersTab)
+      : 'orders'
+  );
+
+  // Fetched by reference rather than hunted for in the loaded page: the order
+  // may well be on a page the table has not loaded.
+  const { data: deepLinkOrder } = useGetVendorOrderQuery(deepLinkRef ?? '', {
+    skip: !deepLinkRef,
+  });
+
+  // Opened once per reference. Without the guard, every unrelated re-render
+  // re-opens the drawer the user just closed.
+  const openedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!deepLinkRef || !deepLinkOrder) return;
+    if (openedRef.current === deepLinkRef) return;
+    openedRef.current = deepLinkRef;
+    NiceModal.show(OrderDetailsDrawer, {
+      order: deepLinkOrder,
+      openChat: wantsChat,
+    });
+  }, [deepLinkRef, deepLinkOrder, wantsChat]);
 
   // Unread chat counts for every order at once. The notifications socket
   // invalidates this tag when a message arrives, so the badges update live
@@ -90,7 +128,11 @@ export const OrdersPageTemplate: React.FC = () => {
 
   return (
     <div className="w-full min-h-screen h-fit pb-10">
-      <Tabs defaultValue="orders" className="space-y-6">
+      <Tabs
+        value={tab}
+        onValueChange={(v) => setTab(v as OrdersTab)}
+        className="space-y-6"
+      >
         {/* Card-background tab bar; active tab uses the theme's primary colour.
             On mobile it spans the full screen width and scrolls horizontally
             (triggers keep their size and overflow into a swipe-scroll); on

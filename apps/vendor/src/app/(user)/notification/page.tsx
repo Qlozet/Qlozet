@@ -169,6 +169,9 @@ const NotificationPage: React.FC = () => {
                 desc={item.body}
                 date={item.createdAt}
                 category={item.category}
+                type={item.type}
+                metadata={item.metadata}
+                actionUrl={item.action_url}
               />
             ))}
           </div>
