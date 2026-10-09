@@ -51,6 +51,23 @@ describe('notificationDestination', () => {
     });
   });
 
+  describe('returns', () => {
+    it('lands on the returns tab, where a vendor approves one', () => {
+      expect(
+        notificationDestination({
+          type: 'return_requested',
+          metadata: { order_reference: REF },
+        })
+      ).toBe(`/orders?tab=returns&ref=${REF}`);
+    });
+
+    it('falls back to the returns tab without a reference', () => {
+      expect(notificationDestination({ type: 'return_requested' })).toBe(
+        '/orders?tab=returns'
+      );
+    });
+  });
+
   describe('orders', () => {
     it.each([
       'new_order',

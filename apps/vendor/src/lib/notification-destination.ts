@@ -82,6 +82,13 @@ export function notificationDestination(
         ? orderHref(reference, { tab: 'disputes' })
         : '/orders?tab=disputes';
 
+    // ── Returns ──────────────────────────────────────────────────────
+    // The Returns tab, which is where a vendor approves or rejects one.
+    case 'return_requested':
+      return reference
+        ? orderHref(reference, { tab: 'returns' })
+        : '/orders?tab=returns';
+
     // ── Orders ───────────────────────────────────────────────────────
     case 'new_order':
     case 'order_confirmed':
