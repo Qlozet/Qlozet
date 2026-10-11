@@ -24,8 +24,10 @@ import {
   useLazyGetConversationQuery,
   type AssistantMessage,
   type AssistantChart,
+  type AssistantAction,
 } from '@/redux/services/assistant/assistant.api-slice';
 import { AssistantMiniChart } from '../molecules/assistant-mini-chart';
+import { AssistantActionCard } from '../molecules/assistant-action-card';
 import { streamChat } from '../lib/stream-chat';
 import { Markdown } from '@/components/ui/markdown';
 
@@ -84,6 +86,22 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
     });
   };
 
+  // A card's status changed (confirmed, cancelled, failed): swap it in place.
+  const replaceAction = (messageIndex: number, updated: AssistantAction) => {
+    setMessages((prev) =>
+      prev.map((m, i) =>
+        i === messageIndex
+          ? {
+              ...m,
+              actions: (m.actions ?? []).map((a) =>
+                a.action_id === updated.action_id ? updated : a
+              ),
+            }
+          : m
+      )
+    );
+  };
+
   const startNew = () => {
     abortRef.current?.abort();
     setMessages([]);
@@ -115,6 +133,7 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
         role: 'assistant',
         content: '',
         charts: [],
+        actions: [],
         createdAt: new Date().toISOString(),
       },
     ]);
@@ -124,6 +143,7 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
     abortRef.current = controller;
     let acc = '';
     const chartsAcc: AssistantChart[] = [];
+    const actionsAcc: AssistantAction[] = [];
 
     await streamChat(
       { message: q, conversation_id: conversationId },
@@ -135,6 +155,10 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
         onChart: (c) => {
           chartsAcc.push(c);
           patchLastAssistant({ charts: [...chartsAcc] });
+        },
+        onAction: (a) => {
+          actionsAcc.push(a);
+          patchLastAssistant({ actions: [...actionsAcc] });
         },
         onDone: ({ conversation_id }) => {
           setConversationId(conversation_id);
@@ -312,6 +336,13 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
                   ) : null}
                   {m.charts?.map((chart, ci) => (
                     <AssistantMiniChart key={ci} chart={chart} />
+                  ))}
+                  {m.actions?.map((action) => (
+                    <AssistantActionCard
+                      key={action.action_id}
+                      action={action}
+                      onChange={(updated) => replaceAction(i, updated)}
+                    />
                   ))}
                 </div>
               </div>

@@ -1,11 +1,16 @@
 import { env } from '@/env';
 import { getCookies } from '@/lib/helpers/cookies-manager';
 import { SESSION_COOKIE_KEY } from '@/lib/constants';
-import type { AssistantChart } from '@/redux/services/assistant/assistant.api-slice';
+import type {
+  AssistantAction,
+  AssistantChart,
+} from '@/redux/services/assistant/assistant.api-slice';
 
 export interface StreamHandlers {
   onDelta: (text: string) => void;
   onChart: (chart: AssistantChart) => void;
+  // A prepared action to show as a confirm card under the answer.
+  onAction?: (action: AssistantAction) => void;
   onDone: (info: { conversation_id: string; tools_used: string[] }) => void;
   onError: (message: string) => void;
 }
@@ -81,6 +86,9 @@ export async function streamChat(
             break;
           case 'chart':
             handlers.onChart(evt.chart);
+            break;
+          case 'action':
+            if (evt.action) handlers.onAction?.(evt.action);
             break;
           case 'done':
             handlers.onDone({
