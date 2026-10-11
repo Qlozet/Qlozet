@@ -30,10 +30,12 @@ import { streamChat } from '../lib/stream-chat';
 import { Markdown } from '@/components/ui/markdown';
 
 const SUGGESTIONS = [
+  'What orders need my attention?',
   'How were my sales this month?',
   'What are my top selling products?',
   'When is my next payout and how much?',
-  'Which states buy from me the most?',
+  'What is missing from my product listings?',
+  'What do my reviews say?',
 ];
 
 interface Props {
