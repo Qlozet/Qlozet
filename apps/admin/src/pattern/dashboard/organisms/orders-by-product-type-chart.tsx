@@ -9,6 +9,7 @@ import {
 import { useGetAdminDashboardChartsQuery } from '@/redux/services/dashboard/dashboard.api-slice';
 import { DonutChart, type DonutDatum } from '../molecules/donut-chart';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
+import { useDashboardRange } from '../lib/use-dashboard-range';
 
 const COLORS = [
   'var(--chart-1)',
@@ -30,9 +31,10 @@ interface OrdersByProductTypeChartProps {
 export const OrdersByProductTypeChart = ({
   data,
 }: OrdersByProductTypeChartProps) => {
+  const [range] = useDashboardRange();
   // Skip the request entirely when the caller already has the data.
   const { data: bundle, isLoading } = useGetAdminDashboardChartsQuery(
-    undefined,
+    { range },
     { skip: data !== undefined }
   );
 

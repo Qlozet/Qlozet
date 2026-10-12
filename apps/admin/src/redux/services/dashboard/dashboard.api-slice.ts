@@ -35,6 +35,8 @@ export interface MustPurchaseProduct {
  */
 export interface AdminDashboardChanges {
   period_days: number;
+  /** The window the changes compare - the dashboard's selected range. */
+  period?: { key: string; label: string };
   total_orders: number | null;
   orders_delivered: number | null;
   orders_in_transit: number | null;
@@ -100,31 +102,39 @@ export interface ExpectedEarningsChart extends Chart {
   currency: string;
 }
 
+export interface DashboardRangeInfo {
+  key: '7d' | '30d' | '12w' | '12m';
+  unit: 'day' | 'week' | 'month';
+  label: string;
+  start: string;
+  end: string;
+  days: number;
+}
+
 export interface AdminDashboardCharts {
-  /** The year the monthly series cover — the request's `year`, or the year of the most recent order. */
-  year: number;
+  /** The window every chart but expectedEarnings covers. */
+  range: DashboardRangeInfo;
   currency: string;
   summary: {
-    revenueThisYear: number;
-    ordersThisYear: number;
+    /** Paid order totals inside the window, gross. */
+    revenue: number;
+    orders: number;
+    /** Platform commission on paid orders inside the window. */
+    platformEarnings: number;
     expectedEarnings: number;
   };
   charts: {
-    /** Twelve points, Jan–Dec, zero-filled. */
-    revenueByMonth: Chart;
-    /** Twelve points, Jan–Dec, zero-filled. */
-    orderCountByMonth: Chart;
-    /** Seven points, Sun–Sat in Africa/Lagos. Revenue by day of the week, all-time. */
-    earningsByDay: Chart;
-    /** Seven points, Sun–Sat in Africa/Lagos. Order volume by day of the week, all-time. */
-    orderCountByDay: Chart;
-    /** All-time. Every status is present, including at zero. */
+    /** One point per bucket (day / week / month), zero-filled. Paid orders only. */
+    revenue: Chart;
+    /** One point per bucket. Every order, paid or not. */
+    orderCount: Chart;
+    /** One point per bucket. Commission on paid orders. */
+    platformEarnings: Chart;
     ordersByStatus: Chart;
-    /** All-time, from the product's taxonomy audience — not the buyer's profile gender. */
     ordersByAudience: Chart;
-    /** All-time, top 6 states, from the order's shipping address. */
     ordersByLocation: Chart;
     ordersByProductKind: Chart;
+    /** Forward-looking; independent of the window. */
     expectedEarnings: ExpectedEarningsChart;
   };
 }
@@ -223,9 +233,15 @@ export interface VendorOrder {
 export const dashboardApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // Get admin dashboard metrics
-    getAdminDashboard: builder.query<ApiResponse<AdminDashboardMetrics>, void>({
-      query: () => ({
-        url: '/admin/dashboard',
+    // `range` scopes the change badges; the counters themselves are all-time.
+    getAdminDashboard: builder.query<
+      ApiResponse<AdminDashboardMetrics>,
+      { range?: string } | void
+    >({
+      query: (args) => ({
+        url: args?.range
+          ? `/admin/dashboard?range=${encodeURIComponent(args.range)}`
+          : '/admin/dashboard',
         method: 'GET',
       }),
       providesTags: ['DashboardMetrics'],
@@ -247,19 +263,17 @@ export const dashboardApiSlice = baseAPI.injectEndpoints({
     // Get admin dashboard chart series. Separate from /admin/dashboard: the
     // counters there are three countDocuments calls, these are seven
     // aggregations over the whole orders collection.
+    // One window for the whole page (7d | 30d | 12w | 12m); RTK caches each.
     getAdminDashboardCharts: builder.query<
       ApiResponse<AdminDashboardCharts>,
-      { year?: number } | void
+      { range?: string } | void
     >({
-      query: (args) => {
-        const year = args && 'year' in args ? args.year : undefined;
-        return {
-          url: year
-            ? `/admin/dashboard/charts?year=${year}`
-            : '/admin/dashboard/charts',
-          method: 'GET',
-        };
-      },
+      query: (args) => ({
+        url: args?.range
+          ? `/admin/dashboard/charts?range=${encodeURIComponent(args.range)}`
+          : '/admin/dashboard/charts',
+        method: 'GET',
+      }),
       providesTags: ['DashboardMetrics'],
     }),
 

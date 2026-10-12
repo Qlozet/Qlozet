@@ -10,6 +10,7 @@ import {
   useGetAdminDashboardQuery,
   type AdminDashboardMetrics,
 } from '@/redux/services/dashboard/dashboard.api-slice';
+import { useDashboardRange } from '../lib/use-dashboard-range';
 
 /**
  * First numeric value among `keys`, or undefined when none is present.
@@ -48,12 +49,13 @@ export const StatsCards = () => {
   // the six come straight off GET /admin/dashboard; Measurement Accuracy has no
   // backend definition yet and dashes.
   //
-  // The design's "2.5%" change badges are now real: `changes` compares the last
-  // 30 days against the 30 before. A badge is absent — rather than showing 0% —
+  // The design's "2.5%" change badges are real: `changes` compares the
+  // dashboard's selected window against the equal-length one before it. A badge is absent — rather than showing 0% —
   // when the earlier window had nothing to compare against, so a card never
   // claims a trend the data cannot support. Measurement Accuracy has no badge
   // for the same reason it has no value.
-  const { data, isLoading } = useGetAdminDashboardQuery();
+  const [range] = useDashboardRange();
+  const { data, isLoading } = useGetAdminDashboardQuery({ range });
   const metrics = data?.data;
   const changes = metrics?.changes;
 

@@ -27,7 +27,7 @@ vi.mock('recharts', async () => {
   };
 });
 
-import { MonthlyRevenueChart } from '../monthly-revenue-chart';
+import { RevenueChart } from '../revenue-chart';
 import { ExpectedEarningsChart } from '../expected-earnings-chart';
 import { OrdersByStatus } from '../orders-by-status';
 import { OrdersByGender } from '../orders-by-gender';
@@ -69,49 +69,56 @@ const loading = () =>
     isLoading: true,
   });
 
-describe('MonthlyRevenueChart', () => {
+describe('RevenueChart', () => {
   const bundle = (revenue: Record<string, number>, total: number) => ({
-    year: 2026,
+    range: {
+      key: '12m',
+      unit: 'month',
+      label: 'Last 12 months',
+      start: '',
+      end: '',
+      days: 365,
+    },
     currency: 'NGN',
-    summary: { revenueThisYear: total, ordersThisYear: 0, expectedEarnings: 0 },
+    summary: {
+      revenue: total,
+      orders: 0,
+      platformEarnings: 0,
+      expectedEarnings: 0,
+    },
     charts: {
-      revenueByMonth: {
+      revenue: {
         chartType: 'bar',
-        title: 'Revenue by Month',
+        title: 'Revenue',
         series: [{ key: 'revenue', name: 'Revenue', data: monthly(revenue) }],
       },
     },
   });
 
-  it("shows the API's year total, not a re-sum of the bars", () => {
-    // The single-bar screenshot this replaced read ₦156,921.99 because the
-    // client was summing ten paginated orders. The headline now comes from the
-    // same aggregation that produced the bars.
+  it("shows the API's total for the window, not a re-sum of the bars", () => {
     withBundle(bundle({ Mar: 40000, Aug: 156921.99 }, 196921.99));
-    render(<MonthlyRevenueChart />);
+    render(<RevenueChart />);
     expect(screen.getByText('₦196,921.99')).toBeInTheDocument();
   });
 
-  it('labels the axis with the year the API actually charted', () => {
+  it('labels the card with the window the API actually charted', () => {
     withBundle(bundle({ Aug: 1 }, 1));
-    render(<MonthlyRevenueChart />);
-    // Not "this year": the endpoint falls back to the most recent order's year,
-    // which on a stale database is not the current one.
-    expect(screen.getByText('Revenue in 2026, by month')).toBeInTheDocument();
+    render(<RevenueChart />);
+    expect(
+      screen.getByText('Revenue · Last 12 months, by month')
+    ).toBeInTheDocument();
   });
 
-  it('renders the empty template for a year with no revenue', () => {
+  it('renders the empty template for a window with no revenue', () => {
     withBundle(bundle({}, 0));
-    render(<MonthlyRevenueChart />);
-    expect(
-      screen.getByText(/Monthly revenue will chart here/)
-    ).toBeInTheDocument();
+    render(<RevenueChart />);
+    expect(screen.getByText(/Revenue will chart here/)).toBeInTheDocument();
     expect(screen.getByText('₦0')).toBeInTheDocument();
   });
 
   it('renders a skeleton while the query is in flight', () => {
     loading();
-    const { container } = render(<MonthlyRevenueChart />);
+    const { container } = render(<RevenueChart />);
     expect(container.querySelectorAll('.animate-pulse').length).toBeGreaterThan(
       0
     );
@@ -346,18 +353,17 @@ const weekly = (values: Record<string, number>) =>
   DAYS.map((label) => ({ label, value: values[label] ?? 0 }));
 
 describe('EarningsChart', () => {
-  it('charts revenue by weekday and sums the bars for the header', () => {
-    // Deliberately a different cut from MonthlyRevenueChart. Before this the
-    // two cards rendered an identical monthly series.
+  it('charts platform commission over the window and shows the API total in the header', () => {
     withBundle({
+      summary: { platformEarnings: 156921.99 },
       charts: {
-        earningsByDay: {
+        platformEarnings: {
           chartType: 'bar',
-          title: 'Earnings',
+          title: 'Platform earnings',
           series: [
             {
-              key: 'earnings',
-              name: 'Earnings',
+              key: 'platform_earnings',
+              name: 'Platform earnings',
               data: weekly({ Wed: 120000, Fri: 36921.99 }),
             },
           ],
@@ -365,51 +371,46 @@ describe('EarningsChart', () => {
       },
     });
     render(<EarningsChart />);
-    expect(screen.getByText('Gross Sales: ₦156,921.99')).toBeInTheDocument();
+    expect(screen.getByText('Commission: ₦156,921.99')).toBeInTheDocument();
     expect(screen.getAllByText('Wed').length).toBeGreaterThan(0);
   });
 
-  it('prefers a caller-supplied gross-sales figure over the summed bars', () => {
+  it('sums the bars when the API sends no headline', () => {
     withBundle({
       charts: {
-        earningsByDay: {
+        platformEarnings: {
           chartType: 'bar',
-          title: 'Earnings',
+          title: 'Platform earnings',
           series: [
-            { key: 'earnings', name: 'Earnings', data: weekly({ Wed: 1 }) },
+            {
+              key: 'platform_earnings',
+              name: 'Platform earnings',
+              data: weekly({ Wed: 1 }),
+            },
           ],
         },
       },
     });
-    render(<EarningsChart grossSales="51,000" />);
-    expect(screen.getByText('Gross Sales: 51,000')).toBeInTheDocument();
+    render(<EarningsChart />);
+    expect(screen.getByText('Commission: ₦1')).toBeInTheDocument();
   });
 });
 
 describe('OrderCountChart', () => {
-  it('reads the weekday volume series, not the monthly one', () => {
+  it('reads the windowed volume series', () => {
     withBundle({
       charts: {
-        orderCountByDay: {
+        orderCount: {
           chartType: 'bar',
           title: 'Order Count',
           series: [
             { key: 'order_count', name: 'Orders', data: weekly({ Wed: 12 }) },
           ],
         },
-        // A monthly series is present too; reading it would be the old bug.
-        orderCountByMonth: {
-          chartType: 'bar',
-          title: 'Order Count by Month',
-          series: [
-            { key: 'order_count', name: 'Orders', data: monthly({ Aug: 99 }) },
-          ],
-        },
       },
     });
     render(<OrderCountChart />);
     expect(screen.getAllByText('Sun').length).toBeGreaterThan(0);
-    expect(screen.queryByText('Jan')).not.toBeInTheDocument();
   });
 });
 
@@ -445,16 +446,22 @@ describe('OrdersByProductTypeChart', () => {
     // the platform-wide one would waste a request and risk rendering it here.
     render(<OrdersByProductTypeChart data={[{ name: 'Fabric', value: 3 }]} />);
     expect(screen.getByText('Fabric')).toBeInTheDocument();
-    expect(useGetAdminDashboardChartsQuery).toHaveBeenCalledWith(undefined, {
-      skip: true,
-    });
+    expect(useGetAdminDashboardChartsQuery).toHaveBeenCalledWith(
+      { range: '7d' },
+      {
+        skip: true,
+      }
+    );
   });
 
   it('does not skip when it has to fetch the split itself', () => {
     withBundle({ charts: {} });
     render(<OrdersByProductTypeChart />);
-    expect(useGetAdminDashboardChartsQuery).toHaveBeenCalledWith(undefined, {
-      skip: false,
-    });
+    expect(useGetAdminDashboardChartsQuery).toHaveBeenCalledWith(
+      { range: '7d' },
+      {
+        skip: false,
+      }
+    );
   });
 });

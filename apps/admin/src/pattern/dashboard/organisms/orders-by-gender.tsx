@@ -5,6 +5,7 @@ import { readSeries, withoutZeroes } from '@/lib/dashboard-series';
 import { useGetAdminDashboardChartsQuery } from '@/redux/services/dashboard/dashboard.api-slice';
 import { DonutChart } from '../molecules/donut-chart';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
+import { useDashboardRange } from '../lib/use-dashboard-range';
 
 const COLORS = ['var(--chart-1)', 'var(--chart-4)', 'var(--chart-3)'];
 
@@ -14,7 +15,8 @@ const COLORS = ['var(--chart-1)', 'var(--chart-4)', 'var(--chart-3)'];
 // backend chart grouped on — is almost always unset and answers a different
 // question. Same source the vendor dashboard settled on.
 export const OrdersByGender = () => {
-  const { data, isLoading } = useGetAdminDashboardChartsQuery();
+  const [range] = useDashboardRange();
+  const { data, isLoading } = useGetAdminDashboardChartsQuery({ range });
 
   const series = useMemo(
     () => withoutZeroes(readSeries(data?.data?.charts?.ordersByAudience)),

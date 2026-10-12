@@ -1,7 +1,7 @@
 'use client';
 
 import { ExpectedEarningsChart } from '../organisms/expected-earnings-chart';
-import { MonthlyRevenueChart } from '../organisms/monthly-revenue-chart';
+import { RevenueChart } from '../organisms/revenue-chart';
 import { OrdersByGender } from '../organisms/orders-by-gender';
 import { OrdersByLocation } from '../organisms/orders-by-location';
 import { OrdersByProductTypeChart } from '../organisms/orders-by-product-type-chart';
@@ -13,13 +13,13 @@ import { RecentOrders } from '../organisms/recent-orders';
 export function ChartsSection() {
   return (
     <div className="w-full space-y-6">
-      {/* Expected earnings + Monthly revenue */}
+      {/* Expected earnings + Revenue over the selected window */}
       <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1">
           <ExpectedEarningsChart />
         </div>
         <div className="lg:col-span-2">
-          <MonthlyRevenueChart />
+          <RevenueChart />
         </div>
       </div>
 
@@ -30,8 +30,9 @@ export function ChartsSection() {
         <OrdersByLocation />
       </div>
 
-      {/* Earnings and order count by day of the week, plus recent orders.
-          These are the weekly cut; the monthly cut is the revenue card above. */}
+      {/* Platform commission and order volume over the selected window, plus
+          recent orders. Revenue (the card above) is what customers paid;
+          platform earnings is the commission the marketplace kept of it. */}
       <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
         <EarningsChart />
         <OrderCountChart />
