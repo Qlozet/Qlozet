@@ -16,11 +16,41 @@ export interface AssistantChart {
   data: { label: string; value: number }[];
 }
 
+export type AssistantActionKind =
+  | 'approve_product'
+  | 'reject_product'
+  | 'decide_vendor_application'
+  | 'assign_ticket'
+  | 'reply_to_ticket'
+  | 'resolve_dispute';
+
+export type AssistantActionStatus =
+  | 'proposed'
+  | 'executed'
+  | 'failed'
+  | 'cancelled'
+  | 'expired';
+
+// An action the assistant PREPARED. Nothing runs until the admin confirms it
+// from the card; the status here is what the card shows.
+export interface AssistantAction {
+  action_id: string;
+  kind: AssistantActionKind | string;
+  title: string;
+  summary: string;
+  details: { label: string; value: string }[];
+  status: AssistantActionStatus;
+  result_text?: string | null;
+  error?: string | null;
+  expires_at?: string;
+}
+
 export interface AssistantMessage {
   role: 'user' | 'assistant';
   content: string;
   tools_used?: string[];
   charts?: AssistantChart[];
+  actions?: AssistantAction[];
   createdAt?: string;
 }
 
@@ -28,6 +58,7 @@ export interface ChatResult {
   conversation_id: string;
   answer: string;
   charts: AssistantChart[];
+  actions?: AssistantAction[];
   tools_used: string[];
 }
 
@@ -66,6 +97,28 @@ export interface LatestDigestResult {
   unread: number;
 }
 
+/** The platform morning brief - one a day, shared by the team. */
+export interface AdminBriefRecommendation extends DigestRecommendation {
+  /** The question "Ask assistant" sends about this item. */
+  question?: string;
+}
+
+export interface AdminBrief {
+  _id: string;
+  summary: string;
+  recommendations: AdminBriefRecommendation[];
+  metrics: Record<string, unknown>;
+  /** The platform day it covers, YYYY-MM-DD. */
+  period_key: string;
+  createdAt: string;
+}
+
+export interface LatestAdminBriefResult {
+  brief: AdminBrief | null;
+  /** 1 when this admin has not read it yet. */
+  unread: number;
+}
+
 export const assistantApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // Ask a question. Starts a new conversation when conversation_id is omitted.
@@ -75,6 +128,45 @@ export const assistantApiSlice = baseAPI.injectEndpoints({
     >({
       query: (body) => ({ url: '/assistant/chat', method: 'POST', body }),
       invalidatesTags: ['AssistantConversations', 'AssistantConversation'],
+    }),
+
+    // The admin's decision on a prepared action. Confirm executes it server
+    // side through the same services the console uses; the lists it changed
+    // refetch.
+    confirmAssistantAction: builder.mutation<
+      ApiResponse<AssistantAction>,
+      string
+    >({
+      query: (id) => ({
+        url: `/assistant/actions/${id}/confirm`,
+        method: 'POST',
+      }),
+      invalidatesTags: [
+        'AssistantConversation',
+        'Product',
+        'Products',
+        'ProductStats',
+        'Vendor',
+        'Vendors',
+        'Business',
+        'Businesses',
+        'Ticket',
+        'Tickets',
+        'Dispute',
+        'Disputes',
+        'DashboardMetrics',
+      ],
+    }),
+
+    cancelAssistantAction: builder.mutation<
+      ApiResponse<AssistantAction>,
+      string
+    >({
+      query: (id) => ({
+        url: `/assistant/actions/${id}/cancel`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['AssistantConversation'],
     }),
 
     getConversations: builder.query<
@@ -108,14 +200,33 @@ export const assistantApiSlice = baseAPI.injectEndpoints({
       query: (id) => ({ url: `/assistant/digest/${id}/read`, method: 'PATCH' }),
       invalidatesTags: ['AssistantDigest'],
     }),
+
+    // The platform morning brief, written daily from the same tools the
+    // assistant answers with.
+    getAdminBrief: builder.query<ApiResponse<LatestAdminBriefResult>, void>({
+      query: () => ({ url: '/assistant/admin-brief/latest', method: 'GET' }),
+      providesTags: ['AssistantDigest'],
+    }),
+
+    markAdminBriefRead: builder.mutation<ApiResponse<AdminBrief>, string>({
+      query: (id) => ({
+        url: `/assistant/admin-brief/${id}/read`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['AssistantDigest'],
+    }),
   }),
 });
 
 export const {
   useSendChatMutation,
+  useConfirmAssistantActionMutation,
+  useCancelAssistantActionMutation,
   useGetConversationsQuery,
   useGetConversationQuery,
   useLazyGetConversationQuery,
   useGetLatestDigestQuery,
   useMarkDigestReadMutation,
+  useGetAdminBriefQuery,
+  useMarkAdminBriefReadMutation,
 } = assistantApiSlice;

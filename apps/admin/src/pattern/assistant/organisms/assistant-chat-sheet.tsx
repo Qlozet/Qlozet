@@ -24,8 +24,10 @@ import {
   useLazyGetConversationQuery,
   type AssistantMessage,
   type AssistantChart,
+  type AssistantAction,
 } from '@/redux/services/assistant/assistant.api-slice';
 import { AssistantMiniChart } from '../molecules/assistant-mini-chart';
+import { AssistantActionCard } from '../molecules/assistant-action-card';
 import { streamChat } from '../lib/stream-chat';
 import { Markdown } from '@/components/ui/markdown';
 
@@ -34,18 +36,29 @@ import { Markdown } from '@/components/ui/markdown';
 // an admin without e.g. financial_management gets no revenue/payout tools
 // and the model says so instead of guessing.
 const SUGGESTIONS = [
+  'What is waiting on admin action right now?',
+  'Which orders are stuck, and with whom?',
+  'Which vendors are at risk this month?',
+  'What are shoppers searching for that we do not have?',
   'How did the marketplace perform this month?',
   'Which vendors are driving the most revenue?',
-  'What is waiting on admin action right now?',
   'How is the support workload looking this week?',
 ];
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** A question to ask as a fresh thread as soon as the sheet opens. */
+  seedMessage?: string | null;
+  onSeedConsumed?: () => void;
 }
 
-export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
+export const AssistantChatSheet = ({
+  open,
+  onOpenChange,
+  seedMessage,
+  onSeedConsumed,
+}: Props) => {
   const [messages, setMessages] = useState<AssistantMessage[]>([]);
   const [conversationId, setConversationId] = useState<string | undefined>();
   const [input, setInput] = useState('');
@@ -93,6 +106,22 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
     setShowHistory(false);
   };
 
+  // A card's status changed (confirmed, dismissed, failed): swap it in place.
+  const replaceAction = (messageIndex: number, updated: AssistantAction) => {
+    setMessages((prev) =>
+      prev.map((m, i) =>
+        i === messageIndex
+          ? {
+              ...m,
+              actions: (m.actions ?? []).map((a) =>
+                a.action_id === updated.action_id ? updated : a
+              ),
+            }
+          : m
+      )
+    );
+  };
+
   const openThread = async (id: string) => {
     setShowHistory(false);
     const res = await loadConversation(id)
@@ -105,7 +134,7 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
     }
   };
 
-  const submit = async (text: string) => {
+  const submit = async (text: string, opts: { fresh?: boolean } = {}) => {
     const q = text.trim();
     if (!q || isStreaming) return;
     setInput('');
@@ -117,6 +146,7 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
         role: 'assistant',
         content: '',
         charts: [],
+        actions: [],
         createdAt: new Date().toISOString(),
       },
     ]);
@@ -126,9 +156,12 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
     abortRef.current = controller;
     let acc = '';
     const chartsAcc: AssistantChart[] = [];
+    const actionsAcc: AssistantAction[] = [];
 
     await streamChat(
-      { message: q, conversation_id: conversationId },
+      // `fresh` starts a new thread even if state still holds the old id:
+      // the seeded question is asked before React has re-rendered the reset.
+      { message: q, conversation_id: opts.fresh ? undefined : conversationId },
       {
         onDelta: (t) => {
           acc += t;
@@ -137,6 +170,10 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
         onChart: (c) => {
           chartsAcc.push(c);
           patchLastAssistant({ charts: [...chartsAcc] });
+        },
+        onAction: (a) => {
+          actionsAcc.push(a);
+          patchLastAssistant({ actions: [...actionsAcc] });
         },
         onDone: ({ conversation_id }) => {
           setConversationId(conversation_id);
@@ -151,6 +188,19 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
     setIsStreaming(false);
     abortRef.current = null;
   };
+
+  // Opened from elsewhere with a question: fresh thread, asked once.
+  useEffect(() => {
+    if (!open || !seedMessage) return;
+    abortRef.current?.abort();
+    setMessages([]);
+    setConversationId(undefined);
+    setShowHistory(false);
+    onSeedConsumed?.();
+    void submit(seedMessage, { fresh: true });
+    // submit is recreated every render; the seed is the only real trigger.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, seedMessage]);
 
   const convos = convosRes?.data?.items ?? [];
   const isEmpty = messages.length === 0;
@@ -314,6 +364,13 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
                   ) : null}
                   {m.charts?.map((chart, ci) => (
                     <AssistantMiniChart key={ci} chart={chart} />
+                  ))}
+                  {m.actions?.map((action) => (
+                    <AssistantActionCard
+                      key={action.action_id}
+                      action={action}
+                      onChange={(updated) => replaceAction(i, updated)}
+                    />
                   ))}
                 </div>
               </div>
