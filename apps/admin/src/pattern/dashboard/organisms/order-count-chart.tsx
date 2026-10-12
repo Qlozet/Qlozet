@@ -16,15 +16,17 @@ import { CustomYAxisTick } from '../molecules/custom-y-axis-tick';
 import { CustomXAxisTick } from '../molecules/custom-x-axis-tick';
 import { ChartEmptyState } from '../molecules/chart-empty-state';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
+import { useDashboardRange } from '../lib/use-dashboard-range';
 
-// Order volume by day of the WEEK, from GET /admin/dashboard/charts →
-// charts.orderCountByDay. Every order counts here, paid or not — unlike the
-// earnings series, which only counts orders the customer paid for.
+// Order volume over the dashboard window, from GET /admin/dashboard/charts →
+// charts.orderCount, bucketed by day, week or month to suit it. Every order
+// counts here, paid or not - unlike revenue, which only counts paid ones.
 export const OrderCountChart = () => {
-  const { data, isLoading } = useGetAdminDashboardChartsQuery();
+  const [range] = useDashboardRange();
+  const { data, isLoading } = useGetAdminDashboardChartsQuery({ range });
 
   const series = useMemo(
-    () => readSeries(data?.data?.charts?.orderCountByDay),
+    () => readSeries(data?.data?.charts?.orderCount),
     [data]
   );
   const isEmpty = !hasAnyValue(series);
@@ -42,7 +44,7 @@ export const OrderCountChart = () => {
         <ChartEmptyState
           isEmpty={isEmpty}
           height={350}
-          description="Order volume will chart here by day of the week as orders are placed."
+          description="Order volume will chart here as orders are placed in this period."
         >
           <ResponsiveContainer width="100%" height={350}>
             <BarChart
@@ -60,12 +62,13 @@ export const OrderCountChart = () => {
                 tick={<CustomXAxisTick />}
                 axisLine={false}
                 tickLine={false}
+                interval="preserveStartEnd"
+                minTickGap={18}
               />
               <YAxis
                 tick={<CustomYAxisTick />}
                 axisLine={false}
                 tickLine={false}
-                allowDecimals={false}
               />
               <Bar
                 dataKey="value"

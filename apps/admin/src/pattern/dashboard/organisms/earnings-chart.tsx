@@ -17,30 +17,24 @@ import { CustomYAxisTick } from '../molecules/custom-y-axis-tick';
 import { CustomXAxisTick } from '../molecules/custom-x-axis-tick';
 import { ChartEmptyState } from '../molecules/chart-empty-state';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
+import { useDashboardRange } from '../lib/use-dashboard-range';
 
-interface EarningsChartProps {
-  /**
-   * Optional gross-sales figure for the header. Callers that have the all-time
-   * figure from GET /admin/dashboard pass it in; otherwise the header sums the
-   * bars below.
-   */
-  grossSales?: string;
-}
-
-// Marketplace revenue by day of the WEEK, from GET /admin/dashboard/charts →
-// charts.earningsByDay. Deliberately a different cut from MonthlyRevenueChart,
-// which charts the same money by month — the two cards used to render an
-// identical monthly series, so one of them said nothing the other didn't.
-export const EarningsChart = ({ grossSales }: EarningsChartProps) => {
-  const { data, isLoading } = useGetAdminDashboardChartsQuery();
+// The PLATFORM's earnings - commission on paid orders - over the dashboard
+// window, from GET /admin/dashboard/charts → charts.platformEarnings. This
+// used to chart paid order totals by weekday, which is revenue (the card
+// above already shows it) under a different name; what the marketplace
+// actually earns is the commission, and that is what this card now says.
+export const EarningsChart = () => {
+  const [range] = useDashboardRange();
+  const { data, isLoading } = useGetAdminDashboardChartsQuery({ range });
   const bundle = data?.data;
 
   const series = useMemo(
-    () => readSeries(bundle?.charts?.earningsByDay),
+    () => readSeries(bundle?.charts?.platformEarnings),
     [bundle]
   );
   const isEmpty = !hasAnyValue(series);
-  const total = useMemo(() => sumSeries(series), [series]);
+  const total = bundle?.summary?.platformEarnings ?? sumSeries(series);
 
   if (isLoading) return <ChartSkeleton />;
 
@@ -48,17 +42,17 @@ export const EarningsChart = ({ grossSales }: EarningsChartProps) => {
     <Card className="w-full max-h-fit rounded-[12px] custom-card-shadow">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-white">
-          Earnings
+          Platform earnings
         </CardTitle>
         <span className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-white">
-          Gross Sales: {grossSales ?? formatNaira(total)}
+          Commission: {formatNaira(total)}
         </span>
       </CardHeader>
       <CardContent className="w-full">
         <ChartEmptyState
           isEmpty={isEmpty}
           height={350}
-          description="Earnings will chart here by day of the week once orders are paid for."
+          description="Commission will chart here once orders are paid for in this period."
         >
           <ResponsiveContainer width="100%" height={350}>
             <BarChart
@@ -76,6 +70,8 @@ export const EarningsChart = ({ grossSales }: EarningsChartProps) => {
                 tick={<CustomXAxisTick />}
                 axisLine={false}
                 tickLine={false}
+                interval="preserveStartEnd"
+                minTickGap={18}
               />
               <YAxis
                 tick={<CustomYAxisTick />}

@@ -16,13 +16,15 @@ import { CustomXAxisTick } from '../molecules/custom-x-axis-tick';
 import { CustomYAxisTick } from '../molecules/custom-y-axis-tick';
 import { ChartEmptyState } from '../molecules/chart-empty-state';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
+import { useDashboardRange } from '../lib/use-dashboard-range';
 
 // Top six states by order count, from GET /admin/dashboard/charts →
 // charts.ordersByLocation. Location is the ORDER's shipping state, not the
 // customer's profile address — the profile is usually unset, and a customer can
 // ship to somewhere other than where they live.
 export const OrdersByLocation = () => {
-  const { data, isLoading } = useGetAdminDashboardChartsQuery();
+  const [range] = useDashboardRange();
+  const { data, isLoading } = useGetAdminDashboardChartsQuery({ range });
 
   const series = useMemo(
     () => readSeries(data?.data?.charts?.ordersByLocation),

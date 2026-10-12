@@ -5,6 +5,7 @@ import { readSeries, withoutZeroes } from '@/lib/dashboard-series';
 import { useGetAdminDashboardChartsQuery } from '@/redux/services/dashboard/dashboard.api-slice';
 import { DonutChart } from '../molecules/donut-chart';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
+import { useDashboardRange } from '../lib/use-dashboard-range';
 
 const COLORS = [
   'var(--chart-1)',
@@ -17,7 +18,8 @@ const COLORS = [
 // Every marketplace order by delivery status, from
 // GET /admin/dashboard/charts → charts.ordersByStatus.
 export const OrdersByStatus = () => {
-  const { data, isLoading } = useGetAdminDashboardChartsQuery();
+  const [range] = useDashboardRange();
+  const { data, isLoading } = useGetAdminDashboardChartsQuery({ range });
 
   // The endpoint ships all seven statuses — including the ones at zero — so the
   // legend is stable between refreshes. A donut shouldn't draw invisible slices

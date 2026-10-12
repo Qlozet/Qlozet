@@ -17,6 +17,7 @@ import { useGetAdminDashboardChartsQuery } from '@/redux/services/dashboard/dash
 import { CustomXAxisTick } from '../molecules/custom-x-axis-tick';
 import { ChartEmptyState } from '../molecules/chart-empty-state';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
+import { useDashboardRange } from '../lib/use-dashboard-range';
 
 // Platform commission that is booked against an order but not yet released to
 // the vendor, bucketed by the month it is due to release. This is money already
@@ -26,7 +27,8 @@ import { ChartSkeleton } from '../molecules/chart-skeleton';
 // once that was removed, a permanent "No forecast yet" template. It is now wired
 // to GET /admin/dashboard/charts → charts.expectedEarnings.
 export const ExpectedEarningsChart = () => {
-  const { data, isLoading } = useGetAdminDashboardChartsQuery();
+  const [range] = useDashboardRange();
+  const { data, isLoading } = useGetAdminDashboardChartsQuery({ range });
   const chart = data?.data?.charts?.expectedEarnings;
 
   // Drop the zero months. A release month whose commission sums to nothing is

@@ -18,21 +18,24 @@ import { useGetAdminDashboardChartsQuery } from '@/redux/services/dashboard/dash
 import { CustomXAxisTick } from '../molecules/custom-x-axis-tick';
 import { ChartEmptyState } from '../molecules/chart-empty-state';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
+import { useDashboardRange } from '../lib/use-dashboard-range';
 
-export const MonthlyRevenueChart = () => {
-  const { data, isLoading } = useGetAdminDashboardChartsQuery();
+// Marketplace revenue (paid order totals - gross, before refunds and
+// commission) over the dashboard window, from GET /admin/dashboard/charts →
+// charts.revenue. Bucketed by the server to suit the window: by day, week or
+// month. The headline is the API's own sum of the same series.
+export const RevenueChart = () => {
+  const [range] = useDashboardRange();
+  const { data, isLoading } = useGetAdminDashboardChartsQuery({ range });
   const bundle = data?.data;
 
-  const series = useMemo(
-    () => readSeries(bundle?.charts?.revenueByMonth),
-    [bundle]
-  );
+  const series = useMemo(() => readSeries(bundle?.charts?.revenue), [bundle]);
   const isEmpty = !hasAnyValue(series);
-
-  // The endpoint already sums the year, so the headline never disagrees with
-  // the bars underneath it.
-  const total = bundle?.summary?.revenueThisYear ?? 0;
+  const total = bundle?.summary?.revenue ?? 0;
   const maxValue = useMemo(() => maxOf(series), [series]);
+  const period = bundle?.range
+    ? `${bundle.range.label}, by ${bundle.range.unit}`
+    : 'Revenue';
 
   if (isLoading) return <ChartSkeleton />;
 
@@ -46,17 +49,13 @@ export const MonthlyRevenueChart = () => {
         <p className="text-3xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white">
           {formatNaira(isEmpty ? 0 : total)}
         </p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          {bundle?.year
-            ? `Revenue in ${bundle.year}, by month`
-            : 'Revenue this year, by month'}
-        </p>
+        <p className="mt-1 text-xs text-muted-foreground">Revenue · {period}</p>
 
         <div className="mt-8 flex-1">
           <ChartEmptyState
             isEmpty={isEmpty}
             height={280}
-            description="Monthly revenue will chart here once orders are paid for."
+            description="Revenue will chart here once orders are paid for in this period."
           >
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
@@ -68,6 +67,8 @@ export const MonthlyRevenueChart = () => {
                   tick={<CustomXAxisTick />}
                   axisLine={false}
                   tickLine={false}
+                  interval="preserveStartEnd"
+                  minTickGap={18}
                 />
                 <YAxis hide domain={[0, maxValue * 1.1]} />
                 <ReferenceLine
