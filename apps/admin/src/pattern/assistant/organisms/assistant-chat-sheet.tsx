@@ -34,9 +34,11 @@ import { Markdown } from '@/components/ui/markdown';
 // an admin without e.g. financial_management gets no revenue/payout tools
 // and the model says so instead of guessing.
 const SUGGESTIONS = [
+  'What is waiting on admin action right now?',
+  'Which orders are stuck, and with whom?',
+  'Which vendors are at risk this month?',
   'How did the marketplace perform this month?',
   'Which vendors are driving the most revenue?',
-  'What is waiting on admin action right now?',
   'How is the support workload looking this week?',
 ];
 
