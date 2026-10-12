@@ -31,6 +31,21 @@ export function notificationAskPrompt(
   const product = str(meta.product_name) ?? str(meta.name);
   const design = str(meta.design_name);
 
+  // A nudge from the platform team (an admin's note, sent as an announcement
+  // with metadata.nudge). The assistant can show them exactly what the note
+  // is about, by topic.
+  if (meta.nudge === true) {
+    const topic = str(meta.topic);
+    if (topic === 'listings')
+      return 'Qlozet asked me to improve my listings. What is missing from them, and which should I fix first?';
+    if (topic === 'fulfilment')
+      return 'Qlozet sent me a note about my orders. What is waiting on me or overdue right now?';
+    const body = str(notification.body);
+    return body
+      ? `Qlozet sent me this note: "${body.slice(0, 200)}". What should I do about it?`
+      : 'Qlozet sent me a note. What needs my attention right now?';
+  }
+
   switch (notification.type) {
     case 'new_order':
       return ref

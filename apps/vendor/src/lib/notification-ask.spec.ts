@@ -52,6 +52,34 @@ describe('notificationAskPrompt', () => {
     expect(notificationAskPrompt({ type: 'something_new' })).toBeNull();
   });
 
+  it('turns a platform nudge into the question its topic calls for, whatever its type', () => {
+    expect(
+      notificationAskPrompt({
+        type: 'announcement',
+        metadata: { nudge: true, topic: 'listings' },
+      })
+    ).toContain('improve my listings');
+    expect(
+      notificationAskPrompt({
+        type: 'announcement',
+        metadata: { nudge: true, topic: 'fulfilment' },
+      })
+    ).toContain('waiting on me or overdue');
+    expect(
+      notificationAskPrompt({
+        type: 'announcement',
+        body: 'Please add photos to your kaftans.',
+        metadata: { nudge: true, topic: 'general' },
+      })
+    ).toBe(
+      'Qlozet sent me this note: "Please add photos to your kaftans.". What should I do about it?'
+    );
+    // An ordinary announcement is still not something the assistant can read.
+    expect(
+      notificationAskPrompt({ type: 'announcement', metadata: {} })
+    ).toBeNull();
+  });
+
   it('accepts the other reference spellings payloads use', () => {
     expect(
       notificationAskPrompt({
