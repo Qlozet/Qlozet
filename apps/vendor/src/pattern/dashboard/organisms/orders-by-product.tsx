@@ -15,6 +15,7 @@ import {
 import { CustomChartTooltip } from '../molecules/custom-chart-tooltip';
 import ChartLegendIcon from '../atoms/chart-legend-icon';
 import { ChartEmptyState } from '../molecules/chart-empty-state';
+import { useDashboardRange } from '../lib/use-dashboard-range';
 
 const COLORS = [
   'var(--chart-1)',
@@ -46,7 +47,8 @@ const renderLegend = (props: any): JSX.Element => {
 };
 
 export const OrdersByProduct = () => {
-  const { data: chartResponse, isLoading } = useGetOrdersChartQuery();
+  const [range] = useDashboardRange();
+  const { data: chartResponse, isLoading } = useGetOrdersChartQuery({ range });
 
   const { chartData, hasData } = useMemo(() => {
     const rawKindData =

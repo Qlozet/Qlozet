@@ -13,6 +13,7 @@ import { AverageOrdersPerDayCardIcon } from '../atoms/average-orders-per-day-car
 import { useGetOrdersChartQuery } from '@/redux/services/orders/orders.api-slice';
 import { StatsCardSkeleton } from '../molecules/stats-card-skeleton';
 import { readMetricChange, type MetricChange } from '../lib/metric-change';
+import { useDashboardRange } from '../lib/use-dashboard-range';
 
 // A "returns went up" delta is bad news, so the two returns-style metrics read
 // their colour inverted — an up arrow stays, but in red.
@@ -25,7 +26,8 @@ const changeToneClass = (change: MetricChange, higherIsBetter: boolean) => {
 };
 
 export const StatsCards = () => {
-  const { data: chartResponse, isLoading } = useGetOrdersChartQuery();
+  const [range] = useDashboardRange();
+  const { data: chartResponse, isLoading } = useGetOrdersChartQuery({ range });
   const summary = chartResponse?.data?.summary;
 
   if (isLoading) {

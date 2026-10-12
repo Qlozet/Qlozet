@@ -13,9 +13,11 @@ import { useGetOrdersChartQuery } from '@/redux/services/orders/orders.api-slice
 import { ChartSkeleton } from '../molecules/chart-skeleton';
 import { CustomChartTooltip } from '../molecules/custom-chart-tooltip';
 import { ChartEmptyState } from '../molecules/chart-empty-state';
+import { useDashboardRange } from '../lib/use-dashboard-range';
 
 export const OrdersByLocation = () => {
-  const { data: chartResponse, isLoading } = useGetOrdersChartQuery();
+  const [range] = useDashboardRange();
+  const { data: chartResponse, isLoading } = useGetOrdersChartQuery({ range });
 
   if (isLoading) {
     return <ChartSkeleton />;

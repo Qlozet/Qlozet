@@ -15,9 +15,11 @@ import { ChartSkeleton } from '../molecules/chart-skeleton';
 import { CustomYAxisTick } from '../molecules/custom-y-axis-tick';
 import { CustomXAxisTick } from '../molecules/custom-x-axis-tick';
 import { ChartEmptyState } from '../molecules/chart-empty-state';
+import { useDashboardRange } from '../lib/use-dashboard-range';
 
 export const OrderCountChart = () => {
-  const { data: chartResponse, isLoading } = useGetOrdersChartQuery();
+  const [range] = useDashboardRange();
+  const { data: chartResponse, isLoading } = useGetOrdersChartQuery({ range });
 
   if (isLoading) {
     return <ChartSkeleton />;
@@ -65,6 +67,8 @@ export const OrderCountChart = () => {
                 tick={<CustomXAxisTick />}
                 axisLine={false}
                 tickLine={false}
+                interval="preserveStartEnd"
+                minTickGap={18}
               />
               <YAxis
                 tick={<CustomYAxisTick />}
