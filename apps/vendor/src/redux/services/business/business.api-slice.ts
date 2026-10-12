@@ -140,7 +140,7 @@ export const businessApiSlice = baseAPI.injectEndpoints({
     // GET /business/earnings-chart
     getEarningsChart: builder.query<
       ApiResponse<EarningsPoint[]>,
-      { filter?: string } | void
+      { filter?: string; range?: string } | void
     >({
       query: (params) => ({
         url: `/business/earnings-chart${buildQueryString({ ...(params ?? {}) })}`,

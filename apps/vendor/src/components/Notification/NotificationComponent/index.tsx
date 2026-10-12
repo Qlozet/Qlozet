@@ -4,6 +4,8 @@ import {
   notificationDestination,
   type RoutableNotification,
 } from '@/lib/notification-destination';
+import { notificationAskPrompt } from '@/lib/notification-ask';
+import { askAssistant } from '@/lib/assistant-bus';
 import { useMarkNotificationAsViewedMutation } from '@/redux/services/notifications/notifications.api-slice';
 import {
   Package,
@@ -16,6 +18,7 @@ import {
   Bell,
   Layers,
   Check,
+  Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -98,6 +101,17 @@ const Notification = ({
     action_url: actionUrl,
   } as RoutableNotification);
 
+  // "Ask assistant": the notification says THAT it happened; the assistant can
+  // say what it means and what to do, with the numbers. Null when it has no
+  // tools for this kind (messages, team, tickets) - then no button.
+  const askPrompt = notificationAskPrompt({
+    type,
+    category,
+    metadata,
+    title,
+    body: desc,
+  });
+
   const markRead = async () => {
     if (isRead) return;
     try {
@@ -173,22 +187,39 @@ const Notification = ({
         <div className="mt-1.5 flex items-center justify-between gap-3">
           <p className="text-xs text-muted-foreground">{timeAgo(date)}</p>
 
-          {/* Explicit action for unread items — clicking the row does the same
-              thing, so this stops propagation to avoid firing twice. */}
-          {!isRead && (
-            <button
-              type="button"
-              disabled={isMarking}
-              onClick={(e) => {
-                e.stopPropagation();
-                markRead();
-              }}
-              className="flex shrink-0 cursor-pointer items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary/10 disabled:opacity-50 dark:text-white"
-            >
-              <Check className="size-3.5" />
-              Mark as read
-            </button>
-          )}
+          <div className="flex shrink-0 items-center gap-1">
+            {askPrompt && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  void markRead();
+                  askAssistant(askPrompt);
+                }}
+                className="flex shrink-0 cursor-pointer items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary/10 dark:text-white"
+              >
+                <Sparkles className="size-3.5" />
+                Ask assistant
+              </button>
+            )}
+
+            {/* Explicit action for unread items — clicking the row does the same
+                thing, so this stops propagation to avoid firing twice. */}
+            {!isRead && (
+              <button
+                type="button"
+                disabled={isMarking}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  markRead();
+                }}
+                className="flex shrink-0 cursor-pointer items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary/10 disabled:opacity-50 dark:text-white"
+              >
+                <Check className="size-3.5" />
+                Mark as read
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

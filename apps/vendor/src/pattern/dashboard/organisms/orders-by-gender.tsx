@@ -15,6 +15,7 @@ import { CustomChartTooltip } from '../molecules/custom-chart-tooltip';
 import { ChartSkeleton } from '../molecules/chart-skeleton';
 import ChartLegendIcon from '../atoms/chart-legend-icon';
 import { ChartEmptyState } from '../molecules/chart-empty-state';
+import { useDashboardRange } from '../lib/use-dashboard-range';
 
 const renderLegend = (props: any): JSX.Element => {
   const payload = props?.payload ?? [];
@@ -43,7 +44,8 @@ const renderLegend = (props: any): JSX.Element => {
 const COLORS = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)'];
 
 export const OrdersByGender = () => {
-  const { data: chartResponse, isLoading } = useGetOrdersChartQuery();
+  const [range] = useDashboardRange();
+  const { data: chartResponse, isLoading } = useGetOrdersChartQuery({ range });
 
   if (isLoading) {
     return <ChartSkeleton />;

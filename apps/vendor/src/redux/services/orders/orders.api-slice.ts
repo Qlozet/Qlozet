@@ -666,9 +666,14 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Orders'],
     }),
 
-    // GET /orders/chart — dashboard chart data (summary + all charts)
-    getOrdersChart: builder.query<{ data: any }, void>({
-      query: () => ({ url: '/orders/chart', method: 'GET' }),
+    // GET /orders/chart?range= — dashboard summary + all charts over one
+    // window (7d | 30d | 12w | 12m). RTK caches per range, so switching back
+    // is instant.
+    getOrdersChart: builder.query<{ data: any }, { range?: string } | void>({
+      query: (params) => ({
+        url: `/orders/chart${params?.range ? `?range=${encodeURIComponent(params.range)}` : ''}`,
+        method: 'GET',
+      }),
       providesTags: ['OrderStats'],
     }),
 

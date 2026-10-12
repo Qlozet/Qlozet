@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Typography from '../Typography';
@@ -8,6 +8,7 @@ import { Search, Bell, Menu, User, Sparkles } from 'lucide-react';
 import { useGetUnreadCountQuery } from '@/redux/services/notifications/notifications.api-slice';
 import { useGetLatestDigestQuery } from '@/redux/services/assistant/assistant.api-slice';
 import { AssistantChatSheet } from '@/pattern/assistant/organisms/assistant-chat-sheet';
+import { onAskAssistant } from '@/lib/assistant-bus';
 import notificationIcon from '@/public/assets/svg/notification-bing.svg';
 import altireicon from '@/public/assets/svg/altire-icon.svg';
 import transformText from '@/public/assets/svg/textformat.size.svg';
@@ -42,6 +43,17 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
   const router = useRouter();
   const [showProfile, setShowProfile] = useState<boolean>(false);
   const [showAsk, setShowAsk] = useState<boolean>(false);
+  // A question handed in from elsewhere (a notification's "Ask assistant"):
+  // open the sheet with it already asked.
+  const [askSeed, setAskSeed] = useState<string | null>(null);
+  useEffect(
+    () =>
+      onAskAssistant((message) => {
+        setAskSeed(message);
+        setShowAsk(true);
+      }),
+    []
+  );
   const { data: unreadData } = useGetUnreadCountQuery(undefined, {
     pollingInterval: 60_000,
   });
@@ -228,7 +240,12 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
         showProfile={showProfile}
         isLoading={isLoading}
       />
-      <AssistantChatSheet open={showAsk} onOpenChange={setShowAsk} />
+      <AssistantChatSheet
+        open={showAsk}
+        onOpenChange={setShowAsk}
+        seedMessage={askSeed}
+        onSeedConsumed={() => setAskSeed(null)}
+      />
     </div>
   );
 };
