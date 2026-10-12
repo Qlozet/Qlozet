@@ -39,6 +39,7 @@ const SUGGESTIONS = [
   'What is waiting on admin action right now?',
   'Which orders are stuck, and with whom?',
   'Which vendors are at risk this month?',
+  'What are shoppers searching for that we do not have?',
   'How did the marketplace perform this month?',
   'Which vendors are driving the most revenue?',
   'How is the support workload looking this week?',
@@ -47,9 +48,17 @@ const SUGGESTIONS = [
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** A question to ask as a fresh thread as soon as the sheet opens. */
+  seedMessage?: string | null;
+  onSeedConsumed?: () => void;
 }
 
-export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
+export const AssistantChatSheet = ({
+  open,
+  onOpenChange,
+  seedMessage,
+  onSeedConsumed,
+}: Props) => {
   const [messages, setMessages] = useState<AssistantMessage[]>([]);
   const [conversationId, setConversationId] = useState<string | undefined>();
   const [input, setInput] = useState('');
@@ -125,7 +134,7 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
     }
   };
 
-  const submit = async (text: string) => {
+  const submit = async (text: string, opts: { fresh?: boolean } = {}) => {
     const q = text.trim();
     if (!q || isStreaming) return;
     setInput('');
@@ -150,7 +159,9 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
     const actionsAcc: AssistantAction[] = [];
 
     await streamChat(
-      { message: q, conversation_id: conversationId },
+      // `fresh` starts a new thread even if state still holds the old id:
+      // the seeded question is asked before React has re-rendered the reset.
+      { message: q, conversation_id: opts.fresh ? undefined : conversationId },
       {
         onDelta: (t) => {
           acc += t;
@@ -177,6 +188,19 @@ export const AssistantChatSheet = ({ open, onOpenChange }: Props) => {
     setIsStreaming(false);
     abortRef.current = null;
   };
+
+  // Opened from elsewhere with a question: fresh thread, asked once.
+  useEffect(() => {
+    if (!open || !seedMessage) return;
+    abortRef.current?.abort();
+    setMessages([]);
+    setConversationId(undefined);
+    setShowHistory(false);
+    onSeedConsumed?.();
+    void submit(seedMessage, { fresh: true });
+    // submit is recreated every render; the seed is the only real trigger.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, seedMessage]);
 
   const convos = convosRes?.data?.items ?? [];
   const isEmpty = messages.length === 0;

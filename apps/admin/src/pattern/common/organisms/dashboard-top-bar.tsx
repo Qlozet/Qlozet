@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Bell, Menu, Sparkles, User } from 'lucide-react';
@@ -9,7 +9,8 @@ import { APP_ROUTES } from '@/lib/routes';
 import { initialsFrom, readUserAvatar, readUserName } from '@/lib/current-user';
 import { useGetCurrentUserQuery } from '@/redux/services/users/users.api-slice';
 import { useGetUnreadCountQuery } from '@/redux/services/notifications/notifications.api-slice';
-import { useGetLatestDigestQuery } from '@/redux/services/assistant/assistant.api-slice';
+import { useGetAdminBriefQuery } from '@/redux/services/assistant/assistant.api-slice';
+import { onAskAssistant } from '@/lib/assistant-bus';
 import { AssistantChatSheet } from '@/pattern/assistant/organisms/assistant-chat-sheet';
 import {
   Sheet,
@@ -85,8 +86,21 @@ export const DashboardTopBar = ({ title }: DashboardTopBarProps) => {
   });
   const unreadCount = unreadData?.data?.total ?? 0;
 
-  const { data: digestData } = useGetLatestDigestQuery();
-  const digestUnread = digestData?.data?.unread ?? 0;
+  // The dot on the sparkle: an unread morning brief.
+  const { data: briefData } = useGetAdminBriefQuery();
+  const digestUnread = briefData?.data?.unread ?? 0;
+
+  // A question handed in from elsewhere (the brief's "Ask"): open the sheet
+  // with it already asked.
+  const [askSeed, setAskSeed] = useState<string | null>(null);
+  useEffect(
+    () =>
+      onAskAssistant((message) => {
+        setAskSeed(message);
+        setShowAssistant(true);
+      }),
+    []
+  );
 
   return (
     <div className="w-full flex items-center justify-between gap-4 bg-white dark:bg-card py-3 px-5 lg:px-6 rounded-2xl border shadow-[0px_4px_10px_#AEAEC026]">
@@ -195,6 +209,8 @@ export const DashboardTopBar = ({ title }: DashboardTopBarProps) => {
       <AssistantChatSheet
         open={showAssistant}
         onOpenChange={setShowAssistant}
+        seedMessage={askSeed}
+        onSeedConsumed={() => setAskSeed(null)}
       />
 
       <ProfileSheet open={showProfile} onOpenChange={setShowProfile} />

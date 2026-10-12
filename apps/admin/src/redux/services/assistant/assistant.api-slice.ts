@@ -97,6 +97,28 @@ export interface LatestDigestResult {
   unread: number;
 }
 
+/** The platform morning brief - one a day, shared by the team. */
+export interface AdminBriefRecommendation extends DigestRecommendation {
+  /** The question "Ask assistant" sends about this item. */
+  question?: string;
+}
+
+export interface AdminBrief {
+  _id: string;
+  summary: string;
+  recommendations: AdminBriefRecommendation[];
+  metrics: Record<string, unknown>;
+  /** The platform day it covers, YYYY-MM-DD. */
+  period_key: string;
+  createdAt: string;
+}
+
+export interface LatestAdminBriefResult {
+  brief: AdminBrief | null;
+  /** 1 when this admin has not read it yet. */
+  unread: number;
+}
+
 export const assistantApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // Ask a question. Starts a new conversation when conversation_id is omitted.
@@ -178,6 +200,21 @@ export const assistantApiSlice = baseAPI.injectEndpoints({
       query: (id) => ({ url: `/assistant/digest/${id}/read`, method: 'PATCH' }),
       invalidatesTags: ['AssistantDigest'],
     }),
+
+    // The platform morning brief, written daily from the same tools the
+    // assistant answers with.
+    getAdminBrief: builder.query<ApiResponse<LatestAdminBriefResult>, void>({
+      query: () => ({ url: '/assistant/admin-brief/latest', method: 'GET' }),
+      providesTags: ['AssistantDigest'],
+    }),
+
+    markAdminBriefRead: builder.mutation<ApiResponse<AdminBrief>, string>({
+      query: (id) => ({
+        url: `/assistant/admin-brief/${id}/read`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['AssistantDigest'],
+    }),
   }),
 });
 
@@ -190,4 +227,6 @@ export const {
   useLazyGetConversationQuery,
   useGetLatestDigestQuery,
   useMarkDigestReadMutation,
+  useGetAdminBriefQuery,
+  useMarkAdminBriefReadMutation,
 } = assistantApiSlice;

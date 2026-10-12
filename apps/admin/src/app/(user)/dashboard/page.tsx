@@ -4,6 +4,7 @@ import React from 'react';
 import { StatsCards } from '@/pattern/dashboard/templates/stats-cards';
 import { ChartsSection } from '@/pattern/dashboard/templates/charts-section';
 import { DashboardRangeControl } from '@/pattern/dashboard/molecules/dashboard-range-control';
+import { AdminBriefCard } from '@/pattern/dashboard/organisms/admin-brief-card';
 
 const DashboardPage = () => {
   return (
@@ -12,6 +13,8 @@ const DashboardPage = () => {
       <div className="flex items-center justify-end">
         <DashboardRangeControl />
       </div>
+      {/* What happened yesterday and what needs a decision today. */}
+      <AdminBriefCard />
       <StatsCards />
       <ChartsSection />
     </div>
