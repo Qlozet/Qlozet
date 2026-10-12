@@ -11,6 +11,7 @@ import { useGetCurrentUserQuery } from '@/redux/services/users/users.api-slice';
 import { useGetUnreadCountQuery } from '@/redux/services/notifications/notifications.api-slice';
 import { useGetAdminBriefQuery } from '@/redux/services/assistant/assistant.api-slice';
 import { onAskAssistant } from '@/lib/assistant-bus';
+import { useNotificationsSocket } from '@/lib/hooks/use-notifications-socket';
 import { AssistantChatSheet } from '@/pattern/assistant/organisms/assistant-chat-sheet';
 import {
   Sheet,
@@ -85,6 +86,10 @@ export const DashboardTopBar = ({ title }: DashboardTopBarProps) => {
     pollingInterval: 60_000,
   });
   const unreadCount = unreadData?.data?.total ?? 0;
+
+  // Live notifications: a push from the gateway refetches the bell count and
+  // the inbox the moment something arrives, instead of on the next poll.
+  useNotificationsSocket();
 
   // The dot on the sparkle: an unread morning brief.
   const { data: briefData } = useGetAdminBriefQuery();
