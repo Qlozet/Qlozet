@@ -14,13 +14,18 @@ import {
 // no hydration mismatch.
 const listeners = new Set<() => void>();
 
+// What was chosen in this page's lifetime - the answer when storage is
+// blocked (private mode), so the choice still holds until the tab closes.
+let inMemory: DashboardRangeKey | null = null;
+
 const read = (): DashboardRangeKey => {
   try {
     const saved = window.localStorage.getItem(DASHBOARD_RANGE_STORAGE_KEY);
-    return isDashboardRangeKey(saved) ? saved : DEFAULT_DASHBOARD_RANGE;
+    if (isDashboardRangeKey(saved)) return saved;
   } catch {
-    return DEFAULT_DASHBOARD_RANGE;
+    // fall through to the in-memory choice
   }
+  return inMemory ?? DEFAULT_DASHBOARD_RANGE;
 };
 
 const subscribe = (listener: () => void) => {
@@ -37,6 +42,7 @@ const subscribe = (listener: () => void) => {
 };
 
 export function setDashboardRange(key: DashboardRangeKey): void {
+  inMemory = key;
   try {
     window.localStorage.setItem(DASHBOARD_RANGE_STORAGE_KEY, key);
   } catch {
