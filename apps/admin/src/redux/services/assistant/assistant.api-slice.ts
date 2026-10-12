@@ -16,11 +16,41 @@ export interface AssistantChart {
   data: { label: string; value: number }[];
 }
 
+export type AssistantActionKind =
+  | 'approve_product'
+  | 'reject_product'
+  | 'decide_vendor_application'
+  | 'assign_ticket'
+  | 'reply_to_ticket'
+  | 'resolve_dispute';
+
+export type AssistantActionStatus =
+  | 'proposed'
+  | 'executed'
+  | 'failed'
+  | 'cancelled'
+  | 'expired';
+
+// An action the assistant PREPARED. Nothing runs until the admin confirms it
+// from the card; the status here is what the card shows.
+export interface AssistantAction {
+  action_id: string;
+  kind: AssistantActionKind | string;
+  title: string;
+  summary: string;
+  details: { label: string; value: string }[];
+  status: AssistantActionStatus;
+  result_text?: string | null;
+  error?: string | null;
+  expires_at?: string;
+}
+
 export interface AssistantMessage {
   role: 'user' | 'assistant';
   content: string;
   tools_used?: string[];
   charts?: AssistantChart[];
+  actions?: AssistantAction[];
   createdAt?: string;
 }
 
@@ -28,6 +58,7 @@ export interface ChatResult {
   conversation_id: string;
   answer: string;
   charts: AssistantChart[];
+  actions?: AssistantAction[];
   tools_used: string[];
 }
 
@@ -77,6 +108,45 @@ export const assistantApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['AssistantConversations', 'AssistantConversation'],
     }),
 
+    // The admin's decision on a prepared action. Confirm executes it server
+    // side through the same services the console uses; the lists it changed
+    // refetch.
+    confirmAssistantAction: builder.mutation<
+      ApiResponse<AssistantAction>,
+      string
+    >({
+      query: (id) => ({
+        url: `/assistant/actions/${id}/confirm`,
+        method: 'POST',
+      }),
+      invalidatesTags: [
+        'AssistantConversation',
+        'Product',
+        'Products',
+        'ProductStats',
+        'Vendor',
+        'Vendors',
+        'Business',
+        'Businesses',
+        'Ticket',
+        'Tickets',
+        'Dispute',
+        'Disputes',
+        'DashboardMetrics',
+      ],
+    }),
+
+    cancelAssistantAction: builder.mutation<
+      ApiResponse<AssistantAction>,
+      string
+    >({
+      query: (id) => ({
+        url: `/assistant/actions/${id}/cancel`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['AssistantConversation'],
+    }),
+
     getConversations: builder.query<
       ApiResponse<{ total: number; items: ConversationSummary[] }>,
       { page?: number; size?: number } | void
@@ -113,6 +183,8 @@ export const assistantApiSlice = baseAPI.injectEndpoints({
 
 export const {
   useSendChatMutation,
+  useConfirmAssistantActionMutation,
+  useCancelAssistantActionMutation,
   useGetConversationsQuery,
   useGetConversationQuery,
   useLazyGetConversationQuery,
