@@ -4,7 +4,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 // Minimal, dependency-free Markdown renderer for the subset the assistant and
-// help-center articles emit: headings, paragraphs, bullet / numbered lists,
+// help-center articles emit: headings, paragraphs, bullet / numbered lists, tables,
 // [links](url), and inline **bold** / *italic* / _italic_. Not a full
 // CommonMark parser — just enough to render cleanly without a library.
 
@@ -52,6 +52,20 @@ function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
   return nodes;
 }
 
+// GitHub-flavoured tables: a `| a | b |` row followed by a `|---|---|` rule,
+// then rows. The assistant lists records (orders, products, vendors) this way;
+// without it the model fell back to dash-separated lines nobody could scan.
+const isTableRow = (l: string) => /^\s*\|.*\|\s*$/.test(l);
+const isTableRule = (l: string) =>
+  /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)*\|?\s*$/.test(l);
+const splitRow = (l: string) =>
+  l
+    .trim()
+    .replace(/^\|/, '')
+    .replace(/\|$/, '')
+    .split('|')
+    .map((c) => c.trim());
+
 export function Markdown({
   content,
   className,
@@ -87,8 +101,59 @@ export function Markdown({
     list = null;
   };
 
-  for (const raw of lines) {
+  for (let idx = 0; idx < lines.length; idx++) {
+    const raw = lines[idx];
     const line = raw.trimEnd();
+    // A table: header row, rule, body rows - consumed as one block.
+    if (
+      isTableRow(line) &&
+      idx + 1 < lines.length &&
+      isTableRule(lines[idx + 1].trimEnd())
+    ) {
+      flushList();
+      const header = splitRow(line);
+      const rows: string[][] = [];
+      let j = idx + 2;
+      while (j < lines.length && isTableRow(lines[j].trimEnd())) {
+        rows.push(splitRow(lines[j].trimEnd()));
+        j++;
+      }
+      const k = key++;
+      blocks.push(
+        <div key={k} className="-mx-1 overflow-x-auto">
+          <table className="w-full border-collapse text-left text-[13px]">
+            <thead>
+              <tr>
+                {header.map((h, c) => (
+                  <th
+                    key={c}
+                    className="whitespace-nowrap border-b border-border px-2 py-1.5 text-xs font-semibold text-muted-foreground"
+                  >
+                    {renderInline(h, `th${k}-${c}`)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r, ri) => (
+                <tr
+                  key={ri}
+                  className="border-b border-border/60 last:border-0"
+                >
+                  {header.map((_, c) => (
+                    <td key={c} className="px-2 py-1.5 align-top">
+                      {renderInline(r[c] ?? '', `td${k}-${ri}-${c}`)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+      idx = j - 1;
+      continue;
+    }
     const heading = line.match(/^\s*(#{1,4})\s+(.*)$/);
     if (heading) {
       flushList();
