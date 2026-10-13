@@ -10,7 +10,7 @@ import NiceModal from '@ebay/nice-modal-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { PaginationState } from '@tanstack/react-table';
 import { toast } from 'sonner';
-import { Landmark, ChevronRight } from 'lucide-react';
+import { Landmark, ChevronRight, RotateCcw } from 'lucide-react';
 import {
   useGetWalletBalanceQuery,
   useGetWalletTransactionsQuery,
@@ -73,6 +73,15 @@ const readPendingBalance = (raw: unknown): number | undefined => {
     if (typeof d[key] === 'number') return d[key] as number;
   }
   return undefined;
+};
+
+// Money owed back to the platform (GET /wallets/balance, owed_balance): a
+// refund the spendable balance could not cover because it had already been
+// withdrawn. It is taken from the next earnings release, and withdrawals stay
+// closed until it is cleared - so say so up front, not only at withdraw time.
+const readOwedBalance = (raw: unknown): number => {
+  const d = (raw ?? {}) as Record<string, unknown>;
+  return typeof d.owed_balance === 'number' ? d.owed_balance : 0;
 };
 
 // The transactions envelope is undocumented — pull the row array from the most
@@ -203,6 +212,7 @@ export const WalletPageTemplate: React.FC = () => {
   // Held earnings come from the wallet itself (pending_balance), not the
   // business profile — see readPendingBalance.
   const pendingBalance = readPendingBalance(balanceData?.data);
+  const owedBalance = readOwedBalance(balanceData?.data);
 
   const transactions = useMemo(
     () => readTransactionList(transactionsData?.data),
@@ -270,6 +280,24 @@ export const WalletPageTemplate: React.FC = () => {
             Set up payout
             <ChevronRight className="ml-1 size-4" />
           </Button>
+        </div>
+      )}
+
+      {owedBalance > 0 && (
+        <div className="flex items-start gap-3 rounded-[10px] border border-rose-200 bg-rose-50 p-4 dark:border-rose-900/40 dark:bg-rose-900/20">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-rose-100 text-rose-600 dark:bg-rose-900/40 dark:text-rose-400">
+            <RotateCcw className="size-5" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-rose-900 dark:text-rose-200">
+              {formatNaira(owedBalance)} owed from refunded orders
+            </p>
+            <p className="text-xs text-rose-800/80 dark:text-rose-300/70">
+              A refund was issued on an order after its earnings had already
+              been withdrawn. The amount is taken from your next earnings
+              release, and withdrawals reopen once it is cleared.
+            </p>
+          </div>
         </div>
       )}
 
