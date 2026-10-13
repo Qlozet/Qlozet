@@ -393,6 +393,25 @@ export const SETTINGS_TABS: SettingsTab[] = [
           },
         ],
       },
+      {
+        id: 'abandoned-orders',
+        title: 'Abandoned orders',
+        description:
+          'A confirmed order the vendor never ships is cancelled on their behalf once it is this far past the promised date: the customer is refunded in full, the vendor’s earnings reversed and the stock returned.',
+        fields: [
+          {
+            key: 'abandon_after_days',
+            label: 'Cancel after',
+            help: 'Days past the promised date before an unshipped order is cancelled for the customer. 0 never cancels; the late penalty then just stops at its cap.',
+            kind: 'number',
+            unit: 'days',
+            min: 0,
+            max: 90,
+            step: 1,
+            integer: true,
+          },
+        ],
+      },
     ],
   },
   {
