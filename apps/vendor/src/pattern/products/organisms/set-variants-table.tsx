@@ -48,6 +48,12 @@ interface SetVariantsTableProps {
   onChange: (next: VariantRow[]) => void;
   /** Product title, so generated SKUs identify THIS product. */
   productName?: string;
+  /**
+   * Accessories are priced at their base price and use no fabric, so the
+   * yards and extra-cost columns are left out for them - a vendor typing an
+   * extra cost there was never charging it.
+   */
+  kind?: 'clothing' | 'accessory';
 }
 
 /**
@@ -91,8 +97,13 @@ export const SetVariantsTable = ({
   variants,
   onChange,
   productName,
+  kind = 'clothing',
 }: SetVariantsTableProps) => {
   if (variants.length === 0) return null;
+  const perSize = kind === 'accessory';
+  const detailGrid = perSize
+    ? 'grid grid-cols-[90px_1fr_1.3fr_40px] items-center gap-3'
+    : 'grid grid-cols-[90px_1fr_1fr_1fr_1.3fr_40px] items-center gap-3';
 
   const patchVariant = (id: string, patch: Partial<VariantRow>) =>
     onChange(variants.map((v) => (v.id === id ? { ...v, ...patch } : v)));
@@ -183,7 +194,7 @@ export const SetVariantsTable = ({
       </h3>
 
       <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 pb-2">
-        <div className="min-w-[800px]">
+        <div className={perSize ? 'min-w-[560px]' : 'min-w-[800px]'}>
           {/* Column header */}
           <div className="flex items-center gap-4 border-b border-border pb-3">
             <span className="w-[110px] text-xs font-medium text-muted-foreground shrink-0">
@@ -330,20 +341,26 @@ export const SetVariantsTable = ({
                 {/* Expanded per-size detail */}
                 {variant.expanded && variant.availableSizes.length > 0 && (
                   <div className="pb-4">
-                    <div className="grid grid-cols-[90px_1fr_1fr_1fr_1.3fr_40px] items-center gap-3 border-y border-border py-2">
+                    <div
+                      className={cn(detailGrid, 'border-y border-border py-2')}
+                    >
                       <HeaderInfo label="Size" />
                       <HeaderInfo
                         label="Stock"
                         hint="Units you can ship right now. A size with 0 shows as sold out."
                       />
-                      <HeaderInfo
-                        label="Yards/order"
-                        hint="Fabric this size uses when a shopper picks or supplies cloth."
-                      />
-                      <HeaderInfo
-                        label="Extra cost (₦)"
-                        hint="Added on top of the product price for this size. Leave empty if the price is the same."
-                      />
+                      {!perSize && (
+                        <HeaderInfo
+                          label="Yards/order"
+                          hint="Fabric this size uses when a shopper picks or supplies cloth."
+                        />
+                      )}
+                      {!perSize && (
+                        <HeaderInfo
+                          label="Extra cost (₦)"
+                          hint="Added on top of the product price for this size. Leave empty if the price is the same."
+                        />
+                      )}
                       <div className="flex items-center justify-between gap-2">
                         <HeaderInfo label="SKU" />
                         <button
@@ -375,10 +392,7 @@ export const SetVariantsTable = ({
                         const detail =
                           variant.details[size] ?? makeSizeDetail();
                         return (
-                          <div
-                            key={size}
-                            className="grid grid-cols-[90px_1fr_1fr_1fr_1.3fr_40px] items-center gap-3"
-                          >
+                          <div key={size} className={detailGrid}>
                             <span className="rounded-md border border-input px-3 py-1.5 text-center text-sm text-foreground">
                               {size}
                             </span>
@@ -388,34 +402,38 @@ export const SetVariantsTable = ({
                                 patchDetail(variant.id, size, { stock: v })
                               }
                             />
-                            <NumberStepper
-                              value={detail.yardsPerOrder}
-                              onChange={(v) =>
-                                patchDetail(variant.id, size, {
-                                  yardsPerOrder: v,
-                                })
-                              }
-                            />
-                            <div className="relative">
-                              <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                                ₦
-                              </span>
-                              <Input
-                                type="number"
-                                min={0}
-                                value={detail.price === 0 ? '' : detail.price}
-                                onChange={(e) =>
+                            {!perSize && (
+                              <NumberStepper
+                                value={detail.yardsPerOrder}
+                                onChange={(v) =>
                                   patchDetail(variant.id, size, {
-                                    price:
-                                      e.target.value === ''
-                                        ? 0
-                                        : Number(e.target.value),
+                                    yardsPerOrder: v,
                                   })
                                 }
-                                placeholder="0"
-                                className="h-9 bg-accent dark:bg-muted pl-5 text-sm"
                               />
-                            </div>
+                            )}
+                            {!perSize && (
+                              <div className="relative">
+                                <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                                  ₦
+                                </span>
+                                <Input
+                                  type="number"
+                                  min={0}
+                                  value={detail.price === 0 ? '' : detail.price}
+                                  onChange={(e) =>
+                                    patchDetail(variant.id, size, {
+                                      price:
+                                        e.target.value === ''
+                                          ? 0
+                                          : Number(e.target.value),
+                                    })
+                                  }
+                                  placeholder="0"
+                                  className="h-9 bg-accent dark:bg-muted pl-5 text-sm"
+                                />
+                              </div>
+                            )}
                             <Input
                               value={detail.sku}
                               onChange={(e) =>

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  accessoryReadiness,
   fabricReadiness,
   listingReadiness,
   visibleText,
@@ -134,5 +135,39 @@ describe('fabricReadiness', () => {
     expect(failing({ widthInches: '8' })).toContain('width');
     expect(failing({ pricePerYard: '' })).toContain('price');
     expect(failing({ material: '' })).toContain('material');
+  });
+});
+
+describe('accessoryReadiness', () => {
+  const bag = {
+    title: 'Woven raffia market bag',
+    description:
+      'Hand-woven raffia with a leather-trimmed handle and a cotton lining. ' +
+      'Roomy enough for a laptop, light enough for the market. Spot clean only; ' +
+      'keep out of heavy rain and it will last for years.',
+    photoCount: 3,
+    price: '18000',
+    productType: 'Bag',
+    audience: 'women',
+    variants: [{ sizes: [{ stock: 5 }] }],
+  };
+  const failing = (over: Partial<typeof bag>) =>
+    accessoryReadiness({ ...bag, ...over })
+      .items.filter((i) => !i.ok)
+      .map((i) => i.key);
+
+  it('a complete accessory is ready', () => {
+    expect(accessoryReadiness(bag).ready).toBe(true);
+  });
+
+  it('needs a colour with stock, not just a price', () => {
+    expect(failing({ variants: [] })).toEqual(['stock']);
+    expect(failing({ variants: [{ sizes: [{ stock: 0 }] }] })).toEqual([
+      'stock',
+    ]);
+  });
+
+  it('has no default price: an empty price is not ready', () => {
+    expect(failing({ price: '' })).toEqual(['price']);
   });
 });

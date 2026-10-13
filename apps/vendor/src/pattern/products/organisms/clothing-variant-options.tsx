@@ -48,6 +48,10 @@ interface VariantSelectOptionsProps {
   sizeOptions?: SizeOption[];
   /** One line under the size field saying where these sizes come from. */
   sizeSource?: React.ReactNode;
+  /** Fabric swatches as a variant make sense for garments only. */
+  allowFabric?: boolean;
+  /** Sizes pre-selected for each new colour (e.g. "One size" for accessories). */
+  defaultSizes?: string[];
 }
 
 // Size field: selected sizes show as inline chips with a clear (trash) button
@@ -188,12 +192,14 @@ export const VariantSelectOptions = ({
   onAddVariant,
   sizeOptions = STANDARD_SIZE_OPTIONS,
   sizeSource,
+  allowFabric = true,
+  defaultSizes = [],
 }: VariantSelectOptionsProps) => {
   const colorPickerModal = useModal(AdvancedColorPickerModal);
   const [variantType, setVariantType] = useState<'colour' | 'fabric'>('colour');
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [customColors, setCustomColors] = useState<ColorOption[]>([]);
-  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [selectedSizes, setSelectedSizes] = useState<string[]>(defaultSizes);
   const [fabrics, setFabrics] = useState<SelectedFabric[]>([]);
   const [activeFabricId, setActiveFabricId] = useState<string | null>(null);
 
@@ -283,7 +289,7 @@ export const VariantSelectOptions = ({
       });
       setSelectedColors([]);
     }
-    setSelectedSizes([]);
+    setSelectedSizes(defaultSizes);
   };
 
   return (
@@ -297,28 +303,30 @@ export const VariantSelectOptions = ({
       </p>
 
       {/* Colour / Fabric toggle */}
-      <div className="mb-4 flex items-center gap-6">
-        {(['colour', 'fabric'] as const).map((opt) => (
-          <button
-            key={opt}
-            type="button"
-            onClick={() => setVariantType(opt)}
-            className="flex items-center gap-2 text-sm capitalize text-grey-black dark:text-white"
-          >
-            <span
-              className={cn(
-                'flex size-4 items-center justify-center rounded-full border',
-                variantType === opt ? 'border-primary' : 'border-input'
-              )}
+      {allowFabric && (
+        <div className="mb-4 flex items-center gap-6">
+          {(['colour', 'fabric'] as const).map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => setVariantType(opt)}
+              className="flex items-center gap-2 text-sm capitalize text-grey-black dark:text-white"
             >
-              {variantType === opt && (
-                <span className="size-2 rounded-full bg-primary" />
-              )}
-            </span>
-            {opt}
-          </button>
-        ))}
-      </div>
+              <span
+                className={cn(
+                  'flex size-4 items-center justify-center rounded-full border',
+                  variantType === opt ? 'border-primary' : 'border-input'
+                )}
+              >
+                {variantType === opt && (
+                  <span className="size-2 rounded-full bg-primary" />
+                )}
+              </span>
+              {opt}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Colour swatches */}
       {variantType === 'colour' ? (
