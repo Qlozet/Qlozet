@@ -1,13 +1,14 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { io, type Socket } from 'socket.io-client';
 import { toast } from 'sonner';
 import { getCookies } from '@/lib/helpers/cookies-manager';
 import { SESSION_COOKIE_KEY } from '@/lib/constants';
 import { env } from '@/env';
-import { useAppDispatch } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { baseAPI } from '@/redux/api/base-api';
+import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 
 // ─── Realtime notifications ───────────────────────────────────
 // Connects to the backend Socket.IO gateway with the vendor's Bearer token and
@@ -16,6 +17,14 @@ import { baseAPI } from '@/redux/api/base-api';
 // source of truth; the socket is just the trigger.
 export function useNotificationsSocket(showToast = true) {
   const dispatch = useAppDispatch();
+  // A person on several stores' teams gets one socket room; a push for a
+  // store other than the one on screen still refreshes the (server-scoped)
+  // list and badge, but is not announced here as if it were this store's.
+  const activeBusinessId = useAppSelector(selectActiveBusiness)?._id ?? null;
+  const activeRef = useRef<string | null>(activeBusinessId);
+  useEffect(() => {
+    activeRef.current = activeBusinessId;
+  }, [activeBusinessId]);
 
   useEffect(() => {
     const token = getCookies({ key: SESSION_COOKIE_KEY });
@@ -35,7 +44,11 @@ export function useNotificationsSocket(showToast = true) {
       reconnection: true,
     });
 
-    const onNotification = (n: { title?: string; body?: string }) => {
+    const onNotification = (n: {
+      title?: string;
+      body?: string;
+      recipient_business?: string | null;
+    }) => {
       dispatch(baseAPI.util.invalidateTags(['Notification']));
       // A chat reply raises a notification, so this is also the live trigger
       // for the unread-message badges on the orders list. Cheap: one small
@@ -45,7 +58,11 @@ export function useNotificationsSocket(showToast = true) {
           { type: 'OrderMessages' as const, id: 'UNREAD' },
         ])
       );
-      if (showToast && n?.title) {
+      const forOtherStore =
+        !!n?.recipient_business &&
+        !!activeRef.current &&
+        n.recipient_business !== activeRef.current;
+      if (showToast && n?.title && !forOtherStore) {
         toast(n.title, { description: n.body });
       }
     };
