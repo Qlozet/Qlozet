@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import type React from 'react';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { ChevronDown, ImagePlus, Plus, Trash2, X, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,24 +13,25 @@ import { PredefinedColor } from '../constants/predefined-colors';
 import AdvancedColorPickerModal from './advanced-color-picker-modal';
 import { AVAILABLE_COLORS, ColorOption } from '../types/variant.types';
 
-const SIZE_OPTIONS = [
-  { value: 'xs', label: 'Extra small' },
-  { value: 's', label: 'Small' },
-  { value: 'm', label: 'Medium' },
-  { value: 'l', label: 'Large' },
-  { value: 'xl', label: 'Extra Large' },
-  { value: 'xxl', label: 'Extra Extra Large' },
-];
+export interface SizeOption {
+  /** The size key stored on the variant and shown to shoppers, e.g. "M" or "42". */
+  value: string;
+  label: string;
+}
 
-// Maps the Select Options size values to the Set Variants size keys.
-const SIZE_KEY: Record<string, string> = {
-  xs: 'XS',
-  s: 'S',
-  m: 'M',
-  l: 'L',
-  xl: 'XL',
-  xxl: 'XXL',
-};
+/**
+ * The fallback when the product has no size guide. A guide's own sizes
+ * (numeric, kids, the vendor's labels) take over as soon as one is chosen;
+ * the garment's sizes are whatever its chart says, not a fixed alphabet.
+ */
+export const STANDARD_SIZE_OPTIONS: SizeOption[] = [
+  { value: 'XS', label: 'XS' },
+  { value: 'S', label: 'S' },
+  { value: 'M', label: 'M' },
+  { value: 'L', label: 'L' },
+  { value: 'XL', label: 'XL' },
+  { value: 'XXL', label: 'XXL' },
+];
 
 const SWATCHES = ['#000000', '#3d2817', '#8a7060', '#991B1B', '#1E3A5F'];
 
@@ -42,19 +44,34 @@ export interface VariantDescriptor {
 interface VariantSelectOptionsProps {
   /** Called with the chosen colour/fabric + size keys when "Add Variants" is clicked. */
   onAddVariant: (descriptor: VariantDescriptor, sizeKeys: string[]) => void;
+  /** The sizes on offer: the product's size guide, or the standard set. */
+  sizeOptions?: SizeOption[];
+  /** One line under the size field saying where these sizes come from. */
+  sizeSource?: React.ReactNode;
 }
 
 // Size field: selected sizes show as inline chips with a clear (trash) button
-// and a dropdown (chevron) to toggle the available sizes.
+// and a dropdown (chevron) to toggle the available sizes, plus a box to add
+// a size the list does not have.
 const SizeField = ({
   value,
   onChange,
+  options,
 }: {
   value: string[];
   onChange: (next: string[]) => void;
+  options: SizeOption[];
 }) => {
   const [open, setOpen] = useState(false);
+  const [custom, setCustom] = useState('');
   const ref = useRef<HTMLDivElement>(null);
+
+  const addCustom = () => {
+    const label = custom.trim();
+    if (!label) return;
+    if (!value.includes(label)) onChange([...value, label]);
+    setCustom('');
+  };
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -77,7 +94,7 @@ const SizeField = ({
             <span className="text-sm text-muted-foreground">Select sizes</span>
           )}
           {value.map((v) => {
-            const opt = SIZE_OPTIONS.find((o) => o.value === v);
+            const opt = options.find((o) => o.value === v);
             return (
               <span
                 key={v}
@@ -118,7 +135,7 @@ const SizeField = ({
       {open && (
         <div className="absolute z-50 mt-2 w-full rounded-lg border border-border bg-card p-3 shadow-lg">
           <div className="flex flex-wrap gap-2">
-            {SIZE_OPTIONS.map((o) => {
+            {options.map((o) => {
               const selected = value.includes(o.value);
               return (
                 <button
@@ -137,6 +154,28 @@ const SizeField = ({
               );
             })}
           </div>
+          <div className="mt-3 flex items-center gap-2 border-t border-border pt-3">
+            <input
+              value={custom}
+              onChange={(e) => setCustom(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addCustom();
+                }
+              }}
+              placeholder="Another size, e.g. 3XL or 44"
+              className="h-9 flex-1 rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            />
+            <button
+              type="button"
+              onClick={addCustom}
+              disabled={!custom.trim()}
+              className="h-9 rounded-md border border-input px-3 text-sm text-foreground hover:bg-accent disabled:opacity-50"
+            >
+              Add
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -147,6 +186,8 @@ const SizeField = ({
 // variant row to the Set Variants table below.
 export const VariantSelectOptions = ({
   onAddVariant,
+  sizeOptions = STANDARD_SIZE_OPTIONS,
+  sizeSource,
 }: VariantSelectOptionsProps) => {
   const colorPickerModal = useModal(AdvancedColorPickerModal);
   const [variantType, setVariantType] = useState<'colour' | 'fabric'>('colour');
@@ -220,7 +261,7 @@ export const VariantSelectOptions = ({
 
   const addVariant = () => {
     if (!canAdd) return;
-    const sizeKeys = selectedSizes.map((s) => SIZE_KEY[s] ?? s.toUpperCase());
+    const sizeKeys = selectedSizes.map((s) => s.trim());
     if (variantType === 'fabric' && activeFabric) {
       onAddVariant(
         {
@@ -247,9 +288,13 @@ export const VariantSelectOptions = ({
 
   return (
     <div className="rounded-lg border bg-card p-6 custom-card-shadow">
-      <h3 className="mb-4 text-sm font-semibold text-grey-black dark:text-white">
-        Select Options (Variants)
+      <h3 className="mb-1 text-sm font-semibold text-grey-black dark:text-white">
+        Add a colour and its sizes
       </h3>
+      <p className="mb-4 text-xs text-muted-foreground">
+        Pick a colour (or a fabric) and the sizes you sell it in, then add it.
+        Repeat for each colour. Stock and photos per size come next.
+      </p>
 
       {/* Colour / Fabric toggle */}
       <div className="mb-4 flex items-center gap-6">
@@ -388,8 +433,17 @@ export const VariantSelectOptions = ({
 
       {/* Size field */}
       <div className="mb-4">
-        <FieldLabel tooltip="Select sizes">Size</FieldLabel>
-        <SizeField value={selectedSizes} onChange={setSelectedSizes} />
+        <FieldLabel tooltip="The sizes you sell this colour in.">
+          Sizes
+        </FieldLabel>
+        <SizeField
+          value={selectedSizes}
+          onChange={setSelectedSizes}
+          options={sizeOptions}
+        />
+        {sizeSource && (
+          <p className="mt-2 text-xs text-muted-foreground">{sizeSource}</p>
+        )}
       </div>
 
       <Button
@@ -400,7 +454,7 @@ export const VariantSelectOptions = ({
         <span className="flex size-5 items-center justify-center rounded-[5px] border border-primary-foreground/50">
           <Plus className="size-3.5" />
         </span>
-        Add Variants
+        Add colour
       </Button>
     </div>
   );

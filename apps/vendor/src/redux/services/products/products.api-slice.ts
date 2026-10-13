@@ -151,6 +151,8 @@ export interface ClothingDto {
 export interface CreateClothingDto {
   product_id?: string;
   _id?: string;
+  /** The size guide whose chart shoppers see and whose sizes this product uses. null unlinks. */
+  size_guide?: string | null;
   seo?: {
     title?: string;
     keywords?: string[];

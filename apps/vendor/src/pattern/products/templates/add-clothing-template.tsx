@@ -1,15 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { readApiError } from '@/redux/services/types';
 import { Button } from '@/components/ui/button';
 import { GoBackButton } from '@/pattern/common/atoms/go-back-button';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { RichTextEditor } from '@/pattern/common/organisms/rich-text-editor';
-import { ProductAlertBanner } from '../molecules/product-alert-banner';
 import { ListingReadinessCard } from '../molecules/listing-readiness-card';
 import {
   listingReadiness,
@@ -25,6 +31,8 @@ import {
 import { ProductPricingSection } from '../organisms/clothing-pricing-section';
 import {
   VariantSelectOptions,
+  STANDARD_SIZE_OPTIONS,
+  type SizeOption,
   type VariantDescriptor,
 } from '../organisms/clothing-variant-options';
 import {
@@ -55,16 +63,40 @@ import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.
 import type { StyleHotspotDto } from '@/redux/services/products/products.api-slice';
 import NiceModal from '@ebay/nice-modal-react';
 import { HotspotEditorModal } from '../organisms/hotspot-editor-modal';
-import { Layers } from 'lucide-react';
 import { useLazyGetStyleLibraryQuery } from '@/redux/services/style-library/style-library.api-slice';
 import { cn, uploadSequentially } from '@/lib/utils';
 import { useGetCategoriesForTypeQuery } from '@/redux/services/taxonomy/taxonomy.api-slice';
 import { useGetBusinessProfileQuery } from '@/redux/services/settings/settings.api-slice';
+import { useGetSizeGuidesQuery } from '@/redux/services/size-guides/size-guides.api-slice';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 
 type ProductStatus = 'active' | 'draft' | 'archived';
 type ModerationStatus = 'pending' | 'approved' | 'rejected';
+
+// One numbered heading per section, so the form reads as a path: what it
+// is, what it looks like, what it comes in, how it is made.
+const SectionHeader = ({
+  step,
+  title,
+  lead,
+}: {
+  step: number;
+  title: string;
+  lead?: ReactNode;
+}) => (
+  <div className="mb-4">
+    <div className="flex items-center gap-2">
+      <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-semibold text-primary tabular-nums">
+        {step}
+      </span>
+      <h3 className="text-sm font-semibold text-grey-black dark:text-white">
+        {title}
+      </h3>
+    </div>
+    {lead && <p className="mt-1.5 text-xs text-muted-foreground">{lead}</p>}
+  </div>
+);
 
 // Add Clothing product form (vendor). Shares the admin component set, wired to
 // the vendor's own create-clothing endpoint.
@@ -88,7 +120,6 @@ export default function AddClothingTemplate() {
     useUploadProductImageMutation();
   const isSaving = isCreating || isUploading;
 
-  const [showAlert, setShowAlert] = useState(true);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<ProductStatus>('active');
@@ -125,6 +156,28 @@ export default function AddClothingTemplate() {
   });
   const [price, setPrice] = useState('');
   const [variants, setVariants] = useState<VariantRow[]>([]);
+
+  // The size guide this garment follows. Its sizes become the ones on offer
+  // and its chart is what the shop shows; the vendor's guides may also attach
+  // themselves by their own conditions, which shows up here pre-selected.
+  const [sizeGuideId, setSizeGuideId] = useState<string | null>(null);
+  const { data: sizeGuidesRes } = useGetSizeGuidesQuery();
+  const sizeGuides = sizeGuidesRes?.data ?? [];
+  const activeGuide = sizeGuides.find((g) => g._id === sizeGuideId) ?? null;
+  const sizeOptions: SizeOption[] =
+    activeGuide && activeGuide.sizes.length > 0
+      ? [...activeGuide.sizes]
+          .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+          .map((sz) => ({ value: sz.label.trim(), label: sz.label.trim() }))
+      : STANDARD_SIZE_OPTIONS;
+
+  // Unsaved-work guard. A snapshot of everything the vendor can change is
+  // compared to the one taken after the form settled (empty for a new
+  // listing, populated for an edit); leaving with a difference asks first.
+  const [loadedAt, setLoadedAt] = useState(0);
+  const [baseline, setBaseline] = useState<string | null>(null);
+  // Flipped once a save lands, so the guard does not fire on the way out.
+  const [saved, setSaved] = useState(false);
 
   // Fetch attributes for the selected product type (needed for submission)
   const { data: categoryData } = useGetCategoriesForTypeQuery(
@@ -368,6 +421,12 @@ export default function AddClothingTemplate() {
       }
 
       setCustomizationSections(newSections);
+
+      const sg = rawProduct?.size_guide;
+      setSizeGuideId(
+        sg ? String(typeof sg === 'object' && sg?._id ? sg._id : sg) : null
+      );
+      setLoadedAt(Date.now());
     }
   }, [productData]);
 
@@ -385,6 +444,59 @@ export default function AddClothingTemplate() {
       (sec.subGroups?.reduce((m, sg) => m + sg.items.length, 0) ?? 0),
     0
   );
+
+  const snapshot = JSON.stringify({
+    title,
+    description,
+    photos: defaultImages.map((i) => i.url),
+    variants: variants.map((v) => ({
+      c: v.colorHex,
+      l: v.label,
+      s: v.availableSizes,
+      d: v.details,
+      i: v.images,
+    })),
+    organization,
+    price,
+    customizationEnabled,
+    turnaroundDays,
+    yardagePerSize,
+    externalFabricOverride,
+    sizeGuideId,
+    options: customizationSections.map((sec) => ({
+      k: sec.key,
+      i: sec.items?.map((it) => [it.productId, it.label, it.price]),
+      g: sec.subGroups?.map((sg) => [sg.title, sg.items.length]),
+    })),
+  });
+  useEffect(() => {
+    // Runs on mount (new listing: empty baseline) and again once an edited
+    // product has been poured into state (loadedAt changes in that pass).
+    setBaseline(snapshot);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadedAt]);
+  const dirty = baseline !== null && snapshot !== baseline && !saved;
+
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [dirty]);
+
+  const leave = () => {
+    if (
+      dirty &&
+      !window.confirm(
+        'Leave without saving? The changes on this page will be lost.'
+      )
+    )
+      return;
+    router.push(APP_ROUTES.productsCloth);
+  };
 
   // The server's publish rules, live. Publish is enabled only when this is
   // ready; a draft can always be saved.
@@ -406,8 +518,9 @@ export default function AddClothingTemplate() {
   });
 
   const addVariant = (descriptor: VariantDescriptor, sizeKeys: string[]) => {
-    // Keep sizes in a consistent order (XS → XXL) regardless of pick order.
-    const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+    // Keep sizes in the order the size list gives them (the guide's order,
+    // or XS → XXL), whatever order they were picked in; unknown sizes last.
+    const SIZE_ORDER = sizeOptions.map((o) => o.value);
     const sortSizes = (arr: string[]) =>
       [...arr].sort((a, b) => {
         const ia = SIZE_ORDER.indexOf(a);
@@ -707,6 +820,7 @@ export default function AddClothingTemplate() {
 
       const payload: CreateClothingDto = {
         ...(editId ? { product_id: editId } : {}),
+        size_guide: sizeGuideId,
         seo: { title: title.trim() },
         metafields: {
           base_price: price ? Number(price) : undefined,
@@ -742,6 +856,7 @@ export default function AddClothingTemplate() {
       };
 
       await createClothing(payload).unwrap();
+      setSaved(true);
 
       // Say what actually happened: a published listing is not live until
       // Qlozet has reviewed it, and an edit is not a creation.
@@ -766,29 +881,26 @@ export default function AddClothingTemplate() {
   };
 
   /**
-   * The garment's bill of materials: yards of fabric per size.
-   *
-   * Hoisted so it can render whether or not customization is enabled. It
-   * used to sit inside the customization block, but the shop lets a
-   * customer apply their own fabric to any clothing item whose
-   * accepts_external_fabric is not false - and that defaults to true. A
-   * ready-to-wear garment therefore accepted supplied fabric with no way
-   * for the vendor to say how much it needs, and the order fell back to
-   * the fabric's min_cut: too little cloth for the tailor, too little
-   * money for the fabric vendor.
+   * The garment's bill of materials: yards of fabric per size. Lives in the
+   * customer-supplied fabric card, because that is when it is used: the shop
+   * lets a customer apply their own cloth to any garment that accepts it,
+   * and without this the order fell back to the fabric's minimum cut.
    */
-  const yardageEditor = (() => {
-    const garmentSizes = Array.from(
-      new Set(variants.flatMap((v) => v.availableSizes || []))
-    );
-    if (garmentSizes.length === 0) return null;
-    return (
-      <div>
+  const garmentSizes = Array.from(
+    new Set(variants.flatMap((v) => v.availableSizes || []))
+  );
+  const acceptsCustomerFabric =
+    externalFabricOverride === null
+      ? businessProfile?.accepts_external_fabric !== false
+      : externalFabricOverride;
+  const yardageEditor =
+    garmentSizes.length > 0 && acceptsCustomerFabric ? (
+      <div className="mt-4 border-t border-border pt-4">
         <FieldLabel
-          tooltip="Yards of fabric this garment uses per size. Drives fabric pricing and cross-vendor fabric mapping."
+          tooltip="How much cloth each size takes. Sets what a shopper is charged for fabric and what a fabric vendor is paid."
           className="font-normal"
         >
-          Fabric yardage per size
+          Yards of fabric per size
         </FieldLabel>
         <div className="grid grid-cols-3 gap-2">
           {garmentSizes.map((size) => (
@@ -812,11 +924,46 @@ export default function AddClothingTemplate() {
           ))}
         </div>
       </div>
-    );
-  })();
+    ) : null;
+
+  // Section numbers shift with the mode: made-to-order gets an Options step
+  // and a Making-it step that ready-to-wear does not have.
+  const steps = {
+    garment: 1,
+    photos: 2,
+    options: 3,
+    sizes: customizationEnabled ? 4 : 3,
+    making: 5,
+  };
+
+  const publishLabel = isSaving
+    ? editId
+      ? 'Saving…'
+      : 'Submitting…'
+    : editId && status === 'active'
+      ? 'Save changes'
+      : 'Publish';
+
+  const sizeSource = activeGuide ? (
+    <>
+      Sizes from your size guide “{activeGuide.title}”. Shoppers see its chart
+      on the product page.
+    </>
+  ) : (
+    <>
+      Standard sizes.{' '}
+      <Link
+        href={APP_ROUTES.productsSizeGuidesCreate}
+        className="font-medium text-primary underline-offset-2 hover:underline"
+      >
+        Create a size guide
+      </Link>{' '}
+      to sell in your own sizes and show shoppers a chart.
+    </>
+  );
 
   return (
-    <div className="w-full min-h-screen h-fit pb-10">
+    <div className="w-full min-h-screen h-fit pb-28 lg:pb-10">
       <div className="mx-auto max-w-7xl space-y-6">
         {isLoadingProduct ? (
           <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
@@ -824,20 +971,73 @@ export default function AddClothingTemplate() {
           </div>
         ) : (
           <>
-            {/* Back */}
-            <GoBackButton />
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <GoBackButton onClick={leave} label="Back to clothing" />
+              <h2 className="text-base font-semibold text-grey-black dark:text-white">
+                {editId ? 'Edit clothing' : 'Add clothing'}
+              </h2>
+            </div>
 
-            {showAlert && (
-              <ProductAlertBanner
-                message="Upload picture products with close to white background in high resolution and quality"
-                onDismiss={() => setShowAlert(false)}
-              />
-            )}
+            {/* The one choice that shapes the rest of the form. */}
+            <div className="rounded-lg border bg-card p-4 custom-card-shadow sm:p-6">
+              <p className="text-sm font-semibold text-grey-black dark:text-white">
+                What are you listing?
+              </p>
+              <div
+                role="radiogroup"
+                aria-label="Listing type"
+                className="mt-3 grid gap-3 sm:grid-cols-2"
+              >
+                {(
+                  [
+                    {
+                      value: false,
+                      title: 'Ready to wear',
+                      lead: 'Already made. Shoppers pick a colour and size and you ship it from stock.',
+                    },
+                    {
+                      value: true,
+                      title: 'Made to order',
+                      lead: 'Shoppers choose styles, fabrics and add-ons, and you make it for them.',
+                    },
+                  ] as const
+                ).map((mode) => {
+                  const selected = customizationEnabled === mode.value;
+                  return (
+                    <button
+                      key={mode.title}
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      onClick={() => setCustomizationEnabled(mode.value)}
+                      className={cn(
+                        'rounded-lg border p-4 text-left transition-colors',
+                        selected
+                          ? 'border-primary bg-primary/5 ring-1 ring-primary'
+                          : 'border-border hover:border-primary/50'
+                      )}
+                    >
+                      <span className="text-sm font-medium text-grey-black dark:text-white">
+                        {mode.title}
+                      </span>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {mode.lead}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-              {/* Left column */}
+              {/* Left column: the garment, in the order a vendor thinks */}
               <div className="space-y-6 lg:col-span-2">
                 <div className="rounded-lg border bg-card p-6 custom-card-shadow">
+                  <SectionHeader
+                    step={steps.garment}
+                    title="The garment"
+                    lead="A clear name and a description that covers the fabric, the fit and the care."
+                  />
                   <FieldLabel
                     htmlFor="product-title"
                     tooltip="What shoppers see first. Name the garment, not the brand: style, fabric, one detail."
@@ -855,71 +1055,78 @@ export default function AddClothingTemplate() {
                   <p className="mt-2 text-xs text-muted-foreground tabular-nums">
                     {title.trim().length}/{LISTING_RULES.TITLE_MAX} characters
                   </p>
+
+                  <div className="mt-5">
+                    <FieldLabel tooltip="Shoppers cannot touch it, so tell them what it feels like and how it falls.">
+                      Description
+                    </FieldLabel>
+                    <RichTextEditor
+                      value={description}
+                      onChange={setDescription}
+                    />
+                    <p
+                      className={cn(
+                        'mt-2 text-xs tabular-nums',
+                        descriptionChars >= LISTING_RULES.DESCRIPTION_MIN
+                          ? 'text-muted-foreground'
+                          : 'text-amber-600'
+                      )}
+                    >
+                      {descriptionChars}/{LISTING_RULES.DESCRIPTION_MIN}{' '}
+                      characters
+                    </p>
+                  </div>
                 </div>
 
                 <div className="rounded-lg border bg-card p-6 custom-card-shadow">
-                  <FieldLabel tooltip="Cover the fabric, the fit and the care. Shoppers cannot touch it, so tell them what it feels like and how it falls.">
-                    Description
-                  </FieldLabel>
-                  <RichTextEditor
-                    value={description}
-                    onChange={setDescription}
+                  <SectionHeader
+                    step={steps.photos}
+                    title="Photos"
+                    lead={`At least ${LISTING_RULES.MIN_PHOTOS}. The first one is the cover. JPG, PNG or WebP, shortest side 800px or more, under 10MB. A plain, light background sells best.`}
                   />
-                  <p
-                    className={cn(
-                      'mt-2 text-xs tabular-nums',
-                      descriptionChars >= LISTING_RULES.DESCRIPTION_MIN
-                        ? 'text-muted-foreground'
-                        : 'text-amber-600'
-                    )}
-                  >
-                    {descriptionChars}/{LISTING_RULES.DESCRIPTION_MIN}{' '}
-                    characters
-                  </p>
-                </div>
-
-                <div className="rounded-lg border bg-card p-6 custom-card-shadow">
-                  <h3 className="mb-1 text-sm font-semibold text-grey-black dark:text-white">
-                    Product photos
-                  </h3>
-                  <p className="mb-4 text-xs text-muted-foreground">
-                    At least {LISTING_RULES.MIN_PHOTOS}. The first one is the
-                    cover. JPG, PNG or WebP, shortest side 800px or more, under
-                    10MB. A plain, light background sells best.
-                  </p>
                   <DefaultImagesUploader
                     images={defaultImages}
                     onChange={setDefaultImages}
-                    onConfigureHotspots={async (index) => {
-                      const image = defaultImages[index];
-                      if (!image) return;
-                      const result = await NiceModal.show(HotspotEditorModal, {
-                        imageUrl: image.url,
-                        hotspots: image.hotspots || [],
-                        sections: customizationSections,
-                      });
-                      if (result !== undefined) {
-                        const newImages = [...defaultImages];
-                        newImages[index] = {
-                          ...image,
-                          hotspots: result as StyleHotspotDto[],
-                        };
-                        setDefaultImages(newImages);
-                      }
-                    }}
+                    onConfigureHotspots={
+                      customizationEnabled
+                        ? async (index) => {
+                            const image = defaultImages[index];
+                            if (!image) return;
+                            const result = await NiceModal.show(
+                              HotspotEditorModal,
+                              {
+                                imageUrl: image.url,
+                                hotspots: image.hotspots || [],
+                                sections: customizationSections,
+                              }
+                            );
+                            if (result !== undefined) {
+                              const newImages = [...defaultImages];
+                              newImages[index] = {
+                                ...image,
+                                hotspots: result as StyleHotspotDto[],
+                              };
+                              setDefaultImages(newImages);
+                            }
+                          }
+                        : undefined
+                    }
                   />
+                  {customizationEnabled && (
+                    <p className="mt-3 text-xs text-muted-foreground">
+                      Hover a photo to mark where each style option sits on the
+                      garment, so shoppers see what they are choosing.
+                    </p>
+                  )}
                 </div>
 
                 {(customizationEnabled || hasCustomItems) && (
                   <div className="rounded-lg border bg-card p-6 custom-card-shadow">
-                    <h3 className="mb-1 text-sm font-semibold text-grey-black dark:text-white">
-                      Options the customer can choose
-                    </h3>
-                    <p className="mb-4 text-xs text-muted-foreground">
-                      Styles are tailoring choices such as a collar or sleeve.
-                      Fabrics are the cloths you offer it in. Add-ons are extras
-                      with their own price, shown as colours or pictures.
-                    </p>
+                    <SectionHeader
+                      step={steps.options}
+                      title="Options the customer can choose"
+                      lead="Styles are tailoring choices such as a collar or sleeve. Fabrics are the cloths you offer it in. Add-ons are extras with their own price, shown as colours or pictures."
+                    />
                     <CustomizationBuilder
                       sections={customizationSections}
                       onChange={setCustomizationSections}
@@ -927,7 +1134,60 @@ export default function AddClothingTemplate() {
                   </div>
                 )}
 
-                <VariantSelectOptions onAddVariant={addVariant} />
+                <div className="rounded-lg border bg-card p-6 custom-card-shadow">
+                  <SectionHeader
+                    step={steps.sizes}
+                    title="Colours and sizes"
+                    lead={
+                      customizationEnabled
+                        ? 'Optional for made-to-order. Add colours and sizes if you also keep finished pieces in stock.'
+                        : 'Every colour you sell, the sizes it comes in, and how many of each you have.'
+                    }
+                  />
+                  <div className="mb-4">
+                    <FieldLabel
+                      htmlFor="size-guide"
+                      tooltip="A size guide gives this garment its sizes and shows shoppers a measurement chart. Guides can also attach themselves to products that match their rules."
+                      className="font-normal"
+                    >
+                      Size guide
+                    </FieldLabel>
+                    <Select
+                      value={sizeGuideId ?? 'none'}
+                      onValueChange={(v) =>
+                        setSizeGuideId(v === 'none' ? null : v)
+                      }
+                    >
+                      <SelectTrigger
+                        id="size-guide"
+                        className="w-full bg-background dark:bg-muted dark:border-white/10"
+                      >
+                        <SelectValue placeholder="No size guide" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">
+                          No size guide (standard XS to XXL)
+                        </SelectItem>
+                        {sizeGuides.map((g) => (
+                          <SelectItem key={g._id} value={g._id}>
+                            {g.title}
+                            {g.sizes?.length
+                              ? ` · ${g.sizes
+                                  .map((sz) => sz.label)
+                                  .slice(0, 6)
+                                  .join(', ')}${g.sizes.length > 6 ? '…' : ''}`
+                              : ''}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <VariantSelectOptions
+                    onAddVariant={addVariant}
+                    sizeOptions={sizeOptions}
+                    sizeSource={sizeSource}
+                  />
+                </div>
 
                 {variants.length > 0 && (
                   <SetVariantsTable
@@ -936,14 +1196,38 @@ export default function AddClothingTemplate() {
                     productName={title}
                   />
                 )}
+
+                {customizationEnabled && (
+                  <div className="rounded-lg border bg-card p-6 custom-card-shadow">
+                    <SectionHeader
+                      step={steps.making}
+                      title="Making it"
+                      lead="What you promise the customer once they order."
+                    />
+                    <div className="max-w-xs">
+                      <FieldLabel
+                        htmlFor="turnaround-days"
+                        tooltip="A promise to the customer. Late orders are penalised, so allow for your real workload."
+                        className="font-normal"
+                      >
+                        Days to make it
+                      </FieldLabel>
+                      <Input
+                        id="turnaround-days"
+                        type="number"
+                        min={1}
+                        value={turnaroundDays}
+                        onChange={(e) => setTurnaroundDays(e.target.value)}
+                        className="bg-background"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Right column */}
+              {/* Right column: how it is filed and priced, and whether it is ready */}
               <div className="lg:col-span-1">
-                <div className="sticky top-6 space-y-6">
-                  {/* The old Status dropdown did nothing: the button pressed
-                      decides draft or published. What a vendor editing a
-                      listing needs instead is where it stands. */}
+                <div className="space-y-6 lg:sticky lg:top-6">
                   {editId && (
                     <div className="rounded-lg border bg-card p-6 custom-card-shadow">
                       <div className="flex items-center justify-between">
@@ -982,55 +1266,17 @@ export default function AddClothingTemplate() {
                     </div>
                   )}
 
-                  <div className="rounded-lg border bg-card p-6 custom-card-shadow">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <span className="text-sm font-semibold text-grey-black dark:text-white">
-                          Made to order
-                        </span>
-                        <p className="mt-0.5 text-xs text-muted-foreground">
-                          Customers choose styles, fabrics and add-ons, and you
-                          make it for them.
-                        </p>
-                      </div>
-                      <Switch
-                        checked={customizationEnabled}
-                        onCheckedChange={setCustomizationEnabled}
-                      />
-                    </div>
+                  <ProductOrganizationSection
+                    value={organization}
+                    onChange={setOrganization}
+                  />
 
-                    {customizationEnabled && (
-                      <div className="mt-4 space-y-4 border-t border-border pt-4">
-                        <div>
-                          <FieldLabel
-                            htmlFor="turnaround-days"
-                            tooltip="A promise to the customer. Late orders are penalised, so allow for your real workload."
-                            className="font-normal"
-                          >
-                            Days to make it
-                          </FieldLabel>
-                          <Input
-                            id="turnaround-days"
-                            type="number"
-                            min={1}
-                            value={turnaroundDays}
-                            onChange={(e) => setTurnaroundDays(e.target.value)}
-                            className="bg-background"
-                          />
-                        </div>
+                  <ProductPricingSection
+                    price={price}
+                    onPriceChange={setPrice}
+                    discountsHref={APP_ROUTES.productsDiscounts}
+                  />
 
-                        {yardageEditor}
-                      </div>
-                    )}
-                  </div>
-
-                  {!customizationEnabled && (
-                    <div className="rounded-lg border bg-card p-6 custom-card-shadow">
-                      {yardageEditor}
-                    </div>
-                  )}
-
-                  {/* External Fabric Override */}
                   <div className="rounded-lg border bg-card p-6 custom-card-shadow">
                     <div className="mb-3">
                       <span className="text-sm font-semibold text-grey-black dark:text-white">
@@ -1093,35 +1339,19 @@ export default function AddClothingTemplate() {
                         </Label>
                       </div>
                     </RadioGroup>
+                    {yardageEditor}
                   </div>
-
-                  <ProductOrganizationSection
-                    value={organization}
-                    onChange={setOrganization}
-                  />
-
-                  <ProductPricingSection
-                    price={price}
-                    onPriceChange={setPrice}
-                    discountsHref={APP_ROUTES.productsDiscounts}
-                  />
 
                   <ListingReadinessCard readiness={readiness} />
 
-                  <div className="flex flex-col gap-3">
+                  <div className="hidden flex-col gap-3 lg:flex">
                     <Button
                       type="button"
                       onClick={() => handleSave(false)}
                       disabled={isSaving || !readiness.ready}
                       className="h-12 w-full"
                     >
-                      {isSaving
-                        ? editId
-                          ? 'Saving…'
-                          : 'Submitting…'
-                        : editId && status === 'active'
-                          ? 'Save changes'
-                          : 'Publish'}
+                      {publishLabel}
                     </Button>
                     <Button
                       type="button"
@@ -1130,10 +1360,43 @@ export default function AddClothingTemplate() {
                       disabled={isSaving}
                       className="h-12 w-full bg-transparent"
                     >
-                      {isSaving ? 'Saving…' : 'Save as Draft'}
+                      {isSaving ? 'Saving…' : 'Save as draft'}
                     </Button>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Phones and tablets: the two actions stay within reach. */}
+            <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 p-3 backdrop-blur lg:hidden">
+              <div className="mx-auto flex max-w-7xl items-center gap-3">
+                <span
+                  className={cn(
+                    'hidden text-xs tabular-nums sm:block',
+                    readiness.ready
+                      ? 'text-emerald-600'
+                      : 'text-muted-foreground'
+                  )}
+                >
+                  {readiness.done} of {readiness.total} ready
+                </span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => handleSave(true)}
+                  disabled={isSaving}
+                  className="h-11 flex-1 bg-transparent"
+                >
+                  {isSaving ? 'Saving…' : 'Save draft'}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => handleSave(false)}
+                  disabled={isSaving || !readiness.ready}
+                  className="h-11 flex-1"
+                >
+                  {publishLabel}
+                </Button>
               </div>
             </div>
           </>
