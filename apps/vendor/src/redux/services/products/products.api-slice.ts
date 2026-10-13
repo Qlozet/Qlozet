@@ -109,6 +109,9 @@ export interface FabricDto {
   name: string;
   description?: string;
   product_type: string;
+  /** Shown on the fabric card; the shop reads colours from HERE, not metafields. */
+  material?: string;
+  colors?: { name: string; hex: string }[];
   pattern?: string;
   yard_length: number;
   width: number;

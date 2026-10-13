@@ -1,20 +1,29 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { Check, Info, Upload, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { readApiError } from '@/redux/services/types';
-import { IMAGE_RULES, checkImageFile } from '@/lib/image-checks';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { StepperField } from '../molecules/stepper-field';
+import { cn, uploadSequentially } from '@/lib/utils';
 import { LabeledSelect } from '../molecules/labeled-select';
 import { ColourSelect } from '../molecules/colour-select';
+import { StatusPill } from '../atoms/status-pill';
+import { ListingReadinessCard } from '../molecules/listing-readiness-card';
+import {
+  DefaultImagesUploader,
+  type DefaultImage,
+} from './default-images-uploader';
+import {
+  fabricReadiness,
+  visibleText,
+  LISTING_RULES,
+} from '../lib/listing-readiness';
 import {
   useCreateFabricMutation,
   useGetProductQuery,
@@ -25,42 +34,124 @@ import {
   useGetCategoriesForTypeQuery,
 } from '@/redux/services/taxonomy/taxonomy.api-slice';
 
-// Vendor "Add Fabric" — two-panel modal wired to the vendor createFabric
-// endpoint (POST /products/fabric). Material maps to the fabric product_type;
-// colour is preserved in metafields since the vendor FabricDto has no colour.
+type ProductStatus = 'active' | 'draft' | 'archived';
+type ModerationStatus = 'pending' | 'approved' | 'rejected';
+interface FabricColour {
+  name: string;
+  hex: string;
+}
+
+const Section = ({
+  step,
+  title,
+  lead,
+  children,
+}: {
+  step: number;
+  title: string;
+  lead?: ReactNode;
+  children: ReactNode;
+}) => (
+  <section>
+    <div className="mb-3 flex items-center gap-2">
+      <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-semibold text-primary tabular-nums">
+        {step}
+      </span>
+      <h3 className="text-sm font-semibold text-grey-black dark:text-white">
+        {title}
+      </h3>
+    </div>
+    {lead && <p className="-mt-2 mb-3 text-xs text-muted-foreground">{lead}</p>}
+    {children}
+  </section>
+);
+
+// A typed number with its unit shown, instead of a plus/minus stepper that
+// only moved in whole units (no half yards, 49 clicks for a 50-yard bolt).
+const UnitInput = ({
+  id,
+  label,
+  unit,
+  value,
+  onChange,
+  step = 0.5,
+  min = 0,
+  hint,
+}: {
+  id: string;
+  label: string;
+  unit: string;
+  value: string;
+  onChange: (v: string) => void;
+  step?: number;
+  min?: number;
+  hint?: string;
+}) => (
+  <div className="space-y-1.5">
+    <label
+      htmlFor={id}
+      className="text-sm font-medium text-gray-700 dark:text-gray-200"
+    >
+      {label}
+    </label>
+    <div className="relative">
+      <Input
+        id={id}
+        type="number"
+        inputMode="decimal"
+        min={min}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="0"
+        className="pr-14"
+      />
+      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+        {unit}
+      </span>
+    </div>
+    {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+  </div>
+);
+
+const naira = (n: number) => `₦${Math.round(n).toLocaleString()}`;
+
+/**
+ * Add / edit a fabric. One bolt: what it is, what it looks like, how it is
+ * sold. The same readiness list as clothing gates Publish; a draft can
+ * always be saved. Colours go on the fabric itself, which is where the shop
+ * reads them (they used to be saved into metafields and never shown).
+ */
 export const AddFabricModal = NiceModal.create(
   ({ editId }: { editId?: string }) => {
     const modal = useModal();
 
     const { data: productData, isLoading: isLoadingProduct } =
-      useGetProductQuery(editId as string, {
-        skip: !editId,
-      });
+      useGetProductQuery(editId as string, { skip: !editId });
 
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [material, setMaterial] = useState('');
-    const [colour, setColour] = useState('');
-    const [swatch, setSwatch] = useState('#E8A33D');
-    const [pattern, setPattern] = useState('');
-    const [yardsLength, setYardsLength] = useState(1);
-    const [width, setWidth] = useState(10);
-    const [minCut, setMinCut] = useState(4);
-    const [pricePerYard, setPricePerYard] = useState(0);
-
-    const [previewUrl, setPreviewUrl] = useState('');
-    const [hostedUrl, setHostedUrl] = useState('');
-    const [showUrlInput, setShowUrlInput] = useState(false);
-    const [urlDraft, setUrlDraft] = useState('');
-
-    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [fabricType, setFabricType] = useState('');
+    const [colours, setColours] = useState<FabricColour[]>([]);
+    const [yards, setYards] = useState('');
+    const [width, setWidth] = useState('45');
+    const [minCut, setMinCut] = useState('4');
+    const [price, setPrice] = useState('');
+    const [images, setImages] = useState<DefaultImage[]>([]);
+    const [status, setStatus] = useState<ProductStatus>('draft');
+    const [moderation, setModeration] = useState<{
+      status: ModerationStatus;
+      reason?: string | null;
+    } | null>(null);
 
     const [createFabric, { isLoading: isCreating }] = useCreateFabricMutation();
     const [uploadImage, { isLoading: isUploading }] =
       useUploadProductImageMutation();
-    const isLoading = isCreating || isUploading || isLoadingProduct;
+    const isSaving = isCreating || isUploading;
 
-    // Taxonomy hooks — Material → product_type, Pattern → categories
+    // Material is the fabric product type (Cotton, Lace, Silk...); the type
+    // under it (Wax Print, Adire, French Lace...) is its category.
     const { data: fabricTypes, isLoading: isLoadingTypes } =
       useGetProductTypesQuery('fabric');
     const { data: categoryData, isLoading: isLoadingCategories } =
@@ -68,417 +159,481 @@ export const AddFabricModal = NiceModal.create(
         { kind: 'fabric', product_type: material },
         { skip: !material }
       );
-
     const materialOptions = fabricTypes?.map((pt) => pt.name) || [];
-    const patternOptions = categoryData?.categories || [];
+    const typeOptions = categoryData?.categories || [];
 
     useEffect(() => {
-      if (productData) {
-        const rawProduct = (productData as any)?.data || productData;
-        const inner = rawProduct?.kind
-          ? rawProduct[rawProduct.kind]
-          : rawProduct;
+      if (!productData) return;
+      const rawProduct = (productData as any)?.data || productData;
+      const inner = rawProduct?.kind ? rawProduct[rawProduct.kind] : rawProduct;
 
-        setName(inner?.name || rawProduct?.name || '');
-        setDescription(inner?.description || rawProduct?.description || '');
-        setMaterial(
-          inner?.product_type ||
-            inner?.taxonomy?.product_type ||
-            rawProduct?.product_type ||
-            ''
-        );
-        setColour(
-          rawProduct?.metafields?.colour ||
-            rawProduct?.metafields?.color ||
-            inner?.colour ||
-            ''
-        );
-        if (rawProduct?.metafields?.swatch)
-          setSwatch(rawProduct.metafields.swatch);
-        setPattern(inner?.pattern || '');
-        setYardsLength(inner?.yard_length || 0);
-        setWidth(inner?.width || 0);
-        setMinCut(inner?.min_cut || 4);
-        setPricePerYard(inner?.price_per_yard || rawProduct?.base_price || 0);
+      setName(inner?.name || rawProduct?.name || '');
+      setDescription(inner?.description || rawProduct?.description || '');
+      setMaterial(
+        inner?.product_type ||
+          inner?.taxonomy?.product_type ||
+          rawProduct?.product_type ||
+          ''
+      );
+      setFabricType(inner?.pattern || '');
+      setYards(inner?.yard_length != null ? String(inner.yard_length) : '');
+      setWidth(inner?.width != null ? String(inner.width) : '45');
+      setMinCut(inner?.min_cut != null ? String(inner.min_cut) : '4');
+      setPrice(
+        inner?.price_per_yard != null
+          ? String(inner.price_per_yard)
+          : rawProduct?.base_price
+            ? String(rawProduct.base_price)
+            : ''
+      );
+      setStatus((rawProduct?.status as ProductStatus) || 'draft');
+      const pModeration = rawProduct?.moderation;
+      setModeration(
+        pModeration?.status
+          ? {
+              status: pModeration.status as ModerationStatus,
+              reason: pModeration.reason ?? null,
+            }
+          : null
+      );
 
-        const pImages = inner?.images || rawProduct?.images || [];
-        if (pImages && pImages.length > 0) {
-          const url =
-            typeof pImages[0] === 'string' ? pImages[0] : pImages[0].url;
-          setHostedUrl(url);
-          setPreviewUrl(url);
-        }
+      // Colours: the fabric's own list first; older products only have the
+      // single metafield colour the old modal wrote.
+      const loaded: FabricColour[] = Array.isArray(inner?.colors)
+        ? inner.colors
+            .filter((c: any) => c?.hex)
+            .map((c: any) => ({ name: c.name || c.hex, hex: c.hex }))
+        : [];
+      if (!loaded.length && rawProduct?.metafields?.colour) {
+        loaded.push({
+          name: rawProduct.metafields.colour,
+          hex: rawProduct.metafields.swatch || '#000000',
+        });
       }
+      setColours(loaded);
+
+      // Every photo, not only the first: editing used to save a one-image
+      // list back and drop the rest.
+      const pImages = inner?.images || rawProduct?.images || [];
+      setImages(
+        (pImages as any[])
+          .map((img) => (typeof img === 'string' ? img : img?.url))
+          .filter(Boolean)
+          .map((url: string) => ({
+            url: url.replace(/^http:\/\//i, 'https://'),
+            isLocal: false,
+          }))
+      );
     }, [productData]);
 
     const [closing, setClosing] = useState(false);
-
     const handleClose = useCallback(() => {
       setClosing(true);
       setTimeout(() => modal.remove(), 280);
     }, [modal]);
 
+    const readiness = fabricReadiness({
+      title: name,
+      description,
+      photoCount: images.length,
+      material,
+      pricePerYard: price,
+      yardsInStock: yards,
+      minCut,
+      widthInches: width,
+    });
+    const descriptionChars = visibleText(description).length;
+    const minCutCost = (Number(minCut) || 0) * (Number(price) || 0);
+
     if (!modal.visible) return null;
 
-    const isValid =
-      name.trim().length > 0 &&
-      pricePerYard > 0 &&
-      yardsLength > 0 &&
-      width >= 10;
-
-    // Checked at pick time so the vendor hears about a bad photo here, rather
-    // than when the upload is attempted on save. The server re-checks and
-    // remains the authority.
-    const handleFile = async (file?: File) => {
-      if (!file) return;
-      const problem = await checkImageFile(file, {
-        minShortEdge: IMAGE_RULES.DEFAULT_MIN_SHORT_EDGE,
-      });
-      if (problem) {
-        toast.error(problem);
-        return;
-      }
-      setPreviewUrl(URL.createObjectURL(file));
-      setImageFile(file);
-      setHostedUrl('');
+    const addColour = (colourName: string, hex: string) => {
+      setColours((prev) =>
+        prev.some((c) => c.hex.toLowerCase() === hex.toLowerCase())
+          ? prev
+          : [...prev, { name: colourName, hex }]
+      );
     };
 
-    const handleAddUrl = () => {
-      const url = urlDraft.trim();
-      if (!url) return;
-      setPreviewUrl(url);
-      setHostedUrl(url);
-      setImageFile(null);
-      setShowUrlInput(false);
-      setUrlDraft('');
-    };
-
-    const handleSubmit = async (isDraft = false) => {
-      if (!isValid) {
-        toast.error(
-          'Please enter fabric name, price > 0, yards > 0, and width >= 10.'
-        );
+    const handleSubmit = async (isDraft: boolean) => {
+      // A draft needs only what the API cannot store without.
+      if (!name.trim()) {
+        toast.error('Give the fabric a name first.');
         return;
       }
+      if (!material) {
+        toast.error('Choose a material first.');
+        return;
+      }
+      if (!isDraft && !readiness.ready) {
+        toast.error(readiness.firstProblem ?? 'The listing is not ready yet.');
+        return;
+      }
+
       try {
-        let finalImageUrl = hostedUrl;
-        let finalPublicId = 'unknown';
-        if (imageFile && !hostedUrl) {
-          const res = await uploadImage(imageFile).unwrap();
-          if (res.data?.url) {
-            finalImageUrl = res.data.url;
-            finalPublicId = res.data.public_id || 'unknown';
-          }
-        }
+        const local = images.filter((img) => img.isLocal && img.file);
+        const uploaded = await uploadSequentially(local, async (img) => {
+          const res = await uploadImage(img.file!).unwrap();
+          return {
+            url: res.data?.url || '',
+            public_id: res.data?.public_id || 'unknown',
+          };
+        });
+        const finalImages = [
+          ...images
+            .filter((img) => !img.isLocal)
+            .map((img) => ({ url: img.url, public_id: 'unknown' })),
+          ...uploaded.filter((img) => !!img.url),
+        ];
 
+        const first = colours[0];
         await createFabric({
           ...(editId ? { product_id: editId } : {}),
           seo: { title: name.trim() },
           metafields: {
-            colour: colour || undefined,
-            swatch,
-            base_price: pricePerYard ? Number(pricePerYard) : undefined,
+            // Kept for the vendor list, which still reads the first colour here.
+            colour: first?.name,
+            swatch: first?.hex,
+            base_price: Number(price) || undefined,
           },
           status: isDraft ? 'draft' : 'active',
           fabric: {
             name: name.trim(),
             description: description.trim() || undefined,
-            product_type: material || 'fabric',
-            pattern: pattern || undefined,
-            yard_length: yardsLength,
-            width,
-            min_cut: minCut,
-            price_per_yard: pricePerYard,
-            images: finalImageUrl
-              ? [{ url: finalImageUrl, public_id: finalPublicId }]
-              : undefined,
-            // Backend validates variants as an array even though Swagger marks it
-            // optional; the modal has no variant UI, so send an empty array.
+            product_type: material,
+            material,
+            pattern: fabricType || undefined,
+            colors: colours,
+            yard_length: Number(yards) || 0,
+            width: Number(width) || 0,
+            min_cut: Number(minCut) || 0,
+            price_per_yard: Number(price) || 0,
+            images: finalImages.length ? finalImages : undefined,
+            // The API validates this as an array; a bolt has no size variants.
             variants: [],
           },
         }).unwrap();
-        toast.success('Fabric uploaded successfully');
+
+        if (isDraft)
+          toast.success(editId ? 'Draft saved.' : 'Saved as a draft.');
+        else if (editId) toast.success('Changes saved.');
+        else
+          toast.success(
+            "Submitted for review. We'll let you know when it is live."
+          );
         handleClose();
       } catch (err) {
-        // Surface the server's reason — see add-clothing-template.
         toast.error(
-          readApiError(err, 'Failed to upload fabric. Please try again.')
+          readApiError(err, 'Could not save the fabric. Please try again.')
         );
       }
     };
+
+    const publishLabel = isSaving
+      ? editId
+        ? 'Saving…'
+        : 'Submitting…'
+      : editId && status === 'active'
+        ? 'Save changes'
+        : 'Publish';
+
+    const actions = (
+      <div className="flex flex-col gap-2">
+        <Button
+          type="button"
+          onClick={() => handleSubmit(false)}
+          disabled={isSaving || !readiness.ready}
+          className="h-11 w-full"
+        >
+          {publishLabel}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => handleSubmit(true)}
+          disabled={isSaving}
+          className="h-11 w-full bg-transparent"
+        >
+          {isSaving ? 'Saving…' : 'Save as draft'}
+        </Button>
+      </div>
+    );
 
     return (
       <Dialog
         open={modal.visible && !closing}
         onOpenChange={(open) => !open && handleClose()}
       >
-        <DialogContent className="sm:max-w-4xl p-0 overflow-hidden sm:rounded-[16px]">
-          <div className="flex max-h-[90vh] w-full flex-col sm:rounded-[16px] md:flex-row md:overflow-hidden overflow-y-auto">
-            {/* Left: form */}
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="flex-1 space-y-4 p-4 sm:p-6 bg-card md:overflow-y-auto custom-scrollbar"
-            >
-              <DialogTitle
-                id="add-fabric-title"
-                className="text-xl font-semibold text-grey-black dark:text-white"
-              >
-                {editId ? 'Edit' : 'Add'} Fabric
+        <DialogContent className="p-0 overflow-hidden sm:max-w-5xl sm:rounded-[16px]">
+          <div className="flex max-h-[90vh] flex-col md:flex-row md:overflow-hidden">
+            {/* Left: the fabric */}
+            <div className="flex-1 space-y-7 overflow-y-auto bg-card p-4 sm:p-6 custom-scrollbar">
+              <DialogTitle className="text-xl font-semibold text-grey-black dark:text-white">
+                {editId ? 'Edit fabric' : 'Add fabric'}
               </DialogTitle>
 
               {isLoadingProduct ? (
-                <div className="flex flex-col gap-6 pt-4">
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-10 w-full" />
-                  </div>
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton className="h-10 w-full" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Skeleton className="h-4 w-20" />
-                      <Skeleton className="h-10 w-full" />
-                    </div>
-                    <div className="space-y-2">
-                      <Skeleton className="h-4 w-24" />
-                      <Skeleton className="h-10 w-full" />
-                    </div>
-                  </div>
+                <div className="space-y-4">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-24 w-full" />
+                  <Skeleton className="h-10 w-full" />
                 </div>
               ) : (
                 <>
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                      Fabric name
-                    </label>
-                    <Input
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Fabric name"
-                    />
-                  </div>
+                  <Section
+                    step={1}
+                    title="What it is"
+                    lead="Name it the way a shopper would search for it: colour, material, print."
+                  >
+                    <div className="space-y-4">
+                      <div className="space-y-1.5">
+                        <label
+                          htmlFor="fabric-name"
+                          className="text-sm font-medium text-gray-700 dark:text-gray-200"
+                        >
+                          Name
+                        </label>
+                        <Input
+                          id="fabric-name"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="e.g. Royal blue Holland wax print"
+                          maxLength={LISTING_RULES.TITLE_MAX}
+                        />
+                        <p className="text-xs text-muted-foreground tabular-nums">
+                          {name.trim().length}/{LISTING_RULES.TITLE_MAX}{' '}
+                          characters
+                        </p>
+                      </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                      Product description
-                    </label>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        {isLoadingTypes ? (
+                          <Skeleton className="h-10 w-full" />
+                        ) : (
+                          <LabeledSelect
+                            label="Material"
+                            value={material}
+                            options={materialOptions}
+                            placeholder="Cotton, lace, silk…"
+                            onChange={(v) => {
+                              setMaterial(v);
+                              setFabricType('');
+                            }}
+                          />
+                        )}
+                        {isLoadingCategories && material ? (
+                          <Skeleton className="h-10 w-full" />
+                        ) : (
+                          <LabeledSelect
+                            label="Type"
+                            value={fabricType}
+                            options={typeOptions}
+                            placeholder={
+                              material
+                                ? typeOptions.length
+                                  ? 'Wax print, Adire, plain…'
+                                  : 'No types for this material'
+                                : 'Choose a material first'
+                            }
+                            onChange={setFabricType}
+                          />
+                        )}
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                          Colours
+                        </label>
+                        {colours.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {colours.map((c) => (
+                              <span
+                                key={c.hex}
+                                className="flex items-center gap-1.5 rounded-md border border-border bg-background px-2 py-1 text-xs text-foreground"
+                              >
+                                <span
+                                  className="size-3.5 rounded-full border border-border"
+                                  style={{ backgroundColor: c.hex }}
+                                />
+                                {c.name}
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setColours((prev) =>
+                                      prev.filter((x) => x.hex !== c.hex)
+                                    )
+                                  }
+                                  className="text-muted-foreground hover:text-foreground"
+                                  aria-label={`Remove ${c.name}`}
+                                >
+                                  <X className="size-3" />
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <ColourSelect
+                          value=""
+                          hex="#000000"
+                          placeholder={
+                            colours.length
+                              ? 'Add another colour'
+                              : 'Add a colour'
+                          }
+                          onChange={addColour}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          The main colours in the print. Shoppers filter by
+                          these.
+                        </p>
+                      </div>
+                    </div>
+                  </Section>
+
+                  <Section
+                    step={2}
+                    title="Photos"
+                    lead={`At least ${LISTING_RULES.MIN_PHOTOS}: a flat, well-lit shot of the fabric alone, then close-ups of the print and the texture. The first is the cover.`}
+                  >
+                    <DefaultImagesUploader
+                      images={images}
+                      onChange={setImages}
+                    />
+                  </Section>
+
+                  <Section
+                    step={3}
+                    title="The bolt"
+                    lead="How much you have, how it is cut, and what a yard costs."
+                  >
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <UnitInput
+                        id="fabric-yards"
+                        label="Yards in stock"
+                        unit="yards"
+                        value={yards}
+                        onChange={setYards}
+                        hint="Goes down as orders come in."
+                      />
+                      <UnitInput
+                        id="fabric-width"
+                        label="Width"
+                        unit="inches"
+                        value={width}
+                        onChange={setWidth}
+                        step={1}
+                        min={10}
+                        hint="Most African prints are 45 or 46; lace is often 50 to 60."
+                      />
+                      <UnitInput
+                        id="fabric-min-cut"
+                        label="Minimum cut"
+                        unit="yards"
+                        value={minCut}
+                        onChange={setMinCut}
+                        hint="The least a shopper can buy at once."
+                      />
+                      <div className="space-y-1.5">
+                        <label
+                          htmlFor="fabric-price"
+                          className="text-sm font-medium text-gray-700 dark:text-gray-200"
+                        >
+                          Price per yard
+                        </label>
+                        <div className="relative">
+                          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                            ₦
+                          </span>
+                          <Input
+                            id="fabric-price"
+                            type="number"
+                            inputMode="numeric"
+                            min={0}
+                            step={100}
+                            value={price}
+                            onChange={(e) => setPrice(e.target.value)}
+                            placeholder="0"
+                            className="pl-7"
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {minCutCost > 0
+                            ? `A shopper buying the minimum cut pays ${naira(minCutCost)}.`
+                            : 'Shoppers pay this times the yards they choose.'}
+                        </p>
+                      </div>
+                    </div>
+                  </Section>
+
+                  <Section
+                    step={4}
+                    title="Description"
+                    lead="The weight, the feel, how it washes, what it is good for."
+                  >
                     <Textarea
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Add product description"
+                      placeholder="Heavyweight 100% cotton wax print with a crisp hand…"
+                      rows={5}
                     />
-                  </div>
-
-                  {isLoadingTypes ? (
-                    <Skeleton className="h-10 w-full" />
-                  ) : (
-                    <LabeledSelect
-                      label="Material"
-                      value={material}
-                      options={materialOptions}
-                      onChange={(v) => {
-                        setMaterial(v);
-                        setPattern('');
-                      }}
-                    />
-                  )}
-
-                  <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                      Colour
-                    </label>
-                    <ColourSelect
-                      value={colour}
-                      hex={swatch}
-                      onChange={(nextName, hex) => {
-                        setColour(nextName);
-                        setSwatch(hex);
-                      }}
-                    />
-                  </div>
-
-                  {isLoadingCategories && material ? (
-                    <Skeleton className="h-10 w-full" />
-                  ) : patternOptions.length > 0 ? (
-                    <LabeledSelect
-                      label="Pattern"
-                      value={pattern}
-                      options={patternOptions}
-                      onChange={setPattern}
-                    />
-                  ) : material ? (
-                    <div className="space-y-1.5">
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                        Pattern
-                      </label>
-                      <div className="flex h-10 w-full items-center rounded-md border border-input dark:border-white/10 bg-background dark:bg-muted px-3 text-sm text-muted-foreground">
-                        No patterns available for this material
-                      </div>
-                    </div>
-                  ) : null}
-
-                  <div className="grid grid-cols-3 gap-3">
-                    <StepperField
-                      label="Yards/Length"
-                      value={yardsLength}
-                      onChange={setYardsLength}
-                    />
-                    <StepperField
-                      label="Width"
-                      value={width}
-                      onChange={setWidth}
-                    />
-                    <StepperField
-                      label="Min Cut (Yards)"
-                      value={minCut}
-                      onChange={setMinCut}
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-200">
-                      Price per yard
-                      <Info className="size-3.5 text-gray-400" />
-                    </label>
-                    <div className="flex h-10 items-center rounded-md border border-input dark:border-white/10 bg-background dark:bg-muted px-3">
-                      <span className="mr-2 text-sm text-gray-500 dark:text-gray-400">
-                        $
-                      </span>
-                      <input
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        placeholder="0.00"
-                        value={pricePerYard === 0 ? '' : pricePerYard}
-                        onChange={(e) =>
-                          setPricePerYard(
-                            e.target.value === '' ? 0 : Number(e.target.value)
-                          )
-                        }
-                        className="w-full border-none bg-transparent text-sm outline-none dark:text-gray-200"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleSubmit(true)}
-                      disabled={!isValid || isLoading}
-                      className="h-11 flex-1 text-sm bg-transparent"
+                    <p
+                      className={cn(
+                        'mt-1.5 text-xs tabular-nums',
+                        descriptionChars >= LISTING_RULES.DESCRIPTION_MIN
+                          ? 'text-muted-foreground'
+                          : 'text-amber-600'
+                      )}
                     >
-                      {isLoading ? 'Saving...' : 'Save as Draft'}
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={() => handleSubmit(false)}
-                      disabled={!isValid || isLoading}
-                      className="h-11 flex-1 text-sm"
-                    >
-                      {isLoading ? 'Publishing...' : 'Publish Now'}
-                    </Button>
-                  </div>
-                </>
-              )}
-            </form>
-
-            {/* Right: preview / upload */}
-            <div className="flex-1 space-y-4 bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4 sm:p-6 md:overflow-y-auto custom-scrollbar h-full">
-              <h2 className="text-xl font-semibold text-grey-black dark:text-white">
-                Preview
-              </h2>
-              {isLoadingProduct ? (
-                <Skeleton className="aspect-square w-full rounded-xl" />
-              ) : (
-                <>
-                  <div className="flex items-start gap-3 rounded-lg bg-[hsla(27,97%,12%,0.06)] dark:bg-white/5 p-3">
-                    <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                      <Info className="size-3.5" />
-                    </span>
-                    <p className="text-sm text-grey-black dark:text-white">
-                      Provide a flat and smooth picture of only the fabric.
+                      {descriptionChars}/{LISTING_RULES.DESCRIPTION_MIN}{' '}
+                      characters
                     </p>
-                  </div>
+                  </Section>
 
-                  <label
-                    htmlFor="fabric-image"
-                    className={cn(
-                      'flex aspect-square cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-gray-300 dark:border-white/20 bg-white/40 dark:bg-white/5 p-6 text-center transition hover:border-gray-400 dark:hover:border-white/40',
-                      previewUrl &&
-                        'border-solid bg-white dark:bg-transparent p-0'
-                    )}
-                  >
-                    {previewUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={previewUrl}
-                        alt="Fabric preview"
-                        className="h-full w-full rounded-xl object-contain"
-                      />
-                    ) : (
-                      <>
-                        <Upload className="size-6 text-gray-500" />
-                        <span className="rounded-md bg-gray-200 dark:bg-white/10 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200">
-                          Add or Drop image
-                        </span>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setShowUrlInput((prev) => !prev);
-                          }}
-                          className="text-sm text-blue-500 hover:underline"
-                        >
-                          Add from URL
-                        </button>
-                      </>
-                    )}
-                  </label>
-                  <input
-                    id="fabric-image"
-                    type="file"
-                    accept={IMAGE_RULES.ACCEPT_ATTR}
-                    className="hidden"
-                    onChange={(e) => handleFile(e.target.files?.[0])}
-                  />
-
-                  {showUrlInput && !previewUrl && (
-                    <div className="flex gap-2">
-                      <Input
-                        value={urlDraft}
-                        onChange={(e) => setUrlDraft(e.target.value)}
-                        placeholder="https://image-url.com/fabric.png"
-                        className="h-10"
-                      />
-                      <Button
-                        type="button"
-                        onClick={handleAddUrl}
-                        className="h-10"
-                      >
-                        Add
-                      </Button>
-                    </div>
-                  )}
-
-                  {previewUrl && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setPreviewUrl('');
-                        setHostedUrl('');
-                        setImageFile(null);
-                      }}
-                      className="text-sm text-destructive hover:underline"
-                    >
-                      Remove image
-                    </button>
-                  )}
+                  <div className="md:hidden">{actions}</div>
                 </>
               )}
             </div>
+
+            {/* Right: where it stands, and whether it is ready */}
+            <aside className="hidden w-[300px] shrink-0 space-y-4 overflow-y-auto border-l border-border bg-muted/30 p-5 md:block custom-scrollbar">
+              {editId && !isLoadingProduct && (
+                <div className="rounded-lg border bg-card p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-grey-black dark:text-white">
+                      Listing status
+                    </span>
+                    <StatusPill status={status} />
+                  </div>
+                  {status === 'active' && moderation?.status === 'pending' && (
+                    <p className="mt-2 text-xs text-amber-600">
+                      Under review by Qlozet. It goes live once approved.
+                    </p>
+                  )}
+                  {status === 'active' && moderation?.status === 'approved' && (
+                    <p className="mt-2 text-xs text-emerald-600">
+                      Live in the shop.
+                    </p>
+                  )}
+                  {moderation?.status === 'rejected' && (
+                    <div className="mt-2 rounded-md bg-rose-50 p-2.5 text-xs text-rose-800 dark:bg-rose-900/20 dark:text-rose-200">
+                      <p className="font-medium">
+                        Changes requested before this can go live.
+                      </p>
+                      {moderation.reason && (
+                        <p className="mt-1">{moderation.reason}</p>
+                      )}
+                    </div>
+                  )}
+                  {status === 'draft' && (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Not visible to shoppers. Publish when it is ready.
+                    </p>
+                  )}
+                </div>
+              )}
+              <ListingReadinessCard readiness={readiness} className="p-4" />
+              {actions}
+            </aside>
           </div>
         </DialogContent>
       </Dialog>

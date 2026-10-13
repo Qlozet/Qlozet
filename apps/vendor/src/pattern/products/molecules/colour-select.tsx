@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 // Named fabric colours from the Figma "Colour menu".
 export const NAMED_COLOURS: { name: string; hex: string }[] = [
-  { name: 'Solid', hex: '#FFFFFF' },
+  { name: 'White', hex: '#FFFFFF' },
   { name: 'Ivory', hex: '#FFFFF0' },
   { name: 'Beige', hex: '#F5F5DC' },
   { name: 'Dark-gray', hex: '#555555' },
@@ -49,11 +49,17 @@ interface ColourSelectProps {
   value: string;
   hex: string;
   onChange: (name: string, hex: string) => void;
+  placeholder?: string;
 }
 
 // Colour field: a named-colour menu plus a Custom hex picker. Mirrors the Figma
 // Colour menu used by the Add Fabric form.
-export const ColourSelect = ({ value, hex, onChange }: ColourSelectProps) => {
+export const ColourSelect = ({
+  value,
+  hex,
+  onChange,
+  placeholder = 'Choose a colour',
+}: ColourSelectProps) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -75,7 +81,7 @@ export const ColourSelect = ({ value, hex, onChange }: ColourSelectProps) => {
         className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
       >
         <span className={cn(!value && 'text-muted-foreground')}>
-          {value || 'Any fabric type'}
+          {value || placeholder}
         </span>
         <span className="flex items-center gap-2">
           <span

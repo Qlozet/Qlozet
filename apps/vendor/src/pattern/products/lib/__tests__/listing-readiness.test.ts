@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  fabricReadiness,
   listingReadiness,
   visibleText,
   type ReadinessInput,
@@ -90,5 +91,48 @@ describe('listingReadiness', () => {
   it('names the first unmet requirement for a toast', () => {
     const r = listingReadiness({ ...complete, price: '' });
     expect(r.firstProblem).toBe('Still needed: a price above ₦0.');
+  });
+});
+
+describe('fabricReadiness', () => {
+  const bolt = {
+    title: 'Royal blue Holland wax print',
+    description:
+      'Heavyweight 100% cotton wax print with a crisp hand and a deep, colourfast blue. ' +
+      'Sold by the yard from a 45-inch bolt. Pre-wash cold before cutting; iron on the reverse.',
+    photoCount: 3,
+    material: 'Cotton',
+    pricePerYard: '4500',
+    yardsInStock: '30',
+    minCut: '2',
+    widthInches: '45',
+  };
+  const failing = (over: Partial<typeof bolt>) =>
+    fabricReadiness({ ...bolt, ...over })
+      .items.filter((i) => !i.ok)
+      .map((i) => i.key);
+
+  it('a complete bolt is ready', () => {
+    expect(fabricReadiness(bolt).ready).toBe(true);
+  });
+
+  it('needs three photos like every listing - one was all the old modal allowed', () => {
+    expect(failing({ photoCount: 1 })).toEqual(['photos']);
+  });
+
+  it('a minimum cut larger than the stock cannot be bought', () => {
+    expect(failing({ minCut: '40' })).toEqual(['min_cut']);
+    expect(
+      fabricReadiness({ ...bolt, minCut: '40' }).items.find(
+        (i) => i.key === 'min_cut'
+      )?.label
+    ).toBe('Minimum cut no more than the yards in stock');
+  });
+
+  it('checks the bolt numbers and the material', () => {
+    expect(failing({ yardsInStock: '0' })).toContain('stock');
+    expect(failing({ widthInches: '8' })).toContain('width');
+    expect(failing({ pricePerYard: '' })).toContain('price');
+    expect(failing({ material: '' })).toContain('material');
   });
 });

@@ -157,3 +157,87 @@ export function listingReadiness(input: ReadinessInput): Readiness {
     firstProblem: first ? `Still needed: ${first.label.toLowerCase()}.` : null,
   };
 }
+
+export interface FabricReadinessInput {
+  title: string;
+  description: string;
+  photoCount: number;
+  material: string;
+  pricePerYard: string | number;
+  yardsInStock: string | number;
+  minCut: string | number;
+  widthInches: string | number;
+}
+
+/**
+ * A fabric listing's publish rules: the server's general ones (title,
+ * description, photos, price) plus what a bolt needs to be sellable - stock
+ * in yards, a minimum cut a shopper can actually buy, and a width.
+ */
+export function fabricReadiness(input: FabricReadinessInput): Readiness {
+  const title = input.title.trim();
+  const descriptionChars = visibleText(input.description).length;
+  const price = Number(input.pricePerYard) || 0;
+  const yards = Number(input.yardsInStock) || 0;
+  const minCut = Number(input.minCut) || 0;
+  const width = Number(input.widthInches) || 0;
+  const items: ReadinessItem[] = [];
+
+  items.push({
+    key: 'title',
+    label:
+      title.length > LISTING_RULES.TITLE_MAX
+        ? `Name under ${LISTING_RULES.TITLE_MAX} characters (${title.length})`
+        : isShouting(title)
+          ? 'Name in normal case, not all capitals'
+          : `Name of ${LISTING_RULES.TITLE_MIN}+ characters (${title.length})`,
+    ok:
+      title.length >= LISTING_RULES.TITLE_MIN &&
+      title.length <= LISTING_RULES.TITLE_MAX &&
+      !isShouting(title),
+  });
+  items.push({
+    key: 'description',
+    label: `Description of ${LISTING_RULES.DESCRIPTION_MIN}+ characters (${descriptionChars})`,
+    ok: descriptionChars >= LISTING_RULES.DESCRIPTION_MIN,
+  });
+  items.push({
+    key: 'photos',
+    label: `${LISTING_RULES.MIN_PHOTOS}+ photos (${input.photoCount})`,
+    ok: input.photoCount >= LISTING_RULES.MIN_PHOTOS,
+  });
+  items.push({
+    key: 'material',
+    label: 'Material chosen',
+    ok: Boolean(input.material),
+  });
+  items.push({
+    key: 'price',
+    label: 'A price per yard above ₦0',
+    ok: price > 0,
+  });
+  items.push({ key: 'stock', label: 'Yards in stock above 0', ok: yards > 0 });
+  items.push({
+    key: 'min_cut',
+    label:
+      minCut > yards && yards > 0
+        ? 'Minimum cut no more than the yards in stock'
+        : 'A minimum cut of at least 0.1 yards',
+    ok: minCut >= 0.1 && (yards <= 0 || minCut <= yards),
+  });
+  items.push({
+    key: 'width',
+    label: 'Width of at least 10 inches',
+    ok: width >= 10,
+  });
+
+  const done = items.filter((i) => i.ok).length;
+  const first = items.find((i) => !i.ok) ?? null;
+  return {
+    items,
+    ready: done === items.length,
+    done,
+    total: items.length,
+    firstProblem: first ? `Still needed: ${first.label.toLowerCase()}.` : null,
+  };
+}
