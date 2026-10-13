@@ -175,49 +175,43 @@ export const AccessoriesTableColumns = ({
     header: 'Product Status',
     cell: ({ row }) => {
       const status: string = row.getValue('status');
+      const moderation = (row.original as any).moderation as
+        | { status?: string; reason?: string | null }
+        | undefined;
+      const review =
+        moderation?.status === 'rejected'
+          ? { label: 'Changes requested', variant: 'error' as const }
+          : status === 'active' &&
+              (moderation?.status ?? 'pending') === 'pending'
+            ? { label: 'Under review', variant: 'warning' as const }
+            : null;
       return (
-        <Badge
-          variant={getStatusVariant(status)}
-          shape="square"
-          className="capitalize h-[26px] w-[93px] flex items-center justify-center px-2 text-xs font-normal"
-        >
-          {getStatusLabel(status)}
-        </Badge>
+        <div className="flex flex-col items-start gap-1">
+          <Badge
+            variant={getStatusVariant(status)}
+            shape="square"
+            className="capitalize h-[26px] w-[93px] flex items-center justify-center px-2 text-xs font-normal"
+          >
+            {getStatusLabel(status)}
+          </Badge>
+          {review && (
+            <Badge
+              variant={review.variant}
+              shape="square"
+              title={moderation?.reason ?? undefined}
+              className="h-[22px] px-2 text-[11px] font-normal"
+            >
+              {review.label}
+            </Badge>
+          )}
+        </div>
       );
     },
   },
   {
     id: 'actions',
-    header: ({ table }) => {
-      // Show actions dropdown in header when in select mode
-      if (showSelect) {
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4 text-gray-500" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>View product</DropdownMenuItem>
-              <DropdownMenuItem>Edit product</DropdownMenuItem>
-              <DropdownMenuItem>Select Product</DropdownMenuItem>
-              <DropdownMenuItem>Activate product</DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600 focus:text-red-600">
-                Archive product
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600 focus:text-red-600">
-                Deactivate product
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600 focus:text-red-600">
-                Delete product
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      }
-      return null;
-    },
+    // The select-mode header menu had seven items and no handlers.
+    header: () => null,
     cell: ({ row, table }) => {
       const product = row.original;
 

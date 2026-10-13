@@ -241,3 +241,80 @@ export function fabricReadiness(input: FabricReadinessInput): Readiness {
     firstProblem: first ? `Still needed: ${first.label.toLowerCase()}.` : null,
   };
 }
+
+export interface AccessoryReadinessInput {
+  title: string;
+  description: string;
+  photoCount: number;
+  price: string | number;
+  productType: string;
+  audience: string;
+  variants: ReadinessVariant[];
+}
+
+/**
+ * An accessory's publish rules: the server's general ones plus at least one
+ * colour with stock, since the table is what a shopper buys from.
+ */
+export function accessoryReadiness(input: AccessoryReadinessInput): Readiness {
+  const title = input.title.trim();
+  const descriptionChars = visibleText(input.description).length;
+  const price = Number(input.price) || 0;
+  const items: ReadinessItem[] = [];
+
+  items.push({
+    key: 'title',
+    label:
+      title.length > LISTING_RULES.TITLE_MAX
+        ? `Name under ${LISTING_RULES.TITLE_MAX} characters (${title.length})`
+        : isShouting(title)
+          ? 'Name in normal case, not all capitals'
+          : `Name of ${LISTING_RULES.TITLE_MIN}+ characters (${title.length})`,
+    ok:
+      title.length >= LISTING_RULES.TITLE_MIN &&
+      title.length <= LISTING_RULES.TITLE_MAX &&
+      !isShouting(title),
+  });
+  items.push({
+    key: 'description',
+    label: `Description of ${LISTING_RULES.DESCRIPTION_MIN}+ characters (${descriptionChars})`,
+    ok: descriptionChars >= LISTING_RULES.DESCRIPTION_MIN,
+  });
+  items.push({
+    key: 'photos',
+    label: `${LISTING_RULES.MIN_PHOTOS}+ photos (${input.photoCount})`,
+    ok: input.photoCount >= LISTING_RULES.MIN_PHOTOS,
+  });
+  items.push({ key: 'price', label: 'A price above ₦0', ok: price > 0 });
+  items.push({
+    key: 'type',
+    label: 'Product type chosen',
+    ok: Boolean(input.productType),
+  });
+  items.push({
+    key: 'audience',
+    label: 'Audience chosen',
+    ok: Boolean(input.audience),
+  });
+  const hasVariants = input.variants.length > 0;
+  const anyStock = input.variants.some((v) =>
+    v.sizes.some((s) => (s.stock ?? 0) > 0)
+  );
+  items.push({
+    key: 'stock',
+    label: hasVariants
+      ? 'Stock on at least one colour'
+      : 'At least one colour with stock',
+    ok: hasVariants && anyStock,
+  });
+
+  const done = items.filter((i) => i.ok).length;
+  const first = items.find((i) => !i.ok) ?? null;
+  return {
+    items,
+    ready: done === items.length,
+    done,
+    total: items.length,
+    firstProblem: first ? `Still needed: ${first.label.toLowerCase()}.` : null,
+  };
+}
