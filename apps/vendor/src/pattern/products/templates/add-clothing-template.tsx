@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { readApiError } from '@/redux/services/types';
 import { Button } from '@/components/ui/button';
 import { GoBackButton } from '@/pattern/common/atoms/go-back-button';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -16,8 +16,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { RichTextEditor } from '@/pattern/common/organisms/rich-text-editor';
-import { FileUploadWidget } from '@/pattern/common/organisms/file-upload-widget';
-import { ProductAlertBanner } from '../molecules/product-alert-banner';
+import { ListingReadinessCard } from '../molecules/listing-readiness-card';
+import {
+  listingReadiness,
+  visibleText,
+  LISTING_RULES,
+} from '../lib/listing-readiness';
 import { FieldLabel } from '../atoms/field-label';
 import { StatusPill } from '../atoms/status-pill';
 import {
@@ -27,6 +31,8 @@ import {
 import { ProductPricingSection } from '../organisms/clothing-pricing-section';
 import {
   VariantSelectOptions,
+  STANDARD_SIZE_OPTIONS,
+  type SizeOption,
   type VariantDescriptor,
 } from '../organisms/clothing-variant-options';
 import {
@@ -57,23 +63,40 @@ import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.
 import type { StyleHotspotDto } from '@/redux/services/products/products.api-slice';
 import NiceModal from '@ebay/nice-modal-react';
 import { HotspotEditorModal } from '../organisms/hotspot-editor-modal';
-import { Layers } from 'lucide-react';
 import { useLazyGetStyleLibraryQuery } from '@/redux/services/style-library/style-library.api-slice';
-import { uploadSequentially } from '@/lib/utils';
+import { cn, uploadSequentially } from '@/lib/utils';
 import { useGetCategoriesForTypeQuery } from '@/redux/services/taxonomy/taxonomy.api-slice';
 import { useGetBusinessProfileQuery } from '@/redux/services/settings/settings.api-slice';
+import { useGetSizeGuidesQuery } from '@/redux/services/size-guides/size-guides.api-slice';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Info } from 'lucide-react';
-
-const countWords = (html: string) =>
-  html
-    .replace(/<[^>]*>/g, ' ')
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean).length;
 
 type ProductStatus = 'active' | 'draft' | 'archived';
+type ModerationStatus = 'pending' | 'approved' | 'rejected';
+
+// One numbered heading per section, so the form reads as a path: what it
+// is, what it looks like, what it comes in, how it is made.
+const SectionHeader = ({
+  step,
+  title,
+  lead,
+}: {
+  step: number;
+  title: string;
+  lead?: ReactNode;
+}) => (
+  <div className="mb-4">
+    <div className="flex items-center gap-2">
+      <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-semibold text-primary tabular-nums">
+        {step}
+      </span>
+      <h3 className="text-sm font-semibold text-grey-black dark:text-white">
+        {title}
+      </h3>
+    </div>
+    {lead && <p className="mt-1.5 text-xs text-muted-foreground">{lead}</p>}
+  </div>
+);
 
 // Add Clothing product form (vendor). Shares the admin component set, wired to
 // the vendor's own create-clothing endpoint.
@@ -97,12 +120,16 @@ export default function AddClothingTemplate() {
     useUploadProductImageMutation();
   const isSaving = isCreating || isUploading;
 
-  const [showAlert, setShowAlert] = useState(true);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<ProductStatus>('active');
+  // Platform review of the listing (set by the admin catalogue). Read-only
+  // here; shown so a vendor editing a listing knows whether it is live.
+  const [moderation, setModeration] = useState<{
+    status: ModerationStatus;
+    reason?: string | null;
+  } | null>(null);
   const [defaultImages, setDefaultImages] = useState<DefaultImage[]>([]);
-  const [extraFiles, setExtraFiles] = useState<File[]>([]);
 
   const [customizationEnabled, setCustomizationEnabled] = useState(false);
   // Garment fabric requirement: yards this garment uses per size (bill of
@@ -110,7 +137,6 @@ export default function AddClothingTemplate() {
   const [yardagePerSize, setYardagePerSize] = useState<Record<string, number>>(
     {}
   );
-  const [measurementRequired, setMeasurementRequired] = useState(false);
   const [turnaroundDays, setTurnaroundDays] = useState('2');
   const [customizationSections, setCustomizationSections] = useState<
     CustomSection[]
@@ -129,8 +155,29 @@ export default function AddClothingTemplate() {
     audience: '',
   });
   const [price, setPrice] = useState('');
-  const [discount, setDiscount] = useState('');
   const [variants, setVariants] = useState<VariantRow[]>([]);
+
+  // The size guide this garment follows. Its sizes become the ones on offer
+  // and its chart is what the shop shows; the vendor's guides may also attach
+  // themselves by their own conditions, which shows up here pre-selected.
+  const [sizeGuideId, setSizeGuideId] = useState<string | null>(null);
+  const { data: sizeGuidesRes } = useGetSizeGuidesQuery();
+  const sizeGuides = sizeGuidesRes?.data ?? [];
+  const activeGuide = sizeGuides.find((g) => g._id === sizeGuideId) ?? null;
+  const sizeOptions: SizeOption[] =
+    activeGuide && activeGuide.sizes.length > 0
+      ? [...activeGuide.sizes]
+          .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+          .map((sz) => ({ value: sz.label.trim(), label: sz.label.trim() }))
+      : STANDARD_SIZE_OPTIONS;
+
+  // Unsaved-work guard. A snapshot of everything the vendor can change is
+  // compared to the one taken after the form settled (empty for a new
+  // listing, populated for an edit); leaving with a difference asks first.
+  const [loadedAt, setLoadedAt] = useState(0);
+  const [baseline, setBaseline] = useState<string | null>(null);
+  // Flipped once a save lands, so the guard does not fire on the way out.
+  const [saved, setSaved] = useState(false);
 
   // Fetch attributes for the selected product type (needed for submission)
   const { data: categoryData } = useGetCategoriesForTypeQuery(
@@ -168,6 +215,15 @@ export default function AddClothingTemplate() {
       setTitle(pName);
       setDescription(pDesc);
       setStatus(pStatus as ProductStatus);
+      const pModeration = rawProduct?.moderation;
+      setModeration(
+        pModeration?.status
+          ? {
+              status: pModeration.status as ModerationStatus,
+              reason: pModeration.reason ?? null,
+            }
+          : null
+      );
       setPrice(pPrice ? String(pPrice) : '');
 
       if (pType === 'customize') {
@@ -365,14 +421,106 @@ export default function AddClothingTemplate() {
       }
 
       setCustomizationSections(newSections);
+
+      const sg = rawProduct?.size_guide;
+      setSizeGuideId(
+        sg ? String(typeof sg === 'object' && sg?._id ? sg._id : sg) : null
+      );
+      setLoadedAt(Date.now());
     }
   }, [productData]);
 
-  const wordCount = countWords(description);
+  const descriptionChars = visibleText(description).length;
+
+  const hasCustomItems = customizationSections.some(
+    (sec) =>
+      (sec.items && sec.items.length > 0) ||
+      sec.subGroups?.some((sg) => sg.items && sg.items.length > 0)
+  );
+  const optionCount = customizationSections.reduce(
+    (n, sec) =>
+      n +
+      (sec.items?.length ?? 0) +
+      (sec.subGroups?.reduce((m, sg) => m + sg.items.length, 0) ?? 0),
+    0
+  );
+
+  const snapshot = JSON.stringify({
+    title,
+    description,
+    photos: defaultImages.map((i) => i.url),
+    variants: variants.map((v) => ({
+      c: v.colorHex,
+      l: v.label,
+      s: v.availableSizes,
+      d: v.details,
+      i: v.images,
+    })),
+    organization,
+    price,
+    customizationEnabled,
+    turnaroundDays,
+    yardagePerSize,
+    externalFabricOverride,
+    sizeGuideId,
+    options: customizationSections.map((sec) => ({
+      k: sec.key,
+      i: sec.items?.map((it) => [it.productId, it.label, it.price]),
+      g: sec.subGroups?.map((sg) => [sg.title, sg.items.length]),
+    })),
+  });
+  useEffect(() => {
+    // Runs on mount (new listing: empty baseline) and again once an edited
+    // product has been poured into state (loadedAt changes in that pass).
+    setBaseline(snapshot);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadedAt]);
+  const dirty = baseline !== null && snapshot !== baseline && !saved;
+
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [dirty]);
+
+  const leave = () => {
+    if (
+      dirty &&
+      !window.confirm(
+        'Leave without saving? The changes on this page will be lost.'
+      )
+    )
+      return;
+    router.push(APP_ROUTES.productsCloth);
+  };
+
+  // The server's publish rules, live. Publish is enabled only when this is
+  // ready; a draft can always be saved.
+  const readiness = listingReadiness({
+    title,
+    descriptionHtml: description,
+    photoCount: defaultImages.length,
+    price,
+    productType: organization.productType,
+    audience: organization.audience,
+    variants: variants.map((v) => ({
+      sizes: v.availableSizes.map((size) => ({
+        stock: v.details[size]?.stock ?? 0,
+      })),
+    })),
+    madeToOrder: customizationEnabled,
+    turnaroundDays,
+    optionCount,
+  });
 
   const addVariant = (descriptor: VariantDescriptor, sizeKeys: string[]) => {
-    // Keep sizes in a consistent order (XS → XXL) regardless of pick order.
-    const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+    // Keep sizes in the order the size list gives them (the guide's order,
+    // or XS → XXL), whatever order they were picked in; unknown sizes last.
+    const SIZE_ORDER = sizeOptions.map((o) => o.value);
     const sortSizes = (arr: string[]) =>
       [...arr].sort((a, b) => {
         const ia = SIZE_ORDER.indexOf(a);
@@ -438,51 +586,25 @@ export default function AddClothingTemplate() {
   };
 
   const handleSave = async (isDraft = false) => {
+    // A draft is a workbench: only what the API cannot store without is
+    // required. Publishing is gated by the readiness list - the same rules
+    // the server enforces, so a listing that is green here is accepted there.
     if (!title.trim()) {
-      toast.error('Please enter a product title.');
+      toast.error('Give the product a title first.');
       return;
     }
-
-    const hasCustomItems = customizationSections.some(
-      (sec) =>
-        (sec.items && sec.items.length > 0) ||
-        sec.subGroups?.some((sg) => sg.items && sg.items.length > 0)
-    );
-
-    if (!isDraft && customizationEnabled && !hasCustomItems) {
-      toast.error(
-        'You must add at least one style or customization option to publish a customisable product. Save as a draft instead.'
-      );
-      return;
-    }
-
-    // Backend requires a non-empty taxonomy.product_type. The vendor must
-    // always pick one from the API-driven dropdown.
+    // Backend requires a non-empty taxonomy.product_type even on a draft.
     const productType = organization.productType;
     if (!productType) {
-      toast.error('Please select a product type.');
+      toast.error('Choose a product type first.');
       return;
     }
-
-    if (!organization.audience) {
-      toast.error('Please select a target audience.');
+    if (isDraft && !organization.audience) {
+      toast.error('Choose an audience first.');
       return;
     }
-
-    // A draft may be unpriced — that is what an unfinished listing looks like.
-    // A published one may not: the API falls back to a price of 0 when none is
-    // sent, which would put a free, orderable garment in the catalogue.
-    if (!isDraft && !(Number(price) > 0)) {
-      toast.error(
-        'Enter a price above zero before publishing, or save this as a draft.'
-      );
-      return;
-    }
-
-    // The turnaround a vendor publishes is a commitment to the customer, so a
-    // made-to-order garment cannot promise same-day completion by default.
-    if (!isDraft && customizationEnabled && !(Number(turnaroundDays) >= 1)) {
-      toast.error('Enter how many days this garment takes to make.');
+    if (!isDraft && !readiness.ready) {
+      toast.error(readiness.firstProblem ?? 'The listing is not ready yet.');
       return;
     }
 
@@ -503,19 +625,15 @@ export default function AddClothingTemplate() {
             .filter((img) => Boolean(img.url));
         }
 
+        // Hotspots belong to the photo they were drawn on. These used to be
+        // copied from the product photos by position, so a colour's second
+        // image inherited the hotspots of the second cover photo.
         const finalVariantImages = [
           ...v.images
             .filter((url) => !url.startsWith('blob:'))
             .map((url) => ({ url, public_id: 'unknown' })),
           ...uploadedVariantImages,
-        ].map((img, idx) => ({
-          ...img,
-          hotspots:
-            defaultImages[idx]?.hotspots &&
-            defaultImages[idx].hotspots!.length > 0
-              ? defaultImages[idx].hotspots
-              : undefined,
-        }));
+        ];
 
         return {
           name,
@@ -575,20 +693,7 @@ export default function AddClothingTemplate() {
           })),
       ];
 
-      const uploadedExtras = await uploadSequentially(
-        extraFiles,
-        async (file) => {
-          const res = await uploadImage(file).unwrap();
-          return {
-            url: res.data?.url || '',
-            public_id: res.data?.public_id || 'unknown',
-          };
-        }
-      );
-
-      const extraImageUrls = uploadedExtras.filter((img) => !!img.url);
-
-      const finalImages: any[] = [...defaultImageUrls, ...extraImageUrls];
+      const finalImages: any[] = [...defaultImageUrls];
 
       // Prepare customization objects
       const styles: any[] = [];
@@ -715,10 +820,10 @@ export default function AddClothingTemplate() {
 
       const payload: CreateClothingDto = {
         ...(editId ? { product_id: editId } : {}),
+        size_guide: sizeGuideId,
         seo: { title: title.trim() },
         metafields: {
           base_price: price ? Number(price) : undefined,
-          discount: discount || undefined,
           tags: organization.tags,
         },
         clothing: {
@@ -751,8 +856,19 @@ export default function AddClothingTemplate() {
       };
 
       await createClothing(payload).unwrap();
+      setSaved(true);
 
-      toast.success('Clothing product created successfully.');
+      // Say what actually happened: a published listing is not live until
+      // Qlozet has reviewed it, and an edit is not a creation.
+      if (isDraft) {
+        toast.success(editId ? 'Draft saved.' : 'Saved as a draft.');
+      } else if (editId) {
+        toast.success('Changes saved.');
+      } else {
+        toast.success(
+          "Submitted for review. We'll let you know when it is live."
+        );
+      }
       router.push(APP_ROUTES.productsCloth);
     } catch (err) {
       // The server explains WHY (an image too small, a field rejected). A bare
@@ -765,29 +881,26 @@ export default function AddClothingTemplate() {
   };
 
   /**
-   * The garment's bill of materials: yards of fabric per size.
-   *
-   * Hoisted so it can render whether or not customization is enabled. It
-   * used to sit inside the customization block, but the shop lets a
-   * customer apply their own fabric to any clothing item whose
-   * accepts_external_fabric is not false - and that defaults to true. A
-   * ready-to-wear garment therefore accepted supplied fabric with no way
-   * for the vendor to say how much it needs, and the order fell back to
-   * the fabric's min_cut: too little cloth for the tailor, too little
-   * money for the fabric vendor.
+   * The garment's bill of materials: yards of fabric per size. Lives in the
+   * customer-supplied fabric card, because that is when it is used: the shop
+   * lets a customer apply their own cloth to any garment that accepts it,
+   * and without this the order fell back to the fabric's minimum cut.
    */
-  const yardageEditor = (() => {
-    const garmentSizes = Array.from(
-      new Set(variants.flatMap((v) => v.availableSizes || []))
-    );
-    if (garmentSizes.length === 0) return null;
-    return (
-      <div>
+  const garmentSizes = Array.from(
+    new Set(variants.flatMap((v) => v.availableSizes || []))
+  );
+  const acceptsCustomerFabric =
+    externalFabricOverride === null
+      ? businessProfile?.accepts_external_fabric !== false
+      : externalFabricOverride;
+  const yardageEditor =
+    garmentSizes.length > 0 && acceptsCustomerFabric ? (
+      <div className="mt-4 border-t border-border pt-4">
         <FieldLabel
-          tooltip="Yards of fabric this garment uses per size. Drives fabric pricing and cross-vendor fabric mapping."
+          tooltip="How much cloth each size takes. Sets what a shopper is charged for fabric and what a fabric vendor is paid."
           className="font-normal"
         >
-          Fabric yardage per size
+          Yards of fabric per size
         </FieldLabel>
         <div className="grid grid-cols-3 gap-2">
           {garmentSizes.map((size) => (
@@ -811,11 +924,46 @@ export default function AddClothingTemplate() {
           ))}
         </div>
       </div>
-    );
-  })();
+    ) : null;
+
+  // Section numbers shift with the mode: made-to-order gets an Options step
+  // and a Making-it step that ready-to-wear does not have.
+  const steps = {
+    garment: 1,
+    photos: 2,
+    options: 3,
+    sizes: customizationEnabled ? 4 : 3,
+    making: 5,
+  };
+
+  const publishLabel = isSaving
+    ? editId
+      ? 'Saving…'
+      : 'Submitting…'
+    : editId && status === 'active'
+      ? 'Save changes'
+      : 'Publish';
+
+  const sizeSource = activeGuide ? (
+    <>
+      Sizes from your size guide “{activeGuide.title}”. Shoppers see its chart
+      on the product page.
+    </>
+  ) : (
+    <>
+      Standard sizes.{' '}
+      <Link
+        href={APP_ROUTES.productsSizeGuidesCreate}
+        className="font-medium text-primary underline-offset-2 hover:underline"
+      >
+        Create a size guide
+      </Link>{' '}
+      to sell in your own sizes and show shoppers a chart.
+    </>
+  );
 
   return (
-    <div className="w-full min-h-screen h-fit pb-10">
+    <div className="w-full min-h-screen h-fit pb-28 lg:pb-10">
       <div className="mx-auto max-w-7xl space-y-6">
         {isLoadingProduct ? (
           <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
@@ -823,89 +971,223 @@ export default function AddClothingTemplate() {
           </div>
         ) : (
           <>
-            {/* Back */}
-            <GoBackButton />
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <GoBackButton onClick={leave} label="Back to clothing" />
+              <h2 className="text-base font-semibold text-grey-black dark:text-white">
+                {editId ? 'Edit clothing' : 'Add clothing'}
+              </h2>
+            </div>
 
-            {showAlert && (
-              <ProductAlertBanner
-                message="Upload picture products with close to white background in high resolution and quality"
-                onDismiss={() => setShowAlert(false)}
-              />
-            )}
+            {/* The one choice that shapes the rest of the form. */}
+            <div className="rounded-lg border bg-card p-4 custom-card-shadow sm:p-6">
+              <p className="text-sm font-semibold text-grey-black dark:text-white">
+                What are you listing?
+              </p>
+              <div
+                role="radiogroup"
+                aria-label="Listing type"
+                className="mt-3 grid gap-3 sm:grid-cols-2"
+              >
+                {(
+                  [
+                    {
+                      value: false,
+                      title: 'Ready to wear',
+                      lead: 'Already made. Shoppers pick a colour and size and you ship it from stock.',
+                    },
+                    {
+                      value: true,
+                      title: 'Made to order',
+                      lead: 'Shoppers choose styles, fabrics and add-ons, and you make it for them.',
+                    },
+                  ] as const
+                ).map((mode) => {
+                  const selected = customizationEnabled === mode.value;
+                  return (
+                    <button
+                      key={mode.title}
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      onClick={() => setCustomizationEnabled(mode.value)}
+                      className={cn(
+                        'rounded-lg border p-4 text-left transition-colors',
+                        selected
+                          ? 'border-primary bg-primary/5 ring-1 ring-primary'
+                          : 'border-border hover:border-primary/50'
+                      )}
+                    >
+                      <span className="text-sm font-medium text-grey-black dark:text-white">
+                        {mode.title}
+                      </span>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {mode.lead}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-              {/* Left column */}
+              {/* Left column: the garment, in the order a vendor thinks */}
               <div className="space-y-6 lg:col-span-2">
                 <div className="rounded-lg border bg-card p-6 custom-card-shadow">
-                  <FieldLabel htmlFor="product-title">Title</FieldLabel>
+                  <SectionHeader
+                    step={steps.garment}
+                    title="The garment"
+                    lead="A clear name and a description that covers the fabric, the fit and the care."
+                  />
+                  <FieldLabel
+                    htmlFor="product-title"
+                    tooltip="What shoppers see first. Name the garment, not the brand: style, fabric, one detail."
+                  >
+                    Title
+                  </FieldLabel>
                   <Input
                     id="product-title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="https://www.garmisland.com"
+                    placeholder="e.g. Hand-finished Ankara kaftan with lined collar"
+                    maxLength={LISTING_RULES.TITLE_MAX}
                     className="bg-background"
                   />
-                </div>
-
-                <div className="rounded-lg border bg-card p-6 custom-card-shadow">
-                  <FieldLabel tooltip="Enter product description">
-                    Description
-                  </FieldLabel>
-                  <RichTextEditor
-                    value={description}
-                    onChange={setDescription}
-                  />
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    {wordCount} words
+                  <p className="mt-2 text-xs text-muted-foreground tabular-nums">
+                    {title.trim().length}/{LISTING_RULES.TITLE_MAX} characters
                   </p>
+
+                  <div className="mt-5">
+                    <FieldLabel tooltip="Shoppers cannot touch it, so tell them what it feels like and how it falls.">
+                      Description
+                    </FieldLabel>
+                    <RichTextEditor
+                      value={description}
+                      onChange={setDescription}
+                    />
+                    <p
+                      className={cn(
+                        'mt-2 text-xs tabular-nums',
+                        descriptionChars >= LISTING_RULES.DESCRIPTION_MIN
+                          ? 'text-muted-foreground'
+                          : 'text-amber-600'
+                      )}
+                    >
+                      {descriptionChars}/{LISTING_RULES.DESCRIPTION_MIN}{' '}
+                      characters
+                    </p>
+                  </div>
                 </div>
 
                 <div className="rounded-lg border bg-card p-6 custom-card-shadow">
-                  <FieldLabel>Upload Media</FieldLabel>
-                  <FileUploadWidget
-                    value={extraFiles}
-                    onChange={setExtraFiles}
+                  <SectionHeader
+                    step={steps.photos}
+                    title="Photos"
+                    lead={`At least ${LISTING_RULES.MIN_PHOTOS}. The first one is the cover. JPG, PNG or WebP, shortest side 800px or more, under 10MB. A plain, light background sells best.`}
                   />
-                </div>
-
-                <div className="rounded-lg border bg-card p-6 custom-card-shadow">
-                  <h3 className="mb-4 text-sm font-semibold text-grey-black dark:text-white">
-                    Upload Default Images
-                  </h3>
                   <DefaultImagesUploader
                     images={defaultImages}
                     onChange={setDefaultImages}
-                    onConfigureHotspots={async (index) => {
-                      const image = defaultImages[index];
-                      if (!image) return;
-                      const result = await NiceModal.show(HotspotEditorModal, {
-                        imageUrl: image.url,
-                        hotspots: image.hotspots || [],
-                        sections: customizationSections,
-                      });
-                      if (result !== undefined) {
-                        const newImages = [...defaultImages];
-                        newImages[index] = {
-                          ...image,
-                          hotspots: result as StyleHotspotDto[],
-                        };
-                        setDefaultImages(newImages);
-                      }
-                    }}
+                    onConfigureHotspots={
+                      customizationEnabled
+                        ? async (index) => {
+                            const image = defaultImages[index];
+                            if (!image) return;
+                            const result = await NiceModal.show(
+                              HotspotEditorModal,
+                              {
+                                imageUrl: image.url,
+                                hotspots: image.hotspots || [],
+                                sections: customizationSections,
+                              }
+                            );
+                            if (result !== undefined) {
+                              const newImages = [...defaultImages];
+                              newImages[index] = {
+                                ...image,
+                                hotspots: result as StyleHotspotDto[],
+                              };
+                              setDefaultImages(newImages);
+                            }
+                          }
+                        : undefined
+                    }
                   />
+                  {customizationEnabled && (
+                    <p className="mt-3 text-xs text-muted-foreground">
+                      Hover a photo to mark where each style option sits on the
+                      garment, so shoppers see what they are choosing.
+                    </p>
+                  )}
                 </div>
+
+                {(customizationEnabled || hasCustomItems) && (
+                  <div className="rounded-lg border bg-card p-6 custom-card-shadow">
+                    <SectionHeader
+                      step={steps.options}
+                      title="Options the customer can choose"
+                      lead="Styles are tailoring choices such as a collar or sleeve. Fabrics are the cloths you offer it in. Add-ons are extras with their own price, shown as colours or pictures."
+                    />
+                    <CustomizationBuilder
+                      sections={customizationSections}
+                      onChange={setCustomizationSections}
+                    />
+                  </div>
+                )}
 
                 <div className="rounded-lg border bg-card p-6 custom-card-shadow">
-                  <h3 className="mb-4 text-sm font-semibold text-grey-black dark:text-white">
-                    Customization
-                  </h3>
-                  <CustomizationBuilder
-                    sections={customizationSections}
-                    onChange={setCustomizationSections}
+                  <SectionHeader
+                    step={steps.sizes}
+                    title="Colours and sizes"
+                    lead={
+                      customizationEnabled
+                        ? 'Optional for made-to-order. Add colours and sizes if you also keep finished pieces in stock.'
+                        : 'Every colour you sell, the sizes it comes in, and how many of each you have.'
+                    }
+                  />
+                  <div className="mb-4">
+                    <FieldLabel
+                      htmlFor="size-guide"
+                      tooltip="A size guide gives this garment its sizes and shows shoppers a measurement chart. Guides can also attach themselves to products that match their rules."
+                      className="font-normal"
+                    >
+                      Size guide
+                    </FieldLabel>
+                    <Select
+                      value={sizeGuideId ?? 'none'}
+                      onValueChange={(v) =>
+                        setSizeGuideId(v === 'none' ? null : v)
+                      }
+                    >
+                      <SelectTrigger
+                        id="size-guide"
+                        className="w-full bg-background dark:bg-muted dark:border-white/10"
+                      >
+                        <SelectValue placeholder="No size guide" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">
+                          No size guide (standard XS to XXL)
+                        </SelectItem>
+                        {sizeGuides.map((g) => (
+                          <SelectItem key={g._id} value={g._id}>
+                            {g.title}
+                            {g.sizes?.length
+                              ? ` · ${g.sizes
+                                  .map((sz) => sz.label)
+                                  .slice(0, 6)
+                                  .join(', ')}${g.sizes.length > 6 ? '…' : ''}`
+                              : ''}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <VariantSelectOptions
+                    onAddVariant={addVariant}
+                    sizeOptions={sizeOptions}
+                    sizeSource={sizeSource}
                   />
                 </div>
-
-                <VariantSelectOptions onAddVariant={addVariant} />
 
                 {variants.length > 0 && (
                   <SetVariantsTable
@@ -914,95 +1196,96 @@ export default function AddClothingTemplate() {
                     productName={title}
                   />
                 )}
-              </div>
 
-              {/* Right column */}
-              <div className="lg:col-span-1">
-                <div className="sticky top-6 space-y-6">
+                {customizationEnabled && (
                   <div className="rounded-lg border bg-card p-6 custom-card-shadow">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="text-sm font-semibold text-grey-black dark:text-white">
-                        Status
-                      </span>
-                      <StatusPill status={status} />
-                    </div>
-                    <Select
-                      value={status}
-                      onValueChange={(v) => setStatus(v as ProductStatus)}
-                    >
-                      <SelectTrigger className="w-full bg-background dark:bg-muted dark:border-white/10 capitalize">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="draft">Draft</SelectItem>
-                        <SelectItem value="archived">Archived</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="rounded-lg border bg-card p-6 custom-card-shadow">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold text-grey-black dark:text-white">
-                        Customization
-                      </span>
-                      <Switch
-                        checked={customizationEnabled}
-                        onCheckedChange={setCustomizationEnabled}
+                    <SectionHeader
+                      step={steps.making}
+                      title="Making it"
+                      lead="What you promise the customer once they order."
+                    />
+                    <div className="max-w-xs">
+                      <FieldLabel
+                        htmlFor="turnaround-days"
+                        tooltip="A promise to the customer. Late orders are penalised, so allow for your real workload."
+                        className="font-normal"
+                      >
+                        Days to make it
+                      </FieldLabel>
+                      <Input
+                        id="turnaround-days"
+                        type="number"
+                        min={1}
+                        value={turnaroundDays}
+                        onChange={(e) => setTurnaroundDays(e.target.value)}
+                        className="bg-background"
                       />
                     </div>
-
-                    {customizationEnabled && (
-                      <div className="mt-4 space-y-4 border-t border-border pt-4">
-                        <div className="flex items-center justify-between">
-                          <FieldLabel
-                            tooltip="Indicate if measurements are required"
-                            className="mb-0 font-normal"
-                          >
-                            Measurement Required
-                          </FieldLabel>
-                          <Switch
-                            checked={measurementRequired}
-                            onCheckedChange={setMeasurementRequired}
-                          />
-                        </div>
-                        <div>
-                          <FieldLabel
-                            htmlFor="turnaround-days"
-                            tooltip="Days required to complete customization"
-                            className="font-normal"
-                          >
-                            Turnaround Days
-                          </FieldLabel>
-                          <Input
-                            id="turnaround-days"
-                            type="number"
-                            min={1}
-                            value={turnaroundDays}
-                            onChange={(e) => setTurnaroundDays(e.target.value)}
-                            className="bg-background"
-                          />
-                        </div>
-
-                        {yardageEditor}
-                      </div>
-                    )}
                   </div>
+                )}
+              </div>
 
-                  {!customizationEnabled && (
+              {/* Right column: how it is filed and priced, and whether it is ready */}
+              <div className="lg:col-span-1">
+                <div className="space-y-6 lg:sticky lg:top-6">
+                  {editId && (
                     <div className="rounded-lg border bg-card p-6 custom-card-shadow">
-                      {yardageEditor}
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-semibold text-grey-black dark:text-white">
+                          Listing status
+                        </span>
+                        <StatusPill status={status} />
+                      </div>
+                      {status === 'active' &&
+                        moderation?.status === 'pending' && (
+                          <p className="mt-2 text-xs text-amber-600">
+                            Under review by Qlozet. It goes live once approved.
+                          </p>
+                        )}
+                      {status === 'active' &&
+                        moderation?.status === 'approved' && (
+                          <p className="mt-2 text-xs text-emerald-600">
+                            Live in the shop.
+                          </p>
+                        )}
+                      {moderation?.status === 'rejected' && (
+                        <div className="mt-2 rounded-md bg-rose-50 p-2.5 text-xs text-rose-800 dark:bg-rose-900/20 dark:text-rose-200">
+                          <p className="font-medium">
+                            Changes requested before this can go live.
+                          </p>
+                          {moderation.reason && (
+                            <p className="mt-1">{moderation.reason}</p>
+                          )}
+                        </div>
+                      )}
+                      {status === 'draft' && (
+                        <p className="mt-2 text-xs text-muted-foreground">
+                          Not visible to shoppers. Publish when it is ready.
+                        </p>
+                      )}
                     </div>
                   )}
 
-                  {/* External Fabric Override */}
+                  <ProductOrganizationSection
+                    value={organization}
+                    onChange={setOrganization}
+                  />
+
+                  <ProductPricingSection
+                    price={price}
+                    onPriceChange={setPrice}
+                    discountsHref={APP_ROUTES.productsDiscounts}
+                  />
+
                   <div className="rounded-lg border bg-card p-6 custom-card-shadow">
                     <div className="mb-3">
                       <span className="text-sm font-semibold text-grey-black dark:text-white">
-                        External Fabric
+                        Customer-supplied fabric
                       </span>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        Override your store-wide setting for this product only.
+                        Can a shopper send their own cloth for this garment?
+                        Your store setting applies unless you choose otherwise
+                        here.
                       </p>
                     </div>
                     <RadioGroup
@@ -1027,12 +1310,12 @@ export default function AddClothingTemplate() {
                           htmlFor="ef-inherit"
                           className="text-sm font-normal cursor-pointer"
                         >
-                          Inherit from store settings{' '}
+                          Use my store setting{' '}
                           <span className="text-xs text-muted-foreground">
-                            (currently:{' '}
+                            (currently{' '}
                             {businessProfile?.accepts_external_fabric !== false
-                              ? 'ON'
-                              : 'OFF'}
+                              ? 'yes'
+                              : 'no'}
                             )
                           </span>
                         </Label>
@@ -1043,7 +1326,7 @@ export default function AddClothingTemplate() {
                           htmlFor="ef-always"
                           className="text-sm font-normal cursor-pointer"
                         >
-                          Always accept
+                          Yes, for this garment
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -1052,39 +1335,23 @@ export default function AddClothingTemplate() {
                           htmlFor="ef-never"
                           className="text-sm font-normal cursor-pointer"
                         >
-                          Never accept
+                          No, not for this garment
                         </Label>
                       </div>
                     </RadioGroup>
-                    <div className="flex items-start gap-2 mt-3 p-2.5 rounded-md bg-muted/50">
-                      <Info className="size-3.5 text-muted-foreground shrink-0 mt-0.5" />
-                      <p className="text-xs text-muted-foreground">
-                        This overrides your store-wide setting for this specific
-                        product only.
-                      </p>
-                    </div>
+                    {yardageEditor}
                   </div>
 
-                  <ProductOrganizationSection
-                    value={organization}
-                    onChange={setOrganization}
-                  />
+                  <ListingReadinessCard readiness={readiness} />
 
-                  <ProductPricingSection
-                    price={price}
-                    onPriceChange={setPrice}
-                    discount={discount}
-                    onDiscountChange={setDiscount}
-                  />
-
-                  <div className="flex flex-col gap-3">
+                  <div className="hidden flex-col gap-3 lg:flex">
                     <Button
                       type="button"
                       onClick={() => handleSave(false)}
-                      disabled={isSaving}
+                      disabled={isSaving || !readiness.ready}
                       className="h-12 w-full"
                     >
-                      {isSaving ? 'Publishing…' : 'Publish Now'}
+                      {publishLabel}
                     </Button>
                     <Button
                       type="button"
@@ -1093,10 +1360,43 @@ export default function AddClothingTemplate() {
                       disabled={isSaving}
                       className="h-12 w-full bg-transparent"
                     >
-                      {isSaving ? 'Saving…' : 'Save as Draft'}
+                      {isSaving ? 'Saving…' : 'Save as draft'}
                     </Button>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Phones and tablets: the two actions stay within reach. */}
+            <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 p-3 backdrop-blur lg:hidden">
+              <div className="mx-auto flex max-w-7xl items-center gap-3">
+                <span
+                  className={cn(
+                    'hidden text-xs tabular-nums sm:block',
+                    readiness.ready
+                      ? 'text-emerald-600'
+                      : 'text-muted-foreground'
+                  )}
+                >
+                  {readiness.done} of {readiness.total} ready
+                </span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => handleSave(true)}
+                  disabled={isSaving}
+                  className="h-11 flex-1 bg-transparent"
+                >
+                  {isSaving ? 'Saving…' : 'Save draft'}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => handleSave(false)}
+                  disabled={isSaving || !readiness.ready}
+                  className="h-11 flex-1"
+                >
+                  {publishLabel}
+                </Button>
               </div>
             </div>
           </>

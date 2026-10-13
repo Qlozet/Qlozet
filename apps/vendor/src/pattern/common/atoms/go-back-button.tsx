@@ -7,18 +7,23 @@ interface GoBackButtonProps {
   /** Optional explicit destination; defaults to browser back. */
   href?: string;
   label?: string;
+  /** Takes over the click entirely - for pages that must ask about unsaved work first. */
+  onClick?: () => void;
 }
 
 export const GoBackButton = ({
   href,
   label = 'Go Back',
+  onClick,
 }: GoBackButtonProps) => {
   const router = useRouter();
 
   return (
     <button
       type="button"
-      onClick={() => (href ? router.push(href) : router.back())}
+      onClick={() =>
+        onClick ? onClick() : href ? router.push(href) : router.back()
+      }
       className="inline-flex items-center gap-2 text-sm font-medium text-grey-black dark:text-gray-200 hover:opacity-80 transition-opacity cursor-pointer"
     >
       <span className="flex size-7 items-center justify-center rounded-full border border-border bg-white dark:bg-muted">

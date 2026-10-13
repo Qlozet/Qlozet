@@ -157,6 +157,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
       price: apiProduct.base_price || itemData?.price || 0,
       stock: totalStock,
       status: apiProduct.status || 'draft',
+      moderation: apiProduct.moderation,
       images: itemData?.images?.map((img: any) => img.url) || [],
       variants: Array.from({ length: totalVariants || 1 }),
       customizations: itemData?.styles || [],
