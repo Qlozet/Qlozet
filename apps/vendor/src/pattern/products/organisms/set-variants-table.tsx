@@ -74,10 +74,14 @@ const codeFrom = (value: string | undefined, length: number): string =>
     .slice(0, length)
     .toUpperCase();
 
-const HeaderInfo = ({ label }: { label: string }) => (
-  <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+// The info icon used to carry no text at all. Now it explains the column.
+const HeaderInfo = ({ label, hint }: { label: string; hint?: string }) => (
+  <span
+    className="flex items-center gap-1 text-xs font-medium text-muted-foreground"
+    title={hint}
+  >
     {label}
-    <Info className="size-3" />
+    {hint && <Info className="size-3" aria-label={hint} />}
   </span>
 );
 
@@ -328,9 +332,18 @@ export const SetVariantsTable = ({
                   <div className="pb-4">
                     <div className="grid grid-cols-[90px_1fr_1fr_1fr_1.3fr_40px] items-center gap-3 border-y border-border py-2">
                       <HeaderInfo label="Size" />
-                      <HeaderInfo label="Stock" />
-                      <HeaderInfo label="Yards/order" />
-                      <HeaderInfo label="Extra Cost" />
+                      <HeaderInfo
+                        label="Stock"
+                        hint="Units you can ship right now. A size with 0 shows as sold out."
+                      />
+                      <HeaderInfo
+                        label="Yards/order"
+                        hint="Fabric this size uses when a shopper picks or supplies cloth."
+                      />
+                      <HeaderInfo
+                        label="Extra cost (₦)"
+                        hint="Added on top of the product price for this size. Leave empty if the price is the same."
+                      />
                       <div className="flex items-center justify-between gap-2">
                         <HeaderInfo label="SKU" />
                         <button

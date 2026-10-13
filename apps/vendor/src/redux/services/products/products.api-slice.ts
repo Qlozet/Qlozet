@@ -9,6 +9,11 @@ export interface Product {
   price: number;
   stock: number;
   status: 'active' | 'draft' | 'inactive';
+  /** Platform review; a published listing is only live once approved. */
+  moderation?: {
+    status: 'pending' | 'approved' | 'rejected';
+    reason?: string | null;
+  };
   images: ProductImageDto[];
   variants?: ProductVariant[];
   customizations?: ProductCustomization[];
