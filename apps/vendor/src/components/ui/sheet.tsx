@@ -88,6 +88,14 @@ const SheetContent = React.forwardRef<
             max-height: 85vh;
             overflow-y: auto;
           }
+          /* Opt-in for sheets with their own header + scrolling body (profile,
+             assistant). A definite height makes the caller's inner h-full real,
+             so the header stays put and only the body scrolls; without it the
+             sheet grew to its content and scrolled as a whole, header included. */
+          .sheet-mobile-bottom.sheet-mobile-fill {
+            height: 85vh !important;
+            overflow: hidden !important;
+          }
           .sheet-mobile-bottom[data-state="open"] {
             animation: sheetMobileSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
           }
