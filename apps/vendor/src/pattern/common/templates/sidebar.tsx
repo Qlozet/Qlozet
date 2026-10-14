@@ -30,7 +30,7 @@ import {
 import { useScreenSize } from '@/lib/hooks/useScreenSize';
 import { If } from '../atoms/If';
 import { ThemeToggleSwitch } from '../molecules/theme-toggle-switch';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Tooltip,
   TooltipContent,
@@ -108,20 +108,29 @@ export const Sidebar = () => {
   }, [pathname]);
 
   const screenSize = useScreenSize();
-  console.log('SCREEN SIZE: ', screenSize.toString() ?? '');
 
   return (
     <div className="invisible hidden lg:block lg:visible lg:w-fit 2xl:w-[260px] lg:h-screen lg:pl-6 lg:py-6 lg:pr-1 transition-all duration-300">
-      <ScrollArea className="flex-1 w-full h-full bg-sidebar rounded-xl border custom-card-shadow transition-all duration-300 [&>div>div]:w-full [&>div>div]:min-h-full">
-        <div className="lg:w-[78px] xl:w-full min-h-[calc(100vh-3rem)] flex flex-col gap-y-10 py-6 pl-[14px] pr-3 transition-all duration-300">
-          {/* Logo */}
-          <div className="2xl:pl-4">
-            <BrandLogo />
-          </div>
+      {/* The rail is a fixed-height column: logo pinned at the top, theme and
+          log out pinned at the bottom, and only the menu between them scrolls.
+          The whole card used to scroll, so on a short window the logo rolled
+          away and Log out sat below the fold. */}
+      <div className="lg:w-[78px] xl:w-full h-full bg-sidebar rounded-xl border custom-card-shadow flex flex-col gap-y-10 py-6 pl-[14px] pr-3 transition-all duration-300">
+        {/* Logo */}
+        <div className="2xl:pl-4 shrink-0">
+          <BrandLogo />
+        </div>
 
-          <div className="flex-1 w-full flex flex-col items-center gap-y-9">
-            {/* Menu Items */}
-            <nav className="w-[47px] 2xl:w-full space-y-2">
+        <div className="flex-1 min-h-0 w-full flex flex-col items-center gap-y-9">
+          {/* Menu Items. Overlay scrollbar: present only when the list is
+              taller than the space, shown only while the pointer is over the
+              list or it is being scrolled. */}
+          <ScrollArea
+            type="hover"
+            scrollHideDelay={400}
+            className="w-[47px] 2xl:w-full flex-1 min-h-0 [&>div>div]:w-full"
+          >
+            <nav className="w-full space-y-2">
               {menuItems?.map((item, idx) => {
                 return item.subItems ? (
                   <Accordion
@@ -196,23 +205,22 @@ export const Sidebar = () => {
                 );
               })}
             </nav>
+          </ScrollArea>
 
-            {/* Bottom Section */}
-            <div className="w-[47px] 2xl:w-full flex flex-col items-center gap-y-2 mt-auto">
-              <If isTrue={screenSize.gt('xl')}>
-                <ThemeToggle />
-              </If>
-              <If isTrue={screenSize.lt('2xl') && screenSize.gte('xl')}>
-                <ThemeToggleSwitch />
-              </If>
+          {/* Bottom Section, pinned below the scrolling menu. */}
+          <div className="w-[47px] 2xl:w-full shrink-0 flex flex-col items-center gap-y-2">
+            <If isTrue={screenSize.gt('xl')}>
+              <ThemeToggle />
+            </If>
+            <If isTrue={screenSize.lt('2xl') && screenSize.gte('xl')}>
+              <ThemeToggleSwitch />
+            </If>
 
-              {/* Log out */}
-              <LogoutBtn />
-            </div>
+            {/* Log out */}
+            <LogoutBtn />
           </div>
         </div>
-        <ScrollBar orientation="vertical" />
-      </ScrollArea>
+      </div>
     </div>
   );
 };
