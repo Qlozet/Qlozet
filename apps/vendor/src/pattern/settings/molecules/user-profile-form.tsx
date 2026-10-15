@@ -1,11 +1,11 @@
-// User Profile Form - Molecule
-// Form for user profile with personal information
-// fullName and email are read-only (backend doesn't allow updating them via profile endpoint)
+// Your account: the few things about the person (not the store) that can be
+// changed here. Name and email are shown, not offered as disabled inputs.
 
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { AtSign, Phone } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -15,7 +15,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -23,6 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
+import { ProfileSaveBar } from './profile-save-bar';
 import { DIAL_CODES, joinPhone, splitPhone } from '../lib/phone';
 
 const userProfileSchema = z.object({
@@ -30,10 +31,11 @@ const userProfileSchema = z.object({
   email: z.string().optional(),
   username: z
     .string()
-    .min(3, 'Username must be at least 3 characters')
+    .min(3, 'A username needs at least 3 characters')
+    .regex(/^[a-z0-9_.]+$/i, 'Letters, numbers, dots and underscores only')
     .optional()
     .or(z.literal('')),
-  phoneNumber: z.string().min(1, 'Phone number is required'),
+  phoneNumber: z.string().min(1, 'Add a phone number'),
   country: z.string().optional(),
   address: z.string().optional(),
 });
@@ -44,118 +46,118 @@ interface UserProfileFormProps {
   initialData?: Partial<UserProfileData>;
   onSubmit: (data: UserProfileData) => void;
   isLoading?: boolean;
+  resetKey?: string;
+  onDirtyChange?: (dirty: boolean) => void;
 }
+
+const seed = (d?: Partial<UserProfileData>): UserProfileData => ({
+  fullName: d?.fullName || '',
+  email: d?.email || '',
+  username: d?.username || '',
+  phoneNumber: d?.phoneNumber || '',
+  country: d?.country || '',
+  address: d?.address || '',
+});
+
+const inputClass =
+  'bg-background border-border focus-visible:ring-primary/30 dark:bg-muted dark:border-white/10';
+
+const ReadOnlyRow = ({
+  label,
+  value,
+  hint,
+}: {
+  label: string;
+  value: string;
+  hint: string;
+}) => (
+  <div className="flex flex-col gap-1 rounded-lg border border-border bg-muted/40 px-4 py-3">
+    <span className="text-xs font-medium text-muted-foreground">{label}</span>
+    <span className="text-sm text-foreground break-all">{value || '—'}</span>
+    <span className="text-[11px] text-muted-foreground">{hint}</span>
+  </div>
+);
 
 export const UserProfileForm: React.FC<UserProfileFormProps> = ({
   initialData,
   onSubmit,
   isLoading = false,
+  resetKey,
+  onDirtyChange,
 }) => {
   const form = useForm<UserProfileData>({
     resolver: zodResolver(userProfileSchema),
-    defaultValues: {
-      fullName: initialData?.fullName || '',
-      email: initialData?.email || '',
-      username: initialData?.username || '',
-      phoneNumber: initialData?.phoneNumber || '',
-      country: initialData?.country || '',
-      address: initialData?.address || '',
-    },
+    defaultValues: seed(initialData),
   });
 
-  // Reset form when API data loads
   useEffect(() => {
-    if (initialData) {
-      form.reset({
-        fullName: initialData.fullName || '',
-        email: initialData.email || '',
-        username: initialData.username || '',
-        phoneNumber: initialData.phoneNumber || '',
-        country: initialData.country || '',
-        address: initialData.address || '',
-      });
-    }
-  }, [initialData?.fullName, initialData?.email, initialData?.username]);
+    form.reset(seed(initialData));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetKey]);
+
+  const dirty = form.formState.isDirty;
+  useEffect(() => {
+    onDirtyChange?.(dirty);
+  }, [dirty, onDirtyChange]);
 
   return (
-    <div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Full Name (read-only) */}
-            <FormField
-              control={form.control}
-              name="fullName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Full Name
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      className="bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400"
-                      readOnly
-                      disabled
-                      {...field}
-                    />
-                  </FormControl>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Name cannot be changed here
-                  </p>
-                  <FormMessage />
-                </FormItem>
-              )}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <section>
+          <div className="mb-4">
+            <h3 className="text-sm font-semibold text-foreground">
+              Who you are
+            </h3>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Your name and sign-in email are fixed to this account. Contact
+              support to change them.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <ReadOnlyRow
+              label="Full name"
+              value={initialData?.fullName ?? ''}
+              hint="As it appears to your team"
             />
+            <ReadOnlyRow
+              label="Sign-in email"
+              value={initialData?.email ?? ''}
+              hint="Where your login codes go"
+            />
+          </div>
+        </section>
 
-            {/* Username */}
+        <section className="border-t border-border pt-6">
+          <div className="mb-4">
+            <h3 className="text-sm font-semibold text-foreground">
+              How we reach you
+            </h3>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              A username for your team and the number for urgent order matters.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Username
-                  </FormLabel>
+                  <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Choose a username"
-                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
-                      {...field}
-                    />
+                    <div className="relative">
+                      <AtSign className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        placeholder="yourname"
+                        autoCapitalize="none"
+                        className={cn(inputClass, 'pl-9')}
+                        {...field}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            {/* Email Address (read-only) */}
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Email Address
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      className="bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400"
-                      readOnly
-                      disabled
-                      {...field}
-                    />
-                  </FormControl>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Email cannot be changed here
-                  </p>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Phone Number — dial code and national part are two views of the
-                single stored string, so the select isn't decorative. */}
             <FormField
               control={form.control}
               name="phoneNumber"
@@ -163,9 +165,7 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                 const { code, national } = splitPhone(field.value);
                 return (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Phone Number
-                    </FormLabel>
+                    <FormLabel>Phone</FormLabel>
                     <FormControl>
                       <div className="flex gap-2">
                         <Select
@@ -174,7 +174,9 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                             field.onChange(joinPhone(next, national))
                           }
                         >
-                          <SelectTrigger className="w-[100px] bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200">
+                          <SelectTrigger
+                            className={cn(inputClass, 'w-[104px]')}
+                          >
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -185,17 +187,21 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                             ))}
                           </SelectContent>
                         </Select>
-                        <Input
-                          placeholder="Phone number"
-                          className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 flex-1"
-                          name={field.name}
-                          ref={field.ref}
-                          onBlur={field.onBlur}
-                          value={national}
-                          onChange={(e) =>
-                            field.onChange(joinPhone(code, e.target.value))
-                          }
-                        />
+                        <div className="relative flex-1">
+                          <Phone className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                          <Input
+                            placeholder="801 234 5678"
+                            inputMode="tel"
+                            className={cn(inputClass, 'pl-9')}
+                            name={field.name}
+                            ref={field.ref}
+                            onBlur={field.onBlur}
+                            value={national}
+                            onChange={(e) =>
+                              field.onChange(joinPhone(code, e.target.value))
+                            }
+                          />
+                        </div>
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -203,71 +209,15 @@ export const UserProfileForm: React.FC<UserProfileFormProps> = ({
                 );
               }}
             />
-
-            {/* Country (display-only, from business) */}
-            <FormField
-              control={form.control}
-              name="country"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
-                    Country
-                    <span className="text-gray-400">ⓘ</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      className="bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400"
-                      readOnly
-                      disabled
-                      {...field}
-                    />
-                  </FormControl>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Set in Organization profile
-                  </p>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Address (display-only, from business) */}
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Address
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      className="bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400"
-                      readOnly
-                      disabled
-                      {...field}
-                    />
-                  </FormControl>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Set in Organization profile
-                  </p>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </div>
+        </section>
 
-          {/* Save Button */}
-          <div className="flex justify-start">
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="bg-[#3d2817] hover:bg-[#2e1e10] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black px-8 py-2 rounded-lg"
-            >
-              {isLoading ? 'Saving...' : 'Save'}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+        <ProfileSaveBar
+          dirty={dirty}
+          saving={isLoading}
+          onDiscard={() => form.reset(seed(initialData))}
+        />
+      </form>
+    </Form>
   );
 };

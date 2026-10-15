@@ -1,13 +1,14 @@
-// Profile Content - Organism
-// Profile section with Organization/User profile tabs and vendor card
-// Now fetches data directly from backend API
+// Profile tab: the store hero (cover, logo, status, storefront link, how
+// complete the profile is), then "Store profile" or "Your account" below it.
+// Data comes straight from the API; saves send only what changed.
 
-import React, { useState } from 'react';
-import { ProfileTabButton } from '../atoms/profile-tab-button';
+import React, { useCallback, useState } from 'react';
+import { CheckCircle2, ChevronRight, Sparkles } from 'lucide-react';
 import { OrganizationProfileForm } from '../molecules/organization-profile-form';
 import { UserProfileForm } from '../molecules/user-profile-form';
 import { VendorProfileCard } from '../molecules/vendor-profile-card';
 import { UserProfileCard } from '../molecules/user-profile-card';
+import { profileCompleteness } from '../lib/profile-completeness';
 import {
   useGetBusinessProfileQuery,
   useUpdateBusinessProfileMutation,
@@ -22,7 +23,11 @@ import type {
 } from '@/redux/services/settings/settings.api-slice';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 import { readApiError } from '@/redux/services/types';
+
+const SHOP_URL =
+  process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://qlozet-shop.vercel.app';
 
 /**
  * Only the fields this save actually changed.
@@ -30,8 +35,8 @@ import { readApiError } from '@/redux/services/types';
  * The form seeds every input from the record with `|| ''`, so a field the
  * business has never set arrives blank and, untouched, submits blank. Sending
  * the whole object would write that blank back as an explicit empty string, and
- * would overwrite anything changed on the record — by an admin, or in another
- * tab — between the load and the save. Comparing against the loaded value,
+ * would overwrite anything changed on the record - by an admin, or in another
+ * tab - between the load and the save. Comparing against the loaded value,
  * normalised the same way the form normalised it, keeps a save to what the
  * person in front of it actually edited.
  */
@@ -57,70 +62,44 @@ interface ProfileContentProps {
   userData?: any;
 }
 
-// Skeleton that mirrors the profile layout (form card + tabs on the left,
-// profile card + upload buttons on the right) so the shape doesn't jump when
-// the data loads.
-const ProfileContentSkeleton: React.FC = () => (
-  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    {/* Left — form card */}
-    <div className="lg:col-span-2 bg-white dark:bg-card border dark:border-white/10 rounded-[12px] p-4 lg:p-8 custom-card-shadow">
-      {/* Tab pill */}
-      <Skeleton className="mb-8 h-11 w-full rounded-[10px]" />
+type ProfileTab = 'organization' | 'user';
 
-      {/* Form fields */}
-      <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
-        {Array.from({ length: 8 }).map((_, i) => (
+const ProfileContentSkeleton: React.FC = () => (
+  <div className="space-y-6">
+    <div className="overflow-hidden rounded-[12px] border bg-card custom-card-shadow dark:border-white/10">
+      <Skeleton className="h-40 w-full rounded-none" />
+      <div className="-mt-12 flex items-end gap-4 px-6 pb-6">
+        <Skeleton className="size-24 rounded-full border-4 border-card" />
+        <div className="space-y-2 pb-1">
+          <Skeleton className="h-5 w-48" />
+          <Skeleton className="h-3 w-32" />
+        </div>
+      </div>
+    </div>
+    <Skeleton className="h-10 w-64 rounded-lg" />
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="space-y-6 rounded-[12px] border bg-card p-6 custom-card-shadow dark:border-white/10 lg:col-span-2">
+        {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="space-y-2">
             <Skeleton className="h-3 w-24" />
-            <Skeleton className="h-11 w-full rounded-lg" />
+            <Skeleton className="h-10 w-full rounded-lg" />
           </div>
         ))}
       </div>
-
-      {/* About / textarea */}
-      <div className="mt-6 space-y-2">
-        <Skeleton className="h-3 w-20" />
-        <Skeleton className="h-24 w-full rounded-lg" />
-      </div>
-
-      {/* Submit */}
-      <Skeleton className="mt-8 h-11 w-40 rounded-lg" />
-    </div>
-
-    {/* Right — profile card + upload buttons */}
-    <div className="lg:col-span-1 space-y-6">
-      <div className="overflow-hidden rounded-[12px] bg-white pb-6 custom-card-shadow border dark:border-white/10 dark:bg-card">
-        {/* Cover */}
-        <Skeleton className="h-32 w-full rounded-none" />
-        {/* Avatar + info */}
-        <div className="-mt-16 flex flex-col items-center px-6">
-          <Skeleton className="size-24 rounded-full border-4 border-white dark:border-card" />
-          <Skeleton className="mt-4 h-5 w-40" />
-          <Skeleton className="mt-2 h-3 w-28" />
-          <Skeleton className="mt-2 h-3 w-32" />
-          <Skeleton className="mt-2 h-3 w-24" />
-        </div>
-      </div>
-
-      {/* Upload buttons */}
-      <div className="space-y-4">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-14 w-full rounded-[12px]" />
-        ))}
-      </div>
+      <Skeleton className="h-48 w-full rounded-[12px]" />
     </div>
   </div>
 );
 
 export const ProfileContent: React.FC<ProfileContentProps> = () => {
-  const [activeProfileTab, setActiveProfileTab] = useState<
-    'organization' | 'user'
-  >('organization');
+  const [activeProfileTab, setActiveProfileTab] =
+    useState<ProfileTab>('organization');
+  const [orgDirty, setOrgDirty] = useState(false);
+  const [userDirty, setUserDirty] = useState(false);
 
-  // Fetch live data. refetchOnMountOrArgChange forces a fresh fetch whenever we
-  // navigate to Settings, so a stale/empty cache (e.g. a first fetch that ran
-  // before the auth token was ready) can't leave the profile blank until a full
-  // page refresh.
+  // refetchOnMountOrArgChange: a fresh fetch whenever Settings opens, so a
+  // stale or empty cache (a first fetch that ran before the auth token was
+  // ready) cannot leave the profile blank until a full reload.
   const {
     data: businessData,
     isLoading: isLoadingBusiness,
@@ -135,25 +114,19 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
     isLoading: isLoadingUser,
     isFetching: isFetchingUser,
     refetch: refetchUser,
-  } = useGetUserProfileQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
+  } = useGetUserProfileQuery(undefined, { refetchOnMountOrArgChange: true });
 
-  // Mutations
   const [updateBusiness, { isLoading: isUpdatingBusiness }] =
     useUpdateBusinessProfileMutation();
-
   const [updateBusinessDetails, { isLoading: isUpdatingBusinessDetails }] =
     useUpdateBusinessProfileDetailsMutation();
-
   const [updateUser, { isLoading: isUpdatingUser }] =
     useUpdateUserProfileMutation();
 
-  const handleOrganizationSubmit = async (formData: any) => {
+  const handleOrganizationSubmit = async (formData: any): Promise<boolean> => {
     try {
       // Address fields go to PATCH /business/address, the rest to
-      // PATCH /business/profile. Both are diffed against the loaded record —
-      // see changedFields.
+      // PATCH /business/profile. Both are diffed against the loaded record.
       const addressPatch = changedFields<UpdateBusinessProfilePayload>(
         {
           address: formData.address,
@@ -228,63 +201,79 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
 
       if (!requests.length) {
         toast.info('No changes to save');
-        return;
+        return false;
       }
 
       await Promise.all(requests);
-      toast.success('Organization profile updated successfully');
+      toast.success('Store profile saved');
+      return true;
     } catch (error: any) {
-      toast.error(readApiError(error, 'Failed to update organization profile'));
+      toast.error(readApiError(error, 'Could not save the store profile'));
+      return false;
     }
   };
 
-  const handleUserProfileSubmit = async (formData: any) => {
+  const handleUserProfileSubmit = async (formData: any): Promise<boolean> => {
     try {
       const patch = changedFields<UpdateUserProfilePayload>(
-        {
-          phone_number: formData.phoneNumber,
-          username: formData.username,
-        },
-        {
-          phone_number: userData?.phone_number,
-          username: userData?.username,
-        }
+        { phone_number: formData.phoneNumber, username: formData.username },
+        { phone_number: userData?.phone_number, username: userData?.username }
       );
-
       if (!Object.keys(patch).length) {
         toast.info('No changes to save');
-        return;
+        return false;
       }
-
       await updateUser(patch).unwrap();
-      toast.success('User profile updated successfully');
+      toast.success('Account saved');
+      return true;
     } catch (error: any) {
-      toast.error(readApiError(error, 'Failed to update user profile'));
+      toast.error(readApiError(error, 'Could not save your account'));
+      return false;
     }
   };
 
-  // The org profile is the primary record; treat it as "present" only when a
-  // real business (with an id) came back.
+  // Switching tabs with unsaved edits asks first; the forms re-seed on return.
+  const switchTab = useCallback(
+    (next: ProfileTab) => {
+      if (next === activeProfileTab) return;
+      const dirty = activeProfileTab === 'organization' ? orgDirty : userDirty;
+      if (
+        dirty &&
+        !window.confirm('You have unsaved changes. Leave without saving?')
+      )
+        return;
+      setActiveProfileTab(next);
+    },
+    [activeProfileTab, orgDirty, userDirty]
+  );
+
+  const jumpTo = (anchor: string) => {
+    const go = () =>
+      document
+        .getElementById(anchor)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (activeProfileTab !== 'organization' && anchor !== 'profile-brand') {
+      switchTab('organization');
+      setTimeout(go, 50);
+    } else {
+      go();
+    }
+  };
+
   const hasBusiness = !!businessData?._id;
   const busy =
     isLoadingBusiness || isLoadingUser || isFetchingBusiness || isFetchingUser;
 
-  // Show the skeleton while we don't yet have the business profile and a
-  // request is in flight (initial load OR a refetch after a stale/empty cache).
-  if (!hasBusiness && busy) {
-    return <ProfileContentSkeleton />;
-  }
+  if (!hasBusiness && busy) return <ProfileContentSkeleton />;
 
-  // Finished, but the profile came back empty — offer a retry instead of a
-  // silent blank form.
   if (!hasBusiness) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 rounded-[12px] bg-white dark:bg-card border dark:border-white/10 px-6 py-16 text-center custom-card-shadow">
-        <p className="text-sm font-medium text-[#1C1C1E] dark:text-white">
+      <div className="flex flex-col items-center justify-center gap-3 rounded-[12px] border bg-card px-6 py-16 text-center custom-card-shadow dark:border-white/10">
+        <p className="text-sm font-medium text-foreground">
           Couldn&apos;t load your profile
         </p>
-        <p className="max-w-sm text-xs text-gray-500 dark:text-gray-400">
-          Something went wrong fetching your business profile. Please try again.
+        <p className="max-w-sm text-xs text-muted-foreground">
+          Something went wrong fetching your store profile. Please try again.
         </p>
         <button
           type="button"
@@ -292,7 +281,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
             refetchBusiness();
             refetchUser();
           }}
-          className="mt-1 rounded-lg bg-[#6D5545] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#5a4638] dark:bg-white dark:text-black"
+          className="mt-1 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90"
         >
           Retry
         </button>
@@ -300,37 +289,64 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
     );
   }
 
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Left Column - Form Card */}
-      <div className="lg:col-span-2 bg-white dark:bg-card border dark:border-white/10 rounded-[12px] p-4 lg:p-8 custom-card-shadow">
-        {/* Profile Tabs Pill Toggle */}
-        <div className="flex w-full bg-[#F3F4F6] dark:bg-muted rounded-[10px] p-1 mb-8">
-          <button
-            onClick={() => setActiveProfileTab('organization')}
-            className={`flex-1 py-2.5 text-sm font-semibold rounded-[8px] transition-all duration-200 ${
-              activeProfileTab === 'organization'
-                ? 'bg-[#6D5545] text-white shadow-sm dark:bg-white dark:text-black'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent'
-            }`}
-          >
-            Organization
-          </button>
-          <button
-            onClick={() => setActiveProfileTab('user')}
-            className={`flex-1 py-2.5 text-sm font-semibold rounded-[8px] transition-all duration-200 ${
-              activeProfileTab === 'user'
-                ? 'bg-[#6D5545] text-white shadow-sm dark:bg-white dark:text-black'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-transparent'
-            }`}
-          >
-            User
-          </button>
-        </div>
+  const completeness = profileCompleteness(businessData);
+  const resetKey = `${businessData?._id ?? ''}:${businessData?.updatedAt ?? ''}:${userData?.phone_number ?? ''}:${userData?.username ?? ''}`;
 
-        {/* Form Content */}
-        <div>
-          {activeProfileTab === 'organization' ? (
+  const tabs: { key: ProfileTab; label: string; hint: string }[] = [
+    { key: 'organization', label: 'Store profile', hint: 'What shoppers see' },
+    { key: 'user', label: 'Your account', hint: 'Just you' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <VendorProfileCard
+        vendorName={businessData?.business_name || 'Your store'}
+        registrationId={businessData?._id || ''}
+        website={businessData?.website || ''}
+        status={(businessData?.status as any) || 'pending'}
+        logoUrl={businessData?.business_logo_url}
+        svgLogoUrl={businessData?.business_logo_svg_url}
+        coverImageUrl={businessData?.cover_image_url}
+        themeColor={businessData?.theme_color}
+        storefrontUrl={
+          businessData?._id
+            ? `${SHOP_URL}/vendor/${businessData._id}`
+            : undefined
+        }
+        completeness={completeness}
+      />
+
+      <div
+        role="tablist"
+        aria-label="Profile sections"
+        className="inline-flex rounded-lg border border-border bg-muted/40 p-1"
+      >
+        {tabs.map((t) => {
+          const active = activeProfileTab === t.key;
+          return (
+            <button
+              key={t.key}
+              role="tab"
+              type="button"
+              aria-selected={active}
+              onClick={() => switchTab(t.key)}
+              className={cn(
+                'flex flex-col items-start rounded-md px-4 py-1.5 text-left transition-colors',
+                active
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <span className="text-sm font-semibold">{t.label}</span>
+              <span className="text-[11px] opacity-70">{t.hint}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {activeProfileTab === 'organization' ? (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="rounded-[12px] border bg-card p-5 custom-card-shadow dark:border-white/10 sm:p-8 lg:col-span-2">
             <OrganizationProfileForm
               initialData={{
                 country: businessData?.country || '',
@@ -351,10 +367,65 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
                 city: businessData?.city || '',
                 timeZone: businessData?.time_zone || '',
               }}
+              resetKey={resetKey}
+              onDirtyChange={setOrgDirty}
               onSubmit={handleOrganizationSubmit}
               isLoading={isUpdatingBusiness || isUpdatingBusinessDetails}
             />
-          ) : (
+          </div>
+
+          <aside className="space-y-6 lg:col-span-1">
+            <div className="rounded-[12px] border bg-card p-5 custom-card-shadow dark:border-white/10">
+              <div className="flex items-center gap-2">
+                <Sparkles className="size-4 text-primary" />
+                <h3 className="text-sm font-semibold text-foreground">
+                  {completeness.missing.length
+                    ? 'Finish your profile'
+                    : 'Looking good'}
+                </h3>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {completeness.missing.length
+                  ? 'Stores with a full profile get more trust, and more orders.'
+                  : 'Everything a shopper looks for is here. Keep it fresh.'}
+              </p>
+              {completeness.missing.length > 0 ? (
+                <ul className="mt-4 space-y-2">
+                  {completeness.missing.map((m) => (
+                    <li key={m.key}>
+                      <button
+                        type="button"
+                        onClick={() => jumpTo(m.anchor)}
+                        className="flex w-full items-center justify-between gap-2 rounded-lg border border-border px-3 py-2 text-left text-sm text-foreground hover:bg-accent"
+                      >
+                        {m.label}
+                        <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <ul className="mt-4 space-y-2">
+                  {completeness.items.map((m) => (
+                    <li
+                      key={m.key}
+                      className="flex items-center gap-2 text-sm text-muted-foreground"
+                    >
+                      <CheckCircle2 className="size-4 text-emerald-600" />
+                      {m.label.replace(
+                        /^(Add|Describe|Say more about) /,
+                        (s) => s
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </aside>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="rounded-[12px] border bg-card p-5 custom-card-shadow dark:border-white/10 sm:p-8 lg:col-span-2">
             <UserProfileForm
               initialData={{
                 fullName: userData?.full_name || '',
@@ -364,35 +435,22 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
                 country: businessData?.country || '',
                 address: businessData?.business_address || '',
               }}
+              resetKey={resetKey}
+              onDirtyChange={setUserDirty}
               onSubmit={handleUserProfileSubmit}
               isLoading={isUpdatingUser}
             />
-          )}
+          </div>
+          <aside className="lg:col-span-1">
+            <UserProfileCard
+              fullName={userData?.full_name || ''}
+              registrationId={businessData?._id || ''}
+              email={userData?.email || ''}
+              profilePicture={userData?.profile_picture}
+            />
+          </aside>
         </div>
-      </div>
-
-      {/* Right Column - Profile Cards */}
-      <div className="lg:col-span-1">
-        {activeProfileTab === 'organization' ? (
-          <VendorProfileCard
-            vendorName={businessData?.business_name || 'Business'}
-            registrationId={businessData?._id || ''}
-            website={businessData?.website || ''}
-            status={(businessData?.status as any) || 'pending'}
-            logoUrl={businessData?.business_logo_url}
-            svgLogoUrl={businessData?.business_logo_svg_url}
-            coverImageUrl={businessData?.cover_image_url}
-            themeColor={businessData?.theme_color}
-          />
-        ) : (
-          <UserProfileCard
-            fullName={userData?.full_name || ''}
-            registrationId={businessData?._id || ''}
-            email={userData?.email || ''}
-            profilePicture={userData?.profile_picture}
-          />
-        )}
-      </div>
+      )}
     </div>
   );
 };

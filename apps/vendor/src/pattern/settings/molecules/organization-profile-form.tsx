@@ -1,10 +1,23 @@
-// Organization Profile Form - Molecule
-// Form for organization profile with all fields mapped to backend Business schema
+// Store profile form: what shoppers read about the store, grouped the way a
+// vendor thinks about it - the store, how to reach it, where it is, and its
+// links - with a save bar that only appears when something changed.
 
-import React, { useEffect } from 'react';
+import React, { useEffect, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import {
+  Globe,
+  Instagram,
+  Mail,
+  MapPin,
+  Music2,
+  Phone,
+  Pin,
+  Twitter,
+  Youtube,
+  type LucideIcon,
+} from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -14,7 +27,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -23,22 +35,36 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 import { AddressAutocompleteInput } from './address-autocomplete-input';
+import { ProfileSaveBar } from './profile-save-bar';
 import { DIAL_CODES, joinPhone, splitPhone } from '../lib/phone';
+import { countryOptions } from '../lib/countries';
+import { ABOUT_MIN } from '../lib/profile-completeness';
 import type { PlaceDetails } from '@/hooks/use-google-places';
 
+const THIS_YEAR = new Date().getFullYear();
+
 const organizationProfileSchema = z.object({
-  businessName: z.string().min(1, 'Business name is required'),
-  country: z.string().min(1, 'Country is required'),
-  state: z.string().min(1, 'State is required'),
+  businessName: z.string().min(1, 'Give the store a name'),
+  country: z.string().min(1, 'Choose a country'),
+  state: z.string().min(1, 'Add the state'),
   city: z.string().optional(),
-  address: z.string().min(1, 'Address is required'),
+  address: z.string().min(1, 'Add the store address'),
   zipCode: z.string().optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
-  yearFounded: z.string().optional(),
-  email: z.string().email('Invalid email address'),
-  phoneNumber: z.string().min(1, 'Phone number is required'),
+  yearFounded: z
+    .string()
+    .optional()
+    .refine(
+      (v) =>
+        !v ||
+        (/^\d{4}$/.test(v) && Number(v) >= 1900 && Number(v) <= THIS_YEAR),
+      `Enter a year between 1900 and ${THIS_YEAR}`
+    ),
+  email: z.string().email('Enter a valid email address'),
+  phoneNumber: z.string().min(1, 'Add a phone number'),
   website: z.string().optional(),
   // Handles, not URLs. The backend reduces a pasted profile URL to its
   // handle and the storefront builds the link, so a vendor can paste
@@ -51,8 +77,6 @@ const organizationProfileSchema = z.object({
   timeZone: z.string().optional(),
   registrationId: z.string().optional(),
   about: z.string().optional(),
-  // No nin / bvn. The platform stored both in plaintext and never read
-  // them; identity is established by QoreID verification instead.
 });
 
 type OrganizationProfileData = z.infer<typeof organizationProfileSchema>;
@@ -61,83 +85,127 @@ interface OrganizationProfileFormProps {
   initialData?: Partial<OrganizationProfileData>;
   onSubmit: (data: OrganizationProfileData) => void;
   isLoading?: boolean;
+  /** Changes when a fresh record arrives, so the form re-seeds from it. */
+  resetKey?: string;
+  onDirtyChange?: (dirty: boolean) => void;
 }
+
+const seed = (
+  d?: Partial<OrganizationProfileData>
+): OrganizationProfileData => ({
+  businessName: d?.businessName || '',
+  country: d?.country || '',
+  state: d?.state || '',
+  city: d?.city || '',
+  address: d?.address || '',
+  zipCode: d?.zipCode || '',
+  latitude: d?.latitude || undefined,
+  longitude: d?.longitude || undefined,
+  yearFounded: d?.yearFounded || '',
+  email: d?.email || '',
+  phoneNumber: d?.phoneNumber || '',
+  website: d?.website || '',
+  instagram: d?.instagram || '',
+  twitter: d?.twitter || '',
+  tiktok: d?.tiktok || '',
+  youtube: d?.youtube || '',
+  pinterest: d?.pinterest || '',
+  timeZone: d?.timeZone || '',
+  registrationId: d?.registrationId || '',
+  about: d?.about || '',
+});
+
+const Section = ({
+  id,
+  title,
+  lead,
+  children,
+}: {
+  id: string;
+  title: string;
+  lead: string;
+  children: ReactNode;
+}) => (
+  <section
+    id={id}
+    className="scroll-mt-24 border-t border-border pt-6 first:border-t-0 first:pt-0"
+  >
+    <div className="mb-4">
+      <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+      <p className="mt-0.5 text-xs text-muted-foreground">{lead}</p>
+    </div>
+    {children}
+  </section>
+);
+
+const inputClass =
+  'bg-background border-border focus-visible:ring-primary/30 dark:bg-muted dark:border-white/10';
+
+/** An input with an icon in the leading slot. */
+const IconInput = ({
+  icon: Icon,
+  className,
+  ...props
+}: React.ComponentProps<typeof Input> & { icon: LucideIcon }) => (
+  <div className="relative">
+    <Icon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+    <Input className={cn(inputClass, 'pl-9', className)} {...props} />
+  </div>
+);
+
+const SOCIALS: {
+  name: 'instagram' | 'twitter' | 'tiktok' | 'youtube' | 'pinterest';
+  label: string;
+  icon: LucideIcon;
+}[] = [
+  { name: 'instagram', label: 'Instagram', icon: Instagram },
+  { name: 'tiktok', label: 'TikTok', icon: Music2 },
+  { name: 'twitter', label: 'X (Twitter)', icon: Twitter },
+  { name: 'youtube', label: 'YouTube', icon: Youtube },
+  { name: 'pinterest', label: 'Pinterest', icon: Pin },
+];
 
 export const OrganizationProfileForm: React.FC<
   OrganizationProfileFormProps
-> = ({ initialData, onSubmit, isLoading = false }) => {
+> = ({ initialData, onSubmit, isLoading = false, resetKey, onDirtyChange }) => {
   const form = useForm<OrganizationProfileData>({
     resolver: zodResolver(organizationProfileSchema),
-    defaultValues: {
-      businessName: initialData?.businessName || '',
-      country: initialData?.country || '',
-      state: initialData?.state || '',
-      city: initialData?.city || '',
-      address: initialData?.address || '',
-      zipCode: initialData?.zipCode || '',
-      latitude: initialData?.latitude || undefined,
-      longitude: initialData?.longitude || undefined,
-      yearFounded: initialData?.yearFounded || '',
-      email: initialData?.email || '',
-      phoneNumber: initialData?.phoneNumber || '',
-      website: initialData?.website || '',
-      instagram: initialData?.instagram || '',
-      twitter: initialData?.twitter || '',
-      tiktok: initialData?.tiktok || '',
-      youtube: initialData?.youtube || '',
-      pinterest: initialData?.pinterest || '',
-      timeZone: initialData?.timeZone || '',
-      registrationId: initialData?.registrationId || '',
-      about: initialData?.about || '',
-    },
+    defaultValues: seed(initialData),
   });
 
-  // Reset form when API data loads
+  // Re-seed when a fresh record arrives (first load, or a save that came back).
   useEffect(() => {
-    if (initialData) {
-      form.reset({
-        businessName: initialData.businessName || '',
-        country: initialData.country || '',
-        state: initialData.state || '',
-        city: initialData.city || '',
-        address: initialData.address || '',
-        zipCode: initialData.zipCode || '',
-        latitude: initialData.latitude || undefined,
-        longitude: initialData.longitude || undefined,
-        yearFounded: initialData.yearFounded || '',
-        email: initialData.email || '',
-        phoneNumber: initialData.phoneNumber || '',
-        website: initialData.website || '',
-        instagram: initialData.instagram || '',
-        twitter: initialData.twitter || '',
-        tiktok: initialData.tiktok || '',
-        youtube: initialData.youtube || '',
-        pinterest: initialData.pinterest || '',
-        timeZone: initialData.timeZone || '',
-        registrationId: initialData.registrationId || '',
-        about: initialData.about || '',
-      });
-    }
-  }, [initialData?.businessName, initialData?.email, initialData?.country]);
+    form.reset(seed(initialData));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetKey]);
+
+  const dirty = form.formState.isDirty;
+  useEffect(() => {
+    onDirtyChange?.(dirty);
+  }, [dirty, onDirtyChange]);
+
+  const about = form.watch('about') ?? '';
+  const country = form.watch('country');
 
   return (
-    <div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Business Name */}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <Section
+          id="profile-about"
+          title="The store"
+          lead="The name shoppers search for and the few lines that sell it."
+        >
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-[1fr_160px]">
             <FormField
               control={form.control}
               name="businessName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Business Name
-                  </FormLabel>
+                  <FormLabel>Store name</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter your business name"
-                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
+                      placeholder="e.g. Aso Oke Co"
+                      className={inputClass}
                       {...field}
                     />
                   </FormControl>
@@ -145,127 +213,20 @@ export const OrganizationProfileForm: React.FC<
                 </FormItem>
               )}
             />
-
-            {/* Country */}
-            <FormField
-              control={form.control}
-              name="country"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
-                    Country
-                    <span className="text-gray-400">ⓘ</span>
-                  </FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200">
-                        <SelectValue placeholder="Select country" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Nigeria">Nigeria</SelectItem>
-                      <SelectItem value="United States">
-                        United States
-                      </SelectItem>
-                      <SelectItem value="United Kingdom">
-                        United Kingdom
-                      </SelectItem>
-                      <SelectItem value="Canada">Canada</SelectItem>
-                      <SelectItem value="Ghana">Ghana</SelectItem>
-                      <SelectItem value="South Africa">South Africa</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* State */}
-            <FormField
-              control={form.control}
-              name="state"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
-                    State
-                    <span className="text-gray-400">ⓘ</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter state"
-                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* City */}
-            <FormField
-              control={form.control}
-              name="city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    City
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter city"
-                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Address (Google Places Autocomplete) */}
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Business Address
-                  </FormLabel>
-                  <FormControl>
-                    <AddressAutocompleteInput
-                      value={field.value}
-                      onChange={field.onChange}
-                      onSelect={(details: PlaceDetails) => {
-                        field.onChange(details.address);
-                        form.setValue('city', details.city);
-                        form.setValue('state', details.state);
-                        form.setValue('country', details.country || 'Nigeria');
-                        form.setValue('zipCode', details.postalCode);
-                        form.setValue('latitude', details.lat);
-                        form.setValue('longitude', details.lng);
-                      }}
-                      placeholder="Search for your business address..."
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Year Founded */}
             <FormField
               control={form.control}
               name="yearFounded"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Year Founded
-                  </FormLabel>
+                  <FormLabel>Founded</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter year founded"
-                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
+                      type="number"
+                      inputMode="numeric"
+                      min={1900}
+                      max={THIS_YEAR}
+                      placeholder={String(THIS_YEAR - 5)}
+                      className={inputClass}
                       {...field}
                     />
                   </FormControl>
@@ -273,21 +234,56 @@ export const OrganizationProfileForm: React.FC<
                 </FormItem>
               )}
             />
+          </div>
+          <FormField
+            control={form.control}
+            name="about"
+            render={({ field }) => (
+              <FormItem className="mt-5">
+                <FormLabel>About the store</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="What you make, who it is for, and what makes it yours. Shoppers read this on your storefront."
+                    className={cn(inputClass, 'min-h-[110px] resize-y')}
+                    {...field}
+                  />
+                </FormControl>
+                <p
+                  className={cn(
+                    'text-xs tabular-nums',
+                    about.trim().length >= ABOUT_MIN
+                      ? 'text-muted-foreground'
+                      : 'text-amber-600'
+                  )}
+                >
+                  {about.trim().length}/{ABOUT_MIN} characters
+                  {about.trim().length < ABOUT_MIN
+                    ? ' - a few more lines help shoppers trust the store'
+                    : ''}
+                </p>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </Section>
 
-            {/* Email Address */}
+        <Section
+          id="profile-contact"
+          title="How to reach you"
+          lead="Shown to shoppers and used for order questions."
+        >
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Email Address
-                  </FormLabel>
+                  <FormLabel>Store email</FormLabel>
                   <FormControl>
-                    <Input
+                    <IconInput
+                      icon={Mail}
                       type="email"
-                      placeholder="Enter business email"
-                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
+                      placeholder="hello@yourstore.com"
                       {...field}
                     />
                   </FormControl>
@@ -295,9 +291,6 @@ export const OrganizationProfileForm: React.FC<
                 </FormItem>
               )}
             />
-
-            {/* Phone Number — dial code and national part are two views of the
-                single stored string, so the select isn't decorative. */}
             <FormField
               control={form.control}
               name="phoneNumber"
@@ -305,9 +298,7 @@ export const OrganizationProfileForm: React.FC<
                 const { code, national } = splitPhone(field.value);
                 return (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Phone Number
-                    </FormLabel>
+                    <FormLabel>Phone</FormLabel>
                     <FormControl>
                       <div className="flex gap-2">
                         <Select
@@ -316,7 +307,9 @@ export const OrganizationProfileForm: React.FC<
                             field.onChange(joinPhone(next, national))
                           }
                         >
-                          <SelectTrigger className="w-[100px] bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200">
+                          <SelectTrigger
+                            className={cn(inputClass, 'w-[104px]')}
+                          >
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -327,17 +320,21 @@ export const OrganizationProfileForm: React.FC<
                             ))}
                           </SelectContent>
                         </Select>
-                        <Input
-                          placeholder="Phone number"
-                          className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 flex-1"
-                          name={field.name}
-                          ref={field.ref}
-                          onBlur={field.onBlur}
-                          value={national}
-                          onChange={(e) =>
-                            field.onChange(joinPhone(code, e.target.value))
-                          }
-                        />
+                        <div className="relative flex-1">
+                          <Phone className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                          <Input
+                            placeholder="801 234 5678"
+                            inputMode="tel"
+                            className={cn(inputClass, 'pl-9')}
+                            name={field.name}
+                            ref={field.ref}
+                            onBlur={field.onBlur}
+                            value={national}
+                            onChange={(e) =>
+                              field.onChange(joinPhone(code, e.target.value))
+                            }
+                          />
+                        </div>
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -345,172 +342,17 @@ export const OrganizationProfileForm: React.FC<
                 );
               }}
             />
-
-            {/* Website */}
             <FormField
               control={form.control}
               name="website"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Website
-                  </FormLabel>
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>Website</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Enter website URL"
-                      className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Instagram */}
-            <FormField
-              control={form.control}
-              name="instagram"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Instagram
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
-                        @
-                      </span>
-                      <Input
-                        placeholder="yourhandle"
-                        className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 pl-7"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Twitter / X */}
-            <FormField
-              control={form.control}
-              name="twitter"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Twitter / X
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
-                        @
-                      </span>
-                      <Input
-                        placeholder="yourhandle"
-                        className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 pl-7"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* TikTok */}
-            <FormField
-              control={form.control}
-              name="tiktok"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    TikTok
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
-                        @
-                      </span>
-                      <Input
-                        placeholder="yourhandle"
-                        className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 pl-7"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* YouTube */}
-            <FormField
-              control={form.control}
-              name="youtube"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    YouTube
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
-                        @
-                      </span>
-                      <Input
-                        placeholder="yourhandle"
-                        className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 pl-7"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Pinterest */}
-            <FormField
-              control={form.control}
-              name="pinterest"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Pinterest
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
-                        @
-                      </span>
-                      <Input
-                        placeholder="yourhandle"
-                        className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 pl-7"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Registration ID (read-only) */}
-            <FormField
-              control={form.control}
-              name="registrationId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Registration ID
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      className="bg-gray-100 dark:bg-muted/60 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400"
-                      readOnly
-                      disabled
+                    <IconInput
+                      icon={Globe}
+                      placeholder="https://yourstore.com"
+                      inputMode="url"
                       {...field}
                     />
                   </FormControl>
@@ -519,40 +361,148 @@ export const OrganizationProfileForm: React.FC<
               )}
             />
           </div>
+        </Section>
 
-          {/* About */}
+        <Section
+          id="profile-location"
+          title="Where the store is"
+          lead="Search the address and the rest fills in. Used for delivery quotes and the map on your storefront."
+        >
           <FormField
             control={form.control}
-            name="about"
+            name="address"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  About
-                </FormLabel>
+                <FormLabel>Address</FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="Tell customers about your business..."
-                    className="bg-gray-50 dark:bg-muted border-gray-200 dark:border-white/10 dark:text-gray-200 min-h-[100px] resize-none"
-                    {...field}
+                  <AddressAutocompleteInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    onSelect={(details: PlaceDetails) => {
+                      field.onChange(details.address);
+                      form.setValue('city', details.city, {
+                        shouldDirty: true,
+                      });
+                      form.setValue('state', details.state, {
+                        shouldDirty: true,
+                      });
+                      form.setValue('country', details.country || 'Nigeria', {
+                        shouldDirty: true,
+                      });
+                      form.setValue('zipCode', details.postalCode, {
+                        shouldDirty: true,
+                      });
+                      form.setValue('latitude', details.lat, {
+                        shouldDirty: true,
+                      });
+                      form.setValue('longitude', details.lng, {
+                        shouldDirty: true,
+                      });
+                    }}
+                    placeholder="Start typing the street address…"
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-
-          {/* Save Button */}
-          <div className="flex justify-start">
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="bg-[#3d2817] hover:bg-[#2e1e10] text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black px-8 py-2 rounded-lg"
-            >
-              {isLoading ? 'Saving...' : 'Save'}
-            </Button>
+          <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>City</FormLabel>
+                  <FormControl>
+                    <IconInput icon={MapPin} placeholder="City" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="state"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>State</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="State"
+                      className={inputClass}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="country"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Country</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value || undefined}
+                  >
+                    <FormControl>
+                      <SelectTrigger className={inputClass}>
+                        <SelectValue placeholder="Country" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {countryOptions(country).map((c) => (
+                        <SelectItem key={c} value={c}>
+                          {c}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
-        </form>
-      </Form>
-    </div>
+        </Section>
+
+        <Section
+          id="profile-social"
+          title="Social links"
+          lead="Paste a handle or a profile link; either works. They show on your storefront."
+        >
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            {SOCIALS.map((s) => (
+              <FormField
+                key={s.name}
+                control={form.control}
+                name={s.name}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{s.label}</FormLabel>
+                    <FormControl>
+                      <IconInput
+                        icon={s.icon}
+                        placeholder="yourhandle"
+                        autoCapitalize="none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
+          </div>
+        </Section>
+
+        <ProfileSaveBar
+          dirty={dirty}
+          saving={isLoading}
+          onDiscard={() => form.reset(seed(initialData))}
+        />
+      </form>
+    </Form>
   );
 };

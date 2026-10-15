@@ -1,6 +1,5 @@
-// User Profile Card - Molecule
-// Card showing user profile information with avatar
-// Profile picture uploads to Cloudinary, shown via local state
+// Account card: avatar with a change button, name and sign-in email.
+// Profile picture uploads to Cloudinary, then PATCH /users/me/profile.
 
 import React, { useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -13,19 +12,22 @@ import { readApiError } from '@/redux/services/types';
 
 interface UserProfileCardProps {
   fullName: string;
-  registrationId: string;
+  /** Kept for callers; no longer shown - an object id means nothing to a person. */
+  registrationId?: string;
   email: string;
   avatarUrl?: string;
   profilePicture?: string;
+  /** Role at the active store, e.g. "Owner". */
+  role?: string;
   className?: string;
 }
 
 export const UserProfileCard: React.FC<UserProfileCardProps> = ({
   fullName,
-  registrationId,
   email,
   avatarUrl,
   profilePicture,
+  role,
   className,
 }) => {
   const imageUrl = avatarUrl || profilePicture;
@@ -39,24 +41,19 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     try {
       const result = await uploadImage(file).unwrap();
       const uploadedUrl = result?.data?.url || (result as any)?.url;
-
       if (!uploadedUrl) {
-        toast.error('Upload failed — no URL returned');
+        toast.error('Upload failed - no URL returned');
         return;
       }
-
-      // Save URL to user profile via PATCH /users/me/profile
       await updateUser({ profile_picture: uploadedUrl }).unwrap();
       setLocalPicture(uploadedUrl);
-      toast.success('Profile picture updated!');
+      toast.success('Profile photo updated');
     } catch (error: any) {
-      toast.error(readApiError(error, 'Failed to upload profile picture'));
+      toast.error(readApiError(error, 'Could not upload the photo'));
     }
-
     e.target.value = '';
   };
 
@@ -65,11 +62,10 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
   return (
     <div
       className={cn(
-        'bg-white dark:bg-card border dark:border-white/10 rounded-[12px] py-10 px-6 custom-card-shadow',
+        'rounded-[12px] border bg-card px-6 py-8 custom-card-shadow dark:border-white/10',
         className
       )}
     >
-      {/* Hidden file input */}
       <input
         ref={fileInputRef}
         type="file"
@@ -77,49 +73,50 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
         className="hidden"
         onChange={handleFileChange}
       />
-
-      {/* Avatar Section */}
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center text-center">
         <div className="relative">
-          <div className="w-32 h-32 bg-[#F8F9FA] dark:bg-muted rounded-full border-4 border-white dark:border-card custom-card-shadow flex items-center justify-center overflow-hidden">
+          <div className="flex size-28 items-center justify-center overflow-hidden rounded-full border-4 border-card bg-muted shadow-md">
             {displayPicture ? (
               <Image
                 src={displayPicture}
                 alt={fullName}
-                width={128}
-                height={128}
-                className="object-cover"
+                width={112}
+                height={112}
+                className="size-full object-cover"
                 unoptimized={displayPicture?.includes('/raw/')}
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
-                <span className="text-4xl font-bold text-gray-600 dark:text-gray-300">
-                  {fullName.charAt(0) || 'U'}
-                </span>
-              </div>
+              <span className="text-4xl font-bold text-muted-foreground">
+                {fullName.charAt(0) || 'U'}
+              </span>
             )}
           </div>
           <button
+            type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
-            className="absolute bottom-0 right-0 bg-[#3d2817] p-2.5 rounded-full shadow-md border-2 border-white dark:border-card hover:bg-[#2c1d11] disabled:opacity-50"
+            aria-label="Change profile photo"
+            className="absolute -bottom-0.5 -right-0.5 rounded-full border-2 border-card bg-primary p-2 text-primary-foreground shadow-md hover:opacity-90 disabled:opacity-60"
           >
             {isUploading ? (
-              <Loader2 className="w-5 h-5 text-white animate-spin" />
+              <Loader2 className="size-4 animate-spin" />
             ) : (
-              <Camera className="w-5 h-5 text-white" />
+              <Camera className="size-4" />
             )}
           </button>
         </div>
-
-        {/* User Info */}
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-6">
-          {fullName || 'User'}
+        <h3 className="mt-4 text-lg font-semibold text-foreground">
+          {fullName || 'Your account'}
         </h3>
-        <p className="text-sm text-gray-400 mt-2 uppercase tracking-wider">
-          {registrationId}
+        <p className="mt-1 break-all text-sm text-muted-foreground">{email}</p>
+        {role && (
+          <span className="mt-2 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold capitalize text-primary">
+            {role}
+          </span>
+        )}
+        <p className="mt-4 text-xs text-muted-foreground">
+          Your photo shows on team lists and in order chats with customers.
         </p>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{email}</p>
       </div>
     </div>
   );
