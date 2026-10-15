@@ -73,8 +73,7 @@ const createCollectionSchema = z.object({
 
 type CreateCollectionForm = z.infer<typeof createCollectionSchema>;
 
-const cardClass =
-  'rounded-[10px] bg-card p-6 custom-card-shadow border dark:border-white/10';
+const cardClass = 'surface-card p-6';
 
 // Client-side condition evaluation logic has been moved to useProductConditions hook
 

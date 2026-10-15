@@ -60,12 +60,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
   const displayPicture = localPicture || imageUrl;
 
   return (
-    <div
-      className={cn(
-        'rounded-[12px] border bg-card px-6 py-8 custom-card-shadow dark:border-white/10',
-        className
-      )}
-    >
+    <div className={cn('surface-card px-6 py-8', className)}>
       <input
         ref={fileInputRef}
         type="file"
