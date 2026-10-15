@@ -1,23 +1,29 @@
-// Vendor Profile Card - Molecule
-// Card showing vendor profile information and document upload options
-// Uploads go to Cloudinary via POST /uploads/profile, then URL is saved to Business via PATCH /business/profile
-
+// Store hero: what the storefront looks like (cover, logo, theme), where the
+// store stands (approval status, link to the live storefront) and how
+// finished the profile is. Uploads go to Cloudinary via POST /uploads/profile,
+// then the URL is saved to the business via PATCH /business/profile.
 import React, { useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import {
   Camera,
+  Check,
+  CheckCircle2,
+  Copy,
+  ExternalLink,
+  FileUp,
   Loader2,
   Palette,
-  FileUp,
-  CheckCircle2,
   XCircle,
 } from 'lucide-react';
 import Image from 'next/image';
+import { useUploadProfileImageMutation } from '@/redux/services/uploads/uploads.api-slice';
+import { useUpdateBusinessProfileDetailsMutation } from '@/redux/services/settings/settings.api-slice';
+import { toast } from 'sonner';
+import { readApiError } from '@/redux/services/types';
+import type { ProfileCompleteness } from '../lib/profile-completeness';
 
 // No 'cac'. The CAC certificate is evidence for verification, not a
-// storefront asset, and is filed from Get Verified - beside the RC number
-// check it supports, through an endpoint that accepts a PDF. This card only
-// handles the three images the storefront renders.
+// storefront asset, and is filed from Get Verified.
 type UploadType = 'logo' | 'svg_logo' | 'cover';
 
 // Local overrides: `null` = no local change yet (use whatever the API returned),
@@ -32,8 +38,6 @@ const payloadKeyFor = (type: UploadType): string =>
       ? 'business_logo_svg_url'
       : 'cover_image_url';
 
-// Cloudinary URLs end in the stored file name — good enough to confirm to the
-// vendor *which* file is on record.
 const fileNameFromUrl = (url?: string | null): string | null => {
   if (!url) return null;
   const path = url.split('?')[0].split('#')[0];
@@ -46,8 +50,8 @@ const fileNameFromUrl = (url?: string | null): string | null => {
   }
 };
 
-// Darken a hex colour — mirrors the shop storefront, which paints its page
-// background with darkenHex(theme_color), so the preview here matches what
+// Darken a hex colour - mirrors the shop storefront, which paints its page
+// background with darkenHex(theme_color), so the preview matches what
 // customers actually see.
 function darkenHex(hex: string, amount = 0.55): string {
   const clean = (hex || '').replace('#', '');
@@ -58,7 +62,6 @@ function darkenHex(hex: string, amount = 0.55): string {
   return `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
 }
 
-// Curated storefront-friendly presets.
 const THEME_PRESETS = [
   '#8D7F72',
   '#2C1810',
@@ -71,110 +74,87 @@ const THEME_PRESETS = [
   '#B45309',
   '#111827',
 ];
-import { useUploadProfileImageMutation } from '@/redux/services/uploads/uploads.api-slice';
-import { useUpdateBusinessProfileDetailsMutation } from '@/redux/services/settings/settings.api-slice';
-import { toast } from 'sonner';
-import { readApiError } from '@/redux/services/types';
 
 interface VendorProfileCardProps {
   vendorName: string;
   registrationId: string;
   website: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'approved' | 'rejected' | 'verified' | string;
   logoUrl?: string;
   svgLogoUrl?: string;
   coverImageUrl?: string;
   themeColor?: string;
+  /** Live storefront, when the store id is known. */
+  storefrontUrl?: string;
+  completeness?: ProfileCompleteness;
   className?: string;
 }
 
-// One row in the upload list. Empty state is the plain "Upload X" button; once
-// a file exists the row keeps that label and gains a green tick plus a chip
-// naming the stored file, which can be opened or removed.
+// One row in the brand list: empty state is the plain "Upload X" button; once
+// a file exists the row keeps that label and gains a tick plus the file name.
 const UploadRow = ({
   label,
+  hint,
   fileUrl,
   uploading,
   removing,
   disabled,
-  verified = false,
   onSelect,
   onRemove,
 }: {
   label: string;
-  fileUrl?: string | null;
+  hint: string;
+  fileUrl?: string;
   uploading: boolean;
   removing: boolean;
   disabled: boolean;
-  /**
-   * Back-office confirmation that the document is genuine. No endpoint exposes
-   * per-document verification yet, so nothing passes this today.
-   * TODO(api): wire once the business profile returns a verification flag.
-   */
-  verified?: boolean;
   onSelect: () => void;
   onRemove: () => void;
 }) => {
   const busy = uploading || removing;
-
   return (
-    <div className="w-full px-6 py-4 bg-white dark:bg-card border dark:border-white/10 rounded-[12px] custom-card-shadow">
-      <div className="flex items-center gap-3">
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-background px-3 py-2.5 dark:bg-muted/40">
+      <div className="min-w-0">
+        <div className="flex items-center gap-2">
+          {fileUrl ? (
+            <CheckCircle2 className="size-4 shrink-0 text-emerald-600" />
+          ) : (
+            <FileUp className="size-4 shrink-0 text-muted-foreground" />
+          )}
+          <span className="text-sm font-medium text-foreground">{label}</span>
+        </div>
+        <p
+          className="mt-0.5 truncate text-[11px] text-muted-foreground"
+          title={fileNameFromUrl(fileUrl) ?? undefined}
+        >
+          {fileUrl ? (fileNameFromUrl(fileUrl) ?? 'Uploaded') : hint}
+        </p>
+      </div>
+      <div className="flex items-center gap-1.5">
         <button
           type="button"
           onClick={onSelect}
           disabled={disabled}
-          className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 text-left disabled:opacity-50"
+          className="rounded-md border border-border px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-accent disabled:opacity-50"
         >
-          {uploading ? (
-            <Loader2 className="w-5 h-5 shrink-0 animate-spin text-gray-400" />
-          ) : (
-            <FileUp className="w-5 h-5 shrink-0 text-gray-500 dark:text-gray-400" />
-          )}
-          <span className="truncate text-sm font-medium text-gray-600 dark:text-gray-300">
-            {uploading ? 'Uploading…' : `Upload ${label}`}
-          </span>
+          {uploading ? 'Uploading…' : fileUrl ? 'Replace' : 'Upload'}
         </button>
-
-        {fileUrl && !busy && (
-          <span className="shrink-0">
-            {verified ? (
-              <span className="text-xs font-bold text-green-700 dark:text-green-500">
-                Verified
-              </span>
-            ) : (
-              <CheckCircle2 className="size-5 fill-green-600 text-white dark:text-card" />
-            )}
-          </span>
-        )}
-      </div>
-
-      {fileUrl && !uploading && (
-        <div className="mt-3 flex items-center gap-2 rounded-lg border border-gray-200 dark:border-white/10 px-3 py-2">
-          <a
-            href={fileUrl}
-            target="_blank"
-            rel="noreferrer"
-            title={fileNameFromUrl(fileUrl) ?? undefined}
-            className="min-w-0 flex-1 truncate text-sm text-gray-500 hover:underline dark:text-gray-400"
-          >
-            {fileNameFromUrl(fileUrl) ?? 'View file'}
-          </a>
+        {fileUrl && (
           <button
             type="button"
             onClick={onRemove}
             disabled={disabled}
             aria-label={`Remove ${label}`}
-            className="shrink-0 cursor-pointer text-gray-400 transition-colors hover:text-gray-600 disabled:opacity-50 dark:hover:text-gray-200"
+            className="rounded-md p-1.5 text-muted-foreground hover:text-destructive disabled:opacity-50"
           >
             {removing ? (
-              <Loader2 className="size-5 animate-spin" />
+              <Loader2 className="size-4 animate-spin" />
             ) : (
-              <XCircle className="size-5" />
+              <XCircle className="size-4" />
             )}
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
@@ -188,23 +168,22 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   svgLogoUrl,
   coverImageUrl,
   themeColor,
+  storefrontUrl,
+  completeness,
   className,
 }) => {
   const logoInputRef = useRef<HTMLInputElement>(null);
   const svgLogoInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
-  // Local state for uploaded images (shown immediately after upload)
   const [localLogo, setLocalLogo] = useState<string | null>(null);
   const [localSvgLogo, setLocalSvgLogo] = useState<string | null>(null);
   const [localCover, setLocalCover] = useState<string | null>(null);
-  // Which upload is in flight — the mutation's own isLoading is shared by all
-  // four, which would otherwise spin every control at once.
   const [uploadingType, setUploadingType] = useState<UploadType | null>(null);
   const [removingType, setRemovingType] = useState<UploadType | null>(null);
-  // Optimistic theme colour, so the preview updates instantly on select.
   const [localTheme, setLocalTheme] = useState<string | null>(null);
   const [savingTheme, setSavingTheme] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const [uploadImage, { isLoading: isUploading }] =
     useUploadProfileImageMutation();
@@ -214,16 +193,17 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
   const coverTint = darkenHex(effectiveTheme, 0.45);
 
   const handleSelectTheme = async (color: string) => {
-    if (!color) return;
     const prev = localTheme;
     setLocalTheme(color);
     setSavingTheme(true);
     try {
       await updateBusinessDetails({ theme_color: color }).unwrap();
-      toast.success('Storefront theme colour updated');
+      toast.success('Storefront colour updated');
     } catch (error: any) {
-      setLocalTheme(prev); // revert on failure
-      toast.error(readApiError(error, 'Failed to update theme colour'));
+      setLocalTheme(prev);
+      toast.error(
+        readApiError(error, 'Could not update the storefront colour')
+      );
     } finally {
       setSavingTheme(false);
     }
@@ -234,50 +214,44 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
     try {
       const result = await uploadImage(file).unwrap();
       const imageUrl = result?.data?.url || (result as any)?.url;
-
       if (!imageUrl) {
-        toast.error('Upload failed — no URL returned');
+        toast.error('Upload failed - no URL returned');
         return;
       }
-
-      // Save URL to business profile
       await updateBusinessDetails({
         [payloadKeyFor(type)]: imageUrl,
       } as any).unwrap();
-
-      // Update local state to show the image immediately
       if (type === 'logo') {
         setLocalLogo(imageUrl);
-        toast.success('Logo uploaded successfully!');
+        toast.success('Logo updated');
       } else if (type === 'svg_logo') {
         setLocalSvgLogo(imageUrl);
-        toast.success('SVG/PNG logo uploaded successfully!');
+        toast.success('Header logo updated');
       } else {
         setLocalCover(imageUrl);
-        toast.success('Cover image uploaded successfully!');
+        toast.success('Cover photo updated');
       }
     } catch (error: any) {
-      toast.error(readApiError(error, 'Failed to upload image'));
+      toast.error(readApiError(error, 'Could not upload the image'));
     } finally {
       setUploadingType(null);
     }
   };
 
-  // Clearing sends '' for that field.
   const handleRemove = async (type: UploadType, label: string) => {
     setRemovingType(type);
     try {
       await updateBusinessDetails({
         [payloadKeyFor(type)]: '',
       } as any).unwrap();
-
       if (type === 'logo') setLocalLogo('');
       else if (type === 'svg_logo') setLocalSvgLogo('');
       else setLocalCover('');
-
       toast.success(`${label} removed`);
     } catch (error: any) {
-      toast.error(readApiError(error, `Failed to remove ${label}`));
+      toast.error(
+        readApiError(error, `Could not remove the ${label.toLowerCase()}`)
+      );
     } finally {
       setRemovingType(null);
     }
@@ -288,257 +262,336 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
     type: UploadType
   ) => {
     const file = e.target.files?.[0];
-    if (file) {
-      handleImageUpload(file, type);
-    }
+    if (file) handleImageUpload(file, type);
     e.target.value = '';
   };
 
-  const busy = isUploading || removingType !== null;
+  const copyId = async () => {
+    try {
+      await navigator.clipboard.writeText(registrationId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast.error('Could not copy');
+    }
+  };
 
+  const busy = isUploading || removingType !== null;
   const displayLogo = resolveFile(localLogo, logoUrl);
   const displaySvgLogo = resolveFile(localSvgLogo, svgLogoUrl);
   const displayCover = resolveFile(localCover, coverImageUrl);
 
-  const getStatusColor = () => {
-    switch (status) {
-      case 'approved':
-        return 'text-green-600';
-      case 'rejected':
-        return 'text-red-600';
-      case 'pending':
-      default:
-        return 'text-[#D4A574]';
-    }
-  };
-
-  const getStatusText = () => {
-    switch (status) {
-      case 'approved':
-        return 'Approved';
-      case 'rejected':
-        return 'Rejected';
-      case 'pending':
-      default:
-        return 'Pending approval';
-    }
-  };
+  const approved = status === 'approved' || status === 'verified';
+  const statusChip = approved
+    ? {
+        text: 'Approved',
+        className:
+          'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
+      }
+    : status === 'rejected'
+      ? {
+          text: 'Changes requested',
+          className:
+            'bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300',
+        }
+      : {
+          text: 'Pending approval',
+          className:
+            'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
+        };
 
   return (
-    <div className={cn('space-y-6', className)}>
-      {/* Main Vendor Card */}
-      <div className="bg-white dark:bg-card border dark:border-white/10 rounded-[12px] custom-card-shadow overflow-hidden pb-6">
-        {/* Hidden file inputs */}
-        <input
-          ref={logoInputRef}
-          type="file"
-          accept="image/png,image/svg+xml,image/jpeg,image/webp"
-          className="hidden"
-          onChange={(e) => handleFileChange(e, 'logo')}
-        />
-        <input
-          ref={svgLogoInputRef}
-          type="file"
-          accept="image/png,image/svg+xml,image/jpeg,image/webp"
-          className="hidden"
-          onChange={(e) => handleFileChange(e, 'svg_logo')}
-        />
-        <input
-          ref={coverInputRef}
-          type="file"
-          accept="image/png,image/jpeg,image/webp"
-          className="hidden"
-          onChange={(e) => handleFileChange(e, 'cover')}
-        />
+    <div
+      className={cn(
+        'overflow-hidden rounded-[12px] border bg-card custom-card-shadow dark:border-white/10',
+        className
+      )}
+    >
+      <input
+        ref={logoInputRef}
+        type="file"
+        accept="image/png,image/svg+xml,image/jpeg,image/webp"
+        className="hidden"
+        onChange={(e) => handleFileChange(e, 'logo')}
+      />
+      <input
+        ref={svgLogoInputRef}
+        type="file"
+        accept="image/png,image/svg+xml,image/jpeg,image/webp"
+        className="hidden"
+        onChange={(e) => handleFileChange(e, 'svg_logo')}
+      />
+      <input
+        ref={coverInputRef}
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        className="hidden"
+        onChange={(e) => handleFileChange(e, 'cover')}
+      />
 
-        {/* Cover Image Section (Touches edges). Backed by the theme colour so it
-          previews the storefront accent — the shop paints its whole page with a
-          darkened theme_color, matched here via coverTint. */}
-        <div
-          className="relative h-32"
-          style={{
-            background: `linear-gradient(135deg, ${effectiveTheme}, ${coverTint})`,
-          }}
+      {/* Cover, tinted with the storefront colour the way the shop paints it */}
+      <div
+        className="relative h-36 sm:h-44"
+        style={{
+          background: `linear-gradient(135deg, ${effectiveTheme}, ${coverTint})`,
+        }}
+      >
+        {displayCover && (
+          <>
+            <Image
+              src={displayCover}
+              alt="Cover"
+              fill
+              className="object-cover"
+              unoptimized={displayCover?.includes('/raw/')}
+            />
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background: `linear-gradient(to bottom, transparent 30%, ${coverTint}cc 100%)`,
+              }}
+            />
+          </>
+        )}
+        {displaySvgLogo && (
+          <div className="absolute left-4 top-3 z-10 size-10">
+            <Image
+              src={displaySvgLogo}
+              alt={vendorName}
+              width={100}
+              height={100}
+              quality={100}
+              className="size-full object-contain"
+              unoptimized={
+                displaySvgLogo?.toLowerCase().includes('.svg') ||
+                displaySvgLogo?.includes('/raw/')
+              }
+            />
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={() => coverInputRef.current?.click()}
+          disabled={busy}
+          className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 text-xs font-medium text-gray-800 shadow-md hover:bg-white disabled:opacity-60 dark:bg-black/60 dark:text-white dark:hover:bg-black/70"
         >
-          {displayCover ? (
-            <>
-              <Image
-                src={displayCover}
-                alt="Cover"
-                fill
-                className="object-cover"
-                unoptimized={displayCover?.includes('/raw/')}
-              />
-              {/* Theme-tinted overlay so the logo/buttons pop and the accent reads
-                through even with a cover photo. */}
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background: `linear-gradient(to bottom, transparent 30%, ${coverTint}cc 100%)`,
-                }}
-              />
-            </>
-          ) : null}
-
-          {/* Scaled SVG/PNG logo in top-left corner */}
-          {displaySvgLogo && (
-            <div className="absolute top-2 left-4 z-10">
-              <div className="size-10">
-                <Image
-                  src={displaySvgLogo}
-                  alt={vendorName}
-                  width={100}
-                  height={100}
-                  quality={100}
-                  className="size-full object-contain"
-                  unoptimized={
-                    displaySvgLogo?.toLowerCase().includes('.svg') ||
-                    displaySvgLogo?.includes('/raw/')
-                  }
-                />
-              </div>
-            </div>
+          {uploadingType === 'cover' ? (
+            <Loader2 className="size-3.5 animate-spin" />
+          ) : (
+            <Camera className="size-3.5" />
           )}
+          <span className="hidden sm:inline">
+            {displayCover ? 'Change cover' : 'Add cover photo'}
+          </span>
+        </button>
+      </div>
 
-          <button
-            onClick={() => coverInputRef.current?.click()}
-            disabled={isUploading}
-            className="absolute top-2 right-2 bg-white dark:bg-muted p-2 rounded-full shadow-md hover:bg-gray-50 dark:hover:bg-muted/80"
-          >
-            {uploadingType === 'cover' ? (
-              <Loader2 className="w-4 h-4 text-gray-600 animate-spin" />
-            ) : (
-              <Camera className="w-4 h-4 text-gray-600" />
-            )}
-          </button>
-        </div>
-
-        {/* Logo Section */}
-        <div className="px-6 flex flex-col items-center -mt-16">
-          <div className="relative">
-            <div className="w-24 h-24 bg-white dark:bg-muted rounded-full border-4 border-white dark:border-card shadow-lg flex items-center justify-center overflow-hidden">
-              {displayLogo ? (
-                <Image
-                  src={displayLogo}
-                  alt={vendorName}
-                  width={200}
-                  height={200}
-                  quality={100}
-                  className="object-cover size-full"
-                  unoptimized={displayLogo?.includes('/raw/')}
-                />
-              ) : (
-                <div className="w-full h-full bg-white dark:bg-muted flex items-center justify-center">
+      <div className="px-5 pb-5 sm:px-6">
+        {/* Logo + identity + storefront link */}
+        <div className="-mt-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex items-end gap-4">
+            <div className="relative shrink-0">
+              <div className="flex size-24 items-center justify-center overflow-hidden rounded-full border-4 border-card bg-white shadow-lg dark:bg-muted">
+                {displayLogo ? (
+                  <Image
+                    src={displayLogo}
+                    alt={vendorName}
+                    width={200}
+                    height={200}
+                    quality={100}
+                    className="size-full object-cover"
+                    unoptimized={displayLogo?.includes('/raw/')}
+                  />
+                ) : (
                   <span className="text-3xl font-bold text-gray-800 dark:text-gray-200">
                     {vendorName.charAt(0)}
                   </span>
-                </div>
-              )}
-            </div>
-            <button
-              onClick={() => logoInputRef.current?.click()}
-              disabled={isUploading}
-              className="absolute bottom-0 right-0 bg-[#3d2817] p-2 rounded-full shadow-md border-2 border-white hover:bg-[#2c1d11]"
-            >
-              {uploadingType === 'logo' ? (
-                <Loader2 className="w-4 h-4 text-gray-600 animate-spin" />
-              ) : (
-                <Camera className="w-4 h-4 text-white" />
-              )}
-            </button>
-          </div>
-
-          {/* Vendor Info */}
-          <h3 className="text-lg font-semibold text-[#1C1C1E] dark:text-white mt-4">
-            {vendorName}
-          </h3>
-          <p className="text-sm text-gray-400 mt-1 uppercase tracking-wider">
-            {registrationId}
-          </p>
-          <p className="text-sm text-[#5C2D0D] dark:text-amber-400 mt-1">
-            {website}
-          </p>
-          <p className={cn('text-xs font-semibold mt-1', getStatusColor())}>
-            {getStatusText()}
-          </p>
-
-          {/* Storefront theme colour picker — previews live in the cover above */}
-          <div className="mt-5 w-full px-2 pb-1">
-            <div className="mb-2.5 flex items-center justify-center gap-1.5">
-              <Palette className="size-3.5 text-gray-400" />
-              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                Storefront theme
-              </span>
-              {savingTheme && (
-                <Loader2 className="size-3 animate-spin text-gray-400" />
-              )}
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              {THEME_PRESETS.map((c) => {
-                const active = effectiveTheme.toLowerCase() === c.toLowerCase();
-                return (
-                  <button
-                    key={c}
-                    type="button"
-                    disabled={savingTheme}
-                    onClick={() => handleSelectTheme(c)}
-                    aria-label={`Theme colour ${c}`}
-                    className="size-7 rounded-full transition-transform hover:scale-110 disabled:opacity-60"
-                    style={{
-                      backgroundColor: c,
-                      boxShadow: active
-                        ? `0 0 0 2px #fff, 0 0 0 4px ${c}`
-                        : '0 0 0 1px rgba(0,0,0,0.12)',
-                    }}
-                  />
-                );
-              })}
-              {/* Custom colour — native picker behind a rainbow swatch */}
-              <label
-                className="relative size-7 cursor-pointer overflow-hidden rounded-full border border-white shadow-sm"
-                title="Custom colour"
-                style={{
-                  background:
-                    'conic-gradient(from 0deg, #ef4444, #f59e0b, #22c55e, #06b6d4, #3b82f6, #a855f7, #ef4444)',
-                }}
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => logoInputRef.current?.click()}
+                disabled={busy}
+                aria-label={displayLogo ? 'Change logo' : 'Add logo'}
+                className="absolute -bottom-0.5 -right-0.5 rounded-full border-2 border-card bg-primary p-2 text-primary-foreground shadow-md hover:opacity-90 disabled:opacity-60"
               >
-                <input
-                  type="color"
-                  value={effectiveTheme}
-                  onChange={(e) => handleSelectTheme(e.target.value)}
-                  disabled={savingTheme}
-                  className="absolute inset-0 cursor-pointer opacity-0"
-                />
-              </label>
+                {uploadingType === 'logo' ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Camera className="size-4" />
+                )}
+              </button>
             </div>
-            <p className="mt-2.5 text-center text-[11px] leading-relaxed text-gray-400">
-              This colours your storefront background for customers.
-            </p>
+            <div className="min-w-0 pb-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="truncate text-lg font-semibold text-foreground">
+                  {vendorName}
+                </h2>
+                <span
+                  className={cn(
+                    'rounded-full px-2 py-0.5 text-[11px] font-semibold',
+                    statusChip.className
+                  )}
+                >
+                  {statusChip.text}
+                </span>
+              </div>
+              {website ? (
+                <a
+                  href={
+                    website.startsWith('http') ? website : `https://${website}`
+                  }
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-0.5 block truncate text-sm text-primary hover:underline"
+                >
+                  {website}
+                </a>
+              ) : (
+                <p className="mt-0.5 text-sm text-muted-foreground">
+                  No website yet
+                </p>
+              )}
+              {registrationId && (
+                <button
+                  type="button"
+                  onClick={copyId}
+                  className="mt-1 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
+                  title="Store ID - quote this to support"
+                >
+                  Store ID {registrationId.slice(-6).toUpperCase()}
+                  {copied ? (
+                    <Check className="size-3 text-emerald-600" />
+                  ) : (
+                    <Copy className="size-3" />
+                  )}
+                </button>
+              )}
+            </div>
+          </div>
+          {storefrontUrl && (
+            <a
+              href={storefrontUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-medium text-foreground hover:bg-accent"
+            >
+              View storefront
+              <ExternalLink className="size-4" />
+            </a>
+          )}
+        </div>
+
+        {/* Completeness */}
+        {completeness && (
+          <div className="mt-5 rounded-lg border border-border bg-muted/30 px-4 py-3">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-sm font-medium text-foreground">
+                {completeness.percent === 100
+                  ? 'Profile complete'
+                  : `Profile ${completeness.percent}% complete`}
+              </span>
+              <span className="text-xs tabular-nums text-muted-foreground">
+                {completeness.done} of {completeness.total}
+              </span>
+            </div>
+            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border">
+              <div
+                className={cn(
+                  'h-full rounded-full transition-all',
+                  completeness.percent === 100 ? 'bg-emerald-500' : 'bg-primary'
+                )}
+                style={{ width: `${Math.max(4, completeness.percent)}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Storefront look */}
+        <div
+          id="profile-brand"
+          className="mt-6 scroll-mt-24 border-t border-border pt-5"
+        >
+          <div className="mb-3 flex items-center gap-2">
+            <Palette className="size-4 text-muted-foreground" />
+            <h3 className="text-sm font-semibold text-foreground">
+              Storefront look
+            </h3>
+            {savingTheme && (
+              <Loader2 className="size-3 animate-spin text-muted-foreground" />
+            )}
+          </div>
+          <div className="grid gap-4 lg:grid-cols-[auto_1fr] lg:items-start">
+            <div>
+              <p className="mb-2 text-xs text-muted-foreground">
+                Accent colour. It paints the cover above and your storefront
+                background.
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                {THEME_PRESETS.map((c) => {
+                  const active =
+                    effectiveTheme.toLowerCase() === c.toLowerCase();
+                  return (
+                    <button
+                      key={c}
+                      type="button"
+                      disabled={savingTheme}
+                      onClick={() => handleSelectTheme(c)}
+                      aria-label={`Theme colour ${c}`}
+                      aria-pressed={active}
+                      className="size-7 rounded-full transition-transform hover:scale-110 disabled:opacity-60"
+                      style={{
+                        backgroundColor: c,
+                        boxShadow: active
+                          ? `0 0 0 2px var(--card), 0 0 0 4px ${c}`
+                          : '0 0 0 1px rgba(0,0,0,0.12)',
+                      }}
+                    />
+                  );
+                })}
+                <label
+                  className="relative size-7 cursor-pointer overflow-hidden rounded-full border border-card shadow-sm"
+                  title="Custom colour"
+                  style={{
+                    background:
+                      'conic-gradient(from 0deg, #ef4444, #f59e0b, #22c55e, #06b6d4, #3b82f6, #a855f7, #ef4444)',
+                  }}
+                >
+                  <input
+                    type="color"
+                    value={effectiveTheme}
+                    onChange={(e) => handleSelectTheme(e.target.value)}
+                    disabled={savingTheme}
+                    className="absolute inset-0 cursor-pointer opacity-0"
+                    aria-label="Custom theme colour"
+                  />
+                </label>
+              </div>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <UploadRow
+                label="Header logo"
+                hint="Optional. A wide or transparent logo for the top of your storefront; the round logo is used elsewhere."
+                fileUrl={displaySvgLogo}
+                uploading={uploadingType === 'svg_logo'}
+                removing={removingType === 'svg_logo'}
+                disabled={busy}
+                onSelect={() => svgLogoInputRef.current?.click()}
+                onRemove={() => handleRemove('svg_logo', 'Header logo')}
+              />
+              <UploadRow
+                label="Cover photo"
+                hint="Wide photo behind your store name. 1600 by 600 or larger looks best."
+                fileUrl={displayCover}
+                uploading={uploadingType === 'cover'}
+                removing={removingType === 'cover'}
+                disabled={busy}
+                onSelect={() => coverInputRef.current?.click()}
+                onRemove={() => handleRemove('cover', 'Cover photo')}
+              />
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Upload rows — each reflects whatever is already on the profile */}
-      <div className="space-y-4">
-        <UploadRow
-          label="SVG/PNG logo"
-          fileUrl={displaySvgLogo}
-          uploading={uploadingType === 'svg_logo'}
-          removing={removingType === 'svg_logo'}
-          disabled={busy}
-          onSelect={() => svgLogoInputRef.current?.click()}
-          onRemove={() => handleRemove('svg_logo', 'SVG/PNG logo')}
-        />
-
-        <UploadRow
-          label="Cover image"
-          fileUrl={displayCover}
-          uploading={uploadingType === 'cover'}
-          removing={removingType === 'cover'}
-          disabled={busy}
-          onSelect={() => coverInputRef.current?.click()}
-          onRemove={() => handleRemove('cover', 'Cover image')}
-        />
       </div>
     </div>
   );
