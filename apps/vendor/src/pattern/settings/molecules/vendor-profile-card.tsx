@@ -348,15 +348,16 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
             />
           </>
         )}
+        {/* Header logo, sized like the storefront shows it: a wide mark, not an icon. */}
         {displaySvgLogo && (
-          <div className="absolute left-4 top-3 z-10 size-10">
+          <div className="absolute left-4 top-3 z-10 h-14 w-[200px] sm:h-20 sm:w-[280px]">
             <Image
               src={displaySvgLogo}
               alt={vendorName}
-              width={100}
-              height={100}
+              width={400}
+              height={160}
               quality={100}
-              className="size-full object-contain"
+              className="size-full object-contain object-left drop-shadow-md"
               unoptimized={
                 displaySvgLogo?.toLowerCase().includes('.svg') ||
                 displaySvgLogo?.includes('/raw/')
