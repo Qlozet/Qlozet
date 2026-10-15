@@ -66,7 +66,7 @@ type ProfileTab = 'organization' | 'user';
 
 const ProfileContentSkeleton: React.FC = () => (
   <div className="space-y-6">
-    <div className="overflow-hidden rounded-[12px] border bg-card custom-card-shadow dark:border-white/10">
+    <div className="surface-card overflow-hidden">
       <Skeleton className="h-40 w-full rounded-none" />
       <div className="-mt-12 flex items-end gap-4 px-6 pb-6">
         <Skeleton className="size-24 rounded-full border-4 border-card" />
@@ -78,7 +78,7 @@ const ProfileContentSkeleton: React.FC = () => (
     </div>
     <Skeleton className="h-10 w-64 rounded-lg" />
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-      <div className="space-y-6 rounded-[12px] border bg-card p-6 custom-card-shadow dark:border-white/10 lg:col-span-2">
+      <div className="surface-card space-y-6 p-6 lg:col-span-2">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="space-y-2">
             <Skeleton className="h-3 w-24" />
@@ -268,7 +268,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
 
   if (!hasBusiness) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 rounded-[12px] border bg-card px-6 py-16 text-center custom-card-shadow dark:border-white/10">
+      <div className="surface-card flex flex-col items-center justify-center gap-3 px-6 py-16 text-center">
         <p className="text-sm font-medium text-foreground">
           Couldn&apos;t load your profile
         </p>
@@ -346,7 +346,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
 
       {activeProfileTab === 'organization' ? (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="rounded-[12px] border bg-card p-5 custom-card-shadow dark:border-white/10 sm:p-8 lg:col-span-2">
+          <div className="surface-card p-5 sm:p-8 lg:col-span-2">
             <OrganizationProfileForm
               initialData={{
                 country: businessData?.country || '',
@@ -375,7 +375,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
           </div>
 
           <aside className="space-y-6 lg:col-span-1">
-            <div className="rounded-[12px] border bg-card p-5 custom-card-shadow dark:border-white/10">
+            <div className="surface-card p-5">
               <div className="flex items-center gap-2">
                 <Sparkles className="size-4 text-primary" />
                 <h3 className="text-sm font-semibold text-foreground">
@@ -425,7 +425,7 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="rounded-[12px] border bg-card p-5 custom-card-shadow dark:border-white/10 sm:p-8 lg:col-span-2">
+          <div className="surface-card p-5 sm:p-8 lg:col-span-2">
             <UserProfileForm
               initialData={{
                 fullName: userData?.full_name || '',

@@ -19,12 +19,7 @@ export const ListingReadinessCard = ({
   readiness,
   className,
 }: ListingReadinessCardProps) => (
-  <div
-    className={cn(
-      'rounded-lg border bg-card p-6 custom-card-shadow',
-      className
-    )}
-  >
+  <div className={cn('surface-card p-6', className)}>
     <div className="mb-3 flex items-center justify-between">
       <span className="text-sm font-semibold text-grey-black dark:text-white">
         Ready to publish?

@@ -230,6 +230,17 @@
   box-shadow: 0px 4px 25px 0px hsla(240, 13%, 72%, 0.15);
 }
 
+/* The one card surface for a page's main components - the same radius,
+   border and shadow as the top bar and the dashboard cards, so settings and
+   the product editors stop each inventing their own (10px here, 12px there,
+   a white/10 border in one place and the token in another). */
+@utility surface-card {
+  border-radius: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0px 4px 25px 0px hsla(240, 13%, 72%, 0.15);
+}
+
 /* Subtle slide-in from right for Sheets (Profile, Order Details) */
 @keyframes bounce-slide-in-right {
   0% {

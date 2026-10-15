@@ -11,8 +11,7 @@ import { Input } from '@/components/ui/input';
 import { FormControl, FormField, FormItem } from '@/components/ui/form';
 import { cn } from '@/lib/utils';
 
-const cardClass =
-  'rounded-[10px] bg-card p-6 custom-card-shadow border dark:border-white/10';
+const cardClass = 'surface-card p-6';
 
 interface SizeChartBuilderProps {
   /** Currently selected body parts (drives columns) */

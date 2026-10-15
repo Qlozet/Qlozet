@@ -979,7 +979,7 @@ export default function AddClothingTemplate() {
             </div>
 
             {/* The one choice that shapes the rest of the form. */}
-            <div className="rounded-lg border bg-card p-4 custom-card-shadow sm:p-6">
+            <div className="surface-card p-4 sm:p-6">
               <p className="text-sm font-semibold text-grey-black dark:text-white">
                 What are you listing?
               </p>
@@ -1032,7 +1032,7 @@ export default function AddClothingTemplate() {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
               {/* Left column: the garment, in the order a vendor thinks */}
               <div className="space-y-6 lg:col-span-2">
-                <div className="rounded-lg border bg-card p-6 custom-card-shadow">
+                <div className="surface-card p-6">
                   <SectionHeader
                     step={steps.garment}
                     title="The garment"
@@ -1078,7 +1078,7 @@ export default function AddClothingTemplate() {
                   </div>
                 </div>
 
-                <div className="rounded-lg border bg-card p-6 custom-card-shadow">
+                <div className="surface-card p-6">
                   <SectionHeader
                     step={steps.photos}
                     title="Photos"
@@ -1121,7 +1121,7 @@ export default function AddClothingTemplate() {
                 </div>
 
                 {(customizationEnabled || hasCustomItems) && (
-                  <div className="rounded-lg border bg-card p-6 custom-card-shadow">
+                  <div className="surface-card p-6">
                     <SectionHeader
                       step={steps.options}
                       title="Options the customer can choose"
@@ -1134,7 +1134,7 @@ export default function AddClothingTemplate() {
                   </div>
                 )}
 
-                <div className="rounded-lg border bg-card p-6 custom-card-shadow">
+                <div className="surface-card p-6">
                   <SectionHeader
                     step={steps.sizes}
                     title="Colours and sizes"
@@ -1198,7 +1198,7 @@ export default function AddClothingTemplate() {
                 )}
 
                 {customizationEnabled && (
-                  <div className="rounded-lg border bg-card p-6 custom-card-shadow">
+                  <div className="surface-card p-6">
                     <SectionHeader
                       step={steps.making}
                       title="Making it"
@@ -1229,7 +1229,7 @@ export default function AddClothingTemplate() {
               <div className="lg:col-span-1">
                 <div className="space-y-6 lg:sticky lg:top-6">
                   {editId && (
-                    <div className="rounded-lg border bg-card p-6 custom-card-shadow">
+                    <div className="surface-card p-6">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-semibold text-grey-black dark:text-white">
                           Listing status
@@ -1277,7 +1277,7 @@ export default function AddClothingTemplate() {
                     discountsHref={APP_ROUTES.productsDiscounts}
                   />
 
-                  <div className="rounded-lg border bg-card p-6 custom-card-shadow">
+                  <div className="surface-card p-6">
                     <div className="mb-3">
                       <span className="text-sm font-semibold text-grey-black dark:text-white">
                         Customer-supplied fabric

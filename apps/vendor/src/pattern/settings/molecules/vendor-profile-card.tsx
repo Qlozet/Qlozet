@@ -301,12 +301,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
         };
 
   return (
-    <div
-      className={cn(
-        'overflow-hidden rounded-[12px] border bg-card custom-card-shadow dark:border-white/10',
-        className
-      )}
-    >
+    <div className={cn('surface-card overflow-hidden', className)}>
       <input
         ref={logoInputRef}
         type="file"

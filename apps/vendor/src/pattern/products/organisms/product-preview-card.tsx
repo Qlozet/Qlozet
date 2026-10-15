@@ -73,12 +73,7 @@ export const ProductPreviewCard = ({
   }, [allRawProducts, matchingProducts, manualExcludes, manualPickerSearch]);
 
   return (
-    <div
-      className={cn(
-        'rounded-[10px] bg-card p-6 custom-card-shadow border dark:border-white/10 flex flex-col',
-        className
-      )}
-    >
+    <div className={cn('surface-card p-6 flex flex-col', className)}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-base font-medium">Product Preview</h3>
         <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">

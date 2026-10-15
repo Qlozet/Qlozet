@@ -293,7 +293,7 @@ export const VariantSelectOptions = ({
   };
 
   return (
-    <div className="rounded-lg border bg-card p-6 custom-card-shadow">
+    <div className="surface-card p-6">
       <h3 className="mb-1 text-sm font-semibold text-grey-black dark:text-white">
         Add a colour and its sizes
       </h3>

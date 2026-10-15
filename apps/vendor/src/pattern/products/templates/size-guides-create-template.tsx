@@ -95,8 +95,7 @@ const sizeGuideFormSchema = z.object({
 
 type SizeGuideForm = z.infer<typeof sizeGuideFormSchema>;
 
-const cardClass =
-  'rounded-[10px] bg-card p-6 custom-card-shadow border dark:border-white/10';
+const cardClass = 'surface-card p-6';
 
 const humanizeBodyPart = (part: string): string =>
   part.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
