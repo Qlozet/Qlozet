@@ -515,8 +515,8 @@ export const SETTINGS_TABS: SettingsTab[] = [
           },
           {
             key: 'run_prediction_token_price',
-            label: 'Run prediction',
-            help: 'Running a fit or style prediction.',
+            label: 'Measurement estimate (no photos)',
+            help: 'Charged when a shopper estimates their measurements from height, weight and body shape without photos. The model costs nothing to run; 0 makes it free.',
             ...TOKENS,
           },
           {
