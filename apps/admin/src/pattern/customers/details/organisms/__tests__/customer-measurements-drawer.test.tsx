@@ -137,7 +137,9 @@ describe('CustomerMeasurementsDrawer', () => {
     await open();
 
     expect(within(drawer).getByText('Chest/Bust Circ.')).toBeInTheDocument();
-    expect(within(drawer).getByText('Shoulder Width')).toBeInTheDocument();
+    expect(
+      within(drawer).getByText('Shoulder Breadth (bone to bone)')
+    ).toBeInTheDocument();
     // Nothing invented to fill out the grid.
     expect(within(drawer).queryByText('Ankle Circum.')).toBeNull();
     expect(within(drawer).queryByText('Knee Circum.')).toBeNull();

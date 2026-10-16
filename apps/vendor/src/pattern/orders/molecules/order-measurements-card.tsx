@@ -19,7 +19,7 @@ const LABELS: Record<string, string> = {
   neck: 'Neck',
   neck_circumference: 'Neck',
   shoulder: 'Shoulder Width',
-  shoulder_breadth: 'Shoulder Width',
+  shoulder_breadth: 'Shoulder Breadth (bone to bone)',
   chest: 'Chest / Bust',
   bust: 'Bust',
   waist: 'Waist',
@@ -53,6 +53,18 @@ const LABELS: Record<string, string> = {
   waist_height: 'Waist Height (Floor–Waist)',
   ankle_height: 'Ankle Height',
   neck_height: 'Neck Height (Floor–Nape)',
+};
+
+// What the model's key actually measures, where a tape across the back would
+// give a different number. Shown in the cell's tooltip beside the error band.
+const DEFINITIONS: Record<string, string> = {
+  shoulder_breadth:
+    'Straight line between the two shoulder bones (biacromial). A shoulder seam measured across the back usually runs a few centimetres more.',
+  sleeve_length: 'Centre back of the neck, over the shoulder, to the wrist.',
+  arm_length: 'Shoulder bone to the wrist.',
+  leg_length: 'Crotch to the floor.',
+  inseam: 'Crotch to the ankle bone.',
+  outseam: 'Waist to the ankle bone.',
 };
 
 const prettify = (key: string): string =>
@@ -101,6 +113,7 @@ const MeasurementGrid = ({
       const rough = m?.tier === 'rough';
       const estimated = m?.tier === 'estimated';
       const hint = [
+        DEFINITIONS[row.key],
         rough
           ? 'Rough estimate — verify with the customer before cutting.'
           : estimated
