@@ -116,7 +116,7 @@ const VendorDetailsPage = () => {
       <TopProductsTable businessId={id} />
 
       {/* 5. Wallet details */}
-      <WalletDetailsSection vendor={vendor} metrics={metrics} />
+      <WalletDetailsSection businessId={id} vendor={vendor} />
 
       {/* 6. Internal notes and flags */}
       <VendorNotesSection businessId={id} />
