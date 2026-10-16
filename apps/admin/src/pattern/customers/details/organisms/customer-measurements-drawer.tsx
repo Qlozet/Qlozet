@@ -41,7 +41,7 @@ const LABELS: Record<string, string> = {
   neck: 'Neck Circum.',
   neck_circumference: 'Neck Circum.',
   shoulder: 'Shoulder Width',
-  shoulder_breadth: 'Shoulder Width',
+  shoulder_breadth: 'Shoulder Breadth (bone to bone)',
   shoulder_width: 'Shoulder Width',
   chest: 'Chest/Bust Circ.',
   bust: 'Bust Circ.',
