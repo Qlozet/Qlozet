@@ -20,6 +20,8 @@ const LABELS: Record<string, string> = {
   neck_circumference: 'Neck',
   shoulder: 'Shoulder Width',
   shoulder_breadth: 'Shoulder Breadth (bone to bone)',
+  shoulder_width: 'Shoulder Width (seam to seam)',
+  across_back: 'Across Back',
   chest: 'Chest / Bust',
   bust: 'Bust',
   waist: 'Waist',
@@ -60,6 +62,10 @@ const LABELS: Record<string, string> = {
 const DEFINITIONS: Record<string, string> = {
   shoulder_breadth:
     'Straight line between the two shoulder bones (biacromial). A shoulder seam measured across the back usually runs a few centimetres more.',
+  shoulder_width:
+    'Seam to seam across the back. Estimated as the bone-to-bone breadth plus 3.5 cm; measure the customer before cutting.',
+  across_back: 'Across the back between the two back armpit folds, arms down.',
+  nape_to_waist: 'Nape of the neck down the back to the waist.',
   sleeve_length: 'Centre back of the neck, over the shoulder, to the wrist.',
   arm_length: 'Shoulder bone to the wrist.',
   leg_length: 'Crotch to the floor.',
