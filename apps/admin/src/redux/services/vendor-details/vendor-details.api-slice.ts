@@ -7,6 +7,56 @@
 import { baseAPI } from '@/redux/api/base-api';
 import { ApiResponse, PaginatedData, buildQueryString } from '../types';
 
+/**
+ * GET /admin/businesses/:id/wallet. Money is a number including 0; only a
+ * genuinely absent value is null.
+ */
+export interface VendorWallet {
+  business_id: string;
+  business_name: string | null;
+  has_wallet: boolean;
+  currency: string;
+  status: 'active' | 'suspended' | 'closed' | null;
+  last_transaction_at: string | null;
+  balance: number;
+  pending_balance: number;
+  owed_balance: number;
+  withdrawal_hold: number;
+  available_to_withdraw: number;
+  minimum_payout: number;
+  lifetime: {
+    gross: number;
+    commission: number;
+    net: number;
+    released: number;
+  };
+  unreleased_earnings: number;
+  awaiting_delivery: number;
+  /** pending_balance minus the unreleased earnings rows; 0 when they agree. */
+  pending_drift: number;
+  next_release: { date: string; amount: number } | null;
+  payouts: {
+    total_withdrawn: number;
+    in_flight: number;
+    failed_count: number;
+    count: number;
+    last: {
+      amount: number;
+      status: string;
+      reference: string;
+      created_at: string;
+    } | null;
+  };
+  payout_account: {
+    linked: boolean;
+    rail: string;
+    bank_name: string | null;
+    account_name: string | null;
+    /** Masked: ******1234. */
+    account_number: string | null;
+  };
+}
+
 export interface VendorProduct {
   _id: string;
   name?: string;
@@ -147,6 +197,15 @@ export interface VendorTableParams {
 
 export const vendorDetailsApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
+    // Wallet, earnings and payouts for the Wallet section, in one read.
+    getVendorWallet: builder.query<ApiResponse<VendorWallet>, string>({
+      query: (businessId) => ({
+        url: `/admin/businesses/${businessId}/wallet`,
+        method: 'GET',
+      }),
+      providesTags: ['Transactions', 'VendorDashboard'],
+    }),
+
     // Vendor wallet ledger (Activity Log table).
     //
     // /transactions/vendor cannot serve this: it derives the business from the
@@ -341,6 +400,7 @@ export const {
   useGetVendorTopProductsQuery,
   useGetVendorActivityLogQuery,
   useGetVendorTransactionsQuery,
+  useGetVendorWalletQuery,
   useGetVendorChartQuery,
   useGetVendorWarehousesQuery,
   useUpdateVendorProfileMutation,
