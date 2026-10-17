@@ -70,6 +70,18 @@ export interface CustomerMeasurement {
   name: string;
   active: boolean;
   createdAt: string;
+  /** Per-measurement provenance from the AI estimate; rough rows get "Verify". */
+  tailoring_meta?: Record<string, { tier?: string; mae_cm?: number | null }>;
+}
+
+/** The body type of the customer's default set. */
+export interface CustomerBodyType {
+  type: string;
+  confidence: string;
+  flattering_fits: string[];
+  avoid_fits: string[];
+  /** Null when worked out for this response rather than stored. */
+  computed_at: string | null;
 }
 
 // Slim order returned in a customer's recent-orders array.
@@ -99,6 +111,8 @@ export interface VendorCustomer {
   total_orders: number;
   orders: CustomerOrderPreview[];
   default_measurement: CustomerMeasurement | null;
+  gender?: 'male' | 'female' | null;
+  body_type?: CustomerBodyType | null;
 }
 
 export interface VendorCustomersResponse {
