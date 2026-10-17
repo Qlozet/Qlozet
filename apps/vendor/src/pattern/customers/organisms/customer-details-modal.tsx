@@ -316,12 +316,20 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
       }
     };
 
-    const openMeasurements = () => {
+    // The measurements panel is a Sheet (z-50) under this Dialog (z-60), so
+    // opened on top it sat behind the blurred overlay. Same as an order: step
+    // aside while it is open and come back, with our args, when it closes.
+    const openMeasurements = async () => {
       if (!customer) return;
-      NiceModal.show(CustomerMeasurementsModal, {
-        customer,
-        measurementSet: customer.default_measurement ?? undefined,
-      });
+      hide();
+      try {
+        await NiceModal.show(CustomerMeasurementsModal, {
+          customer,
+          measurementSet: customer.default_measurement ?? undefined,
+        });
+      } finally {
+        show({ customerId });
+      }
     };
 
     // Fetch the full order (list-row shape) and open the REAL order drawer on
