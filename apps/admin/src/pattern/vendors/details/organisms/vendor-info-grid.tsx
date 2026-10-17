@@ -1,7 +1,14 @@
 'use client';
 
 import NiceModal from '@ebay/nice-modal-react';
-import { Star, ShieldCheck, Check, ClipboardList } from 'lucide-react';
+import {
+  Star,
+  ShieldCheck,
+  Check,
+  ClipboardList,
+  Wrench,
+  X,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RowActionsMenu } from '@/pattern/common/molecules/row-actions-menu';
 import type { Business } from '@/redux/services/businesses/businesses.api-slice';
@@ -220,15 +227,20 @@ export const VendorInfoGrid = ({
           than here: both need a body, and a button that only opens a prompt
           for one is a worse version of the panel.
         */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Button
             type="button"
             variant="outline"
             onClick={() => decide('rejected')}
             disabled={isUpdatingStatus || status === 'rejected'}
-            className="h-10 cursor-pointer border-destructive/40 text-destructive hover:bg-destructive/5"
+            aria-label={status === 'rejected' ? 'Rejected' : 'Reject'}
+            title={status === 'rejected' ? 'Rejected' : 'Reject'}
+            className="h-10 size-10 px-0 sm:w-auto sm:px-4 cursor-pointer gap-2 border-destructive/40 text-destructive hover:bg-destructive/5"
           >
-            {status === 'rejected' ? 'Rejected' : 'Reject'}
+            <X className="size-4 sm:hidden" />
+            <span className="hidden sm:inline">
+              {status === 'rejected' ? 'Rejected' : 'Reject'}
+            </span>
           </Button>
           {/* The third outcome, and the one the old two buttons could not
               express: the vendor keeps everything, still cannot sell, and is
@@ -238,17 +250,24 @@ export const VendorInfoGrid = ({
             variant="outline"
             onClick={() => decide('action_required')}
             disabled={isUpdatingStatus}
-            className="h-10 cursor-pointer"
+            aria-label="Needs fixing"
+            title="Needs fixing"
+            className="h-10 size-10 px-0 sm:w-auto sm:px-4 cursor-pointer gap-2"
           >
-            Needs fixing
+            <Wrench className="size-4 sm:hidden" />
+            <span className="hidden sm:inline">Needs fixing</span>
           </Button>
           <Button
             type="button"
             onClick={() => decide('approved')}
             disabled={isUpdatingStatus || status === 'approved'}
-            className="h-10 cursor-pointer gap-2"
+            aria-label={status === 'approved' ? 'Approved' : 'Approve'}
+            title={status === 'approved' ? 'Approved' : 'Approve'}
+            className="h-10 size-10 px-0 sm:w-auto sm:px-4 cursor-pointer gap-2"
           >
-            {status === 'approved' ? 'Approved' : 'Approve'}
+            <span className="hidden sm:inline">
+              {status === 'approved' ? 'Approved' : 'Approve'}
+            </span>
             <Check className="size-4" />
           </Button>
           <RowActionsMenu

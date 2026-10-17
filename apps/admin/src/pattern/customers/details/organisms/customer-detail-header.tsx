@@ -1,6 +1,12 @@
 'use client';
 
-import { ChevronRight, ClipboardList, Flag, Pencil } from 'lucide-react';
+import {
+  ChevronRight,
+  ClipboardList,
+  Flag,
+  LifeBuoy,
+  Pencil,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { Customer } from '@/redux/services/customers/customers.api-slice';
@@ -89,7 +95,7 @@ export const CustomerDetailHeader = ({
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         <button
           type="button"
           aria-label="Body measurements"
@@ -109,12 +115,21 @@ export const CustomerDetailHeader = ({
           type="button"
           variant="outline"
           onClick={onEscalate}
-          className="h-10 border-destructive/40 text-destructive hover:bg-destructive/5"
+          aria-label="Escalate to support"
+          title="Escalate to support"
+          className="h-10 size-10 px-0 sm:w-auto sm:px-4 gap-2 border-destructive/40 text-destructive hover:bg-destructive/5"
         >
-          Escalate to support
+          <LifeBuoy className="size-4 sm:hidden" />
+          <span className="hidden sm:inline">Escalate to support</span>
         </Button>
-        <Button type="button" onClick={onEdit} className="h-10 gap-2">
-          Edit Information
+        <Button
+          type="button"
+          onClick={onEdit}
+          aria-label="Edit Information"
+          title="Edit Information"
+          className="h-10 size-10 px-0 sm:w-auto sm:px-4 gap-2"
+        >
+          <span className="hidden sm:inline">Edit Information</span>
           <Pencil className="size-4" />
         </Button>
       </div>
