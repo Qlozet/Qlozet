@@ -95,7 +95,7 @@ export const CustomerDetailHeader = ({
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex items-center justify-end gap-2 self-end sm:gap-3 lg:self-auto">
         <button
           type="button"
           aria-label="Body measurements"

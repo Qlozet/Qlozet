@@ -227,7 +227,7 @@ export const VendorInfoGrid = ({
           than here: both need a body, and a button that only opens a prompt
           for one is a worse version of the panel.
         */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center justify-end gap-2 self-end sm:gap-3 lg:self-auto">
           <Button
             type="button"
             variant="outline"
