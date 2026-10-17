@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Sidebar } from '@/pattern/common/templates/sidebar';
 import { DashboardTopBar } from '@/pattern/common/organisms/dashboard-top-bar';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { AccessGate } from '@/pattern/common/organisms/access-gate';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
@@ -18,7 +19,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </header>
 
           <main className="w-full flex-1 overflow-auto pt-6 pl-4 pr-4 lg:pl-8 2xl:pr-8">
-            {children}
+            <AccessGate>{children}</AccessGate>
           </main>
         </div>
       </div>

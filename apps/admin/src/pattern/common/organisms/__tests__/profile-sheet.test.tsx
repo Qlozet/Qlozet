@@ -23,6 +23,7 @@ vi.mock('@/redux/services/users/users.api-slice', () => ({
     useGetCurrentUserQuery(...args) ?? { data: undefined, isLoading: false },
   useGetRolesQuery: (...args: unknown[]) =>
     useGetRolesQuery(...args) ?? { data: undefined },
+  useGetMyAccessQuery: () => ({ data: undefined }),
 }));
 
 vi.mock('@/redux/services/assistant/assistant.api-slice', () => ({

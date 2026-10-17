@@ -3,6 +3,8 @@
 import NavLink from '../molecules/nav-link';
 import BrandLogo from '../molecules/brand-logo';
 import { APP_ROUTES } from '@/lib/routes';
+import type { ConsoleResource } from '@/lib/access';
+import { useConsoleAccess } from '@/lib/hooks/use-console-access';
 import { DashboardNavIcon } from '../atoms/nav-icons/dashboard-nav-icon';
 import { VendorsNavIcon } from '../atoms/nav-icons/vendors-nav-icon';
 import { CustomersNavIcon } from '../atoms/nav-icons/customers-nav-icon';
@@ -98,20 +100,47 @@ export const SidebarNav = ({
     onNavigate?.();
   };
 
+  // Hide the rows this account's role cannot view. Until access has loaded
+  // every row shows; the server refuses what it must either way.
+  const { canView } = useConsoleAccess();
+
   // Labels are permanent in the drawer, width-gated on the rail.
   const labelClass = expanded
     ? 'inline-block'
     : 'invisible hidden 2xl:visible 2xl:inline-block';
   const itemWidthClass = expanded ? 'w-full' : undefined;
 
-  const menuItems = [
-    { icon: DashboardNavIcon, label: 'Dashboard', href: APP_ROUTES.dashboard },
-    { icon: VendorsNavIcon, label: 'Vendors', href: APP_ROUTES.vendors },
-    { icon: CustomersNavIcon, label: 'Customers', href: APP_ROUTES.customers },
+  const allMenuItems: {
+    icon: typeof DashboardNavIcon;
+    label: string;
+    href: string;
+    /** The Edit Access row that opens this page; null when every role has it. */
+    resource: ConsoleResource | null;
+    subItems?: { icon: typeof DashboardNavIcon; label: string; href: string }[];
+  }[] = [
+    {
+      icon: DashboardNavIcon,
+      label: 'Dashboard',
+      href: APP_ROUTES.dashboard,
+      resource: 'dashboard',
+    },
+    {
+      icon: VendorsNavIcon,
+      label: 'Vendors',
+      href: APP_ROUTES.vendors,
+      resource: 'vendors',
+    },
+    {
+      icon: CustomersNavIcon,
+      label: 'Customers',
+      href: APP_ROUTES.customers,
+      resource: 'customers',
+    },
     {
       icon: ProductsNavIcon,
       label: 'Products',
       href: APP_ROUTES.products,
+      resource: 'products',
       subItems: [
         {
           icon: ProductsClothsNavIcon,
@@ -181,13 +210,25 @@ export const SidebarNav = ({
     //     },
     //   ],
     // },
-    { icon: AdminNavIcon, label: 'Admin', href: APP_ROUTES.admin },
-    { icon: DisputesNavIcon, label: 'Disputes', href: APP_ROUTES.disputes },
+    {
+      icon: AdminNavIcon,
+      label: 'Admin',
+      href: APP_ROUTES.admin,
+      resource: 'admin-management',
+    },
+    {
+      icon: DisputesNavIcon,
+      label: 'Disputes',
+      href: APP_ROUTES.disputes,
+      resource: 'orders',
+    },
     // { icon: PaymentNavIcon, label: 'Payment', href: APP_ROUTES.payment },
     {
       icon: NotificationsNavIcon,
       label: 'Notifications',
       href: APP_ROUTES.notifications,
+      // The inbox is the person's own; every role has one.
+      resource: null,
     },
     // {
     //   // TODO: replace placeholder sub-pages with the real Performance sections
@@ -207,16 +248,28 @@ export const SidebarNav = ({
     //     },
     //   ],
     // },
-    { icon: SupportNavIcon, label: 'Support', href: APP_ROUTES.support },
+    {
+      icon: SupportNavIcon,
+      label: 'Support',
+      href: APP_ROUTES.support,
+      resource: 'tickets',
+    },
     {
       icon: HelpCenterNavIcon,
       label: 'Help Center',
       href: APP_ROUTES.helpCenter,
+      resource: 'blogs',
     },
-    { icon: SettingsNavIcon, label: 'Settings', href: APP_ROUTES.settings },
+    {
+      icon: SettingsNavIcon,
+      label: 'Settings',
+      href: APP_ROUTES.settings,
+      resource: 'settings',
+    },
     // { icon: FeedbackNavIcon, label: 'Feedback', href: APP_ROUTES.feedback },
     // { icon: HelpNavIcon, label: 'Help', href: APP_ROUTES.help },
   ];
+  const menuItems = allMenuItems.filter((item) => canView(item.resource));
 
   return (
     <div

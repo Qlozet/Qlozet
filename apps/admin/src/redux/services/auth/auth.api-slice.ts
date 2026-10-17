@@ -22,7 +22,14 @@ interface LoginResponse {
       access_token: string;
       refresh_token: string;
     };
+    /** True while the emailed temporary password is still in use. */
+    must_change_password?: boolean;
   };
+}
+
+interface ChangePasswordPayload {
+  current_password: string;
+  new_password: string;
 }
 
 interface MessageResponse {
@@ -64,6 +71,16 @@ const authAPI = baseAPI.injectEndpoints({
     }),
 
     // Completes the reset using the token from that email.
+    changePassword: builder.mutation<MessageResponse, ChangePasswordPayload>({
+      query: (body) => ({
+        url: '/auth/change-password',
+        method: 'POST',
+        body,
+      }),
+      // Clears must_change_password on the access read.
+      invalidatesTags: ['CurrentUser'],
+    }),
+
     resetPassword: builder.mutation<MessageResponse, ResetPasswordPayload>({
       query: (body) => ({
         url: '/auth/reset-password',
@@ -77,6 +94,7 @@ const authAPI = baseAPI.injectEndpoints({
 
 export const {
   useAdminLoginMutation,
+  useChangePasswordMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
 } = authAPI;
