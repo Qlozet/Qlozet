@@ -1,5 +1,7 @@
 'use client';
 
+import { useVendorAccess } from '@/lib/hooks/use-vendor-access';
+
 import { useState, useEffect, useMemo } from 'react';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { createFabricTableColumns } from '@/pattern/products/molecules/fabric-table-columns';
@@ -214,6 +216,7 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     }
   }, [productsResponse, totalPagesFromAPI]);
 
+  const { can: canUse } = useVendorAccess();
   const handleAddProduct = () => {
     show(AddFabricModal);
   };
@@ -362,15 +365,17 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
           </Button>
 
           {/* Add new product */}
-          <Button
-            variant="default"
-            size="default"
-            onClick={handleAddProduct}
-            className="gap-[10px] text-xs! font-medium"
-          >
-            <LinearAddSquareIcon className="size-[18px]" />
-            <span>Add new fabric</span>
-          </Button>
+          {canUse('products.manage') && (
+            <Button
+              variant="default"
+              size="default"
+              onClick={handleAddProduct}
+              className="gap-[10px] text-xs! font-medium"
+            >
+              <LinearAddSquareIcon className="size-[18px]" />
+              <span>Add new fabric</span>
+            </Button>
+          )}
         </div>
       </div>
 

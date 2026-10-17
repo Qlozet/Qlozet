@@ -137,7 +137,7 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
 
       {/* Actions */}
       <div className="flex items-center gap-4 lg:pt-2">
-        {isOwner && (
+        {onWithdraw && (
           <Button
             type="button"
             variant="outline"
@@ -148,14 +148,16 @@ export const WalletStatsSection: React.FC<WalletStatsSectionProps> = ({
             Withdraw
           </Button>
         )}
-        <Button
-          type="button"
-          onClick={onFundWallet}
-          className="bg-[#056921] text-white dark:text-white hover:bg-[#056921]/90 h-11 gap-2"
-        >
-          <LinearReceiveMoneyIcon />
-          Fund wallet
-        </Button>
+        {onFundWallet && (
+          <Button
+            type="button"
+            onClick={onFundWallet}
+            className="bg-[#056921] text-white dark:text-white hover:bg-[#056921]/90 h-11 gap-2"
+          >
+            <LinearReceiveMoneyIcon />
+            Fund wallet
+          </Button>
+        )}
       </div>
     </div>
   );

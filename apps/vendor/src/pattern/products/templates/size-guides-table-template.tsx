@@ -1,5 +1,7 @@
 'use client';
 
+import { useVendorAccess } from '@/lib/hooks/use-vendor-access';
+
 import { useMemo, useState } from 'react';
 import { PaginationState } from '@tanstack/react-table';
 import { show } from '@ebay/nice-modal-react';
@@ -99,6 +101,7 @@ const SizeGuidesTableTemplate = () => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
+  const { can: canUse } = useVendorAccess();
   const handleCreateSizeGuide = () => {
     router.push(APP_ROUTES.productsSizeGuidesCreate);
   };
@@ -179,15 +182,17 @@ const SizeGuidesTableTemplate = () => {
       <div className="w-full flex justify-end gap-4 mb-[21px]">
         <div className="flex items-center gap-2 flex-wrap justify-end">
           {/* Create Size Guide */}
-          <Button
-            variant="default"
-            size="default"
-            onClick={handleCreateSizeGuide}
-            className="gap-[10px] text-xs! font-medium"
-          >
-            <span>Create Size Guide</span>
-            <LinearAddSquareIcon className="size-[18px]" />
-          </Button>
+          {canUse('size_guides.manage') && (
+            <Button
+              variant="default"
+              size="default"
+              onClick={handleCreateSizeGuide}
+              className="gap-[10px] text-xs! font-medium"
+            >
+              <span>Create Size Guide</span>
+              <LinearAddSquareIcon className="size-[18px]" />
+            </Button>
+          )}
         </div>
       </div>
 

@@ -1,5 +1,7 @@
 'use client';
 
+import { useVendorAccess } from '@/lib/hooks/use-vendor-access';
+
 import { useMemo, useState } from 'react';
 import { PaginationState } from '@tanstack/react-table';
 import { show } from '@ebay/nice-modal-react';
@@ -100,6 +102,7 @@ const DiscountsTableTemplate = () => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
+  const { can: canUse } = useVendorAccess();
   const handleCreateDiscount = () => {
     router.push(APP_ROUTES.productsDiscountsCreate);
   };
@@ -166,15 +169,17 @@ const DiscountsTableTemplate = () => {
       <div className="w-full flex justify-end gap-4 mb-[21px]">
         <div className="flex items-center gap-2 flex-wrap justify-end">
           {/* Create Discount */}
-          <Button
-            variant="default"
-            size="default"
-            onClick={handleCreateDiscount}
-            className="gap-[10px] text-xs! font-medium"
-          >
-            <span>Create Discount</span>
-            <LinearAddSquareIcon className="size-[18px]" />
-          </Button>
+          {canUse('discounts.manage') && (
+            <Button
+              variant="default"
+              size="default"
+              onClick={handleCreateDiscount}
+              className="gap-[10px] text-xs! font-medium"
+            >
+              <span>Create Discount</span>
+              <LinearAddSquareIcon className="size-[18px]" />
+            </Button>
+          )}
         </div>
       </div>
 

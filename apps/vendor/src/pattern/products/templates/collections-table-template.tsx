@@ -1,5 +1,7 @@
 'use client';
 
+import { useVendorAccess } from '@/lib/hooks/use-vendor-access';
+
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PaginationState } from '@tanstack/react-table';
@@ -88,6 +90,7 @@ const CollectionsTableTemplate = ({
     toast.info('Import collections feature coming soon');
   };
 
+  const { can: canUse } = useVendorAccess();
   const handleCreateCollection = () => {
     router.push(APP_ROUTES.productsCollectionsCreate);
   };
@@ -194,15 +197,17 @@ const CollectionsTableTemplate = ({
           </Button>
 
           {/* Create Collection */}
-          <Button
-            variant="default"
-            size="default"
-            onClick={handleCreateCollection}
-            className="gap-[10px] text-xs! font-medium"
-          >
-            <span>Create Collection</span>
-            <LinearAddSquareIcon className="size-[18px]" />
-          </Button>
+          {canUse('collections.manage') && (
+            <Button
+              variant="default"
+              size="default"
+              onClick={handleCreateCollection}
+              className="gap-[10px] text-xs! font-medium"
+            >
+              <span>Create Collection</span>
+              <LinearAddSquareIcon className="size-[18px]" />
+            </Button>
+          )}
         </div>
       </div>
 

@@ -24,6 +24,7 @@ import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
 import { WalletStatsSection } from '../molecules/wallet-stats-section';
 import { FundWalletModal } from '../organisms/fund-wallet-modal';
 import { WithdrawModal } from '../organisms/withdraw-modal';
+import { useVendorAccess } from '@/lib/hooks/use-vendor-access';
 import { PurchaseTokensModal } from '../organisms/purchase-tokens-modal';
 import { TransactionDetailsModal } from '../organisms/transaction-details-modal';
 import { createTransactionColumns } from '../molecules/wallet-transactions-columns';
@@ -157,6 +158,7 @@ export const WalletPageTemplate: React.FC = () => {
   const { data: payoutRes, isLoading: isPayoutLoading } =
     useGetPayoutAccountQuery();
   const payoutLinked = payoutRes?.data?.linked;
+  const { can: canUse } = useVendorAccess();
 
   const {
     data: transactionsData,
@@ -257,7 +259,7 @@ export const WalletPageTemplate: React.FC = () => {
     <div className="w-full min-h-screen h-fit space-y-6 pb-10">
       {/* Prompt to link a payout account — withdrawals are blocked until one
           exists, so surface it up front rather than only at withdraw time. */}
-      {!isPayoutLoading && !payoutLinked && (
+      {!isPayoutLoading && !payoutLinked && canUse('payout_account.manage') && (
         <div className="flex flex-col gap-3 rounded-[10px] border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/40 dark:bg-amber-900/20 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
             <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400">
@@ -308,8 +310,16 @@ export const WalletPageTemplate: React.FC = () => {
         isLoading={isBalanceLoading}
         isTokenLoading={isTokenLoading}
         onPurchaseTokens={() => NiceModal.show(PurchaseTokensModal)}
-        onWithdraw={() => NiceModal.show(WithdrawModal, { balance })}
-        onFundWallet={() => NiceModal.show(FundWalletModal)}
+        onWithdraw={
+          canUse('wallet.withdraw')
+            ? () => NiceModal.show(WithdrawModal, { balance })
+            : undefined
+        }
+        onFundWallet={
+          canUse('wallet.fund')
+            ? () => NiceModal.show(FundWalletModal)
+            : undefined
+        }
       />
 
       {/* Recent transactions */}
