@@ -62,6 +62,7 @@ import {
   type OrderEarningRecord,
 } from '@/redux/services/business/business.api-slice';
 import { useAppSelector } from '@/redux/store';
+import { useVendorAccess } from '@/lib/hooks/use-vendor-access';
 import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import { CustomerDetailsModal } from '../../customers/organisms/customer-details-modal';
@@ -725,6 +726,8 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     // Vendor business ID for filtering items/shipments
     const activeBusiness = useAppSelector(selectActiveBusiness);
     const businessId = activeBusiness?._id ?? '';
+    // What this member's role may do; the routes enforce the same matrix.
+    const { can: canArea } = useVendorAccess();
 
     // This vendor is on the order ONLY as a fabric-transfer source (the backend
     // trimmed it to their transfer). Render it as a fabric order shipped
@@ -1501,7 +1504,11 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                             order={order}
                             isLast={index === vendorItems.length - 1}
                             onPreview={showPreview}
-                            canReject={canRejectItems && vendorItems.length > 1}
+                            canReject={
+                              canRejectItems &&
+                              canArea('orders.reject') &&
+                              vendorItems.length > 1
+                            }
                             onReject={openRejectItem}
                           />
                         ))
@@ -2062,7 +2069,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                 </p>
               </div>
             )}
-            {isRetryFulfill && canFulfill && (
+            {isRetryFulfill && canFulfill && canArea('orders.fulfil') && (
               <div className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-800/50 dark:bg-amber-900/20">
                 <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
                 <p className="text-xs text-amber-700 dark:text-amber-300">
@@ -2073,7 +2080,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
             )}
             <div className="flex items-center gap-3">
               {/* Confirm / Reject — shown when order needs confirmation */}
-              {needsConfirmation && (
+              {needsConfirmation && canArea('orders.fulfil') && (
                 <>
                   <Button
                     type="button"
@@ -2084,20 +2091,22 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     <CheckCircle className="size-4" />
                     {isConfirming ? 'Confirming...' : 'Confirm Order'}
                   </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowRejectDialog(true)}
-                    disabled={isRejecting}
-                    className="flex-1 h-11 gap-2 text-sm border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
-                  >
-                    <XCircle className="size-4" />
-                    Reject
-                  </Button>
+                  {canArea('orders.reject') && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowRejectDialog(true)}
+                      disabled={isRejecting}
+                      className="flex-1 h-11 gap-2 text-sm border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
+                    >
+                      <XCircle className="size-4" />
+                      Reject
+                    </Button>
+                  )}
                 </>
               )}
               {/* Fulfill — shown after confirmation */}
-              {canFulfill && (
+              {canFulfill && canArea('orders.fulfil') && (
                 <Button
                   type="button"
                   onClick={handleFulfill}
@@ -2147,7 +2156,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                 </div>
               )}
               {/* Handover — the entire fulfilment for an event fabric claim */}
-              {canHandover && (
+              {canHandover && canArea('orders.fulfil') && (
                 <Button
                   type="button"
                   onClick={handleHandover}

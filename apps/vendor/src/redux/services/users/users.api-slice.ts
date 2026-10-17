@@ -143,11 +143,42 @@ export interface FeedParams {
 }
 
 // ---- API Slice ----
+/**
+ * GET /users/me/access. For a vendor team member, `vendor.areas` lists what
+ * they may do in the store they have open (see lib/vendor-access.ts).
+ */
+export interface MyAccess {
+  type: string;
+  status: string | null;
+  role: {
+    _id: string;
+    name: string;
+    description: string | null;
+    type?: string;
+  } | null;
+  is_super_admin: boolean;
+  full_access: boolean;
+  permissions: string[];
+  must_change_password: boolean;
+  vendor: {
+    business_id: string;
+    role: string | null;
+    is_owner: boolean;
+    areas: string[];
+  } | null;
+}
+
 export const usersApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // GET /users/me — current authenticated user
     getMe: builder.query<ApiResponse<CurrentUser>, void>({
       query: () => ({ url: '/users/me', method: 'GET' }),
+      providesTags: ['Me'],
+    }),
+
+    // GET /users/me/access — what this member may do in the open store
+    getMyAccess: builder.query<ApiResponse<MyAccess>, void>({
+      query: () => ({ url: '/users/me/access', method: 'GET' }),
       providesTags: ['Me'],
     }),
 
@@ -392,6 +423,7 @@ export const usersApiSlice = baseAPI.injectEndpoints({
 // ---- Hooks ----
 export const {
   useGetMeQuery,
+  useGetMyAccessQuery,
   useUpdateMyProfileMutation,
   useGetFollowingBusinessesQuery,
   useDeleteMyAccountMutation,

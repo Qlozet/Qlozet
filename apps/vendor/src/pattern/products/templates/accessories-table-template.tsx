@@ -1,5 +1,7 @@
 'use client';
 
+import { useVendorAccess } from '@/lib/hooks/use-vendor-access';
+
 import { useState, useEffect, useMemo } from 'react';
 import { PaginationState } from '@tanstack/react-table';
 import {
@@ -176,6 +178,7 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     }
   }, [productsResponse, totalPagesFromAPI]);
 
+  const { can: canUse } = useVendorAccess();
   const handleAddAccessories = () => {
     show(AddAccessoryModal);
   };
@@ -293,15 +296,17 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
           </Button>
 
           {/* Add new product */}
-          <Button
-            variant="default"
-            size="default"
-            onClick={handleAddAccessories}
-            className="gap-[10px] text-xs! font-medium"
-          >
-            <LinearAddSquareIcon className="size-[18px]" />
-            <span>Add new accessories</span>
-          </Button>
+          {canUse('products.manage') && (
+            <Button
+              variant="default"
+              size="default"
+              onClick={handleAddAccessories}
+              className="gap-[10px] text-xs! font-medium"
+            >
+              <LinearAddSquareIcon className="size-[18px]" />
+              <span>Add new accessories</span>
+            </Button>
+          )}
         </div>
       </div>
 

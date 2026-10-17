@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import NavLink from '../molecules/nav-link';
 import BrandLogo from '../molecules/brand-logo';
 import { APP_ROUTES } from '@/lib/routes';
+import { useVendorAccess } from '@/lib/hooks/use-vendor-access';
 import { DashboardNavIcon } from '../atoms/nav-icons/dashboard-nav-icon';
 import { OrdersNavIcon } from '../atoms/nav-icons/orders-nav-icon';
 import { ProductsNavIcon } from '../atoms/nav-icons/products-nav-icon';
@@ -38,6 +39,9 @@ import {
 } from '@/components/ui/tooltip';
 
 export const Sidebar = () => {
+  // Rows a member's role cannot use are hidden; until access has loaded
+  // every row shows and the server refuses what it must.
+  const { can: canUse } = useVendorAccess();
   const menuItems = [
     { icon: DashboardNavIcon, label: 'Dashboard', href: APP_ROUTES.dashboard },
     { icon: OrdersNavIcon, label: 'Orders', href: APP_ROUTES.orders },
@@ -83,7 +87,9 @@ export const Sidebar = () => {
         },
       ],
     },
-    { icon: WalletNavIcon, label: 'Wallet', href: APP_ROUTES.wallet },
+    ...(canUse('money.view')
+      ? [{ icon: WalletNavIcon, label: 'Wallet', href: APP_ROUTES.wallet }]
+      : []),
     { icon: CustomersNavIcon, label: 'Customers', href: APP_ROUTES.customers },
     { icon: SettingsNavIcon, label: 'Settings', href: APP_ROUTES.settings },
     { icon: SupportNavIcon, label: 'Support', href: APP_ROUTES.support },
