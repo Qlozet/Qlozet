@@ -15,6 +15,18 @@ vi.mock('@ebay/nice-modal-react', () => ({
   useModal: () => ({ visible: false, hide: vi.fn(), remove: vi.fn() }),
 }));
 
+// Access filtering has its own test; here every row is visible.
+vi.mock('@/lib/hooks/use-console-access', () => ({
+  useConsoleAccess: () => ({
+    access: undefined,
+    isLoading: false,
+    isError: false,
+    refetch: vi.fn(),
+    can: () => true,
+    canView: () => true,
+  }),
+}));
+
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { SidebarNav } from '../sidebar';
 

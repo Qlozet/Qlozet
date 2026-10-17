@@ -17,7 +17,7 @@ import { removeCookie } from '@/lib/helpers/cookies-manager';
 import { initialsFrom, readUserAvatar, readUserName } from '@/lib/current-user';
 import {
   useGetCurrentUserQuery,
-  useGetRolesQuery,
+  useGetMyAccessQuery,
 } from '@/redux/services/users/users.api-slice';
 import { useGetAdminProfileOverviewQuery } from '@/redux/services/dashboard/dashboard.api-slice';
 import { AdminMetricsSection } from './admin-metrics-section';
@@ -60,8 +60,9 @@ export const ProfileSheet = ({ open, onOpenChange }: ProfileSheetProps) => {
     undefined,
     skip
   );
-  // `/users/me` returns `role` as an id, so resolve it to a display name.
-  const { data: rolesData } = useGetRolesQuery(undefined, skip);
+  // `/users/me` returns `role` as an id. The access read names it, and unlike
+  // the roles list it is open to every staff role.
+  const { data: accessData } = useGetMyAccessQuery(undefined, skip);
   const {
     data: overviewData,
     isLoading: isLoadingOverview,
@@ -75,19 +76,19 @@ export const ProfileSheet = ({ open, onOpenChange }: ProfileSheetProps) => {
   const email = typeof user?.email === 'string' ? user.email : null;
 
   const roleName = useMemo(() => {
+    const fromAccess = accessData?.data?.role?.name;
+    if (typeof fromAccess === 'string' && fromAccess.trim()) {
+      return fromAccess.trim();
+    }
     const raw = user?.role;
     if (raw && typeof raw === 'object') {
       const nested = (raw as { name?: unknown }).name;
       if (typeof nested === 'string' && nested.trim()) return nested.trim();
     }
     if (typeof raw !== 'string' || !raw.trim()) return null;
-
-    const match = (rolesData?.data ?? []).find((role) => role._id === raw);
-    if (match?.name) return match.name;
-
     // Unresolved id — show nothing rather than a raw ObjectId.
     return /^[a-f0-9]{24}$/i.test(raw.trim()) ? null : raw.trim();
-  }, [user, rolesData]);
+  }, [user, accessData]);
 
   const overview = overviewData?.data;
 

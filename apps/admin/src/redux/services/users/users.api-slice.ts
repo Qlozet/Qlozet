@@ -114,6 +114,27 @@ export interface ConsolePermissionGroup {
   actions: Record<'view' | 'create' | 'edit' | 'delete', string | null>;
 }
 
+/**
+ * GET /users/me/access. What the signed-in staff account may do, as the
+ * `<resource>.<action>` names of the Edit Access grid. Full-access roles
+ * (super admin, admin) get every name.
+ */
+export interface MyAccess {
+  type: string;
+  status: string | null;
+  role: {
+    _id: string;
+    name: string;
+    description: string | null;
+    type?: string;
+  } | null;
+  is_super_admin: boolean;
+  full_access: boolean;
+  permissions: string[];
+  /** True while the emailed temporary password is still in use. */
+  must_change_password: boolean;
+}
+
 export interface Vendor {
   _id: string;
   business_name?: string;
@@ -152,6 +173,11 @@ export const usersApiSlice = baseAPI.injectEndpoints({
     // ---- Roles & permissions ----
 
     // The signed-in user — drives the top bar's name + avatar.
+    getMyAccess: builder.query<ApiResponse<MyAccess>, void>({
+      query: () => ({ url: '/users/me/access', method: 'GET' }),
+      providesTags: ['CurrentUser'],
+    }),
+
     getCurrentUser: builder.query<ApiResponse<CurrentUser>, void>({
       query: () => ({ url: '/users/me', method: 'GET' }),
       providesTags: ['CurrentUser'],
@@ -360,6 +386,7 @@ export const usersApiSlice = baseAPI.injectEndpoints({
 
 // Export hooks
 export const {
+  useGetMyAccessQuery,
   useGetCurrentUserQuery,
   useGetRolesQuery,
   useGetConsolePermissionsQuery,
