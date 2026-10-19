@@ -18,14 +18,24 @@ const statusLabel = (status?: string): string => {
   return status.charAt(0).toUpperCase() + status.slice(1);
 };
 
+interface TopProductsColumnsOptions {
+  /** The best seller's revenue; every bar is drawn relative to it. */
+  maxRevenue: number;
+  /** Revenue across the whole ranked list, for the share column. */
+  totalRevenue: number;
+}
+
 // Ranked by real sales (server aggregates order items) — so the columns are
-// sales facts, not the demo-era stock/variant guesses.
-export const createTopProductsColumns = (): ColumnDef<VendorTopProduct>[] => [
+// sales facts, not the demo-era stock/variant guesses. Rows open the product.
+export const createTopProductsColumns = ({
+  maxRevenue,
+  totalRevenue,
+}: TopProductsColumnsOptions): ColumnDef<VendorTopProduct>[] => [
   {
     id: 'rank',
     header: '#',
     cell: ({ row }) => (
-      <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+      <span className="text-sm font-semibold tabular-nums text-gray-500 dark:text-gray-400">
         {row.index + 1}
       </span>
     ),
@@ -38,7 +48,8 @@ export const createTopProductsColumns = (): ColumnDef<VendorTopProduct>[] => [
       const p = row.original;
       return (
         <div className="flex items-center gap-3">
-          <div className="h-[31px] w-[51px] shrink-0 overflow-hidden rounded-[8px] border border-border bg-gray-50 dark:bg-muted">
+          {/* Portrait, like the catalogue cards: product photos are 3:4. */}
+          <div className="h-10 w-[30px] shrink-0 overflow-hidden rounded-md border border-border bg-gray-50 dark:bg-muted">
             {p.image ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -49,7 +60,7 @@ export const createTopProductsColumns = (): ColumnDef<VendorTopProduct>[] => [
             ) : null}
           </div>
           <div className="flex min-w-0 flex-col">
-            <span className="truncate text-sm text-gray-700 dark:text-gray-200">
+            <span className="truncate text-sm font-medium text-gray-800 dark:text-gray-100">
               {p.name ?? '—'}
             </span>
             {p.kind && (
@@ -73,7 +84,7 @@ export const createTopProductsColumns = (): ColumnDef<VendorTopProduct>[] => [
           ? p.discounted_price
           : p.base_price;
       return (
-        <span className="text-sm text-gray-700 dark:text-gray-200">
+        <span className="text-sm tabular-nums text-gray-700 dark:text-gray-200">
           {typeof price === 'number' ? formatCurrency(price, 'NGN') : '—'}
         </span>
       );
@@ -84,7 +95,7 @@ export const createTopProductsColumns = (): ColumnDef<VendorTopProduct>[] => [
     accessorKey: 'units_sold',
     header: 'Units sold',
     cell: ({ row }) => (
-      <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+      <span className="text-sm font-medium tabular-nums text-gray-700 dark:text-gray-200">
         {row.original.units_sold.toLocaleString()}
       </span>
     ),
@@ -94,7 +105,7 @@ export const createTopProductsColumns = (): ColumnDef<VendorTopProduct>[] => [
     accessorKey: 'orders',
     header: 'Orders',
     cell: ({ row }) => (
-      <span className="text-sm text-gray-700 dark:text-gray-200">
+      <span className="text-sm tabular-nums text-gray-700 dark:text-gray-200">
         {row.original.orders.toLocaleString()}
       </span>
     ),
@@ -103,11 +114,33 @@ export const createTopProductsColumns = (): ColumnDef<VendorTopProduct>[] => [
   {
     accessorKey: 'revenue',
     header: 'Revenue',
-    cell: ({ row }) => (
-      <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-        {formatCurrency(row.original.revenue ?? 0, 'NGN')}
-      </span>
-    ),
+    cell: ({ row }) => {
+      const revenue = row.original.revenue ?? 0;
+      const width =
+        maxRevenue > 0 ? Math.max(4, (revenue / maxRevenue) * 100) : 0;
+      const share =
+        totalRevenue > 0 ? Math.round((revenue / totalRevenue) * 100) : 0;
+      return (
+        <div className="min-w-[140px]">
+          <div className="flex items-baseline justify-between gap-3">
+            <span className="text-sm font-medium tabular-nums text-gray-700 dark:text-gray-200">
+              {formatCurrency(revenue, 'NGN')}
+            </span>
+            <span className="text-[11px] tabular-nums text-gray-400">
+              {share}%
+            </span>
+          </div>
+          {/* Share of the ranked list's revenue, so the drop-off after the
+              top seller is visible without reading the numbers. */}
+          <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-muted">
+            <div
+              className="h-full rounded-full bg-primary/70"
+              style={{ width: `${width}%` }}
+            />
+          </div>
+        </div>
+      );
+    },
     enableSorting: false,
   },
   {
