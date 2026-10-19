@@ -2,7 +2,10 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { EyeOff } from 'lucide-react';
+import NiceModal from '@ebay/nice-modal-react';
+import { toast } from 'sonner';
+import { Check, EyeOff, X } from 'lucide-react';
+import { ConfirmActionModal } from '@/pattern/common/organisms/confirm-action-modal';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -10,12 +13,16 @@ import { APP_ROUTES } from '@/lib/routes';
 import { cn } from '@/lib/utils';
 import { readApiError } from '@/redux/services/types';
 import {
+  useApproveAdminProductMutation,
   useGetAdminProductsQuery,
+  useRejectAdminProductMutation,
   type AdminProductsParams,
 } from '@/redux/services/products/admin-products.api-slice';
+import type { Product } from '@/redux/services/products/products.api-slice';
 import {
   formatProductPrice,
   getProductImage,
+  getProductModeration,
   getProductName,
   getProductStatus,
   getStorefrontVisibility,
@@ -149,6 +156,77 @@ export const VendorCatalogueSection = ({
   const open = (id: string) =>
     router.push(`${APP_ROUTES.productDetails}?id=${id}`);
 
+  // Moderation from the card, so a new vendor's catalogue can be cleared in
+  // one pass instead of one product page at a time. Same calls, and the same
+  // required reason for a rejection, as the product page.
+  const [approveProduct] = useApproveAdminProductMutation();
+  const [rejectProduct] = useRejectAdminProductMutation();
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  const approve = async (product: Product) => {
+    setBusyId(product._id);
+    try {
+      await approveProduct({ id: product._id }).unwrap();
+      toast.success(`${getProductName(product)} approved`);
+    } catch (err) {
+      toast.error(readApiError(err, 'Could not approve this product.'));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const reject = (product: Product) =>
+    NiceModal.show(ConfirmActionModal, {
+      title: `Reject ${getProductName(product)}?`,
+      description:
+        'The listing stays with the vendor but is hidden from shoppers, and the vendor is told why. Nothing is deleted.',
+      confirmLabel: 'Reject listing',
+      destructive: true,
+      reason: {
+        label: 'What should the vendor fix?',
+        placeholder: 'e.g. photos are blurred; show the garment on a model',
+        required: true,
+      },
+      onConfirm: async (reason?: string) => {
+        try {
+          await rejectProduct({
+            id: product._id,
+            reason: reason ?? '',
+          }).unwrap();
+          toast.success(`${getProductName(product)} rejected`);
+        } catch (err) {
+          toast.error(readApiError(err, 'Could not reject this product.'));
+          throw err; // keeps the dialog open
+        }
+      },
+    });
+
+  const pending = products.filter((p) => getProductModeration(p) === 'pending');
+
+  const approveAll = () =>
+    NiceModal.show(ConfirmActionModal, {
+      title: `Approve ${pending.length} ${pending.length === 1 ? 'listing' : 'listings'}?`,
+      description:
+        'Every listing waiting for review on this page goes live in the shop. Open any you have not looked at first.',
+      confirmLabel: 'Approve all',
+      onConfirm: async () => {
+        let done = 0;
+        for (const product of pending) {
+          try {
+            await approveProduct({ id: product._id }).unwrap();
+            done += 1;
+          } catch {
+            /* counted below */
+          }
+        }
+        if (done === pending.length) toast.success(`${done} approved`);
+        else
+          toast.error(
+            `${done} of ${pending.length} approved; the rest failed. Try them one by one.`
+          );
+      },
+    });
+
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-white dark:bg-card custom-card-shadow">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-6 py-4">
@@ -158,7 +236,7 @@ export const VendorCatalogueSection = ({
           </h3>
           <p className="mt-0.5 text-xs text-muted-foreground">
             Every listing this vendor has created, including drafts. Click one
-            to open it.
+            to open it, or approve and reject the ones waiting for review.
           </p>
         </div>
         {totalItems > 0 && (
@@ -203,6 +281,18 @@ export const VendorCatalogueSection = ({
       </div>
 
       <div className="p-6">
+        {filter === 'review' && pending.length > 1 && (
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-amber-50 px-4 py-2.5 text-xs text-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
+            <span>
+              {pending.length} listings on this page are waiting for review.
+            </span>
+            <Button size="sm" onClick={approveAll} className="h-8 gap-1.5">
+              <Check className="size-3.5" />
+              Approve all on this page
+            </Button>
+          </div>
+        )}
+
         {isLoading && (
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6 2xl:grid-cols-8">
             {Array.from({ length: 12 }).map((_, i) => (
@@ -266,59 +356,87 @@ export const VendorCatalogueSection = ({
                 status.key === 'active' &&
                 !getStorefrontVisibility(product).visible;
               const name = getProductName(product);
+              const moderation = getProductModeration(product);
               return (
-                <button
-                  key={product._id}
-                  type="button"
-                  onClick={() => open(product._id)}
-                  title={`Open ${name}`}
-                  className="group rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                >
-                  {/* 3:4, the ratio the shop's PDP and cards crop to — so the
+                <div key={product._id} className="flex min-w-0 flex-col">
+                  <button
+                    type="button"
+                    onClick={() => open(product._id)}
+                    title={`Open ${name}`}
+                    className="group rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  >
+                    {/* 3:4, the ratio the shop's PDP and cards crop to — so the
                       admin judges the same framing a customer will see. */}
-                  <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg border border-border bg-muted">
-                    {image ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={image}
-                        alt={name}
-                        loading="lazy"
-                        className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="flex size-full items-center justify-center px-2 text-center text-[11px] text-muted-foreground">
-                        No image
-                      </div>
-                    )}
-                    <Badge
-                      variant={STATUS_VARIANT[status.key] ?? 'secondary'}
-                      shape="square"
-                      className="absolute left-1.5 top-1.5 h-5 px-1.5 text-[10px] font-medium"
-                    >
-                      {status.label}
-                    </Badge>
-                    {hidden && (
-                      <span
-                        title="Published by the vendor but not visible to shoppers until it is approved."
-                        className="absolute bottom-1.5 left-1.5 inline-flex items-center gap-1 rounded-md bg-black/65 px-1.5 py-0.5 text-[10px] font-medium text-white"
+                    <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg border border-border bg-muted">
+                      {image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={image}
+                          alt={name}
+                          loading="lazy"
+                          className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex size-full items-center justify-center px-2 text-center text-[11px] text-muted-foreground">
+                          No image
+                        </div>
+                      )}
+                      <Badge
+                        variant={STATUS_VARIANT[status.key] ?? 'secondary'}
+                        shape="square"
+                        className="absolute left-1.5 top-1.5 h-5 px-1.5 text-[10px] font-medium"
                       >
-                        <EyeOff className="size-3" />
-                        Not in shop
+                        {status.label}
+                      </Badge>
+                      {hidden && (
+                        <span
+                          title="Published by the vendor but not visible to shoppers until it is approved."
+                          className="absolute bottom-1.5 left-1.5 inline-flex items-center gap-1 rounded-md bg-black/65 px-1.5 py-0.5 text-[10px] font-medium text-white"
+                        >
+                          <EyeOff className="size-3" />
+                          Not in shop
+                        </span>
+                      )}
+                      <span className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-full bg-primary/90 py-1 text-center text-[11px] font-medium text-primary-foreground transition-transform group-hover:translate-y-0 group-focus-visible:translate-y-0">
+                        View
                       </span>
-                    )}
-                    <span className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-full bg-primary/90 py-1 text-center text-[11px] font-medium text-primary-foreground transition-transform group-hover:translate-y-0 group-focus-visible:translate-y-0">
-                      View
-                    </span>
-                  </div>
+                    </div>
 
-                  <p className="mt-1.5 truncate text-xs font-medium text-gray-900 dark:text-white">
-                    {name}
-                  </p>
-                  <p className="truncate text-[11px] text-muted-foreground">
-                    {formatProductPrice(product)}
-                    {product.kind ? ` · ${product.kind}` : ''}
-                  </p>
-                </button>
+                    <p className="mt-1.5 truncate text-xs font-medium text-gray-900 dark:text-white">
+                      {name}
+                    </p>
+                    <p className="truncate text-[11px] text-muted-foreground">
+                      {formatProductPrice(product)}
+                      {product.kind ? ` · ${product.kind}` : ''}
+                    </p>
+                  </button>
+                  {moderation === 'pending' && (
+                    <div className="mt-1.5 grid grid-cols-2 gap-1">
+                      <button
+                        type="button"
+                        onClick={() => approve(product)}
+                        disabled={busyId === product._id}
+                        aria-label={`Approve ${name}`}
+                        title="Approve"
+                        className="inline-flex h-7 cursor-pointer items-center justify-center gap-1 rounded-md bg-emerald-50 text-[11px] font-medium text-emerald-700 transition-colors hover:bg-emerald-100 disabled:opacity-50 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
+                      >
+                        <Check className="size-3.5" />
+                        <span className="hidden xl:inline">Approve</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => reject(product)}
+                        disabled={busyId === product._id}
+                        aria-label={`Reject ${name}`}
+                        title="Reject"
+                        className="inline-flex h-7 cursor-pointer items-center justify-center gap-1 rounded-md bg-red-50 text-[11px] font-medium text-red-700 transition-colors hover:bg-red-100 disabled:opacity-50 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/50"
+                      >
+                        <X className="size-3.5" />
+                        <span className="hidden xl:inline">Reject</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>

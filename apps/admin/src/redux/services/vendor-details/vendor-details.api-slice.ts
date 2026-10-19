@@ -358,10 +358,11 @@ export const vendorDetailsApiSlice = baseAPI.injectEndpoints({
     // /products listing cannot rank them).
     getVendorTopProducts: builder.query<
       ApiResponse<VendorTopProduct[]>,
-      { businessId: string; limit?: number }
+      /** `days` ranks only orders placed in that window; omit for all time. */
+      { businessId: string; limit?: number; days?: number }
     >({
-      query: ({ businessId, limit = 25 }) => ({
-        url: `/admin/businesses/${businessId}/top-products${buildQueryString({ limit })}`,
+      query: ({ businessId, limit = 25, days }) => ({
+        url: `/admin/businesses/${businessId}/top-products${buildQueryString({ limit, days })}`,
         method: 'GET',
       }),
       providesTags: ['Products'],
