@@ -20,6 +20,7 @@ import type {
 import { SettingsSection } from '../molecules/settings-section';
 import { SettingsTabActions } from '../molecules/settings-tab-actions';
 import { TokenPriceCard } from './token-price-card';
+import { ListingReviewNotice } from '../molecules/listing-review-notice';
 import type { TokenPrice } from '@/redux/services/settings/settings.api-slice';
 
 interface SettingsContentProps {
@@ -80,6 +81,12 @@ export const SettingsContent = ({
           isDirty={totalChangeCount > 0}
           onChange={(value) => onChange(TOKEN_PRICE_USD_KEY, value)}
           onRefresh={onRefreshTokenPrice}
+        />
+      )}
+
+      {tab.sections.some((s) => s.id === 'listing-review') && (
+        <ListingReviewNotice
+          mode={String(draft.listing_review_mode ?? 'review_first')}
         />
       )}
 

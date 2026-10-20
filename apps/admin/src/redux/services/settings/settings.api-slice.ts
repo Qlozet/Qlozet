@@ -20,6 +20,18 @@ export type PayoutCycle = 'weekly' | 'bi-weekly' | 'monthly';
 /** Commission is either a percentage of the item price or a flat naira amount. */
 export type CommissionType = 'percent' | 'fixed';
 
+/**
+ * How a newly published listing reaches the shop. review_first: hidden until
+ * approved. live_first: visible at once while it waits for review.
+ */
+export type ListingReviewMode = 'review_first' | 'live_first';
+
+export interface ListingReviewImpact {
+  mode: ListingReviewMode;
+  /** Published listings still waiting for review (hidden under review_first). */
+  published_awaiting_review: number;
+}
+
 export interface TokenPrice {
   /** Set by an administrator — the price of one token in USD. */
   usd: { amount: number; currency: string };
@@ -65,6 +77,9 @@ export interface PlatformSettings {
   // Availability
   low_stock_threshold: number;
   low_fabric_yards: number;
+
+  /** Optional because backends deployed before the setting don't return it. */
+  listing_review_mode?: ListingReviewMode;
 
   // AI + tokens
   token_price: TokenPrice;
@@ -132,6 +147,19 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       providesTags: ['PlatformSettings'],
     }),
 
+    // How many published listings are waiting for review, i.e. what review
+    // first hides. Re-read after every settings save.
+    getListingReviewImpact: builder.query<
+      ApiResponse<ListingReviewImpact>,
+      void
+    >({
+      query: () => ({
+        url: '/admin/settings/listing-review-impact',
+        method: 'GET',
+      }),
+      providesTags: ['PlatformSettings'],
+    }),
+
     updatePlatformSettings: builder.mutation<
       ApiResponse<PlatformSettings>,
       UpdatePlatformSettingsRequest
@@ -158,6 +186,7 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
 
 export const {
   useGetPlatformSettingsQuery,
+  useGetListingReviewImpactQuery,
   useUpdatePlatformSettingsMutation,
   useRefreshTokenPriceMutation,
 } = settingsApiSlice;

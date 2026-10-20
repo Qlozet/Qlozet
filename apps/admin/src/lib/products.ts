@@ -176,7 +176,9 @@ export interface StorefrontVisibility {
  * question the preview exists to answer.
  */
 export const getStorefrontVisibility = (
-  product: Product
+  product: Product,
+  /** Platform setting listing_review_mode; review first is the default. */
+  reviewMode: 'review_first' | 'live_first' = 'review_first'
 ): StorefrontVisibility => {
   const reasons: string[] = [];
 
@@ -189,8 +191,14 @@ export const getStorefrontVisibility = (
     );
   }
 
-  if (getProductModeration(product) === 'rejected') {
+  // Review first: only an approved listing reaches shoppers. A product with
+  // no moderation record predates review and stays visible, so read the raw
+  // field here, not getProductModeration (which shows a missing one as pending).
+  const moderation = asRecord(product.moderation)?.status;
+  if (moderation === 'rejected') {
     reasons.push('The platform rejected this listing.');
+  } else if (moderation === 'pending' && reviewMode === 'review_first') {
+    reasons.push('It is waiting for Qlozet approval.');
   }
 
   const business = asRecord(product.business);

@@ -33,6 +33,7 @@ import {
   useGetProductTypesQuery,
   useGetCategoriesForTypeQuery,
 } from '@/redux/services/taxonomy/taxonomy.api-slice';
+import { PendingReviewNote } from '../molecules/listing-review-copy';
 
 type ProductStatus = 'active' | 'draft' | 'archived';
 type ModerationStatus = 'pending' | 'approved' | 'rejected';
@@ -605,9 +606,7 @@ export const AddFabricModal = NiceModal.create(
                     <StatusPill status={status} />
                   </div>
                   {status === 'active' && moderation?.status === 'pending' && (
-                    <p className="mt-2 text-xs text-amber-600">
-                      Under review by Qlozet. It goes live once approved.
-                    </p>
+                    <PendingReviewNote />
                   )}
                   {status === 'active' && moderation?.status === 'approved' && (
                     <p className="mt-2 text-xs text-emerald-600">
