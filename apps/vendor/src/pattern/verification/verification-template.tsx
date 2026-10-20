@@ -1,10 +1,11 @@
 'use client';
 
 // Get Verified — QoreID-backed vendor verification.
-// Three checks: identity (vNIN, required — earns the Verified badge),
-// payout bank account (NUBAN name match), and CAC registration (optional
-// Registered Business credential). Each card collapses into a summary once
-// its check passes.
+// Three checks, all required (Qlozet onboards registered businesses): identity
+// (vNIN), payout bank account (NUBAN name match) and CAC registration. Then
+// the agreement and a review; the Verified badge comes from the admin's
+// approval, never from a single check. Each card collapses into a summary
+// once its check passes.
 
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -241,7 +242,7 @@ export const VerificationTemplate = () => {
       }).unwrap();
       if (res.data?.verified) {
         toast.success(
-          'Identity verified — your store now carries the Verified badge.'
+          'Identity verified. Finish the other checks, then submit your store for review.'
         );
       } else {
         toast.error(
@@ -358,7 +359,7 @@ export const VerificationTemplate = () => {
             store your identity numbers, only the result.
           </p>
         </div>
-        {identity?.status === 'verified' && (
+        {step === 'approved' && (
           <Badge className="flex shrink-0 items-center gap-1.5 bg-emerald-50 px-3 py-1.5 text-emerald-700 hover:bg-emerald-50 dark:bg-emerald-950 dark:text-emerald-300">
             <ShieldCheck className="size-3.5" /> Verified vendor
           </Badge>
@@ -484,7 +485,7 @@ export const VerificationTemplate = () => {
           <Card
             icon={ShieldCheck}
             title="Identity"
-            tag="Required · earns the Verified badge"
+            tag="Required"
             done={identity?.status === 'verified'}
             failed={identity?.status === 'failed'}
           >
@@ -647,11 +648,11 @@ export const VerificationTemplate = () => {
             )}
           </Card>
 
-          {/* 3 — Registered business (optional) */}
+          {/* 3 — Registered business (required) */}
           <Card
             icon={Building2}
             title="Registered business"
-            tag="Optional · CAC registration for a Registered Business credential"
+            tag="Required · your CAC registration (RC or BN) number"
             done={business?.status === 'verified'}
             failed={business?.status === 'failed'}
           >

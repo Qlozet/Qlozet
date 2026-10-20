@@ -141,6 +141,25 @@ export const VendorInfoGrid = ({
   const m = (metrics ?? {}) as Record<string, unknown>;
   const v = (vendor ?? {}) as Record<string, unknown>;
 
+  // Verification attempts: each hosted run is billed, and only "Needs fixing"
+  // (or the one automatic retry after a failed run) grants another, so the
+  // reviewer needs to see where the vendor stands before deciding.
+  const attemptsUsed = num(v.verification_attempts) ?? 0;
+  const attemptsAllowed = num(v.verification_attempts_allowed) ?? 1;
+  const attemptsLeft = Math.max(0, attemptsAllowed - attemptsUsed);
+  const autoRetryUsed = v.verification_auto_retry_granted === true;
+  const agreement = v.service_agreement as
+    | { version?: string; accepted_at?: string }
+    | null
+    | undefined;
+  const agreementDate = agreement?.accepted_at
+    ? new Date(agreement.accepted_at).toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
+    : null;
+
   // The account owner — what this page labels "Admin". Business has no
   // personal_name / personal_phone_number / principal_email fields, so those
   // three cards read undefined and rendered a dash. The detail endpoint joins
@@ -455,6 +474,22 @@ export const VendorInfoGrid = ({
                   })
               : undefined
           }
+        />
+        <VendorInfoCard
+          label="Verification attempts"
+          value={`${attemptsUsed} of ${attemptsAllowed} used${
+            attemptsLeft === 0 ? ' · none left' : ''
+          }${autoRetryUsed ? ' · automatic retry used' : ''}`}
+          valueClassName={attemptsLeft === 0 ? 'text-destructive' : undefined}
+        />
+        <VendorInfoCard
+          label="Vendor agreement"
+          value={
+            agreement?.version
+              ? `Accepted v${agreement.version}${agreementDate ? ` · ${agreementDate}` : ''}`
+              : 'Not accepted'
+          }
+          valueClassName={agreement?.version ? undefined : 'text-destructive'}
         />
         {/* One card per handle the vendor filled in. Nothing renders when
             they have added none — an empty "Social profiles" row would just
