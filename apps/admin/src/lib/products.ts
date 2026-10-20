@@ -189,8 +189,14 @@ export const getStorefrontVisibility = (
     );
   }
 
-  if (getProductModeration(product) === 'rejected') {
+  // Review first: only an approved listing reaches shoppers. A product with
+  // no moderation record predates review and stays visible, so read the raw
+  // field here, not getProductModeration (which shows a missing one as pending).
+  const moderation = asRecord(product.moderation)?.status;
+  if (moderation === 'rejected') {
     reasons.push('The platform rejected this listing.');
+  } else if (moderation === 'pending') {
+    reasons.push('It is waiting for Qlozet approval.');
   }
 
   const business = asRecord(product.business);

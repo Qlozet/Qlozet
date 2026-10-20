@@ -291,6 +291,17 @@ describe('getStorefrontVisibility', () => {
     expect(result.reasons).toContain('The platform rejected this listing.');
   });
 
+  it('fails a listing still waiting for approval (review first)', () => {
+    const result = visible({ moderation: { status: 'pending' } });
+    expect(result.visible).toBe(false);
+    expect(result.reasons).toContain('It is waiting for Qlozet approval.');
+  });
+
+  it('passes an approved listing, and one that predates review', () => {
+    expect(visible({ moderation: { status: 'approved' } }).visible).toBe(true);
+    expect(visible({ moderation: undefined }).visible).toBe(true);
+  });
+
   it('fails a listing whose vendor is not approved to sell', () => {
     const result = visible({
       business: { business_name: 'Garm island', status: 'pending' },
