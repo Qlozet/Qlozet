@@ -39,6 +39,8 @@ export interface PlatformSettings {
   payout_delay_days: number;
   auto_release_days: number;
   tailored_order_upfront_percent: number;
+  /** Share of a confirmed custom item a customer forfeits by cancelling; paid to the tailor. */
+  custom_cancellation_fee_percent: number;
   reservation_fee_percent: number;
 
   // Commission, fees and tax

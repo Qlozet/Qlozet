@@ -23,6 +23,7 @@ const SETTINGS: PlatformSettings = {
   payout_delay_days: 3,
   auto_release_days: 10,
   tailored_order_upfront_percent: 65,
+  custom_cancellation_fee_percent: 30,
   reservation_fee_percent: 10,
   platform_commission_type: 'percent',
   platform_commission_percent: 10,
