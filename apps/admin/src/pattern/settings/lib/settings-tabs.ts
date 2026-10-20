@@ -339,6 +339,17 @@ export const SETTINGS_TABS: SettingsTab[] = [
             step: 1,
             integer: true,
           },
+          {
+            key: 'return_auto_approve_days',
+            label: 'Approve unanswered returns after',
+            help: 'A return request the vendor has not approved or rejected after this many days is approved automatically, and both sides are told. 0 never approves automatically.',
+            kind: 'number',
+            unit: 'days',
+            min: 0,
+            max: 30,
+            step: 1,
+            integer: true,
+          },
         ],
       },
       {

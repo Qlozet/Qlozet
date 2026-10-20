@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 import type { ReturnRequest } from '@/redux/services/returns/returns.api-slice';
 import { formatDate, formatNaira } from '../lib/order-fields';
 import {
+  canDecideReturn,
+  canMarkReceived,
   readReturnCustomer,
   readReturnReason,
   readReturnRef,
@@ -58,11 +60,49 @@ export const createReturnsColumns = (
   {
     id: 'reason',
     header: 'Reason',
-    cell: ({ row }) => (
-      <span className="block max-w-[220px] truncate text-sm text-gray-600 dark:text-muted-foreground">
-        {readReturnReason(row.original)}
-      </span>
-    ),
+    // The reason, the customer's own words, and their photos: what the
+    // vendor needs to decide. Words and photos were stored but never shown.
+    cell: ({ row }) => {
+      const r = row.original;
+      const photos = (r.evidence_urls ?? []).filter(Boolean);
+      return (
+        <div className="flex max-w-[260px] flex-col gap-1">
+          <span className="text-sm font-medium text-grey-black dark:text-foreground">
+            {readReturnReason(r)}
+          </span>
+          {r.description ? (
+            <span
+              className="line-clamp-2 text-xs text-gray-600 dark:text-muted-foreground"
+              title={r.description}
+            >
+              {r.description}
+            </span>
+          ) : null}
+          {photos.length > 0 && (
+            <div className="flex gap-1">
+              {photos.slice(0, 3).map((url, i) => (
+                <a
+                  key={url}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Customer photo ${i + 1}`}
+                  className="block size-9 overflow-hidden rounded-md border"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt="" className="size-full object-cover" />
+                </a>
+              ))}
+            </div>
+          )}
+          {r.vendor_rejection_reason ? (
+            <span className="text-xs text-[#D42620]">
+              You said: {r.vendor_rejection_reason}
+            </span>
+          ) : null}
+        </div>
+      );
+    },
     enableSorting: false,
   },
   {
@@ -103,8 +143,8 @@ export const createReturnsColumns = (
       const status = readReturnStatus(r);
       const busy = actions.busyId === r._id;
 
-      // pending -> approve / reject ; approved -> mark received ; else nothing.
-      if (status === 'pending') {
+      // requested -> approve / reject ; approved -> mark received ; else nothing.
+      if (canDecideReturn(status)) {
         return (
           <div className="flex items-center gap-2">
             <Button
@@ -128,7 +168,7 @@ export const createReturnsColumns = (
         );
       }
 
-      if (status === 'approved') {
+      if (canMarkReceived(status)) {
         return (
           <Button
             size="sm"

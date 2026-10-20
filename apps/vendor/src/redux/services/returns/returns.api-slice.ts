@@ -16,9 +16,16 @@ export interface ReturnRequest {
   order_reference?: string;
   item_index?: number;
   reason?: string;
-  /** pending | approved | rejected | received | refunded */
+  /** requested | vendor_approved | return_shipped | received |
+   *  refund_processed | vendor_rejected | closed */
   status?: string;
   refund_amount?: number;
+  /** The customer's own words and photos. */
+  description?: string;
+  evidence_urls?: string[];
+  vendor_rejection_reason?: string;
+  /** Approved by the platform because it was not answered in time. */
+  auto_approved?: boolean;
   customer?: {
     _id?: string;
     username?: string;
@@ -58,15 +65,16 @@ export const returnsApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Returns', 'Return'],
     }),
 
-    // PATCH /returns/:id/reject — decline the return (optional reason)
+    // PATCH /returns/:id/reject — decline the return; the reason is required
+    // and shown to the customer.
     rejectReturn: builder.mutation<
       ApiResponse<ReturnRequest>,
-      { id: string; reason?: string }
+      { id: string; reason: string }
     >({
       query: ({ id, reason }) => ({
         url: `/returns/${id}/reject`,
         method: 'PATCH',
-        body: reason ? { reason } : undefined,
+        body: { reason },
       }),
       invalidatesTags: ['Returns', 'Return'],
     }),

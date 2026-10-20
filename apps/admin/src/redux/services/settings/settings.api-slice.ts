@@ -71,6 +71,8 @@ export interface PlatformSettings {
   abandon_after_days: number;
   /** Days to ship an item with no turnaround of its own, from confirmation. */
   default_turnaround_days?: number;
+  /** Unanswered return requests are approved after this many days (0 = never). */
+  return_auto_approve_days?: number;
 
   // Product image rules (enforced by the upload endpoints)
   product_image_min_short_edge: number;
