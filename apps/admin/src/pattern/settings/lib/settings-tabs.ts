@@ -167,6 +167,12 @@ export const SETTINGS_TABS: SettingsTab[] = [
             ...PERCENT,
           },
           {
+            key: 'custom_cancellation_fee_percent',
+            label: 'Cancellation fee after confirmation',
+            help: 'Share of a custom or bespoke item a customer gives up by cancelling after the tailor confirmed it. Paid to the tailor; the rest is refunded. Cancelling before confirmation, or anything the vendor causes, stays free. 0 makes cancelling always free.',
+            ...PERCENT,
+          },
+          {
             key: 'reservation_fee_percent',
             label: 'Reservation fee',
             help: 'Share of the order total a customer pays to reserve a slot.',
