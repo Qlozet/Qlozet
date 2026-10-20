@@ -66,7 +66,7 @@ describe('buildDraft', () => {
   it('holds numbers as strings and switches as booleans', () => {
     const draft = buildDraft(SETTINGS);
     expect(draft.minimum_payout).toBe('2000');
-    expect(draft.payout_cycle).toBe('weekly');
+    expect(draft.platform_commission_type).toBe('percent');
     expect(draft.ai_ask_requires_auth).toBe(false);
   });
 
@@ -135,13 +135,13 @@ describe('buildPayload', () => {
   it('sends only what changed, coerced back to its own type', () => {
     const draft = draftWith({
       minimum_payout: '5000',
-      payout_cycle: 'monthly',
+      platform_commission_type: 'fixed',
       ai_ask_requires_auth: true,
     });
 
     expect(buildPayload(draft, SETTINGS)).toEqual({
       minimum_payout: 5000,
-      payout_cycle: 'monthly',
+      platform_commission_type: 'fixed',
       ai_ask_requires_auth: true,
     });
   });
