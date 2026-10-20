@@ -36,6 +36,7 @@ const SETTINGS: PlatformSettings = {
   late_penalty_percent_per_day: 5,
   late_penalty_max_percent: 25,
   abandon_after_days: 7,
+  default_turnaround_days: 3,
   low_stock_threshold: 5,
   low_fabric_yards: 0,
   product_image_min_short_edge: 800,

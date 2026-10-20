@@ -69,6 +69,8 @@ export interface PlatformSettings {
   late_penalty_percent_per_day: number;
   late_penalty_max_percent: number;
   abandon_after_days: number;
+  /** Days to ship an item with no turnaround of its own, from confirmation. */
+  default_turnaround_days?: number;
 
   // Product image rules (enforced by the upload endpoints)
   product_image_min_short_edge: number;
