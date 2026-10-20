@@ -12,6 +12,7 @@ export const REASON_LABELS: Record<DisputeReason, string> = {
   not_as_described: 'Not as described',
   poor_quality: 'Poor quality',
   missing_items: 'Missing items',
+  not_received: 'Not received',
   measurement_issue: 'Measurement issue',
   other: 'Other',
 };

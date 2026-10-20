@@ -219,7 +219,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
     if (fabricYards < 0.1)
       return 'Enter the required fabric amount (in yards).';
     if (completionDays < 1)
-      return 'Enter the estimated completion time (in days).';
+      return 'Enter how many days you need before you can ship.';
     return null;
   };
 
@@ -483,13 +483,14 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
               <div className="flex items-center justify-between rounded-xl border border-border bg-white dark:bg-[#404040] px-4 py-3">
                 <div>
                   <p className="text-sm font-semibold text-grey-black dark:text-white">
-                    Estimated completion
+                    Days until you ship
                     {isDraft && (
                       <span className="ml-0.5 text-[#D42620]">*</span>
                     )}
                   </p>
                   <p className="text-xs text-grey2 dark:text-gray-400">
-                    Days from acceptance
+                    Counted from when the customer pays. Delivery comes on top,
+                    and shipping late is penalised.
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
