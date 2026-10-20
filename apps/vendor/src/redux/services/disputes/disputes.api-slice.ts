@@ -18,6 +18,8 @@ export interface Dispute {
   status?: string;
   evidence_urls?: string[];
   vendor_response?: string;
+  /** The vendor's own evidence, as opposed to the customer's evidence_urls. */
+  vendor_evidence_urls?: string[];
   customer?: {
     _id?: string;
     username?: string;
@@ -38,7 +40,8 @@ export interface GetVendorDisputesParams {
 
 export interface RespondDisputeRequest {
   id: string;
-  vendor_response: string;
+  /** The backend reads `response` (a `vendor_response` body was dropped). */
+  response: string;
   evidence_urls?: string[];
 }
 

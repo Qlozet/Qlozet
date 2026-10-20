@@ -64,7 +64,8 @@ export const RespondDisputeModal = create<RespondDisputeModalProps>(
       resolver: zodResolver(respondSchema),
       defaultValues: {
         vendor_response: dispute.vendor_response ?? '',
-        evidence_urls: (dispute.evidence_urls ?? []).join('\n'),
+        // The vendor's own earlier evidence — never the customer's.
+        evidence_urls: (dispute.vendor_evidence_urls ?? []).join('\n'),
       },
     });
 
@@ -76,9 +77,11 @@ export const RespondDisputeModal = create<RespondDisputeModalProps>(
 
     const onSubmit = async (values: RespondFormData) => {
       try {
+        // The backend reads `response`; `vendor_response` alone was dropped,
+        // so every vendor answer was saved empty.
         const res = await respond({
           id: dispute._id,
-          vendor_response: values.vendor_response.trim(),
+          response: values.vendor_response.trim(),
           evidence_urls: parseUrls(values.evidence_urls),
         }).unwrap();
         toast.success(res?.message || 'Response submitted.');
@@ -115,6 +118,41 @@ export const RespondDisputeModal = create<RespondDisputeModalProps>(
               </span>
             </p>
           </div>
+
+          {(dispute.description ||
+            (dispute.evidence_urls?.length ?? 0) > 0) && (
+            <div className="mb-4 rounded-lg border bg-muted/30 p-3 text-sm">
+              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[#646A86]">
+                The customer says
+              </p>
+              {dispute.description ? (
+                <p className="text-[#0C0C0D] dark:text-white">
+                  {dispute.description}
+                </p>
+              ) : null}
+              {(dispute.evidence_urls?.length ?? 0) > 0 && (
+                <div className="mt-2 flex gap-1.5">
+                  {(dispute.evidence_urls ?? []).slice(0, 4).map((url, i) => (
+                    <a
+                      key={url}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Customer photo ${i + 1}`}
+                      className="block size-12 overflow-hidden rounded-md border"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={url}
+                        alt=""
+                        className="size-full object-cover"
+                      />
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">

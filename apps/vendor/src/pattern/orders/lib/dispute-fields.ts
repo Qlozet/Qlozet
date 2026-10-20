@@ -8,6 +8,9 @@ import type { StatusBadge } from './order-fields';
 // Statuses that mean the dispute is settled (no vendor action, earnings unfrozen).
 const TERMINAL_STATUSES = [
   'resolved',
+  'resolved_refund',
+  'resolved_partial',
+  'resolved_released',
   'closed',
   'rejected',
   'refunded',
@@ -21,7 +24,10 @@ export const readDisputeReason = (d: Dispute): string =>
   (d.reason ?? d.description ?? '').trim() || '—';
 
 export const readDisputeCustomer = (d: Dispute): string =>
-  d.customer?.username || d.customer?.email || '—';
+  (d.customer?.full_name as string | undefined) ||
+  d.customer?.username ||
+  d.customer?.email ||
+  '—';
 
 export const readDisputeStatus = (d: Dispute): string =>
   String(d.status ?? 'open').toLowerCase();
@@ -45,6 +51,19 @@ export const disputeStatusBadge = (status: string): StatusBadge => {
       className: 'bg-[#F4EBFF] text-[#7E22CE]',
     },
     resolved: { label: 'Resolved', className: 'bg-[#E7F6EC] text-[#0F973D]' },
+    // How the backend actually records a decision.
+    resolved_refund: {
+      label: 'Refunded to customer',
+      className: 'bg-[#FBEAE9] text-[#D42620]',
+    },
+    resolved_partial: {
+      label: 'Partly refunded',
+      className: 'bg-[#FEF6E7] text-[#DD900D]',
+    },
+    resolved_released: {
+      label: 'Settled in your favour',
+      className: 'bg-[#E7F6EC] text-[#0F973D]',
+    },
     refunded: { label: 'Refunded', className: 'bg-[#E7F6EC] text-[#0F973D]' },
     rejected: { label: 'Rejected', className: 'bg-[#FBEAE9] text-[#D42620]' },
     closed: { label: 'Closed', className: 'bg-[#EAECF0] text-[#475467]' },
@@ -59,13 +78,7 @@ export const disputeStatusBadge = (status: string): StatusBadge => {
   );
 };
 
-export type DisputeStatusFilter =
-  | 'all'
-  | 'open'
-  | 'under_review'
-  | 'vendor_responded'
-  | 'resolved'
-  | 'rejected';
+export type DisputeStatusFilter = 'all' | 'open' | 'under_review' | 'resolved';
 
 // Whether an order's vendor earnings are frozen by an active dispute. The order
 // object may carry this a few different ways depending on the backend; read them

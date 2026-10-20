@@ -31,9 +31,7 @@ const STATUS_OPTIONS: FilterOption<DisputeStatusFilter>[] = [
   { value: 'all', label: 'All' },
   { value: 'open', label: 'Open' },
   { value: 'under_review', label: 'Under Review' },
-  { value: 'vendor_responded', label: 'Responded' },
   { value: 'resolved', label: 'Resolved' },
-  { value: 'rejected', label: 'Rejected' },
 ];
 
 export const DisputesPanel: React.FC = () => {
@@ -45,9 +43,8 @@ export const DisputesPanel: React.FC = () => {
   });
 
   const { data, isLoading, isFetching, isSuccess, isError, error } =
+    // A plain list from the server (filtered by status there), paged here.
     useGetVendorDisputesQuery({
-      page: pagination.pageIndex + 1,
-      size: pagination.pageSize,
       status: statusFilter === 'all' ? undefined : statusFilter,
     });
 
@@ -80,8 +77,6 @@ export const DisputesPanel: React.FC = () => {
     []
   );
 
-  const totalPages = data?.data?.total_pages ?? data?.data?.totalPages ?? 1;
-
   return (
     <div className="bg-card w-full rounded-xl border custom-card-shadow">
       <TableToolbar
@@ -112,8 +107,6 @@ export const DisputesPanel: React.FC = () => {
         error={error}
         pagination={pagination}
         setPagination={setPagination}
-        pageCount={totalPages}
-        manualPagination
         emptyTitle="No disputes"
         emptyMessage="Disputes raised by customers will show up here."
         minWidth="900px"
