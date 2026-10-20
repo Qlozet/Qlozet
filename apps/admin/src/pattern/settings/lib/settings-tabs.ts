@@ -318,6 +318,17 @@ export const SETTINGS_TABS: SettingsTab[] = [
             integer: true,
           },
           {
+            key: 'default_turnaround_days',
+            label: 'Default time to ship',
+            help: 'Days a vendor has to ship, from confirming, for items with no "days to make it" of their own: fabric, accessories and auto-confirmed orders. Late penalties count from this deadline, and the shop adds it to delivery estimates.',
+            kind: 'number',
+            unit: 'days',
+            min: 1,
+            max: 60,
+            step: 1,
+            integer: true,
+          },
+          {
             key: 'return_window_days',
             label: 'Return window',
             help: 'Days after delivery in which a customer can still open a return.',
