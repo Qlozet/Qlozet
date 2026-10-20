@@ -424,8 +424,26 @@ export const SETTINGS_TABS: SettingsTab[] = [
     label: 'Catalogue',
     slug: 'inventory',
     description:
-      'Stock thresholds, and the rules an uploaded product photo must meet.',
+      'How new listings reach the shop, stock thresholds, and the rules an uploaded product photo must meet.',
     sections: [
+      {
+        id: 'listing-review',
+        title: 'Listing review',
+        description:
+          'Every listing is reviewed. This decides whether shoppers can see it before the review is done.',
+        fields: [
+          {
+            key: 'listing_review_mode',
+            label: 'New listings',
+            help: 'Review first: a listing stays out of the shop until approved. Live first: it shows as soon as it is published and waits in the review queue; rejecting it takes it down. Rejected listings are hidden either way.',
+            kind: 'select',
+            options: [
+              { value: 'review_first', label: 'Review first' },
+              { value: 'live_first', label: 'Live first' },
+            ],
+          },
+        ],
+      },
       {
         id: 'product-images',
         title: 'Product photos',

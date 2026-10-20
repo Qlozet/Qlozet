@@ -30,6 +30,9 @@ vi.mock('@/redux/services/products/admin-products.api-slice', () => ({
   useEscalateProductMutation: () => [vi.fn(), { isLoading: false }],
 }));
 
+vi.mock('@/lib/hooks/use-listing-review-mode', () => ({
+  useListingReviewMode: () => 'review_first',
+}));
 vi.mock('@/redux/services/vendor-details/vendor-details.api-slice', () => ({
   useResolveVendorNoteMutation: () => [vi.fn(), { isLoading: false }],
   useDeleteVendorNoteMutation: () => [vi.fn(), { isLoading: false }],

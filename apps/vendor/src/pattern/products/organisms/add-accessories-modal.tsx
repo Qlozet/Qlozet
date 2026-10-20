@@ -42,6 +42,7 @@ import {
 } from '@/redux/services/products/products.api-slice';
 import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
 import { useGetCategoriesForTypeQuery } from '@/redux/services/taxonomy/taxonomy.api-slice';
+import { PendingReviewNote } from '../molecules/listing-review-copy';
 
 type ProductStatus = 'active' | 'draft' | 'archived';
 type ModerationStatus = 'pending' | 'approved' | 'rejected';
@@ -585,9 +586,7 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                   <StatusPill status={status} />
                 </div>
                 {status === 'active' && moderation?.status === 'pending' && (
-                  <p className="mt-2 text-xs text-amber-600">
-                    Under review by Qlozet. It goes live once approved.
-                  </p>
+                  <PendingReviewNote />
                 )}
                 {status === 'active' && moderation?.status === 'approved' && (
                   <p className="mt-2 text-xs text-emerald-600">

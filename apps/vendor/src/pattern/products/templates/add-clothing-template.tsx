@@ -70,6 +70,7 @@ import { useGetBusinessProfileQuery } from '@/redux/services/settings/settings.a
 import { useGetSizeGuidesQuery } from '@/redux/services/size-guides/size-guides.api-slice';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { PendingReviewNote } from '../molecules/listing-review-copy';
 
 type ProductStatus = 'active' | 'draft' | 'archived';
 type ModerationStatus = 'pending' | 'approved' | 'rejected';
@@ -1238,9 +1239,7 @@ export default function AddClothingTemplate() {
                       </div>
                       {status === 'active' &&
                         moderation?.status === 'pending' && (
-                          <p className="mt-2 text-xs text-amber-600">
-                            Under review by Qlozet. It goes live once approved.
-                          </p>
+                          <PendingReviewNote />
                         )}
                       {status === 'active' &&
                         moderation?.status === 'approved' && (

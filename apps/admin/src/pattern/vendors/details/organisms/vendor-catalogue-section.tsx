@@ -19,6 +19,7 @@ import {
   type AdminProductsParams,
 } from '@/redux/services/products/admin-products.api-slice';
 import type { Product } from '@/redux/services/products/products.api-slice';
+import { useListingReviewMode } from '@/lib/hooks/use-listing-review-mode';
 import {
   formatProductPrice,
   getProductImage,
@@ -124,6 +125,7 @@ export const VendorCatalogueSection = ({
   businessId: string;
 }) => {
   const router = useRouter();
+  const reviewMode = useListingReviewMode();
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState('all');
   const [kind, setKind] = useState('');
@@ -354,7 +356,7 @@ export const VendorCatalogueSection = ({
               // state an admin is usually here to clear.
               const hidden =
                 status.key === 'active' &&
-                !getStorefrontVisibility(product).visible;
+                !getStorefrontVisibility(product, reviewMode).visible;
               const name = getProductName(product);
               const moderation = getProductModeration(product);
               return (

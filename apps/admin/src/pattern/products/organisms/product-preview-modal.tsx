@@ -27,6 +27,7 @@ import {
   isCustomisable,
 } from '@/lib/products';
 import type { Product } from '@/redux/services/products/products.api-slice';
+import { useListingReviewMode } from '@/lib/hooks/use-listing-review-mode';
 
 interface ProductPreviewModalProps {
   product: Product;
@@ -55,9 +56,10 @@ export const ProductPreviewModal = NiceModal.create<ProductPreviewModalProps>(
 
     const images = useMemo(() => getProductImages(product), [product]);
     const colours = useMemo(() => getColourOptions(product), [product]);
+    const reviewMode = useListingReviewMode();
     const visibility = useMemo(
-      () => getStorefrontVisibility(product),
-      [product]
+      () => getStorefrontVisibility(product, reviewMode),
+      [product, reviewMode]
     );
 
     if (!modal.visible) return null;

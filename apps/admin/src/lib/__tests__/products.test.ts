@@ -297,6 +297,20 @@ describe('getStorefrontVisibility', () => {
     expect(result.reasons).toContain('It is waiting for Qlozet approval.');
   });
 
+  it('passes a pending listing in live-first mode, but never a rejected one', () => {
+    const live = (moderation: string) =>
+      getStorefrontVisibility(
+        product({
+          status: 'active',
+          business: { business_name: 'Garm island', status: 'approved' },
+          moderation: { status: moderation },
+        }),
+        'live_first'
+      );
+    expect(live('pending').visible).toBe(true);
+    expect(live('rejected').visible).toBe(false);
+  });
+
   it('passes an approved listing, and one that predates review', () => {
     expect(visible({ moderation: { status: 'approved' } }).visible).toBe(true);
     expect(visible({ moderation: undefined }).visible).toBe(true);

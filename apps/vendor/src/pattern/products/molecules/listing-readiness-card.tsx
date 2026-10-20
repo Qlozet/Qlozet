@@ -3,6 +3,7 @@
 import { CheckCircle2, Circle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Readiness } from '../lib/listing-readiness';
+import { ReviewTimingNote } from './listing-review-copy';
 
 interface ListingReadinessCardProps {
   readiness: Readiness;
@@ -58,8 +59,7 @@ export const ListingReadinessCard = ({
       ))}
     </ul>
     <p className="mt-3 text-xs text-muted-foreground">
-      You can save a draft at any point. Published listings go live after a
-      quick review by Qlozet.
+      You can save a draft at any point. <ReviewTimingNote />
     </p>
   </div>
 );
