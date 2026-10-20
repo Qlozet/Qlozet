@@ -40,7 +40,7 @@ const SUGGESTED_CATEGORIES = [
   'Payments & Wallet',
   'Payouts & Earnings',
   'Products & Moderation',
-  'Quotes & Bespoke',
+  'Account & Verification',
   'Policies',
 ];
 
