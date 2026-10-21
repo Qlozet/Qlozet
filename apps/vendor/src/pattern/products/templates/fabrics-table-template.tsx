@@ -194,6 +194,10 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
         itemData?.fabric_details?.price_per_yard ||
         apiProduct.base_price ||
         0,
+      // Sold by the piece: the column shows the piece price too.
+      soldBy: itemData?.sold_by ?? 'yard',
+      pieceYards: itemData?.piece_yards ?? null,
+      piecePrice: itemData?.piece_price ?? null,
       createdAt: apiProduct.createdAt,
       updatedAt: apiProduct.updatedAt,
     };

@@ -138,6 +138,65 @@ describe('fabricReadiness', () => {
   });
 });
 
+describe('fabricReadiness - by the piece', () => {
+  const bolt = {
+    title: 'Royal blue Holland wax print',
+    description:
+      'Heavyweight 100% cotton wax print with a crisp hand and a deep, colourfast blue. ' +
+      'Sold by the 6-yard piece from a 45-inch bolt. Pre-wash cold before cutting.',
+    photoCount: 3,
+    material: 'Cotton',
+    pricePerYard: '',
+    yardsInStock: '30',
+    minCut: '',
+    widthInches: '45',
+  };
+  const keys = (r: ReturnType<typeof fabricReadiness>) =>
+    r.items.map((i) => i.key);
+
+  it('a piece-only fabric needs a piece length and price, not a per-yard price or cut', () => {
+    const r = fabricReadiness({
+      ...bolt,
+      soldBy: 'piece',
+      pieceYards: '6',
+      piecePrice: '24000',
+    });
+    expect(r.ready).toBe(true);
+    expect(keys(r)).not.toContain('price');
+    expect(keys(r)).not.toContain('min_cut');
+  });
+
+  it('a piece cannot be longer than the stock, and needs a price', () => {
+    const long = fabricReadiness({
+      ...bolt,
+      soldBy: 'piece',
+      pieceYards: '40',
+      piecePrice: '24000',
+    });
+    expect(long.items.find((i) => i.key === 'piece_yards')?.ok).toBe(false);
+    const free = fabricReadiness({
+      ...bolt,
+      soldBy: 'piece',
+      pieceYards: '6',
+      piecePrice: '',
+    });
+    expect(free.items.find((i) => i.key === 'piece_price')?.ok).toBe(false);
+  });
+
+  it('selling both needs the yard and the piece settings', () => {
+    const r = fabricReadiness({
+      ...bolt,
+      soldBy: 'both',
+      pieceYards: '6',
+      piecePrice: '24000',
+    });
+    expect(r.ready).toBe(false);
+    expect(keys(r)).toEqual(
+      expect.arrayContaining(['price', 'min_cut', 'piece_yards', 'piece_price'])
+    );
+  });
+});
+
 describe('accessoryReadiness', () => {
   const bag = {
     title: 'Woven raffia market bag',
