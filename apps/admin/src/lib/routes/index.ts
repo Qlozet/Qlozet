@@ -25,7 +25,6 @@ export const APP_ROUTES = {
   productsTaxonomy: '/products/taxonomy',
   productsTemplates: '/products/templates',
   productsTemplateStudio: '/products/templates/studio',
-  productsAdd: '/products/add-product',
   staticPage: '/static-page',
   marketing: '/marketing',
   admin: '/admin',

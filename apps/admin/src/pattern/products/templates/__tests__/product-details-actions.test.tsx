@@ -28,6 +28,7 @@ vi.mock('@/redux/services/products/admin-products.api-slice', () => ({
     isError: false,
   }),
   useEscalateProductMutation: () => [vi.fn(), { isLoading: false }],
+  useUpdateAdminProductMutation: () => [vi.fn(), { isLoading: false }],
 }));
 
 vi.mock('@/lib/hooks/use-listing-review-mode', () => ({
@@ -163,13 +164,21 @@ describe('ProductDetailsTemplate — actions', () => {
     );
   });
 
-  it('opens the edit form on this product, not a blank one', async () => {
+  it('opens the listing editor on this product, filled in', async () => {
     const user = userEvent.setup();
     renderPage();
 
-    await user.click(screen.getByRole('button', { name: 'Edit' }));
+    await user.click(screen.getByRole('button', { name: 'Edit listing' }));
 
-    expect(push).toHaveBeenCalledWith(`/products/add-product?id=${PRODUCT_ID}`);
+    const sheet = await screen.findByRole('dialog', { name: 'Edit listing' });
+    expect(within(sheet).getByLabelText('Name')).toHaveValue(
+      'Garm Forest T-shirt'
+    );
+    // The vendor's money and stock aren't on it.
+    expect(within(sheet).queryByLabelText(/price/i)).toBeNull();
+    expect(
+      within(sheet).getByLabelText('Why are you changing it?')
+    ).toBeInTheDocument();
   });
 
   it('opens the customer preview', async () => {

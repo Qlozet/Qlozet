@@ -9,6 +9,7 @@ import { getProductName, getProductStatus } from '@/lib/products';
 import { readApiError } from '@/redux/services/types';
 import { ConfirmActionModal } from '@/pattern/common/organisms/confirm-action-modal';
 import { ScheduleProductActivationModal } from '../organisms/schedule-product-activation-modal';
+import { openEditListing } from '../organisms/edit-listing-sheet';
 import type { ProductAction } from '../molecules/product-actions-cell';
 import type { Product } from '@/redux/services/products/products.api-slice';
 import { useDeleteProductMutation } from '@/redux/services/products/products.api-slice';
@@ -74,7 +75,8 @@ export const useProductRowActions = () => {
           return;
 
         case 'edit':
-          router.push(`${APP_ROUTES.productsAdd}?id=${id}`);
+          // Name, description, category and photos only — see the sheet.
+          openEditListing(product);
           return;
 
         case 'schedule':

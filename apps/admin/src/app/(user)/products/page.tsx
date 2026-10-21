@@ -15,16 +15,10 @@ export default function ProductsPage() {
             Products
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Admin mirror of vendor /products. Replace with admin product
-            catalog.
+            Every vendor&apos;s listings. Vendors create them; the team reviews,
+            tidies and moderates them here.
           </p>
         </div>
-        <Link
-          href="/products/add-product"
-          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
-        >
-          Add product
-        </Link>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
