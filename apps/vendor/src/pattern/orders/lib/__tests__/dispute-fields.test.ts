@@ -28,6 +28,9 @@ describe('dispute field readers', () => {
       'Wrong size'
     );
     expect(readDisputeReason(dispute({ description: 'Late' }))).toBe('Late');
+    expect(readDisputeReason(dispute({ reason: 'poor_fit' }))).toBe(
+      'Doesn’t fit as measured'
+    );
     expect(readDisputeReason(dispute({ reason: '   ' }))).toBe('—');
     expect(readDisputeReason(dispute({}))).toBe('—');
   });

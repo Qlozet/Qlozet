@@ -20,8 +20,23 @@ const TERMINAL_STATUSES = [
 export const readDisputeRef = (d: Dispute): string =>
   d.order_reference || (d.order_id ? String(d.order_id) : '') || d._id || '—';
 
-export const readDisputeReason = (d: Dispute): string =>
-  (d.reason ?? d.description ?? '').trim() || '—';
+// The reason codes the customer picks from, in the words they saw.
+const REASON_LABELS: Record<string, string> = {
+  not_as_described: 'Not as described',
+  damaged: 'Arrived damaged',
+  wrong_item: 'Wrong item',
+  missing_items: 'Missing items',
+  not_received: 'Never arrived',
+  poor_fit: 'Doesn’t fit as measured',
+  poor_quality: 'Poor quality',
+  measurement_issue: 'Measurement issue',
+  other: 'Something else',
+};
+
+export const readDisputeReason = (d: Dispute): string => {
+  const raw = (d.reason ?? d.description ?? '').trim();
+  return REASON_LABELS[raw] ?? (raw || '—');
+};
 
 export const readDisputeCustomer = (d: Dispute): string =>
   (d.customer?.full_name as string | undefined) ||

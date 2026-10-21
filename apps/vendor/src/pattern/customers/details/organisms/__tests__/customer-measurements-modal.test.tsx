@@ -56,11 +56,12 @@ describe('CustomerMeasurementsModal (vendor)', () => {
     await open({ customer: customer(), measurementSet: SET });
     expect(within(panel).getByText('Body Measurement')).toBeInTheDocument();
     expect(
-      within(panel).getByText(/^Default set · Updated /)
+      within(panel).getByText(/^Current profile · Updated /)
     ).toBeInTheDocument();
     expect(within(panel).getByText('Upper body')).toBeInTheDocument();
     expect(within(panel).getByText('Lengths')).toBeInTheDocument();
-    expect(within(panel).getByText('Waist Circ.')).toBeInTheDocument();
+    // Once as a summary figure, once in its group.
+    expect(within(panel).getAllByText('Waist').length).toBeGreaterThan(0);
   });
 
   it('shows the body type the way the admin panel does', async () => {
@@ -84,7 +85,8 @@ describe('CustomerMeasurementsModal (vendor)', () => {
     await open({ customer: customer(), measurementSet: SET });
     const row = () =>
       within(panel)
-        .getByText('Waist Circ.')
+        .getAllByText('Waist')
+        .at(-1)!
         .parentElement?.querySelectorAll('span')[1]?.textContent;
     expect(row()).toBe('97');
     await user.click(

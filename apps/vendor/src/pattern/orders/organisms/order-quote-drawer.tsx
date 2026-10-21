@@ -52,7 +52,10 @@ import { DesignDetailModal } from './design-detail-modal';
 import { readBespokeDesign } from '../lib/bespoke-design';
 import { OrderFabricCard } from '../molecules/order-fabric-card';
 import { OrderAccessoriesCard } from '../molecules/order-accessories-card';
-import { OrderMeasurementsCard } from '../molecules/order-measurements-card';
+import {
+  OrderMeasurementsCard,
+  ItemBodyMeasurements,
+} from '../molecules/order-measurements-card';
 import { OverlayScroll } from '@/components/OverlayScroll';
 import { OrderEarningsCard } from '../molecules/order-earnings-card';
 import { VendorGuidelinesCard } from '../molecules/vendor-guidelines-card';
@@ -633,7 +636,13 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
             {/* Body Measurement — the set this order must be sewn to. Snapshot
               taken at acceptance when available; live active set for legacy
               orders (badged accordingly). */}
-            <OrderMeasurementsCard reference={(order as any).reference} />
+            {(order as any).reference ? (
+              <OrderMeasurementsCard reference={(order as any).reference} />
+            ) : quote?.measurements?.measurements ? (
+              // A quote request: the measurements the customer picked for
+              // this design, so the price (and the yards) fit the body.
+              <ItemBodyMeasurements profile={quote.measurements} quote />
+            ) : null}
 
             {/* Fabric */}
             {(() => {
