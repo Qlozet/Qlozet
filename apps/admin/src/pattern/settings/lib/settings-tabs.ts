@@ -111,19 +111,11 @@ export const SETTINGS_TABS: SettingsTab[] = [
         id: 'payout-schedule',
         title: 'Payout schedule',
         description:
-          'Earnings become eligible on delivery plus the delay below, and are paid out on the cycle.',
+          'Earnings become available after delivery plus the longer of this delay and the return window. Vendors withdraw them whenever they choose.',
         fields: [
-          {
-            key: 'payout_cycle',
-            label: 'Payout cycle',
-            help: 'How often eligible earnings are swept into a payout.',
-            kind: 'select',
-            options: [
-              { value: 'weekly', label: 'Weekly' },
-              { value: 'bi-weekly', label: 'Bi-weekly' },
-              { value: 'monthly', label: 'Monthly' },
-            ],
-          },
+          // payout_cycle is not shown: nothing reads it. Vendors withdraw
+          // their available balance whenever they choose; a setting that
+          // moves nothing misleads whoever changes it.
           {
             key: 'minimum_payout',
             label: 'Minimum payout',
