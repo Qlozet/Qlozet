@@ -117,6 +117,13 @@ export interface TeamMember {
   accepted?: boolean;
   is_active?: boolean;
   is_owner?: boolean;
+  /** The member's account; still on the emailed temporary password until they set their own. */
+  user?: {
+    _id: string;
+    full_name?: string;
+    email?: string;
+    must_change_password?: boolean;
+  } | null;
   invited_by?: string;
   invite_expires?: string;
   createdAt?: string;
@@ -338,6 +345,19 @@ export const usersApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['TeamMembers'],
     }),
 
+    // POST /users/team/members/{id}/resend-invite — a new temporary password
+    // for a member who hasn't signed in and set their own yet.
+    resendTeamInvite: builder.mutation<
+      ApiResponse<{ message: string }>,
+      string
+    >({
+      query: (id) => ({
+        url: `/users/team/members/${id}/resend-invite`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['TeamMembers'],
+    }),
+
     // DELETE /users/team/members/{id} — hard delete.
     deleteTeamMember: builder.mutation<ApiResponse<null>, string>({
       query: (id) => ({
@@ -442,6 +462,7 @@ export const {
   useInviteTeamMemberMutation,
   useUpdateTeamMemberMutation,
   useDeleteTeamMemberMutation,
+  useResendTeamInviteMutation,
   useGetVendorsQuery,
   useGetNewVendorsThisWeekQuery,
   useGetTopVendorsThisWeekQuery,

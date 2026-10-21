@@ -39,6 +39,7 @@ import {
   useUpdateTeamMemberMutation,
 } from '@/redux/services/users/users.api-slice';
 import { readApiError } from '@/redux/services/types';
+import { prettyRole, roleSummary } from '@/pattern/settings/lib/team-roles';
 
 export interface TeamMemberDetails {
   _id: string;
@@ -59,9 +60,6 @@ const memberSchema = z.object({
 });
 
 type MemberFormData = z.infer<typeof memberSchema>;
-
-const prettyRole = (name?: string): string =>
-  (name ?? '').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
 const ReadOnlyField = ({ label, value }: { label: string; value: string }) => (
   <div className="space-y-2">
@@ -219,6 +217,13 @@ export const TeamMemberDetailsModal = create<{ member: TeamMemberDetails }>(
                             ))}
                           </SelectContent>
                         </Select>
+                        {field.value && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {roleSummary(
+                              roles.find((r) => r._id === field.value)?.name
+                            )}
+                          </p>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}
