@@ -31,12 +31,15 @@ export interface ProductPreviewCardProps {
   className?: string;
   /** Subtitle description for the card */
   description?: string;
+  /** What the products are being added to, for the wording ("size guide"). */
+  noun?: string;
 }
 
 export const ProductPreviewCard = ({
   conditionState,
   className,
   description = 'These products currently match your conditions.',
+  noun = 'collection',
 }: ProductPreviewCardProps) => {
   const {
     allRawProducts,
@@ -156,7 +159,7 @@ export const ProductPreviewCard = ({
                     type="button"
                     onClick={() => handleExclude(product._id)}
                     className="shrink-0 rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-red-50 hover:text-red-600"
-                    title="Exclude from collection"
+                    title={`Exclude from this ${noun}`}
                   >
                     <X className="size-3.5" />
                   </button>
@@ -205,7 +208,7 @@ export const ProductPreviewCard = ({
                 <p className="py-4 text-center text-xs text-muted-foreground">
                   {manualPickerSearch
                     ? 'No matching products found.'
-                    : 'All products are already in this collection.'}
+                    : `All products are already in this ${noun}.`}
                 </p>
               ) : (
                 availableForInclude.slice(0, 20).map((product: any) => (

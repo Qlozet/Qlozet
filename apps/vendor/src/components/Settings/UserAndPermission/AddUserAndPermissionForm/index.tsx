@@ -16,6 +16,7 @@ import {
 } from '@/redux/services/users/users.api-slice';
 import { toast } from 'sonner';
 import { readApiError } from '@/redux/services/types';
+import { prettyRole, roleSummary } from '@/pattern/settings/lib/team-roles';
 
 interface InviteRow {
   id: string;
@@ -158,9 +159,7 @@ const AddNewUserAndPermissionForm = ({
                 ) : (
                   availableRoles.map((role) => (
                     <SelectItem key={role._id} value={role._id}>
-                      {(role.name ?? '')
-                        .replace(/_/g, ' ')
-                        .replace(/\b\w/g, (c) => c.toUpperCase())}
+                      {prettyRole(role.name)}
                     </SelectItem>
                   ))
                 )}
@@ -178,6 +177,15 @@ const AddNewUserAndPermissionForm = ({
                 <Trash2 className="size-4" />
               </button>
             </div>
+
+            {/* What the chosen role can do */}
+            {row.role_id && (
+              <p className="md:col-span-4 -mt-1 text-xs text-gray-500 dark:text-gray-400">
+                {roleSummary(
+                  availableRoles.find((r) => r._id === row.role_id)?.name
+                )}
+              </p>
+            )}
           </div>
         ))}
       </div>
@@ -199,7 +207,8 @@ const AddNewUserAndPermissionForm = ({
         </div>
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Invited members will receive an email with a temporary password. They
-          must change it on first login.
+          must change it on first login. If the email goes missing, use Resend
+          invite from their row.
         </p>
       </div>
 

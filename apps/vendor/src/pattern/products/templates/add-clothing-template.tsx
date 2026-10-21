@@ -162,6 +162,9 @@ export default function AddClothingTemplate() {
   // and its chart is what the shop shows; the vendor's guides may also attach
   // themselves by their own conditions, which shows up here pre-selected.
   const [sizeGuideId, setSizeGuideId] = useState<string | null>(null);
+  // Sent only when the vendor changes it here: a choice made on the listing
+  // is pinned, while an untouched picker leaves the guides' rules in charge.
+  const [sizeGuideTouched, setSizeGuideTouched] = useState(false);
   const { data: sizeGuidesRes } = useGetSizeGuidesQuery();
   const sizeGuides = sizeGuidesRes?.data ?? [];
   const activeGuide = sizeGuides.find((g) => g._id === sizeGuideId) ?? null;
@@ -230,6 +233,20 @@ export default function AddClothingTemplate() {
       if (pType === 'customize') {
         setCustomizationEnabled(true);
       }
+
+      // Making time and fabric per size. Not loading these meant every save
+      // of an edit put "Days to make it" back to 2 and dropped the yards.
+      const pTurnaround = Number(inner?.turnaround_days);
+      if (pTurnaround > 0) setTurnaroundDays(String(pTurnaround));
+      const pYards: { size?: string; yards?: number }[] =
+        inner?.yardage_per_size ?? [];
+      setYardagePerSize(
+        Object.fromEntries(
+          pYards
+            .filter((y) => y?.size && Number(y.yards) > 0)
+            .map((y) => [String(y.size), Number(y.yards)])
+        )
+      );
 
       // External fabric override
       const pExtFabric = inner?.accepts_external_fabric;
@@ -713,7 +730,7 @@ export default function AddClothingTemplate() {
                 let updatedImages = it.originalData.images || [];
                 return {
                   ...it.originalData,
-                  price: Math.max(1, Number(it.price) || 1),
+                  price: Math.max(0, Number(it.price) || 0),
                   images: updatedImages,
                 };
               }
@@ -739,7 +756,7 @@ export default function AddClothingTemplate() {
                       attributes: styleItem.attributes || [],
                       description: styleItem.description || '',
                       aliases: styleItem.aliases || [],
-                      price: Math.max(1, Number(it.price) || 1),
+                      price: Math.max(0, Number(it.price) || 0),
                       min_width_cm: 1,
                       type: styleItem.type || 'style',
                     };
@@ -780,7 +797,7 @@ export default function AddClothingTemplate() {
                   : prodData;
                 return {
                   ...finalData,
-                  price: Math.max(1, Number(it.price) || 1),
+                  price: Math.max(0, Number(it.price) || 0),
                 };
               } catch (e) {
                 console.error('Failed to fetch product for custom section', e);
@@ -821,7 +838,7 @@ export default function AddClothingTemplate() {
 
       const payload: CreateClothingDto = {
         ...(editId ? { product_id: editId } : {}),
-        size_guide: sizeGuideId,
+        ...(sizeGuideTouched ? { size_guide: sizeGuideId } : {}),
         seo: { title: title.trim() },
         metafields: {
           base_price: price ? Number(price) : undefined,
@@ -831,7 +848,11 @@ export default function AddClothingTemplate() {
           name: title.trim(),
           type: customizationEnabled ? 'customize' : 'non_customize',
           description: description || undefined,
-          turnaround_days: Number(turnaroundDays) || 0,
+          // Only a made-to-order piece has a making time of its own; ready
+          // to wear ships within the platform's standard time.
+          turnaround_days: customizationEnabled
+            ? Number(turnaroundDays) || 0
+            : 0,
           status: isDraft ? 'draft' : 'active',
           taxonomy: {
             product_type: productType,
@@ -844,7 +865,7 @@ export default function AddClothingTemplate() {
           styles,
           accessories,
           fabrics,
-          ...(Object.keys(yardagePerSize).length > 0
+          ...(customizationEnabled && Object.keys(yardagePerSize).length > 0
             ? {
                 yardage_per_size: Object.entries(yardagePerSize)
                   .filter(([, yards]) => yards > 0)
@@ -852,7 +873,9 @@ export default function AddClothingTemplate() {
               }
             : {}),
           ...(addons.length > 0 ? { addons } : {}),
-          accepts_external_fabric: externalFabricOverride,
+          accepts_external_fabric: customizationEnabled
+            ? externalFabricOverride
+            : null,
         },
       };
 
@@ -882,50 +905,68 @@ export default function AddClothingTemplate() {
   };
 
   /**
-   * The garment's bill of materials: yards of fabric per size. Lives in the
-   * customer-supplied fabric card, because that is when it is used: the shop
-   * lets a customer apply their own cloth to any garment that accepts it,
-   * and without this the order fell back to the fabric's minimum cut.
+   * The garment's bill of materials: yards of fabric for one piece, and per
+   * size when sizes differ. It prices the fabric a customer picks (the
+   * vendor's own or another vendor's) and what a fabric vendor is paid;
+   * without it the order falls back to the fabric's minimum cut. '*' is the
+   * one-piece figure, used when a piece is cut from measurements with no size.
    */
   const garmentSizes = Array.from(
     new Set(variants.flatMap((v) => v.availableSizes || []))
   );
-  const acceptsCustomerFabric =
-    externalFabricOverride === null
-      ? businessProfile?.accepts_external_fabric !== false
-      : externalFabricOverride;
-  const yardageEditor =
-    garmentSizes.length > 0 && acceptsCustomerFabric ? (
-      <div className="mt-4 border-t border-border pt-4">
-        <FieldLabel
-          tooltip="How much cloth each size takes. Sets what a shopper is charged for fabric and what a fabric vendor is paid."
-          className="font-normal"
-        >
-          Yards of fabric per size
-        </FieldLabel>
-        <div className="grid grid-cols-3 gap-2">
-          {garmentSizes.map((size) => (
-            <div key={size}>
-              <span className="text-xs text-muted-foreground">{size}</span>
-              <Input
-                type="number"
-                min={0}
-                step={0.5}
-                placeholder="yds"
-                value={yardagePerSize[size] ?? ''}
-                onChange={(e) =>
-                  setYardagePerSize((prev) => ({
-                    ...prev,
-                    [size]: Number(e.target.value) || 0,
-                  }))
-                }
-                className="bg-background"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-    ) : null;
+  const setYards = (size: string, value: string) =>
+    setYardagePerSize((prev) => {
+      const next = { ...prev };
+      const yards = Number(value);
+      if (yards > 0) next[size] = yards;
+      else delete next[size];
+      return next;
+    });
+  const yardageEditor = (
+    <div className="mt-5 border-t border-border pt-5">
+      <FieldLabel
+        htmlFor="yards-one-piece"
+        tooltip="How much cloth one piece takes. Sets what a customer is charged for the fabric they choose, and what a fabric vendor is paid."
+        className="font-normal"
+      >
+        Yards of fabric for one piece
+      </FieldLabel>
+      <Input
+        id="yards-one-piece"
+        type="number"
+        min={0}
+        step={0.5}
+        placeholder="e.g. 4"
+        value={yardagePerSize['*'] ?? ''}
+        onChange={(e) => setYards('*', e.target.value)}
+        className="max-w-xs bg-background"
+      />
+      {garmentSizes.length > 0 && (
+        <>
+          <p className="mt-3 text-xs text-muted-foreground">
+            By size, if some take more or less. Leave a size blank to use the
+            figure above.
+          </p>
+          <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
+            {garmentSizes.map((size) => (
+              <div key={size}>
+                <span className="text-xs text-muted-foreground">{size}</span>
+                <Input
+                  type="number"
+                  min={0}
+                  step={0.5}
+                  placeholder="yds"
+                  value={yardagePerSize[size] ?? ''}
+                  onChange={(e) => setYards(size, e.target.value)}
+                  className="bg-background"
+                />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
 
   // Section numbers shift with the mode: made-to-order gets an Options step
   // and a Making-it step that ready-to-wear does not have.
@@ -1155,9 +1196,10 @@ export default function AddClothingTemplate() {
                     </FieldLabel>
                     <Select
                       value={sizeGuideId ?? 'none'}
-                      onValueChange={(v) =>
-                        setSizeGuideId(v === 'none' ? null : v)
-                      }
+                      onValueChange={(v) => {
+                        setSizeGuideId(v === 'none' ? null : v);
+                        setSizeGuideTouched(true);
+                      }}
                     >
                       <SelectTrigger
                         id="size-guide"
@@ -1222,6 +1264,7 @@ export default function AddClothingTemplate() {
                         className="bg-background"
                       />
                     </div>
+                    {yardageEditor}
                   </div>
                 )}
               </div>
@@ -1276,70 +1319,74 @@ export default function AddClothingTemplate() {
                     discountsHref={APP_ROUTES.productsDiscounts}
                   />
 
-                  <div className="surface-card p-6">
-                    <div className="mb-3">
-                      <span className="text-sm font-semibold text-grey-black dark:text-white">
-                        Customer-supplied fabric
-                      </span>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Can a shopper send their own cloth for this garment?
-                        Your store setting applies unless you choose otherwise
-                        here.
-                      </p>
+                  {customizationEnabled && (
+                    <div className="surface-card p-6">
+                      <div className="mb-3">
+                        <span className="text-sm font-semibold text-grey-black dark:text-white">
+                          Fabric from other vendors
+                        </span>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          Can a customer buy fabric from another Qlozet vendor
+                          and have you make this piece in it? The fabric vendor
+                          ships it to you. Your store setting applies unless you
+                          choose otherwise here.
+                        </p>
+                      </div>
+                      <RadioGroup
+                        value={
+                          externalFabricOverride === null
+                            ? 'inherit'
+                            : externalFabricOverride
+                              ? 'always'
+                              : 'never'
+                        }
+                        onValueChange={(val) => {
+                          if (val === 'inherit')
+                            setExternalFabricOverride(null);
+                          else if (val === 'always')
+                            setExternalFabricOverride(true);
+                          else setExternalFabricOverride(false);
+                        }}
+                        className="space-y-2.5"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="inherit" id="ef-inherit" />
+                          <Label
+                            htmlFor="ef-inherit"
+                            className="text-sm font-normal cursor-pointer"
+                          >
+                            Use my store setting{' '}
+                            <span className="text-xs text-muted-foreground">
+                              (currently{' '}
+                              {businessProfile?.accepts_external_fabric !==
+                              false
+                                ? 'yes'
+                                : 'no'}
+                              )
+                            </span>
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="always" id="ef-always" />
+                          <Label
+                            htmlFor="ef-always"
+                            className="text-sm font-normal cursor-pointer"
+                          >
+                            Yes, for this garment
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="never" id="ef-never" />
+                          <Label
+                            htmlFor="ef-never"
+                            className="text-sm font-normal cursor-pointer"
+                          >
+                            No, not for this garment
+                          </Label>
+                        </div>
+                      </RadioGroup>
                     </div>
-                    <RadioGroup
-                      value={
-                        externalFabricOverride === null
-                          ? 'inherit'
-                          : externalFabricOverride
-                            ? 'always'
-                            : 'never'
-                      }
-                      onValueChange={(val) => {
-                        if (val === 'inherit') setExternalFabricOverride(null);
-                        else if (val === 'always')
-                          setExternalFabricOverride(true);
-                        else setExternalFabricOverride(false);
-                      }}
-                      className="space-y-2.5"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="inherit" id="ef-inherit" />
-                        <Label
-                          htmlFor="ef-inherit"
-                          className="text-sm font-normal cursor-pointer"
-                        >
-                          Use my store setting{' '}
-                          <span className="text-xs text-muted-foreground">
-                            (currently{' '}
-                            {businessProfile?.accepts_external_fabric !== false
-                              ? 'yes'
-                              : 'no'}
-                            )
-                          </span>
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="always" id="ef-always" />
-                        <Label
-                          htmlFor="ef-always"
-                          className="text-sm font-normal cursor-pointer"
-                        >
-                          Yes, for this garment
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="never" id="ef-never" />
-                        <Label
-                          htmlFor="ef-never"
-                          className="text-sm font-normal cursor-pointer"
-                        >
-                          No, not for this garment
-                        </Label>
-                      </div>
-                    </RadioGroup>
-                    {yardageEditor}
-                  </div>
+                  )}
 
                   <ListingReadinessCard readiness={readiness} />
 

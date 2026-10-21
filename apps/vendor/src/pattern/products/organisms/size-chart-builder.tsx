@@ -8,7 +8,12 @@ import { useFieldArray, useFormContext } from 'react-hook-form';
 import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { FormControl, FormField, FormItem } from '@/components/ui/form';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form';
 import { cn } from '@/lib/utils';
 
 const cardClass = 'surface-card p-6';
@@ -201,6 +206,7 @@ export const SizeChartBuilder = ({
                                   }
                                 />
                               </FormControl>
+                              <FormMessage className="text-[11px]" />
                             </FormItem>
                           )}
                         />

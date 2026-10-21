@@ -20,14 +20,13 @@ import { TeamMemberDetailsModal } from '@/pattern/settings/organisms/team-member
 import {
   useGetTeamMembersQuery,
   useGetVendorRolesQuery,
+  useResendTeamInviteMutation,
   useUpdateTeamMemberMutation,
   type TeamMember,
 } from '@/redux/services/users/users.api-slice';
 import { readApiError } from '@/redux/services/types';
 
-// "customer_support" -> "Customer Support"
-const prettyRole = (name?: string): string =>
-  (name ?? '').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+import { prettyRole } from '@/pattern/settings/lib/team-roles';
 
 interface UserData {
   _id: string;
@@ -60,6 +59,19 @@ const UserAndPermissionTable: FC = () => {
   const members = useMemo(() => response?.data ?? [], [response]);
 
   const [updateMember] = useUpdateTeamMemberMutation();
+  const [resendInvite] = useResendTeamInviteMutation();
+
+  const onResendInvite = useCallback(
+    async (member: { _id: string; emailAddress: string }) => {
+      try {
+        await resendInvite(member._id).unwrap();
+        toast.success(`New invite sent to ${member.emailAddress}`);
+      } catch (error: any) {
+        toast.error(readApiError(error, 'Failed to resend the invite'));
+      }
+    },
+    [resendInvite]
+  );
 
   // Soft-disable rather than DELETE — the hard delete is destructive and there
   // is no undo, so the menu offers deactivate/reactivate.
@@ -105,14 +117,14 @@ const UserAndPermissionTable: FC = () => {
         phoneNumber: m.phone_number ?? '—',
         role: m.role?.name ? prettyRole(m.role.name) : '—',
         roleId: m.role?._id,
-        // `is_active` now persists server-side, so a disabled member is
-        // distinct from one who simply hasn't accepted their invite.
+        // Inactive: the owner turned their access off. Invited: they haven't
+        // signed in and set their own password yet.
         status:
           m.is_active === false
             ? 'Inactive'
-            : m.accepted
-              ? 'Active'
-              : 'Pending',
+            : !m.is_owner && m.user?.must_change_password
+              ? 'Invited'
+              : 'Active',
         is_active: m.is_active !== false,
         is_owner: m.is_owner ?? false,
       })),
@@ -172,7 +184,7 @@ const UserAndPermissionTable: FC = () => {
           const status = row.original.status;
           const colorMap: Record<string, string> = {
             Active: 'bg-[#EAFFF2] text-[#00A843]',
-            Pending: 'bg-[#FFF8E1] text-[#F59E0B]',
+            Invited: 'bg-[#FFF8E1] text-[#F59E0B]',
             Inactive: 'bg-[#FFF0F0] text-[#E02B2B]',
           };
           return (
@@ -221,6 +233,11 @@ const UserAndPermissionTable: FC = () => {
                       {member.is_active ? 'Deactivate user' : 'Reactivate user'}
                     </DropdownMenuItem>
                   )}
+                  {member.status === 'Invited' && (
+                    <DropdownMenuItem onClick={() => onResendInvite(member)}>
+                      Resend invite
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -228,7 +245,7 @@ const UserAndPermissionTable: FC = () => {
         },
       },
     ],
-    [onToggleActive]
+    [onToggleActive, onResendInvite]
   );
 
   return (
