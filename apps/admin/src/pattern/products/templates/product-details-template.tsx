@@ -85,6 +85,12 @@ interface ClothingView {
   yard_length?: number;
   min_cut?: number;
   price_per_yard?: number;
+  /** The main colours in the print (shoppers filter by these). */
+  colors?: { name?: string; hex?: string }[];
+  /** 'yard' (default), 'piece' (whole pieces only) or 'both'. */
+  sold_by?: 'yard' | 'piece' | 'both';
+  piece_yards?: number | null;
+  piece_price?: number | null;
 }
 
 const NGN = (value?: number) =>
@@ -211,6 +217,21 @@ export const ProductDetailsTemplate = ({
     product.kind === 'fabric' ||
     product.price_per_yard !== undefined ||
     product.min_cut !== undefined;
+  // Fabric: sold by the piece, and the print's colours (the fabric's own
+  // list; older listings only have the single colour the old form wrote).
+  const fabricSellsPieces =
+    (product.sold_by === 'piece' || product.sold_by === 'both') &&
+    Number(product.piece_yards) > 0 &&
+    Number(product.piece_price) > 0;
+  const printColours: { name: string; hex: string }[] = (
+    Array.isArray(product.colors) && product.colors.length
+      ? product.colors
+      : product.colour || product.swatch
+        ? [{ name: product.colour ?? '', hex: product.swatch ?? '' }]
+        : []
+  )
+    .filter((c) => c && (c.name || c.hex))
+    .map((c) => ({ name: c.name || c.hex || '', hex: c.hex || '' }));
   const firstImage = images[0];
   const material =
     product.material ?? product.product_type ?? product.taxonomy?.product_type;
@@ -438,9 +459,38 @@ export const ProductDetailsTemplate = ({
                 </div>
               )}
 
-              <p className="mt-4 text-2xl font-bold text-grey-black dark:text-white">
-                {NGN(product.price)}
-              </p>
+              {isFabric ? (
+                // A fabric's price only means something with its unit: per
+                // yard, per piece, or both.
+                <div className="mt-4">
+                  {fabricSellsPieces && (
+                    <p className="text-2xl font-bold text-grey-black dark:text-white">
+                      {NGN(product.piece_price ?? undefined)}
+                      <span className="ml-1.5 text-sm font-medium text-muted-foreground">
+                        per {product.piece_yards}-yard piece
+                      </span>
+                    </p>
+                  )}
+                  {product.sold_by !== 'piece' && (
+                    <p
+                      className={
+                        fabricSellsPieces
+                          ? 'mt-1 text-base font-semibold text-grey-black dark:text-white'
+                          : 'text-2xl font-bold text-grey-black dark:text-white'
+                      }
+                    >
+                      {NGN(product.price_per_yard ?? product.price)}
+                      <span className="ml-1.5 text-sm font-medium text-muted-foreground">
+                        per yard
+                      </span>
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className="mt-6 text-[24px] font-bold text-black dark:text-white">
+                  {NGN(product.price)}
+                </p>
+              )}
 
               {product.items_delivered !== undefined && (
                 <div className="mt-3 inline-flex items-center gap-2 rounded-md bg-accent px-3 py-1.5 text-xs text-grey-black dark:text-white">
@@ -489,18 +539,32 @@ export const ProductDetailsTemplate = ({
                       <ChipThumb url={firstImage} label={material} />
                     </DetailRow>
                   ) : null}
-                  {product.swatch || product.colour ? (
-                    <DetailRow label="Colour">
-                      {product.swatch ? (
+                  {printColours.length ? (
+                    // The print's colours, as shoppers see them listed (and
+                    // filter by): a description, not a choice.
+                    <DetailRow label="Colours in the print">
+                      {printColours.map((c) => (
                         <span
-                          style={{ backgroundColor: product.swatch }}
-                          className="size-6 rounded-full border border-border"
-                        />
-                      ) : (
-                        <Chip>{product.colour}</Chip>
-                      )}
+                          key={`${c.name}-${c.hex}`}
+                          className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-xs text-grey-black dark:text-white"
+                        >
+                          <span
+                            aria-hidden
+                            style={{ backgroundColor: c.hex || '#ccc' }}
+                            className="size-3.5 rounded-full border border-border"
+                          />
+                          {c.name}
+                        </span>
+                      ))}
                     </DetailRow>
                   ) : null}
+                  <DetailRow label="Sold">
+                    {product.sold_by === 'piece'
+                      ? `By the piece · ${product.piece_yards} yards each`
+                      : product.sold_by === 'both' && fabricSellsPieces
+                        ? `By the yard, or a full ${product.piece_yards}-yard piece`
+                        : 'By the yard'}
+                  </DetailRow>
                   {product.pattern ? (
                     <DetailRow label="Pattern">
                       <ChipThumb url={firstImage} label={product.pattern} />
@@ -512,9 +576,13 @@ export const ProductDetailsTemplate = ({
                   {product.yard_length !== undefined ? (
                     <DetailRow label="Available Length">
                       {product.yard_length} Yards
+                      {fabricSellsPieces && product.piece_yards
+                        ? ` · ${Math.floor(product.yard_length / product.piece_yards + 1e-9)} pieces`
+                        : ''}
                     </DetailRow>
                   ) : null}
-                  {product.min_cut !== undefined ? (
+                  {product.min_cut !== undefined &&
+                  product.sold_by !== 'piece' ? (
                     <DetailRow label="Minimum Cut">
                       {product.min_cut} Yards
                     </DetailRow>

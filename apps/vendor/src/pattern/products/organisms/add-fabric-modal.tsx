@@ -529,7 +529,10 @@ export const AddFabricModal = NiceModal.create(
                         />
                         <p className="text-xs text-muted-foreground">
                           The main colours in the print. Shoppers filter by
-                          these.
+                          these, and see them listed on the product page; they
+                          do not pick one. Sell it in more than one colourway?
+                          Add each colourway as its own fabric, with its own
+                          photos and stock.
                         </p>
                       </div>
                     </div>

@@ -60,7 +60,10 @@ export const createTopProductsColumns = ({
             ) : null}
           </div>
           <div className="flex min-w-0 flex-col">
-            <span className="truncate text-sm font-medium text-gray-800 dark:text-gray-100">
+            <span
+              className="max-w-[220px] truncate text-sm font-medium text-gray-800 dark:text-gray-100"
+              title={p.name ?? undefined}
+            >
               {p.name ?? '—'}
             </span>
             {p.kind && (

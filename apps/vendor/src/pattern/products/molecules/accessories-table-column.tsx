@@ -108,7 +108,13 @@ export const AccessoriesTableColumns = ({
     accessorKey: 'name',
     header: 'Product name',
     cell: ({ row }) => {
-      return <div className="font-normal">{row.getValue('name')}</div>;
+      // Long names truncate; the full name shows on hover.
+      const name = String(row.getValue('name') ?? '');
+      return (
+        <div className="max-w-[240px] truncate font-normal" title={name}>
+          {name}
+        </div>
+      );
     },
   },
   {
