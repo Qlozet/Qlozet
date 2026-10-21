@@ -63,11 +63,16 @@ const sizeGuideFormSchema = z.object({
         label: z.string().min(1, 'Size label is required'),
         sort_order: z.number(),
         measurements: z.array(
-          z.object({
-            body_part: z.string(),
-            min: z.coerce.number().min(0),
-            max: z.coerce.number().min(0),
-          })
+          z
+            .object({
+              body_part: z.string(),
+              min: z.coerce.number().min(0),
+              max: z.coerce.number().min(0),
+            })
+            .refine((m) => m.min <= m.max, {
+              message: 'Min must not be bigger than max',
+              path: ['max'],
+            })
         ),
       })
     )
@@ -126,22 +131,24 @@ export const SizeGuidesCreateTemplate = () => {
   const availableBodyParts = useMemo<string[]>(() => {
     const bp = bodyPartsResponse?.data?.body_parts;
     if (Array.isArray(bp) && bp.length > 0) return bp;
-    // Fallback if endpoint hasn't been deployed yet
+    // Fallback while the list loads: the server's own list
+    // (common/constants/body-parts.constant.ts), so nothing picked here is
+    // refused on save.
     return [
       'chest',
       'waist',
       'hip',
-      'shoulder_breadth',
-      'sleeve_length',
-      'back_length',
-      'inseam',
-      'outseam',
-      'thigh',
-      'calf',
       'bicep',
+      'calf',
       'forearm',
-      'neck',
       'height',
+      'leg_length',
+      'shoulder_breadth',
+      'shoulder_to_crotch',
+      'thigh',
+      'wrist',
+      'ankle',
+      'arm_length',
     ];
   }, [bodyPartsResponse]);
 
@@ -370,7 +377,11 @@ export const SizeGuidesCreateTemplate = () => {
       <FormProvider {...form}>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit as any)}
+            onSubmit={form.handleSubmit(onSubmit as any, () =>
+              toast.error(
+                'Some fields need fixing before you can save. They are marked in red.'
+              )
+            )}
             className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start"
           >
             {/* LEFT COLUMN: Main Form */}
@@ -482,6 +493,7 @@ export const SizeGuidesCreateTemplate = () => {
               <ProductPreviewCard
                 conditionState={conditionState}
                 className="flex flex-col h-fit"
+                noun="size guide"
               />
             </div>
 

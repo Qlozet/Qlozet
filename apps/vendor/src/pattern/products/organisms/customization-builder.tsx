@@ -241,7 +241,7 @@ const ComponentTile = ({
 
     <div className="relative mt-1">
       <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-        $
+        ₦
       </span>
       <Input
         type="number"
