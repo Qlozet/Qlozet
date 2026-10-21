@@ -129,12 +129,30 @@ export const createFabricTableColumns = ({
   },
   {
     id: 'pricePerYard',
-    header: 'Price per yard',
+    header: 'Price',
     cell: ({ row }) => {
-      const price = parseFloat(
-        (row.original as any).pricePerYard || row.original.price || 0
+      const r = row.original as any;
+      const price = parseFloat(r.pricePerYard || r.price || 0);
+      const piece =
+        (r.soldBy === 'piece' || r.soldBy === 'both') && r.piecePrice
+          ? `${formatCurrency(Number(r.piecePrice), 'NGN')} / ${r.pieceYards}-yd piece`
+          : null;
+      return (
+        <div className="font-normal">
+          {r.soldBy === 'piece' && piece ? (
+            piece
+          ) : (
+            <>
+              {formatCurrency(price, 'NGN')} / yd
+              {piece && (
+                <span className="block text-xs text-muted-foreground">
+                  {piece}
+                </span>
+              )}
+            </>
+          )}
+        </div>
       );
-      return <div className="font-normal">{formatCurrency(price, 'NGN')}</div>;
     },
   },
   {

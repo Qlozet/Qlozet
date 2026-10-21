@@ -167,6 +167,10 @@ export interface FabricReadinessInput {
   yardsInStock: string | number;
   minCut: string | number;
   widthInches: string | number;
+  /** How it is sold: 'yard' (default), 'piece' (whole pieces) or 'both'. */
+  soldBy?: 'yard' | 'piece' | 'both';
+  pieceYards?: string | number;
+  piecePrice?: string | number;
 }
 
 /**
@@ -181,6 +185,11 @@ export function fabricReadiness(input: FabricReadinessInput): Readiness {
   const yards = Number(input.yardsInStock) || 0;
   const minCut = Number(input.minCut) || 0;
   const width = Number(input.widthInches) || 0;
+  const soldBy = input.soldBy ?? 'yard';
+  const byYard = soldBy !== 'piece';
+  const byPiece = soldBy !== 'yard';
+  const pieceYards = Number(input.pieceYards) || 0;
+  const piecePrice = Number(input.piecePrice) || 0;
   const items: ReadinessItem[] = [];
 
   items.push({
@@ -211,20 +220,40 @@ export function fabricReadiness(input: FabricReadinessInput): Readiness {
     label: 'Material chosen',
     ok: Boolean(input.material),
   });
-  items.push({
-    key: 'price',
-    label: 'A price per yard above ₦0',
-    ok: price > 0,
-  });
+  // Mirrors the backend's normaliseFabricPieces (products/fabric-pieces).
+  if (byYard) {
+    items.push({
+      key: 'price',
+      label: 'A price per yard above ₦0',
+      ok: price > 0,
+    });
+  }
   items.push({ key: 'stock', label: 'Yards in stock above 0', ok: yards > 0 });
-  items.push({
-    key: 'min_cut',
-    label:
-      minCut > yards && yards > 0
-        ? 'Minimum cut no more than the yards in stock'
-        : 'A minimum cut of at least 0.1 yards',
-    ok: minCut >= 0.1 && (yards <= 0 || minCut <= yards),
-  });
+  if (byYard) {
+    items.push({
+      key: 'min_cut',
+      label:
+        minCut > yards && yards > 0
+          ? 'Minimum cut no more than the yards in stock'
+          : 'A minimum cut of at least 0.1 yards',
+      ok: minCut >= 0.1 && (yards <= 0 || minCut <= yards),
+    });
+  }
+  if (byPiece) {
+    items.push({
+      key: 'piece_yards',
+      label:
+        pieceYards > yards && yards > 0
+          ? 'A piece no longer than the yards in stock'
+          : 'Yards in one piece (at least 0.5)',
+      ok: pieceYards >= 0.5 && (yards <= 0 || pieceYards <= yards),
+    });
+    items.push({
+      key: 'piece_price',
+      label: 'A price per piece above ₦0',
+      ok: piecePrice > 0,
+    });
+  }
   items.push({
     key: 'width',
     label: 'Width of at least 10 inches',

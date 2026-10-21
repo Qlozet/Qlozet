@@ -139,6 +139,11 @@ export const AddFabricModal = NiceModal.create(
     const [width, setWidth] = useState('45');
     const [minCut, setMinCut] = useState('4');
     const [price, setPrice] = useState('');
+    // Selling by the piece (Ankara in 6-yard pieces, lace in 5): whole pieces
+    // at their own price, instead of or as well as by the yard.
+    const [soldBy, setSoldBy] = useState<'yard' | 'piece' | 'both'>('yard');
+    const [pieceYards, setPieceYards] = useState('6');
+    const [piecePrice, setPiecePrice] = useState('');
     const [images, setImages] = useState<DefaultImage[]>([]);
     const [status, setStatus] = useState<ProductStatus>('draft');
     const [moderation, setModeration] = useState<{
@@ -187,6 +192,13 @@ export const AddFabricModal = NiceModal.create(
             ? String(rawProduct.base_price)
             : ''
       );
+      setSoldBy(
+        inner?.sold_by === 'piece' || inner?.sold_by === 'both'
+          ? inner.sold_by
+          : 'yard'
+      );
+      if (inner?.piece_yards) setPieceYards(String(inner.piece_yards));
+      if (inner?.piece_price) setPiecePrice(String(inner.piece_price));
       setStatus((rawProduct?.status as ProductStatus) || 'draft');
       const pModeration = rawProduct?.moderation;
       setModeration(
@@ -242,9 +254,20 @@ export const AddFabricModal = NiceModal.create(
       yardsInStock: yards,
       minCut,
       widthInches: width,
+      soldBy,
+      pieceYards,
+      piecePrice,
     });
     const descriptionChars = visibleText(description).length;
     const minCutCost = (Number(minCut) || 0) * (Number(price) || 0);
+    const byYard = soldBy !== 'piece';
+    const byPiece = soldBy !== 'yard';
+    // What a piece saves against buying the same yards loose.
+    const pieceSaving =
+      soldBy === 'both'
+        ? (Number(pieceYards) || 0) * (Number(price) || 0) -
+          (Number(piecePrice) || 0)
+        : 0;
 
     if (!modal.visible) return null;
 
@@ -295,7 +318,10 @@ export const AddFabricModal = NiceModal.create(
             // Kept for the vendor list, which still reads the first colour here.
             colour: first?.name,
             swatch: first?.hex,
-            base_price: Number(price) || undefined,
+            // Listings show the piece price for a piece-only fabric.
+            base_price:
+              (soldBy === 'piece' ? Number(piecePrice) : Number(price)) ||
+              undefined,
           },
           status: isDraft ? 'draft' : 'active',
           fabric: {
@@ -307,8 +333,26 @@ export const AddFabricModal = NiceModal.create(
             colors: colours,
             yard_length: Number(yards) || 0,
             width: Number(width) || 0,
-            min_cut: Number(minCut) || 0,
-            price_per_yard: Number(price) || 0,
+            // A piece-only fabric's per-yard price and minimum cut come from
+            // the piece (the backend derives them the same way).
+            min_cut:
+              soldBy === 'piece'
+                ? Number(pieceYards) || 0
+                : Number(minCut) || 0,
+            price_per_yard:
+              soldBy === 'piece'
+                ? Math.round(
+                    ((Number(piecePrice) || 0) / (Number(pieceYards) || 1)) *
+                      100
+                  ) / 100
+                : Number(price) || 0,
+            sold_by: soldBy,
+            ...(soldBy !== 'yard'
+              ? {
+                  piece_yards: Number(pieceYards) || undefined,
+                  piece_price: Number(piecePrice) || undefined,
+                }
+              : {}),
             images: finalImages.length ? finalImages : undefined,
             // The API validates this as an array; a bolt has no size variants.
             variants: [],
@@ -505,8 +549,54 @@ export const AddFabricModal = NiceModal.create(
                   <Section
                     step={3}
                     title="The bolt"
-                    lead="How much you have, how it is cut, and what a yard costs."
+                    lead="How much you have, how you sell it, and what it costs."
                   >
+                    <div
+                      role="radiogroup"
+                      aria-label="How you sell it"
+                      className="mb-4 grid grid-cols-3 gap-2"
+                    >
+                      {(
+                        [
+                          {
+                            key: 'yard',
+                            title: 'By the yard',
+                            sub: 'Any length',
+                          },
+                          {
+                            key: 'piece',
+                            title: 'By the piece',
+                            sub: 'Whole pieces only',
+                          },
+                          {
+                            key: 'both',
+                            title: 'Both',
+                            sub: 'Yards or a full piece',
+                          },
+                        ] as const
+                      ).map((o) => (
+                        <button
+                          key={o.key}
+                          type="button"
+                          role="radio"
+                          aria-checked={soldBy === o.key}
+                          onClick={() => setSoldBy(o.key)}
+                          className={cn(
+                            'rounded-lg border px-3 py-2 text-left transition-colors',
+                            soldBy === o.key
+                              ? 'border-primary bg-primary/5'
+                              : 'border-border hover:bg-muted/50'
+                          )}
+                        >
+                          <span className="block text-sm font-medium text-gray-800 dark:text-gray-100">
+                            {o.title}
+                          </span>
+                          <span className="block text-xs text-muted-foreground">
+                            {o.sub}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
                     <div className="grid gap-4 sm:grid-cols-2">
                       <UnitInput
                         id="fabric-yards"
@@ -526,43 +616,88 @@ export const AddFabricModal = NiceModal.create(
                         min={10}
                         hint="Most African prints are 45 or 46; lace is often 50 to 60."
                       />
-                      <UnitInput
-                        id="fabric-min-cut"
-                        label="Minimum cut"
-                        unit="yards"
-                        value={minCut}
-                        onChange={setMinCut}
-                        hint="The least a shopper can buy at once."
-                      />
-                      <div className="space-y-1.5">
-                        <label
-                          htmlFor="fabric-price"
-                          className="text-sm font-medium text-gray-700 dark:text-gray-200"
-                        >
-                          Price per yard
-                        </label>
-                        <div className="relative">
-                          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                            ₦
-                          </span>
-                          <Input
-                            id="fabric-price"
-                            type="number"
-                            inputMode="numeric"
-                            min={0}
-                            step={100}
-                            value={price}
-                            onChange={(e) => setPrice(e.target.value)}
-                            placeholder="0"
-                            className="pl-7"
-                          />
+                      {byPiece && (
+                        <UnitInput
+                          id="fabric-piece-yards"
+                          label="Yards in one piece"
+                          unit="yards"
+                          value={pieceYards}
+                          onChange={setPieceYards}
+                          hint="For example 6 for Ankara, 5 for lace."
+                        />
+                      )}
+                      {byPiece && (
+                        <div className="space-y-1.5">
+                          <label
+                            htmlFor="fabric-piece-price"
+                            className="text-sm font-medium text-gray-700 dark:text-gray-200"
+                          >
+                            Price per piece
+                          </label>
+                          <div className="relative">
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                              ₦
+                            </span>
+                            <Input
+                              id="fabric-piece-price"
+                              type="number"
+                              inputMode="numeric"
+                              min={0}
+                              step={100}
+                              value={piecePrice}
+                              onChange={(e) => setPiecePrice(e.target.value)}
+                              placeholder="0"
+                              className="pl-7"
+                            />
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {pieceSaving > 0
+                              ? `A full piece saves a shopper ${naira(pieceSaving)} against buying ${pieceYards} yards loose.`
+                              : 'Shoppers buy whole pieces at this price.'}
+                          </p>
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          {minCutCost > 0
-                            ? `A shopper buying the minimum cut pays ${naira(minCutCost)}.`
-                            : 'Shoppers pay this times the yards they choose.'}
-                        </p>
-                      </div>
+                      )}
+                      {byYard && (
+                        <UnitInput
+                          id="fabric-min-cut"
+                          label="Minimum cut"
+                          unit="yards"
+                          value={minCut}
+                          onChange={setMinCut}
+                          hint="The least a shopper can buy at once."
+                        />
+                      )}
+                      {byYard && (
+                        <div className="space-y-1.5">
+                          <label
+                            htmlFor="fabric-price"
+                            className="text-sm font-medium text-gray-700 dark:text-gray-200"
+                          >
+                            Price per yard
+                          </label>
+                          <div className="relative">
+                            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                              ₦
+                            </span>
+                            <Input
+                              id="fabric-price"
+                              type="number"
+                              inputMode="numeric"
+                              min={0}
+                              step={100}
+                              value={price}
+                              onChange={(e) => setPrice(e.target.value)}
+                              placeholder="0"
+                              className="pl-7"
+                            />
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {minCutCost > 0
+                              ? `A shopper buying the minimum cut pays ${naira(minCutCost)}.`
+                              : 'Shoppers pay this times the yards they choose.'}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </Section>
 

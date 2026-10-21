@@ -117,6 +117,11 @@ export interface FabricDto {
   width: number;
   min_cut: number;
   price_per_yard: number;
+  /** 'yard' (default), 'piece' (whole pieces only) or 'both'. */
+  sold_by?: 'yard' | 'piece' | 'both';
+  /** Yards in one piece, and its price, when sold by the piece. */
+  piece_yards?: number;
+  piece_price?: number;
   images?: ProductImageDto[];
   variants?: VariantDto[];
 }
