@@ -26,6 +26,7 @@ import { ProductReviewsDrawer } from '../organisms/product-reviews-drawer';
 import { ProductNotesSection } from '../organisms/product-notes-section';
 import { EscalateProductModal } from '../organisms/escalate-product-modal';
 import { ProductPreviewModal } from '../organisms/product-preview-modal';
+import { openEditListing } from '../organisms/edit-listing-sheet';
 import { useAddProductNoteMutation } from '@/redux/services/products/admin-products.api-slice';
 import { useGetAdminProductQuery } from '@/redux/services/products/admin-products.api-slice';
 import { getKindDetail, getProductPrice } from '@/lib/products';
@@ -731,14 +732,11 @@ export const ProductDetailsTemplate = ({
                 Delete
               </button>
               <Button
-                onClick={() =>
-                  // `?id=` puts the shared product form into edit mode. Without
-                  // it this opened an empty "add product" form.
-                  router.push(`${APP_ROUTES.productsAdd}?id=${productId}`)
-                }
+                onClick={() => raw && openEditListing(raw)}
+                disabled={!raw}
                 className="px-8"
               >
-                Edit
+                Edit listing
               </Button>
             </div>
           </div>

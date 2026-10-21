@@ -1,12 +1,8 @@
 'use client';
 
-import NiceModal from '@ebay/nice-modal-react';
-import { Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { APP_ROUTES } from '@/lib/routes';
 import { ProductsStats } from '@/pattern/products/templates/products-stats';
 import { FabricProductsTemplate } from '@/pattern/products/templates/fabric-products-template';
-import { AddFabricModal } from '@/pattern/products/organisms/add-fabric-modal';
 import { useProductCatalogue } from '@/pattern/products/hooks/use-product-catalogue';
 
 export default function FabricsPage() {
@@ -14,19 +10,8 @@ export default function FabricsPage() {
 
   return (
     <div className="w-full min-h-screen h-fit space-y-6 pb-10">
-      {/* Header actions */}
-      <div className="flex justify-end gap-3">
-        {/* No Import Products action: the backend has no bulk product import
-            endpoint, so there is nothing an import dialog could submit to. */}
-        <Button
-          onClick={() => NiceModal.show(AddFabricModal)}
-          className="h-11 gap-2 rounded-lg px-5 text-sm"
-        >
-          Add new product
-          <Plus className="size-4" />
-        </Button>
-      </div>
-
+      {/* No Add here: listings are created by vendors in their own store.
+          The team reviews and tidies them (row actions → Edit listing). */}
       {/* Summary metrics + sales donut */}
       <ProductsStats
         totalProducts={catalogue.stats?.total_products ?? catalogue.totalCount}

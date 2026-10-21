@@ -1,8 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-import { Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { APP_ROUTES } from '@/lib/routes';
 import { ProductsStats } from '@/pattern/products/templates/products-stats';
 import { VariantProductsTemplate } from '@/pattern/products/templates/variant-products-template';
@@ -13,16 +10,8 @@ export default function ClothingPage() {
 
   return (
     <div className="w-full min-h-screen h-fit space-y-6 pb-10">
-      {/* Header action */}
-      <div className="flex justify-end">
-        <Button asChild className="h-11 gap-2 rounded-lg px-5 text-sm">
-          <Link href={APP_ROUTES.productsAdd}>
-            Add new product
-            <Plus className="size-4" />
-          </Link>
-        </Button>
-      </div>
-
+      {/* No Add here: listings are created by vendors in their own store.
+          The team reviews and tidies them (row actions → Edit listing). */}
       {/* Summary metrics + sales donut */}
       <ProductsStats
         totalProducts={catalogue.stats?.total_products ?? catalogue.totalCount}
