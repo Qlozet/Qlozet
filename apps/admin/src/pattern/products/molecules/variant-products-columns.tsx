@@ -37,8 +37,12 @@ export const createVariantProductsColumns = ({
   {
     id: 'name',
     header: 'Product name',
+    // Long names truncate; the full name shows on hover.
     cell: ({ row }) => (
-      <span className="text-sm text-gray-700 dark:text-gray-200">
+      <span
+        className="block max-w-[240px] truncate text-sm text-gray-700 dark:text-gray-200"
+        title={getProductName(row.original)}
+      >
         {getProductName(row.original)}
       </span>
     ),
