@@ -56,7 +56,10 @@ import { OverlayScroll } from '@/components/OverlayScroll';
 /*  Content                                                            */
 /* ------------------------------------------------------------------ */
 
-const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
+const ItemDetailContent: React.FC<{
+  item: OrderItem;
+  orderReference?: string;
+}> = ({ item, orderReference }) => {
   const product = asProduct(item.product);
   const clothing = product?.clothing;
   const name = getProductName(product);
@@ -198,7 +201,12 @@ const ItemDetailContent: React.FC<{ item: OrderItem }> = ({ item }) => {
           snapshot. Lives here (not just order-level) so an order carrying
           garments for different bodies is never ambiguous. */}
       {(item as any).body_profile?.measurements && (
-        <ItemBodyMeasurements profile={(item as any).body_profile} />
+        <ItemBodyMeasurements
+          profile={(item as any).body_profile}
+          reference={orderReference}
+          itemId={(item as any)._id ? String((item as any)._id) : null}
+          productName={getProductName(asProduct(item.product))}
+        />
       )}
 
       {/* Colour / size variants */}
@@ -476,7 +484,7 @@ interface OrderItemDetailModalProps {
 }
 
 export const OrderItemDetailModal = create<OrderItemDetailModalProps>(
-  ({ item }) => {
+  ({ item, order }) => {
     const { visible, hide, remove } = useModal();
 
     const onOpenChange = (open: boolean) => {
@@ -517,7 +525,7 @@ export const OrderItemDetailModal = create<OrderItemDetailModalProps>(
             )}
           </SheetHeader>
           <OverlayScroll className="min-h-0 flex-1 px-4 py-5 sm:px-6">
-            <ItemDetailContent item={item} />
+            <ItemDetailContent item={item} orderReference={order?.reference} />
           </OverlayScroll>
         </SheetContent>
       </Sheet>

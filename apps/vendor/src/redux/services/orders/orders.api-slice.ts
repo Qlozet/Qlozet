@@ -722,6 +722,9 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
         url: `/orders/${reference}/measurements`,
         method: 'GET',
       }),
+      providesTags: (_r, _e, reference) => [
+        { type: 'Order' as const, id: `measurements-${reference}` },
+      ],
       transformResponse: (res: any) => {
         // Envelope walk: interceptor wraps the service's { data } again.
         let cur = res;
@@ -740,15 +743,68 @@ export const ordersApiSlice = baseAPI.injectEndpoints({
           : null;
       },
     }),
+
+    // POST /orders/:reference/measurements/questions — ask the customer
+    // about the measurements before cutting. The customer is notified and
+    // can correct this order's copy.
+    askMeasurementQuestion: builder.mutation<
+      unknown,
+      {
+        reference: string;
+        item_id?: string | null;
+        body_parts: string[];
+        message: string;
+      }
+    >({
+      query: ({ reference, ...body }) => ({
+        url: `/orders/${reference}/measurements/questions`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: (_r, _e, { reference }) => [
+        { type: 'Order' as const, id: `measurements-${reference}` },
+      ],
+    }),
   }),
 });
 
-export interface OrderItemMeasurements {
+/** How and when a set was taken, carried on every snapshot. */
+export interface MeasurementProvenance {
+  /** Per-measurement { tier, mae_cm, method } from the estimate. */
+  tailoring_meta?: Record<
+    string,
+    { tier?: string; mae_cm?: number | null; method?: string }
+  > | null;
+  /** manual | estimate | mixed | scan; null for older sets. */
+  method?: string | null;
+  measured_at?: string | null;
+  /** The customer corrected these numbers for this order. */
+  updated_by_customer_at?: string | null;
+  body_type?: string | null;
+  fit_preferences?: string[];
+}
+
+export interface OrderItemMeasurements extends MeasurementProvenance {
+  item_id?: string | null;
   product_name?: string | null;
   set_name?: string | null;
   unit?: 'cm' | 'inch';
   snapshot?: boolean;
   measurements: Record<string, number>;
+}
+
+/** A question this vendor asked the customer, and the answer. */
+export interface MeasurementQuestion {
+  _id: string;
+  /** The made-to-order line asked about; null = the order's own copy. */
+  item_id: string | null;
+  body_parts: string[];
+  message: string;
+  status: 'open' | 'answered';
+  asked_at: string;
+  answered_at: string | null;
+  answer_message: string | null;
+  changes: { body_part: string; from: number | null; to: number }[];
 }
 
 export interface OrderMeasurements {
@@ -763,6 +819,13 @@ export interface OrderMeasurements {
   measurements: Record<string, number>;
   /** Per-garment snapshots — one order can carry items for different bodies. */
   items?: OrderItemMeasurements[];
+  questions?: MeasurementQuestion[];
+  tailoring_meta?: MeasurementProvenance['tailoring_meta'];
+  method?: string | null;
+  measured_at?: string | null;
+  updated_by_customer_at?: string | null;
+  body_type?: string | null;
+  fit_preferences?: string[];
 }
 
 export const {
@@ -778,5 +841,6 @@ export const {
   useGetVendorDashboardMetricsQuery,
   useGetVendorOrderQuery,
   useGetOrderMeasurementsQuery,
+  useAskMeasurementQuestionMutation,
   useLazyGetVendorOrderQuery,
 } = ordersApiSlice;

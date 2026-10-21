@@ -70,6 +70,10 @@ export interface CustomerMeasurement {
   name: string;
   active: boolean;
   createdAt: string;
+  /** When the numbers last changed (createdAt never moves on an edit). */
+  updated_at?: string | null;
+  /** manual | estimate | mixed | scan; null for older sets. */
+  method?: string | null;
   /** Per-measurement provenance from the AI estimate; rough rows get "Verify". */
   tailoring_meta?: Record<string, { tier?: string; mae_cm?: number | null }>;
 }

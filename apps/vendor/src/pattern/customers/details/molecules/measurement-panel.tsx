@@ -8,6 +8,10 @@
 import type { ReactNode } from 'react';
 import { Ruler } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  MEASUREMENT_DEFINITIONS,
+  MEASUREMENT_LABELS,
+} from '@/lib/measurement-labels';
 
 export type Unit = 'cm' | 'in';
 
@@ -16,57 +20,10 @@ export const PANEL_CARD =
   'rounded-[20px] border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949]';
 
 /**
- * Friendly labels for the keys the backend writes, the spellings older sets
- * used, and the tailoring rows the AI estimate adds. Anything unlisted is
- * prettified from its key.
+ * Friendly labels: the one list the order screens use too
+ * (lib/measurement-labels.ts), so a measurement reads the same everywhere.
  */
-export const LABELS: Record<string, string> = {
-  neck: 'Neck Circum.',
-  neck_circumference: 'Neck Circum.',
-  neck_base: 'Neck Base',
-  shoulder: 'Shoulder Width',
-  shoulder_breadth: 'Shoulder Breadth (bone to bone)',
-  shoulder_width: 'Shoulder Width (seam to seam)',
-  across_back: 'Across Back',
-  chest: 'Chest/Bust Circ.',
-  bust: 'Bust Circ.',
-  under_bust: 'Under Bust',
-  waist: 'Waist Circ.',
-  belly_waist: 'Belly Waist',
-  top_hip: 'High Hip',
-  hip: 'Hip Circ.',
-  hips: 'Hip Circ.',
-  arm_length: 'Arm Length',
-  sleeve_length: 'Sleeve Length',
-  upper_arm: 'Upper Arm Circum.',
-  bicep: 'Bicep Circum.',
-  elbow: 'Elbow Circum.',
-  forearm: 'Forearm Circum.',
-  wrist: 'Wrist Circum.',
-  height: 'Height',
-  weight: 'Weight',
-  shoulder_to_crotch: 'Torso Length',
-  nape_to_waist: 'Back Length (Nape to Waist)',
-  back_length: 'Back Length',
-  front_length: 'Front Length',
-  leg_length: 'Leg Length',
-  inseam: 'Inseam Length',
-  inseam_length: 'Inseam Length',
-  outseam: 'Outseam Length',
-  outseam_length: 'Outseam Length',
-  crotch_depth: 'Crotch Depth',
-  hip_to_knee: 'Hip to Knee',
-  knee_to_ankle: 'Knee to Ankle',
-  waist_height: 'Waist Height',
-  neck_height: 'Neck Height',
-  ankle_height: 'Ankle Height',
-  thigh: 'Thigh Circum.',
-  mid_thigh: 'Mid Thigh',
-  lower_thigh: 'Lower Thigh',
-  knee: 'Knee Circum.',
-  calf: 'Calf Circum.',
-  ankle: 'Ankle Circum.',
-};
+export const LABELS: Record<string, string> = MEASUREMENT_LABELS;
 
 /**
  * Reading order in groups a tailor works through: torso, arms, the lengths a
@@ -328,6 +285,7 @@ export const MeasurementGroups = ({
               <div
                 key={row.key}
                 className="flex items-center justify-between gap-3 py-3"
+                title={MEASUREMENT_DEFINITIONS[row.key]}
               >
                 <span className="min-w-0 flex-1 truncate text-sm text-gray-600 dark:text-gray-300">
                   {row.label}

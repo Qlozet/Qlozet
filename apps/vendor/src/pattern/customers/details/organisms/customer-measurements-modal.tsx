@@ -33,6 +33,7 @@ import {
   toRows,
   type Unit,
 } from '../molecules/measurement-panel';
+import { MEASUREMENT_METHOD } from '@/lib/measurement-labels';
 
 const formatDate = (iso?: string | null): string => {
   if (!iso) return '';
@@ -86,7 +87,12 @@ export const CustomerMeasurementsModal = create<CustomerMeasurementsModalProps>(
     );
 
     const fromUnit = measurementSet?.unit ?? 'cm';
-    const updated = formatDate(measurementSet?.createdAt);
+    const updated = formatDate(
+      measurementSet?.updated_at ?? measurementSet?.createdAt
+    );
+    const method = measurementSet?.method
+      ? MEASUREMENT_METHOD[measurementSet.method]
+      : null;
     const bodyType = customer?.body_type ?? null;
     const name = customer?.full_name || customer?.username || 'This customer';
 
@@ -110,15 +116,16 @@ export const CustomerMeasurementsModal = create<CustomerMeasurementsModalProps>(
                 {rows.length === 0 ? (
                   <EmptyState
                     title="No measurements yet"
-                    message={`${name} hasn't saved a default measurement set.`}
+                    message={`${name}'s measurements show here once they order a piece made to measure from you.`}
                   />
                 ) : (
                   <>
                     <SummaryCard
                       title={measurementSet?.name ?? 'Measurements'}
                       subtitle={[
-                        'Default set',
+                        'Current profile',
                         updated ? `Updated ${updated}` : null,
+                        method?.label ?? null,
                       ]
                         .filter(Boolean)
                         .join(' · ')}
@@ -126,6 +133,12 @@ export const CustomerMeasurementsModal = create<CustomerMeasurementsModalProps>(
                       fromUnit={fromUnit}
                       unit={unit}
                     />
+
+                    <p className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+                      These are the customer’s measurements today. Each order
+                      keeps the measurements it was placed with — always cut
+                      from the ones on the order.
+                    </p>
 
                     {bodyType && bodyType.type !== 'unclassified' && (
                       <BodyTypeCard

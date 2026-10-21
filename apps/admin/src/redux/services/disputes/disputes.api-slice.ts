@@ -24,6 +24,7 @@ export type DisputeReason =
   | 'poor_quality'
   | 'missing_items'
   | 'not_received'
+  | 'poor_fit'
   | 'measurement_issue'
   | 'other';
 
