@@ -56,6 +56,9 @@ export const notificationsApiSlice = baseAPI.injectEndpoints({
     >({
       query: (params) => {
         const searchParams = new URLSearchParams();
+        // The vendor app's own inbox: a login that also shops never sees its
+        // shopper notifications here.
+        searchParams.set('audience', 'vendor');
         if (params?.page) searchParams.set('page', String(params.page));
         if (params?.limit) searchParams.set('limit', String(params.limit));
         if (params?.category) searchParams.set('category', params.category);
@@ -71,7 +74,7 @@ export const notificationsApiSlice = baseAPI.injectEndpoints({
     // Get unread notification count (total + per category)
     getUnreadCount: builder.query<ApiResponse<UnreadCountResponse>, void>({
       query: () => ({
-        url: '/notifications/unread-count',
+        url: '/notifications/unread-count?audience=vendor',
         method: 'GET',
       }),
       providesTags: ['Notification'],
@@ -89,7 +92,7 @@ export const notificationsApiSlice = baseAPI.injectEndpoints({
     // Mark all notifications as read
     markAllAsRead: builder.mutation<ApiResponse<null>, void>({
       query: () => ({
-        url: '/notifications/mark-all-read',
+        url: '/notifications/mark-all-read?audience=vendor',
         method: 'PATCH',
       }),
       invalidatesTags: ['Notification'],

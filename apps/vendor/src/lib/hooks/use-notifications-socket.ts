@@ -48,6 +48,7 @@ export function useNotificationsSocket(showToast = true) {
       title?: string;
       body?: string;
       recipient_business?: string | null;
+      audience?: 'customer' | 'vendor' | null;
     }) => {
       dispatch(baseAPI.util.invalidateTags(['Notification']));
       // A chat reply raises a notification, so this is also the live trigger
@@ -62,7 +63,9 @@ export function useNotificationsSocket(showToast = true) {
         !!n?.recipient_business &&
         !!activeRef.current &&
         n.recipient_business !== activeRef.current;
-      if (showToast && n?.title && !forOtherStore) {
+      // Sent to this person as a shopper: it belongs in the shop, not here.
+      const forShopping = n?.audience === 'customer';
+      if (showToast && n?.title && !forOtherStore && !forShopping) {
         toast(n.title, { description: n.body });
       }
     };
