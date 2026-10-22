@@ -76,7 +76,7 @@ export const MEASUREMENT_DEFINITIONS: Record<string, string> = {
   upper_arm: 'Around the fullest part of the upper arm, arm relaxed.',
   forearm: 'Around the fullest part of the forearm.',
   wrist: 'Around the wrist bone.',
-  height: 'Standing straight, without shoes.',
+  height: 'Standing straight against a wall, without shoes.',
   shoulder_to_crotch: 'Top of the shoulder, down the front, to the crotch.',
   nape_to_waist: 'Nape of the neck down the back to the waist.',
   leg_length: 'From the crotch straight down to the floor.',
