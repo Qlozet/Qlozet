@@ -12,6 +12,8 @@ import { PasswordStrength } from '../organisms/password-strength';
 
 const resetPasswordSchema = z
   .object({
+    // Only asked for when setting a password over a temporary one.
+    currentPassword: z.string().optional(),
     password: z
       .string()
       .min(1, 'Password is required')
@@ -33,16 +35,29 @@ interface ResetPasswordFormProps {
   onSubmit: (data: ResetPasswordFormData) => void;
   loading?: boolean;
   className?: string;
+  /** Ask for the temporary password from the invite email first. */
+  withCurrent?: boolean;
+  submitLabel?: string;
 }
 
 export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
   onSubmit,
   loading = false,
   className = '',
+  withCurrent = false,
+  submitLabel = 'Reset Password',
 }) => {
   const form = useForm<ResetPasswordFormData>({
-    resolver: zodResolver(resetPasswordSchema),
+    resolver: zodResolver(
+      withCurrent
+        ? resetPasswordSchema.refine((d) => !!d.currentPassword, {
+            message: 'Enter the temporary password from your invite email',
+            path: ['currentPassword'],
+          })
+        : resetPasswordSchema
+    ),
     defaultValues: {
+      currentPassword: '',
       password: '',
       confirmPassword: '',
     },
@@ -56,6 +71,15 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
         onSubmit={form.handleSubmit(onSubmit)}
         className={cn('space-y-6', className)}
       >
+        {withCurrent && (
+          <PasswordInput
+            control={form.control}
+            name="currentPassword"
+            label="Temporary password"
+            placeholder="From your invite email"
+          />
+        )}
+
         <PasswordInput
           control={form.control}
           name="password"
@@ -74,7 +98,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
         <PasswordStrength password={password} />
 
         <SubmitButton disabled={loading} loading={loading}>
-          Reset Password
+          {submitLabel}
         </SubmitButton>
       </form>
     </Form>

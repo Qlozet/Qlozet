@@ -267,10 +267,15 @@ export const authApiSlice = baseAPI.injectEndpoints({
       { message: string },
       ChangePasswordRequest
     >({
+      // ChangePasswordDto is { current_password, new_password }; the old
+      // camelCase body failed validation every time.
       query: (data) => ({
         url: '/auth/change-password',
         method: 'POST',
-        body: data,
+        body: {
+          current_password: data.currentPassword,
+          new_password: data.newPassword,
+        },
       }),
       invalidatesTags: ['Profile'],
     }),
