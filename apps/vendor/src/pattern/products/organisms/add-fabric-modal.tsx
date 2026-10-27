@@ -8,9 +8,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { readApiError } from '@/redux/services/types';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { cn, uploadSequentially } from '@/lib/utils';
+import { RichTextEditor } from '@/pattern/common/organisms/rich-text-editor';
 import { LabeledSelect } from '../molecules/labeled-select';
 import { ColourSelect } from '../molecules/colour-select';
 import { StatusPill } from '../atoms/status-pill';
@@ -709,11 +709,10 @@ export const AddFabricModal = NiceModal.create(
                     title="Description"
                     lead="The weight, the feel, how it washes, what it is good for."
                   >
-                    <Textarea
+                    {/* The same editor as clothing: bold, italics, headings, lists. */}
+                    <RichTextEditor
                       value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Heavyweight 100% cotton wax print with a crisp hand…"
-                      rows={5}
+                      onChange={setDescription}
                     />
                     <p
                       className={cn(

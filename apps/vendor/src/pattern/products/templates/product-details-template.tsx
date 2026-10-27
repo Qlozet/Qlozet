@@ -27,6 +27,10 @@ import {
 import { ProductReviewsSheet } from '@/pattern/products/organisms/product-reviews-sheet';
 import { AddFabricModal } from '../organisms/add-fabric-modal';
 import { AddAccessoryModal } from '../organisms/add-accessories-modal';
+import {
+  DESCRIPTION_CLASSES,
+  safeDescriptionHtml,
+} from '@/lib/description-html';
 
 // Defensive view over the clothing product shape (the catalogue Product carries
 // these nested fields via its index signature).
@@ -44,6 +48,8 @@ interface ComponentView {
 interface ClothingView {
   _id?: string;
   name?: string;
+  /** HTML from the editor (plain text on older fabric and accessory listings). */
+  description?: string;
   status?: string;
   price?: number;
   type?: string;
@@ -184,6 +190,9 @@ export const ProductDetailsTemplate = ({
     reviews_count: ratings ? (ratings.total_reviews ?? 0) : undefined,
     items_delivered: ratings?.items_sold,
   };
+
+  // Cleaned before it is put on the page (lib/description-html).
+  const descriptionHtml = safeDescriptionHtml(product.description);
 
   const baseImages = (product.images ?? [])
     .map((i) => (typeof i === 'string' ? i : i?.url))
@@ -738,6 +747,19 @@ export const ProductDetailsTemplate = ({
                 </>
               )}
             </div>
+
+            {/* The description, as shoppers see it. */}
+            {descriptionHtml && (
+              <div className="mt-8">
+                <h3 className="mb-3 text-sm font-semibold text-grey-black dark:text-white">
+                  Description
+                </h3>
+                <div
+                  className={DESCRIPTION_CLASSES}
+                  dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+                />
+              </div>
+            )}
 
             {/* Footer actions */}
             <div className="flex items-center justify-end gap-6 mt-8">

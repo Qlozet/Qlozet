@@ -3,13 +3,13 @@
 import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { create, useModal } from '@ebay/nice-modal-react';
 import { toast } from 'sonner';
 import { readApiError } from '@/redux/services/types';
 import { cn, uploadSequentially } from '@/lib/utils';
+import { RichTextEditor } from '@/pattern/common/organisms/rich-text-editor';
 import {
   VariantSelectOptions,
   type SizeOption,
@@ -551,11 +551,10 @@ export const AddAccessoryModal = create(({ editId }: { editId?: string }) => {
                   title="Description"
                   lead="Materials, size in centimetres where it matters, how to care for it."
                 >
-                  <Textarea
+                  {/* The same editor as clothing: bold, italics, headings, lists. */}
+                  <RichTextEditor
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Hand-woven raffia with a leather-trimmed handle…"
-                    rows={5}
+                    onChange={setDescription}
                   />
                   <p
                     className={cn(

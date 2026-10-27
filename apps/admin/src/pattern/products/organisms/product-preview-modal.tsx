@@ -28,6 +28,10 @@ import {
 } from '@/lib/products';
 import type { Product } from '@/redux/services/products/products.api-slice';
 import { useListingReviewMode } from '@/lib/hooks/use-listing-review-mode';
+import {
+  DESCRIPTION_CLASSES,
+  safeDescriptionHtml,
+} from '@/lib/description-html';
 
 interface ProductPreviewModalProps {
   product: Product;
@@ -67,7 +71,8 @@ export const ProductPreviewModal = NiceModal.create<ProductPreviewModalProps>(
     const close = () => modal.remove();
     const name = getProductName(product);
     const price = getProductPrice(product);
-    const description = getProductDescription(product);
+    // Cleaned before it is put on the page (lib/description-html).
+    const description = safeDescriptionHtml(getProductDescription(product));
     const turnaround = getTurnaroundDays(product);
     const { stock } = getProductQuantity(product);
     const colour = colours[colourIndex];
@@ -222,9 +227,9 @@ export const ProductPreviewModal = NiceModal.create<ProductPreviewModalProps>(
 
               {description && (
                 <div
-                  className="prose-sm max-w-none text-sm leading-relaxed text-muted-foreground [&_*]:!m-0"
-                  // The vendor writes the description in a rich-text editor, so
-                  // it arrives as HTML; a customer sees it rendered.
+                  className={DESCRIPTION_CLASSES}
+                  // HTML from the vendor's editor, cleaned the way the shop
+                  // cleans it, so this shows what a customer sees.
                   dangerouslySetInnerHTML={{ __html: description }}
                 />
               )}
