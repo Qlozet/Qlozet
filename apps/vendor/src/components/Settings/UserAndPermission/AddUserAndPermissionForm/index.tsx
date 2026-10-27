@@ -69,12 +69,21 @@ const AddNewUserAndPermissionForm = ({
 
     for (const row of rows) {
       try {
-        await inviteTeamMember({
+        const result: any = await inviteTeamMember({
           email: row.email,
           full_name: row.full_name,
           role: row.role_id,
         }).unwrap();
         successCount++;
+        // Added, but the email with their sign-in details didn't go.
+        if (
+          result?.email_sent === false ||
+          result?.data?.email_sent === false
+        ) {
+          toast.warning(
+            `${row.email} was added, but we couldn't send their invite email. Use Resend invite on their row.`
+          );
+        }
       } catch (err: any) {
         toast.error(readApiError(err, `Failed to invite ${row.email}`));
       }
