@@ -45,11 +45,14 @@ export const VerificationTemplate = () => {
   const [resendVerificationEmail, { isLoading }] =
     useResendVerificationEmailMutation();
 
-  const [canResend, setCanResend] = useState(false);
+  // Sent here from sign-in when the new code couldn't be emailed: Resend
+  // works straight away. Otherwise a code just went out, and the backend
+  // allows one a minute, so the countdown matches that.
+  const sendFailed = searchParams.get('resend') === 'now';
+  const [canResend, setCanResend] = useState(sendFailed);
 
-  // Countdown starting from 90 seconds (1:30)
   const [count, { start, reset }] = useCountdown({
-    countStart: 90,
+    countStart: 60,
     intervalMs: 1000,
     isIncrement: false,
     countStop: 0,
@@ -69,10 +72,10 @@ export const VerificationTemplate = () => {
     }
   }, [count]);
 
-  // Start countdown on component mount
+  // Start countdown on component mount (not when Resend is already open)
   useEffect(() => {
-    start();
-  }, [start]);
+    if (!sendFailed) start();
+  }, [start, sendFailed]);
 
   const form = useForm<VerificationFormData>({
     resolver: zodResolver(verificationSchema),
