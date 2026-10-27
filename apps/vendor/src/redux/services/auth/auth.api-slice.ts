@@ -134,6 +134,8 @@ export interface UpdateProfileRequest {
 
 export interface VerifyEmailRequest {
   token: string;
+  /** The email the code was sent to; the backend needs it with a 6-digit code. */
+  email?: string;
 }
 
 export interface RefreshTokenRequest {
@@ -275,10 +277,10 @@ export const authApiSlice = baseAPI.injectEndpoints({
 
     // Verify Email (backend expects the token in the request body)
     verifyEmail: builder.mutation<{ message: string }, VerifyEmailRequest>({
-      query: ({ token }) => ({
+      query: ({ token, email }) => ({
         url: '/auth/verify-email',
         method: 'POST',
-        body: { token },
+        body: email ? { token, email } : { token },
       }),
       invalidatesTags: ['Auth', 'Profile'],
     }),

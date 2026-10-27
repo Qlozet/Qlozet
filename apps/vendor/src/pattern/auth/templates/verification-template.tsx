@@ -82,15 +82,17 @@ export const VerificationTemplate = () => {
   });
 
   const handleVerification = (data: VerificationFormData) => {
-    verifyEmail({ token: data?.verificationCode })
+    verifyEmail({ token: data?.verificationCode, email: email ?? undefined })
       .unwrap()
       .then(() => {
         toast.success('Email verified successfully!');
         push(AUTH_ROUTES.signIn);
       })
       .catch((error) => {
+        // The server's own words: wrong code (with tries left), expired,
+        // or too many tries.
         toast.error(
-          error?.message ?? 'Error verifying email. Please try again.'
+          readApiError(error, 'Error verifying email. Please try again.')
         );
       });
   };

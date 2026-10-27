@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import Image from '@tiptap/extension-image';
 import {
   Bold,
   Italic,
@@ -14,6 +13,7 @@ import {
   Heading3,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toEditorHtml } from '@/lib/description-html';
 
 interface RichTextEditorProps {
   value: string;
@@ -22,8 +22,12 @@ interface RichTextEditorProps {
 
 export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
   const editor = useEditor({
-    extensions: [StarterKit, Image],
-    content: value,
+    // No images: product photos belong in the gallery, and the backend
+    // drops them from descriptions anyway.
+    extensions: [StarterKit],
+    // Plain text (older fabric and accessory descriptions) loads as
+    // paragraphs, so its line breaks survive.
+    content: toEditorHtml(value),
     editorProps: {
       attributes: {
         class: 'focus:outline-none min-h-[200px] p-4',
@@ -36,8 +40,9 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
 
   // Update editor content when value prop changes externally
   useEffect(() => {
-    if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value);
+    const html = toEditorHtml(value);
+    if (editor && html !== editor.getHTML()) {
+      editor.commands.setContent(html);
     }
   }, [value, editor]);
 

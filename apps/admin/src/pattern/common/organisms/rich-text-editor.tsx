@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import { useEditor, EditorContent, type Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import Image from '@tiptap/extension-image';
 import {
   Bold,
   Italic,
@@ -15,6 +14,7 @@ import {
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
+import { toEditorHtml } from '@/lib/description-html';
 
 interface RichTextEditorProps {
   value: string;
@@ -50,8 +50,12 @@ const ToolbarButton = ({
 // vendor "Add Product" descriptions behave identically.
 export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
   const editor = useEditor({
-    extensions: [StarterKit, Image],
-    content: value,
+    // No images: product photos belong in the gallery, and the backend
+    // drops them from descriptions anyway.
+    extensions: [StarterKit],
+    // Plain text (older fabric and accessory descriptions) loads as
+    // paragraphs, so its line breaks survive.
+    content: toEditorHtml(value),
     immediatelyRender: false,
     editorProps: {
       attributes: { class: 'focus:outline-none min-h-[200px] p-4' },
@@ -61,8 +65,9 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
 
   // Sync external value changes back into the editor.
   useEffect(() => {
-    if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value);
+    const html = toEditorHtml(value);
+    if (editor && html !== editor.getHTML()) {
+      editor.commands.setContent(html);
     }
   }, [value, editor]);
 

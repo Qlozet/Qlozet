@@ -338,7 +338,10 @@ export const SignupTemplate = () => {
   const handleVerify = async () => {
     if (!isCodeComplete) return;
     try {
-      const response: any = await verifyEmail({ token: code }).unwrap();
+      const response: any = await verifyEmail({
+        token: code,
+        email: registeredEmail,
+      }).unwrap();
       const accessToken = response?.data?.token?.access_token;
       if (accessToken) {
         saveCookie({
