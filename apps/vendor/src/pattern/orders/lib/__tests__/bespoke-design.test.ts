@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Order } from '@/redux/services/orders/orders.api-slice';
-import { readBespokeDesign } from '../bespoke-design';
+import { designViews, readBespokeDesign } from '../bespoke-design';
 
 const order = (bespoke_design: unknown) =>
   ({ bespoke_design }) as unknown as Order;
@@ -70,5 +70,58 @@ describe('readBespokeDesign', () => {
     expect(readBespokeDesign(order([]))).toBeNull();
     expect(readBespokeDesign(null)).toBeNull();
     expect(readBespokeDesign(undefined)).toBeNull();
+  });
+});
+
+describe('designViews', () => {
+  const design = {
+    design_images: ['chosen.png', 'old1.png', 'old2.png'],
+    back_views: [
+      { front: 'old1.png', back: 'old1-back.png' },
+      { front: 'chosen.png', back: 'chosen-back.png' },
+    ],
+  };
+
+  it('puts the chosen version first with its own back', () => {
+    expect(designViews(design)).toEqual({
+      chosen: 'chosen.png',
+      back: 'chosen-back.png',
+      others: ['old1.png', 'old2.png'],
+    });
+  });
+
+  it('hides the other versions when the customer chose to', () => {
+    expect(
+      designViews({ ...design, show_other_versions: false }).others
+    ).toEqual([]);
+  });
+
+  it('has no back when only another version has one', () => {
+    expect(
+      designViews({ ...design, back_views: [design.back_views[0]] }).back
+    ).toBeNull();
+  });
+
+  it('feeds the order gallery in that order, before references', () => {
+    const summary = readBespokeDesign(
+      order({
+        ...design,
+        show_other_versions: false,
+        reference_images: ['ref.png'],
+      })
+    );
+    expect(summary?.images).toEqual([
+      'chosen.png',
+      'chosen-back.png',
+      'ref.png',
+    ]);
+  });
+
+  it('copes with a design that is only an id', () => {
+    expect(designViews('665abc')).toEqual({
+      chosen: null,
+      back: null,
+      others: [],
+    });
   });
 });

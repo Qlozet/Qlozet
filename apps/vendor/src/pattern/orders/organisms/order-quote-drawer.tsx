@@ -49,7 +49,10 @@ import {
 } from '../lib/item-resolvers';
 import { MediaPreviewModal } from './media-preview-modal';
 import { DesignDetailModal } from './design-detail-modal';
-import { readBespokeDesign } from '../lib/bespoke-design';
+import {
+  designImagesForTailor,
+  readBespokeDesign,
+} from '../lib/bespoke-design';
 import { OrderFabricCard } from '../molecules/order-fabric-card';
 import { OrderAccessoriesCard } from '../molecules/order-accessories-card';
 import {
@@ -281,13 +284,11 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
   // Garment media for the companion panel. A bespoke quote request carries the
   // customer's reference images on `bespoke_design` and has no order items at
   // all, so those come first; standard orders fall back to product images.
-  const designImages: string[] = Array.isArray(
-    (order as any).bespoke_design?.design_images
-  )
-    ? (order as any).bespoke_design.design_images.filter(
-        (url: unknown): url is string => typeof url === 'string' && !!url
-      )
-    : [];
+  // The chosen version and its back first; other versions only if the
+  // customer chose to show them.
+  const designImages: string[] = designImagesForTailor(
+    (order as any).bespoke_design
+  );
 
   const orderMedia = Array.from(
     new Set([
