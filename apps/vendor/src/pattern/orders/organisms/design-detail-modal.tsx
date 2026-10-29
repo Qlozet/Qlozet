@@ -22,6 +22,7 @@ import {
 import { cn } from '@/lib/utils';
 import { formatNaira } from '../lib/order-fields';
 import { OverlayScroll } from '@/components/OverlayScroll';
+import { designViews } from '../lib/bespoke-design';
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
@@ -79,9 +80,11 @@ const SpecRow: React.FC<{
 /* ------------------------------------------------------------------ */
 
 const DesignDetailContent: React.FC<{ design: any }> = ({ design }) => {
-  const images: string[] = design?.design_images ?? [];
+  // The chosen version (what to make), its back, and other versions only if
+  // the customer chose to show them.
+  const { chosen, back, others } = designViews(design);
   const refImages: string[] = design?.reference_images ?? [];
-  const heroUrl = images[0] ?? null;
+  const heroUrl = chosen;
 
   const { notes, selections, brief } = useMemo(() => {
     try {
@@ -195,28 +198,74 @@ const DesignDetailContent: React.FC<{ design: any }> = ({ design }) => {
         </div>
       )}
 
-      {/* Design images */}
-      {images.length > 0 && (
+      {/* What to make: the chosen version, front and back */}
+      {chosen && (
         <Section
-          title="Design Images"
+          title="What to make"
+          icon={<ImageIcon className="size-3.5 text-grey3" />}
+        >
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { src: chosen, label: 'Front' },
+              ...(back ? [{ src: back, label: 'Back' }] : []),
+            ].map((v) => (
+              <a
+                key={v.label}
+                href={v.src}
+                target="_blank"
+                rel="noreferrer"
+                className="group relative block aspect-[3/4] overflow-hidden rounded-xl border border-[#E5E7EB] bg-gray-50 dark:border-border dark:bg-gray-800"
+              >
+                <Image
+                  src={v.src}
+                  alt={`${design?.name ?? 'Design'}, ${v.label.toLowerCase()}`}
+                  fill
+                  className="object-contain p-1.5"
+                  sizes="240px"
+                />
+                <span className="absolute left-2 top-2 rounded-md bg-black/60 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                  {v.label}
+                </span>
+              </a>
+            ))}
+          </div>
+          {!back && (
+            <p className="text-[11px] text-grey3 dark:text-gray-400">
+              No back view. Ask the customer in chat if the back matters for
+              your price.
+            </p>
+          )}
+        </Section>
+      )}
+
+      {/* Other versions the customer chose to share */}
+      {others.length > 0 && (
+        <Section
+          title="Other versions they liked"
           icon={<ImageIcon className="size-3.5 text-grey3" />}
         >
           <div className="flex gap-2 overflow-x-auto">
-            {images.map((img, i) => (
-              <div
-                key={i}
-                className="relative size-24 shrink-0 overflow-hidden rounded-xl border border-[#E5E7EB] dark:border-border bg-gray-100"
+            {others.map((img, i) => (
+              <a
+                key={img}
+                href={img}
+                target="_blank"
+                rel="noreferrer"
+                className="relative size-20 shrink-0 overflow-hidden rounded-xl border border-[#E5E7EB] dark:border-border bg-gray-100"
               >
                 <Image
                   src={img}
-                  alt={`Design ${i + 1}`}
+                  alt={`Other version ${i + 1}`}
                   fill
                   className="object-cover"
-                  sizes="96px"
+                  sizes="80px"
                 />
-              </div>
+              </a>
             ))}
           </div>
+          <p className="text-[11px] text-grey3 dark:text-gray-400">
+            For ideas only. Make the version above.
+          </p>
         </Section>
       )}
 

@@ -13,7 +13,8 @@ export interface BespokeDesignSummary {
   design: Record<string, unknown>;
   /** Display name, never empty. */
   name: string;
-  /** Generated design images first, then the customer's references. */
+  /** The chosen design, its back and any other versions shown, then the
+   *  customer's references. */
   images: string[];
 }
 
@@ -31,6 +32,48 @@ const toUrls = (value: unknown): string[] => {
       return '';
     })
     .filter(Boolean);
+};
+
+export interface DesignViews {
+  /** The version the customer chose: what the tailor makes. */
+  chosen: string | null;
+  /** Its back view, when the customer made one. */
+  back: string | null;
+  /** Other versions they kept; empty when they chose not to show them. */
+  others: string[];
+}
+
+/**
+ * What the tailor should see of a design. design_images[0] is the chosen
+ * version; `back_views` ties a back to the front it was made from; and the
+ * customer can hide the other versions (`show_other_versions: false`).
+ */
+export const designViews = (design: unknown): DesignViews => {
+  const d = (design && typeof design === 'object' ? design : {}) as Record<
+    string,
+    unknown
+  >;
+  const fronts = toUrls(d.design_images);
+  const chosen = fronts[0] ?? null;
+  const backs = Array.isArray(d.back_views) ? (d.back_views as unknown[]) : [];
+  const match = backs.find(
+    (v) =>
+      !!v &&
+      typeof v === 'object' &&
+      (v as { front?: unknown }).front === chosen &&
+      typeof (v as { back?: unknown }).back === 'string'
+  ) as { back: string } | undefined;
+  return {
+    chosen,
+    back: match?.back?.trim() || null,
+    others: d.show_other_versions === false ? [] : fronts.slice(1),
+  };
+};
+
+/** The chosen design, its back, then any other versions shown to tailors. */
+export const designImagesForTailor = (design: unknown): string[] => {
+  const v = designViews(design);
+  return [v.chosen, v.back, ...v.others].filter((x): x is string => !!x);
 };
 
 /**
@@ -52,7 +95,7 @@ export const readBespokeDesign = (
 
   const images = Array.from(
     new Set([
-      ...toUrls(design.design_images),
+      ...designImagesForTailor(design),
       ...toUrls(design.reference_images),
     ])
   );
