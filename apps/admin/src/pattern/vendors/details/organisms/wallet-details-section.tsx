@@ -337,8 +337,8 @@ export const WalletDetailsSection = ({
               value={wallet ? formatNaira(scheduled) : '—'}
             />
             <Row
-              label="Awaiting delivery"
-              hint="Released once the order is delivered and the return window closes"
+              label="Not yet dated"
+              hint="Older earnings without a payout date. They are given one (14 days after payment) within the hour"
               value={formatNaira(wallet?.awaiting_delivery)}
             />
           </div>

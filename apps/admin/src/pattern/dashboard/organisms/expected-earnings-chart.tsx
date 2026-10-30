@@ -83,7 +83,7 @@ export const ExpectedEarningsChart = () => {
             }
             description={
               hasMoney
-                ? 'None of this commission has a release date yet — one is set when an order is delivered.'
+                ? 'None of this commission has a release date yet. Every order gets one at payment (14 days later), so this clears within the hour.'
                 : "Expected earnings show the platform commission on orders that haven't paid out yet."
             }
             height={220}

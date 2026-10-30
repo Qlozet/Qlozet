@@ -93,8 +93,8 @@ export const RejectReturnModal = create<RejectReturnModalProps>(
               {readReturnRef(returnRequest)}
             </span>
             . The customer sees your reason, and can still report a problem on
-            the order for a few days if they disagree. Your earnings for it stay
-            on hold until then.
+            the order if they disagree. If we later decide a refund is due, it
+            comes out of your earnings for this order.
           </p>
 
           <Form {...form}>
