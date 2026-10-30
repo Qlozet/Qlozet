@@ -110,8 +110,8 @@ describe('validateDraft', () => {
   });
 
   it('rejects a fractional day count', () => {
-    const draft = draftWith({ payout_delay_days: '2.5' });
-    expect(validateDraft(draft, SETTINGS).payout_delay_days).toBe(
+    const draft = draftWith({ return_window_days: '2.5' });
+    expect(validateDraft(draft, SETTINGS).return_window_days).toBe(
       'Whole numbers only.'
     );
   });
@@ -163,18 +163,6 @@ describe('buildPayload', () => {
         },
       },
     });
-  });
-
-  it('spells the tailored-order field the way the schema does', () => {
-    // Mongoose strict mode drops a path the schema does not know and still
-    // answers 200, so a near-miss on this name would save nothing and look
-    // like it worked. The Swagger DTO carried the shorter spelling for a
-    // while, which is what makes it worth pinning.
-    const draft = draftWith({ tailored_order_upfront_percent: '50' });
-    const payload = buildPayload(draft, SETTINGS);
-
-    expect(payload).toEqual({ tailored_order_upfront_percent: 50 });
-    expect(payload).not.toHaveProperty('tailored_order_upfront');
   });
 });
 

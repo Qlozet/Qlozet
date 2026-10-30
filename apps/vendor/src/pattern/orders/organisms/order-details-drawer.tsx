@@ -203,10 +203,8 @@ const readReleaseText = (rec: OrderEarningRecord): string => {
   if (status.includes('eligible')) return 'Eligible for payout';
   if (rec.description) return String(rec.description);
   const m = String(rec.milestone ?? '').toLowerCase();
-  if (m.includes('upfront') || m.includes('deposit'))
-    return 'Releases on shipment';
-  if (m.includes('completion') || m.includes('final') || m.includes('balance'))
-    return 'Releases after delivery';
+  // Every portion follows the same fixed schedule (backend settlement.ts).
+  if (m) return 'Available 14 days after payment';
   return 'Pending';
 };
 
@@ -1195,7 +1193,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                 {isEarningsFrozen(order) && (
                   <span className="inline-flex h-[26px] items-center gap-1 whitespace-nowrap rounded-lg bg-[#FEF6E7] px-3 text-xs font-medium text-[#DD900D]">
                     <ShieldAlert className="size-3.5" />
-                    Earnings Frozen
+                    Problem reported
                   </span>
                 )}
                 <span

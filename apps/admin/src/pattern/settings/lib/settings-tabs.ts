@@ -105,13 +105,13 @@ export const SETTINGS_TABS: SettingsTab[] = [
     label: 'Payouts',
     slug: 'payouts',
     description:
-      'When a vendor gets paid, how much has to have accrued first, and how a custom order is split between confirmation and delivery.',
+      'When a vendor gets paid, how much has to have accrued first, and what customers give up by cancelling custom work.',
     sections: [
       {
         id: 'payout-schedule',
         title: 'Payout schedule',
         description:
-          'Earnings become available after delivery plus the longer of this delay and the return window. Vendors withdraw them whenever they choose.',
+          'Earnings become available 14 days after the customer pays, on every order, and are never held for delivery, returns or disputes (Paystack does not allow conditional holds). The 14 days is fixed in the backend and published in the Terms and vendor agreement. Vendors withdraw whenever they choose.',
         fields: [
           // payout_cycle is not shown: nothing reads it. Vendors withdraw
           // their available balance whenever they choose; a setting that
@@ -122,42 +122,14 @@ export const SETTINGS_TABS: SettingsTab[] = [
             help: 'A balance under this is carried to the next cycle rather than paid.',
             ...NAIRA,
           },
-          {
-            key: 'payout_delay_days',
-            label: 'Payout delay',
-            help: 'Days after an order completes before its earnings become eligible.',
-            kind: 'number',
-            unit: 'days',
-            min: 0,
-            max: 90,
-            step: 1,
-            integer: true,
-          },
-          {
-            key: 'auto_release_days',
-            label: 'Auto-release after dispatch',
-            help: 'Safety net: earnings release this many days after dispatch if the delivery webhook never fires.',
-            kind: 'number',
-            unit: 'days',
-            min: 1,
-            max: 90,
-            step: 1,
-            integer: true,
-          },
         ],
       },
       {
         id: 'custom-order-milestones',
-        title: 'Custom order milestones',
+        title: 'Custom orders',
         description:
-          'Tailored work pays in two parts — a share on vendor confirmation, the rest on delivery plus the payout delay.',
+          'Tailored work is paid on the same fixed schedule as everything else: 14 days after the customer pays.',
         fields: [
-          {
-            key: 'tailored_order_upfront_percent',
-            label: 'Upfront on confirmation',
-            help: 'Share of a tailored order released when the vendor confirms it. The remainder follows on delivery.',
-            ...PERCENT,
-          },
           {
             key: 'custom_cancellation_fee_percent',
             label: 'Cancellation fee after confirmation',
