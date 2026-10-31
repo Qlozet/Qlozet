@@ -216,8 +216,38 @@ export const SETTINGS_TABS: SettingsTab[] = [
     label: 'Payments',
     slug: 'payments',
     description:
-      'International card payments: whether non-naira charges route to Stripe, and the FX spread locked into their checkout rate.',
+      'Which provider takes naira card payments and which takes over when it fails, plus international cards through Stripe.',
     sections: [
+      {
+        id: 'naira-payments',
+        title: 'Naira card payments',
+        description:
+          'Naira checkouts (orders, custom orders, wallet top-ups and reservation fees) go to the main provider. If it cannot start a payment, the customer is sent to the other one, and the failed provider is skipped for five minutes. Each payment is checked and refunded with the provider that took it.',
+        fields: [
+          {
+            key: 'naira_processor',
+            label: 'Main provider',
+            help: 'Tried first for every naira card payment. The other provider is only used when this one fails, and only if Flutterwave is switched on below.',
+            kind: 'select',
+            options: [
+              { value: 'paystack', label: 'Paystack' },
+              { value: 'flutterwave', label: 'Flutterwave' },
+            ],
+          },
+          {
+            key: 'flutterwave_enabled',
+            label: 'Use Flutterwave',
+            help: 'On, Flutterwave takes payments when it is the main provider or when Paystack fails. Leave off until Flutterwave has approved the account for live payments. Needs the Flutterwave keys on the backend.',
+            kind: 'switch',
+          },
+          {
+            key: 'flutterwave_payouts_enabled',
+            label: 'Pay vendors through Flutterwave as a backup',
+            help: 'Payouts go through Paystack. On, a payout Paystack refuses (for example, not enough Paystack balance because customers paid through Flutterwave) is sent through Flutterwave instead. A Paystack timeout never switches, so a vendor is never paid twice.',
+            kind: 'switch',
+          },
+        ],
+      },
       {
         id: 'international-payments',
         title: 'International payments',
@@ -597,6 +627,9 @@ export const FIELD_FALLBACKS: Partial<
   Record<SettingsFieldKey, string | boolean>
 > = {
   stripe_enabled: false,
+  naira_processor: 'paystack',
+  flutterwave_enabled: false,
+  flutterwave_payouts_enabled: false,
   fx_markup_percent: '2',
   base_currency: 'USD',
   // Token rewards — defaults mirror the backend schema (which in turn
