@@ -1546,6 +1546,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   <PreshipPanel
                     reference={order.reference}
                     initial={(order as any).preship ?? null}
+                    plan={(order as any).payment_plan ?? null}
                   />
                 )}
 

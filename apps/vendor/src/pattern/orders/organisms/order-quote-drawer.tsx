@@ -454,6 +454,20 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                     ₦{total.toLocaleString()}
                   </span>
                 </div>
+                {typeof quote?.deposit_percent === 'number' &&
+                  quote.deposit_percent > 0 &&
+                  quote.deposit_percent < 100 &&
+                  total > 0 && (
+                    <p className="mt-2 text-xs leading-relaxed text-grey2 dark:text-gray-400">
+                      The customer pays {quote.deposit_percent}% (₦
+                      {Math.round(
+                        (total * quote.deposit_percent) / 100
+                      ).toLocaleString()}
+                      ) when they accept, and the rest when you send photos of
+                      the finished piece. You ship once the balance is paid.
+                      Each part reaches your wallet 14 days after it is paid.
+                    </p>
+                  )}
               </div>
 
               {/* Required fabric amount */}

@@ -128,8 +128,26 @@ export const SETTINGS_TABS: SettingsTab[] = [
         id: 'custom-order-milestones',
         title: 'Custom orders',
         description:
-          'Tailored work is paid on the same fixed schedule as everything else: 14 days after the customer pays.',
+          'Bespoke orders are paid in two parts: a deposit when the customer accepts the quote, and the balance when the tailor sends photos of the finished piece. Each part reaches the tailor 14 days after it is paid.',
         fields: [
+          {
+            key: 'bespoke_deposit_percent',
+            label: 'Bespoke deposit',
+            help: 'Share of the tailor’s quote charged when the customer accepts it. The rest is charged when the tailor sends finished-piece photos, and the tailor ships once it is paid. Fabric from another vendor is always paid in full up front. 0 or 100 charges the whole quote at acceptance.',
+            ...PERCENT,
+            step: 5,
+          },
+          {
+            key: 'bespoke_balance_days',
+            label: 'Time to pay the balance',
+            help: 'Days the customer has to pay after the photos arrive (paused while they ask for changes). Reminders go out on days 2 and 5. If it passes unpaid, the order closes and the tailor keeps the deposit.',
+            kind: 'number',
+            unit: 'days',
+            min: 1,
+            max: 60,
+            step: 1,
+            integer: true,
+          },
           {
             key: 'custom_cancellation_fee_percent',
             label: 'Cancellation fee after confirmation',
@@ -627,6 +645,8 @@ export const FIELD_FALLBACKS: Partial<
   Record<SettingsFieldKey, string | boolean>
 > = {
   stripe_enabled: false,
+  bespoke_deposit_percent: '50',
+  bespoke_balance_days: '14',
   naira_processor: 'paystack',
   flutterwave_enabled: false,
   flutterwave_payouts_enabled: false,

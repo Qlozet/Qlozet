@@ -29,13 +29,35 @@ const fmt = (iso?: string | null) =>
       })
     : '';
 
+export interface PaymentPlanState {
+  quote_total: number;
+  deposit_percent: number;
+  deposit_amount: number;
+  balance_amount: number;
+  status:
+    | 'awaiting_deposit'
+    | 'deposit_paid'
+    | 'awaiting_balance'
+    | 'paid'
+    | 'forfeited';
+  balance_due_at?: string | null;
+}
+
+const naira = (n: number) => `₦${Math.round(n || 0).toLocaleString()}`;
+
 export const PreshipPanel = ({
   reference,
   initial,
+  plan,
 }: {
   reference: string;
   initial: PreshipState | null;
+  /** Bespoke deposit + balance; the balance is asked for with the photos. */
+  plan?: PaymentPlanState | null;
 }) => {
+  const owesBalance =
+    !!plan &&
+    (plan.status === 'deposit_paid' || plan.status === 'awaiting_balance');
   const [preship, setPreship] = useState<PreshipState | null>(initial);
   const [photos, setPhotos] = useState<string[]>([]);
   const [note, setNote] = useState('');
@@ -75,7 +97,11 @@ export const PreshipPanel = ({
       setPreship((res as any)?.data ?? null);
       setPhotos([]);
       setNote('');
-      toast.success('Sent to the customer for approval.');
+      toast.success(
+        owesBalance
+          ? 'Sent. The customer approves by paying the balance.'
+          : 'Sent to the customer for approval.'
+      );
     } catch (err) {
       const msg = (err as { data?: { message?: string | string[] } })?.data
         ?.message;
@@ -93,6 +119,35 @@ export const PreshipPanel = ({
         Pre-ship Approval
       </p>
       <div className="space-y-4 rounded-xl border border-border bg-white p-4 dark:bg-card">
+        {/* How this order is paid */}
+        {plan && (
+          <div className="space-y-1 rounded-lg bg-[#F9FAFB] p-3 text-xs dark:bg-[#2a2a2a]">
+            <div className="flex justify-between">
+              <span className="text-grey2 dark:text-gray-400">
+                Deposit ({plan.deposit_percent}%)
+              </span>
+              <span className="font-semibold text-grey-black dark:text-white">
+                {naira(plan.deposit_amount)}{' '}
+                {plan.status === 'awaiting_deposit' ? 'due' : 'paid'}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-grey2 dark:text-gray-400">Balance</span>
+              <span
+                className={`font-semibold ${plan.status === 'paid' ? 'text-[#0F973D]' : plan.status === 'forfeited' ? 'text-[#D42620]' : 'text-grey-black dark:text-white'}`}
+              >
+                {naira(plan.balance_amount)}{' '}
+                {plan.status === 'paid'
+                  ? 'paid'
+                  : plan.status === 'forfeited'
+                    ? 'not paid (order closed, you keep the deposit)'
+                    : plan.status === 'awaiting_balance'
+                      ? 'requested'
+                      : 'due when you send photos'}
+              </span>
+            </div>
+          </div>
+        )}
         {/* Current state */}
         {preship?.status === 'approved' && (
           <div className="flex items-center gap-2 text-sm font-medium text-[#0F973D]">
@@ -106,11 +161,14 @@ export const PreshipPanel = ({
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm font-medium text-[#DD900D]">
               <Clock className="size-4" />
-              Waiting for the customer&apos;s approval
+              {owesBalance
+                ? 'Waiting for the customer to pay the balance'
+                : 'Waiting for the customer\u2019s approval'}
             </div>
             <p className="text-xs text-grey2 dark:text-gray-400">
-              Sent {fmt(preship.submitted_at)}. If they don&apos;t respond
-              within 72 hours, shipping unlocks automatically.
+              {owesBalance
+                ? `Sent ${fmt(preship.submitted_at)}. Paying the balance approves the photos; you can ship once it's paid. If it isn't paid${plan?.balance_due_at ? ` by ${fmt(plan.balance_due_at)}` : ' in time'}, the order closes and you keep the deposit. No late penalty while you wait.`
+                : `Sent ${fmt(preship.submitted_at)}. If they don't respond within 72 hours, shipping unlocks automatically.`}
             </p>
           </div>
         )}
@@ -149,7 +207,9 @@ export const PreshipPanel = ({
             <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
               {preship
                 ? 'Address the feedback, then submit new photos — the customer reviews again before you ship.'
-                : 'Photograph the finished piece (front, back, details). The customer approves before you can ship — catching issues now beats a return later.'}
+                : owesBalance
+                  ? `Photograph the finished piece (front, back, details). Sending them asks the customer for the ${naira(plan!.balance_amount)} balance; you ship once it's paid.`
+                  : 'Photograph the finished piece (front, back, details). The customer approves before you can ship — catching issues now beats a return later.'}
             </p>
             <div className="flex flex-wrap gap-2">
               {photos.map((url, i) => (
