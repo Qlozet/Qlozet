@@ -124,6 +124,10 @@ export interface PlatformSettings {
   currency_processor_map?: Record<string, string>;
   /** Kill-switch: routes non-NGN card charges to Stripe when on. */
   stripe_enabled?: boolean;
+  /** Bespoke: share of the quote paid at acceptance (0/100 = pay in full). */
+  bespoke_deposit_percent?: number;
+  /** Bespoke: days to pay the balance after the finished-piece photos. */
+  bespoke_balance_days?: number;
   /** Provider naira checkouts try first; the other takes over if it fails. */
   naira_processor?: 'paystack' | 'flutterwave';
   /** Lets Flutterwave take naira payments (backend also needs its key). */
