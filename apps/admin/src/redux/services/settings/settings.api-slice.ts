@@ -124,6 +124,12 @@ export interface PlatformSettings {
   currency_processor_map?: Record<string, string>;
   /** Kill-switch: routes non-NGN card charges to Stripe when on. */
   stripe_enabled?: boolean;
+  /** Provider naira checkouts try first; the other takes over if it fails. */
+  naira_processor?: 'paystack' | 'flutterwave';
+  /** Lets Flutterwave take naira payments (backend also needs its key). */
+  flutterwave_enabled?: boolean;
+  /** Sends a payout through Flutterwave when Paystack refuses it. */
+  flutterwave_payouts_enabled?: boolean;
 
   createdAt?: string;
   updatedAt?: string;

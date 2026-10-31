@@ -190,8 +190,9 @@ export const FundWithPaystackModal = create(() => {
         </DialogHeader>
 
         <p className="text-sm font-normal text-[#0C0C0D] dark:text-white mb-4">
-          Enter the amount you want to add to your wallet. You’ll be redirected
-          to Paystack to complete the payment.
+          Enter the amount you want to add to your wallet. You’ll pay on
+          Paystack, or on Flutterwave if Paystack is unavailable, then come back
+          here.
         </p>
 
         <Form {...form}>
