@@ -67,12 +67,23 @@ export interface EarningsPoint {
 export interface UpcomingEarning {
   _id?: string;
   order?: string;
+  /** The order's human reference (QLZ-...), when the order still exists. */
+  order_reference?: string | null;
+  order_type?: string | null;
+  milestone?: string;
   net_amount?: number;
   release_date?: string;
   /** Normalized aliases added client-side. */
   amount?: number;
   date?: string;
   [key: string]: unknown;
+}
+
+export interface UpcomingEarningsPage {
+  rows: UpcomingEarning[];
+  /** Sum of every upcoming payout, not just the rows returned. */
+  totalAmount: number | null;
+  totalCount: number;
 }
 
 // CreateWarehouseDto
@@ -149,20 +160,39 @@ export const businessApiSlice = baseAPI.injectEndpoints({
       providesTags: ['Earnings'],
     }),
 
-    // GET /business/earnings/upcoming (paginated). Normalize the backend rows
-    // (net_amount / release_date) into a flat amount / date list for the UI.
-    getUpcomingEarnings: builder.query<UpcomingEarning[], void>({
-      query: () => ({ url: '/business/earnings/upcoming', method: 'GET' }),
+    // GET /business/earnings/upcoming (paginated, soonest first). Normalize
+    // the backend rows (net_amount / release_date) into amount / date, and
+    // keep the total of every upcoming payout and how many there are.
+    getUpcomingEarnings: builder.query<
+      UpcomingEarningsPage,
+      { size?: number } | void
+    >({
+      query: (args) => ({
+        url: `/business/earnings/upcoming${buildQueryString({
+          size: (args && args.size) || 5,
+        })}`,
+        method: 'GET',
+      }),
 
-      transformResponse: (res: any): UpcomingEarning[] => {
-        const rows = res?.data?.data ?? res?.data ?? res ?? [];
+      transformResponse: (res: any): UpcomingEarningsPage => {
+        const page = res?.data && !Array.isArray(res.data) ? res.data : res;
+        const rows = page?.data ?? [];
         const list = Array.isArray(rows) ? rows : [];
 
-        return list.map((r: any) => ({
-          ...r,
-          amount: typeof r?.net_amount === 'number' ? r.net_amount : r?.amount,
-          date: r?.release_date ?? r?.date,
-        }));
+        return {
+          rows: list.map((r: any) => ({
+            ...r,
+            amount:
+              typeof r?.net_amount === 'number' ? r.net_amount : r?.amount,
+            date: r?.release_date ?? r?.date,
+          })),
+          totalAmount:
+            typeof page?.total_amount === 'number' ? page.total_amount : null,
+          totalCount:
+            typeof page?.total_items === 'number'
+              ? page.total_items
+              : list.length,
+        };
       },
       providesTags: ['Earnings'],
     }),

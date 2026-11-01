@@ -22,6 +22,7 @@ import { useGetTokenBalanceQuery } from '@/redux/services/tokens/tokens.api-slic
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
 import { WalletStatsSection } from '../molecules/wallet-stats-section';
+import { NextPayoutsCard } from '../molecules/next-payouts-card';
 import { FundWalletModal } from '../organisms/fund-wallet-modal';
 import { WithdrawModal } from '../organisms/withdraw-modal';
 import { useVendorAccess } from '@/lib/hooks/use-vendor-access';
@@ -321,6 +322,9 @@ export const WalletPageTemplate: React.FC = () => {
             : undefined
         }
       />
+
+      {/* What makes up Pending Earnings, and when each part lands. */}
+      <NextPayoutsCard />
 
       {/* Recent transactions */}
       <div
