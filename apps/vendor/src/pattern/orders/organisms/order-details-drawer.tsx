@@ -1493,7 +1493,13 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               {!isFabricTransferOnly &&
                 !(bespokeDesign && vendorItems.length === 0) && (
                   <section className="space-y-3">
-                    <Card title={`Your items (${vendorItems.length})`}>
+                    <Card
+                      title={
+                        bespokeDesign
+                          ? `Materials (${vendorItems.length})`
+                          : `Your items (${vendorItems.length})`
+                      }
+                    >
                       {vendorItems.length > 0 ? (
                         vendorItems.map((item, index) => (
                           <OrderItemRow

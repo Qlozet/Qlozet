@@ -226,6 +226,52 @@ describe('readOrderTitle', () => {
   });
 });
 
+// A bespoke order made with the tailor's own fabric carries that fabric as a
+// real product on its first item; the row must still show the design.
+describe('custom order with a fabric item', () => {
+  const withFabric = order({
+    type: 'bespoke',
+    bespoke_design: {
+      name: 'Agbada',
+      design_images: ['chosen.png', 'other.png'],
+    },
+    items: [
+      { product: { fabric: { name: 'Ankara', images: ['fabric.png'] } } },
+    ],
+  });
+
+  it('pictures the chosen design, not the fabric', () => {
+    expect(readOrderImage(withFabric)).toBe('chosen.png');
+  });
+
+  it('stacks the design first, then the fabric', () => {
+    expect(readOrderItemImages(withFabric)).toEqual([
+      'chosen.png',
+      'fabric.png',
+    ]);
+  });
+
+  it('is named by the design', () => {
+    expect(readOrderTitle(withFabric)).toBe('Agbada');
+  });
+
+  it('keeps the fabric picture for the fabric vendor on a transfer', () => {
+    const transfer = order({
+      vendor_role: 'fabric_transfer',
+      type: 'bespoke',
+      bespoke_design: { name: 'Agbada', design_images: ['chosen.png'] },
+      shipments: [
+        {
+          shipment_type: 'fabric_transfer',
+          fabric_product: { fabric: { images: ['fabric.png'] } },
+        },
+      ],
+    });
+    expect(readOrderImage(transfer)).toBe('fabric.png');
+    expect(readOrderTitle(transfer)).toMatch(/^Fabric transfer/);
+  });
+});
+
 describe('status badges', () => {
   it('maps every known order status to a label', () => {
     const statuses = [
