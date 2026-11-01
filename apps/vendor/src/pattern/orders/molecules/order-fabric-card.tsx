@@ -5,7 +5,7 @@
 // Two variants, driven by who supplies the fabric:
 //  - cross-vendor fabric the customer picked: shows the source vendor, the
 //    transfer status and a "View fabric" action.
-//  - the vendor's own fabric: shows a reminder to price it into the quote.
+//  - the vendor's own fabric: notes it is priced from their listing.
 
 import React from 'react';
 import Image from 'next/image';
@@ -196,7 +196,8 @@ export const OrderFabricCard = ({
 
       {fabric.vendorSources ? (
         <p className="text-xs text-grey3 dark:text-gray-400">
-          You are sourcing this fabric — include cost in your quote.
+          From your stock. The quote prices it from your listing, and the yards
+          come off your stock when the customer pays.
         </p>
       ) : (
         <Button
