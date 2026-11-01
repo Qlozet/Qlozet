@@ -8,6 +8,7 @@ import type {
   OrderStatus,
   ShipmentStatus,
 } from '@/redux/services/orders/orders.api-slice';
+import { designImagesForTailor } from './bespoke-design';
 
 // ──────────────── Formatters ────────────────
 
@@ -148,6 +149,19 @@ const readBespokeDesign = (o: Order): any | null => {
   return d && typeof d === 'object' ? d : null;
 };
 
+// The picture of a custom order: the version the customer chose (then any
+// design image, then their references). A custom order's first item can be a
+// real product (the tailor's own fabric), so the design must win over it.
+const designCover = (o: Order): string | null => {
+  const d = readBespokeDesign(o);
+  if (!d) return null;
+  return (
+    designImagesForTailor(d)[0] ??
+    firstImageOf(d.design_images) ??
+    firstImageOf(d.reference_images)
+  );
+};
+
 // Fabric image(s) from a fabric-transfer order's shipments — the fabric vendor
 // has no catalogue item, so the fabric they're sending is the row's picture.
 const readFabricTransferImages = (o: Order): string[] => {
@@ -171,6 +185,10 @@ export const readOrderImage = (
 ): string | null => {
   const fabricImg = readFabricTransferImages(o)[0];
   if (fabricImg) return fabricImg;
+  if (isCustomOrder(o)) {
+    const cover = designCover(o);
+    if (cover) return cover;
+  }
   const product = asPopulatedProduct(vendorItems(o, businessId)[0]);
   if (product) {
     const kindImages =
@@ -228,10 +246,13 @@ export const readOrderItemImages = (
   const fabricImgs = readFabricTransferImages(o);
   if (fabricImgs.length) return fabricImgs.slice(0, max);
   const imgs: string[] = [];
+  // Custom order: the design leads, then its materials (e.g. the fabric).
+  const cover = isCustomOrder(o) ? designCover(o) : null;
+  if (cover) imgs.push(cover);
   for (const item of vendorItems(o, businessId)) {
-    const img = productImage(item);
-    if (img) imgs.push(img);
     if (imgs.length >= max) break;
+    const img = productImage(item);
+    if (img && !imgs.includes(img)) imgs.push(img);
   }
   if (imgs.length === 0) {
     const d = readBespokeDesign(o);
@@ -262,6 +283,11 @@ const readFabricTransferTitle = (o: Order): string | null => {
 export const readOrderTitle = (o: Order, businessId?: string): string => {
   const fabricTitle = readFabricTransferTitle(o);
   if (fabricTitle) return fabricTitle;
+  // Custom order: named by the design, not by the fabric item it carries.
+  if (isCustomOrder(o)) {
+    const d = readBespokeDesign(o);
+    if (d) return d.name ?? 'Custom design';
+  }
   const product = asPopulatedProduct(vendorItems(o, businessId)[0]);
   const name =
     product?.clothing?.name ??
