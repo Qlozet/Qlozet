@@ -56,7 +56,11 @@ import {
 import { OrderFabricCard } from '../molecules/order-fabric-card';
 import {
   type FabricOffer,
+  type FabricRole,
+  FABRIC_ROLE_NAMES,
   depositFor,
+  fabricLineLabel,
+  isAnyFabricLine,
   isFabricLine,
   priceFabricOffer,
 } from '../lib/quote-fabric';
@@ -173,6 +177,8 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
 
   const [lineItems, setLineItems] = useState<QuoteLineItem[]>(EMPTY_LINE_ITEMS);
   const [fabricYards, setFabricYards] = useState(0);
+  // Yards for each of the design's other fabrics (contrast, lining).
+  const [extraYards, setExtraYards] = useState<Record<string, number>>({});
   const [completionDays, setCompletionDays] = useState(0);
   const [notes, setNotes] = useState('');
 
@@ -182,6 +188,14 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
     if (quote.line_items?.length) setLineItems(quote.line_items);
     if (typeof quote.required_fabric_yards === 'number')
       setFabricYards(quote.required_fabric_yards);
+    if (Array.isArray(quote.extra_fabric_yards))
+      setExtraYards(
+        Object.fromEntries(
+          (quote.extra_fabric_yards as { role: string; yards: number }[]).map(
+            (e) => [e.role, Number(e.yards) || 0]
+          )
+        )
+      );
     if (typeof quote.estimated_completion_days === 'number')
       setCompletionDays(quote.estimated_completion_days);
     if (typeof quote.vendor_notes === 'string') setNotes(quote.vendor_notes);
@@ -193,39 +207,75 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
   // Fabric: priced from the listing when the customer chose one (another
   // vendor's, billed on top; or this tailor's own, a line of the quote), or
   // typed by the tailor when they buy it themselves. The backend re-prices it
-  // on every save; this is the same rule, live.
+  // on every save; this is the same rule, live. A garment can need more than
+  // one fabric (contrast, lining): each is its own slot, priced the same way.
   const isDraftNow = isDraftStatus(quote?.status);
   const offer = (quote?.fabric_offer ?? null) as FabricOffer | null;
   const source = offer?.source;
   const fabricPrice = priceFabricOffer(offer, fabricYards);
+  const slots = useMemo(() => {
+    const extras = (
+      (quote?.extra_fabric_offers ?? []) as (FabricOffer & {
+        role: FabricRole;
+      })[]
+    ).map((o) => {
+      const yards = extraYards[o.role] ?? 0;
+      return {
+        role: o.role,
+        offer: o,
+        yards,
+        price: priceFabricOffer(o, yards),
+      };
+    });
+    return [
+      ...(offer
+        ? [
+            {
+              role: 'main' as FabricRole,
+              offer,
+              yards: fabricYards,
+              price: fabricPrice,
+            },
+          ]
+        : []),
+      ...extras,
+    ];
+  }, [quote, offer, fabricYards, fabricPrice, extraYards]);
   const effectiveLines = useMemo(() => {
     if (!isDraftNow) return lineItems;
-    if (source === 'other_vendor')
-      return lineItems.filter((li) => !isFabricLine(li.label));
-    if (source === 'tailor_stock') {
-      const priced = lineItems.map((li) =>
-        isFabricLine(li.label) ? { ...li, amount: fabricPrice.cost } : li
-      );
-      return priced.some((li) => isFabricLine(li.label))
-        ? priced
-        : [...priced, { label: 'Fabric', amount: fabricPrice.cost }];
+    let lines = lineItems;
+    for (const slot of slots) {
+      const label = fabricLineLabel(slot.role);
+      const mine = (li: QuoteLineItem) => isFabricLine(li.label, slot.role);
+      if (slot.offer.source === 'other_vendor') {
+        lines = lines.filter((li) => !mine(li));
+      } else if (slot.offer.source === 'tailor_stock') {
+        const priced = lines.map((li) =>
+          mine(li) ? { ...li, amount: slot.price.cost } : li
+        );
+        lines = priced.some(mine)
+          ? priced
+          : [...priced, { label, amount: slot.price.cost }];
+      } else if (!lines.some(mine)) {
+        lines = [...lines, { label, amount: 0 }];
+      }
     }
-    if (
-      source === 'tailor_sourced' &&
-      !lineItems.some((li) => isFabricLine(li.label))
-    )
-      return [...lineItems, { label: 'Fabric', amount: 0 }];
-    return lineItems;
-  }, [isDraftNow, lineItems, source, fabricPrice.cost]);
-  const fabricInQuote =
-    source === 'other_vendor'
-      ? 0
-      : effectiveLines.find((li) => isFabricLine(li.label))?.amount || 0;
-  const overStock =
+    return lines;
+  }, [isDraftNow, lineItems, slots]);
+  const fabricInQuote = slots
+    .filter((slot) => slot.offer.source !== 'other_vendor')
+    .reduce(
+      (sum, slot) =>
+        sum +
+        (effectiveLines.find((li) => isFabricLine(li.label, slot.role))
+          ?.amount || 0),
+      0
+    );
+  const slotOverStock = (slot: (typeof slots)[number]) =>
     isDraftNow &&
-    source !== 'tailor_sourced' &&
-    typeof offer?.yards_in_stock === 'number' &&
-    fabricPrice.yards > offer.yards_in_stock;
+    slot.offer.source !== 'tailor_sourced' &&
+    typeof slot.offer.yards_in_stock === 'number' &&
+    slot.price.yards > slot.offer.yards_in_stock;
 
   const total = useMemo(
     () => effectiveLines.reduce((sum, li) => sum + (li.amount || 0), 0),
@@ -252,6 +302,12 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
   const payload = () => ({
     line_items: effectiveLines,
     ...(fabricYards >= 0.1 ? { required_fabric_yards: fabricYards } : {}),
+    extra_fabric_yards: slots
+      .filter((slot) => slot.role !== 'main' && slot.yards >= 0.1)
+      .map((slot) => ({
+        role: slot.role as 'contrast' | 'lining',
+        yards: slot.yards,
+      })),
     ...(completionDays >= 1
       ? { estimated_completion_days: completionDays }
       : {}),
@@ -267,12 +323,15 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
 
   const validateForSubmit = (): string | null => {
     if (total <= 0) return 'Add at least one price before submitting.';
-    if (source !== 'tailor_sourced' && fabricYards < 0.1)
-      return 'Enter the required fabric amount (in yards). It prices the fabric.';
-    if (overStock)
-      return source === 'tailor_stock'
-        ? `Your listing has ${offer?.yards_in_stock} yards in stock. Update the stock, or lower the yards.`
-        : `${offer?.supplier_name ?? 'The fabric seller'} has only ${offer?.yards_in_stock} yards left.`;
+    for (const slot of slots) {
+      const name = FABRIC_ROLE_NAMES[slot.role].toLowerCase();
+      if (slot.offer.source !== 'tailor_sourced' && slot.yards < 0.1)
+        return `Enter the yards of ${name} you need. It prices the ${name}.`;
+      if (slotOverStock(slot))
+        return slot.offer.source === 'tailor_stock'
+          ? `Your listing for ${slot.offer.name ?? name} has ${slot.offer.yards_in_stock} yards in stock. Update the stock, or lower the yards.`
+          : `${slot.offer.supplier_name ?? 'The fabric seller'} has only ${slot.offer.yards_in_stock} yards of ${slot.offer.name ?? name} left.`;
+    }
     if (completionDays < 1)
       return 'Enter how many days you need before you can ship.';
     return null;
@@ -327,8 +386,6 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
 
   // While drafting, flag the two fields the backend requires to submit so the
   // vendor fills them instead of hitting a rejected submit.
-  const fabricMissing =
-    isDraft && source !== 'tailor_sourced' && fabricYards < 0.1;
   const daysMissing = isDraft && completionDays < 1;
 
   // Garment media for the companion panel. A bespoke quote request carries the
@@ -451,9 +508,16 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                   {effectiveLines.map((li) => {
                     // Fabric from a listing is priced by the platform; the
                     // tailor types it only when they buy the fabric themselves.
+                    const slot = slots.find((x) =>
+                      isFabricLine(li.label, x.role)
+                    );
                     const readOnly =
                       !isDraft ||
-                      (isFabricLine(li.label) && source !== 'tailor_sourced');
+                      (!!slot && slot.offer.source !== 'tailor_sourced') ||
+                      (!slot &&
+                        isAnyFabricLine(li.label) &&
+                        source !== 'tailor_sourced' &&
+                        !!source);
                     return (
                       <div
                         key={li.label}
@@ -505,17 +569,27 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                     ₦{total.toLocaleString()}
                   </span>
                 </div>
-                {isDraft && source && (
-                  <p className="mt-2 text-xs leading-relaxed text-grey2 dark:text-gray-400">
-                    {source === 'other_vendor'
-                      ? fabricYards >= 0.1
-                        ? `Fabric from ${offer?.supplier_name ?? 'another vendor'} (${fabricPrice.yards} yd${fabricPrice.pieces ? `, ${fabricPrice.pieces} piece${fabricPrice.pieces === 1 ? '' : 's'}` : ''}): ₦${fabricPrice.cost.toLocaleString()}. The customer pays this on top of your quote and the seller ships the fabric to you, so leave it out of your prices.`
-                        : `The customer chose fabric from ${offer?.supplier_name ?? 'another vendor'}. Enter the yards you need below and it is priced from their listing, on top of your quote.`
-                      : source === 'tailor_stock'
-                        ? `Fabric is priced from your listing${offer?.name ? ` for ${offer.name}` : ''}${fabricYards >= 0.1 ? ` (${fabricPrice.yards} yd)` : ''}. The yards come off your stock when the customer pays.`
-                        : 'The customer did not choose a fabric. Enter what it will cost you to buy it on the Fabric line.'}
-                  </p>
-                )}
+                {isDraft &&
+                  slots.map((slot) => {
+                    const o = slot.offer;
+                    const name = FABRIC_ROLE_NAMES[slot.role];
+                    const lower = name.toLowerCase();
+                    const yd = slot.price.yards;
+                    return (
+                      <p
+                        key={slot.role}
+                        className="mt-2 text-xs leading-relaxed text-grey2 dark:text-gray-400"
+                      >
+                        {o.source === 'other_vendor'
+                          ? slot.yards >= 0.1
+                            ? `${name} from ${o.supplier_name ?? 'another vendor'} (${yd} yd${slot.price.pieces ? `, ${slot.price.pieces} piece${slot.price.pieces === 1 ? '' : 's'}` : ''}): ₦${slot.price.cost.toLocaleString()}. The customer pays this on top of your quote and the seller ships it to you, so leave it out of your prices.`
+                            : `The customer chose ${lower} from ${o.supplier_name ?? 'another vendor'}. Enter the yards you need below and it is priced from their listing, on top of your quote.`
+                          : o.source === 'tailor_stock'
+                            ? `${name} is priced from your listing${o.name ? ` for ${o.name}` : ''}${slot.yards >= 0.1 ? ` (${yd} yd)` : ''}. The yards come off your stock when the customer pays.`
+                            : `The customer left the ${lower} to you. Enter what it will cost you to buy it on the ${fabricLineLabel(slot.role)} line.`}
+                      </p>
+                    );
+                  })}
                 {(() => {
                   const pct = Number(quote?.deposit_percent);
                   const dep = depositFor(total, pct, fabricInQuote);
@@ -535,47 +609,78 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                 })()}
               </div>
 
-              {/* Required fabric amount */}
-              <div className="flex items-center justify-between rounded-xl border border-border bg-white dark:bg-[#404040] px-4 py-3">
-                <span className="text-sm font-semibold text-grey-black dark:text-white">
-                  Required fabric amount
-                  {isDraft &&
-                    (source === 'tailor_sourced' ? (
-                      <span className="ml-1 text-xs font-normal text-grey2 dark:text-gray-400">
-                        (optional)
-                      </span>
-                    ) : (
-                      <span className="ml-0.5 text-[#D42620]">*</span>
-                    ))}
-                  {overStock && (
-                    <span className="mt-0.5 block text-xs font-normal text-[#D42620]">
-                      {source === 'tailor_stock'
-                        ? `Only ${offer?.yards_in_stock} yd in your stock`
-                        : `Only ${offer?.yards_in_stock} yd left`}
+              {/* Required fabric amount, one per fabric of the garment */}
+              {(slots.length
+                ? slots
+                : [
+                    {
+                      role: 'main' as FabricRole,
+                      offer: { source: 'tailor_sourced' } as FabricOffer,
+                      yards: fabricYards,
+                      price: fabricPrice,
+                    },
+                  ]
+              ).map((slot) => {
+                const o = slot.offer;
+                const over = slotOverStock(slot);
+                const missing =
+                  isDraft && o.source !== 'tailor_sourced' && slot.yards < 0.1;
+                const setYards = (n: number) =>
+                  slot.role === 'main'
+                    ? setFabricYards(n)
+                    : setExtraYards((prev) => ({ ...prev, [slot.role]: n }));
+                return (
+                  <div
+                    key={slot.role}
+                    className="flex items-center justify-between rounded-xl border border-border bg-white dark:bg-[#404040] px-4 py-3"
+                  >
+                    <span className="text-sm font-semibold text-grey-black dark:text-white">
+                      {slots.length > 1
+                        ? `${FABRIC_ROLE_NAMES[slot.role]} needed`
+                        : 'Required fabric amount'}
+                      {isDraft &&
+                        (o.source === 'tailor_sourced' ? (
+                          <span className="ml-1 text-xs font-normal text-grey2 dark:text-gray-400">
+                            (optional)
+                          </span>
+                        ) : (
+                          <span className="ml-0.5 text-[#D42620]">*</span>
+                        ))}
+                      {slots.length > 1 && o.name && (
+                        <span className="mt-0.5 block text-xs font-normal text-grey2 dark:text-gray-400">
+                          {o.name}
+                        </span>
+                      )}
+                      {over && (
+                        <span className="mt-0.5 block text-xs font-normal text-[#D42620]">
+                          {o.source === 'tailor_stock'
+                            ? `Only ${o.yards_in_stock} yd in your stock`
+                            : `Only ${o.yards_in_stock} yd left`}
+                        </span>
+                      )}
                     </span>
-                  )}
-                </span>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    min={0}
-                    value={fabricYards}
-                    readOnly={!isDraft}
-                    onChange={(e) =>
-                      setFabricYards(Number(e.target.value) || 0)
-                    }
-                    className={cn(
-                      'w-16 rounded-lg px-3 py-1.5 text-right text-sm text-grey-black dark:text-white focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
-                      isDraft ? 'border border-border' : 'bg-transparent',
-                      (fabricMissing || overStock) &&
-                        'border-[#D42620] dark:border-[#D42620]'
-                    )}
-                  />
-                  <span className="text-sm text-grey3 dark:text-gray-300">
-                    yards
-                  </span>
-                </div>
-              </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min={0}
+                        value={slot.yards}
+                        readOnly={!isDraft}
+                        aria-label={`${FABRIC_ROLE_NAMES[slot.role]} yards`}
+                        onChange={(e) => setYards(Number(e.target.value) || 0)}
+                        className={cn(
+                          'w-16 rounded-lg px-3 py-1.5 text-right text-sm text-grey-black dark:text-white focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+                          isDraft ? 'border border-border' : 'bg-transparent',
+                          (missing || over) &&
+                            'border-[#D42620] dark:border-[#D42620]'
+                        )}
+                      />
+                      <span className="text-sm text-grey3 dark:text-gray-300">
+                        yards
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
 
               {/* Estimated completion */}
               <div className="flex items-center justify-between rounded-xl border border-border bg-white dark:bg-[#404040] px-4 py-3">
