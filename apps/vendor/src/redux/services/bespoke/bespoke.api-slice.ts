@@ -4,6 +4,7 @@
 
 import { baseAPI } from '@/redux/api/base-api';
 import { ApiResponse } from '../types';
+import type { ExtraFabricRole } from '@/pattern/orders/lib/quote-fabric';
 
 // LineItemDto — a single priced line on a quote (Base Tailoring, Fabric, ...).
 export interface QuoteLineItem {
@@ -18,8 +19,8 @@ export interface QuoteLineItem {
 export interface QuotePayload {
   line_items: QuoteLineItem[];
   required_fabric_yards?: number;
-  /** Yards for each of the design's other fabrics (contrast, lining). */
-  extra_fabric_yards?: { role: 'contrast' | 'lining'; yards: number }[];
+  /** Yards for each of the design's other fabrics (contrast, lining, bottom). */
+  extra_fabric_yards?: { role: ExtraFabricRole; yards: number }[];
   estimated_completion_days?: number;
   vendor_notes?: string;
 }

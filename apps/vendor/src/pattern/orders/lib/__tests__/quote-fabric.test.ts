@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { depositFor, priceFabricOffer } from '../quote-fabric';
+import {
+  depositFor,
+  fabricLineLabel,
+  isAnyFabricLine,
+  isFabricLine,
+  priceFabricOffer,
+} from '../quote-fabric';
 
 describe('quote fabric preview', () => {
   it('prices per yard from the listing', () => {
@@ -42,5 +48,14 @@ describe('deposit preview', () => {
   });
   it('is the whole quote when the fabric is the whole quote', () => {
     expect(depositFor(50000, 50, 50000)).toBeNull();
+  });
+});
+
+describe('fabric line labels', () => {
+  it('labels the bottom fabric line like the backend', () => {
+    expect(fabricLineLabel('bottom')).toBe('Fabric (Bottom)');
+    expect(isFabricLine('fabric (bottom)', 'bottom')).toBe(true);
+    expect(isAnyFabricLine('Fabric (Bottom)')).toBe(true);
+    expect(isAnyFabricLine('Add-ons')).toBe(false);
   });
 });
