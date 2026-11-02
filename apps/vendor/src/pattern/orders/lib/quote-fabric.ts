@@ -25,16 +25,30 @@ export interface FabricOffer {
 }
 
 /**
- * A garment can need more than one fabric: the main one plus a contrast and
- * a lining (`extra_fabric_offers`, one per role). Each is priced the same way
- * and, when inside the quote, has its own line: "Fabric", "Fabric (Lining)".
+ * A garment can need more than one fabric: the main one plus a contrast, a
+ * lining or a bottom (`extra_fabric_offers`, one per role). Each is priced the
+ * same way and, when inside the quote, has its own line: "Fabric",
+ * "Fabric (Lining)". A slot the tailor fills can carry the colour the customer
+ * wants (`color`).
  */
-export type FabricRole = 'main' | 'contrast' | 'lining';
+export const EXTRA_FABRIC_ROLES = ['contrast', 'lining', 'bottom'] as const;
+export type ExtraFabricRole = (typeof EXTRA_FABRIC_ROLES)[number];
+export type FabricRole = 'main' | ExtraFabricRole;
 
 export const FABRIC_ROLE_NAMES: Record<FabricRole, string> = {
   main: 'Fabric',
   contrast: 'Contrast fabric',
   lining: 'Lining',
+  // A two-piece set whose bottom (trousers, skirt) is in a different fabric;
+  // the main fabric is then the top's.
+  bottom: 'Bottom fabric',
+};
+
+/** An extra fabric as the quote returns it. */
+export type ExtraFabricOffer = FabricOffer & {
+  role: ExtraFabricRole;
+  /** Colour the customer wants; only on a tailor-sourced slot. */
+  color?: string | null;
 };
 
 export const fabricLineLabel = (role: FabricRole = 'main') =>
@@ -49,7 +63,7 @@ export const isFabricLine = (label?: string, role: FabricRole = 'main') =>
 
 /** Any fabric line, whichever fabric it is for. */
 export const isAnyFabricLine = (label?: string) =>
-  (['main', 'contrast', 'lining'] as FabricRole[]).some((r) =>
+  (['main', ...EXTRA_FABRIC_ROLES] as FabricRole[]).some((r) =>
     isFabricLine(label, r)
   );
 
