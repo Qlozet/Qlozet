@@ -24,10 +24,34 @@ export interface FabricOffer {
   yards_in_stock?: number | null;
 }
 
-export const isFabricLine = (label?: string) =>
+/**
+ * A garment can need more than one fabric: the main one plus a contrast and
+ * a lining (`extra_fabric_offers`, one per role). Each is priced the same way
+ * and, when inside the quote, has its own line: "Fabric", "Fabric (Lining)".
+ */
+export type FabricRole = 'main' | 'contrast' | 'lining';
+
+export const FABRIC_ROLE_NAMES: Record<FabricRole, string> = {
+  main: 'Fabric',
+  contrast: 'Contrast fabric',
+  lining: 'Lining',
+};
+
+export const fabricLineLabel = (role: FabricRole = 'main') =>
+  role === 'main'
+    ? 'Fabric'
+    : `Fabric (${role[0].toUpperCase()}${role.slice(1)})`;
+
+export const isFabricLine = (label?: string, role: FabricRole = 'main') =>
   String(label ?? '')
     .trim()
-    .toLowerCase() === 'fabric';
+    .toLowerCase() === fabricLineLabel(role).toLowerCase();
+
+/** Any fabric line, whichever fabric it is for. */
+export const isAnyFabricLine = (label?: string) =>
+  (['main', 'contrast', 'lining'] as FabricRole[]).some((r) =>
+    isFabricLine(label, r)
+  );
 
 /** Yards charged for and their cost (whole pieces for piece-only fabric). */
 export function priceFabricOffer(

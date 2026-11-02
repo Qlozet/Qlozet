@@ -18,6 +18,8 @@ export interface QuoteLineItem {
 export interface QuotePayload {
   line_items: QuoteLineItem[];
   required_fabric_yards?: number;
+  /** Yards for each of the design's other fabrics (contrast, lining). */
+  extra_fabric_yards?: { role: 'contrast' | 'lining'; yards: number }[];
   estimated_completion_days?: number;
   vendor_notes?: string;
 }
