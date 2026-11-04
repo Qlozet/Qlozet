@@ -242,13 +242,31 @@ export const SignupTemplate = () => {
       : `+234${cleanPhone.replace(/^0/, '')}`;
 
     try {
-      await register({
+      const res: any = await register({
         business_name: data.businessName,
         personal_name: data.personalName,
         personal_email: data.personalEmail,
         personal_phone_number: phone,
         password: data.password,
       }).unwrap();
+
+      // Already shops on Qlozet with this email and password: the email is
+      // proven, so the store is ready and they're signed in. No code.
+      const linkedToken = res?.data?.linked_shop_account
+        ? res?.data?.token?.access_token
+        : null;
+      if (linkedToken) {
+        saveCookie({
+          key: SESSION_COOKIE_KEY,
+          value: linkedToken,
+          isObject: false,
+        });
+        toast.success(
+          'Your store is ready. Use the same email and password for the shop and your store.'
+        );
+        push(APP_ROUTES.dashboard);
+        return;
+      }
 
       setRegisteredEmail(data.personalEmail);
       toast.success('Account created! Please check your email to verify.');
@@ -482,6 +500,11 @@ export const SignupTemplate = () => {
                 password={passwordValue}
                 confirmPassword={confirmPasswordValue}
               />
+
+              <p className="text-xs text-muted-foreground">
+                Already shop on Qlozet with this email? Use the same password
+                and your store is ready straight away.
+              </p>
 
               <div className="pt-2">
                 <SubmitButton

@@ -162,7 +162,8 @@ export const SignInTemplate = () => {
   const form = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      email: '',
+      // Filled in when coming from the shop's "Open a store".
+      email: searchParams.get('email') ?? '',
       password: '',
     },
   });
@@ -175,7 +176,10 @@ export const SignInTemplate = () => {
         isError={isError}
         alertTitle="Sign In Error"
         alertDescription={
-          error && 'Invalid email or password. Please try again.'
+          // The server's reason (e.g. "this is your shopping account"), not
+          // a blanket "invalid" that contradicts the toast.
+          error &&
+          readApiError(error, 'Invalid email or password. Please try again.')
         }
       >
         <div>
