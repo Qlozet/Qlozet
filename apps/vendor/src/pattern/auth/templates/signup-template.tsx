@@ -33,6 +33,7 @@ import { Button } from '@/components/ui/button';
 import { useCountdown } from '@/lib/hooks/useCountdown';
 import { Progress } from '@/components/ui/progress';
 import { readApiError } from '@/redux/services/types';
+import { isValidPhone } from '@/lib/phone-number';
 
 // ─── Types ───────────────────────────────────────────────────────────
 type SignupStep = 'details' | 'password' | 'otp';
@@ -47,10 +48,15 @@ const signupSchema = z
     personalEmail: z.string().email('Please enter a valid email address'),
     // AuthPhoneInput always emits "+<dial><digits>" (dial code from the
     // dropdown, digits-only local part, leading zeros stripped).
+    // The server's own rule (same library), so a number accepted here is
+    // never bounced after the password step.
     personalPhone: z
       .string()
       .min(1, 'Phone number is required')
-      .regex(/^\+\d{9,15}$/, 'Please enter a valid phone number'),
+      .refine(
+        isValidPhone,
+        'Check the number: it looks too short, too long or mistyped for that country.'
+      ),
     password: z
       .string()
       .min(8, 'Password must be at least 8 characters')
@@ -279,6 +285,32 @@ export const SignupTemplate = () => {
           ? 'An account with this email or business already exists.'
           : 'Failed to create account. Please try again.'
       );
+      // An earlier sign-up on this email that was never verified: the server
+      // has just sent it a new code, so go and enter it.
+      if (/isn't verified/i.test(message)) {
+        setRegisteredEmail(data.personalEmail);
+        toast.info(message);
+        setStep('otp');
+        return;
+      }
+      // A problem with something on the first step: take them back to it and
+      // put the message on the field, instead of a toast on the password step.
+      const field = /phone/i.test(message)
+        ? 'personalPhone'
+        : /email/i.test(message) && !/shop password/i.test(message)
+          ? 'personalEmail'
+          : /business/i.test(message)
+            ? 'businessName'
+            : null;
+      if (field) {
+        setStep('details');
+        // After the step renders, so the field exists to take the error.
+        setTimeout(
+          () => form.setError(field, { message }, { shouldFocus: true }),
+          0
+        );
+        return;
+      }
       toast.error(message);
     }
   };
