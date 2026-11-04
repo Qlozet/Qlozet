@@ -46,10 +46,18 @@ export function CustomerChatSheet({
   const [sendMessage] = useSendOrderMessageMutation();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Live delivery — refetch the thread when a new message lands.
-  useOrderMessageSocket(open ? reference : null, open, () => {
-    refetch();
-  });
+  // Live delivery — refetch the thread when a new message lands, and after
+  // any reconnect so nothing sent while offline is missed.
+  useOrderMessageSocket(
+    open ? reference : null,
+    open,
+    () => {
+      refetch();
+    },
+    () => {
+      refetch();
+    }
+  );
 
   useEffect(() => {
     const el = scrollRef.current;
