@@ -10,7 +10,7 @@ import {
   getCookies,
   saveCookie,
 } from '@/lib/helpers/cookies-manager';
-import { SESSION_COOKIE_KEY } from '@/lib/constants';
+import { SESSION_COOKIE_KEY, REFRESH_COOKIE_KEY } from '@/lib/constants';
 import { type UserDetails } from '@/types';
 
 const USER_DETAILS_KEY = 'AltireuserDetails';
@@ -29,8 +29,10 @@ export const getToken = (): string | null => {
   return getCookies({ key: SESSION_COOKIE_KEY, isObject: false });
 };
 
+/** Drops both session cookies: a stale refresh token must not outlive a logout. */
 export const clearToken = (): boolean => {
   removeCookie(SESSION_COOKIE_KEY);
+  removeCookie(REFRESH_COOKIE_KEY);
   return true;
 };
 

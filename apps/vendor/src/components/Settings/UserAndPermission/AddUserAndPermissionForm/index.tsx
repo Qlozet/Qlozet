@@ -17,6 +17,12 @@ import {
 import { toast } from 'sonner';
 import { readApiError } from '@/redux/services/types';
 import { prettyRole, roleSummary } from '@/pattern/settings/lib/team-roles';
+import {
+  inviteEmailSent,
+  isValidInviteEmail,
+  normalizeInviteEmail,
+} from '@/pattern/settings/lib/team-invite';
+import { cn } from '@/lib/utils';
 
 interface InviteRow {
   id: string;
@@ -38,7 +44,14 @@ const AddNewUserAndPermissionForm = ({
   closeModal: () => void;
 }) => {
   const [rows, setRows] = useState<InviteRow[]>([createEmptyRow()]);
-  const { data: rolesResponse } = useGetVendorRolesQuery();
+  // Rows whose email didn't pass the format check, outlined until edited.
+  const [badEmailIds, setBadEmailIds] = useState<Set<string>>(new Set());
+  const {
+    data: rolesResponse,
+    isLoading: rolesLoading,
+    isError: rolesError,
+    refetch: refetchRoles,
+  } = useGetVendorRolesQuery();
   const [inviteTeamMember, { isLoading: isInviting }] =
     useInviteTeamMemberMutation();
 
@@ -56,45 +69,89 @@ const AddNewUserAndPermissionForm = ({
     setRows((prev) =>
       prev.map((r) => (r.id === id ? { ...r, [field]: value } : r))
     );
+    if (field === 'email' && badEmailIds.has(id)) {
+      setBadEmailIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
   };
 
   const handleInvite = async () => {
-    const invalid = rows.some((r) => !r.email || !r.full_name || !r.role_id);
+    // Send what the server will store: trimmed, emails lowercased.
+    const prepared = rows.map((r) => ({
+      ...r,
+      full_name: r.full_name.trim(),
+      email: normalizeInviteEmail(r.email),
+    }));
+    setRows(prepared);
+
+    const invalid = prepared.some(
+      (r) => !r.email || !r.full_name || !r.role_id
+    );
     if (invalid) {
       toast.error('Please fill in name, email, and role for all rows');
       return;
     }
 
-    let successCount = 0;
+    const badEmails = prepared.filter((r) => !isValidInviteEmail(r.email));
+    if (badEmails.length > 0) {
+      setBadEmailIds(new Set(badEmails.map((r) => r.id)));
+      toast.error(
+        badEmails.length === 1
+          ? `"${badEmails[0].email}" isn't a valid email address`
+          : `${badEmails.length} email addresses aren't valid`
+      );
+      return;
+    }
 
-    for (const row of rows) {
+    const emails = prepared.map((r) => r.email);
+    const duplicate = emails.find((e, i) => emails.indexOf(e) !== i);
+    if (duplicate) {
+      toast.error(`${duplicate} is in the list more than once`);
+      return;
+    }
+
+    let invitedCount = 0;
+    const failedIds = new Set<string>();
+
+    for (const row of prepared) {
       try {
-        const result: any = await inviteTeamMember({
+        const result = await inviteTeamMember({
           email: row.email,
           full_name: row.full_name,
           role: row.role_id,
         }).unwrap();
-        successCount++;
-        // Added, but the email with their sign-in details didn't go.
-        if (
-          result?.email_sent === false ||
-          result?.data?.email_sent === false
-        ) {
+        if (inviteEmailSent(result)) {
+          invitedCount++;
+        } else {
+          // Added, but the email with their sign-in details didn't go. The
+          // server's message names them and points at Resend invite.
           toast.warning(
-            `${row.email} was added, but we couldn't send their invite email. Use Resend invite on their row.`
+            result?.message ||
+              `${row.full_name} was added, but we couldn't send their invite email. Use Resend invite on their row.`
           );
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
+        failedIds.add(row.id);
         toast.error(readApiError(err, `Failed to invite ${row.email}`));
       }
     }
 
-    if (successCount > 0) {
+    if (invitedCount > 0) {
       toast.success(
-        `${successCount} member${successCount > 1 ? 's' : ''} invited successfully`
+        `${invitedCount} member${invitedCount > 1 ? 's' : ''} invited successfully`
       );
-      closeModal();
     }
+
+    if (failedIds.size === 0) {
+      closeModal();
+      return;
+    }
+    // Keep only the rows that failed open, so a retry doesn't invite the
+    // others a second time.
+    setRows(prepared.filter((r) => failedIds.has(r.id)));
   };
 
   return (
@@ -149,7 +206,11 @@ const AddNewUserAndPermissionForm = ({
               value={row.email}
               onChange={(e) => updateRow(row.id, 'email', e.target.value)}
               placeholder="email@example.com"
-              className="h-10 w-full rounded-lg border border-gray-300 dark:border-white/20 bg-transparent px-3 text-sm text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+              aria-invalid={badEmailIds.has(row.id) || undefined}
+              className={cn(
+                'h-10 w-full rounded-lg border border-gray-300 dark:border-white/20 bg-transparent px-3 text-sm text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-primary transition-colors',
+                badEmailIds.has(row.id) && 'border-red-500 dark:border-red-500'
+              )}
             />
 
             {/* Role (from API) */}
@@ -161,9 +222,24 @@ const AddNewUserAndPermissionForm = ({
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
-                {availableRoles.length === 0 ? (
+                {rolesLoading ? (
                   <div className="px-3 py-2 text-sm text-muted-foreground">
                     Loading roles...
+                  </div>
+                ) : rolesError ? (
+                  <div className="flex items-center justify-between gap-3 px-3 py-2 text-sm text-muted-foreground">
+                    <span>Couldn&apos;t load roles.</span>
+                    <button
+                      type="button"
+                      onClick={() => refetchRoles()}
+                      className="font-medium text-primary dark:text-white underline cursor-pointer"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                ) : availableRoles.length === 0 ? (
+                  <div className="px-3 py-2 text-sm text-muted-foreground">
+                    No roles available
                   </div>
                 ) : (
                   availableRoles.map((role) => (

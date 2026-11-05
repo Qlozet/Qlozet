@@ -20,6 +20,7 @@ import { ProductReviewsSheet } from '@/pattern/products/organisms/product-review
 import { OverlayScroll } from '@/components/OverlayScroll';
 import { UserAvatar } from '@/pattern/common/atoms/user-avatar';
 import { useGetUserProfileQuery } from '@/redux/services/settings/settings.api-slice';
+import { StoreSwitcherButton } from '@/pattern/common/molecules/store-switcher';
 
 // Bands rendered in the reviews breakdown, in display order.
 const RATING_BANDS = [
@@ -185,6 +186,13 @@ const Profile = ({
                       >
                         {userDetails?.businessName}
                       </Typography>
+                      {/* Phones have no room in the header for the switcher,
+                          so members of several stores switch from here. The
+                          sheet closes first so it doesn't sit over the picker. */}
+                      <StoreSwitcherButton
+                        className="mt-3 lg:hidden"
+                        onOpen={showProfileHandler}
+                      />
                       {/* Email comes straight from /users/me — it isn't part of
                           the UserDetails the layout threads down. */}
                       {email && (

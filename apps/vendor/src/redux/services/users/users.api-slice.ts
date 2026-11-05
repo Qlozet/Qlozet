@@ -93,6 +93,11 @@ export interface InviteTeamMemberRequest {
   phone_number?: string;
 }
 
+export interface InviteTeamMemberResult {
+  email_sent: boolean;
+  teamMember: TeamMember;
+}
+
 // PATCH /users/team/members/{id}. Owner-role guarded server-side — the
 // business owner can't be edited or removed.
 export interface UpdateTeamMemberRequest {
@@ -171,6 +176,8 @@ export interface MyAccess {
     business_id: string;
     role: string | null;
     is_owner: boolean;
+    /** False once the owner turned this member's access off. */
+    is_active?: boolean;
     areas: string[];
   } | null;
 }
@@ -318,9 +325,10 @@ export const usersApiSlice = baseAPI.injectEndpoints({
       providesTags: ['TeamMembers'],
     }),
 
-    // POST /users/team/invite-member
+    // POST /users/team/invite-member. The member is added even when the
+    // invite email fails; `email_sent` says whether it went out.
     inviteTeamMember: builder.mutation<
-      ApiResponse<TeamMember>,
+      ApiResponse<InviteTeamMemberResult>,
       InviteTeamMemberRequest
     >({
       query: (body) => ({
@@ -358,7 +366,8 @@ export const usersApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['TeamMembers'],
     }),
 
-    // DELETE /users/team/members/{id} — hard delete.
+    // DELETE /users/team/members/{id} — takes them off the team (not the
+    // owner). Their Qlozet account stays, so they can be invited again.
     deleteTeamMember: builder.mutation<ApiResponse<null>, string>({
       query: (id) => ({
         url: `/users/team/members/${id}`,

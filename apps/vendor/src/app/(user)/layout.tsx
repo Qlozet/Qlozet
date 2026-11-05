@@ -37,6 +37,7 @@ import { AUTH_ROUTES } from '@/lib/routes';
 import CompleteKycPopover from '@/pattern/common/organisms/complete-kyc-popover';
 import { If } from '@/pattern/common/atoms/If';
 import { Sidebar } from '@/pattern/common/templates/sidebar';
+import { StorePickerHost } from '@/pattern/common/molecules/store-switcher';
 import { type UserDetails } from '@/types';
 
 interface LoadingState {
@@ -322,6 +323,9 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
           {children}
         </OverlayScrollbarsComponent>
       </div>
+
+      {/* Store picker: switching by choice, or after losing access */}
+      <StorePickerHost />
 
       {/* KYC Completion Popup */}
       <If isTrue={showKycPopUp}>

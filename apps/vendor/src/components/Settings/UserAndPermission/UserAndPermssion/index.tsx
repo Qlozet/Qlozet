@@ -1,15 +1,39 @@
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import UserAndPermissionTable from '../UserAndPermissionTable';
 import AddNewUserAndPermissionForm from '../AddUserAndPermissionForm';
+import { useGetTeamMembersQuery } from '@/redux/services/users/users.api-slice';
 
 const UserAndPermission = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const closeAddModal = () => {
     setShowAddModal(false);
   };
+
+  // Same cached request as the table. Only the owner may manage the team, so
+  // anyone else gets a 403 here: explain that instead of an empty table and
+  // an Invite button that would only fail.
+  const { error } = useGetTeamMembersQuery();
+  const notOwner = (error as { status?: unknown } | undefined)?.status === 403;
+
+  if (notOwner) {
+    return (
+      <div className="bg-card w-full rounded-xl border custom-card-shadow flex flex-col items-center text-center gap-3 px-6 py-12">
+        <div className="size-11 rounded-full bg-primary/10 dark:bg-white/10 flex items-center justify-center">
+          <ShieldCheck className="size-5 text-primary dark:text-white" />
+        </div>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-foreground font-poppins">
+          Only the store owner can manage the team
+        </h3>
+        <p className="max-w-sm text-sm text-gray-500 dark:text-gray-400">
+          Ask the owner if you need someone added, removed or given a different
+          role.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="">

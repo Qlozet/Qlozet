@@ -7,7 +7,7 @@ import {
   type FilterOption,
 } from '@/pattern/common/molecules/filter-menu';
 import { MoreHorizontal } from 'lucide-react';
-import { show } from '@ebay/nice-modal-react';
+import { remove, show } from '@ebay/nice-modal-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,7 +17,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { TeamMemberDetailsModal } from '@/pattern/settings/organisms/team-member-details-modal';
+import { DeleteProductConfirmationModal as ConfirmModal } from '@/pattern/common/organisms/delete-confirmation-modal';
 import {
+  useDeleteTeamMemberMutation,
   useGetTeamMembersQuery,
   useGetVendorRolesQuery,
   useResendTeamInviteMutation,
@@ -45,6 +47,17 @@ const UserAndPermissionTable: FC = () => {
   const [roleFilter, setRoleFilter] = useState('all');
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 });
 
+  // A new search or filter starts from the first page; staying on page 3 of
+  // a list that now has one page shows nothing.
+  const onSearchChange = useCallback((value: string) => {
+    setSearchValue(value);
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  }, []);
+  const onRoleFilterChange = useCallback((value: string) => {
+    setRoleFilter(value);
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  }, []);
+
   const {
     data: response,
     isLoading,
@@ -60,6 +73,7 @@ const UserAndPermissionTable: FC = () => {
 
   const [updateMember] = useUpdateTeamMemberMutation();
   const [resendInvite] = useResendTeamInviteMutation();
+  const [deleteMember] = useDeleteTeamMemberMutation();
 
   const onResendInvite = useCallback(
     async (member: { _id: string; emailAddress: string }) => {
@@ -73,11 +87,21 @@ const UserAndPermissionTable: FC = () => {
     [resendInvite]
   );
 
-  // Soft-disable rather than DELETE — the hard delete is destructive and there
-  // is no undo, so the menu offers deactivate/reactivate.
+  // Deactivate keeps them on the team with access turned off (reversible);
+  // Remove takes them off the team. Both ask first; reactivating doesn't.
   const onToggleActive = useCallback(
     async (member: { _id: string; is_active: boolean; name: string }) => {
       const next = !member.is_active;
+      if (!next) {
+        // Resolves on confirm only; closing the dialog leaves it pending.
+        await show(ConfirmModal, {
+          title: `Deactivate ${member.name || 'this member'}?`,
+          description:
+            'They lose access to this store straight away, but stay on the team. You can reactivate them at any time.',
+          actionText: 'Deactivate',
+        });
+        remove(ConfirmModal);
+      }
       try {
         await updateMember({
           id: member._id,
@@ -91,6 +115,26 @@ const UserAndPermissionTable: FC = () => {
       }
     },
     [updateMember]
+  );
+
+  const onRemove = useCallback(
+    async (member: { _id: string; name: string }) => {
+      const name = member.name || 'this member';
+      await show(ConfirmModal, {
+        title: `Remove ${name} from the team?`,
+        description:
+          'They lose access to this store straight away. You can invite them again later.',
+        actionText: 'Remove',
+      });
+      remove(ConfirmModal);
+      try {
+        const res = await deleteMember(member._id).unwrap();
+        toast.success(res?.message || `${name} was removed from the team`);
+      } catch (error: any) {
+        toast.error(readApiError(error, 'Failed to remove team member'));
+      }
+    },
+    [deleteMember]
   );
 
   // Filter options come from the roles endpoint — a hardcoded list drifts from
@@ -238,6 +282,14 @@ const UserAndPermissionTable: FC = () => {
                       Resend invite
                     </DropdownMenuItem>
                   )}
+                  {!member.is_owner && (
+                    <DropdownMenuItem
+                      className="cursor-pointer text-red-600 focus:text-red-600"
+                      onClick={() => onRemove(member)}
+                    >
+                      Remove
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -245,7 +297,7 @@ const UserAndPermissionTable: FC = () => {
         },
       },
     ],
-    [onToggleActive, onResendInvite]
+    [onToggleActive, onResendInvite, onRemove]
   );
 
   return (
@@ -253,12 +305,12 @@ const UserAndPermissionTable: FC = () => {
       <TableToolbar
         title="Roles & Permissions"
         search={searchValue}
-        onSearchChange={setSearchValue}
+        onSearchChange={onSearchChange}
         filterControl={
           <FilterMenu
             options={roleOptions}
             value={roleFilter}
-            onChange={setRoleFilter}
+            onChange={onRoleFilterChange}
           />
         }
       />

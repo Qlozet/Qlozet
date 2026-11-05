@@ -18,6 +18,7 @@ import mobileProfile from '@/public/assets/svg/mobile-oct-icon.svg';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/pattern/common/atoms/user-avatar';
 import { useGetUserProfileQuery } from '@/redux/services/settings/settings.api-slice';
+import { StoreSwitcherButton } from '@/pattern/common/molecules/store-switcher';
 
 interface DashboardNavWithOutSearchProps {
   name?: string;
@@ -212,6 +213,8 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
                   )}
                 </div>
               </div>
+              {/* Only for people in more than one store */}
+              <StoreSwitcherButton />
               <Typography
                 textColor="text-dark dark:text-foreground"
                 textWeight="font-normal"
