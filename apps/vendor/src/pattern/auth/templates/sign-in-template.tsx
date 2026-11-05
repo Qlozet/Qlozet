@@ -4,13 +4,10 @@ import React, { useState } from 'react';
 import { AuthLayout } from '../organisms/auth-layout';
 import {
   useSignInMutation,
-  useSwitchBusinessMutation,
   type LoginResponseBusiness,
 } from '@/redux/services/auth/auth.api-slice';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import { saveCookie } from '@/lib/helpers/cookies-manager';
-import { SESSION_COOKIE_KEY, REFRESH_COOKIE_KEY } from '@/lib/constants';
 import { APP_ROUTES, AUTH_ROUTES } from '@/lib/routes';
 import { PAGES_IN_PROGRESS } from '@/lib/feature-flags';
 import { Form } from '@/components/ui/form';
@@ -24,10 +21,11 @@ import { AuthLink } from '../atoms/auth-link';
 import arrowRight from '@/public/assets/svg/arrow-right.svg';
 import { SubmitButton } from '@/pattern/common/molecules/submit-button';
 import { useAppDispatch } from '@/redux/store';
-import { setCredentials, setActiveBusiness } from '@/redux/slices/auth-slice';
+import { setCredentials } from '@/redux/slices/auth-slice';
 import { BusinessPicker } from '../organisms/business-picker';
-import { baseAPI } from '@/redux/api/base-api';
 import { readApiError } from '@/redux/services/types';
+import { storeSessionTokens as storeTokens } from '@/lib/session/tokens';
+import { useSwitchStore } from '@/lib/hooks/use-switch-store';
 
 export const SignInTemplate = () => {
   const { push } = useRouter();
@@ -36,28 +34,11 @@ export const SignInTemplate = () => {
 
   // Sign In mutation hook
   const [signIn, { isLoading, isError, error }] = useSignInMutation();
-  const [switchBusiness] = useSwitchBusinessMutation();
+  const { switchStore, switchingId } = useSwitchStore();
 
   // Multi-business picker state
   const [showBusinessPicker, setShowBusinessPicker] = useState(false);
   const [businesses, setBusinesses] = useState<LoginResponseBusiness[]>([]);
-  const [switchingId, setSwitchingId] = useState<string | null>(null);
-
-  /** Store tokens in cookies */
-  const storeTokens = (accessToken: string, refreshToken?: string) => {
-    saveCookie({
-      key: SESSION_COOKIE_KEY,
-      value: accessToken,
-      isObject: false,
-    });
-    if (refreshToken) {
-      saveCookie({
-        key: REFRESH_COOKIE_KEY,
-        value: refreshToken,
-        isObject: false,
-      });
-    }
-  };
 
   /** Navigate to the intended destination */
   const goToDashboard = () => {
@@ -132,31 +113,12 @@ export const SignInTemplate = () => {
 
   /** Handle business selection from the picker */
   const handleSelectBusiness = async (businessId: string) => {
-    setSwitchingId(businessId);
-    try {
-      const result = await switchBusiness({ business_id: businessId }).unwrap();
-
-      // Replace tokens with the new ones
-      storeTokens(
-        result.data.token.access_token,
-        result.data.token.refresh_token
-      );
-
-      // Update active business in Redux
-      dispatch(setActiveBusiness(result.data.active_business));
-
-      // Clear ALL cached API data so the dashboard (and every other view)
-      // refetches under the new business + token, instead of showing the
-      // previous business's cached data until a manual refresh.
-      dispatch(baseAPI.util.resetApiState());
-
-      setShowBusinessPicker(false);
-      goToDashboard();
-    } catch (err: any) {
-      toast.error(readApiError(err, 'Failed to switch business'));
-    } finally {
-      setSwitchingId(null);
-    }
+    // Same switch flow as the shell's store switcher (tokens, active store,
+    // cache reset); it shows its own error.
+    const switched = await switchStore(businessId);
+    if (!switched) return;
+    setShowBusinessPicker(false);
+    goToDashboard();
   };
 
   const form = useForm<SignInFormData>({

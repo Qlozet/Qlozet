@@ -5,24 +5,24 @@ import { create, useModal } from '@ebay/nice-modal-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { QuestionMarkIcon } from '../atoms/question-mark-icon';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
-import { AUTH_ROUTES } from '@/lib/routes';
-import { clearToken } from '@/lib/utils';
+import { useAppDispatch } from '@/redux/store';
+import { signOut } from '@/redux/api/base-api';
 
 const LogoutConfirmationModal = create(() => {
   const { resolve, remove, visible } = useModal();
 
-  const router = useRouter();
+  const dispatch = useAppDispatch();
 
   const handleCloseModal = () => {
     resolve({ resolved: true });
     remove();
   };
 
+  // Full sign-out: persisted stores, cached data and both session cookies go,
+  // then a hard navigation so nothing from this session carries over.
   const handleLogoutClick = () => {
-    clearToken();
     handleCloseModal();
-    router.push(AUTH_ROUTES.signIn);
+    signOut(dispatch);
   };
   return (
     <Dialog open={visible} onOpenChange={handleCloseModal}>

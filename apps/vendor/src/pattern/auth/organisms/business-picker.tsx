@@ -9,6 +9,14 @@ interface BusinessPickerProps {
   onSelect: (businessId: string) => void;
   isLoading?: boolean;
   loadingId?: string | null;
+  /** The store open right now, marked "Current" in the list. */
+  activeId?: string | null;
+  /** Shown above the list instead of the default prompt (e.g. lost access). */
+  message?: string | null;
+  /** Makes the picker dismissible (switching by choice). */
+  onClose?: () => void;
+  /** Offers a way out when there's nothing to go back to (lost access). */
+  onSignOut?: () => void;
 }
 
 export const BusinessPicker: React.FC<BusinessPickerProps> = ({
@@ -16,15 +24,32 @@ export const BusinessPicker: React.FC<BusinessPickerProps> = ({
   onSelect,
   isLoading = false,
   loadingId = null,
+  activeId = null,
+  message = null,
+  onClose,
+  onSignOut,
 }) => {
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-      <div className="bg-white dark:bg-card rounded-xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-foreground font-poppins">
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4"
+      onClick={onClose && !isLoading ? onClose : undefined}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="business-picker-title"
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white dark:bg-card rounded-xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200"
+      >
+        <h2
+          id="business-picker-title"
+          className="text-lg font-semibold text-gray-900 dark:text-foreground font-poppins"
+        >
           Select Business
         </h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 mb-6">
-          You belong to multiple businesses. Choose which one to work in:
+          {message ||
+            'You belong to multiple businesses. Choose which one to work in:'}
         </p>
 
         <div className="space-y-3">
@@ -60,6 +85,11 @@ export const BusinessPicker: React.FC<BusinessPickerProps> = ({
 
               {/* Badges */}
               <div className="flex items-center gap-2 shrink-0">
+                {activeId === biz._id && (
+                  <span className="text-xs bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-full font-medium">
+                    Current
+                  </span>
+                )}
                 {biz.is_owner && (
                   <span className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium">
                     Owner
@@ -72,6 +102,31 @@ export const BusinessPicker: React.FC<BusinessPickerProps> = ({
             </button>
           ))}
         </div>
+
+        {(onClose || onSignOut) && (
+          <div className="flex items-center justify-end gap-3 mt-6">
+            {onSignOut && (
+              <button
+                type="button"
+                onClick={onSignOut}
+                disabled={isLoading}
+                className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-destructive cursor-pointer disabled:opacity-60"
+              >
+                Sign out
+              </button>
+            )}
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                disabled={isLoading}
+                className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-foreground cursor-pointer disabled:opacity-60"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
