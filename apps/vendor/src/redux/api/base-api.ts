@@ -232,7 +232,8 @@ export const custom401Middleware: Middleware =
   };
 
 // Endpoints whose 403 the page explains itself, so no generic toast.
-const QUIET_403_ENDPOINTS = new Set(['getTeamMembers']);
+// getVerification: the dashboard banner is owner-only and simply hides.
+const QUIET_403_ENDPOINTS = new Set(['getTeamMembers', 'getVerification']);
 
 // Global 403 handler — shows a toast when a team member lacks permission
 export const custom403Middleware: Middleware =
