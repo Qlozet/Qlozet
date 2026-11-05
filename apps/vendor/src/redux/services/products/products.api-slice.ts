@@ -75,6 +75,8 @@ export interface CreateStyleDto {
   min_width_cm: number;
   notes?: string;
   type: string;
+  /** The style in the listing photos for its part; in the listing price. */
+  is_default?: boolean;
 }
 
 export interface VariantDto {
