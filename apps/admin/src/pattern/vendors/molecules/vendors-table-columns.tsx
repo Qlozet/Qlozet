@@ -29,6 +29,7 @@ import {
   formatOnboardedDate,
   type VendorStatusVariant,
 } from '@/lib/vendors';
+import { VerificationPills } from './verification-pills';
 
 // Map the vendor status to the shared Badge variants (mirrors how the vendor
 // app derives status badge variants in its table columns).
@@ -254,13 +255,16 @@ export const createVendorsTableColumns = ({
     cell: ({ row }) => {
       const status = getVendorStatus(row.original);
       return (
-        <Badge
-          variant={STATUS_BADGE_VARIANT[status.variant]}
-          shape="square"
-          className="h-[26px] flex w-fit items-center justify-center px-3 text-xs font-normal"
-        >
-          {status.label}
-        </Badge>
+        <div className="flex flex-col items-start gap-1">
+          <Badge
+            variant={STATUS_BADGE_VARIANT[status.variant]}
+            shape="square"
+            className="h-[26px] flex w-fit items-center justify-center px-3 text-xs font-normal"
+          >
+            {status.label}
+          </Badge>
+          <VerificationPills vendor={row.original} />
+        </div>
       );
     },
     enableSorting: false,

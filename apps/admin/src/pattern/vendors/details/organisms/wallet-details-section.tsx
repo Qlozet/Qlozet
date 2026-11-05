@@ -71,6 +71,10 @@ const VERIFICATION_LABEL: Record<string, string> = {
 
 const verificationLabel = (vendor?: Business): string => {
   const state = vendor?.verification_state;
+  // Approved without the identity checks: sellable, but not "Verified".
+  if (state === 'approved' && vendor?.verification_method === 'manual') {
+    return 'Approved by hand';
+  }
   if (typeof state === 'string' && VERIFICATION_LABEL[state]) {
     return VERIFICATION_LABEL[state];
   }

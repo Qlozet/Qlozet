@@ -26,6 +26,13 @@ export type CommissionType = 'percent' | 'fixed';
  */
 export type ListingReviewMode = 'review_first' | 'live_first';
 
+/**
+ * How vendors are verified. qoreid: the hosted identity checks, then an admin
+ * decides. manual: the vendor gives their CAC number and a bank-confirmed
+ * payout account, and the team checks each one by hand.
+ */
+export type VendorVerificationMode = 'qoreid' | 'manual';
+
 export interface ListingReviewImpact {
   mode: ListingReviewMode;
   /** Published listings still waiting for review (hidden under review_first). */
@@ -84,6 +91,16 @@ export interface PlatformSettings {
 
   /** Optional because backends deployed before the setting don't return it. */
   listing_review_mode?: ListingReviewMode;
+
+  /**
+   * Saving 'qoreid' starts the clock for manually approved vendors (and tells
+   * them): they keep selling for `manual_verification_grace_days`, then are
+   * paused until they finish the identity checks. Optional because backends
+   * deployed before the setting don't return them.
+   */
+  vendor_verification_mode?: VendorVerificationMode;
+  /** Days a manually approved vendor has to finish the QoreID checks (1–180). */
+  manual_verification_grace_days?: number;
 
   // AI + tokens
   token_price: TokenPrice;

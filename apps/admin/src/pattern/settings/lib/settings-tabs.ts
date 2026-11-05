@@ -458,7 +458,7 @@ export const SETTINGS_TABS: SettingsTab[] = [
     label: 'Catalogue',
     slug: 'inventory',
     description:
-      'How new listings reach the shop, stock thresholds, and the rules an uploaded product photo must meet.',
+      'How vendors are verified, how new listings reach the shop, stock thresholds, and the rules an uploaded product photo must meet.',
     sections: [
       {
         id: 'listing-review',
@@ -475,6 +475,35 @@ export const SETTINGS_TABS: SettingsTab[] = [
               { value: 'review_first', label: 'Review first' },
               { value: 'live_first', label: 'Live first' },
             ],
+          },
+        ],
+      },
+      {
+        id: 'vendor-verification',
+        title: 'Vendor verification',
+        description:
+          'How a new vendor proves who they are before they can sell. Use manual only while QoreID is unavailable.',
+        fields: [
+          {
+            key: 'vendor_verification_mode',
+            label: 'Verify vendors with',
+            help: 'QoreID: the vendor runs the identity checks, then your team decides. Manual: the vendor gives their CAC number and links a payout account their bank has confirmed, and your team checks each one by hand.',
+            kind: 'select',
+            options: [
+              { value: 'qoreid', label: 'QoreID' },
+              { value: 'manual', label: 'Manual' },
+            ],
+          },
+          {
+            key: 'manual_verification_grace_days',
+            label: 'Time to finish full checks',
+            help: 'Once you switch back to QoreID, vendors approved by hand have this many days to finish the identity checks. They keep selling until then; after it, their products are hidden until they finish and are approved again.',
+            kind: 'number',
+            unit: 'days',
+            min: 1,
+            max: 180,
+            step: 1,
+            integer: true,
           },
         ],
       },
@@ -652,6 +681,8 @@ export const FIELD_FALLBACKS: Partial<
   flutterwave_payouts_enabled: false,
   fx_markup_percent: '2',
   base_currency: 'USD',
+  vendor_verification_mode: 'qoreid',
+  manual_verification_grace_days: '30',
   // Token rewards — defaults mirror the backend schema (which in turn
   // preserves the amounts registration used to hardcode).
   max_quote_vendors_per_design: '5',

@@ -21,6 +21,7 @@ import {
 } from '@/pattern/settings/lib/settings-form';
 import { SettingsSkeleton } from '@/pattern/settings/organisms/settings-skeleton';
 import { readApiError } from '@/redux/services/types';
+import { verificationModeSwitchWarning } from '@/lib/manual-verification';
 import {
   useGetPlatformSettingsQuery,
   useUpdatePlatformSettingsMutation,
@@ -148,6 +149,18 @@ const SettingsPageContent = () => {
     const saved = changedKeys(draft, settings, tabKeys);
     const payload = buildPayload(draft, settings, tabKeys);
     if (!Object.keys(payload).length) return;
+
+    // Switching verification mode moves vendors, not just a number: back to
+    // QoreID starts every hand-approved vendor's deadline (and notifies
+    // them), so it is confirmed with what it will do.
+    if (payload.vendor_verification_mode !== undefined) {
+      const warning = verificationModeSwitchWarning(
+        settings.vendor_verification_mode,
+        payload.vendor_verification_mode,
+        draft.manual_verification_grace_days
+      );
+      if (warning && !window.confirm(warning)) return;
+    }
 
     try {
       const result = await updateSettings(payload).unwrap();

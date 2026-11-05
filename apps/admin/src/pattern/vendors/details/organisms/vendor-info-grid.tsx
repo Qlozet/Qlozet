@@ -24,6 +24,9 @@ import {
   VerificationDecisionModal,
   type VerificationDecision,
 } from './verification-decision-modal';
+import { readManualSubmission } from '@/lib/manual-verification';
+import { ManualVerificationPanel } from '../molecules/manual-verification-panel';
+import { VerificationPills } from '../../molecules/verification-pills';
 
 interface VendorInfoGridProps {
   vendor?: Business;
@@ -205,12 +208,23 @@ export const VendorInfoGrid = ({
           businessId,
           vendorName,
           decision,
+          manual: manualSubmission
+            ? {
+                submission: manualSubmission,
+                businessName: str(v.business_name) ?? vendorName,
+                ownerName,
+              }
+            : undefined,
         })
       : undefined;
   const logoUrl =
     str(v.business_logo_svg_url) ?? str(v.business_logo_url) ?? str(v.logo);
   const vendorName = getVendorName(vendor ?? ({} as Business));
   const businessId = str(v._id);
+  const ownerName = str(owner.full_name) ?? str(createdBy.name);
+  // Verified by hand while QoreID was unavailable: the provider cards would
+  // only read "Not checked", so the reviewer's own checklist takes their place.
+  const manualSubmission = readManualSubmission(vendor);
 
   return (
     <div className="space-y-5">
@@ -224,6 +238,7 @@ export const VendorInfoGrid = ({
             <span className="text-sm text-gray-500 dark:text-gray-400">
               Joined {formatJoined(vendor?.createdAt)}
             </span>
+            <VerificationPills vendor={vendor} />
           </div>
           <div className="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-200">
             <span className="font-semibold">{rating ?? '—'}</span>
@@ -328,6 +343,14 @@ export const VendorInfoGrid = ({
         </div>
       </div>
 
+      {manualSubmission && (
+        <ManualVerificationPanel
+          submission={manualSubmission}
+          businessName={str(v.business_name) ?? vendorName}
+          ownerName={ownerName}
+        />
+      )}
+
       {/* Info card grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <VendorInfoCard
@@ -400,57 +423,61 @@ export const VendorInfoGrid = ({
           label="Achieved custom orders / day"
           value={formatCount(num(v.custom_orders_per_day))}
         />
-        <VendorInfoCard
-          label="ID Check"
-          value={
-            idVerified
-              ? `Verified · ${identityCheck?.verified_name ?? 'vNIN'}${identityCheck?.masked_id ? ` (${identityCheck.masked_id})` : ''}${matchNote(identityCheck?.match)}`
-              : identityCheck?.status === 'failed'
-                ? 'Failed — name mismatch'
-                : 'Unverified'
-          }
-          valueClassName={
-            idVerified
-              ? matchClass(identityCheck?.match) ||
-                'text-[#0F973D] dark:text-green-400'
-              : 'text-destructive'
-          }
-        />
-        <VendorInfoCard
-          label="Payout Account Check"
-          value={
-            bankCheck?.status === 'verified'
-              ? `Matched · ${bankCheck?.account_name ?? 'account holder'}${matchNote(bankCheck?.name_match ?? bankCheck?.match)}`
-              : bankCheck?.status === 'failed'
-                ? 'Failed — name mismatch'
-                : 'Not checked'
-          }
-          valueClassName={
-            bankCheck?.status === 'verified'
-              ? matchClass(bankCheck?.name_match ?? bankCheck?.match) ||
-                'text-[#0F973D] dark:text-green-400'
-              : bankCheck?.status === 'failed'
-                ? 'text-destructive'
-                : undefined
-          }
-        />
-        <VendorInfoCard
-          label="CAC Registry"
-          value={
-            cacCheck?.status === 'verified'
-              ? `${str(cacCheck?.company_name) ?? 'Confirmed'}${formatRcNumber(cacCheck?.rc_number)}`
-              : cacCheck?.status === 'failed'
-                ? 'Not found in registry'
-                : 'Not checked'
-          }
-          valueClassName={
-            cacCheck?.status === 'verified'
-              ? 'text-[#0F973D] dark:text-green-400'
-              : cacCheck?.status === 'failed'
-                ? 'text-destructive'
-                : undefined
-          }
-        />
+        {!manualSubmission && (
+          <>
+            <VendorInfoCard
+              label="ID Check"
+              value={
+                idVerified
+                  ? `Verified · ${identityCheck?.verified_name ?? 'vNIN'}${identityCheck?.masked_id ? ` (${identityCheck.masked_id})` : ''}${matchNote(identityCheck?.match)}`
+                  : identityCheck?.status === 'failed'
+                    ? 'Failed — name mismatch'
+                    : 'Unverified'
+              }
+              valueClassName={
+                idVerified
+                  ? matchClass(identityCheck?.match) ||
+                    'text-[#0F973D] dark:text-green-400'
+                  : 'text-destructive'
+              }
+            />
+            <VendorInfoCard
+              label="Payout Account Check"
+              value={
+                bankCheck?.status === 'verified'
+                  ? `Matched · ${bankCheck?.account_name ?? 'account holder'}${matchNote(bankCheck?.name_match ?? bankCheck?.match)}`
+                  : bankCheck?.status === 'failed'
+                    ? 'Failed — name mismatch'
+                    : 'Not checked'
+              }
+              valueClassName={
+                bankCheck?.status === 'verified'
+                  ? matchClass(bankCheck?.name_match ?? bankCheck?.match) ||
+                    'text-[#0F973D] dark:text-green-400'
+                  : bankCheck?.status === 'failed'
+                    ? 'text-destructive'
+                    : undefined
+              }
+            />
+            <VendorInfoCard
+              label="CAC Registry"
+              value={
+                cacCheck?.status === 'verified'
+                  ? `${str(cacCheck?.company_name) ?? 'Confirmed'}${formatRcNumber(cacCheck?.rc_number)}`
+                  : cacCheck?.status === 'failed'
+                    ? 'Not found in registry'
+                    : 'Not checked'
+              }
+              valueClassName={
+                cacCheck?.status === 'verified'
+                  ? 'text-[#0F973D] dark:text-green-400'
+                  : cacCheck?.status === 'failed'
+                    ? 'text-destructive'
+                    : undefined
+              }
+            />
+          </>
+        )}
         {/* The value is the affordance: "View document" when a file is on
             record, "Not uploaded" otherwise. Both open the same modal — with a
             file it previews and downloads, without one it opens on the

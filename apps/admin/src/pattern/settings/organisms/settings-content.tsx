@@ -21,6 +21,7 @@ import { SettingsSection } from '../molecules/settings-section';
 import { SettingsTabActions } from '../molecules/settings-tab-actions';
 import { TokenPriceCard } from './token-price-card';
 import { ListingReviewNotice } from '../molecules/listing-review-notice';
+import { VendorVerificationNotice } from '../molecules/vendor-verification-notice';
 import type { TokenPrice } from '@/redux/services/settings/settings.api-slice';
 
 interface SettingsContentProps {
@@ -87,6 +88,12 @@ export const SettingsContent = ({
       {tab.sections.some((s) => s.id === 'listing-review') && (
         <ListingReviewNotice
           mode={String(draft.listing_review_mode ?? 'review_first')}
+        />
+      )}
+
+      {tab.sections.some((s) => s.id === 'vendor-verification') && (
+        <VendorVerificationNotice
+          mode={String(draft.vendor_verification_mode ?? 'qoreid')}
         />
       )}
 

@@ -42,6 +42,21 @@ export interface Business {
   created_by?: { id?: string; name?: string; email?: string };
   status?: BusinessStatus;
   isVerified?: boolean;
+  /** Where verification stands: not_started … awaiting_review, approved, etc. */
+  verification_state?: string;
+  verification_message?: string | null;
+  /**
+   * How the vendor was verified: 'qoreid' through the hosted identity checks,
+   * 'manual' by the Qlozet team while QoreID was unavailable. Null before
+   * they submit; older backends omit it.
+   */
+  verification_method?: 'qoreid' | 'manual' | null;
+  /**
+   * Manually approved vendors only: when they must have finished the QoreID
+   * checks. Set once the platform switches back to QoreID; past it, a daily
+   * job pauses them until they finish and are approved again.
+   */
+  full_verification_due_at?: string | null;
   // Aggregate metrics surfaced in the Vendors table (optional — present only
   // when the backend joins them in).
   total_products?: number;
@@ -151,12 +166,29 @@ export const businessesApiSlice = baseAPI.injectEndpoints({
         decision: 'approved' | 'action_required' | 'rejected';
         /** Required for anything but approval — the vendor sees only this. */
         message?: string;
+        /**
+         * Manual submissions only: the reviewer's ticks, saved on any
+         * decision. Approval is refused (400) unless all three are true.
+         */
+        manual_checks?: {
+          cac_register: boolean;
+          payout_name: boolean;
+          owner_call: boolean;
+        };
+        /** Manual submissions only: what the reviewer found, for the record. */
+        manual_note?: string;
       }
     >({
-      query: ({ businessId, decision, message }) => ({
+      query: ({
+        businessId,
+        decision,
+        message,
+        manual_checks,
+        manual_note,
+      }) => ({
         url: `/admin/${businessId}/verification-decision`,
         method: 'POST',
-        body: { decision, message },
+        body: { decision, message, manual_checks, manual_note },
       }),
       invalidatesTags: ['Business', 'Businesses'],
     }),
