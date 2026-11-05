@@ -36,7 +36,7 @@ const toastIcons: SonnerToasterProps['icons'] = {
 const toastClassNames: SonnerToasterProps['toastOptions'] = {
   classNames: {
     toast:
-      '!border !rounded-[8px] !shadow-none !py-[8px] !pl-[16px] !pr-[4px] !space-2 !items-center !justify-start !min-w-[490px] !w-fit !max-w-[520px]',
+      '!border !rounded-[8px] !shadow-none !py-[8px] !pl-[16px] !pr-[4px] !space-2 !items-center !justify-start !w-full !min-w-0 !max-w-full sm:!w-fit sm:!min-w-[490px] sm:!max-w-[520px]',
     info: '!bg-[#e8f0fe] !border-[#1e6ef4]',
     success: '!bg-[#e4fdf1] !border-[#149e5e]',
     warning: '!bg-[#fdf2eb] !border-[#ee6002]',

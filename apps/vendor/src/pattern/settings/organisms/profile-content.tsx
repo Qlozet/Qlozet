@@ -26,8 +26,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { readApiError } from '@/redux/services/types';
 
-const SHOP_URL =
-  process.env.NEXT_PUBLIC_SHOP_URL ?? 'https://qlozet-shop.vercel.app';
+const SHOP_URL = process.env.NEXT_PUBLIC_SHOP_URL || 'https://shop.qlozet.app';
 
 /**
  * Only the fields this save actually changed.
