@@ -15,6 +15,7 @@ import { AUTH_ROUTES, APP_ROUTES } from '@/lib/routes';
 import { AuthLayout } from '../organisms/auth-layout';
 import {
   useRegisterMutation,
+  useSignInMutation,
   useVerifyEmailMutation,
   useResendVerificationEmailMutation,
 } from '@/redux/services/auth/auth.api-slice';
@@ -34,6 +35,9 @@ import { useCountdown } from '@/lib/hooks/useCountdown';
 import { Progress } from '@/components/ui/progress';
 import { readApiError } from '@/redux/services/types';
 import { isValidPhone } from '@/lib/phone-number';
+import { useAppDispatch } from '@/redux/store';
+import { setCredentials } from '@/redux/slices/auth-slice';
+import { storeSessionTokens } from '@/lib/session/tokens';
 
 // ─── Types ───────────────────────────────────────────────────────────
 type SignupStep = 'details' | 'password' | 'otp';
@@ -179,6 +183,8 @@ export const SignupTemplate = () => {
 
   // API mutations
   const [register, { isLoading: isRegistering }] = useRegisterMutation();
+  const [signIn] = useSignInMutation();
+  const dispatch = useAppDispatch();
   const [verifyEmail, { isLoading: isVerifying }] = useVerifyEmailMutation();
   const [resendVerificationEmail, { isLoading: isResending }] =
     useResendVerificationEmailMutation();
@@ -256,19 +262,41 @@ export const SignupTemplate = () => {
         password: data.password,
       }).unwrap();
 
-      // Already shops on Qlozet with this email and password: the email is
-      // proven, so the store is ready and they're signed in. No code.
-      const linkedToken = res?.data?.linked_shop_account
-        ? res?.data?.token?.access_token
-        : null;
-      if (linkedToken) {
-        saveCookie({
-          key: SESSION_COOKIE_KEY,
-          value: linkedToken,
-          isObject: false,
-        });
+      // The store is ready and the email already proven: they already shop
+      // on Qlozet with this email, or already have a store login (e.g. on
+      // someone else's team). Sign them in like the sign-in page does, so
+      // every store on the login is in the store menu. No code.
+      const ready =
+        res?.data?.linked_shop_account || res?.data?.added_to_existing_login;
+      if (ready) {
+        try {
+          const session = await signIn({
+            email: data.personalEmail,
+            password: data.password,
+          }).unwrap();
+          storeSessionTokens(
+            session.data.token.access_token,
+            session.data.token.refresh_token
+          );
+          dispatch(
+            setCredentials({
+              businesses: session.data.businesses ?? [],
+              activeBusiness: session.data.active_business ?? null,
+              mustChangePassword: session.data.must_change_password ?? false,
+            })
+          );
+        } catch {
+          // The store exists; fall back to the token sign-up returned.
+          saveCookie({
+            key: SESSION_COOKIE_KEY,
+            value: res?.data?.token?.access_token,
+            isObject: false,
+          });
+        }
         toast.success(
-          'Your store is ready. Use the same email and password for the shop and your store.'
+          res?.data?.added_to_existing_login
+            ? 'Your store is ready. Switch between your stores from the store menu.'
+            : 'Your store is ready. Use the same email and password for the shop and your store.'
         );
         push(APP_ROUTES.dashboard);
         return;
@@ -297,7 +325,8 @@ export const SignupTemplate = () => {
       // put the message on the field, instead of a toast on the password step.
       const field = /phone/i.test(message)
         ? 'personalPhone'
-        : /email/i.test(message) && !/shop password/i.test(message)
+        : /email/i.test(message) &&
+            !/shop password|use that password/i.test(message)
           ? 'personalEmail'
           : /business/i.test(message)
             ? 'businessName'
@@ -534,8 +563,8 @@ export const SignupTemplate = () => {
               />
 
               <p className="text-xs text-muted-foreground">
-                Already shop on Qlozet with this email? Use the same password
-                and your store is ready straight away.
+                Already on Qlozet with this email, shopping or on a store team?
+                Use the same password and your store is ready straight away.
               </p>
 
               <div className="pt-2">
