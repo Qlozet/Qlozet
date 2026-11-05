@@ -117,6 +117,11 @@ export const MEASUREMENT_METHOD: Record<
     tone: 'warn',
     hint: 'Started as an estimate from height and weight; the customer corrected some values by hand.',
   },
+  photo: {
+    label: 'From a measurement book',
+    tone: 'good',
+    hint: 'Read from a photo of the customer’s tailor measurement book and checked by them. Some tailors write garment sizes (with ease added) rather than body sizes, so confirm the key ones.',
+  },
   scan: {
     label: 'From a body scan',
     tone: 'neutral',
