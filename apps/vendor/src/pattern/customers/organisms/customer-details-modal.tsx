@@ -35,7 +35,6 @@ import {
   type VendorCustomer,
 } from '@/redux/services/customers/customers.api-slice';
 import {
-  getCustomerIdentifier,
   getCustomerName,
   getCustomerStatus,
   formatCount,
@@ -412,9 +411,11 @@ export const CustomerDetailsModal = create<CustomerDetailsModalProps>(
                           {getCustomerStatus(customer).label}
                         </Badge>
                       </div>
-                      <p className="text-sm text-grey3 dark:text-gray-400">
-                        @{getCustomerIdentifier(customer)}
-                      </p>
+                      {customer.username && (
+                        <p className="text-sm text-grey3 dark:text-gray-400">
+                          @{customer.username}
+                        </p>
+                      )}
                       <div className="mt-2 flex flex-wrap items-center gap-1.5">
                         {customer.email && (
                           <ContactChip

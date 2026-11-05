@@ -1980,7 +1980,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               {/* ── Delivery Address ── */}
               {addressParts.length > 0 && (
                 <section className="space-y-3">
-                  <Card title="Delivery address">
+                  <Card title="Delivering to">
                     <div className="px-5 py-4">
                       {typeof addr.full_name === 'string' && addr.full_name && (
                         <p className="text-sm font-medium text-[#333333] dark:text-white">
@@ -1995,6 +1995,10 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                           {addressPhone}
                         </p>
                       )}
+                      <p className="mt-2 text-xs text-grey3 dark:text-gray-400">
+                        Qlozet&apos;s courier has the full address and delivers
+                        it. Message the customer in the order chat.
+                      </p>
                     </div>
                   </Card>
                 </section>
