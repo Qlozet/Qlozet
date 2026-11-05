@@ -577,6 +577,17 @@ export const SignupTemplate = () => {
                 >
                   Create Account
                 </SubmitButton>
+                <p className="mt-3 text-center text-xs text-muted-foreground">
+                  You accept the vendor agreement before your store can sell.{' '}
+                  <a
+                    href="/legal/vendor-agreement"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-primary underline underline-offset-2 dark:text-white"
+                  >
+                    Read the vendor agreement
+                  </a>
+                </p>
               </div>
             </div>
           )}

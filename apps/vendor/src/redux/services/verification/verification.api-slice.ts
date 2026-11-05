@@ -41,7 +41,30 @@ export type VerificationStep =
   | 'action_required'
   | 'rejected';
 
+/** 'qoreid' runs the hosted checks; 'manual' is reviewed by the Qlozet team. */
+export type VerificationMode = 'qoreid' | 'manual';
+
 export interface VerificationState {
+  /** How verification works right now — an admin setting. */
+  mode: VerificationMode;
+  /** How this vendor was verified, once they have been. */
+  method: VerificationMode | null;
+  /** Manually approved vendors once QoreID is back: finish the checks by
+   *  this date or the store is paused. */
+  full_verification_due_at: string | null;
+  /** Days a manually approved vendor gets to finish once QoreID is back. */
+  grace_days: number;
+  /** What was sent for manual review. */
+  manual: { rc_number: string | null; submitted_at: string | null } | null;
+  /** The linked payout account (Settings → Payout) the manual review checks. */
+  payout_account: {
+    bank_name: string | null;
+    account_name: string | null;
+    last4: string;
+  } | null;
+  /** Agreement accepted, payout account linked and the state allows it.
+   *  The CAC number is checked on submit. */
+  can_submit_manual: boolean;
   configured: boolean;
   /** False until QOREID_WORKFLOW_ID is set; the older cards are used then. */
   workflow_available: boolean;
@@ -128,6 +151,20 @@ export const verificationApiSlice = verificationAPI.injectEndpoints({
       invalidatesTags: ['Verification'],
     }),
 
+    /** Manual mode: send the CAC number (and the linked payout account,
+     *  read server-side) to the Qlozet team to check by hand. */
+    submitManualVerification: builder.mutation<
+      ApiResponse<{ message: string; verification_state: VerificationStep }>,
+      { rc_number: string }
+    >({
+      query: (body) => ({
+        url: '/verification/manual',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Verification'],
+    }),
+
     verifyVnin: builder.mutation<
       ApiResponse<{ verified: boolean; identity: IdentityVerification }>,
       { vnin: string; firstname?: string; lastname?: string }
@@ -195,6 +232,7 @@ export const {
   useStartVerificationSessionMutation,
   useAcceptServiceAgreementMutation,
   useSubmitForReviewMutation,
+  useSubmitManualVerificationMutation,
   useFileCacDocumentMutation,
   useVerifyBankMutation,
   useVerifyPayoutBankMutation,
