@@ -6,11 +6,14 @@
 // the agreement and a review; the Verified badge comes from the admin's
 // approval, never from a single check. Each card collapses into a summary
 // once its check passes.
+//
+// In manual mode (an admin setting, for while QoreID is unavailable) the
+// QoreID cards give way to a form the Qlozet team checks by hand — see
+// manual-verification.tsx.
 
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import {
-  BadgeCheck,
   Building2,
   CheckCircle2,
   ListChecks,
@@ -19,21 +22,28 @@ import {
   Loader2,
   ShieldCheck,
   Smartphone,
-  XCircle,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Markdown } from '@/components/ui/markdown';
 import { QoreIdSessionCard } from './qoreid-session-card';
+import { Card, SummaryRow } from './verification-card';
+import {
+  AgreementUpdatedNotice,
+  ServiceAgreementPanel,
+} from './service-agreement-panel';
+import {
+  FinishVerificationCard,
+  ManualSubmissionSummary,
+  ManualVerificationCard,
+} from './manual-verification';
+import { showsManualForm } from './verification-status';
 import Link from 'next/link';
 import {
   useGetVerificationQuery,
   useVerifyBankMutation,
   useVerifyCacMutation,
   useFileCacDocumentMutation,
-  useGetServiceAgreementQuery,
-  useAcceptServiceAgreementMutation,
   useSubmitForReviewMutation,
   useVerifyPayoutBankMutation,
   useVerifyVninMutation,
@@ -116,64 +126,6 @@ const errText = (err: unknown, fallback: string) => {
   return (Array.isArray(msg) ? msg[0] : msg) || fallback;
 };
 
-const Card = ({
-  icon: Icon,
-  title,
-  tag,
-  done,
-  failed,
-  children,
-}: {
-  icon: typeof ShieldCheck;
-  title: string;
-  tag: string;
-  done: boolean;
-  failed?: boolean;
-  children: React.ReactNode;
-}) => (
-  <div className="overflow-hidden rounded-xl border border-border bg-white custom-card-shadow dark:bg-card">
-    <div className="flex items-center justify-between border-b border-border/60 px-5 py-4">
-      <div className="flex items-center gap-3">
-        <span className="flex size-9 items-center justify-center rounded-xl bg-brown3/10 text-brown3">
-          <Icon className="size-[18px]" />
-        </span>
-        <div>
-          <p className="text-sm font-bold text-grey-black dark:text-white">
-            {title}
-          </p>
-          <p className="text-[11px] text-grey2 dark:text-gray-400">{tag}</p>
-        </div>
-      </div>
-      {done ? (
-        <Badge className="flex items-center gap-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-50 dark:bg-emerald-950 dark:text-emerald-300">
-          <BadgeCheck className="size-3" /> Verified
-        </Badge>
-      ) : failed ? (
-        <Badge className="flex items-center gap-1 bg-red-50 text-red-600 hover:bg-red-50 dark:bg-red-950 dark:text-red-300">
-          <XCircle className="size-3" /> Failed — try again
-        </Badge>
-      ) : null}
-    </div>
-    <div className="px-5 py-5">{children}</div>
-  </div>
-);
-
-const SummaryRow = ({
-  label,
-  value,
-}: {
-  label: string;
-  value?: string | null;
-}) =>
-  value ? (
-    <div className="flex items-center justify-between text-sm">
-      <span className="text-grey2 dark:text-gray-400">{label}</span>
-      <span className="font-medium text-grey-black dark:text-white">
-        {value}
-      </span>
-    </div>
-  ) : null;
-
 export const VerificationTemplate = () => {
   const { data, isLoading } = useGetVerificationQuery();
   const state = data?.data;
@@ -188,6 +140,13 @@ export const VerificationTemplate = () => {
   const useWorkflow = Boolean(state?.workflow_available);
   const attemptsLeft =
     (state?.attempts_allowed ?? 1) - (state?.attempts_used ?? 0);
+  // Manual mode with nothing sent yet: the form replaces every QoreID card.
+  const manualForm = showsManualForm(state);
+  // Sent by hand, and with the team or decided: show what was sent.
+  const manualRecord =
+    state?.method === 'manual' &&
+    (step === 'awaiting_review' || step === 'approved' || step === 'rejected');
+  const manualApproved = manualRecord && step === 'approved';
 
   const submit = async () => {
     try {
@@ -200,16 +159,6 @@ export const VerificationTemplate = () => {
     }
   };
 
-  const accept = async () => {
-    if (!agreement?.required_version) return;
-    try {
-      await acceptAgreement({ version: agreement.required_version }).unwrap();
-      toast.success('Agreement accepted');
-    } catch (err) {
-      toast.error(errText(err, 'Could not record your acceptance.'));
-    }
-  };
-
   const [verifyVnin, vninState] = useVerifyVninMutation();
   const [verifyBank, bankState] = useVerifyBankMutation();
   const [verifyPayoutBank, payoutBankState] = useVerifyPayoutBankMutation();
@@ -219,9 +168,6 @@ export const VerificationTemplate = () => {
   const payout = payoutRes?.data;
   const [verifyCac, cacState] = useVerifyCacMutation();
   const [uploadDocument, uploadState] = useUploadDocumentMutation();
-  const [acceptAgreement, agreementState] = useAcceptServiceAgreementMutation();
-  const { data: agreementDoc, isLoading: isLoadingAgreement } =
-    useGetServiceAgreementQuery();
   const [submitForReview, submitState] = useSubmitForReviewMutation();
   const [fileCacDocument, fileState] = useFileCacDocumentMutation();
   const cacFileRef = useRef<HTMLInputElement>(null);
@@ -355,16 +301,24 @@ export const VerificationTemplate = () => {
             Get Verified
           </h1>
           <p className="mt-1 text-sm text-grey2 dark:text-gray-400">
-            Verify once, sell with trust — the checks run instantly and we never
-            store your identity numbers, only the result.
+            {manualForm
+              ? 'Send your details to the Qlozet team. We check them by hand and call you before approving your store.'
+              : 'Verify once, sell with trust — the checks run instantly and we never store your identity numbers, only the result.'}
           </p>
         </div>
         {step === 'approved' && (
           <Badge className="flex shrink-0 items-center gap-1.5 bg-emerald-50 px-3 py-1.5 text-emerald-700 hover:bg-emerald-50 dark:bg-emerald-950 dark:text-emerald-300">
-            <ShieldCheck className="size-3.5" /> Verified vendor
+            <ShieldCheck className="size-3.5" />{' '}
+            {manualApproved ? 'Approved by Qlozet' : 'Verified vendor'}
           </Badge>
         )}
       </div>
+
+      {/* A vendor who signed an older version has to sign again, and the
+          box to do it can sit far down the page — say so up top. */}
+      {agreement?.outdated && step !== 'awaiting_review' && (
+        <AgreementUpdatedNotice version={agreement.required_version} />
+      )}
 
       {/* Before you start.
           The failure this prevents: a vendor begins unprepared, fails a check
@@ -374,7 +328,7 @@ export const VerificationTemplate = () => {
           no fault of the vendor's, and holding identity numbers we have no
           use for is the thing this module exists to avoid. Tell them what to
           bring; hold none of it. */}
-      {!allChecksPassed && (
+      {!allChecksPassed && !manualForm && !manualRecord && (
         <div className="rounded-xl border border-border bg-[#F8F9FA] p-4 dark:bg-muted/40 sm:p-5">
           <div className="flex items-center gap-2.5">
             <ListChecks className="size-4 shrink-0 text-brown3" />
@@ -448,7 +402,16 @@ export const VerificationTemplate = () => {
         </div>
       )}
 
-      {useWorkflow ? (
+      {manualForm && state ? (
+        <ManualVerificationCard state={state} />
+      ) : manualRecord && state ? (
+        <>
+          <ManualSubmissionSummary state={state} />
+          {manualApproved && (
+            <FinishVerificationCard state={state} attemptsLeft={attemptsLeft} />
+          )}
+        </>
+      ) : useWorkflow ? (
         <Card
           icon={ScanFace}
           title="Verify your business"
@@ -735,136 +698,81 @@ export const VerificationTemplate = () => {
           agreement and submits, nobody is looking at their store. Before this
           card existed a vendor could pass every check and then have nowhere
           to go — the flow simply stopped. */}
-      <Card
-        icon={ShieldCheck}
-        title="Send your store for review"
-        tag={
-          step === 'awaiting_review'
-            ? 'Submitted · we are reviewing it'
-            : 'Required · the last step'
-        }
-        done={step === 'approved' || step === 'awaiting_review'}
-        failed={step === 'rejected'}
-      >
-        {step === 'approved' ? (
-          <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
-            Your store is approved. Your products are visible to customers and
-            you can take orders.
-          </p>
-        ) : step === 'awaiting_review' ? (
-          <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
-            We are checking your details and your products. Nothing is needed
-            from you — keep adding products while you wait.
-          </p>
-        ) : (
-          <div className="space-y-4">
-            {/* The vendor's own words back to them, verbatim: this is the
-                only thing they are told about what went wrong. */}
-            {state?.verification_message && (
-              <div className="rounded-lg border border-amber-300/70 bg-amber-50 p-3 dark:border-amber-500/30 dark:bg-amber-950/30">
-                <p className="text-xs font-medium text-amber-900 dark:text-amber-200">
-                  {state.verification_message}
-                </p>
-              </div>
-            )}
-
-            {/* The text itself, in the card.
-                A tick beside a link is weak evidence that anyone was shown
-                the terms, and that link pointed at a page which did not
-                exist. Rendering it here means the vendor accepts the exact
-                words their record will name, and removes a tab-switch from
-                the middle of the flow. */}
-            <div className="rounded-lg border border-border bg-[#F8F9FA] dark:bg-muted/40">
-              <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-2.5">
-                <span className="text-xs font-semibold text-grey-black dark:text-white">
-                  Qlozet Vendor Agreement
-                </span>
-                <span className="shrink-0 text-[11px] text-grey2 dark:text-gray-400">
-                  Version {agreement?.required_version}
-                </span>
-              </div>
-              <div className="max-h-72 overflow-y-auto px-4 py-3">
-                {isLoadingAgreement ? (
-                  <div className="space-y-2">
-                    <Skeleton className="h-3 w-3/4 rounded" />
-                    <Skeleton className="h-3 w-full rounded" />
-                    <Skeleton className="h-3 w-5/6 rounded" />
-                  </div>
-                ) : agreementDoc?.data?.body ? (
-                  <Markdown
-                    content={agreementDoc.data.body}
-                    className="text-xs leading-relaxed"
-                  />
-                ) : (
-                  <p className="text-xs text-grey2 dark:text-gray-400">
-                    The agreement could not be loaded. Reload the page before
-                    accepting.
-                  </p>
-                )}
-              </div>
+      {!manualForm && !manualApproved && (
+        <Card
+          icon={ShieldCheck}
+          title="Send your store for review"
+          tag={
+            step === 'awaiting_review'
+              ? 'Submitted · we are reviewing it'
+              : 'Required · the last step'
+          }
+          done={step === 'approved' || step === 'awaiting_review'}
+          failed={step === 'rejected'}
+        >
+          {step === 'approved' ? (
+            <div className="space-y-4">
+              <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
+                Your store is approved. Your products are visible to customers
+                and you can take orders.
+              </p>
+              {!agreement?.accepted && (
+                <ServiceAgreementPanel agreement={agreement} />
+              )}
             </div>
+          ) : step === 'awaiting_review' ? (
+            <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
+              We are checking your details and your products. Nothing is needed
+              from you — keep adding products while you wait.
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {/* The vendor's own words back to them, verbatim: this is the
+                only thing they are told about what went wrong. */}
+              {state?.verification_message && (
+                <div className="rounded-lg border border-amber-300/70 bg-amber-50 p-3 dark:border-amber-500/30 dark:bg-amber-950/30">
+                  <p className="text-xs font-medium text-amber-900 dark:text-amber-200">
+                    {state.verification_message}
+                  </p>
+                </div>
+              )}
 
-            <label className="flex cursor-pointer items-start gap-3">
-              <input
-                type="checkbox"
-                className="mt-0.5 size-4 shrink-0 cursor-pointer accent-primary"
-                checked={Boolean(agreement?.accepted)}
-                // Acceptance is a record, not a toggle — unticking it would
-                // have to mean withdrawing consent, which is not what the
-                // backend stores or what the vendor means by clicking twice.
-                disabled={
-                  Boolean(agreement?.accepted) ||
-                  agreementState.isLoading ||
-                  // Nothing to accept until the words are on screen.
-                  !agreementDoc?.data?.body
-                }
-                onChange={(e) => {
-                  if (e.target.checked) accept();
-                }}
-              />
-              <span className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
-                I have read and accept the Qlozet Vendor Agreement above
-                {agreement?.outdated && (
-                  <span className="ml-1 font-medium text-amber-600 dark:text-amber-400">
-                    (updated since you last accepted — please read it again)
+              <ServiceAgreementPanel agreement={agreement} />
+
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  className={buttonCls}
+                  disabled={
+                    !agreement?.accepted ||
+                    step !== 'provider_complete' ||
+                    submitState.isLoading
+                  }
+                  onClick={submit}
+                >
+                  {submitState.isLoading && (
+                    <Loader2 className="size-4 animate-spin" />
+                  )}
+                  {submitState.isLoading ? 'Submitting…' : 'Submit for review'}
+                </button>
+
+                {/* Say which precondition is missing rather than leaving a
+                  disabled button with no explanation. */}
+                {step !== 'provider_complete' && (
+                  <span className="text-xs text-grey2 dark:text-gray-400">
+                    Finish the checks above first.
                   </span>
                 )}
-              </span>
-            </label>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                className={buttonCls}
-                disabled={
-                  !agreement?.accepted ||
-                  step !== 'provider_complete' ||
-                  submitState.isLoading
-                }
-                onClick={submit}
-              >
-                {submitState.isLoading && (
-                  <Loader2 className="size-4 animate-spin" />
+                {step === 'provider_complete' && !agreement?.accepted && (
+                  <span className="text-xs text-grey2 dark:text-gray-400">
+                    Accept the agreement to continue.
+                  </span>
                 )}
-                {submitState.isLoading ? 'Submitting…' : 'Submit for review'}
-              </button>
-
-              {/* Say which precondition is missing rather than leaving a
-                  disabled button with no explanation. */}
-              {step !== 'provider_complete' && (
-                <span className="text-xs text-grey2 dark:text-gray-400">
-                  Finish the checks above first.
-                </span>
-              )}
-              {step === 'provider_complete' && !agreement?.accepted && (
-                <span className="text-xs text-grey2 dark:text-gray-400">
-                  Accept the agreement to continue.
-                </span>
-              )}
+              </div>
             </div>
-          </div>
-        )}
-      </Card>
+          )}
+        </Card>
+      )}
     </div>
   );
 };

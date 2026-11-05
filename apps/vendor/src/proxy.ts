@@ -17,6 +17,7 @@ import { APP_ROUTES, AUTH_ROUTES } from '@/lib/routes';
 const PUBLIC_PREFIXES = [
   '/auth', // sign-in, sign-up, forgot/reset password, verification, etc.
   '/verify', // email verification links: /verify/[userid]
+  '/legal', // the vendor agreement, readable before signing up
 ];
 
 const isPublicRoute = (pathname: string): boolean =>

@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { AlertTriangle, Clock, Info, ShieldCheck } from 'lucide-react';
 import { useGetVerificationQuery } from '@/redux/services/verification/verification.api-slice';
 import { summariseVerification } from './verification-status';
+import { useAppSelector } from '@/redux/store';
+import { selectActiveBusiness } from '@/redux/slices/auth-slice';
 
 const TONE = {
   warning: {
@@ -37,7 +39,15 @@ const TONE = {
  * support ticket. Renders nothing once they are approved and trading.
  */
 export const VerificationBanner = () => {
-  const { data } = useGetVerificationQuery();
+  // Verification is the owner's to finish, and only they may read it: asking
+  // for a team member drew an "Access denied" toast on every dashboard visit.
+  const activeBusiness = useAppSelector(selectActiveBusiness);
+  const isOwner = activeBusiness
+    ? activeBusiness.is_owner || activeBusiness.role?.toLowerCase() === 'owner'
+    : undefined;
+  const { data } = useGetVerificationQuery(undefined, {
+    skip: isOwner === false,
+  });
   const summary = summariseVerification(data?.data);
 
   if (!summary) return null;

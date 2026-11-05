@@ -16,6 +16,36 @@ export interface VerificationSummary {
 
 const GET_VERIFIED = '/verification';
 
+/** "5 December 2026" — for deadlines and submission dates. */
+export function formatLongDate(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
+/** Approved by the Qlozet team by hand, rather than through the QoreID checks. */
+export function isManuallyApproved(
+  state: VerificationState | undefined | null
+): boolean {
+  return state?.method === 'manual' && state?.verification_state === 'approved';
+}
+
+/** Manual mode, and the vendor still has the form to fill in — nothing is
+ *  with the Qlozet team yet. */
+export function showsManualForm(
+  state: VerificationState | undefined | null
+): boolean {
+  if (state?.mode !== 'manual') return false;
+  return !['awaiting_review', 'approved', 'rejected'].includes(
+    state.verification_state ?? 'not_started'
+  );
+}
+
 /**
  * One reading of verification, shared by the dashboard banner and the Get
  * Verified page.
@@ -34,11 +64,39 @@ export function summariseVerification(
     String(state.status).toLowerCase()
   );
 
-  // Nothing to say to a vendor who is already trading.
-  if (canSell && state.verification_state === 'approved') return null;
-
   const step: VerificationStep = state.verification_state ?? 'not_started';
   const agreement = state.service_agreement;
+
+  // Approved by hand while QoreID was unavailable, and now it is back: they
+  // keep selling until the date, and are paused after it.
+  const due = formatLongDate(state.full_verification_due_at);
+  if (isManuallyApproved(state) && due) {
+    return {
+      canSell,
+      tone: 'warning',
+      headline: `Finish verification by ${due}`,
+      body:
+        state.verification_message ||
+        'You can keep selling until then. After that your products are ' +
+          'hidden until you finish the identity checks.',
+      action: { label: 'Finish verification', href: GET_VERIFIED },
+    };
+  }
+
+  // Nothing to say to a vendor who is already trading — unless the agreement
+  // changed under them.
+  if (canSell && step === 'approved') {
+    if (agreement?.outdated) {
+      return {
+        canSell,
+        tone: 'info',
+        headline: 'The vendor agreement has changed',
+        body: 'Read the new version and accept it on your verification page.',
+        action: { label: 'Read the agreement', href: GET_VERIFIED },
+      };
+    }
+    return null;
+  }
 
   if (step === 'rejected') {
     return {
@@ -85,6 +143,21 @@ export function summariseVerification(
         ? 'Submit your store for review and we will take it from there.'
         : 'Accept the vendor service agreement, then submit your store for review.',
       action: { label: 'Finish verification', href: GET_VERIFIED },
+    };
+  }
+
+  // Manual mode: the Qlozet team checks it by hand, so there is no session
+  // to start — just details to send.
+  if (state.mode === 'manual') {
+    return {
+      canSell,
+      tone: 'warning',
+      headline: 'Verify your store',
+      body: canSell
+        ? 'Send your CAC number and payout account to the Qlozet team to keep selling without interruption.'
+        : 'Customers cannot see or order your products until your store is ' +
+          'approved. Send your CAC number and payout account to the Qlozet team.',
+      action: { label: 'Verify my store', href: GET_VERIFIED },
     };
   }
 
