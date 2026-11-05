@@ -98,7 +98,8 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
         { name: 'Collections', link: APP_ROUTES.productsCollections },
         { name: 'Discounts', link: APP_ROUTES.productsDiscounts },
         { name: 'Size Guides', link: APP_ROUTES.productsSizeGuides },
-        { name: 'Videos', link: APP_ROUTES.productsVideos },
+        // Videos hidden for now.
+        // { name: 'Videos', link: APP_ROUTES.productsVideos },
       ],
     },
     {
