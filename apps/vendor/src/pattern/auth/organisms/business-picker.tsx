@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Plus } from 'lucide-react';
 import type { LoginResponseBusiness } from '@/redux/services/auth/auth.api-slice';
 
 interface BusinessPickerProps {
@@ -17,6 +17,8 @@ interface BusinessPickerProps {
   onClose?: () => void;
   /** Offers a way out when there's nothing to go back to (lost access). */
   onSignOut?: () => void;
+  /** Shows "Open a new store" under the list. */
+  onCreate?: () => void;
 }
 
 export const BusinessPicker: React.FC<BusinessPickerProps> = ({
@@ -28,6 +30,7 @@ export const BusinessPicker: React.FC<BusinessPickerProps> = ({
   message = null,
   onClose,
   onSignOut,
+  onCreate,
 }) => {
   return (
     <div
@@ -45,11 +48,13 @@ export const BusinessPicker: React.FC<BusinessPickerProps> = ({
           id="business-picker-title"
           className="text-lg font-semibold text-gray-900 dark:text-foreground font-poppins"
         >
-          Select Business
+          {businesses.length > 1 ? 'Select Business' : 'Your stores'}
         </h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 mb-6">
           {message ||
-            'You belong to multiple businesses. Choose which one to work in:'}
+            (businesses.length > 1
+              ? 'You belong to multiple businesses. Choose which one to work in:'
+              : 'Open a store of your own on this same login.')}
         </p>
 
         <div className="space-y-3">
@@ -102,6 +107,18 @@ export const BusinessPicker: React.FC<BusinessPickerProps> = ({
             </button>
           ))}
         </div>
+
+        {onCreate && (
+          <button
+            type="button"
+            onClick={onCreate}
+            disabled={isLoading}
+            className="mt-3 w-full flex items-center justify-center gap-2 p-3 rounded-lg border border-dashed border-gray-300 dark:border-white/20 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer disabled:opacity-60"
+          >
+            <Plus className="size-4" />
+            Open a new store
+          </button>
+        )}
 
         {(onClose || onSignOut) && (
           <div className="flex items-center justify-end gap-3 mt-6">

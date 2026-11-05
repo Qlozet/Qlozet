@@ -412,6 +412,21 @@ export const authApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Profile'],
     }),
 
+    // Open a store this login owns (from the store menu)
+    newStore: builder.mutation<
+      {
+        message: string;
+        data: { business: { _id: string; business_name: string } };
+      },
+      { business_name: string }
+    >({
+      query: (body) => ({
+        url: '/auth/new-store',
+        method: 'POST',
+        body,
+      }),
+    }),
+
     // Switch Business (multi-business users)
     switchBusiness: builder.mutation<
       SwitchBusinessResponse,
@@ -428,6 +443,7 @@ export const authApiSlice = baseAPI.injectEndpoints({
 
 // Export hooks
 export const {
+  useNewStoreMutation,
   useSignInMutation,
   useLoginMutation,
   useRegisterMutation,

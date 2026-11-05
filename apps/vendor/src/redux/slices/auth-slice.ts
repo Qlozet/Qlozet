@@ -76,6 +76,14 @@ export const authSlice = createSlice({
       state.storePickerReason = null;
     },
 
+    /** A store the person just opened joins the switcher list. */
+    addBusiness: (state, action: PayloadAction<Business>) => {
+      state.businesses = [
+        ...state.businesses.filter((b) => b._id !== action.payload._id),
+        action.payload,
+      ];
+    },
+
     /** Drop a store the person can no longer open from the switcher list. */
     forgetBusiness: (state, action: PayloadAction<string>) => {
       state.businesses = state.businesses.filter(
@@ -107,6 +115,7 @@ export const authSlice = createSlice({
 export const {
   setCredentials,
   setActiveBusiness,
+  addBusiness,
   forgetBusiness,
   openStorePicker,
   closeStorePicker,
