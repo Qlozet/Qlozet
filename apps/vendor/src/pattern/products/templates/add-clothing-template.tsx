@@ -52,6 +52,7 @@ import {
   type CustomComponentItem,
 } from '../organisms/customization-builder';
 import { APP_ROUTES } from '@/lib/routes';
+import { defaultStyleIds } from '@/lib/style-defaults';
 import {
   useCreateClothingMutation,
   useGetProductQuery,
@@ -384,6 +385,7 @@ export default function AddClothingTemplate() {
             imageUrl: imgUrl,
             price: Number(bItem.price || bItem.base_price || 0),
             category: bItem.categories?.[0] || bItem.category || '',
+            isDefault: !!bItem.is_default,
             originalData: bItem,
           };
         });
@@ -718,6 +720,10 @@ export default function AddClothingTemplate() {
       const accessories: any[] = [];
       const fabrics: any[] = [];
 
+      // Each part's default style is saved as the vendor saw it marked.
+      const styleSection = customizationSections.find((s) => s.key === 'style');
+      const styleDefaults = defaultStyleIds(styleSection?.items ?? []);
+
       await Promise.all(
         customizationSections.map(async (sec) => {
           const allItems = [
@@ -726,12 +732,17 @@ export default function AddClothingTemplate() {
           ];
           const fullObjects = await Promise.all(
             allItems.map(async (it) => {
+              const defaultFlag =
+                sec.key === 'style'
+                  ? { is_default: styleDefaults.has(it.id) }
+                  : {};
               if (it.originalData) {
                 let updatedImages = it.originalData.images || [];
                 return {
                   ...it.originalData,
                   price: Math.max(0, Number(it.price) || 0),
                   images: updatedImages,
+                  ...defaultFlag,
                 };
               }
 
@@ -759,6 +770,7 @@ export default function AddClothingTemplate() {
                       price: Math.max(0, Number(it.price) || 0),
                       min_width_cm: 1,
                       type: styleItem.type || 'style',
+                      ...defaultFlag,
                     };
                   }
                   return null;

@@ -9,6 +9,7 @@ import {
   Image as ImageIcon,
   Pencil,
   Plus,
+  Star,
   Trash2,
   X,
 } from 'lucide-react';
@@ -33,6 +34,12 @@ import {
   type AddonVariantResult,
 } from './add-addon-variant-modal';
 import { cn } from '@/lib/utils';
+import {
+  defaultStyleIds,
+  groupByPart,
+  partLabel,
+  partOf,
+} from '@/lib/style-defaults';
 
 export interface CustomComponentItem {
   id: string;
@@ -46,6 +53,8 @@ export interface CustomComponentItem {
   colorHex?: string;
   /** Yards per order for fabric customization */
   yardsPerOrder?: number;
+  /** Style Options: the vendor's chosen default for this style's part. */
+  isDefault?: boolean;
   originalData?: any;
 }
 
@@ -198,15 +207,30 @@ const ComponentTile = ({
   onPriceChange,
   onRemove,
   onEditHotspots,
+  isDefault,
+  onMakeDefault,
 }: {
   item: CustomComponentItem;
   hasHotspots?: boolean;
   onPriceChange: (price: number) => void;
   onRemove: () => void;
   onEditHotspots?: (item: CustomComponentItem) => void;
+  /** Style tiles: this is its part's default (in the listing price). */
+  isDefault?: boolean;
+  onMakeDefault?: () => void;
 }) => (
   <div className="w-24 shrink-0">
-    <div className="group relative aspect-square overflow-hidden rounded-md border border-input bg-accent">
+    <div
+      className={cn(
+        'group relative aspect-square overflow-hidden rounded-md border bg-accent',
+        isDefault ? 'border-primary ring-1 ring-primary' : 'border-input'
+      )}
+    >
+      {isDefault && (
+        <span className="absolute bottom-1 left-1 rounded bg-primary px-1.5 py-0.5 text-[10px] font-medium text-primary-foreground">
+          Default
+        </span>
+      )}
       {item.imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={item.imageUrl} alt="" className="size-full object-cover" />
@@ -228,6 +252,12 @@ const ComponentTile = ({
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          {onMakeDefault && !isDefault && (
+            <DropdownMenuItem onClick={onMakeDefault}>
+              <Star className="size-4" />
+              Make default
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem
             onClick={onRemove}
             className="text-destructive focus:text-destructive"
@@ -296,6 +326,67 @@ const ItemRow = ({
     ))}
   </div>
 );
+
+// ─── Style Groups ──────────────────────────────────────────────────
+// Style tiles grouped by part, each part with one default: the style in the
+// listing photos. Its price is included in the price shoppers see, and an
+// order that leaves the part empty gets it (backend products/style-defaults).
+const StyleGroups = ({
+  items,
+  onAddItem,
+  onRemoveItem,
+  onPriceChange,
+  onMakeDefault,
+}: {
+  items: CustomComponentItem[];
+  onAddItem: () => void;
+  onRemoveItem: (itemId: string) => void;
+  onPriceChange: (itemId: string, price: number) => void;
+  onMakeDefault: (itemId: string) => void;
+}) => {
+  const defaults = defaultStyleIds(items);
+  const groups = groupByPart(items);
+  return (
+    <div className="space-y-3">
+      <div className="flex items-start gap-3 overflow-x-auto pb-2">
+        <AddTile onClick={onAddItem} />
+        {groups.length === 0 && (
+          <p className="max-w-xs self-center text-xs text-muted-foreground">
+            Add the styles shoppers can choose, such as necklines and sleeves.
+          </p>
+        )}
+      </div>
+      {groups.map((g) => (
+        <div key={g.part}>
+          <p className="mb-1.5 text-xs font-medium text-grey-black dark:text-white">
+            {partLabel(g.part)}
+          </p>
+          <div className="flex items-start gap-3 overflow-x-auto pb-2">
+            {g.items.map((item) => (
+              <ComponentTile
+                key={item.id}
+                item={item}
+                hasHotspots
+                isDefault={defaults.has(item.id)}
+                onMakeDefault={() => onMakeDefault(item.id)}
+                onPriceChange={(price) => onPriceChange(item.id, price)}
+                onRemove={() => onRemoveItem(item.id)}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+      {groups.length > 0 && (
+        <p className="rounded-md bg-accent/50 px-3 py-2 text-xs text-muted-foreground">
+          Each part&apos;s default style is included in the price shoppers see,
+          and is what they get if they don&apos;t change it. Make the style in
+          your photos the default (tile menu → Make default). Until you pick
+          one, the cheapest style of the part is used.
+        </p>
+      )}
+    </div>
+  );
+};
 
 // ─── Addon Variant Row ─────────────────────────────────────────────
 // Renders add-on variants as colour swatches or image tiles.
@@ -485,6 +576,17 @@ export const CustomizationBuilder = ({
       })
     );
 
+  // One default per part: marking a style unmarks the others of its part.
+  const makeDefault = (sectionKey: string, itemId: string) =>
+    updateItems(sectionKey, undefined, (items) => {
+      const target = items.find((it) => it.id === itemId);
+      if (!target) return items;
+      const part = partOf(target);
+      return items.map((it) =>
+        partOf(it) === part ? { ...it, isDefault: it.id === itemId } : it
+      );
+    });
+
   const setPrice = (
     sectionKey: string,
     subKey: string | undefined,
@@ -509,6 +611,7 @@ export const CustomizationBuilder = ({
             setPrice(section.key, subKey, itemId, price)
           }
           onRemoveSubGroup={(subKey) => removeSubGroup(section.key, subKey)}
+          onMakeDefault={(itemId) => makeDefault(section.key, itemId)}
         />
       ))}
     </div>
@@ -523,6 +626,7 @@ const Section = ({
   onPriceChange,
   onEditHotspots,
   onRemoveSubGroup,
+  onMakeDefault,
 }: {
   section: CustomSection;
   onAddItem: (sectionKey: string, subKey?: string) => void;
@@ -534,6 +638,7 @@ const Section = ({
   ) => void;
   onEditHotspots?: (item: CustomComponentItem) => void;
   onRemoveSubGroup?: (subKey: string) => void;
+  onMakeDefault?: (itemId: string) => void;
 }) => {
   const [open, setOpen] = useState(true);
   const isAddons = section.key === 'addons';
@@ -571,18 +676,33 @@ const Section = ({
             />
           )}
 
-          {/* Other sections use ItemRow with editable price */}
-          {section.items && !isFabric && (
-            <ItemRow
+          {/* Style Options: grouped by part, one default per part */}
+          {section.items && section.key === 'style' && onMakeDefault && (
+            <StyleGroups
               items={section.items}
-              hasHotspots={section.hasHotspots}
               onAddItem={() => onAddItem(section.key)}
               onRemoveItem={(itemId) => onRemoveItem(undefined, itemId)}
               onPriceChange={(itemId, price) =>
                 onPriceChange(undefined, itemId, price)
               }
+              onMakeDefault={onMakeDefault}
             />
           )}
+
+          {/* Other sections use ItemRow with editable price */}
+          {section.items &&
+            !isFabric &&
+            !(section.key === 'style' && onMakeDefault) && (
+              <ItemRow
+                items={section.items}
+                hasHotspots={section.hasHotspots}
+                onAddItem={() => onAddItem(section.key)}
+                onRemoveItem={(itemId) => onRemoveItem(undefined, itemId)}
+                onPriceChange={(itemId, price) =>
+                  onPriceChange(undefined, itemId, price)
+                }
+              />
+            )}
 
           {/* Add-on sub-groups */}
           {section.subGroups?.map((sg) => (
