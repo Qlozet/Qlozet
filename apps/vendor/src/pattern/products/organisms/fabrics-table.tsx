@@ -76,7 +76,6 @@ export const FabricsTable = ({
       createFabricTableColumns({
         onViewDetails,
         onEdit,
-        onDuplicate,
         onDelete,
         onStatusChange,
         showSelect,
