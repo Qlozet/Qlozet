@@ -2,6 +2,7 @@
 // Only 4 real endpoints exist: getVendorOrders, fulfillOrder, cancelOrder, getOrdersChart.
 
 import { baseAPI } from '@/redux/api/base-api';
+import type { FitFeedback, MeasurementCheck } from '@/lib/garment-check';
 
 // ──────────────── Enums ────────────────
 
@@ -227,6 +228,12 @@ export interface OrderItem {
     discount: number;
     final: number;
   };
+  /**
+   * How the line's measurement snapshot covers its garment: needed points
+   * that are only rough, extras worth asking for. Null when not made to fit
+   * or the garment isn't known.
+   */
+  measurement_check?: MeasurementCheck | null;
 }
 
 // ──────────────── Shipment Types ────────────────
@@ -391,6 +398,8 @@ export interface Order {
   platform_commission?: number;
   payout_eligible_at?: string;
   payout_status?: 'pending' | 'eligible' | 'paid';
+  /** How a delivered made-to-fit piece fit, from the customer. */
+  fit_feedback?: FitFeedback | null;
   customer_body_profile?: {
     body_type: string;
     confidence: string;

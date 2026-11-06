@@ -77,6 +77,8 @@ import { DesignDetailModal } from './design-detail-modal';
 import { MediaPreviewModal } from './media-preview-modal';
 import { OrderFabricCard } from '../molecules/order-fabric-card';
 import { OrderMeasurementsCard } from '../molecules/order-measurements-card';
+import { measurementChecksByItem } from '@/lib/garment-check';
+import { OrderFitFeedback } from '../molecules/order-fit-feedback';
 import { PreshipPanel } from './preship-panel';
 import { OverlayScroll } from '@/components/OverlayScroll';
 import {
@@ -1536,7 +1538,16 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   order carrying garments for different bodies (Dad, Mum,
                   Sister) is never ambiguous about which grid is whose. */}
               {!isFabricTransferOnly && order.type === 'bespoke' && (
-                <OrderMeasurementsCard reference={order.reference} />
+                <OrderMeasurementsCard
+                  reference={order.reference}
+                  checks={measurementChecksByItem(order)}
+                />
+              )}
+
+              {/* ── How it fit ── the customer's fit feedback on a delivered
+                  made-to-fit piece (bespoke or custom), in plain words. */}
+              {order.status === 'completed' && order.fit_feedback && (
+                <OrderFitFeedback feedback={order.fit_feedback} />
               )}
 
               {/* ── Pre-ship approval (bespoke) ──

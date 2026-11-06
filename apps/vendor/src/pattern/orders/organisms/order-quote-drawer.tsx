@@ -70,6 +70,7 @@ import {
   OrderMeasurementsCard,
   ItemBodyMeasurements,
 } from '../molecules/order-measurements-card';
+import { measurementChecksByItem } from '@/lib/garment-check';
 import { OverlayScroll } from '@/components/OverlayScroll';
 import { OrderEarningsCard } from '../molecules/order-earnings-card';
 import { VendorGuidelinesCard } from '../molecules/vendor-guidelines-card';
@@ -870,11 +871,18 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
               taken at acceptance when available; live active set for legacy
               orders (badged accordingly). */}
             {(order as any).reference ? (
-              <OrderMeasurementsCard reference={(order as any).reference} />
+              <OrderMeasurementsCard
+                reference={(order as any).reference}
+                checks={measurementChecksByItem(order)}
+              />
             ) : quote?.measurements?.measurements ? (
               // A quote request: the measurements the customer picked for
               // this design, so the price (and the yards) fit the body.
-              <ItemBodyMeasurements profile={quote.measurements} quote />
+              <ItemBodyMeasurements
+                profile={quote.measurements}
+                quote
+                check={quote.measurement_check}
+              />
             ) : null}
 
             {/* Fabric */}
