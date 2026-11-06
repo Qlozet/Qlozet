@@ -70,6 +70,14 @@ export const baseAPI = createApi({
     'AssistantDigest',
     'CurrentUser',
   ],
+  // Pages stay ready for 5 minutes after leaving them, so going back is
+  // instant. A copy older than 30 seconds still refreshes in the background
+  // on return (shown without a loading state), as does coming back to the
+  // tab, so a vendor never sits on an old orders list. Saves still refresh
+  // straight away through invalidatesTags.
+  keepUnusedDataFor: 300,
+  refetchOnMountOrArgChange: 30,
+  refetchOnFocus: true,
   endpoints: () => ({}),
 });
 
