@@ -16,6 +16,7 @@ const access = (patch: Partial<MyAccess> = {}): MyAccess => ({
 describe('resourceForPath', () => {
   it('maps every console page to its grid row', () => {
     expect(resourceForPath('/dashboard')).toBe('dashboard');
+    expect(resourceForPath('/measurements')).toBe('dashboard');
     expect(resourceForPath('/vendors/abc')).toBe('vendors');
     expect(resourceForPath('/customers/abc?tab=orders')).toBe('customers');
     expect(resourceForPath('/products/clothing')).toBe('products');

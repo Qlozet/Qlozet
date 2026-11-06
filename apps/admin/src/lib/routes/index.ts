@@ -12,6 +12,7 @@ export const AUTH_ROUTES = {
 export const APP_ROUTES = {
   home: '/',
   dashboard: '/dashboard',
+  measurements: '/measurements',
   vendors: '/vendors',
   customers: '/customers',
   products: '/products',

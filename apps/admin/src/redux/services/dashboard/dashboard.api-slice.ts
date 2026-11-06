@@ -3,6 +3,7 @@
 
 import { baseAPI } from '@/redux/api/base-api';
 import { ApiResponse } from '../types';
+import type { MeasurementAccuracy } from '@/lib/measurement-accuracy';
 
 // Admin overview metrics.
 //
@@ -320,6 +321,15 @@ export const dashboardApiSlice = baseAPI.injectEndpoints({
       },
       providesTags: ['VendorOrders'],
     }),
+
+    // What the measurement system has collected: corrections per body part
+    // and fit feedback (Measurement accuracy page). Read-only.
+    getMeasurementAccuracy: builder.query<
+      ApiResponse<MeasurementAccuracy>,
+      void
+    >({
+      query: () => ({ url: '/admin/measurements/accuracy', method: 'GET' }),
+    }),
   }),
 });
 
@@ -331,4 +341,5 @@ export const {
   useGetCustomerAnalyticsQuery,
   useGetVendorDashboardQuery,
   useGetVendorOrdersQuery,
+  useGetMeasurementAccuracyQuery,
 } = dashboardApiSlice;
