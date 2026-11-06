@@ -71,7 +71,7 @@ const getAudience = (tags?: string[]): string => {
 interface ClothingTableColumnsProps {
   onViewDetails: (productId: string) => void;
   onEdit: (productId: string) => void;
-  onDuplicate?: (productId: string) => void;
+  onSelect?: (productId: string) => void;
   onDelete?: (productId: string) => void;
   onStatusChange?: (
     productId: string,
@@ -83,6 +83,7 @@ interface ClothingTableColumnsProps {
 export const createClothingTableColumns = ({
   onViewDetails,
   onEdit,
+  onSelect,
   onDelete,
   onStatusChange,
   showSelect = false,
@@ -234,5 +235,11 @@ export const createClothingTableColumns = ({
       );
     },
   },
-  productActionsColumn({ onViewDetails, onEdit, onDelete, onStatusChange }),
+  productActionsColumn({
+    onViewDetails,
+    onEdit,
+    onSelect,
+    onDelete,
+    onStatusChange,
+  }),
 ];

@@ -61,6 +61,11 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     setShowSelect(false);
     setRowSelection({});
   };
+  // "Select" in a row's ⋯ menu: start selecting with that product ticked.
+  const startSelectingWith = (productId: string) => {
+    setShowSelect(true);
+    setRowSelection((prev) => ({ ...prev, [productId]: true }));
+  };
   const [sortBy, setSortBy] = useState<
     'name' | 'price' | 'createdAt' | 'stock' | undefined
   >(undefined);
@@ -231,10 +236,6 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     router.push(`/products/add-product?edit=${productId}`);
   };
 
-  const handleDuplicateProduct = (productId: string) => {
-    toast.success('Product duplication will be implemented');
-  };
-
   const handleDeleteProduct = (productId: string) => {
     show(DeleteProductConfirmationModal, {
       title: 'Are you sure you want to delete this product?',
@@ -260,7 +261,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
       createClothingTableColumns({
         onViewDetails: handleViewDetails,
         onEdit: handleEditProduct,
-        onDuplicate: handleDuplicateProduct,
+        onSelect: startSelectingWith,
         onDelete: handleDeleteProduct,
         onStatusChange: handleStatusChange,
         showSelect,
@@ -268,7 +269,7 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     [
       handleViewDetails,
       handleEditProduct,
-      handleDuplicateProduct,
+      startSelectingWith,
       handleDeleteProduct,
       handleStatusChange,
       showSelect,
@@ -334,16 +335,6 @@ const ClothingTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
           >
             <ClothingStylesIcon className="w-[18px] h-[20px]" />
             <span className="hidden sm:inline">Manage Styles</span>
-          </Button>
-
-          {/* Toggle Select Mode */}
-          <Button
-            variant="outline"
-            size="default"
-            onClick={() => (showSelect ? stopSelecting() : setShowSelect(true))}
-            className="flex gap-[10px] text-xs! font-medium dark:text-white dark:border-gray-500"
-          >
-            <span>{showSelect ? 'Cancel selection' : 'Select'}</span>
           </Button>
 
           {/* Add new product */}

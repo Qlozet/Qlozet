@@ -77,7 +77,6 @@ export const AccessoriesTable = ({
       AccessoriesTableColumns({
         onViewDetails,
         onEdit,
-        onDuplicate,
         onDelete,
         onStatusChange,
         showSelect,

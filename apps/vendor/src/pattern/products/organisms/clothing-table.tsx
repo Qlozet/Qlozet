@@ -76,7 +76,6 @@ export const ClothingTable = ({
       createClothingTableColumns({
         onViewDetails,
         onEdit,
-        onDuplicate,
         onDelete,
         onStatusChange,
         showSelect,

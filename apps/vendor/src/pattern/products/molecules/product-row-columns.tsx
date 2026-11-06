@@ -50,6 +50,8 @@ export function productSelectColumn(): ColumnDef<Product> {
 interface ProductActionsOptions {
   onViewDetails: (productId: string) => void;
   onEdit: (productId: string) => void;
+  /** Starts selecting, with this product already ticked. */
+  onSelect?: (productId: string) => void;
   onDelete?: (productId: string) => void;
   onStatusChange?: (
     productId: string,
@@ -65,6 +67,7 @@ interface ProductActionsOptions {
 export function productActionsColumn({
   onViewDetails,
   onEdit,
+  onSelect,
   onDelete,
   onStatusChange,
 }: ProductActionsOptions): ColumnDef<Product> {
@@ -96,6 +99,11 @@ export function productActionsColumn({
               <DropdownMenuItem onClick={() => onEdit(id)}>
                 Edit product
               </DropdownMenuItem>
+              {onSelect && !row.getIsSelected() && (
+                <DropdownMenuItem onClick={() => onSelect(id)}>
+                  Select
+                </DropdownMenuItem>
+              )}
               {onStatusChange && status !== 'active' && (
                 <DropdownMenuItem onClick={() => onStatusChange(id, 'active')}>
                   Activate product
