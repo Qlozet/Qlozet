@@ -80,6 +80,14 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
+  // Wait for a pause in typing, as Clothing and Fabrics do, rather than
+  // asking the server on every keystroke.
+  const [debouncedSearch, setDebouncedSearch] = useState<string>('');
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 400);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   // Get Products API query for clothing category
   const {
     data: productsResponse,
@@ -92,7 +100,7 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   } = useGetProductsByVendorQuery({
     page: pagination.pageIndex + 1,
     size: pagination.pageSize, // API uses 'size' instead of 'limit'
-    search: searchQuery || undefined, // Only send if not empty
+    search: debouncedSearch.trim() || undefined, // Only send if not empty
     kind: 'accessory', // API uses 'kind' instead of 'category'
     sortBy: sortBy, // Add sortBy parameter
     order: order, // Add order parameter (asc/desc)
