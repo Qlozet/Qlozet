@@ -50,6 +50,7 @@ export const RESOURCE_LABELS: Record<ConsoleResource, string> = {
  */
 const ROUTE_RESOURCES: [prefix: string, resource: ConsoleResource][] = [
   ['/dashboard', 'dashboard'],
+  ['/measurements', 'dashboard'],
   ['/vendors', 'vendors'],
   ['/customers', 'customers'],
   ['/products', 'products'],

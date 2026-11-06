@@ -206,6 +206,7 @@ const ItemDetailContent: React.FC<{
           reference={orderReference}
           itemId={(item as any)._id ? String((item as any)._id) : null}
           productName={getProductName(asProduct(item.product))}
+          check={item.measurement_check}
         />
       )}
 

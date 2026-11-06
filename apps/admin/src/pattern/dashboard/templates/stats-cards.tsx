@@ -115,6 +115,8 @@ export const StatsCards = () => {
         { percent: true }
       ),
       icon: <StatCartIcon fill="#FF7976" />,
+      // The corrections and fit feedback behind this card so far.
+      viewAllLink: APP_ROUTES.measurements,
     },
   ];
 

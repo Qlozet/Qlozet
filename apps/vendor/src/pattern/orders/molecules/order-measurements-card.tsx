@@ -8,8 +8,14 @@
 // Shows how and when the numbers were taken, lets the tailor print them, and
 // lets them ask the customer before cutting (the answer corrects the copy).
 
-import { useMemo, useState } from 'react';
-import { Lock, MessageCircleQuestion, Printer, Ruler } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  Lock,
+  MessageCircleQuestion,
+  Printer,
+  Ruler,
+  Scissors,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import {
@@ -19,6 +25,12 @@ import {
   measurementLabel,
 } from '@/lib/measurement-labels';
 import { printMeasurementSheet } from '@/lib/print-measurements';
+import {
+  askDraft,
+  askKeysFor,
+  garmentNote,
+  type MeasurementCheck,
+} from '@/lib/garment-check';
 import {
   useAskMeasurementQuestionMutation,
   useGetOrderMeasurementsQuery,
@@ -246,22 +258,79 @@ const QuestionThread = ({
   );
 };
 
+/**
+ * "For this agbada": the garment's needed points that are only rough
+ * estimates, and extras a tailor often wants that the set lacks. From the
+ * order line's (or quote's) `measurement_check`; hidden when it says nothing.
+ */
+export const GarmentCheckNote = ({
+  check,
+  onAsk,
+}: {
+  check: MeasurementCheck | null | undefined;
+  /** Opens "Ask the customer" with these parts picked. */
+  onAsk?: () => void;
+}) => {
+  const note = garmentNote(check);
+  if (!note) return null;
+  return (
+    <div className="space-y-1 rounded-xl border border-amber-200 bg-amber-50/70 px-3 py-2.5 text-xs dark:border-amber-800/50 dark:bg-amber-950/20">
+      <p className="flex items-center gap-1.5 font-semibold text-grey-black dark:text-white">
+        <Scissors className="size-3.5 text-amber-700 dark:text-amber-300" />
+        {note.title}
+      </p>
+      {note.confirm && (
+        <p className="flex flex-wrap items-center gap-1.5 text-grey-black dark:text-white">
+          <span className="shrink-0 rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+            Verify
+          </span>
+          {note.confirm}
+        </p>
+      )}
+      {note.alsoWant && (
+        <p className="text-grey3 dark:text-gray-300">{note.alsoWant}</p>
+      )}
+      {onAsk && (
+        <button
+          type="button"
+          onClick={onAsk}
+          className="pt-0.5 font-medium text-primary underline-offset-2 hover:underline"
+        >
+          Ask the customer about these
+        </button>
+      )}
+    </div>
+  );
+};
+
 const AskDialog = ({
   open,
   onOpenChange,
   reference,
   itemId,
   keys,
+  seed,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   reference: string;
   itemId: string | null;
   keys: string[];
+  /** Parts and a draft to start from (the garment note's "Ask" link). */
+  seed?: { picked: string[]; message: string } | null;
 }) => {
   const [picked, setPicked] = useState<string[]>([]);
   const [message, setMessage] = useState('');
   const [ask, { isLoading }] = useAskMeasurementQuestionMutation();
+  // Opened from the garment note: start with its parts and a draft.
+  useEffect(() => {
+    if (open && seed) {
+      setPicked(seed.picked);
+      setMessage(seed.message);
+    }
+  }, [open, seed]);
+  // A suggested extra (neck) isn't in the set yet; offer it as a chip too.
+  const chips = Array.from(new Set([...keys, ...(seed?.picked ?? [])]));
 
   const toggle = (k: string) =>
     setPicked((prev) =>
@@ -306,7 +375,7 @@ const AskDialog = ({
               Which measurements? (optional)
             </p>
             <div className="flex flex-wrap gap-1.5">
-              {keys.map((k) => (
+              {chips.map((k) => (
                 <button
                   key={k}
                   type="button"
@@ -370,6 +439,7 @@ const MeasurementActions = ({
   provenance,
   questions,
   canAsk,
+  check,
 }: {
   reference: string;
   itemId: string | null;
@@ -380,10 +450,24 @@ const MeasurementActions = ({
   provenance: Provenance;
   questions: MeasurementQuestion[];
   canAsk: boolean;
+  /** The line's garment check — the "For this agbada" note. */
+  check?: MeasurementCheck | null;
 }) => {
   const [asking, setAsking] = useState(false);
+  const [seed, setSeed] = useState<{
+    picked: string[];
+    message: string;
+  } | null>(null);
   const waiting = questions.some((q) => q.status === 'open');
   const keys = recordedRows(measurements).map((r) => r.key);
+  const openAsk = (fromNote: boolean) => {
+    setSeed(
+      fromNote
+        ? { picked: askKeysFor(check, measurements), message: askDraft(check) }
+        : null
+    );
+    setAsking(true);
+  };
 
   const print = () => {
     const ok = printMeasurementSheet({
@@ -400,12 +484,17 @@ const MeasurementActions = ({
         FIT_PREFERENCE_LABEL
       ),
       verifyKeys: verifyKeysOf(provenance.tailoring_meta),
+      garmentNote: garmentNote(check),
     });
     if (!ok) toast.error('Allow pop-ups for this site to print the sheet.');
   };
 
   return (
     <>
+      <GarmentCheckNote
+        check={check}
+        onAsk={canAsk && !waiting ? () => openAsk(true) : undefined}
+      />
       <div className="flex flex-wrap gap-2">
         <Button
           type="button"
@@ -422,7 +511,7 @@ const MeasurementActions = ({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => setAsking(true)}
+            onClick={() => openAsk(false)}
             disabled={waiting}
             title={
               waiting
@@ -446,6 +535,7 @@ const MeasurementActions = ({
           reference={reference}
           itemId={itemId}
           keys={keys}
+          seed={seed}
         />
       )}
     </>
@@ -504,6 +594,7 @@ export const ItemBodyMeasurements = ({
   itemId,
   productName,
   quote,
+  check,
 }: {
   profile: Provenance & {
     set_name?: string | null;
@@ -515,6 +606,8 @@ export const ItemBodyMeasurements = ({
   productName?: string | null;
   /** A quote request: the customer's current set, locked only when they accept. */
   quote?: boolean;
+  /** The line's (or quote's) garment check — the "For this agbada" note. */
+  check?: MeasurementCheck | null;
 }) => {
   const [unit, setUnit] = useState<Unit>('cm');
   const { data } = useGetOrderMeasurementsQuery(reference ?? '', {
@@ -559,7 +652,7 @@ export const ItemBodyMeasurements = ({
         unit={unit}
         meta={shown.tailoring_meta}
       />
-      {reference && (
+      {reference ? (
         <MeasurementActions
           reference={reference}
           itemId={itemId ?? null}
@@ -570,13 +663,23 @@ export const ItemBodyMeasurements = ({
           provenance={shown}
           questions={questions}
           canAsk={Boolean(itemId)}
+          check={check}
         />
+      ) : (
+        <GarmentCheckNote check={check} />
       )}
     </div>
   );
 };
 
-export const OrderMeasurementsCard = ({ reference }: { reference: string }) => {
+export const OrderMeasurementsCard = ({
+  reference,
+  checks,
+}: {
+  reference: string;
+  /** Each line's garment check, by order-item id (from the order itself). */
+  checks?: Record<string, MeasurementCheck | null | undefined>;
+}) => {
   const { data, isLoading } = useGetOrderMeasurementsQuery(reference, {
     skip: !reference,
   });
@@ -619,6 +722,10 @@ export const OrderMeasurementsCard = ({ reference }: { reference: string }) => {
   // One body for the whole order: ask about the (first) line's copy, which
   // the server keeps in step with the order's own.
   const soleItemId = itemProfiles[0]?.item_id ?? null;
+  const soleCheck =
+    (soleItemId ? checks?.[soleItemId] : null) ??
+    Object.values(checks ?? {}).find(Boolean) ??
+    null;
 
   return (
     <section className="space-y-4 rounded-xl border bg-[hsla(0,0%,96%,1)] dark:bg-[#4A4949] p-4">
@@ -663,6 +770,7 @@ export const OrderMeasurementsCard = ({ reference }: { reference: string }) => {
                 provenance={item}
                 questions={questions.filter((q) => q.item_id === item.item_id)}
                 canAsk={Boolean(item.item_id)}
+                check={item.item_id ? checks?.[item.item_id] : null}
               />
             </div>
           ))}
@@ -701,6 +809,7 @@ export const OrderMeasurementsCard = ({ reference }: { reference: string }) => {
               (q) => !q.item_id || q.item_id === soleItemId
             )}
             canAsk={Boolean(data.snapshot)}
+            check={soleCheck}
           />
         </>
       )}

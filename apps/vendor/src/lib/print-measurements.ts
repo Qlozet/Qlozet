@@ -7,6 +7,7 @@ import {
   MEASUREMENT_METHOD,
   measurementLabel,
 } from './measurement-labels';
+import type { GarmentNote } from './garment-check';
 
 export interface PrintableMeasurements {
   orderReference: string;
@@ -20,6 +21,8 @@ export interface PrintableMeasurements {
   bodyType?: string | null;
   fitPreferences?: string[];
   verifyKeys?: string[];
+  /** "For this agbada": points to confirm and extras to ask for. */
+  garmentNote?: GarmentNote | null;
 }
 
 const esc = (t: string) =>
@@ -79,6 +82,11 @@ export function printMeasurementSheet(p: PrintableMeasurements): boolean {
     .map((f) => `<li>${f}</li>`)
     .join('');
 
+  const g = p.garmentNote;
+  const garment = g
+    ? `<div class="garment"><b>${esc(g.title)}</b>${g.confirm ? `<div><span class="verify">Verify</span> ${esc(g.confirm)}</div>` : ''}${g.alsoWant ? `<div>${esc(g.alsoWant)}</div>` : ''}</div>`
+    : '';
+
   win.document.write(`<!doctype html><html><head><meta charset="utf-8">
 <title>Measurements · ${esc(p.orderReference)}</title>
 <style>
@@ -92,12 +100,15 @@ export function printMeasurementSheet(p: PrintableMeasurements): boolean {
   .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .hint { color: #666; font-size: 11px; margin-top: 2px; }
   .verify { font-size: 10px; font-weight: 700; color: #92400e; background: #fef3c7; border-radius: 6px; padding: 1px 5px; }
+  .garment { border: 1px solid #fcd34d; background: #fffbeb; border-radius: 8px; padding: 8px 10px; margin: 0 0 16px; }
+  .garment div { margin-top: 3px; }
   .foot { margin-top: 16px; color: #666; font-size: 11px; }
   @media print { body { margin: 12mm; } }
 </style></head><body>
 <h1>Measurements for order ${esc(p.orderReference)}</h1>
 <p class="sub">Body measurements, locked when the customer ordered. Add your own ease.</p>
 <ul>${facts}</ul>
+${garment}
 <table><thead><tr><th>Measurement</th><th class="num">cm</th><th class="num">in</th></tr></thead>
 <tbody>${rows}</tbody></table>
 <p class="foot">Printed from Qlozet. Personal data: use only to make this order.</p>

@@ -8,6 +8,7 @@ import { useConsoleAccess } from '@/lib/hooks/use-console-access';
 import { DashboardNavIcon } from '../atoms/nav-icons/dashboard-nav-icon';
 import { VendorsNavIcon } from '../atoms/nav-icons/vendors-nav-icon';
 import { CustomersNavIcon } from '../atoms/nav-icons/customers-nav-icon';
+import { MeasurementsNavIcon } from '../atoms/nav-icons/measurements-nav-icon';
 import { ProductsNavIcon } from '../atoms/nav-icons/products-nav-icon';
 import { ProductsClothsNavIcon } from '../atoms/nav-icons/products-cloths-nav-icon';
 import { ProductsAccessoriesNavIcon } from '../atoms/nav-icons/products-accessories-nav-icon';
@@ -58,6 +59,7 @@ const ENABLED_ROUTES: string[] = [
   APP_ROUTES.dashboard,
   APP_ROUTES.vendors,
   APP_ROUTES.customers,
+  APP_ROUTES.measurements,
   APP_ROUTES.admin,
   APP_ROUTES.orders,
   APP_ROUTES.disputes,
@@ -133,6 +135,12 @@ export const SidebarNav = ({
       label: 'Customers',
       href: APP_ROUTES.customers,
       resource: 'customers',
+    },
+    {
+      icon: MeasurementsNavIcon,
+      label: 'Measurements',
+      href: APP_ROUTES.measurements,
+      resource: 'dashboard',
     },
     {
       icon: ProductsNavIcon,

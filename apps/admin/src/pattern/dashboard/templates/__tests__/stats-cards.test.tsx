@@ -118,11 +118,14 @@ describe('admin StatsCards', () => {
     expect(screen.getAllByText('—').length).toBe(6);
   });
 
-  it('links the vendor and order cards to their pages', () => {
+  it('links the vendor, order and measurement cards to their pages', () => {
     withMetrics({});
     render(<StatsCards />);
     const links = screen.getAllByRole('link', { name: /view all/i });
-    expect(links.length).toBe(3);
+    expect(links.length).toBe(4);
+    expect(links.some((l) => l.getAttribute('href') === '/measurements')).toBe(
+      true
+    );
   });
 });
 
