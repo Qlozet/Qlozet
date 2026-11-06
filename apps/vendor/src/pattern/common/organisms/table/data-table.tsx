@@ -13,6 +13,7 @@ import {
   type ColumnDef,
   type PaginationState,
   type OnChangeFn,
+  type RowSelectionState,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
@@ -56,6 +57,13 @@ export interface DataTableProps<TData> {
   /** Subtitle shown below the empty title */
   emptyMessage?: string;
   minWidth?: string;
+  /**
+   * Ticked rows, keyed by getRowId. Pass both to let rows be selected;
+   * keyed by id rather than position so ticks survive changing page.
+   */
+  rowSelection?: RowSelectionState;
+  onRowSelectionChange?: OnChangeFn<RowSelectionState>;
+  getRowId?: (row: TData) => string;
 }
 
 // Generic TanStack-backed table used across the whole vendor app.
@@ -79,6 +87,9 @@ export function DataTable<TData>({
   emptyTitle = 'Nothing in here yet.',
   emptyMessage,
   minWidth = '900px',
+  rowSelection,
+  onRowSelectionChange,
+  getRowId,
 }: DataTableProps<TData>) {
   const defaultData = useMemo<TData[]>(() => [], []);
 
@@ -87,7 +98,11 @@ export function DataTable<TData>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    state: { pagination },
+    state: { pagination, ...(rowSelection ? { rowSelection } : {}) },
+    ...(onRowSelectionChange
+      ? { enableRowSelection: true, onRowSelectionChange }
+      : {}),
+    ...(getRowId ? { getRowId: (row: TData) => getRowId(row) } : {}),
     onPaginationChange: setPagination,
     manualPagination,
     // TanStack queues a page-index reset whenever the `data` *reference*
