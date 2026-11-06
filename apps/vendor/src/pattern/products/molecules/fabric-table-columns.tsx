@@ -2,17 +2,12 @@
 
 import { Badge } from '@/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  productActionsColumn,
+  productSelectColumn,
+} from './product-row-columns';
 import { Product } from '@/redux/services/products/products.api-slice';
-import { MoreHorizontal, AlertTriangle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { AlertTriangle } from 'lucide-react';
 import Image from 'next/image';
 import { formatCurrency } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -88,11 +83,11 @@ interface ClothingTableColumnsProps {
 export const createFabricTableColumns = ({
   onViewDetails,
   onEdit,
-  onDuplicate,
   onDelete,
   onStatusChange,
   showSelect = false,
 }: ClothingTableColumnsProps): ColumnDef<Product>[] => [
+  ...(showSelect ? [productSelectColumn()] : []),
   {
     accessorKey: 'images',
     header: 'Picture',
@@ -246,87 +241,5 @@ export const createFabricTableColumns = ({
       );
     },
   },
-  {
-    id: 'actions',
-    // The select-mode header menu had seven items and no handlers.
-    header: () => null,
-    cell: ({ row, table }) => {
-      const product = row.original;
-
-      // Show checkbox when in select mode
-      if (showSelect) {
-        return (
-          <div onClick={(e) => e.stopPropagation()}>
-            <Checkbox
-              checked={row.getIsSelected()}
-              onCheckedChange={(value) => row.toggleSelected(!!value)}
-              aria-label="Select row"
-            />
-          </div>
-        );
-      }
-
-      // Show actions dropdown by default
-      return (
-        <div onClick={(e) => e.stopPropagation()}>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4 text-gray-500" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => onViewDetails(product._id as string)}
-              >
-                View product
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onEdit(product._id as string)}>
-                Edit product
-              </DropdownMenuItem>
-              {onDuplicate && (
-                <DropdownMenuItem
-                  onClick={() => onDuplicate(product._id as string)}
-                >
-                  Select Product
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem
-                onClick={() =>
-                  onStatusChange?.(product._id as string, 'active')
-                }
-              >
-                Activate product
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() =>
-                  onStatusChange?.(product._id as string, 'inactive')
-                }
-                className="text-red-600 focus:text-red-600"
-              >
-                Archive product
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() =>
-                  onStatusChange?.(product._id as string, 'inactive')
-                }
-                className="text-red-600 focus:text-red-600"
-              >
-                Deactivate product
-              </DropdownMenuItem>
-              {onDelete && (
-                <DropdownMenuItem
-                  onClick={() => onDelete(product._id as string)}
-                  className="text-red-600 focus:text-red-600"
-                >
-                  Delete product
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      );
-    },
-    enableSorting: false,
-  },
+  productActionsColumn({ onViewDetails, onEdit, onDelete, onStatusChange }),
 ];

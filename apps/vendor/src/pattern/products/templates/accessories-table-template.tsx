@@ -3,7 +3,7 @@
 import { useVendorAccess } from '@/lib/hooks/use-vendor-access';
 
 import { useState, useEffect, useMemo } from 'react';
-import { PaginationState } from '@tanstack/react-table';
+import { PaginationState, RowSelectionState } from '@tanstack/react-table';
 import {
   Product,
   useGetProductsByVendorQuery,
@@ -25,6 +25,7 @@ import { LinearAddSquareIcon } from '@/pattern/common/atoms/linear-add-square-ic
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
 import { DeleteProductConfirmationModal } from '@/pattern/common/organisms/delete-confirmation-modal';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
+import { ProductBulkBar } from '@/pattern/products/organisms/product-bulk-bar';
 import { AccessoriesTableColumns } from '../molecules/accessories-table-column';
 import { AddAccessoryModal } from '../organisms/add-accessories-modal';
 import { ProductsStats } from './products-stats';
@@ -50,6 +51,15 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
   const [pageCount, setPageCount] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [showSelect, setShowSelect] = useState<boolean>(false);
+  // Ticked products, by id, so ticks survive changing page.
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const selectedIds = Object.keys(rowSelection).filter(
+    (id) => rowSelection[id]
+  );
+  const stopSelecting = () => {
+    setShowSelect(false);
+    setRowSelection({});
+  };
   const [sortBy, setSortBy] = useState<
     'name' | 'price' | 'createdAt' | 'stock' | undefined
   >(undefined);
@@ -211,7 +221,7 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     show(DeleteProductConfirmationModal, {
       title: 'Are you sure you want to delete this product?',
       description:
-        'Removing this product will erase all stored information about it from your dashboard.',
+        'It comes off sale and out of your products list. Past orders keep their details.',
       actionText: 'Delete Product',
     }).then(() => {
       deleteProduct(productId)
@@ -289,10 +299,10 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
           <Button
             variant="outline"
             size="default"
-            onClick={() => setShowSelect(!showSelect)}
-            className="hidden sm:flex gap-[10px] text-xs! font-medium dark:text-white dark:border-gray-500"
+            onClick={() => (showSelect ? stopSelecting() : setShowSelect(true))}
+            className="flex gap-[10px] text-xs! font-medium dark:text-white dark:border-gray-500"
           >
-            <span>{showSelect ? 'Cancel Selection' : 'Select Products'}</span>
+            <span>{showSelect ? 'Cancel selection' : 'Select'}</span>
           </Button>
 
           {/* Add new product */}
@@ -334,6 +344,13 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
           filterLabel="Filter By :"
           filterIcon={null}
         />
+        {showSelect && (
+          <ProductBulkBar
+            selectedIds={selectedIds}
+            onDone={() => setRowSelection({})}
+            onCancel={stopSelecting}
+          />
+        )}
         <DataTable
           columns={accessoryColumns}
           data={products as Product[]}
@@ -346,6 +363,17 @@ const AccessoriesTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
           setPagination={setPagination}
           pageCount={pageCount}
           manualPagination
+          onRowClick={(product) =>
+            showSelect
+              ? setRowSelection((prev) => ({
+                  ...prev,
+                  [product._id as string]: !prev[product._id as string],
+                }))
+              : handleViewDetails(product._id as string)
+          }
+          rowSelection={rowSelection}
+          onRowSelectionChange={setRowSelection}
+          getRowId={(product) => String(product._id)}
           emptyMessage="Products will show up here once you add a product."
         />
       </div>

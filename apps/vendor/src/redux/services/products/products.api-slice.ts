@@ -597,6 +597,23 @@ export const productsApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['Product', 'Products'],
     }),
 
+    // POST /products/bulk — activate, archive or delete several at once.
+    // Returns which were changed and which were skipped, with the reason.
+    bulkProductAction: builder.mutation<
+      {
+        message: string;
+        data: {
+          action: BulkProductAction;
+          apply: string[];
+          skipped: { id: string; name: string; reason: string }[];
+        };
+      },
+      { product_ids: string[]; action: BulkProductAction }
+    >({
+      query: (body) => ({ url: '/products/bulk', method: 'POST', body }),
+      invalidatesTags: ['Product', 'Products'],
+    }),
+
     // PATCH /products/{product_id}/schedule-activation
     scheduleProductActivation: builder.mutation<
       any,
@@ -707,6 +724,9 @@ export const productsApiSlice = baseAPI.injectEndpoints({
 });
 
 // Export hooks
+/** What the Products tables can do to several products at once. */
+export type BulkProductAction = 'activate' | 'archive' | 'delete';
+
 export const {
   useGetProductsQuery,
   useGetProductQuery,
@@ -733,6 +753,7 @@ export const {
   useLazyGetProductsByVendorQuery,
   useGetTrendingProductsThisWeekQuery,
   useUpdateProductStatusMutation,
+  useBulkProductActionMutation,
   useScheduleProductActivationMutation,
   useUpdateFabricStockMutation,
   useUpdateAccessoryVariantStockMutation,
