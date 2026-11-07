@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useSwitchBusinessMutation } from '@/redux/services/auth/auth.api-slice';
 import { useAppDispatch } from '@/redux/store';
 import {
+  forgetBusiness,
   setActiveBusiness,
   type ActiveBusiness,
 } from '@/redux/slices/auth-slice';
@@ -50,6 +51,18 @@ export const useSwitchStore = () => {
         resetAccessLossGuard();
         return result.data.active_business;
       } catch (err: unknown) {
+        // 401 / 403 from a switch means this store can't be opened any more:
+        // it was deleted, or the person was removed or switched off there.
+        // The list is the one saved at sign-in, so drop the store from it
+        // rather than leave a dead entry that refuses every tap.
+        const status = (err as { status?: unknown })?.status;
+        if (status === 401 || status === 403) {
+          dispatch(forgetBusiness(businessId));
+          toast.error(
+            `${readApiError(err, 'You can no longer open this store.')} It has been removed from your list.`
+          );
+          return null;
+        }
         toast.error(readApiError(err, 'Failed to switch business'));
         return null;
       } finally {
