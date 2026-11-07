@@ -2,13 +2,13 @@
 
 // Settings Content - Organism
 // The active tab's sections. Everything is rendered from the catalogue except
-// the token price, which is a derived pair and gets its own card at the top of
-// the AI tab.
+// the token packs, which are a list with their own Save and sit at the top of
+// the AI tab. (Purchases are priced from the packs now, not a per-token price,
+// so the old token-price card is no longer shown.)
 
 import React from 'react';
 import {
   AI_TOKENS_TAB_SLUG,
-  TOKEN_PRICE_USD_KEY,
   fieldKeysForTab,
   type SettingsTab,
 } from '../lib/settings-tabs';
@@ -19,7 +19,7 @@ import type {
 } from '../lib/settings-form';
 import { SettingsSection } from '../molecules/settings-section';
 import { SettingsTabActions } from '../molecules/settings-tab-actions';
-import { TokenPriceCard } from './token-price-card';
+import { TokenPacksCard } from './token-packs-card';
 import { ListingReviewNotice } from '../molecules/listing-review-notice';
 import { VendorVerificationNotice } from '../molecules/vendor-verification-notice';
 import type { TokenPrice } from '@/redux/services/settings/settings.api-slice';
@@ -46,14 +46,11 @@ export const SettingsContent = ({
   draft,
   errors,
   changeCount,
-  totalChangeCount,
-  tokenPrice,
   isSaving,
   isRefreshing,
   onChange,
   onSave,
   onDiscard,
-  onRefreshTokenPrice,
 }: SettingsContentProps) => {
   // Read through the same helper the save uses, so the count of what is
   // blocking Save can never drift from the set of fields Save would send.
@@ -72,18 +69,7 @@ export const SettingsContent = ({
     <div className="space-y-5">
       <p className="text-sm text-grey3 dark:text-gray-400">{tab.description}</p>
 
-      {tab.slug === AI_TOKENS_TAB_SLUG && (
-        <TokenPriceCard
-          value={draft[TOKEN_PRICE_USD_KEY] ?? ''}
-          error={errors[TOKEN_PRICE_USD_KEY]}
-          tokenPrice={tokenPrice}
-          disabled={isLocked}
-          isRefreshing={isRefreshing}
-          isDirty={totalChangeCount > 0}
-          onChange={(value) => onChange(TOKEN_PRICE_USD_KEY, value)}
-          onRefresh={onRefreshTokenPrice}
-        />
-      )}
+      {tab.slug === AI_TOKENS_TAB_SLUG && <TokenPacksCard />}
 
       {tab.sections.some((s) => s.id === 'listing-review') && (
         <ListingReviewNotice

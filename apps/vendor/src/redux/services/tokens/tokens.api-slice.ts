@@ -12,12 +12,35 @@ export interface TokenBalance {
   [key: string]: unknown;
 }
 
-// PurchaseDto is an open object on the backend; callers pass the purchase payload.
-export type PurchaseTokensRequest = Record<string, unknown>;
+/** A pack on sale (GET /token/packs): admin-set, priced by the server. */
+export interface TokenPack {
+  id: string;
+  name: string;
+  tokens: number;
+  bonus_tokens: number;
+  total_tokens: number;
+  price_ngn: number;
+  tag: string | null;
+  /** About how many AI designs the pack covers. */
+  designs: number | null;
+}
+
+export interface TokenPacksResponse {
+  packs: TokenPack[];
+  design_token_price: number;
+}
+
+/** Buy a pack by id; the server sets the price and the tokens. */
+export type PurchaseTokensRequest = { pack_id: string };
 
 // ---- API Slice ----
 export const tokensApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
+    // GET /token/packs — the packs on sale (public, admin-set)
+    getTokenPacks: builder.query<TokenPacksResponse, void>({
+      query: () => ({ url: '/token/packs', method: 'GET' }),
+    }),
+
     // GET /token/balance — active token balance
     getTokenBalance: builder.query<ApiResponse<TokenBalance>, void>({
       query: () => ({ url: '/token/balance', method: 'GET' }),
@@ -54,6 +77,7 @@ export const tokensApiSlice = baseAPI.injectEndpoints({
 
 // ---- Hooks ----
 export const {
+  useGetTokenPacksQuery,
   useGetTokenBalanceQuery,
   usePurchaseVendorTokensMutation,
   usePurchaseCustomerTokensMutation,
