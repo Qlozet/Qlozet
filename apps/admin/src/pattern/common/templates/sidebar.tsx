@@ -8,6 +8,7 @@ import { useConsoleAccess } from '@/lib/hooks/use-console-access';
 import { DashboardNavIcon } from '../atoms/nav-icons/dashboard-nav-icon';
 import { VendorsNavIcon } from '../atoms/nav-icons/vendors-nav-icon';
 import { CustomersNavIcon } from '../atoms/nav-icons/customers-nav-icon';
+import { WaitlistNavIcon } from '../atoms/nav-icons/waitlist-nav-icon';
 import { MeasurementsNavIcon } from '../atoms/nav-icons/measurements-nav-icon';
 import { ProductsNavIcon } from '../atoms/nav-icons/products-nav-icon';
 import { ProductsClothsNavIcon } from '../atoms/nav-icons/products-cloths-nav-icon';
@@ -59,6 +60,7 @@ const ENABLED_ROUTES: string[] = [
   APP_ROUTES.dashboard,
   APP_ROUTES.vendors,
   APP_ROUTES.customers,
+  APP_ROUTES.waitlist,
   APP_ROUTES.measurements,
   APP_ROUTES.admin,
   APP_ROUTES.orders,
@@ -134,6 +136,12 @@ export const SidebarNav = ({
       icon: CustomersNavIcon,
       label: 'Customers',
       href: APP_ROUTES.customers,
+      resource: 'customers',
+    },
+    {
+      icon: WaitlistNavIcon,
+      label: 'Waitlist',
+      href: APP_ROUTES.waitlist,
       resource: 'customers',
     },
     {

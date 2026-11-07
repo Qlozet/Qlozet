@@ -39,6 +39,9 @@ export const tokensApiSlice = baseAPI.injectEndpoints({
     // GET /token/packs — the packs on sale (public, admin-set)
     getTokenPacks: builder.query<TokenPacksResponse, void>({
       query: () => ({ url: '/token/packs', method: 'GET' }),
+      // The backend wraps every response: { statusCode, message, data }.
+      transformResponse: (res: ApiResponse<TokenPacksResponse>) =>
+        res?.data ?? { packs: [], design_token_price: 45 },
     }),
 
     // GET /token/balance — active token balance
