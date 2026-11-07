@@ -18,11 +18,12 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { usePurchaseVendorTokensMutation } from '@/redux/services/tokens/tokens.api-slice';
 import {
-  useGetWalletBalanceQuery,
-  useGetWalletPriceQuery,
-} from '@/redux/services/wallet/wallet.api-slice';
+  useGetTokenPacksQuery,
+  usePurchaseVendorTokensMutation,
+  type TokenPack,
+} from '@/redux/services/tokens/tokens.api-slice';
+import { useGetWalletBalanceQuery } from '@/redux/services/wallet/wallet.api-slice';
 import { FundWalletModal } from './fund-wallet-modal';
 import { toast } from 'sonner';
 import { readApiError } from '@/redux/services/types';
@@ -32,20 +33,29 @@ type ActiveSection =
   | 'confirm-token-purchase'
   | 'token-purchase-success';
 
-const TOKEN_PACKAGES = [
-  { id: 'starter', tokens: 5, icon: Sparkles, tag: null },
-  { id: 'popular', tokens: 15, icon: Zap, tag: 'BEST VALUE' },
-  { id: 'pro', tokens: 30, icon: Gem, tag: 'SAVE MORE' },
-  { id: 'ultimate', tokens: 60, icon: Crown, tag: 'BEST DEAL' },
-];
+// The packs are set by the admin (GET /token/packs) and priced by the server;
+// this app only names the pack it buys. Icons go by position.
+const PACK_ICONS = [Sparkles, Zap, Gem, Crown];
+const iconFor = (i: number) => PACK_ICONS[Math.min(i, PACK_ICONS.length - 1)];
 
-const FALLBACK_PRICE_PER_TOKEN_NGN = 16.5;
+/** The pack to start on: the first one the admin labelled, else the second. */
+function defaultPackIndex(packs: TokenPack[]): number {
+  const tagged = packs.findIndex((p) => p.tag);
+  if (tagged >= 0) return tagged;
+  return Math.min(1, Math.max(0, packs.length - 1));
+}
 
 export const PurchaseTokensModal = NiceModal.create(() => {
   const { visible, resolve, remove } = useModal();
   const [activeSection, setActiveSection] =
     useState<ActiveSection>('buy-tokens');
-  const [selectedPackage, setSelectedPackage] = useState('popular');
+  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
+  const {
+    data: packsData,
+    isLoading: packsLoading,
+    isError: packsError,
+  } = useGetTokenPacksQuery();
+  const packs: TokenPack[] = packsData?.packs ?? [];
   const [purchasedTokens, setPurchasedTokens] = useState(0);
 
   const { data: balanceData, refetch: refetchBalance } =
@@ -78,12 +88,11 @@ export const PurchaseTokensModal = NiceModal.create(() => {
   };
 
   const handlePurchase = async () => {
-    const selected =
-      TOKEN_PACKAGES.find((p) => p.id === selectedPackage) || TOKEN_PACKAGES[1];
-    setPurchasedTokens(selected.tokens);
+    if (!selected) return;
+    setPurchasedTokens(selected.total_tokens);
 
     try {
-      await purchaseTokensMutation({ amount: selected.tokens }).unwrap();
+      await purchaseTokensMutation({ pack_id: selected.id }).unwrap();
       refetchBalance();
       setActiveSection('token-purchase-success');
     } catch (err: any) {
@@ -107,28 +116,11 @@ export const PurchaseTokensModal = NiceModal.create(() => {
     NiceModal.show(FundWalletModal);
   };
 
-  const selected =
-    TOKEN_PACKAGES.find((p) => p.id === selectedPackage) || TOKEN_PACKAGES[1];
-  const SelectedIcon = selected.icon;
-
-  // Fetch live token price from backend (GET /wallets/price?tokens=&currency=NGN)
-  const { data: priceData } = useGetWalletPriceQuery({
-    tokens: selected.tokens,
-    currency: 'NGN',
-  });
-
-  const readPrice = (raw: unknown): number => {
-    if (typeof raw === 'number') return raw;
-    const d = (raw ?? {}) as Record<string, unknown>;
-    if (typeof d['amount'] === 'number') return d['amount'] as number;
-    return 0;
-  };
-
-  const livePrice = readPrice(priceData?.data);
-  const price =
-    livePrice > 0
-      ? livePrice
-      : Math.round(FALLBACK_PRICE_PER_TOKEN_NGN * selected.tokens * 10) / 10;
+  const chosen = packs.findIndex((p) => p.id === selectedPackage);
+  const selectedIndex = chosen >= 0 ? chosen : defaultPackIndex(packs);
+  const selected: TokenPack | undefined = packs[selectedIndex];
+  const SelectedIcon = iconFor(selectedIndex);
+  const price = selected?.price_ngn ?? 0;
   const hasEnough = walletBalance >= price;
   const errorText = purchaseError
     ? readApiError(purchaseError, 'An error occurred')
@@ -146,16 +138,29 @@ export const PurchaseTokensModal = NiceModal.create(() => {
             </DialogHeader>
 
             <p className="text-sm font-normal text-[#0C0C0D] dark:text-white mb-4">
-              Tokens power AI design generation. Choose a package:
+              Tokens power AI design generation, and they don&apos;t expire.
+              Choose a pack:
             </p>
 
+            {packsLoading && (
+              <div className="flex justify-center py-8">
+                <Loader2 className="size-5 animate-spin text-primary" />
+              </div>
+            )}
+            {packsError && !packs.length && (
+              <div className="flex items-center gap-2 p-3 mb-4 rounded-md bg-destructive/10 text-destructive text-sm">
+                <AlertCircle className="size-4" />
+                <span>
+                  Couldn&apos;t load the token packs. Close and try again.
+                </span>
+              </div>
+            )}
+
             <div className="space-y-4 mb-6">
-              {TOKEN_PACKAGES.map((pkg) => {
-                const isSelected = selectedPackage === pkg.id;
-                const pkgPrice =
-                  Math.round(FALLBACK_PRICE_PER_TOKEN_NGN * pkg.tokens * 10) /
-                  10;
-                const PkgIcon = pkg.icon;
+              {packs.map((pkg, i) => {
+                const isSelected = selected?.id === pkg.id;
+                const pkgPrice = pkg.price_ngn;
+                const PkgIcon = iconFor(i);
 
                 return (
                   <button
@@ -178,13 +183,20 @@ export const PurchaseTokensModal = NiceModal.create(() => {
                       <div className="text-left">
                         <div className="flex items-center gap-2">
                           <span className="text-base font-medium text-[#333333] dark:text-gray-200">
-                            {pkg.tokens} Tokens
+                            {pkg.name}
                           </span>
                           {pkg.tag && (
                             <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-secondary/10 text-secondary rounded">
                               {pkg.tag}
                             </span>
                           )}
+                        </div>
+                        <div className="text-xs text-[#646A86] dark:text-gray-400">
+                          {pkg.total_tokens.toLocaleString()} tokens
+                          {pkg.bonus_tokens > 0 &&
+                            ` (${pkg.bonus_tokens.toLocaleString()} free)`}
+                          {pkg.designs != null &&
+                            ` · about ${pkg.designs} design${pkg.designs === 1 ? '' : 's'}`}
                         </div>
                       </div>
                     </div>
@@ -199,9 +211,10 @@ export const PurchaseTokensModal = NiceModal.create(() => {
             <Button
               className="w-full"
               size="lg"
+              disabled={!selected}
               onClick={() => setActiveSection('confirm-token-purchase')}
             >
-              Continue with {selected.tokens} Tokens
+              {selected ? `Continue with ${selected.name}` : 'Choose a pack'}
             </Button>
           </>
         )}
@@ -221,7 +234,8 @@ export const PurchaseTokensModal = NiceModal.create(() => {
                 </div>
                 <div>
                   <div className="font-medium text-[#0C0C0D] dark:text-white">
-                    {selected.tokens} Tokens
+                    {selected?.name} · {selected?.total_tokens.toLocaleString()}{' '}
+                    tokens
                   </div>
                   <div className="text-xs text-[#646A86] dark:text-gray-400">
                     Deducted from wallet

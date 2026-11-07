@@ -104,6 +104,16 @@ export interface PlatformSettings {
 
   // AI + tokens
   token_price: TokenPrice;
+  /** What people can buy (backend wallets/token-packs.ts). Unset = defaults. */
+  token_packs?: {
+    id?: string;
+    name: string;
+    tokens: number;
+    bonus_tokens: number;
+    price_ngn: number;
+    tag: string | null;
+    active: boolean;
+  }[];
   image_measurement_token_price: number;
   video_measurement_token_price: number;
   outfit_generation_token_price: number;
