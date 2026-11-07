@@ -2,16 +2,19 @@
 
 // The pre-launch waitlist: who joined, as a shopper or a store, and whether
 // they have since made an account. Totals cover the whole list; the table
-// follows the filter. "Download CSV" exports the current filter.
+// follows the filter. "Download CSV" exports the current filter. Likely bots
+// (backend waitlist-bot.ts) are kept out of everything except their own view.
 
 import { useEffect, useState, type ReactNode } from 'react';
 import {
   CalendarPlus,
+  Bot,
   Download,
   Loader2,
   Search,
   ShoppingBag,
   Store,
+  Trash2,
   Users,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -20,7 +23,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MetricCard } from '@/pattern/common/molecules/metric-card';
 import { readApiError } from '@/redux/services/types';
+import { useConsoleAccess } from '@/lib/hooks/use-console-access';
 import {
+  useDeleteWaitlistBotsMutation,
   useGetWaitlistQuery,
   useLazyExportWaitlistQuery,
   type WaitlistParams,
@@ -56,6 +61,7 @@ const formatDay = (iso: string | null) =>
 
 export default function WaitlistPage() {
   const [type, setType] = useState<TypeFilter>('all');
+  const [bots, setBots] = useState(false);
   const [search, setSearch] = useState('');
   const [debounced, setDebounced] = useState('');
   const [page, setPage] = useState(1);
@@ -68,13 +74,19 @@ export default function WaitlistPage() {
     return () => clearTimeout(t);
   }, [search]);
 
+  const show = bots ? 'bots' : 'people';
   const { data, isLoading, isFetching, isError, error } = useGetWaitlistQuery({
-    type,
+    type: bots ? 'all' : type,
+    show,
     search: debounced || undefined,
     page,
     size: PAGE_SIZE,
   });
   const [exportCsv, { isFetching: isExporting }] = useLazyExportWaitlistQuery();
+  const [deleteBots, { isLoading: isDeleting }] =
+    useDeleteWaitlistBotsMutation();
+  const { can } = useConsoleAccess();
+  const canDelete = can('customers', 'delete');
 
   const rows = data?.data ?? [];
   const totals = data?.totals;
@@ -85,7 +97,8 @@ export default function WaitlistPage() {
   const onDownload = async () => {
     try {
       const csv = await exportCsv({
-        type,
+        type: bots ? 'all' : type,
+        show,
         search: debounced || undefined,
       }).unwrap();
       const url = URL.createObjectURL(
@@ -103,7 +116,25 @@ export default function WaitlistPage() {
     }
   };
 
-  const show = (n?: number) =>
+  const onDeleteBots = async () => {
+    const n = totals?.likely_bots ?? 0;
+    if (
+      !window.confirm(
+        `Delete all ${n.toLocaleString()} likely bots from the waitlist? This cannot be undone.`
+      )
+    )
+      return;
+    try {
+      const res = await deleteBots().unwrap();
+      toast.success(`Deleted ${res.deleted.toLocaleString()} bots.`);
+      setBots(false);
+      setPage(1);
+    } catch (e) {
+      toast.error(readApiError(e, 'Could not delete the bots.'));
+    }
+  };
+
+  const fmt = (n?: number) =>
     typeof n === 'number' ? n.toLocaleString() : '—';
 
   return (
@@ -120,7 +151,7 @@ export default function WaitlistPage() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title="On the waitlist"
-          value={show(totals?.total)}
+          value={fmt(totals?.total)}
           icon={
             <CardIcon bg="bg-[#57CAEB]">
               <Users className="size-6" />
@@ -129,7 +160,7 @@ export default function WaitlistPage() {
         />
         <MetricCard
           title="Shoppers"
-          value={show(totals?.customers)}
+          value={fmt(totals?.customers)}
           icon={
             <CardIcon bg="bg-[#5DDAB4]">
               <ShoppingBag className="size-6" />
@@ -138,7 +169,7 @@ export default function WaitlistPage() {
         />
         <MetricCard
           title="Stores"
-          value={show(totals?.vendors)}
+          value={fmt(totals?.vendors)}
           icon={
             <CardIcon bg="bg-[#FF8F6B]">
               <Store className="size-6" />
@@ -147,7 +178,7 @@ export default function WaitlistPage() {
         />
         <MetricCard
           title="Joined this week"
-          value={show(totals?.this_week)}
+          value={fmt(totals?.this_week)}
           subLabel="last 7 days"
           icon={
             <CardIcon bg="bg-[#9A55FF]">
@@ -169,14 +200,15 @@ export default function WaitlistPage() {
                 key={t.value}
                 type="button"
                 role="tab"
-                aria-selected={type === t.value}
+                aria-selected={!bots && type === t.value}
                 onClick={() => {
                   setType(t.value);
+                  setBots(false);
                   setPage(1);
                 }}
                 className={cn(
                   'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
-                  type === t.value
+                  !bots && type === t.value
                     ? 'border-primary bg-primary text-white'
                     : 'border-border text-grey3 hover:border-primary dark:text-gray-300'
                 )}
@@ -184,6 +216,26 @@ export default function WaitlistPage() {
                 {t.label}
               </button>
             ))}
+            {!!totals?.likely_bots && (
+              <button
+                type="button"
+                role="tab"
+                aria-selected={bots}
+                onClick={() => {
+                  setBots(true);
+                  setPage(1);
+                }}
+                className={cn(
+                  'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
+                  bots
+                    ? 'border-amber-600 bg-amber-600 text-white'
+                    : 'border-amber-300 text-amber-700 hover:border-amber-600 dark:border-amber-700 dark:text-amber-400'
+                )}
+              >
+                <Bot className="size-3.5" />
+                Likely bots · {fmt(totals.likely_bots)}
+              </button>
+            )}
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <div className="relative sm:w-72">
@@ -212,6 +264,29 @@ export default function WaitlistPage() {
           </div>
         </div>
 
+        {bots && (
+          <div className="mb-4 flex flex-col gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-800/60 dark:bg-amber-900/20 dark:text-amber-200 sm:flex-row sm:items-center sm:justify-between">
+            <p>
+              Random-letter names or emails stuffed with dots. They are left out
+              of the totals and the CSV. Don&rsquo;t email them: the messages
+              reach strangers and hurt Qlozet&rsquo;s email delivery.
+            </p>
+            {canDelete && (
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                onClick={onDeleteBots}
+                disabled={isDeleting || !totals?.likely_bots}
+                className="shrink-0"
+              >
+                {isDeleting ? <Loader2 className="animate-spin" /> : <Trash2 />}
+                Delete all bots
+              </Button>
+            )}
+          </div>
+        )}
+
         {isError ? (
           <p className="py-10 text-center text-sm text-destructive">
             {readApiError(error, 'Could not load the waitlist.')}
@@ -222,9 +297,11 @@ export default function WaitlistPage() {
           </div>
         ) : !rows.length ? (
           <p className="py-10 text-center text-sm text-grey3">
-            {debounced || type !== 'all'
-              ? 'Nobody matches this filter.'
-              : 'Nobody has joined the waitlist yet.'}
+            {bots
+              ? 'No likely bots.'
+              : debounced || type !== 'all'
+                ? 'Nobody matches this filter.'
+                : 'Nobody has joined the waitlist yet.'}
           </p>
         ) : (
           <div className={cn('overflow-x-auto', isFetching && 'opacity-60')}>

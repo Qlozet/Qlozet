@@ -19,6 +19,7 @@ export const baseAPI = createApi({
     },
   }),
   tagTypes: [
+    'Waitlist',
     'Business',
     'Businesses',
     'Customer',

@@ -17,6 +17,8 @@ export interface WaitlistEntry {
   createdAt: string | null;
   /** They have since made an account of the same type with this email. */
   signed_up: boolean;
+  /** Random-letter name or a dotted-up email (backend waitlist-bot.ts). */
+  likely_bot?: boolean;
 }
 
 export interface WaitlistPage {
@@ -25,18 +27,21 @@ export interface WaitlistPage {
   size: number;
   total_items: number;
   has_next_page: boolean;
-  /** The whole list, not the current filter. */
+  /** The whole list, not the current filter. Counts people; bots apart. */
   totals: {
     total: number;
     customers: number;
     vendors: number;
     this_week: number;
+    likely_bots: number;
   };
 }
 
 export interface WaitlistParams {
   type?: 'all' | WaitlistType;
   search?: string;
+  /** 'people' (default) hides likely bots; 'bots' shows only them. */
+  show?: 'people' | 'bots';
   page?: number;
   size?: number;
 }
@@ -49,12 +54,20 @@ export const waitlistApiSlice = baseAPI.injectEndpoints({
         method: 'GET',
       }),
       transformResponse: (res: ApiResponse<WaitlistPage>) => res.data,
+      providesTags: ['Waitlist'],
+    }),
+
+    // Deletes every likely-bot entry; needs Customers → Delete.
+    deleteWaitlistBots: builder.mutation<{ deleted: number }, void>({
+      query: () => ({ url: '/admin/waitlist/bots', method: 'DELETE' }),
+      transformResponse: (res: ApiResponse<{ deleted: number }>) => res.data,
+      invalidatesTags: ['Waitlist'],
     }),
 
     // The same filter as a CSV file; the page turns the text into a download.
     exportWaitlist: builder.query<
       string,
-      Pick<WaitlistParams, 'type' | 'search'>
+      Pick<WaitlistParams, 'type' | 'search' | 'show'>
     >({
       query: (params) => ({
         url: `/admin/waitlist/export${buildQueryString({ ...params })}`,
@@ -66,5 +79,8 @@ export const waitlistApiSlice = baseAPI.injectEndpoints({
   }),
 });
 
-export const { useGetWaitlistQuery, useLazyExportWaitlistQuery } =
-  waitlistApiSlice;
+export const {
+  useGetWaitlistQuery,
+  useLazyExportWaitlistQuery,
+  useDeleteWaitlistBotsMutation,
+} = waitlistApiSlice;
