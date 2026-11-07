@@ -15,6 +15,7 @@ export const APP_ROUTES = {
   measurements: '/measurements',
   vendors: '/vendors',
   customers: '/customers',
+  waitlist: '/waitlist',
   products: '/products',
   productsCloth: '/products/clothing',
   productsAccessories: '/products/accessories',

@@ -53,6 +53,8 @@ const ROUTE_RESOURCES: [prefix: string, resource: ConsoleResource][] = [
   ['/measurements', 'dashboard'],
   ['/vendors', 'vendors'],
   ['/customers', 'customers'],
+  // Contact details, so it sits with customers (backend console-access RULES).
+  ['/waitlist', 'customers'],
   ['/products', 'products'],
   ['/product-details', 'products'],
   ['/orders', 'orders'],
