@@ -23,7 +23,10 @@ import {
   useGetProductQuery,
   useDeleteProductMutation,
   useGetProductRatingsQuery,
+  useCreateProductPreviewLinkMutation,
 } from '@/redux/services/products/products.api-slice';
+import { shopPreviewUrl } from '@/lib/shop-url';
+import { readApiError } from '@/redux/services/types';
 import { ProductReviewsSheet } from '@/pattern/products/organisms/product-reviews-sheet';
 import { AddFabricModal } from '../organisms/add-fabric-modal';
 import { AddAccessoryModal } from '../organisms/add-accessories-modal';
@@ -332,7 +335,33 @@ export const ProductDetailsTemplate = ({
     }
   };
 
-  const wip = () => toast.info('This action is coming soon.');
+  // Opens the listing on the real shop page, live or not. The tab opens on
+  // the click itself (a tab opened after the request returns is blocked as a
+  // pop-up) and is pointed at the link once it arrives.
+  const [createPreviewLink, { isLoading: previewing }] =
+    useCreateProductPreviewLinkMutation();
+  const handlePreview = async () => {
+    const tab = window.open('', '_blank');
+    try {
+      const res = await createPreviewLink(productId).unwrap();
+      const url = shopPreviewUrl(productId, res.data.token);
+      if (tab) {
+        tab.opener = null;
+        tab.location.href = url;
+      } else {
+        window.location.href = url;
+      }
+      if (!res.data.live) {
+        toast.info('Only you can see this preview', {
+          description:
+            'Shoppers will see it once it is live. The link works for 30 minutes.',
+        });
+      }
+    } catch (error) {
+      tab?.close();
+      toast.error(readApiError(error, "Couldn't open the preview."));
+    }
+  };
 
   const handleEdit = () => {
     if (isFabric) {
@@ -364,9 +393,15 @@ export const ProductDetailsTemplate = ({
         {/* Header */}
         <div className="flex items-center justify-between">
           <GoBackButton />
-          <Button variant="outline" onClick={wip} className="gap-2">
+          <Button
+            variant="outline"
+            onClick={() => void handlePreview()}
+            disabled={previewing}
+            className="gap-2"
+            title="See it on the shop page, as shoppers will"
+          >
             <Monitor className="size-4" />
-            Preview
+            {previewing ? 'Opening…' : 'Preview'}
           </Button>
         </div>
 
