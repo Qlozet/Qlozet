@@ -29,10 +29,10 @@ export const SETTINGS_TABS: SettingsTab[] = [
   },
   { label: 'Order Settings', slug: 'order-settings' },
   { label: 'Payout', slug: 'payout', ownerOnly: true },
-  // TODO(api): hidden until the backend supports them. Security had no content
-  // beyond a "coming soon" placeholder, and Billing was a form whose inputs
-  // were wired to empty handlers — neither reads or writes anything.
-  // { label: 'Security', slug: 'security' },
+  // Everyone changes their own password, so not owner-only.
+  { label: 'Security', slug: 'security' },
+  // TODO(api): hidden until the backend supports it. Billing was a form whose
+  // inputs were wired to empty handlers; it reads and writes nothing.
   // { label: 'Billing', slug: 'billing' },
 ];
 
