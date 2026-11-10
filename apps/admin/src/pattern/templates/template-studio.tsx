@@ -19,6 +19,9 @@ import {
   Gem,
   ImagePlus,
   Loader2,
+  RefreshCw,
+  Repeat2,
+  Send,
   MessageSquare,
   Palette,
   Settings2,
@@ -40,19 +43,24 @@ import {
   useCreateBespokeTemplateMutation,
   useUpdateBespokeTemplateMutation,
   useGenerateTemplateOutfitMutation,
+  useEditTemplateImageMutation,
   useLazyGetGenerationJobQuery,
   useAnalyzeReferenceMutation,
 } from '@/redux/services/bespoke-templates/bespoke-templates.api-slice';
 import { useGetAdminStylesQuery } from '@/redux/services/style-library/style-library.api-slice';
 import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
 import { EMBELLISHMENTS, filterEmbellishments } from './embellishments';
+import { GeneratingView, type StudioWork } from './generating-view';
 import {
   CATEGORIES,
   COLORS,
   EMPTY_SELECTIONS,
   FIT_OPTIONS,
+  backViewsForSave,
   buildGenerationRequest,
   colourName,
+  garmentWords,
+  refineNotes,
   genderKeyFor,
   hasOptionalTrousers,
   keepFitting,
@@ -114,6 +122,9 @@ function StudioInner() {
   const [status, setStatus] = useState<'active' | 'inactive'>('inactive');
   const [images, setImages] = useState<string[]>([]);
   const [activeIdx, setActiveIdx] = useState(0);
+  // The back of an image, by its front's url.
+  const [backs, setBacks] = useState<Record<string, string>>({});
+  const [showBack, setShowBack] = useState(false);
   const [references, setReferences] = useState<string[]>([]);
   const [selections, setSelections] = useState<Selections>(EMPTY_SELECTIONS);
   const [embellishments, setEmbellishments] = useState<string[]>([]);
@@ -142,6 +153,7 @@ function StudioInner() {
     fit,
     status,
     images,
+    backs: backViewsForSave(images, backs),
     references,
     selections,
     embellishments,
@@ -194,6 +206,10 @@ function StudioInner() {
     setCategory(t.category);
     setStatus(t.status);
     setImages(t.design_images ?? []);
+    const loadedBacks: Record<string, string> = {};
+    for (const v of t.back_views ?? [])
+      if (v?.front && v?.back) loadedBacks[v.front] = v.back;
+    setBacks(loadedBacks);
     setReferences(t.reference_images ?? []);
     if (t.description) {
       try {
@@ -295,24 +311,29 @@ function StudioInner() {
     throw new Error('The AI took too long. Try again.');
   };
 
-  const showJobError = (title: string, err: any) => {
+  const showJobError = (title: string, err: any, retry?: () => void) => {
     if (err instanceof Cancelled) return;
     const detail =
       typeof err?.detail === 'string' ? err.detail.slice(0, 160) : undefined;
     toast.error(title, {
       description: [err?.message, detail].filter(Boolean).join(' '),
+      ...(retry && {
+        duration: 12000,
+        action: { label: 'Try again', onClick: retry },
+      }),
     });
   };
 
   // ── Generate ──
   const [generate] = useGenerateTemplateOutfitMutation();
-  const [generating, setGenerating] = useState(false);
-  const [genStatus, setGenStatus] = useState<string | null>(null);
+  // What the AI is making right now (null = idle). One job at a time.
+  const [work, setWork] = useState<StudioWork | null>(null);
+  const [workBase, setWorkBase] = useState<string | null>(null);
 
   const runGenerate = async () => {
-    if (generating) return;
-    setGenerating(true);
-    setGenStatus('Queuing generation…');
+    if (work) return;
+    setWork('new');
+    setShowBack(false);
     try {
       const { config, userPrompt } = buildGenerationRequest({
         gender,
@@ -331,9 +352,8 @@ function StudioInner() {
         reference_image_urls: references.length ? references : undefined,
       }).unwrap();
       const jobId = jobIdOf(res);
-      if (!jobId) throw new Error('The AI did not take the job. Try again.');
+      if (!jobId) throw new Error('The AI did not take the job.');
 
-      setGenStatus('AI is drawing the garment…');
       const result = await waitForJob(jobId);
       const url = result?.image_url ?? result?.fileUrl;
       if (!url) throw new Error('The AI finished without an image.');
@@ -344,11 +364,68 @@ function StudioInner() {
         return next;
       });
     } catch (err: any) {
-      showJobError('Generation failed', err);
+      showJobError('Generation failed', err, () => void runGenerate());
+    } finally {
+      if (alive.current) setWork(null);
+    }
+  };
+
+  // ── Refine in words / draw the back (the shop's image editor) ──
+  const [editImage] = useEditTemplateImageMutation();
+  const [refineText, setRefineText] = useState('');
+
+  const runEdit = async (kind: 'refine' | 'back', instruction = '') => {
+    const front = images[activeIdx];
+    if (work || !front) return;
+    // Refining while the back is on screen changes the back.
+    const onBack = kind === 'refine' && showBack && !!backs[front];
+    const base = onBack ? backs[front] : front;
+    setWork(kind);
+    setWorkBase(base);
+    try {
+      const res = await editImage({
+        base_image_url: base,
+        garment_type: garmentWords(
+          gender,
+          category,
+          hasOptionalTrousers(category) && withTrousers
+        ),
+        fit: FIT_OPTIONS.find((f) => f.id === fit)?.label.toLowerCase(),
+        style_notes:
+          kind === 'refine' ? refineNotes(instruction) : prompt.trim(),
+        ...(kind === 'back' && { view: 'back' as const }),
+      }).unwrap();
+      const jobId = jobIdOf(res);
+      if (!jobId) throw new Error('The AI did not take the job.');
+      const result = await waitForJob(jobId);
+      const url = result?.image_url ?? result?.fileUrl;
+      if (!url) throw new Error('The AI finished without an image.');
+      if (!alive.current) return;
+      if (kind === 'back' || onBack) {
+        setBacks((prev) => ({ ...prev, [front]: url }));
+        setShowBack(true);
+      } else {
+        // A refine is a new image beside the one it came from.
+        setImages((prev) => {
+          const next = [...prev, url];
+          setActiveIdx(next.length - 1);
+          return next;
+        });
+        setShowBack(false);
+        setRefineText('');
+      }
+    } catch (err: any) {
+      showJobError(
+        kind === 'back'
+          ? 'Could not draw the back'
+          : 'Could not make that change',
+        err,
+        () => void runEdit(kind, instruction)
+      );
     } finally {
       if (alive.current) {
-        setGenStatus(null);
-        setGenerating(false);
+        setWork(null);
+        setWorkBase(null);
       }
     }
   };
@@ -468,6 +545,7 @@ function StudioInner() {
     const beforeIdx = activeIdx;
     setImages(before.filter((_, x) => x !== i));
     setActiveIdx((idx) => Math.max(0, idx - (i <= idx ? 1 : 0)));
+    setShowBack(false);
     toast('Image removed', {
       action: {
         label: 'Undo',
@@ -523,6 +601,7 @@ function StudioInner() {
       category,
       gender,
       design_images: images,
+      back_views: backViewsForSave(images, backs),
       reference_images: references,
       description,
       status,
@@ -552,6 +631,17 @@ function StudioInner() {
   };
 
   const activeImage = images[activeIdx];
+  const activeBack = activeImage ? backs[activeImage] : undefined;
+  const shownImage = showBack && activeBack ? activeBack : activeImage;
+  const busy = work !== null || analyzing;
+  const workSummary = [
+    category,
+    colourName(color),
+    FIT_OPTIONS.find((f) => f.id === fit)?.label,
+    ...Object.values(selections)
+      .map((id) => allStyles.find((st) => st._id === id)?.name)
+      .filter(Boolean),
+  ].filter((x): x is string => !!x);
   const openToolMeta = TOOLS.find((t) => t.key === displayTool);
 
   // ── Drawer content (shared between desktop drawer + mobile sheet) ──
@@ -1067,27 +1157,117 @@ function StudioInner() {
             backgroundSize: '24px 24px',
           }}
         >
+          {work && (
+            <GeneratingView
+              kind={work}
+              baseImage={workBase}
+              summary={workSummary}
+            />
+          )}
           {activeImage ? (
             <div className="flex flex-col items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={activeImage}
-                alt={name}
-                className="max-h-[48vh] w-auto rounded-xl object-contain"
+                src={shownImage}
+                alt={showBack ? `${name}, back` : name}
+                className="max-h-[44vh] w-auto rounded-xl object-contain"
               />
-              {activeIdx === 0 ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary">
-                  <Star className="size-3" /> Cover · customers see this first
-                </span>
-              ) : (
+              <div className="flex flex-wrap items-center justify-center gap-1.5">
+                {activeBack ? (
+                  <div
+                    role="group"
+                    aria-label="Side shown"
+                    className="inline-flex rounded-full border border-border bg-white p-0.5 dark:bg-card"
+                  >
+                    {[
+                      { back: false, label: 'Front' },
+                      { back: true, label: 'Back' },
+                    ].map((o) => (
+                      <button
+                        key={o.label}
+                        type="button"
+                        onClick={() => setShowBack(o.back)}
+                        aria-pressed={showBack === o.back}
+                        className={cn(
+                          'cursor-pointer rounded-full px-2.5 py-0.5 text-[11px] font-semibold transition-colors',
+                          showBack === o.back
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-grey3 hover:text-grey-black dark:text-gray-400 dark:hover:text-white'
+                        )}
+                      >
+                        {o.label}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => void runEdit('back')}
+                    disabled={busy}
+                    className="inline-flex cursor-pointer items-center gap-1 rounded-full border border-border bg-white px-2.5 py-1 text-[11px] font-semibold text-grey-black transition-colors hover:border-primary disabled:cursor-not-allowed disabled:opacity-50 dark:bg-card dark:text-white"
+                  >
+                    <Repeat2 className="size-3" /> Draw the back
+                  </button>
+                )}
+                {activeBack && (
+                  <button
+                    type="button"
+                    onClick={() => void runEdit('back')}
+                    disabled={busy}
+                    aria-label="Draw the back again"
+                    title="Draw the back again"
+                    className="inline-flex size-6 cursor-pointer items-center justify-center rounded-full border border-border bg-white text-grey3 transition-colors hover:border-primary hover:text-grey-black disabled:cursor-not-allowed disabled:opacity-50 dark:bg-card dark:text-gray-400"
+                  >
+                    <RefreshCw className="size-3" />
+                  </button>
+                )}
+                {activeIdx === 0 ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary">
+                    <Star className="size-3" /> Cover · customers see this first
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => makeCover(activeIdx)}
+                    className="inline-flex cursor-pointer items-center gap-1 rounded-full border border-border bg-white px-2.5 py-1 text-[11px] font-semibold text-grey-black transition-colors hover:border-primary dark:bg-card dark:text-white"
+                  >
+                    <Star className="size-3" /> Set as cover
+                  </button>
+                )}
+              </div>
+              {/* Refine in words: a new image with only this changed */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (refineText.trim()) void runEdit('refine', refineText);
+                }}
+                className="mt-1 flex w-full max-w-md items-center gap-1.5 rounded-xl border border-border bg-white p-1 pl-3 focus-within:border-primary dark:bg-card"
+              >
+                <label htmlFor="studio-refine" className="sr-only">
+                  Change something
+                </label>
+                <input
+                  id="studio-refine"
+                  value={refineText}
+                  onChange={(e) => setRefineText(e.target.value)}
+                  disabled={busy}
+                  maxLength={300}
+                  placeholder={
+                    showBack && activeBack
+                      ? 'Change the back, e.g. lower the neckline'
+                      : 'Change something, e.g. make the sleeves shorter'
+                  }
+                  className="h-8 min-w-0 flex-1 bg-transparent text-sm text-grey-black outline-none placeholder:text-gray-400 disabled:opacity-60 dark:text-white"
+                />
                 <button
-                  type="button"
-                  onClick={() => makeCover(activeIdx)}
-                  className="inline-flex cursor-pointer items-center gap-1 rounded-full border border-border bg-white px-2.5 py-1 text-[11px] font-semibold text-grey-black transition-colors hover:border-primary dark:bg-card dark:text-white"
+                  type="submit"
+                  disabled={busy || !refineText.trim()}
+                  aria-label="Make this change"
+                  className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg bg-primary text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  <Star className="size-3" /> Set as cover
+                  <Send className="size-3.5" />
                 </button>
-              )}
+              </form>
             </div>
           ) : (
             <div className="flex flex-col items-center text-center">
@@ -1107,7 +1287,10 @@ function StudioInner() {
                 <div key={img + i} className="group/thumb relative shrink-0">
                   <button
                     type="button"
-                    onClick={() => setActiveIdx(i)}
+                    onClick={() => {
+                      setActiveIdx(i);
+                      setShowBack(false);
+                    }}
                     aria-label={i === 0 ? 'Cover image' : `Image ${i + 1}`}
                     className={cn(
                       'block size-14 cursor-pointer overflow-hidden rounded-lg border-2 transition-transform hover:scale-105',
@@ -1121,6 +1304,14 @@ function StudioInner() {
                       className="h-full w-full object-cover"
                     />
                   </button>
+                  {backs[img] && (
+                    <span
+                      className="pointer-events-none absolute left-1 top-1 flex size-4 items-center justify-center rounded-full bg-black/55 text-white"
+                      title="Has a back view"
+                    >
+                      <Repeat2 className="size-2.5" />
+                    </span>
+                  )}
                   {i === 0 && (
                     <span className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center rounded-b-lg bg-black/55 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white">
                       Cover
@@ -1156,20 +1347,22 @@ function StudioInner() {
             </button>
             <button
               type="button"
-              onClick={runGenerate}
-              disabled={generating || analyzing}
+              onClick={() => void runGenerate()}
+              disabled={busy}
               className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-bold text-primary-foreground transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60 disabled:hover:translate-y-0"
             >
-              {generating || analyzing ? (
+              {busy ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (
                 <Wand2 className="size-4" />
               )}
-              {generating
-                ? (genStatus ?? 'Generating…')
+              {work
+                ? 'Working…'
                 : analyzing
                   ? 'Reading your photo…'
-                  : 'Generate'}
+                  : images.length
+                    ? 'Generate another'
+                    : 'Generate'}
             </button>
           </div>
           <input

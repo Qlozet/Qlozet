@@ -231,3 +231,45 @@ export function buildGenerationRequest(input: GenerationInput) {
 
   return { config, userPrompt: userPrompt || undefined };
 }
+
+/**
+ * The garment in words, for the image editor (refine, back view). Always
+ * sent: without it the backend assumes "women's flare mini dress".
+ */
+export function garmentWords(
+  gender: Gender,
+  category: string,
+  withTrousers: boolean
+): string {
+  const who = gender === 'men' ? "men's" : "women's";
+  const c = category.toLowerCase();
+  if (c === 'agbada')
+    return `${who} agbada (outer robe over an inner top${withTrousers ? ', with trousers' : ''})`;
+  if (c === 'kaftan')
+    return `${who} kaftan${withTrousers ? ' with trousers' : ''}`;
+  const named: Record<string, string> = {
+    tops: 'top',
+    shirts: 'shirt',
+    dresses: 'dress',
+    skirts: 'skirt',
+    pants: 'trousers',
+    jumpsuits: 'jumpsuit',
+    sets: 'two-piece set (top and trousers)',
+    suits: 'suit',
+  };
+  return `${who} ${named[c] ?? 'outfit'}`;
+}
+
+/** What a refine asks the editor: change only this. */
+export const refineNotes = (instruction: string) =>
+  `Change only this and keep everything else exactly as it is: ${instruction.trim()}`;
+
+/** Back views worth saving: one per image the template still has. */
+export function backViewsForSave(
+  images: string[],
+  backs: Record<string, string>
+): { front: string; back: string }[] {
+  return images
+    .filter((front) => backs[front])
+    .map((front) => ({ front, back: backs[front] }));
+}

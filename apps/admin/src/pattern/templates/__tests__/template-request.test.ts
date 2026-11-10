@@ -2,10 +2,13 @@ import { describe, expect, it } from 'vitest';
 import type { PlatformStyle } from '@/redux/services/style-library/style-library.api-slice';
 import {
   EMPTY_SELECTIONS,
+  backViewsForSave,
   buildGenerationRequest,
   colourName,
   garmentTypeFor,
+  garmentWords,
   keepFitting,
+  refineNotes,
 } from '../template-request';
 
 const style = (patch: Partial<PlatformStyle>): PlatformStyle =>
@@ -149,5 +152,31 @@ describe('switching gender or garment', () => {
     );
     expect(out.selections.silhouette).toBeNull();
     expect(out.dropped).toEqual(['A-line']);
+  });
+});
+
+describe('refine and back view', () => {
+  it('always names the garment for the image editor', () => {
+    expect(garmentWords('men', 'Agbada', true)).toBe(
+      "men's agbada (outer robe over an inner top, with trousers)"
+    );
+    expect(garmentWords('men', 'Kaftan', false)).toBe("men's kaftan");
+    expect(garmentWords('women', 'Pants', true)).toBe("women's trousers");
+    expect(garmentWords('women', 'Unknown', true)).toBe("women's outfit");
+  });
+
+  it('asks the editor to change only what was asked', () => {
+    expect(refineNotes('  shorter sleeves ')).toBe(
+      'Change only this and keep everything else exactly as it is: shorter sleeves'
+    );
+  });
+
+  it('saves one back per image still on the template, in image order', () => {
+    expect(
+      backViewsForSave(['b', 'a'], { a: 'a-back', b: 'b-back', gone: 'x' })
+    ).toEqual([
+      { front: 'b', back: 'b-back' },
+      { front: 'a', back: 'a-back' },
+    ]);
   });
 });
