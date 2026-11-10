@@ -12,6 +12,8 @@ export interface BespokeTemplate {
   category: string;
   gender: 'men' | 'women';
   design_images: string[];
+  /** The back of an image, one per front image. */
+  back_views?: { front: string; back: string }[];
   /** Admin-uploaded inspiration photos — seed the customer's Photo & Notes. */
   reference_images?: string[];
   /** Same JSON contract as a design's description: { selections, userPrompt } */
@@ -33,6 +35,7 @@ export type SaveTemplateRequest = Partial<
     | 'category'
     | 'gender'
     | 'design_images'
+    | 'back_views'
     | 'reference_images'
     | 'description'
     | 'status'
@@ -113,6 +116,25 @@ export const bespokeTemplatesApiSlice = baseAPI.injectEndpoints({
       }),
     }),
 
+    // Change an image in words, or draw its back (view: 'back'). Same
+    // editor the shop studio refines with; free for platform users.
+    editTemplateImage: builder.mutation<
+      ApiResponse<{ jobId?: string; job_id?: string }>,
+      {
+        base_image_url: string;
+        garment_type?: string;
+        fit?: string;
+        style_notes?: string;
+        view?: 'front' | 'back';
+      }
+    >({
+      query: (body) => ({
+        url: '/measurements/edit-garment-image',
+        method: 'POST',
+        body,
+      }),
+    }),
+
     getGenerationJob: builder.query<ApiResponse<GenerationJob>, string>({
       query: (jobId) => ({ url: `/measurements/job/${jobId}`, method: 'GET' }),
       // Polled — never cache.
@@ -141,6 +163,7 @@ export const {
   useUpdateBespokeTemplateMutation,
   useDeleteBespokeTemplateMutation,
   useGenerateTemplateOutfitMutation,
+  useEditTemplateImageMutation,
   useLazyGetGenerationJobQuery,
   useAnalyzeReferenceMutation,
 } = bespokeTemplatesApiSlice;
