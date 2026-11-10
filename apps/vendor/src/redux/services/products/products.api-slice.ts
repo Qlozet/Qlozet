@@ -671,6 +671,22 @@ export const productsApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['ProductReviews', 'Product'],
     }),
 
+    // POST /products/{id}/preview-link — a 30-minute token that opens this
+    // listing on the shop page, live or not (buying is off on that link).
+    createProductPreviewLink: builder.mutation<
+      {
+        data: {
+          token: string;
+          expires_at: string;
+          live: boolean;
+          reason: string | null;
+        };
+      },
+      string
+    >({
+      query: (id) => ({ url: `/products/${id}/preview-link`, method: 'POST' }),
+    }),
+
     // GET /products/{id}/ratings — rating summary, reviews + items_sold
     getProductRatings: builder.query<any, string>({
       query: (id) => ({ url: `/products/${id}/ratings`, method: 'GET' }),
@@ -758,6 +774,7 @@ export const {
   useUpdateFabricStockMutation,
   useUpdateAccessoryVariantStockMutation,
   useRateProductMutation,
+  useCreateProductPreviewLinkMutation,
   useGetProductRatingsQuery,
   useGetVendorProductRatingsQuery,
   useToggleProductWishlistMutation,
