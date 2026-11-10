@@ -207,8 +207,7 @@ function StudioInner() {
         });
         if (sel.color) setColor(sel.color);
         if (sel.fit) setFit(sel.fit);
-        if (typeof sel.with_trousers === 'boolean')
-          setWithTrousers(sel.with_trousers);
+        if (sel.no_trousers === true) setWithTrousers(false);
         if (Array.isArray(sel.accessories)) {
           setEmbellishments(
             sel.accessories
@@ -512,7 +511,9 @@ function StudioInner() {
         ...(selections.collar && { collar: selections.collar }),
         ...(color && { color }),
         ...(fit && { fit }),
-        ...(hasOptionalTrousers(category) && { with_trousers: withTrousers }),
+        // The shop's own key: only an agbada or kaftan can leave them off.
+        ...(hasOptionalTrousers(category) &&
+          !withTrousers && { no_trousers: true }),
         ...(enriched.length && { accessories: enriched }),
       },
       userPrompt: prompt.trim() || undefined,
