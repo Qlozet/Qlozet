@@ -3,14 +3,16 @@
 // Template Studio — the admin's twin of the shop's bespoke studio.
 // Same bones: a dotted canvas with the garment, a floating toolbar of tools,
 // and a config DRAWER — a right-hand slide-in on desktop, a bottom sheet on
-// mobile (mirroring the shop's MobileBottomSheet). Sections: Basics, Styles,
-// Finishing (the shop's embellishment catalogue), Photo & Notes (reference
-// upload + AI analysis that writes the prompt and auto-applies matched
-// styles), and Colour & Prompt. Generation + analysis run the shared
-// pipelines, free for platform users.
+// mobile (mirroring the shop's MobileBottomSheet). Sections: Basics (gender,
+// garment, fit), Styles, Finishing (the shop's embellishment catalogue),
+// Photo & Notes (reference upload + AI analysis that suggests a prompt and
+// applies matched styles), and Colour. What goes to the generator is built in
+// template-request.ts, in step with the shop. Generation + analysis run the
+// shared pipelines, free for platform users.
 
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import NiceModal from '@ebay/nice-modal-react';
 import {
   ArrowLeft,
   Check,
@@ -22,6 +24,7 @@ import {
   Settings2,
   Shirt,
   Sparkles,
+  Star,
   Trash2,
   Upload,
   Wand2,
@@ -30,6 +33,8 @@ import {
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { APP_ROUTES } from '@/lib/routes';
+import { guardedLeave, useLeaveGuard } from '@/lib/leave-guard';
+import { ConfirmActionModal } from '@/pattern/common/organisms/confirm-action-modal';
 import {
   useGetBespokeTemplateQuery,
   useCreateBespokeTemplateMutation,
@@ -39,32 +44,24 @@ import {
   useAnalyzeReferenceMutation,
 } from '@/redux/services/bespoke-templates/bespoke-templates.api-slice';
 import { useGetAdminStylesQuery } from '@/redux/services/style-library/style-library.api-slice';
-import type { PlatformStyle } from '@/redux/services/style-library/style-library.api-slice';
 import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
 import { EMBELLISHMENTS, filterEmbellishments } from './embellishments';
-
-// Mirrors the shop studio's garment catalogue + its category→scope mapping.
-const CATEGORIES: Record<'women' | 'men', string[]> = {
-  women: ['Tops', 'Dresses', 'Skirts', 'Pants', 'Jumpsuits', 'Sets'],
-  men: ['Kaftan', 'Agbada', 'Pants', 'Shirts', 'Suits', 'Sets'],
-};
-
-const TYPE_MAP: Record<string, 'top' | 'bottom' | 'full_body'> = {
-  tops: 'top',
-  shirts: 'top',
-  blouses: 'top',
-  dresses: 'full_body',
-  jumpsuits: 'full_body',
-  kaftan: 'full_body',
-  agbada: 'full_body',
-  sets: 'full_body',
-  suits: 'full_body',
-  skirts: 'bottom',
-  pants: 'bottom',
-  trousers: 'bottom',
-};
-
-type SelectionKey = 'silhouette' | 'neckline' | 'sleeve' | 'collar';
+import {
+  CATEGORIES,
+  COLORS,
+  EMPTY_SELECTIONS,
+  FIT_OPTIONS,
+  buildGenerationRequest,
+  colourName,
+  genderKeyFor,
+  hasOptionalTrousers,
+  keepFitting,
+  scopeFor,
+  styleFits,
+  type Gender,
+  type SelectionKey,
+  type Selections,
+} from './template-request';
 
 const STYLE_SECTIONS: {
   key: string;
@@ -77,22 +74,6 @@ const STYLE_SECTIONS: {
   { key: 'collar', label: 'Collar', selection: 'collar' },
 ];
 
-// The shop studio's fabric colour palette, verbatim.
-const COLORS = [
-  '#1B2A4A',
-  '#8B4513',
-  '#2C1810',
-  '#D4AF37',
-  '#800020',
-  '#F5F0E8',
-  '#3B5998',
-  '#228B22',
-  '#FF6347',
-  '#4B0082',
-  '#E8D5B7',
-  '#1A1A1A',
-];
-
 type ToolKey = 'basics' | 'styles' | 'finishing' | 'reference' | 'colour';
 
 const TOOLS: { key: ToolKey; label: string; icon: React.ElementType }[] = [
@@ -103,22 +84,38 @@ const TOOLS: { key: ToolKey; label: string; icon: React.ElementType }[] = [
   { key: 'colour', label: 'Colour', icon: Palette },
 ];
 
+const MAX_REFERENCES = 3;
+const POLL_MS = 3000;
+const POLL_TRIES = 60;
+/** Poll requests that may fail in a row (a network blip) before giving up. */
+const POLL_MISSES = 3;
+
+class Cancelled extends Error {}
+
+const jobIdOf = (res: any): string | undefined =>
+  res?.data?.jobId ?? res?.jobId ?? res?.data?.job_id;
+
 function StudioInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const templateId = searchParams.get('id');
+  // The id the studio opened with. After the first save of a new template
+  // the studio keeps going on the saved one (currentId), without reloading.
+  const [initialId] = useState(() => searchParams.get('id'));
+  const [currentId, setCurrentId] = useState<string | null>(initialId);
+  // False while an existing template is still loading.
+  const [hydrated, setHydrated] = useState(!initialId);
 
   // ── Template state ──
   const [name, setName] = useState('Untitled Template');
-  const [gender, setGender] = useState<'women' | 'men'>('women');
+  const [gender, setGender] = useState<Gender>('women');
   const [category, setCategory] = useState('Dresses');
+  const [withTrousers, setWithTrousers] = useState(true);
+  const [fit, setFit] = useState<string | null>(null);
   const [status, setStatus] = useState<'active' | 'inactive'>('inactive');
   const [images, setImages] = useState<string[]>([]);
   const [activeIdx, setActiveIdx] = useState(0);
   const [references, setReferences] = useState<string[]>([]);
-  const [selections, setSelections] = useState<
-    Record<SelectionKey, string | null>
-  >({ silhouette: null, neckline: null, sleeve: null, collar: null });
+  const [selections, setSelections] = useState<Selections>(EMPTY_SELECTIONS);
   const [embellishments, setEmbellishments] = useState<string[]>([]);
   const [color, setColor] = useState<string | null>(null);
   const [prompt, setPrompt] = useState('');
@@ -134,15 +131,64 @@ function StudioInner() {
   const displayTool = openTool ?? lastTool;
   const [styleSection, setStyleSection] = useState<string>('full_body');
 
-  // ── Load when editing ──
-  const { data: existing } = useGetBespokeTemplateQuery(templateId ?? '', {
-    skip: !templateId,
+  // ── Unsaved changes ──
+  // Everything Save writes. The studio is "dirty" when it differs from what
+  // was last loaded or saved.
+  const snapshot = JSON.stringify({
+    name,
+    gender,
+    category,
+    withTrousers,
+    fit,
+    status,
+    images,
+    references,
+    selections,
+    embellishments,
+    color,
+    prompt,
   });
-  const hydrated = useRef(false);
+  const [savedSnapshot, setSavedSnapshot] = useState<string | null>(null);
+  // Set when the state was just loaded or saved: the next render's snapshot
+  // becomes the clean one.
+  const markClean = useRef(!initialId);
+  useEffect(() => {
+    if (!markClean.current) return;
+    markClean.current = false;
+    setSavedSnapshot(snapshot);
+    // hydrated: a loaded template identical to the defaults still counts.
+  }, [snapshot, hydrated]);
+  const dirty = savedSnapshot !== null && snapshot !== savedSnapshot;
+
+  useLeaveGuard(true, dirty, (go) => {
+    NiceModal.show(ConfirmActionModal, {
+      title: 'Leave without saving?',
+      description:
+        'Your changes to this template, including any images you generated, will be lost.',
+      confirmLabel: 'Leave',
+      destructive: true,
+      onConfirm: go,
+    });
+  });
+
+  // Polls and analyses stop touching state once the studio is gone.
+  const alive = useRef(true);
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+    };
+  }, []);
+
+  // ── Load when editing ──
+  const {
+    data: existing,
+    isError: loadFailed,
+    refetch: retryLoad,
+  } = useGetBespokeTemplateQuery(initialId ?? '', { skip: !initialId });
   useEffect(() => {
     const t = existing?.data;
-    if (!t || hydrated.current) return;
-    hydrated.current = true;
+    if (!t || hydrated) return;
     setName(t.name);
     setGender(t.gender === 'men' ? 'men' : 'women');
     setCategory(t.category);
@@ -160,6 +206,9 @@ function StudioInner() {
           collar: sel.collar ?? null,
         });
         if (sel.color) setColor(sel.color);
+        if (sel.fit) setFit(sel.fit);
+        if (typeof sel.with_trousers === 'boolean')
+          setWithTrousers(sel.with_trousers);
         if (Array.isArray(sel.accessories)) {
           setEmbellishments(
             sel.accessories
@@ -174,23 +223,22 @@ function StudioInner() {
         /* legacy/plain description — fields stay at defaults */
       }
     }
-  }, [existing]);
+    markClean.current = true;
+    setHydrated(true);
+  }, [existing, hydrated]);
 
   // ── Style library ──
   const { data: styleData } = useGetAdminStylesQuery({ scope: 'platform' });
   const allStyles = useMemo(() => styleData?.styles ?? [], [styleData]);
 
-  const garmentScope = TYPE_MAP[category.toLowerCase()] ?? 'full_body';
-  const genderKey = gender === 'men' ? 'male' : 'female';
+  const garmentScope = scopeFor(category);
+  const genderKey = genderKeyFor(gender);
 
   const sectionStyles = useMemo(
     () =>
       allStyles.filter(
         (s) =>
-          s.category === styleSection &&
-          s.is_active !== false &&
-          (s.gender === 'unisex' || s.gender === genderKey) &&
-          (s.type === garmentScope || s.category !== 'full_body')
+          s.category === styleSection && styleFits(s, genderKey, garmentScope)
       ),
     [allStyles, styleSection, genderKey, garmentScope]
   );
@@ -200,22 +248,61 @@ function StudioInner() {
     [garmentScope, genderKey]
   );
 
-  const styleById = (id: string | null): PlatformStyle | undefined =>
-    id ? allStyles.find((s) => s._id === id) : undefined;
+  // Switching gender or garment keeps the picks that still suit it, and
+  // says which ones it dropped.
+  const changeGarment = (nextGender: Gender, nextCategory: string) => {
+    const kept = keepFitting(
+      selections,
+      embellishments,
+      allStyles,
+      genderKeyFor(nextGender),
+      scopeFor(nextCategory)
+    );
+    setGender(nextGender);
+    setCategory(nextCategory);
+    setSelections(kept.selections);
+    setEmbellishments(kept.embellishments);
+    if (kept.dropped.length)
+      toast(`Removed what doesn't suit ${nextCategory.toLowerCase()}`, {
+        description: kept.dropped.join(', '),
+      });
+  };
 
   // ── Job polling (shared by generate + analyze) ──
   const [pollJob] = useLazyGetGenerationJobQuery();
   const waitForJob = async (jobId: string): Promise<any> => {
-    for (let attempt = 0; attempt < 60; attempt++) {
-      await new Promise((r) => setTimeout(r, 3000));
-      const jobRes = await pollJob(jobId).unwrap();
-      const job: any = (jobRes as any)?.data ?? jobRes;
+    let misses = 0;
+    for (let attempt = 0; attempt < POLL_TRIES; attempt++) {
+      await new Promise((r) => setTimeout(r, POLL_MS));
+      if (!alive.current) throw new Cancelled();
+      let job: any;
+      try {
+        const jobRes = await pollJob(jobId).unwrap();
+        job = (jobRes as any)?.data ?? jobRes;
+        misses = 0;
+      } catch {
+        // One failed check isn't a failed job: keep asking a few times.
+        if (++misses >= POLL_MISSES)
+          throw new Error('Lost touch with the AI job. Check your connection.');
+        continue;
+      }
       if (job?.status === 'completed') return job.result ?? {};
       if (job?.status === 'failed') {
-        throw new Error(job?.error || 'The AI job failed');
+        const err = new Error('The AI could not finish this one.');
+        (err as any).detail = job?.error;
+        throw err;
       }
     }
-    throw new Error('The AI job timed out');
+    throw new Error('The AI took too long. Try again.');
+  };
+
+  const showJobError = (title: string, err: any) => {
+    if (err instanceof Cancelled) return;
+    const detail =
+      typeof err?.detail === 'string' ? err.detail.slice(0, 160) : undefined;
+    toast.error(title, {
+      description: [err?.message, detail].filter(Boolean).join(' '),
+    });
   };
 
   // ── Generate ──
@@ -228,53 +315,42 @@ function StudioInner() {
     setGenerating(true);
     setGenStatus('Queuing generation…');
     try {
-      const constructionSelections: Record<string, string> = {};
-      const sil = styleById(selections.silhouette);
-      const neck = styleById(selections.neckline);
-      const slv = styleById(selections.sleeve);
-      const col = styleById(selections.collar);
-      if (sil) constructionSelections.silhouette = sil.name;
-      if (neck) constructionSelections.neckline = neck.name;
-      if (slv) constructionSelections.sleeve_style = slv.name;
-      if (col) constructionSelections.collar = col.name;
-
-      const config: Record<string, unknown> = {
-        garmentType: `${genderKey}_${garmentScope}`,
-        gender: genderKey,
-        view: 'front',
-        constructionSelections,
-      };
-      const chosenEmb = embellishments
-        .map((id) => EMBELLISHMENTS.find((e) => e.id === id)?.name)
-        .filter(Boolean) as string[];
-      if (chosenEmb.length) config.aestheticKeywords = chosenEmb;
-
-      const colourNote = color ? ` Primary colour: ${color}.` : '';
+      const { config, userPrompt } = buildGenerationRequest({
+        gender,
+        category,
+        withTrousers,
+        selections,
+        styles: allStyles,
+        embellishments,
+        color,
+        fit,
+        prompt,
+      });
       const res = await generate({
         config,
-        userPrompt: `${prompt.trim()}${colourNote}`.trim() || undefined,
+        userPrompt,
         reference_image_urls: references.length ? references : undefined,
       }).unwrap();
-      const jobId =
-        (res as any)?.data?.jobId ??
-        (res as any)?.jobId ??
-        (res as any)?.data?.job_id;
-      if (!jobId) throw new Error('No job id returned');
+      const jobId = jobIdOf(res);
+      if (!jobId) throw new Error('The AI did not take the job. Try again.');
 
       setGenStatus('AI is drawing the garment…');
       const result = await waitForJob(jobId);
       const url = result?.image_url ?? result?.fileUrl;
-      if (!url) throw new Error('Job finished without an image');
+      if (!url) throw new Error('The AI finished without an image.');
+      if (!alive.current) return;
       setImages((prev) => {
         const next = [...prev, url];
         setActiveIdx(next.length - 1);
         return next;
       });
     } catch (err: any) {
-      toast.error(err?.message || 'Generation failed. Please try again.');
+      showJobError('Generation failed', err);
     } finally {
-      setGenStatus(null);
-      setGenerating(false);
+      if (alive.current) {
+        setGenStatus(null);
+        setGenerating(false);
+      }
     }
   };
 
@@ -289,62 +365,80 @@ function StudioInner() {
     setAnalyzing(true);
     try {
       const res = await analyzeReference({ image_url: imageUrl }).unwrap();
-      const jobId =
-        (res as any)?.data?.jobId ??
-        (res as any)?.jobId ??
-        (res as any)?.data?.job_id;
-      if (!jobId) throw new Error('No job id returned');
+      const jobId = jobIdOf(res);
+      if (!jobId) throw new Error('The AI did not take the job.');
       const result = await waitForJob(jobId);
+      if (!alive.current) return;
 
-      // Auto-apply matched platform styles, exactly like the shop overlay.
+      // Apply the matched platform styles that suit this garment. A match
+      // without a library id can't be used for generation, so it's skipped.
       const matched = result?.matched_styles ?? {};
       const applied: string[] = [];
-      const applyIf = (key: SelectionKey, m: any) => {
-        const id = m?.style_id ?? m?.style_name;
-        if (!id) return;
-        setSelections((prev) => ({ ...prev, [key]: id }));
-        if (m?.style_name) applied.push(m.style_name);
-      };
-      applyIf('neckline', matched.neckline);
-      applyIf('sleeve', matched.sleeve);
-      applyIf('silhouette', matched.silhouette);
-      applyIf('collar', matched.collar);
+      const updates: Partial<Selections> = {};
+      for (const key of [
+        'silhouette',
+        'neckline',
+        'sleeve',
+        'collar',
+      ] as SelectionKey[]) {
+        const style = allStyles.find((s) => s._id === matched[key]?.style_id);
+        if (!style || !styleFits(style, genderKey, garmentScope)) continue;
+        updates[key] = style._id;
+        applied.push(style.name);
+      }
+      if (applied.length) setSelections((prev) => ({ ...prev, ...updates }));
 
-      if (result?.suggested_prompt) setPrompt(result.suggested_prompt);
-
+      // Fill an empty description; never overwrite what the admin wrote.
+      const suggestion: string | undefined = result?.suggested_prompt;
+      let promptNote = '';
+      if (suggestion) {
+        if (!prompt.trim()) {
+          setPrompt(suggestion);
+          promptNote = 'Description filled in from the photo.';
+        } else {
+          toast('The AI suggested a description', {
+            description: suggestion.slice(0, 140),
+            duration: 15000,
+            action: {
+              label: 'Use it',
+              onClick: () => setPrompt(suggestion),
+            },
+          });
+        }
+      }
       toast.success(
-        applied.length
-          ? `Styles detected: ${applied.join(', ')}`
-          : 'Reference analyzed — prompt updated'
+        applied.length ? `Styles applied: ${applied.join(', ')}` : 'Photo read',
+        promptNote ? { description: promptNote } : undefined
       );
     } catch (err: any) {
-      toast.error(err?.message || 'Analysis failed — the photo was kept.');
+      showJobError('Could not read the photo. It was still kept.', err);
     } finally {
-      setAnalyzing(false);
+      if (alive.current) setAnalyzing(false);
     }
   };
 
-  const handleReferenceUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0];
-    e.target.value = '';
+  const addReference = async (file: File | undefined) => {
     if (!file) return;
-    if (references.length >= 3)
-      return toast.error('Maximum 3 reference photos.');
+    if (!file.type.startsWith('image/'))
+      return toast.error('That file is not an image.');
+    if (references.length >= MAX_REFERENCES)
+      return toast.error(`Up to ${MAX_REFERENCES} reference photos.`);
     try {
       const res = await uploadImage(file).unwrap();
       const url = (res as any)?.data?.url ?? (res as any)?.url;
       if (!url) throw new Error('Upload returned no URL');
-      setReferences((prev) => [...prev, url].slice(0, 3));
-      // First photo also feeds the AI, like the shop's auto-analysis.
+      setReferences((prev) => [...prev, url].slice(0, MAX_REFERENCES));
       void runAnalyze(url);
-    } catch {
-      toast.error('Reference upload failed.');
+    } catch (err: any) {
+      toast.error('Reference upload failed.', {
+        description: err?.data?.message ?? err?.message,
+      });
     }
   };
 
-  // ── Canvas image upload ──
+  const [dragOver, setDragOver] = useState(false);
+
+  // ── Canvas images ──
   const canvasInput = useRef<HTMLInputElement | null>(null);
   const [uploadingCanvas, setUploadingCanvas] = useState(false);
   const handleCanvasUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -361,11 +455,35 @@ function StudioInner() {
         setActiveIdx(next.length - 1);
         return next;
       });
-    } catch {
-      toast.error('Image upload failed.');
+    } catch (err: any) {
+      toast.error('Image upload failed.', {
+        description: err?.data?.message ?? err?.message,
+      });
     } finally {
       setUploadingCanvas(false);
     }
+  };
+
+  const removeImage = (i: number) => {
+    const before = images;
+    const beforeIdx = activeIdx;
+    setImages(before.filter((_, x) => x !== i));
+    setActiveIdx((idx) => Math.max(0, idx - (i <= idx ? 1 : 0)));
+    toast('Image removed', {
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          setImages(before);
+          setActiveIdx(beforeIdx);
+        },
+      },
+    });
+  };
+
+  // The first image is the cover customers see (the shop opens on it too).
+  const makeCover = (i: number) => {
+    setImages((prev) => [prev[i], ...prev.filter((_, x) => x !== i)]);
+    setActiveIdx(0);
   };
 
   // ── Save ──
@@ -393,6 +511,8 @@ function StudioInner() {
         ...(selections.sleeve && { sleeve: selections.sleeve }),
         ...(selections.collar && { collar: selections.collar }),
         ...(color && { color }),
+        ...(fit && { fit }),
+        ...(hasOptionalTrousers(category) && { with_trousers: withTrousers }),
         ...(enriched.length && { accessories: enriched }),
       },
       userPrompt: prompt.trim() || undefined,
@@ -407,16 +527,26 @@ function StudioInner() {
       status,
     };
     try {
-      if (templateId) {
-        await updateTemplate({ id: templateId, data: payload }).unwrap();
-        toast.success('Template updated');
+      if (currentId) {
+        await updateTemplate({ id: currentId, data: payload }).unwrap();
+        toast.success('Changes saved');
       } else {
-        await createTemplate(payload).unwrap();
+        const res = await createTemplate(payload).unwrap();
+        const id = (res as any)?.data?._id;
+        if (id) {
+          setCurrentId(id);
+          // Keep the address in step so a refresh reopens this template.
+          const url = new URL(window.location.href);
+          url.searchParams.set('id', id);
+          window.history.replaceState(window.history.state, '', url.href);
+        }
         toast.success('Template created');
       }
-      router.push(APP_ROUTES.productsTemplates);
-    } catch {
-      toast.error('Could not save the template.');
+      setSavedSnapshot(snapshot);
+    } catch (err: any) {
+      toast.error('Could not save the template.', {
+        description: err?.data?.message ?? err?.message,
+      });
     }
   };
 
@@ -437,17 +567,9 @@ function StudioInner() {
                 <button
                   key={g}
                   type="button"
-                  onClick={() => {
-                    setGender(g);
-                    setCategory(CATEGORIES[g][0]);
-                    setSelections({
-                      silhouette: null,
-                      neckline: null,
-                      sleeve: null,
-                      collar: null,
-                    });
-                    setEmbellishments([]);
-                  }}
+                  onClick={() =>
+                    g !== gender && changeGarment(g, CATEGORIES[g][0])
+                  }
                   className={cn(
                     'flex-1 cursor-pointer rounded-xl border px-3 py-2.5 text-sm font-medium capitalize transition-all hover:shadow-md',
                     gender === g
@@ -470,7 +592,7 @@ function StudioInner() {
                 <button
                   key={c}
                   type="button"
-                  onClick={() => setCategory(c)}
+                  onClick={() => c !== category && changeGarment(gender, c)}
                   className={cn(
                     'cursor-pointer rounded-xl border px-2 py-2.5 text-xs font-medium transition-all hover:shadow-md',
                     category === c
@@ -482,6 +604,70 @@ function StudioInner() {
                 </button>
               ))}
             </div>
+          </div>
+
+          {hasOptionalTrousers(category) && (
+            <div>
+              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-grey3 dark:text-gray-400">
+                Trousers
+              </p>
+              <div className="flex gap-2">
+                {[
+                  { on: true, label: 'With trousers' },
+                  { on: false, label: 'Without' },
+                ].map((o) => (
+                  <button
+                    key={o.label}
+                    type="button"
+                    onClick={() => setWithTrousers(o.on)}
+                    className={cn(
+                      'flex-1 cursor-pointer rounded-xl border px-3 py-2.5 text-xs font-medium transition-all hover:shadow-md',
+                      withTrousers === o.on
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border text-grey3 hover:text-grey-black dark:text-gray-400 dark:hover:text-white'
+                    )}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <p className="mb-2 text-xs font-bold uppercase tracking-wide text-grey3 dark:text-gray-400">
+              Fit
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {FIT_OPTIONS.map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  onClick={() => setFit(fit === f.id ? null : f.id)}
+                  className={cn(
+                    'cursor-pointer rounded-xl border px-3 py-2.5 text-left transition-all hover:shadow-md',
+                    fit === f.id
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-border text-grey-black dark:text-white'
+                  )}
+                >
+                  <span className="block text-xs font-semibold">{f.label}</span>
+                  <span
+                    className={cn(
+                      'mt-0.5 block text-[11px]',
+                      fit === f.id
+                        ? 'text-primary-foreground/80'
+                        : 'text-grey3 dark:text-gray-400'
+                    )}
+                  >
+                    {f.desc}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <p className="mt-1.5 text-[11px] text-grey3 dark:text-gray-400">
+              Optional. Customers start from this fit.
+            </p>
           </div>
         </div>
       )}
@@ -600,7 +786,6 @@ function StudioInner() {
                       : 'border-transparent bg-[#F8F9FA] dark:bg-muted'
                   )}
                 >
-                  <span className="text-xl leading-none">{e.emoji}</span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-semibold text-grey-black dark:text-white">
                       {e.name}
@@ -632,12 +817,25 @@ function StudioInner() {
           <button
             type="button"
             onClick={() =>
-              !uploading && references.length < 3 && refInput.current?.click()
+              !uploading &&
+              references.length < MAX_REFERENCES &&
+              refInput.current?.click()
             }
-            disabled={uploading || references.length >= 3}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setDragOver(false);
+              if (!uploading) void addReference(e.dataTransfer.files?.[0]);
+            }}
+            disabled={uploading || references.length >= MAX_REFERENCES}
             className={cn(
               'flex w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border bg-[#F8F9FA] px-4 py-7 transition-colors hover:border-primary dark:bg-muted',
-              (uploading || references.length >= 3) &&
+              dragOver && 'border-primary',
+              (uploading || references.length >= MAX_REFERENCES) &&
                 'cursor-not-allowed opacity-50'
             )}
           >
@@ -647,19 +845,24 @@ function StudioInner() {
               <Upload className="mb-2 size-6 text-grey3 dark:text-gray-400" />
             )}
             <span className="text-xs font-semibold text-grey-black dark:text-white">
-              {references.length >= 3
-                ? 'Maximum 3 reference photos'
+              {references.length >= MAX_REFERENCES
+                ? `Up to ${MAX_REFERENCES} reference photos`
                 : 'Drop a reference photo or choose a file'}
             </span>
             <span className="mt-1 text-[10px] text-grey3 dark:text-gray-400">
-              PNG, JPG · {references.length}/3 · AI reads it into the prompt
+              PNG, JPG · {references.length}/{MAX_REFERENCES} · the AI picks out
+              its styles
             </span>
           </button>
           <input
             ref={refInput}
             type="file"
             accept="image/*"
-            onChange={handleReferenceUpload}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              e.target.value = '';
+              void addReference(file);
+            }}
             className="hidden"
           />
 
@@ -686,8 +889,8 @@ function StudioInner() {
                   <p className="text-xs font-semibold text-grey-black dark:text-white">
                     Reference {idx + 1}
                   </p>
-                  <p className="text-[10px] text-grey3 dark:text-gray-400">
-                    ✓ Uploaded — sent with generation
+                  <p className="flex items-center gap-1 text-[10px] text-grey3 dark:text-gray-400">
+                    <Check className="size-3" /> Sent with each generation
                   </p>
                 </div>
               </div>
@@ -696,6 +899,7 @@ function StudioInner() {
                 onClick={() =>
                   setReferences((prev) => prev.filter((_, x) => x !== idx))
                 }
+                aria-label={`Remove reference ${idx + 1}`}
                 className="flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-lg text-grey3 transition-colors hover:text-red-600"
               >
                 <X className="size-3.5" />
@@ -711,7 +915,7 @@ function StudioInner() {
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               rows={4}
-              placeholder="Describe the look — analysis fills this in automatically, then refine it"
+              placeholder="Describe the look. A reference photo fills this in when it's empty."
               className="w-full resize-y rounded-xl border border-border bg-white p-3 text-sm text-grey-black outline-none placeholder:text-gray-400 focus:border-primary dark:bg-gray-900 dark:text-white"
             />
             <p className="mt-1.5 text-[11px] text-grey3 dark:text-gray-400">
@@ -731,22 +935,33 @@ function StudioInner() {
             <div className="flex flex-wrap gap-2">
               {COLORS.map((c) => (
                 <button
-                  key={c}
+                  key={c.hex}
                   type="button"
-                  onClick={() => setColor(color === c ? null : c)}
+                  onClick={() => setColor(color === c.hex ? null : c.hex)}
                   className={cn(
                     'size-9 cursor-pointer rounded-full border-2 transition-transform hover:scale-110',
-                    color === c
+                    color === c.hex
                       ? 'border-primary ring-2 ring-primary/40'
                       : 'border-border'
                   )}
-                  style={{ background: c }}
-                  aria-label={c}
+                  style={{ background: c.hex }}
+                  title={c.name}
+                  aria-label={c.name}
+                  aria-pressed={color === c.hex}
                 />
               ))}
             </div>
             <p className="mt-2 text-[11px] text-grey3 dark:text-gray-400">
-              Woven into the generation prompt and saved on the template.
+              {color ? (
+                <>
+                  <span className="font-semibold capitalize text-grey-black dark:text-white">
+                    {colourName(color)}
+                  </span>{' '}
+                  · told to the AI and saved on the template.
+                </>
+              ) : (
+                'Told to the AI by name and saved on the template.'
+              )}
             </p>
           </div>
         </div>
@@ -754,13 +969,50 @@ function StudioInner() {
     </>
   );
 
+  if (!hydrated) {
+    return (
+      <div className="flex min-h-64 flex-col items-center justify-center gap-3 text-center">
+        {loadFailed ? (
+          <>
+            <p className="text-sm font-semibold text-grey-black dark:text-white">
+              Could not open this template.
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => router.push(APP_ROUTES.productsTemplates)}
+                className="h-9 cursor-pointer rounded-lg border border-border px-4 text-sm font-medium text-grey-black dark:text-white"
+              >
+                Back to templates
+              </button>
+              <button
+                type="button"
+                onClick={() => void retryLoad()}
+                className="h-9 cursor-pointer rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground"
+              >
+                Try again
+              </button>
+            </div>
+          </>
+        ) : (
+          <p className="flex items-center text-sm text-grey3 dark:text-gray-400">
+            <Loader2 className="mr-2 size-4 animate-spin" /> Opening template…
+          </p>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full min-h-0 flex-col gap-4 pb-6">
       {/* ── Top bar ── */}
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
-          onClick={() => router.push(APP_ROUTES.productsTemplates)}
+          onClick={() =>
+            guardedLeave(() => router.push(APP_ROUTES.productsTemplates))
+          }
+          aria-label="Back to templates"
           className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border bg-white text-grey-black transition-colors hover:bg-[#F8F9FA] dark:bg-card dark:text-white dark:hover:bg-muted"
         >
           <ArrowLeft className="size-4" />
@@ -792,11 +1044,15 @@ function StudioInner() {
         <button
           type="button"
           onClick={handleSave}
-          disabled={saving}
+          disabled={saving || (!!currentId && !dirty)}
           className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
         >
-          {saving && <Loader2 className="size-4 animate-spin" />}
-          {templateId ? 'Save changes' : 'Create template'}
+          {saving ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            currentId && !dirty && <Check className="size-4" />
+          )}
+          {!currentId ? 'Create template' : dirty ? 'Save changes' : 'Saved'}
         </button>
       </div>
 
@@ -811,12 +1067,27 @@ function StudioInner() {
           }}
         >
           {activeImage ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={activeImage}
-              alt={name}
-              className="max-h-[48vh] w-auto rounded-xl object-contain"
-            />
+            <div className="flex flex-col items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={activeImage}
+                alt={name}
+                className="max-h-[48vh] w-auto rounded-xl object-contain"
+              />
+              {activeIdx === 0 ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary">
+                  <Star className="size-3" /> Cover · customers see this first
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => makeCover(activeIdx)}
+                  className="inline-flex cursor-pointer items-center gap-1 rounded-full border border-border bg-white px-2.5 py-1 text-[11px] font-semibold text-grey-black transition-colors hover:border-primary dark:bg-card dark:text-white"
+                >
+                  <Star className="size-3" /> Set as cover
+                </button>
+              )}
+            </div>
           ) : (
             <div className="flex flex-col items-center text-center">
               <Sparkles className="mb-3 size-10 text-grey2 dark:text-gray-500" />
@@ -836,6 +1107,7 @@ function StudioInner() {
                   <button
                     type="button"
                     onClick={() => setActiveIdx(i)}
+                    aria-label={i === 0 ? 'Cover image' : `Image ${i + 1}`}
                     className={cn(
                       'block size-14 cursor-pointer overflow-hidden rounded-lg border-2 transition-transform hover:scale-105',
                       i === activeIdx ? 'border-primary' : 'border-transparent'
@@ -848,15 +1120,16 @@ function StudioInner() {
                       className="h-full w-full object-cover"
                     />
                   </button>
+                  {i === 0 && (
+                    <span className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center rounded-b-lg bg-black/55 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white">
+                      Cover
+                    </span>
+                  )}
                   <button
                     type="button"
-                    onClick={() => {
-                      setImages((prev) => prev.filter((_, x) => x !== i));
-                      setActiveIdx((idx) =>
-                        Math.max(0, idx - (i <= idx ? 1 : 0))
-                      );
-                    }}
-                    className="absolute -right-1.5 -top-1.5 hidden size-5 cursor-pointer items-center justify-center rounded-full bg-red-500 text-white group-hover/thumb:flex"
+                    onClick={() => removeImage(i)}
+                    aria-label={`Remove image ${i + 1}`}
+                    className="absolute -right-1.5 -top-1.5 hidden size-5 cursor-pointer items-center justify-center rounded-full bg-red-500 text-white group-hover/thumb:flex [@media(hover:none)]:flex"
                   >
                     <Trash2 className="size-3" />
                   </button>
@@ -883,15 +1156,19 @@ function StudioInner() {
             <button
               type="button"
               onClick={runGenerate}
-              disabled={generating}
-              className="inline-flex h-11 items-center gap-2 rounded-xl bg-violet-600 px-6 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60 disabled:hover:translate-y-0"
+              disabled={generating || analyzing}
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-bold text-primary-foreground transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60 disabled:hover:translate-y-0"
             >
-              {generating ? (
+              {generating || analyzing ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (
                 <Wand2 className="size-4" />
               )}
-              {generating ? (genStatus ?? 'Generating…') : 'Generate'}
+              {generating
+                ? (genStatus ?? 'Generating…')
+                : analyzing
+                  ? 'Reading your photo…'
+                  : 'Generate'}
             </button>
           </div>
           <input
@@ -912,6 +1189,7 @@ function StudioInner() {
                   key={t.key}
                   type="button"
                   title={t.label}
+                  aria-label={t.label}
                   onClick={() => setOpenTool(active ? null : t.key)}
                   className={cn(
                     'flex size-10 cursor-pointer items-center justify-center rounded-xl transition-colors',
@@ -969,6 +1247,7 @@ function StudioInner() {
                   key={t.key}
                   type="button"
                   title={t.label}
+                  aria-label={t.label}
                   onClick={() => setOpenTool(active ? null : t.key)}
                   className={cn(
                     'flex size-10 cursor-pointer items-center justify-center rounded-xl transition-colors',
