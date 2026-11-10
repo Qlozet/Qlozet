@@ -73,6 +73,19 @@ export const uploadsApiSlice = baseAPI.injectEndpoints({
         files.forEach((file) => form.append('files', file));
         return { url: '/uploads/outfits', method: 'POST', body: form };
       },
+      // Reference photos for the AI: type and size are checked, but not the
+      // product-photo resolution floor or contact scan. Answers
+      // `{ data: [{ imageUrl, publicId }] }`.
+      transformResponse: (res: {
+        data?: { imageUrl?: string; url?: string; publicId?: string }[];
+      }) =>
+        ({
+          ...res,
+          data: (res?.data ?? []).map((d) => ({
+            url: (d.url ?? d.imageUrl ?? '').replace(/^http:\/\//, 'https://'),
+            public_id: d.publicId,
+          })),
+        }) as ApiResponse<UploadedImage[]>,
     }),
   }),
 });
