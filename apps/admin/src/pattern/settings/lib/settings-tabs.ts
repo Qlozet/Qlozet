@@ -624,7 +624,7 @@ export const SETTINGS_TABS: SettingsTab[] = [
         id: 'token-rewards',
         title: 'Token rewards',
         description:
-          'Free tokens granted at signup and on paid orders. Zero turns a reward off.',
+          'Free tokens granted at signup and on delivered orders. Zero turns a reward off.',
         fields: [
           {
             key: 'customer_signup_token_reward',
@@ -640,8 +640,8 @@ export const SETTINGS_TABS: SettingsTab[] = [
           },
           {
             key: 'order_payment_token_reward',
-            label: 'Paid order',
-            help: 'Granted to the customer each time an order settles as paid.',
+            label: 'Delivered order',
+            help: 'Granted to the customer once an order is delivered and its return window has closed, so a cancelled or refunded order earns nothing. Orders with an open return or dispute wait until it is settled.',
             ...TOKENS,
           },
         ],
