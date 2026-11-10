@@ -48,7 +48,10 @@ import {
   useAnalyzeReferenceMutation,
 } from '@/redux/services/bespoke-templates/bespoke-templates.api-slice';
 import { useGetAdminStylesQuery } from '@/redux/services/style-library/style-library.api-slice';
-import { useUploadProductImageMutation } from '@/redux/services/uploads/uploads.api-slice';
+import {
+  useUploadOutfitImagesMutation,
+  useUploadProductImageMutation,
+} from '@/redux/services/uploads/uploads.api-slice';
 import { EMBELLISHMENTS, filterEmbellishments } from './embellishments';
 import { GeneratingView, type StudioWork } from './generating-view';
 import {
@@ -432,8 +435,11 @@ function StudioInner() {
 
   // ── Reference upload + analysis (the shop's Photo & Notes flow) ──
   const refInput = useRef<HTMLInputElement | null>(null);
-  const [uploadImage, { isLoading: uploading }] =
-    useUploadProductImageMutation();
+  // Reference photos go up the way the shop's do (/uploads/outfits): a phone
+  // snap or a small screenshot is fine, so no product-photo resolution floor.
+  const [uploadReference, { isLoading: uploading }] =
+    useUploadOutfitImagesMutation();
+  const [uploadImage] = useUploadProductImageMutation();
   const [analyzeReference] = useAnalyzeReferenceMutation();
   const [analyzing, setAnalyzing] = useState(false);
 
@@ -500,8 +506,8 @@ function StudioInner() {
     if (references.length >= MAX_REFERENCES)
       return toast.error(`Up to ${MAX_REFERENCES} reference photos.`);
     try {
-      const res = await uploadImage(file).unwrap();
-      const url = (res as any)?.data?.url ?? (res as any)?.url;
+      const res = await uploadReference([file]).unwrap();
+      const url = res?.data?.[0]?.url;
       if (!url) throw new Error('Upload returned no URL');
       setReferences((prev) => [...prev, url].slice(0, MAX_REFERENCES));
       void runAnalyze(url);
