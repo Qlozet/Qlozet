@@ -16,6 +16,7 @@ import UserAndPermission from '@/components/Settings/UserAndPermission/UserAndPe
 import Category from '@/components/Settings/Category/Category';
 import { OrderSettingsContent } from './order-settings-content';
 import { PayoutContent } from './payout-content';
+import { SecurityContent } from './security-content';
 import { VerificationTemplate } from '@/pattern/verification/verification-template';
 import { readApiError } from '@/redux/services/types';
 
@@ -83,9 +84,8 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
           />
         );
 
-      // TODO(api): Billing and Security are hidden from the nav (see
-      // lib/settings-tabs.ts) until endpoints exist — the forms were wired to
-      // empty handlers.
+      // TODO(api): Billing is hidden from the nav (see lib/settings-tabs.ts)
+      // until an endpoint exists — its form was wired to empty handlers.
       // case 'Billing':
       //   return <BillingAndInvoice />;
 
@@ -106,8 +106,8 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
       case 'Payout':
         return <PayoutContent />;
 
-      // case 'Security':
-      //   return <SecurityContent />;
+      case 'Security':
+        return <SecurityContent />;
 
       default:
         return null;

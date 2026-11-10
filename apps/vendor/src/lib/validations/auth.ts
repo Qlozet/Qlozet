@@ -108,11 +108,24 @@ export const resetPasswordSchema = z
     path: ['confirmPassword'],
   });
 
-// Change Password Schema
+// Change Password Schema (Settings → Security).
+// The new password follows the same rule as reset and set-password
+// (ResetPasswordForm) and the backend's ChangePasswordDto (8-64 characters),
+// not sign-up's special-character rule: one account, one password rule after
+// sign-up.
+const newPasswordSchema = z
+  .string()
+  .min(8, 'Password must be at least 8 characters')
+  .max(64, 'Password must be 64 characters or fewer')
+  .regex(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+    'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+  );
+
 export const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, 'Current password is required'),
-    newPassword: passwordSchema,
+    newPassword: newPasswordSchema,
     confirmPassword: z.string().min(1, 'Please confirm your new password'),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
