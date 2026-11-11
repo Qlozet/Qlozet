@@ -117,6 +117,7 @@ const DesignDetailContent: React.FC<{ design: any }> = ({ design }) => {
       ['Skirt', selections?.skirt],
       ['Trouser', selections?.trouser],
       ['Fit', selections?.fit],
+      ['Length', selections?.length],
     ] as [string, any][]
   )
     .map(([label, v]) =>

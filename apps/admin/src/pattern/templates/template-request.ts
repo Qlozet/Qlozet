@@ -127,6 +127,59 @@ export const FIT_OPTIONS = [
   { id: 'fit4', label: 'Oversized', desc: 'Deliberately loose & roomy' },
 ];
 
+/**
+ * Where the hem falls, as the shop studio offers it (qlozet-shop
+ * data/studio-options LENGTH_OPTIONS): dresses and skirts only, unset = the
+ * tailor decides. The id is what a template saves.
+ */
+export const LENGTH_OPTIONS = [
+  {
+    id: 'mini',
+    label: 'Mini',
+    desc: 'Well above the knee',
+    word: 'mini',
+    prompt: 'mini length, well above the knee',
+  },
+  {
+    id: 'knee',
+    label: 'Knee',
+    desc: 'At the knee',
+    word: 'knee-length',
+    prompt: 'knee length, the hem at the knee',
+  },
+  {
+    id: 'midi',
+    label: 'Midi',
+    desc: 'Mid-calf',
+    word: 'midi',
+    prompt: 'midi length, the hem at mid-calf',
+  },
+  {
+    id: 'ankle',
+    label: 'Ankle',
+    desc: 'Just above the ankle',
+    word: 'ankle-length',
+    prompt: 'ankle length, the hem just above the ankle',
+  },
+  {
+    id: 'floor',
+    label: 'Floor',
+    desc: 'Touches the floor',
+    word: 'floor-length',
+    prompt: 'floor length, the hem touching the floor',
+  },
+];
+
+export const hasLength = (category: string) =>
+  ['dresses', 'skirts'].includes(category.toLowerCase());
+
+/** The chosen length, when this garment has one. */
+export const lengthFor = (
+  category: string,
+  length: string | null | undefined
+) =>
+  hasLength(category) ? LENGTH_OPTIONS.find((l) => l.id === length) : undefined;
+
 /** Whether a library style can be used on this garment. */
 export function styleFits(
   style: Pick<PlatformStyle, 'category' | 'gender' | 'type' | 'is_active'>,
@@ -185,6 +238,8 @@ export interface GenerationInput {
   embellishments: string[];
   color: string | null;
   fit: string | null;
+  /** A LENGTH_OPTIONS id; ignored for garments without a length. */
+  length?: string | null;
   prompt: string;
 }
 
@@ -201,6 +256,9 @@ export function buildGenerationRequest(input: GenerationInput) {
   if (neck) constructionSelections.neckline = neck.name;
   if (slv) constructionSelections.sleeve_style = slv.name;
   if (col) constructionSelections.collar = col.name;
+  // Passed through to the generator's metadata, as the shop sends it.
+  const len = lengthFor(input.category, input.length);
+  if (len) constructionSelections.hemline = len.prompt;
 
   const withTrousers =
     hasOptionalTrousers(input.category) && input.withTrousers;
@@ -239,9 +297,12 @@ export function buildGenerationRequest(input: GenerationInput) {
 export function garmentWords(
   gender: Gender,
   category: string,
-  withTrousers: boolean
+  withTrousers: boolean,
+  length?: string | null
 ): string {
-  const who = gender === 'men' ? "men's" : "women's";
+  const len = lengthFor(category, length);
+  // "women's midi dress": the editor keeps the chosen length.
+  const who = `${gender === 'men' ? "men's" : "women's"}${len ? ` ${len.word}` : ''}`;
   const c = category.toLowerCase();
   if (c === 'agbada')
     return `${who} agbada (outer robe over an inner top${withTrousers ? ', with trousers' : ''})`;

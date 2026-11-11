@@ -59,6 +59,9 @@ import {
   COLORS,
   EMPTY_SELECTIONS,
   FIT_OPTIONS,
+  LENGTH_OPTIONS,
+  hasLength,
+  lengthFor,
   backViewsForSave,
   buildGenerationRequest,
   colourName,
@@ -122,6 +125,7 @@ function StudioInner() {
   const [category, setCategory] = useState('Dresses');
   const [withTrousers, setWithTrousers] = useState(true);
   const [fit, setFit] = useState<string | null>(null);
+  const [length, setLength] = useState<string | null>(null);
   const [status, setStatus] = useState<'active' | 'inactive'>('inactive');
   const [images, setImages] = useState<string[]>([]);
   const [activeIdx, setActiveIdx] = useState(0);
@@ -154,6 +158,7 @@ function StudioInner() {
     category,
     withTrousers,
     fit,
+    length,
     status,
     images,
     backs: backViewsForSave(images, backs),
@@ -226,6 +231,7 @@ function StudioInner() {
         });
         if (sel.color) setColor(sel.color);
         if (sel.fit) setFit(sel.fit);
+        if (typeof sel.length === 'string') setLength(sel.length);
         if (sel.no_trousers === true) setWithTrousers(false);
         if (Array.isArray(sel.accessories)) {
           setEmbellishments(
@@ -347,6 +353,7 @@ function StudioInner() {
         embellishments,
         color,
         fit,
+        length,
         prompt,
       });
       const res = await generate({
@@ -391,7 +398,8 @@ function StudioInner() {
         garment_type: garmentWords(
           gender,
           category,
-          hasOptionalTrousers(category) && withTrousers
+          hasOptionalTrousers(category) && withTrousers,
+          length
         ),
         fit: FIT_OPTIONS.find((f) => f.id === fit)?.label.toLowerCase(),
         style_notes:
@@ -595,6 +603,8 @@ function StudioInner() {
         ...(selections.collar && { collar: selections.collar }),
         ...(color && { color }),
         ...(fit && { fit }),
+        // Dresses and skirts: the shop opens the template at this length.
+        ...(lengthFor(category, length) && { length }),
         // The shop's own key: only an agbada or kaftan can leave them off.
         ...(hasOptionalTrousers(category) &&
           !withTrousers && { no_trousers: true }),
@@ -644,6 +654,8 @@ function StudioInner() {
     category,
     colourName(color),
     FIT_OPTIONS.find((f) => f.id === fit)?.label,
+    lengthFor(category, length) &&
+      `${lengthFor(category, length)!.label} length`,
     ...Object.values(selections)
       .map((id) => allStyles.find((st) => st._id === id)?.name)
       .filter(Boolean),
@@ -766,6 +778,47 @@ function StudioInner() {
               Optional. Customers start from this fit.
             </p>
           </div>
+
+          {hasLength(category) && (
+            <div>
+              <p className="mb-2 text-xs font-bold uppercase tracking-wide text-grey3 dark:text-gray-400">
+                Length
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {LENGTH_OPTIONS.map((l) => (
+                  <button
+                    key={l.id}
+                    type="button"
+                    onClick={() => setLength(length === l.id ? null : l.id)}
+                    aria-pressed={length === l.id}
+                    className={cn(
+                      'cursor-pointer rounded-xl border px-3 py-2.5 text-left transition-all hover:shadow-md',
+                      length === l.id
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border text-grey-black dark:text-white'
+                    )}
+                  >
+                    <span className="block text-xs font-semibold">
+                      {l.label}
+                    </span>
+                    <span
+                      className={cn(
+                        'mt-0.5 block text-[11px]',
+                        length === l.id
+                          ? 'text-primary-foreground/80'
+                          : 'text-grey3 dark:text-gray-400'
+                      )}
+                    >
+                      {l.desc}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <p className="mt-1.5 text-[11px] text-grey3 dark:text-gray-400">
+                Optional. Where the hem falls; unset leaves it to the tailor.
+              </p>
+            </div>
+          )}
         </div>
       )}
 

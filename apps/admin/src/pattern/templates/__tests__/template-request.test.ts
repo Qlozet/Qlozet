@@ -180,3 +180,34 @@ describe('refine and back view', () => {
     ]);
   });
 });
+
+describe('length (where the hem falls)', () => {
+  it('sends the length for a dress, as the shop does', () => {
+    const { config } = buildGenerationRequest({
+      ...base,
+      gender: 'women',
+      category: 'Dresses',
+      withTrousers: false,
+      length: 'midi',
+    });
+    expect(
+      (config.constructionSelections as Record<string, string>).hemline
+    ).toBe('midi length, the hem at mid-calf');
+  });
+
+  it('ignores a length on a garment that has none', () => {
+    const { config } = buildGenerationRequest({ ...base, length: 'floor' });
+    expect(
+      (config.constructionSelections as Record<string, string>).hemline
+    ).toBeUndefined();
+  });
+
+  it('puts the length in the editor wording for a skirt only', () => {
+    expect(garmentWords('women', 'Skirts', false, 'knee')).toBe(
+      "women's knee-length skirt"
+    );
+    expect(garmentWords('men', 'Kaftan', true, 'knee')).toBe(
+      "men's kaftan with trousers"
+    );
+  });
+});

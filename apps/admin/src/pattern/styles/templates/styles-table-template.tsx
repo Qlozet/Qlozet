@@ -3,8 +3,10 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { PaginationState } from '@tanstack/react-table';
-import { Layers, Plus, Wand2 } from 'lucide-react';
+import { Layers, PackagePlus, Plus, Wand2 } from 'lucide-react';
 import { toast } from 'sonner';
+import NiceModal from '@ebay/nice-modal-react';
+import { ConfirmActionModal } from '@/pattern/common/organisms/confirm-action-modal';
 import { APP_ROUTES } from '@/lib/routes';
 import { DataTable } from '@/pattern/common/organisms/table/data-table';
 import { TableToolbar } from '@/pattern/common/molecules/table-toolbar';
@@ -13,6 +15,7 @@ import {
   useDeactivatePlatformStyleMutation,
   useUpdatePlatformStyleMutation,
   useRegenerateStyleImagesMutation,
+  useSeedPlatformStylesMutation,
   type PlatformStyle,
   type StyleScope,
 } from '@/redux/services/style-library/style-library.api-slice';
@@ -40,6 +43,7 @@ export default function StylesTableTemplate() {
   const [updateStyle] = useUpdatePlatformStyleMutation();
   const [regenerateImages, { isLoading: regenerating }] =
     useRegenerateStyleImagesMutation();
+  const [seedStyles, { isLoading: seeding }] = useSeedPlatformStylesMutation();
 
   const all: PlatformStyle[] = useMemo(() => data?.styles ?? [], [data]);
 
@@ -93,6 +97,38 @@ export default function StylesTableTemplate() {
       }),
     [deactivateStyle, updateStyle]
   );
+
+  // Qlozet's starter list (men's agbada and kaftan looks, dress shapes,
+  // collars, sleeves, trousers…) lives with the backend. Only styles the
+  // library is missing are added; ones already there, edited or not, stay.
+  const addStarterStyles = () =>
+    NiceModal.show(ConfirmActionModal, {
+      title: 'Add the starter styles?',
+      description:
+        'Adds any of Qlozet’s starter styles that the platform library doesn’t have yet, and draws a picture for each in the background (one AI image per new style). Styles already in the library are left exactly as they are.',
+      confirmLabel: 'Add starter styles',
+      onConfirm: async () => {
+        try {
+          const res = await seedStyles().unwrap();
+          if (!res.created) {
+            toast.success('The library already has every starter style.');
+            return;
+          }
+          toast.success(
+            `${res.created} style${res.created === 1 ? '' : 's'} added`,
+            {
+              description:
+                'Pictures are being drawn now. Refresh in a few minutes to see them.',
+            }
+          );
+        } catch (err: any) {
+          toast.error('Could not add the starter styles.', {
+            description: err?.data?.message,
+          });
+          throw err;
+        }
+      },
+    });
 
   const backfillImages = async () => {
     try {
@@ -157,6 +193,16 @@ export default function StylesTableTemplate() {
                 >
                   <Wand2 className="size-4" />
                   {regenerating ? 'Backfilling…' : 'Backfill images'}
+                </button>
+                <button
+                  type="button"
+                  onClick={addStarterStyles}
+                  disabled={seeding}
+                  title="Add Qlozet's starter styles the library is missing"
+                  className="inline-flex h-10 items-center gap-2 rounded-lg border border-gray-200 px-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50 dark:border-gray-800 dark:text-gray-200 dark:hover:bg-gray-800"
+                >
+                  <PackagePlus className="size-4" />
+                  {seeding ? 'Adding…' : 'Add starter styles'}
                 </button>
                 <button
                   type="button"
