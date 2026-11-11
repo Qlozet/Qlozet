@@ -147,6 +147,17 @@ export const styleLibraryApiSlice = baseAPI.injectEndpoints({
       invalidatesTags: ['StyleLibrary'],
     }),
 
+    // POST /style-library/seed — adds the starter styles the platform library
+    // is missing (codes already there are skipped); pictures are drawn in the
+    // background.
+    seedPlatformStyles: builder.mutation<
+      { created: number; skipped: number; images_pending: number },
+      void
+    >({
+      query: () => ({ url: '/style-library/seed', method: 'POST' }),
+      invalidatesTags: ['StyleLibrary'],
+    }),
+
     regenerateStyleImages: builder.mutation<unknown, void>({
       query: () => ({
         url: '/style-library/regenerate-images',
@@ -164,4 +175,5 @@ export const {
   useUpdatePlatformStyleMutation,
   useDeactivatePlatformStyleMutation,
   useRegenerateStyleImagesMutation,
+  useSeedPlatformStylesMutation,
 } = styleLibraryApiSlice;
