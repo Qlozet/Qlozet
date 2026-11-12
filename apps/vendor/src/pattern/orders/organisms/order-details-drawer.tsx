@@ -92,6 +92,7 @@ import {
   ignoreMediaPanelInteraction,
 } from '../molecules/order-media-panel';
 import { confirmCountdown } from '../lib/confirm-countdown';
+import { latePreviewLines } from '../lib/late-preview';
 import { useNow } from '@/lib/hooks/useNow';
 import {
   deliveryBadge,
@@ -888,6 +889,10 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       vendorShipment &&
       !isConfirmed &&
       !isRejected;
+    // Ship-by date and what lateness costs, once confirmed (from the backend).
+    const latePreview =
+      vendorShipment?.late_preview ?? order.late_preview ?? null;
+    const lateLines = latePreviewLines(latePreview);
     // When this order cancels itself if nobody confirms (from the backend).
     const confirmBy = needsConfirmation
       ? confirmCountdown(vendorShipment?.confirm_by ?? order.confirm_by, now)
@@ -1678,6 +1683,39 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                               : ''}{' '}
                             late)
                           </p>
+                        </div>
+                      </div>
+                    )}
+                    {lateLines.length > 0 && (
+                      <div
+                        className={cn(
+                          'px-5 py-3 border-t',
+                          latePreview?.days_late
+                            ? 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800/50'
+                            : 'bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800/50'
+                        )}
+                      >
+                        <div className="flex items-start gap-2">
+                          <AlertTriangle
+                            className={cn(
+                              'size-4 shrink-0 mt-0.5',
+                              latePreview?.days_late
+                                ? 'text-red-600 dark:text-red-400'
+                                : 'text-amber-600 dark:text-amber-400'
+                            )}
+                          />
+                          <div
+                            className={cn(
+                              'space-y-1 text-xs',
+                              latePreview?.days_late
+                                ? 'text-red-700 dark:text-red-300'
+                                : 'text-amber-700 dark:text-amber-300'
+                            )}
+                          >
+                            {lateLines.map((line) => (
+                              <p key={line}>{line}</p>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     )}

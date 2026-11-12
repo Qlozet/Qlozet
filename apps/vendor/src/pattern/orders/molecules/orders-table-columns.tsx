@@ -5,6 +5,7 @@ import { MessageSquare, Package } from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { OrderStatusPill } from '../atoms/order-status-pill';
+import { ShipByPill } from '../atoms/ship-by-pill';
 import type { Order } from '@/redux/services/orders/orders.api-slice';
 import {
   formatDate,
@@ -148,6 +149,12 @@ export const createOrdersColumns = (
     id: 'delivery_status',
     header: 'Status',
     cell: ({ row }) => <OrderStatusPill order={row.original} />,
+    enableSorting: false,
+  },
+  {
+    id: 'ship_by',
+    header: 'Ship by',
+    cell: ({ row }) => <ShipByPill order={row.original} />,
     enableSorting: false,
   },
   {
