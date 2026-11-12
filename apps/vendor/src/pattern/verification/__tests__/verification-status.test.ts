@@ -176,3 +176,45 @@ describe('summariseVerification', () => {
     ).toBeNull();
   });
 });
+
+describe('How orders work in the summary', () => {
+  const rules = (acknowledged: boolean, outdated = false) => ({
+    version: 'v',
+    acknowledged,
+    acknowledged_at: outdated ? '2026-11-01T09:00:00.000Z' : null,
+    outdated,
+  });
+  const approved = (over: Partial<VerificationState> = {}) =>
+    state({ status: 'approved', verification_state: 'approved', ...over });
+
+  it('asks a live store that has not read the rules', () => {
+    const s = summariseVerification(approved({ order_rules: rules(false) }));
+    expect(s?.headline).toBe('Read how orders work');
+    expect(s?.action?.href).toBe('/verification');
+  });
+
+  it('says a rule changed when it did', () => {
+    expect(
+      summariseVerification(approved({ order_rules: rules(false, true) }))
+        ?.headline
+    ).toBe('An order rule has changed');
+  });
+
+  it('nothing once read, or from an older backend', () => {
+    expect(
+      summariseVerification(approved({ order_rules: rules(true) }))
+    ).toBeNull();
+    expect(summariseVerification(approved())).toBeNull();
+  });
+
+  it('names the step before review', () => {
+    const s = summariseVerification(
+      state({
+        verification_state: 'provider_complete',
+        order_rules: rules(false),
+      })
+    );
+    expect(s?.headline).toBe('Your checks are done — one step left');
+    expect(s?.body).toMatch(/how orders work/);
+  });
+});

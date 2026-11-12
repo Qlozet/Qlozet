@@ -25,6 +25,7 @@ import {
 import { readApiError } from '@/redux/services/types';
 import { Card, SummaryRow } from './verification-card';
 import { ServiceAgreementPanel } from './service-agreement-panel';
+import { OrderRulesPanel } from './order-rules-panel';
 import { QoreIdSessionCard } from './qoreid-session-card';
 import { formatLongDate } from './verification-status';
 
@@ -81,6 +82,7 @@ export const ManualVerificationCard = ({
   state: VerificationState;
 }) => {
   const agreement = state.service_agreement;
+  const rules = state.order_rules;
   const payout = state.payout_account;
   // A resubmission (after "action required") starts from what they sent.
   const [rcNumber, setRcNumber] = useState(state.manual?.rc_number ?? '');
@@ -104,11 +106,13 @@ export const ManualVerificationCard = ({
   // Say which precondition is missing rather than leaving a grey button.
   const blocker = !agreement?.accepted
     ? 'Accept the agreement first.'
-    : !payout
-      ? 'Link your payout account first.'
-      : !rc
-        ? 'Enter your CAC number.'
-        : null;
+    : rules?.acknowledged === false
+      ? 'Tick "I understand" under How orders work first.'
+      : !payout
+        ? 'Link your payout account first.'
+        : !rc
+          ? 'Enter your CAC number.'
+          : null;
 
   return (
     <Card
@@ -142,7 +146,17 @@ export const ManualVerificationCard = ({
             <ServiceAgreementPanel agreement={agreement} />
           </Step>
 
-          <Step n={2} title="Link your payout account" done={Boolean(payout)}>
+          {rules && (
+            <Step n={2} title="Read how orders work" done={rules.acknowledged}>
+              <OrderRulesPanel />
+            </Step>
+          )}
+
+          <Step
+            n={rules ? 3 : 2}
+            title="Link your payout account"
+            done={Boolean(payout)}
+          >
             {payout ? (
               <div className="space-y-2 rounded-lg bg-[#F8F9FA] p-4 dark:bg-muted/60">
                 <SummaryRow label="Bank" value={payout.bank_name} />
@@ -166,7 +180,7 @@ export const ManualVerificationCard = ({
             </p>
           </Step>
 
-          <Step n={3} title="Enter your CAC number" done={false}>
+          <Step n={rules ? 4 : 3} title="Enter your CAC number" done={false}>
             <Input
               className="h-11"
               placeholder="RC or BN number, such as RC1234567"
@@ -177,7 +191,7 @@ export const ManualVerificationCard = ({
             />
           </Step>
 
-          <Step n={4} title="Submit for review" done={false}>
+          <Step n={rules ? 5 : 4} title="Submit for review" done={false}>
             <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
@@ -266,6 +280,7 @@ export const FinishVerificationCard = ({
           {!agreement?.accepted && (
             <ServiceAgreementPanel agreement={agreement} />
           )}
+          {state.order_rules?.acknowledged === false && <OrderRulesPanel />}
         </div>
       </div>
     );
@@ -312,6 +327,7 @@ export const FinishVerificationCard = ({
         {!agreement?.accepted && (
           <ServiceAgreementPanel agreement={agreement} />
         )}
+        {state.order_rules?.acknowledged === false && <OrderRulesPanel />}
       </div>
     </div>
   );

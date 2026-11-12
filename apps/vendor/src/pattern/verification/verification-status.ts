@@ -66,6 +66,8 @@ export function summariseVerification(
 
   const step: VerificationStep = state.verification_state ?? 'not_started';
   const agreement = state.service_agreement;
+  // Missing on an older backend: nothing to ask then.
+  const rulesPending = state.order_rules?.acknowledged === false;
 
   // Approved by hand while QoreID was unavailable, and now it is back: they
   // keep selling until the date, and are paused after it.
@@ -93,6 +95,19 @@ export function summariseVerification(
         headline: 'The vendor agreement has changed',
         body: 'Read the new version and accept it on your verification page.',
         action: { label: 'Read the agreement', href: GET_VERIFIED },
+      };
+    }
+    if (rulesPending) {
+      return {
+        canSell,
+        tone: 'info',
+        headline: state.order_rules?.outdated
+          ? 'An order rule has changed'
+          : 'Read how orders work',
+        body: state.order_rules?.outdated
+          ? 'Read the updated rules and tick "I understand" on your verification page.'
+          : 'A short list of the rules every order follows: confirm and ship-by times, late charges, when you are paid. Tick "I understand" once.',
+        action: { label: 'Read the rules', href: GET_VERIFIED },
       };
     }
     return null;
@@ -136,12 +151,17 @@ export function summariseVerification(
     return {
       canSell,
       tone: 'warning',
-      headline: agreement?.accepted
-        ? 'Your checks are done — send them for review'
-        : 'Your checks are done — one step left',
-      body: agreement?.accepted
-        ? 'Submit your store for review and we will take it from there.'
-        : 'Accept the vendor service agreement, then submit your store for review.',
+      headline:
+        agreement?.accepted && !rulesPending
+          ? 'Your checks are done — send them for review'
+          : 'Your checks are done — one step left',
+      body: !agreement?.accepted
+        ? rulesPending
+          ? 'Accept the vendor service agreement, read how orders work, then submit your store for review.'
+          : 'Accept the vendor service agreement, then submit your store for review.'
+        : rulesPending
+          ? 'Read how orders work and tick "I understand", then submit your store for review.'
+          : 'Submit your store for review and we will take it from there.',
       action: { label: 'Finish verification', href: GET_VERIFIED },
     };
   }
