@@ -4,10 +4,9 @@ import Image from 'next/image';
 import { MessageSquare, Package } from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { OrderStatusPill } from '../atoms/order-status-pill';
 import type { Order } from '@/redux/services/orders/orders.api-slice';
 import {
-  deliveryBadge,
   formatDate,
   formatNaira,
   readAmountPaid,
@@ -17,7 +16,6 @@ import {
   readOrderImage,
   readOrderTitle,
   readProductPrice,
-  readStatus,
 } from '../lib/order-fields';
 
 export const createOrdersColumns = (
@@ -149,19 +147,7 @@ export const createOrdersColumns = (
   {
     id: 'delivery_status',
     header: 'Status',
-    cell: ({ row }) => {
-      const badge = deliveryBadge(readStatus(row.original));
-      return (
-        <span
-          className={cn(
-            'inline-flex h-[26px] items-center justify-center whitespace-nowrap rounded-[8px] px-3 text-xs font-medium',
-            badge.className
-          )}
-        >
-          {badge.label}
-        </span>
-      );
-    },
+    cell: ({ row }) => <OrderStatusPill order={row.original} />,
     enableSorting: false,
   },
   {
