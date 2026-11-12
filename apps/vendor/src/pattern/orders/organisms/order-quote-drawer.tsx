@@ -803,7 +803,7 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                 <Info className="mt-0.5 size-4 shrink-0 text-grey3 dark:text-gray-300" />
                 <p className="text-xs text-grey3 dark:text-gray-300">
                   {isDraft
-                    ? 'Custom orders become non-cancellable after cutting begins. If something feels off, message the customer or escalate to Qlozet.'
+                    ? 'The customer can still cancel after accepting. If they do, you keep part of the quote as a cancellation fee, or the whole deposit once you have sent photos of the finished piece. If something feels off, message the customer or contact Qlozet.'
                     : 'Waiting for customer to review and accept'}
                 </p>
               </div>

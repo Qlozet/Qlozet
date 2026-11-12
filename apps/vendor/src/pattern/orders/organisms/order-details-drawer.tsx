@@ -1429,8 +1429,8 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     )}
                   </Card>
                   <p className="px-1 text-xs text-grey3 dark:text-gray-400">
-                    Paid by the customer. Released to your wallet once the
-                    fabric is delivered to the tailor.
+                    Paid by the customer. It reaches your wallet 14 days after
+                    the customer paid, whether or not the fabric has arrived.
                   </p>
                 </section>
               )}
