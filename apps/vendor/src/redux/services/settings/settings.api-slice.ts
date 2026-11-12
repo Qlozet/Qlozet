@@ -41,6 +41,8 @@ export interface VendorCapacity {
 export interface BusinessProfileResponse {
   _id: string;
   business_name: string;
+  /** Shop address: shop.qlozet.app/s/<slug>. */
+  slug?: string;
   business_email: string;
   business_phone_number?: string;
   business_address?: string;
@@ -170,6 +172,21 @@ export interface UpdateUserProfilePayload {
 }
 
 // API Slice
+export interface StoreAddress {
+  slug: string;
+  /** Older addresses that still redirect to the current one. */
+  previous_slugs: string[];
+}
+
+export interface StoreAddressCheck {
+  slug: string;
+  available: boolean;
+  /** Why it can't be used, in words to show as is. */
+  reason: string | null;
+  /** A free address close to the one asked for, when it was taken. */
+  suggestion?: string;
+}
+
 export const settingsApiSlice = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     // ─── Business/Organization Profile ───
@@ -177,6 +194,33 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       query: () => '/business',
       transformResponse: (res: any) => res?.data ?? res,
       providesTags: ['VendorDetails'],
+    }),
+
+    // ─── Store address (shop.qlozet.app/s/<slug>) ───
+    // Old addresses keep redirecting on the shop, so changing it never breaks
+    // a link the vendor already shared.
+    getStoreAddress: builder.query<StoreAddress, void>({
+      query: () => '/business/store-address',
+      transformResponse: (res: any) => res?.data ?? res,
+      providesTags: ['VendorDetails'],
+    }),
+
+    checkStoreAddress: builder.query<StoreAddressCheck, string>({
+      query: (slug) => ({
+        url: '/business/store-address/check',
+        params: { slug },
+      }),
+      transformResponse: (res: any) => res?.data ?? res,
+    }),
+
+    updateStoreAddress: builder.mutation<StoreAddress, string>({
+      query: (slug) => ({
+        url: '/business/store-address',
+        method: 'PATCH',
+        body: { slug },
+      }),
+      transformResponse: (res: any) => res?.data ?? res,
+      invalidatesTags: ['VendorDetails'],
     }),
 
     /** Live order capacity: how much work this vendor already owes. */
@@ -333,4 +377,7 @@ export const {
   useUpdateVendorDetailsMutation,
   useLazyVerifyVendorAccountQuery,
   useUpdateBusinessSettingsMutation,
+  useGetStoreAddressQuery,
+  useLazyCheckStoreAddressQuery,
+  useUpdateStoreAddressMutation,
 } = settingsApiSlice;

@@ -7,6 +7,7 @@ import { CheckCircle2, ChevronRight, Sparkles } from 'lucide-react';
 import { OrganizationProfileForm } from '../molecules/organization-profile-form';
 import { UserProfileForm } from '../molecules/user-profile-form';
 import { VendorProfileCard } from '../molecules/vendor-profile-card';
+import { StoreAddressCard } from '../molecules/store-address-card';
 import { UserProfileCard } from '../molecules/user-profile-card';
 import { profileCompleteness } from '../lib/profile-completeness';
 import {
@@ -27,6 +28,7 @@ import { cn } from '@/lib/utils';
 import { readApiError } from '@/redux/services/types';
 
 import { SHOP_URL } from '@/lib/shop-url';
+import { storeAddressUrl } from '@/lib/store-address';
 
 /**
  * Only the fields this save actually changed.
@@ -308,12 +310,16 @@ export const ProfileContent: React.FC<ProfileContentProps> = () => {
         coverImageUrl={businessData?.cover_image_url}
         themeColor={businessData?.theme_color}
         storefrontUrl={
-          businessData?._id
-            ? `${SHOP_URL}/vendor/${businessData._id}`
-            : undefined
+          businessData?.slug
+            ? storeAddressUrl(businessData.slug)
+            : businessData?._id
+              ? `${SHOP_URL}/vendor/${businessData._id}`
+              : undefined
         }
         completeness={completeness}
       />
+
+      <StoreAddressCard />
 
       <div
         role="tablist"
