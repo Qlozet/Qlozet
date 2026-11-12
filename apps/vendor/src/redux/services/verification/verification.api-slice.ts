@@ -88,10 +88,34 @@ export interface VerificationState {
     /** Signed an older version, so it has to be signed again. */
     outdated: boolean;
   };
+  /** "How orders work": needed before submitting for review. Missing on an
+   *  older backend, which is read as nothing to ask. */
+  order_rules?: {
+    version: string;
+    acknowledged: boolean;
+    acknowledged_at: string | null;
+    /** A rule changed since they acknowledged it. */
+    outdated: boolean;
+  };
+}
+
+/** One rule on the "How orders work" screen. */
+export interface OrderRuleCard {
+  key: string;
+  title: string;
+  body: string;
+}
+
+export interface OrderRules {
+  version: string;
+  cards: OrderRuleCard[];
+  terms: Record<string, number>;
+  acknowledged: boolean;
+  acknowledged_at: string | null;
 }
 
 const verificationAPI = baseAPI.enhanceEndpoints({
-  addTagTypes: ['Verification'],
+  addTagTypes: ['Verification', 'OrderRules'],
 });
 
 export const verificationApiSlice = verificationAPI.injectEndpoints({
@@ -140,6 +164,25 @@ export const verificationApiSlice = verificationAPI.injectEndpoints({
         body,
       }),
       invalidatesTags: ['Verification'],
+    }),
+
+    /** "How orders work": the rules with today's numbers, from the backend. */
+    getOrderRules: builder.query<ApiResponse<OrderRules>, void>({
+      query: () => ({ url: '/verification/order-rules', method: 'GET' }),
+      providesTags: ['OrderRules'],
+    }),
+
+    /** Tick "I understand". The version shown must still be in force. */
+    acknowledgeOrderRules: builder.mutation<
+      ApiResponse<{ message: string }>,
+      { version: string }
+    >({
+      query: (body) => ({
+        url: '/verification/order-rules',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Verification', 'OrderRules'],
     }),
 
     /** Hand the finished checks to the Qlozet review queue. */
@@ -231,6 +274,8 @@ export const {
   useGetServiceAgreementQuery,
   useStartVerificationSessionMutation,
   useAcceptServiceAgreementMutation,
+  useGetOrderRulesQuery,
+  useAcknowledgeOrderRulesMutation,
   useSubmitForReviewMutation,
   useSubmitManualVerificationMutation,
   useFileCacDocumentMutation,

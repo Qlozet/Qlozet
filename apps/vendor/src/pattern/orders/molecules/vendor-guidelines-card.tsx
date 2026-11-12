@@ -8,16 +8,21 @@
 import React from 'react';
 import { BadgeCheck, ShieldCheck } from 'lucide-react';
 
+// Each line describes what the platform actually does; no promise here
+// that the system does not keep.
 const GUIDELINES: { icon: 'shield' | 'check'; text: string }[] = [
   {
     icon: 'shield',
-    text: 'Proof photos required at cutting, sewing, and QC stages.',
+    text: 'Send photos of the finished piece before shipping. The customer pays the balance from them.',
   },
   {
     icon: 'check',
-    text: 'Disputes escalated to Qlozet if unresolved within 48 hrs.',
+    text: 'Shipping after the ship-by date costs part of your earnings each day, and an order left unshipped too long is cancelled.',
   },
-  { icon: 'check', text: 'On-time delivery improves your vendor rating.' },
+  {
+    icon: 'check',
+    text: 'If a customer reports a problem, reply in Disputes with your side and any photos. Qlozet decides from both.',
+  },
 ];
 
 export const VendorGuidelinesCard = () => (

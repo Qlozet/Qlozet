@@ -3,6 +3,7 @@
 
 import { baseAPI } from '@/redux/api/base-api';
 import type { FitFeedback, MeasurementCheck } from '@/lib/garment-check';
+import type { LatePreview } from '@/pattern/orders/lib/late-preview';
 
 // ──────────────── Enums ────────────────
 
@@ -293,6 +294,8 @@ export interface VendorShipment {
   fulfillment_deadline?: string;
   /** Set while this shipment waits for confirmation: when it cancels itself. */
   confirm_by?: string;
+  /** Set once confirmed and until shipped: ship-by date and lateness costs. */
+  late_preview?: LatePreview;
   late_penalty_applied?: boolean;
   late_penalty_amount?: number;
   late_penalty_days?: number;
@@ -336,6 +339,11 @@ export interface Order {
    * null once confirmed or when auto-cancel is off.
    */
   confirm_by?: string | null;
+  /**
+   * This store's ship-by date and what lateness would cost, from the same
+   * rules as the penalty job. Null when nothing of theirs is waiting to ship.
+   */
+  late_preview?: LatePreview | null;
   customer: {
     _id: string;
     email: string;

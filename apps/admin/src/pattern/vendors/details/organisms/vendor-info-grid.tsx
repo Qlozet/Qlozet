@@ -162,6 +162,18 @@ export const VendorInfoGrid = ({
         year: 'numeric',
       })
     : null;
+  // "How orders work": the vendor ticked "I understand" (business.order_rules_ack).
+  const rulesAck = v.order_rules_ack as
+    | { version?: string; accepted_at?: string }
+    | null
+    | undefined;
+  const rulesDate = rulesAck?.accepted_at
+    ? new Date(rulesAck.accepted_at).toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })
+    : null;
 
   // The account owner — what this page labels "Admin". Business has no
   // personal_name / personal_phone_number / principal_email fields, so those
@@ -517,6 +529,15 @@ export const VendorInfoGrid = ({
               : 'Not accepted'
           }
           valueClassName={agreement?.version ? undefined : 'text-destructive'}
+        />
+        <VendorInfoCard
+          label="How orders work"
+          value={
+            rulesAck?.version
+              ? `Read and understood${rulesDate ? ` · ${rulesDate}` : ''}`
+              : 'Not read yet'
+          }
+          valueClassName={rulesAck?.version ? undefined : 'text-destructive'}
         />
         {/* One card per handle the vendor filled in. Nothing renders when
             they have added none — an empty "Social profiles" row would just

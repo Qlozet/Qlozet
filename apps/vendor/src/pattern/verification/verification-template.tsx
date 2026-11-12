@@ -32,6 +32,7 @@ import {
   AgreementUpdatedNotice,
   ServiceAgreementPanel,
 } from './service-agreement-panel';
+import { OrderRulesPanel } from './order-rules-panel';
 import {
   FinishVerificationCard,
   ManualSubmissionSummary,
@@ -133,6 +134,8 @@ export const VerificationTemplate = () => {
   const bank = state?.verification?.bank ?? null;
   const business = state?.verification?.business ?? null;
   const agreement = state?.service_agreement;
+  // Missing on an older backend: nothing to ask then.
+  const rulesPending = state?.order_rules?.acknowledged === false;
   const step = state?.verification_state ?? 'not_started';
   // One hosted run replaces the three separate cards. Until
   // QOREID_WORKFLOW_ID is set the older cards are shown, so the console can
@@ -719,6 +722,7 @@ export const VerificationTemplate = () => {
               {!agreement?.accepted && (
                 <ServiceAgreementPanel agreement={agreement} />
               )}
+              {rulesPending && <OrderRulesPanel />}
             </div>
           ) : step === 'awaiting_review' ? (
             <p className="text-xs leading-relaxed text-grey2 dark:text-gray-400">
@@ -739,12 +743,15 @@ export const VerificationTemplate = () => {
 
               <ServiceAgreementPanel agreement={agreement} />
 
+              {state?.order_rules && <OrderRulesPanel />}
+
               <div className="flex flex-wrap items-center gap-3">
                 <button
                   type="button"
                   className={buttonCls}
                   disabled={
                     !agreement?.accepted ||
+                    rulesPending ||
                     step !== 'provider_complete' ||
                     submitState.isLoading
                   }
@@ -768,6 +775,14 @@ export const VerificationTemplate = () => {
                     Accept the agreement to continue.
                   </span>
                 )}
+                {step === 'provider_complete' &&
+                  agreement?.accepted &&
+                  rulesPending && (
+                    <span className="text-xs text-grey2 dark:text-gray-400">
+                      Tick &quot;I understand&quot; under How orders work to
+                      continue.
+                    </span>
+                  )}
               </div>
             </div>
           )}
