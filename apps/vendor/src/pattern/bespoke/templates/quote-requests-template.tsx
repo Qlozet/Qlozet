@@ -117,10 +117,11 @@ export const QuoteRequestsTemplate = () => {
             const design = q.design ?? {};
             const img = design.design_images?.[0];
             const pill = statusPill(q.status);
-            const customerName = q.customer
-              ? `${q.customer.first_name ?? ''} ${q.customer.last_name ?? ''}`.trim() ||
-                q.customer.email
-              : 'Customer';
+            // The API sends a short name only ("Ada O."), never contact details.
+            const customerName =
+              q.customer?.full_name ||
+              `${q.customer?.first_name ?? ''} ${q.customer?.last_name ?? ''}`.trim() ||
+              'Customer';
             const total =
               typeof q.total === 'number' && q.total > 0
                 ? q.total

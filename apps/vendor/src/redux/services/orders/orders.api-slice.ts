@@ -291,6 +291,8 @@ export interface VendorShipment {
   rejected_at?: string;
   rejection_reason?: string;
   fulfillment_deadline?: string;
+  /** Set while this shipment waits for confirmation: when it cancels itself. */
+  confirm_by?: string;
   late_penalty_applied?: boolean;
   late_penalty_amount?: number;
   late_penalty_days?: number;
@@ -328,6 +330,12 @@ export function extractFabricName(
 export interface Order {
   _id: string;
   reference: string;
+  /**
+   * When this store's unconfirmed part of the order is cancelled and the
+   * customer refunded. Worked out by the backend from the admin setting;
+   * null once confirmed or when auto-cancel is off.
+   */
+  confirm_by?: string | null;
   customer: {
     _id: string;
     email: string;

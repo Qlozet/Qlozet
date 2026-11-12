@@ -91,6 +91,8 @@ import {
   OrderMediaPanel,
   ignoreMediaPanelInteraction,
 } from '../molecules/order-media-panel';
+import { confirmCountdown } from '../lib/confirm-countdown';
+import { useNow } from '@/lib/hooks/useNow';
 import {
   deliveryBadge,
   formatDate,
@@ -714,6 +716,8 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
   ({ order: orderProp, openChat }) => {
     const { visible, resolve, hide, remove } = useModal();
     const { copied, copy } = useCopyId();
+    // Keeps the confirm-by countdown moving while the drawer is open.
+    const now = useNow();
 
     // Back the passed order with local state so a successful fulfill can update
     // the drawer in place (the shipment flips to SHIPPED with tracking + Print
@@ -884,6 +888,10 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
       vendorShipment &&
       !isConfirmed &&
       !isRejected;
+    // When this order cancels itself if nobody confirms (from the backend).
+    const confirmBy = needsConfirmation
+      ? confirmCountdown(vendorShipment?.confirm_by ?? order.confirm_by, now)
+      : null;
 
     // The backend now reverts ready_to_ship -> pending when a fulfill fails, so
     // fresh failures show a normal Fulfill button. This still catches shipments
@@ -1598,6 +1606,28 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                         value={formatDate(vendorShipment.confirmed_at)}
                       />
                     )}
+                    {needsConfirmation && confirmBy && (
+                      <DetailRow
+                        label="Confirm by"
+                        value={
+                          <span
+                            className={cn(
+                              'text-sm font-medium',
+                              confirmBy.tone === 'calm'
+                                ? 'text-foreground'
+                                : confirmBy.tone === 'soon'
+                                  ? 'text-[#DD900D]'
+                                  : 'text-[#D42620]'
+                            )}
+                          >
+                            {confirmBy.at}
+                            {confirmBy.tone === 'overdue'
+                              ? ' (being cancelled)'
+                              : ` (${confirmBy.left} left)`}
+                          </span>
+                        }
+                      />
+                    )}
                     {isConfirmed && vendorShipment.fulfillment_deadline && (
                       <DetailRow
                         label="Fulfill by"
@@ -2095,6 +2125,43 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                 <p className="text-xs text-amber-700 dark:text-amber-300">
                   A previous fulfillment attempt didn&apos;t complete — no
                   shipping label was created. You can retry below.
+                </p>
+              </div>
+            )}
+            {needsConfirmation && confirmBy && canArea('orders.fulfil') && (
+              <div
+                className={cn(
+                  'mb-3 flex items-start gap-2 rounded-lg border px-3 py-2',
+                  confirmBy.tone === 'calm'
+                    ? 'border-border bg-muted/40'
+                    : confirmBy.tone === 'soon'
+                      ? 'border-amber-200 bg-amber-50 dark:border-amber-800/50 dark:bg-amber-900/20'
+                      : 'border-red-200 bg-red-50 dark:border-red-800/50 dark:bg-red-900/20'
+                )}
+              >
+                <Clock
+                  className={cn(
+                    'mt-0.5 size-4 shrink-0',
+                    confirmBy.tone === 'calm'
+                      ? 'text-muted-foreground'
+                      : confirmBy.tone === 'soon'
+                        ? 'text-amber-600 dark:text-amber-400'
+                        : 'text-red-600 dark:text-red-400'
+                  )}
+                />
+                <p
+                  className={cn(
+                    'text-xs',
+                    confirmBy.tone === 'calm'
+                      ? 'text-muted-foreground'
+                      : confirmBy.tone === 'soon'
+                        ? 'text-amber-700 dark:text-amber-300'
+                        : 'text-red-700 dark:text-red-300'
+                  )}
+                >
+                  {confirmBy.tone === 'overdue'
+                    ? 'The time to confirm has passed. This order is being cancelled and the customer refunded.'
+                    : `Confirm or decline by ${confirmBy.at} (${confirmBy.left} left). If you don't, the order is cancelled and the customer refunded.`}
                 </p>
               </div>
             )}
