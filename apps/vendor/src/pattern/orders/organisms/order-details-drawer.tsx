@@ -93,6 +93,7 @@ import {
 } from '../molecules/order-media-panel';
 import { confirmCountdown } from '../lib/confirm-countdown';
 import { latePreviewLines } from '../lib/late-preview';
+import { OrderAgreementCard } from '../molecules/order-agreement-card';
 import { useNow } from '@/lib/hooks/useNow';
 import {
   deliveryBadge,
@@ -1567,6 +1568,13 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   The customer signs off on photos of the finished piece
                   before fulfil unlocks — the checkpoint that catches
                   problems while they're still fixable at the workshop. */}
+              {/* ── What was agreed at the deposit ── */}
+              {!isFabricTransferOnly &&
+                order.type === 'bespoke' &&
+                order.agreement && (
+                  <OrderAgreementCard agreement={order.agreement} />
+                )}
+
               {!isFabricTransferOnly &&
                 order.type === 'bespoke' &&
                 !isRejected &&

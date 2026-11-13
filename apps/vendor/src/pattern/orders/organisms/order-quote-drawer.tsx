@@ -210,6 +210,9 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
 
   const [saveDraft, { isLoading: isSaving }] = useSaveQuoteDraftMutation();
   const [submitQuote, { isLoading: isSubmitting }] = useSubmitQuoteMutation();
+  // The tailor agrees to Qlozet's bespoke terms when sending the quote; it
+  // becomes their side of the order agreement the customer pays against.
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
   // Fabric: priced from the listing when the customer chose one (another
   // vendor's, billed on top; or this tailor's own, a line of the quote), or
@@ -352,6 +355,8 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
     }
     if (completionDays < 1)
       return 'Enter how many days you need before you can ship.';
+    if (!acceptTerms)
+      return 'Tick that you will make this to the bespoke terms.';
     return null;
   };
 
@@ -384,7 +389,10 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
       return;
     }
     try {
-      await submitQuote({ id: quoteId, data: payload() }).unwrap();
+      await submitQuote({
+        id: quoteId,
+        data: { ...payload(), accept_terms: true },
+      }).unwrap();
       toast.success('Quote submitted');
       // Keep the drawer open: submitting invalidates the quote, so it refetches
       // in place and flips to the read-only "Quoted" view with the saved prices
@@ -779,10 +787,49 @@ export const OrderQuoteDrawer = create<OrderQuoteDrawerProps>(({ order }) => {
                       </p>
                     </div>
                   )}
+                  <div className="rounded-lg border border-border bg-white p-3 dark:bg-[#404040]">
+                    <p className="text-xs font-semibold text-grey-black dark:text-white">
+                      The bespoke terms
+                    </p>
+                    <ul className="mt-1.5 list-disc space-y-1 pl-4 text-xs leading-relaxed text-grey2 dark:text-gray-300">
+                      <li>
+                        The design pictures are the reference for what you make.
+                      </li>
+                      <li>
+                        Your price includes 2 rounds of changes after your
+                        photos of the finished piece.
+                      </li>
+                      <li>
+                        You ship within the days above, counted from payment
+                        (from the day the fabric arrives if another shop sends
+                        it).
+                      </li>
+                      <li>
+                        Cancellations, late charges and payouts follow How
+                        orders work. The customer sees these terms, in naira,
+                        before paying.
+                      </li>
+                    </ul>
+                    <label
+                      htmlFor={`accept-terms-${quoteId}`}
+                      className="mt-2.5 flex cursor-pointer items-start gap-2.5"
+                    >
+                      <input
+                        id={`accept-terms-${quoteId}`}
+                        type="checkbox"
+                        checked={acceptTerms}
+                        onChange={(e) => setAcceptTerms(e.target.checked)}
+                        className="mt-0.5 size-4 shrink-0 cursor-pointer accent-primary"
+                      />
+                      <span className="text-xs leading-relaxed text-grey-black dark:text-white">
+                        I&apos;ll make this to these terms
+                      </span>
+                    </label>
+                  </div>
                   <Button
                     type="button"
                     onClick={handleSubmit}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !acceptTerms}
                     className="w-full"
                   >
                     {isSubmitting ? 'Submitting...' : 'Submit quote'}
