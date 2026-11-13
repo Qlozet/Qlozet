@@ -23,6 +23,8 @@ export interface QuotePayload {
   extra_fabric_yards?: { role: ExtraFabricRole; yards: number }[];
   estimated_completion_days?: number;
   vendor_notes?: string;
+  /** Submit only: the tailor agrees to make this to Qlozet's bespoke terms. */
+  accept_terms?: boolean;
 }
 
 // Quote responses are not documented in Swagger, so the shape is loose.
