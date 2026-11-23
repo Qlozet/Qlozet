@@ -16,7 +16,26 @@ export interface LatePreview {
   charged: number;
   cancel_on: string | null;
   paused: boolean;
+  /** Why the clock is not running. Missing on an older backend: the balance. */
+  paused_reason?: 'balance' | 'fabric' | 'measurements' | null;
 }
+
+const PAUSED_LABEL = {
+  balance: 'Awaiting balance',
+  fabric: 'Waiting for fabric',
+  measurements: 'Waiting on customer',
+} as const;
+
+const PAUSED_LINE = {
+  balance:
+    "Waiting for the customer's balance. Lateness is not counted until they pay.",
+  fabric:
+    'Waiting for the fabric from the other shop. Your making time starts when it arrives, and lateness is not counted until then.',
+  measurements:
+    "Waiting for the customer's answer about measurements. Up to 3 days of waiting is added to your ship-by date.",
+} as const;
+
+const reasonOf = (p: LatePreview) => p.paused_reason ?? 'balance';
 
 export type ShipByTone = 'calm' | 'soon' | 'late' | 'paused';
 
@@ -41,7 +60,8 @@ export function shipByBadge(
   now: number = Date.now()
 ): { label: string; tone: ShipByTone } | null {
   if (!preview) return null;
-  if (preview.paused) return { label: 'Awaiting balance', tone: 'paused' };
+  if (preview.paused)
+    return { label: PAUSED_LABEL[reasonOf(preview)], tone: 'paused' };
   if (preview.days_late > 0) {
     return {
       label: `${preview.days_late} day${preview.days_late === 1 ? '' : 's'} late`,
@@ -61,11 +81,7 @@ export function latePreviewLines(
   preview: LatePreview | null | undefined
 ): string[] {
   if (!preview) return [];
-  if (preview.paused) {
-    return [
-      "Waiting for the customer's balance. Lateness is not counted until they pay.",
-    ];
-  }
+  if (preview.paused) return [PAUSED_LINE[reasonOf(preview)]];
   const lines: string[] = [];
   const day = formatShipDay(preview.ship_by);
   if (preview.days_late > 0) {

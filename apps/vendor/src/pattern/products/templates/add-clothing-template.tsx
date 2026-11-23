@@ -133,7 +133,11 @@ export default function AddClothingTemplate() {
   } | null>(null);
   const [defaultImages, setDefaultImages] = useState<DefaultImage[]>([]);
 
-  const [customizationEnabled, setCustomizationEnabled] = useState(false);
+  // ?mode=made_to_measure (the dashboard's first step) starts a new listing
+  // in made-to-measure mode; editing always follows the saved product.
+  const [customizationEnabled, setCustomizationEnabled] = useState(
+    () => !editId && searchParams.get('mode') === 'made_to_measure'
+  );
   // Garment fabric requirement: yards this garment uses per size (bill of
   // materials). Drives fabric pricing, cross-vendor fabric, and inventory.
   const [yardagePerSize, setYardagePerSize] = useState<Record<string, number>>(

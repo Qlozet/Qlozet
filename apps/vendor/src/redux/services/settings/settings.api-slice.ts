@@ -38,6 +38,22 @@ export interface VendorCapacity {
   remaining: number | null;
 }
 
+export type SetupStepKey =
+  | 'store_details'
+  | 'payout'
+  | 'made_to_measure_listing'
+  | 'ready_to_wear_listing'
+  | 'fabric_listing'
+  | 'accessory_listing';
+
+export interface SetupStepsResponse {
+  offerings: string[];
+  offerings_answered: boolean;
+  dismissed: boolean;
+  steps: { key: SetupStepKey; done: boolean }[];
+  done: boolean;
+}
+
 export interface BusinessProfileResponse {
   _id: string;
   business_name: string;
@@ -66,6 +82,10 @@ export interface BusinessProfileResponse {
   accepts_external_fabric?: boolean;
   /** Whether this vendor takes bespoke / made-to-measure work. */
   accepts_bespoke?: boolean;
+  /** What the store sells (backend offerings.ts); empty until answered. */
+  offerings?: string[];
+  /** Null until the owner answers "What do you sell?". */
+  offerings_answered_at?: string | null;
   /**
    * Vendor social handles - handles, never URLs. The backend reduces a pasted
    * profile URL to its handle; the storefront builds the link.
@@ -269,6 +289,7 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
       > & {
         accepts_external_fabric?: boolean;
         accepts_bespoke?: boolean;
+        offerings?: string[];
       }
     >({
       query: (data) => ({
@@ -276,6 +297,19 @@ export const settingsApiSlice = baseAPI.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
+      invalidatesTags: ['VendorDetails'],
+    }),
+
+    // ─── First steps (dashboard "Get your store ready") ───
+    // Worked out by the backend from the real records each time, so it is
+    // refetched on every visit rather than trusted from cache.
+    getSetupSteps: builder.query<SetupStepsResponse, void>({
+      query: () => '/business/setup-steps',
+      transformResponse: (res: any) => res?.data?.data ?? res?.data ?? res,
+      providesTags: ['VendorDetails'],
+    }),
+    dismissSetupSteps: builder.mutation<any, void>({
+      query: () => ({ url: '/business/setup-steps/dismiss', method: 'POST' }),
       invalidatesTags: ['VendorDetails'],
     }),
 
@@ -377,6 +411,8 @@ export const {
   useUpdateVendorDetailsMutation,
   useLazyVerifyVendorAccountQuery,
   useUpdateBusinessSettingsMutation,
+  useGetSetupStepsQuery,
+  useDismissSetupStepsMutation,
   useGetStoreAddressQuery,
   useLazyCheckStoreAddressQuery,
   useUpdateStoreAddressMutation,

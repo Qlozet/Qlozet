@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { RowActionsMenu } from '@/pattern/common/molecules/row-actions-menu';
 import type { Business } from '@/redux/services/businesses/businesses.api-slice';
+import { OFFERING_FILTER_OPTIONS } from '@/pattern/vendors/molecules/vendor-status-filter';
 import type { VendorDashboardMetrics } from '@/redux/services/dashboard/dashboard.api-slice';
 import { getVendorName, formatCount } from '@/lib/vendors';
 import { LifeBuoy, Pencil } from 'lucide-react';
@@ -368,6 +369,21 @@ export const VendorInfoGrid = ({
         <VendorInfoCard
           label="Vendor name"
           value={getVendorName(vendor ?? ({} as Business))}
+        />
+        {/* What the store said it sells after sign-up (backend offerings.ts). */}
+        <VendorInfoCard
+          label="Sells"
+          value={
+            Array.isArray(v.offerings) && v.offerings.length
+              ? (v.offerings as string[])
+                  .map(
+                    (o) =>
+                      OFFERING_FILTER_OPTIONS.find((x) => x.value === o)
+                        ?.label ?? o
+                  )
+                  .join(' · ')
+              : 'Not answered yet'
+          }
         />
         <VendorInfoCard
           label="Address"

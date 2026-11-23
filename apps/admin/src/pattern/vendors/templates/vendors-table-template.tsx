@@ -7,7 +7,10 @@ import {
   type DateRange,
 } from '@/pattern/common/molecules/date-range-filter';
 import { VendorSearchInput } from '../molecules/vendor-search-input';
-import { VendorStatusFilter } from '../molecules/vendor-status-filter';
+import {
+  OFFERING_FILTER_OPTIONS,
+  VendorStatusFilter,
+} from '../molecules/vendor-status-filter';
 import { VendorsTable } from '../organisms/vendors-table';
 import type { VendorSortColumn } from '../molecules/vendors-table-columns';
 
@@ -20,6 +23,8 @@ interface VendorsTableTemplateProps {
   error?: unknown;
   status: string;
   onStatusChange: (status: string) => void;
+  offering: string;
+  onOfferingChange: (offering: string) => void;
   pagination: PaginationState;
   setPagination: OnChangeFn<PaginationState>;
   pageCount: number;
@@ -42,6 +47,8 @@ export const VendorsTableTemplate = ({
   error,
   status,
   onStatusChange,
+  offering,
+  onOfferingChange,
   pagination,
   setPagination,
   pageCount,
@@ -63,6 +70,13 @@ export const VendorsTableTemplate = ({
         <div className="flex items-center gap-3">
           <VendorSearchInput value={search} onChange={onSearchChange} />
           <DateRangeFilter value={dateRange} onChange={onDateRangeChange} />
+          <VendorStatusFilter
+            value={offering}
+            onChange={onOfferingChange}
+            options={OFFERING_FILTER_OPTIONS}
+            placeholder="Sells"
+            ariaLabel="Filter by what the store sells"
+          />
           <VendorStatusFilter value={status} onChange={onStatusChange} />
         </div>
       </div>

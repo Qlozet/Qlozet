@@ -240,6 +240,18 @@ const FabricsTableTemplate = ({ onExport }: ClothingTableTemplateProps) => {
     show(AddFabricModal);
   };
 
+  // ?add=1 (the dashboard's first steps) opens the add form straight away,
+  // then drops the flag so a reload or Back doesn't open it again.
+  useEffect(() => {
+    if (searchParams.get('add') !== '1') return;
+    if (canUse('products.manage')) show(AddFabricModal);
+    const rest = new URLSearchParams(searchParams.toString());
+    rest.delete('add');
+    const qs = rest.toString();
+    router.replace(qs ? `?${qs}` : window.location.pathname);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   const handleImportProducts = () => {
     toast.info('Import products feature coming soon');
   };

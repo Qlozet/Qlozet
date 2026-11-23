@@ -2,17 +2,19 @@
 
 // Customer Stats Section - Molecule
 // The four headline metric cards above the customers table. Total Customers is
-// the real count from GET /business/customers; the location / unique-customers /
-// favourite metrics aren't provided by that endpoint, so they show a neutral
-// dash rather than a fabricated value (see [[no-stubbed-data]]).
+// the real count from GET /business/customers; top location, repeat customers
+// and the customer favourite come from GET /business/customers/demographics
+// (the same cached query the charts below use). Before there is data a card
+// shows a neutral dash, never a made-up value (see [[no-stubbed-data]]).
 
 import React, { ReactNode } from 'react';
 import Link from 'next/link';
-import { Users, MapPin, UserCheck, Heart, Eye } from 'lucide-react';
+import { Users, MapPin, Repeat, Heart, Eye } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { If } from '@/pattern/common/atoms/If';
 import { StatsCardSkeleton } from '@/pattern/dashboard/molecules/stats-card-skeleton';
+import { useGetCustomerDemographicsQuery } from '@/redux/services/customers/customers.api-slice';
 
 const showNum = (value: unknown): string =>
   typeof value === 'number' && !Number.isNaN(value)
@@ -35,9 +37,17 @@ interface MetricCardProps {
   value: string;
   icon: ReactNode;
   viewAllLink?: string;
+  /** A short line under the value, e.g. "12 customers". */
+  hint?: string;
 }
 
-const MetricCard = ({ title, value, icon, viewAllLink }: MetricCardProps) => (
+const MetricCard = ({
+  title,
+  value,
+  icon,
+  viewAllLink,
+  hint,
+}: MetricCardProps) => (
   <Card className="h-[120px] max-2xl:p-3 2xl:p-4 rounded-[12px] custom-card-shadow">
     <CardContent className="h-full p-0">
       <div className="flex items-start justify-start gap-x-4">
@@ -46,9 +56,17 @@ const MetricCard = ({ title, value, icon, viewAllLink }: MetricCardProps) => (
           <p className="text-[hsla(210,9%,31%,1)] dark:text-white text-xs font-normal">
             {title}
           </p>
-          <p className="text-2xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white truncate">
+          <p
+            className="text-2xl font-bold text-[hsla(210,9%,31%,1)] dark:text-white truncate"
+            title={value}
+          >
             {value}
           </p>
+          <If isTrue={Boolean(hint)}>
+            <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
+              {hint}
+            </p>
+          </If>
           <If isTrue={Boolean(viewAllLink)}>
             <Link
               href={viewAllLink ?? '#'}
@@ -80,7 +98,10 @@ export const CustomerStatsSection: React.FC<CustomerStatsSectionProps> = ({
   isLoading = false,
   tableHref = '#customers-table',
 }) => {
-  if (isLoading) {
+  const { data: demo, isLoading: demoLoading } =
+    useGetCustomerDemographicsQuery();
+
+  if (isLoading || demoLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
@@ -89,6 +110,16 @@ export const CustomerStatsSection: React.FC<CustomerStatsSectionProps> = ({
       </div>
     );
   }
+
+  const plural = (n: number, word: string) =>
+    `${n.toLocaleString()} ${word}${n === 1 ? '' : 's'}`;
+
+  const top = (demo?.topLocations ?? []).find(
+    (l) => l.customerCount > 0 && l.location && l.location !== 'Unknown'
+  );
+  const repeat = demo?.repeatCustomers ?? 0;
+  const base = demo?.totalCustomers ?? 0;
+  const fav = demo?.favoriteProduct ?? null;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -103,8 +134,9 @@ export const CustomerStatsSection: React.FC<CustomerStatsSectionProps> = ({
         viewAllLink={tableHref}
       />
       <MetricCard
-        title="Highest customer by location"
-        value="—"
+        title="Top location"
+        value={top ? String(top.location) : '—'}
+        hint={top ? plural(top.customerCount, 'customer') : undefined}
         icon={
           <CardIcon bg="bg-[#5DDAB4]">
             <MapPin className="size-6" />
@@ -112,18 +144,23 @@ export const CustomerStatsSection: React.FC<CustomerStatsSectionProps> = ({
         }
       />
       <MetricCard
-        title="Unique Customers"
-        value="—"
+        title="Repeat customers"
+        value={base > 0 ? repeat.toLocaleString() : '—'}
+        hint={
+          base > 0
+            ? `${Math.round((repeat / base) * 100)}% ordered more than once`
+            : undefined
+        }
         icon={
           <CardIcon bg="bg-[#FF8F6B]">
-            <UserCheck className="size-6" />
+            <Repeat className="size-6" />
           </CardIcon>
         }
-        viewAllLink={tableHref}
       />
       <MetricCard
         title="Customer favorite"
-        value="—"
+        value={fav ? fav.name : '—'}
+        hint={fav ? `In ${plural(fav.orders, 'order')}` : undefined}
         icon={
           <CardIcon bg="bg-[#FFB200]">
             <Heart className="size-6" />

@@ -140,6 +140,10 @@ export interface AgeGenderDatum {
 
 export interface CustomerDemographicsResponse {
   totalCustomers: number;
+  /** Customers with more than one paid order. */
+  repeatCustomers: number;
+  /** The product in the most paid orders, or null before any. */
+  favoriteProduct: { name: string; orders: number } | null;
   topLocations: CustomerLocationData[];
   genderDistribution: DemographicsDistributionItem[];
   wearsDistribution: DemographicsDistributionItem[];
@@ -192,6 +196,8 @@ export const customersApiSlice = baseAPI.injectEndpoints({
         }
         return {
           totalCustomers: v?.totalCustomers ?? 0,
+          repeatCustomers: v?.repeatCustomers ?? 0,
+          favoriteProduct: v?.favoriteProduct ?? null,
           topLocations: v?.topLocations ?? [],
           genderDistribution: v?.genderDistribution ?? [],
           wearsDistribution: v?.wearsDistribution ?? [],

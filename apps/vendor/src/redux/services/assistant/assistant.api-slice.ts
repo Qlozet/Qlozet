@@ -20,7 +20,8 @@ export type AssistantActionKind =
   | 'confirm_order'
   | 'reply_to_quote'
   | 'update_stock'
-  | 'create_discount';
+  | 'create_discount'
+  | 'update_listing';
 
 export type AssistantActionStatus =
   | 'proposed'

@@ -18,6 +18,9 @@ export type BusinessStatus =
 
 export interface Business {
   _id: string;
+  /** What the store said it sells (backend offerings.ts); empty until answered. */
+  offerings?: string[];
+  offerings_answered_at?: string | null;
   // Business identity (the backend uses a few different field names depending
   // on whether the record is a business profile or the owning vendor user).
   name?: string;
@@ -73,6 +76,8 @@ export interface GetBusinessesParams {
   search?: string;
   /** 'active' | 'inactive' | 'pending', or a raw BusinessStatus. */
   status?: string;
+  /** What the store said it sells: made_to_measure | ready_to_wear | fabric | accessories. */
+  offering?: string;
   /** Column to order by; the endpoint defaults to 'date'. */
   sort?: 'revenue' | 'products' | 'orders' | 'date' | 'name';
   order?: 'asc' | 'desc';

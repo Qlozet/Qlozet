@@ -71,3 +71,24 @@ describe('drawer wording', () => {
     expect(lines[0]).toMatch(/balance/);
   });
 });
+
+describe('why the clock is paused', () => {
+  it('names the wait in the badge and the drawer', () => {
+    expect(
+      shipByBadge(preview({ paused: true, paused_reason: 'fabric' }))?.label
+    ).toBe('Waiting for fabric');
+    expect(
+      shipByBadge(preview({ paused: true, paused_reason: 'measurements' }))
+        ?.label
+    ).toBe('Waiting on customer');
+    expect(
+      latePreviewLines(preview({ paused: true, paused_reason: 'fabric' }))[0]
+    ).toMatch(/starts when it arrives/);
+  });
+
+  it('an older backend without a reason means the balance', () => {
+    expect(shipByBadge(preview({ paused: true }))?.label).toBe(
+      'Awaiting balance'
+    );
+  });
+});

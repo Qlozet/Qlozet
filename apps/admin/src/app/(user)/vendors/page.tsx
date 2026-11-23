@@ -25,6 +25,8 @@ const VendorsPage = () => {
     pageSize: PAGE_SIZE,
   });
   const [status, setStatus] = useState('');
+  // What the store said it sells (made_to_measure, fabric, ...); '' = all.
+  const [offering, setOffering] = useState('');
   const [search, setSearch] = useState('');
   // undefined = the endpoint's default order (oldest first).
   const [sortState, setSortState] = useState<{
@@ -39,6 +41,7 @@ const VendorsPage = () => {
       page: pagination.pageIndex + 1,
       size: pagination.pageSize,
       status: status || undefined,
+      offering: offering || undefined,
       search: search || undefined,
       // Every one of these is applied by the endpoint's aggregation, not to the
       // page already on screen: products, orders and revenue are computed per
@@ -73,6 +76,11 @@ const VendorsPage = () => {
 
   const handleStatusChange = (next: string) => {
     setStatus(next);
+    toFirstPage();
+  };
+
+  const handleOfferingChange = (next: string) => {
+    setOffering(next);
     toFirstPage();
   };
 
@@ -123,6 +131,8 @@ const VendorsPage = () => {
         error={error}
         status={status}
         onStatusChange={handleStatusChange}
+        offering={offering}
+        onOfferingChange={handleOfferingChange}
         search={search}
         onSearchChange={handleSearchChange}
         sort={sort}

@@ -4,6 +4,7 @@
 import { baseAPI } from '@/redux/api/base-api';
 import type { FitFeedback, MeasurementCheck } from '@/lib/garment-check';
 import type { LatePreview } from '@/pattern/orders/lib/late-preview';
+import type { OrderAgreementRecord } from '@/pattern/orders/molecules/order-agreement-card';
 
 // ──────────────── Enums ────────────────
 
@@ -344,6 +345,8 @@ export interface Order {
    * rules as the penalty job. Null when nothing of theirs is waiting to ship.
    */
   late_preview?: LatePreview | null;
+  /** Bespoke: the order agreement frozen when the customer paid the deposit. */
+  agreement?: OrderAgreementRecord | null;
   customer: {
     _id: string;
     email: string;

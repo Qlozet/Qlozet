@@ -93,6 +93,7 @@ import {
 } from '../molecules/order-media-panel';
 import { confirmCountdown } from '../lib/confirm-countdown';
 import { latePreviewLines } from '../lib/late-preview';
+import { OrderAgreementCard } from '../molecules/order-agreement-card';
 import { useNow } from '@/lib/hooks/useNow';
 import {
   deliveryBadge,
@@ -101,10 +102,12 @@ import {
   readCustomerHandle,
   readCustomerName,
   readOrderId,
+  readOrderTitle,
   readStatus,
   shipmentStatusBadge,
 } from '../lib/order-fields';
 import { isEarningsFrozen } from '../lib/dispute-fields';
+import { printInvoice } from '../lib/print-invoice';
 import { readApiError } from '@/redux/services/types';
 
 interface OrderDetailsDrawerProps {
@@ -1567,6 +1570,13 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   The customer signs off on photos of the finished piece
                   before fulfil unlocks — the checkpoint that catches
                   problems while they're still fixable at the workshop. */}
+              {/* ── What was agreed at the deposit ── */}
+              {!isFabricTransferOnly &&
+                order.type === 'bespoke' &&
+                order.agreement && (
+                  <OrderAgreementCard agreement={order.agreement} />
+                )}
+
               {!isFabricTransferOnly &&
                 order.type === 'bespoke' &&
                 !isRejected &&
@@ -2303,7 +2313,27 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => toast.info('Print invoice is coming soon.')}
+                    onClick={() => {
+                      const opened = printInvoice({
+                        order,
+                        items: vendorItems ?? [],
+                        storeName:
+                          activeBusiness?.business_name ?? 'Your store',
+                        fallbackTitle: readOrderTitle(order, businessId),
+                        subtotal: vendorSubtotal ?? 0,
+                        delivery:
+                          vendorShipment?.shipping_fee ??
+                          order.shipping_fee ??
+                          0,
+                        area: [addr.city, addr.state]
+                          .filter(Boolean)
+                          .join(', '),
+                      });
+                      if (!opened)
+                        toast.error(
+                          'Your browser blocked the invoice. Allow pop-ups for this site and try again.'
+                        );
+                    }}
                     className="flex-1 h-11 gap-2 text-sm"
                   >
                     <Printer className="size-4" />
