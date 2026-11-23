@@ -10,6 +10,7 @@ import {
   Scissors,
   Boxes,
   BadgePercent,
+  FilePen,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -29,6 +30,7 @@ const KIND: Record<
   reply_to_quote: { label: 'Send quote', Icon: Scissors },
   update_stock: { label: 'Update stock', Icon: Boxes },
   create_discount: { label: 'Create discount', Icon: BadgePercent },
+  update_listing: { label: 'Edit listing', Icon: FilePen },
 };
 
 const STATUS: Record<
