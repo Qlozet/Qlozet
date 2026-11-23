@@ -6,7 +6,15 @@ import { APP_ROUTES } from '@/lib/routes';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Package, Wallet, ChevronRight, Loader2, Scissors } from 'lucide-react';
+import {
+  Package,
+  Wallet,
+  ChevronRight,
+  Loader2,
+  Scissors,
+  Store,
+} from 'lucide-react';
+import { OfferingsPicker } from '@/pattern/onboarding/offerings-picker';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import {
@@ -193,6 +201,12 @@ export const OrderSettingsContent = () => {
   const [hasChanges, setHasChanges] = useState(false);
   const [acceptsExternalFabric, setAcceptsExternalFabric] = useState(true);
   const [acceptsBespoke, setAcceptsBespoke] = useState(true);
+  // What the store sells (backend offerings.ts). Saved on its own button:
+  // ticking or unticking made to measure also flips the bespoke switch.
+  const [offerings, setOfferings] = useState<string[]>([]);
+  const savedOfferings = businessProfile?.offerings ?? [];
+  const offeringsChanged =
+    [...offerings].sort().join() !== [...savedOfferings].sort().join();
   const isSavingFabric = isSaving;
 
   // Sync external fabric toggle from business profile
@@ -200,6 +214,10 @@ export const OrderSettingsContent = () => {
     if (businessProfile?.accepts_external_fabric !== undefined) {
       setAcceptsExternalFabric(businessProfile.accepts_external_fabric);
     }
+  }, [businessProfile]);
+
+  useEffect(() => {
+    if (businessProfile) setOfferings(businessProfile.offerings ?? []);
   }, [businessProfile]);
 
   // Same for bespoke. Undefined means a profile saved before the field
@@ -262,6 +280,15 @@ export const OrderSettingsContent = () => {
     } catch (error: any) {
       setAcceptsExternalFabric(!value); // revert on error
       toast.error(readApiError(error, 'Failed to update setting'));
+    }
+  };
+
+  const handleSaveOfferings = async () => {
+    try {
+      await updateBusinessSettings({ offerings }).unwrap();
+      toast.success('What you sell is saved');
+    } catch (error: any) {
+      toast.error(readApiError(error, 'Failed to save'));
     }
   };
 
@@ -374,6 +401,49 @@ export const OrderSettingsContent = () => {
             onCheckedChange={handleExternalFabricToggle}
             disabled={isSavingFabric}
           />
+        </div>
+      </div>
+
+      {/* What you sell — the same four choices as the after-sign-up question.
+          Never limits listings; made to measure moves the bespoke switch below. */}
+      <div className="surface-card p-5 lg:p-6">
+        <div className="flex items-center gap-2.5 mb-5 pb-4 border-b border-border/60">
+          <div className="flex items-center justify-center size-8 rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+            <Store className="size-4" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-foreground">
+              What you sell
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Shown on your store page. It never limits what you can list.
+            </p>
+          </div>
+        </div>
+        <OfferingsPicker
+          value={offerings}
+          onChange={setOfferings}
+          disabled={isSaving || settingsUnavailable}
+          className="xl:grid-cols-4"
+        />
+        <div className="mt-4 flex flex-wrap items-center justify-end gap-3">
+          {offeringsChanged &&
+            offerings.includes('made_to_measure') !==
+              savedOfferings.includes('made_to_measure') && (
+              <p className="text-xs text-muted-foreground">
+                {offerings.includes('made_to_measure')
+                  ? 'Saving turns on bespoke requests.'
+                  : 'Saving turns off bespoke requests.'}
+              </p>
+            )}
+          <Button
+            onClick={handleSaveOfferings}
+            disabled={!offeringsChanged || !offerings.length || isSaving}
+            variant="outline"
+          >
+            {isSaving && <Loader2 className="mr-2 size-4 animate-spin" />}
+            Save
+          </Button>
         </div>
       </div>
 

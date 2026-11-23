@@ -18,9 +18,22 @@ const OPTIONS: StatusOption[] = [
   { label: 'Inactive', value: 'inactive' },
 ];
 
+/** What a store said it sells (backend offerings.ts). `''` clears it. */
+export const OFFERING_FILTER_OPTIONS: StatusOption[] = [
+  { label: 'Sells anything', value: '' },
+  { label: 'Made to measure', value: 'made_to_measure' },
+  { label: 'Ready to wear', value: 'ready_to_wear' },
+  { label: 'Fabric', value: 'fabric' },
+  { label: 'Accessories', value: 'accessories' },
+];
+
 interface VendorStatusFilterProps {
   value: string;
   onChange: (value: string) => void;
+  /** Defaults to the status options; the "Sells" filter passes its own. */
+  options?: StatusOption[];
+  placeholder?: string;
+  ariaLabel?: string;
 }
 
 /**
@@ -33,6 +46,9 @@ interface VendorStatusFilterProps {
 export const VendorStatusFilter = ({
   value,
   onChange,
+  options = OPTIONS,
+  placeholder = "Vendor's status",
+  ariaLabel = 'Filter by vendor status',
 }: VendorStatusFilterProps) => {
   const [open, setOpen] = useState(false);
   const ref = useClickOutside<HTMLDivElement>(() => setOpen(false));
@@ -51,9 +67,9 @@ export const VendorStatusFilter = ({
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [open]);
 
-  const selected = OPTIONS.find((option) => option.value === value);
+  const selected = options.find((option) => option.value === value);
   // The trigger reads as a label until something is chosen.
-  const triggerLabel = selected?.value ? selected.label : "Vendor's status";
+  const triggerLabel = selected?.value ? selected.label : placeholder;
 
   return (
     <div className="relative select-none" ref={ref}>
@@ -82,10 +98,10 @@ export const VendorStatusFilter = ({
       {open && (
         <ul
           role="listbox"
-          aria-label="Filter by vendor status"
+          aria-label={ariaLabel}
           className="absolute right-0 z-20 mt-1 w-[180px] overflow-hidden rounded-lg border border-border bg-white dark:bg-card py-1 shadow-lg"
         >
-          {OPTIONS.map((option) => {
+          {options.map((option) => {
             const isSelected = option.value === value;
             return (
               <li
