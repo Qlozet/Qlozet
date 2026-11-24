@@ -303,6 +303,13 @@ export interface VendorShipment {
   rate_fetched_at?: string;
   shipped_at?: string;
   delivered_at?: string;
+  /** The day (YYYY-MM-DD, Lagos) the courier is booked to collect. */
+  pickup_date?: string | null;
+  /** Set when the courier didn't collect (or cancelled): rebook from the drawer. */
+  pickup_alerted_at?: string | null;
+  /** How many times a new courier was booked for this part. */
+  rebook_count?: number;
+  tracking_url?: string | null;
 }
 
 /** Extract the business ID from a shipment's business field (string or populated object) */
