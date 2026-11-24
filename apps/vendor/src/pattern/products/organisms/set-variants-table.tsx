@@ -398,6 +398,7 @@ export const SetVariantsTable = ({
                             </span>
                             <NumberStepper
                               value={detail.stock}
+                              aria-label={`Stock for ${size}`}
                               onChange={(v) =>
                                 patchDetail(variant.id, size, { stock: v })
                               }
@@ -405,6 +406,8 @@ export const SetVariantsTable = ({
                             {!perSize && (
                               <NumberStepper
                                 value={detail.yardsPerOrder}
+                                decimals
+                                aria-label={`Yards per order for ${size}`}
                                 onChange={(v) =>
                                   patchDetail(variant.id, size, {
                                     yardsPerOrder: v,
