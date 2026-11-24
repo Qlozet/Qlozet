@@ -326,6 +326,40 @@ const KIND_BADGE: Record<string, { label: string; className: string }> = {
 const shipmentBizId = (b: unknown): string | undefined =>
   typeof b === 'string' ? b : (b as { _id?: string })?._id;
 
+/**
+ * The courier's pickup day in words, in Lagos time like the backend sets it
+ * (pickup-schedule.ts): "today", "tomorrow", or "on Monday 30 November".
+ */
+const pickupDayText = (pickupDate?: string | null): string | null => {
+  if (!pickupDate || !/^\d{4}-\d{2}-\d{2}$/.test(pickupDate)) return null;
+  const lagosDay = (ms: number) =>
+    new Date(ms + 60 * 60 * 1000).toISOString().slice(0, 10);
+  const now = Date.now();
+  if (pickupDate === lagosDay(now)) return 'today';
+  if (pickupDate === lagosDay(now + 24 * 60 * 60 * 1000)) return 'tomorrow';
+  const day = new Date(`${pickupDate}T12:00:00Z`);
+  const weekday = day.toLocaleDateString('en-GB', {
+    weekday: 'long',
+    timeZone: 'UTC',
+  });
+  const date = day.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    timeZone: 'UTC',
+  });
+  return `on ${weekday} ${date}`;
+};
+
+/**
+ * A booked part whose collection went wrong: the courier cancelled it, or
+ * it was flagged as never collected. The vendor books a new courier with the
+ * same Fulfil call (the backend cancels the old booking first).
+ */
+const canRebookShipment = (s?: VendorShipment | null): boolean =>
+  !!s &&
+  !s.rejected &&
+  (s.status === 'failed' || (s.status === 'shipped' && !!s.pickup_alerted_at));
+
 // ── Optimistic drawer patches ──
 // The drawer keeps a local copy of the order, so after a mutation we patch that
 // copy to reflect the new state immediately (rather than waiting for a reopen).
@@ -887,6 +921,13 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     // Confirmation state derived from shipment
     const isConfirmed = vendorShipment?.confirmed === true;
     const isRejected = vendorShipment?.rejected === true;
+    // Booked, waiting for the courier to collect (not yet flagged).
+    const awaitingPickup =
+      vendorShipment?.status === 'shipped' &&
+      !vendorShipment?.pickup_alerted_at &&
+      !isRejected;
+    const canRebook = canRebookShipment(vendorShipment);
+    const pickupWhen = pickupDayText(vendorShipment?.pickup_date);
     const needsConfirmation =
       ['pending', 'in_review'].includes(order.status) &&
       vendorShipment &&
@@ -930,8 +971,11 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
     // Block fulfillment if there are pending incoming fabric transfers
     const canFulfill = canFulfillBase && pendingIncomingFabric.length === 0;
 
+    // A booking that needs replacing has no label worth printing.
     const hasLabel =
-      vendorShipment?.label_url && vendorShipment.status !== 'pending';
+      vendorShipment?.label_url &&
+      vendorShipment.status !== 'pending' &&
+      !canRebook;
 
     const handleFulfill = async () => {
       try {
@@ -960,12 +1004,22 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     ? { tracking_number: trackingNumber }
                     : {}),
                   ...(shipmentId ? { shipment_id: shipmentId } : {}),
+                  ...(payload?.shipment?.pickup_date
+                    ? { pickup_date: payload.shipment.pickup_date }
+                    : {}),
+                  ...(payload?.shipment?.courier_name
+                    ? { courier_name: payload.shipment.courier_name }
+                    : {}),
+                  pickup_alerted_at: null,
                   shipped_at: s.shipped_at ?? new Date().toISOString(),
                 }
               : s
           ),
         }));
-        toast.success('Shipping label created!');
+        const when = pickupDayText(payload?.shipment?.pickup_date);
+        toast.success(
+          when ? `Courier booked to collect ${when}` : 'Courier booked'
+        );
       } catch (err: any) {
         // The backend reverts the shipment ready_to_ship -> pending when the
         // Shipbubble label call fails, then re-throws the real error. Mirror
@@ -2044,6 +2098,15 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                           value={vendorShipment.courier_name}
                         />
                       )}
+                      {pickupWhen && vendorShipment.status === 'shipped' && (
+                        <DetailRow
+                          label="Pickup"
+                          value={
+                            pickupWhen.charAt(0).toUpperCase() +
+                            pickupWhen.slice(1)
+                          }
+                        />
+                      )}
                       {vendorShipment.tracking_number && (
                         <DetailRow
                           label="Tracking #"
@@ -2167,6 +2230,38 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                 </p>
               </div>
             )}
+            {/* Handover: what happens between booking and the courier's pickup */}
+            {awaitingPickup && (
+              <div className="mb-3 rounded-lg border border-border bg-muted/40 px-3 py-2.5">
+                <p className="text-xs font-medium text-[#333333] dark:text-white">
+                  Hand it to the courier
+                </p>
+                <ol className="mt-1.5 list-decimal space-y-1 pl-4 text-xs text-muted-foreground">
+                  <li>Print the label and stick it on the parcel.</li>
+                  <li>
+                    {vendorShipment?.courier_name
+                      ? `A ${vendorShipment.courier_name} courier`
+                      : 'A courier'}{' '}
+                    collects it from your store
+                    {pickupWhen ? ` ${pickupWhen}` : ''}.
+                    {vendorShipment?.tracking_number
+                      ? ` Tracking ${vendorShipment.tracking_number}.`
+                      : ''}
+                  </li>
+                  <li>We&apos;ll tell you when it&apos;s picked up.</li>
+                </ol>
+              </div>
+            )}
+            {canRebook && canArea('orders.fulfil') && (
+              <div className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-800/50 dark:bg-amber-900/20">
+                <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                <p className="text-xs text-amber-700 dark:text-amber-300">
+                  {vendorShipment?.status === 'failed'
+                    ? 'The courier cancelled this pickup. Book a new courier below.'
+                    : "The courier hasn't collected this parcel. If it's still with you, book a new courier below and we'll cancel the first booking. If the courier already has it, contact support."}
+                </p>
+              </div>
+            )}
             {isRetryFulfill && canFulfill && canArea('orders.fulfil') && (
               <div className="mb-3 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-800/50 dark:bg-amber-900/20">
                 <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
@@ -2250,12 +2345,23 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                 >
                   <Truck className="size-4" />
                   {isFulfilling
-                    ? 'Creating label...'
+                    ? 'Booking courier...'
                     : isRetryFulfill
                       ? 'Retry Fulfillment'
                       : outgoingFabricTransfers.length > 0
                         ? 'Fulfill & Ship to Tailor'
                         : 'Fulfill Order'}
+                </Button>
+              )}
+              {canRebook && canArea('orders.fulfil') && (
+                <Button
+                  type="button"
+                  onClick={handleFulfill}
+                  disabled={isFulfilling}
+                  className="flex-1 h-11 gap-2 text-sm"
+                >
+                  <Truck className="size-4" />
+                  {isFulfilling ? 'Booking...' : 'Book a new courier'}
                 </Button>
               )}
               {pendingIncomingFabric.length > 0 && canFulfillBase && (
@@ -2309,6 +2415,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                 !canFulfill &&
                 !canHandover &&
                 !hasLabel &&
+                !canRebook &&
                 !isRejected && (
                   <Button
                     type="button"
@@ -2343,7 +2450,11 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
               <Button
                 type="button"
                 variant={
-                  needsConfirmation || canFulfill || canHandover || hasLabel
+                  needsConfirmation ||
+                  canFulfill ||
+                  canHandover ||
+                  hasLabel ||
+                  canRebook
                     ? 'outline'
                     : 'default'
                 }
