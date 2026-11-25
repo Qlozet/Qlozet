@@ -119,7 +119,7 @@ const ItemDetailContent: React.FC<{
               src={heroUrl}
               alt={name}
               fill
-              className="object-cover transition-transform group-hover:scale-105"
+              className="object-cover"
               sizes="80px"
             />
           ) : (

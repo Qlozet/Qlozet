@@ -199,7 +199,7 @@ export const AddAddonVariantModal = NiceModal.create(
                           'size-7 rounded-full border-2 transition-all',
                           colorHex === hex
                             ? 'border-primary ring-2 ring-primary/30 scale-110'
-                            : 'border-input hover:scale-105'
+                            : 'border-input hover:border-foreground/40'
                         )}
                         style={{ backgroundColor: hex }}
                         aria-label={hex}

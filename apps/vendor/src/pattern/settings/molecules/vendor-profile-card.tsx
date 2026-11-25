@@ -535,7 +535,7 @@ export const VendorProfileCard: React.FC<VendorProfileCardProps> = ({
                       onClick={() => handleSelectTheme(c)}
                       aria-label={`Theme colour ${c}`}
                       aria-pressed={active}
-                      className="size-7 rounded-full transition-transform hover:scale-110 disabled:opacity-60"
+                      className="size-7 rounded-full transition-shadow hover:ring-2 hover:ring-border disabled:opacity-60"
                       style={{
                         backgroundColor: c,
                         boxShadow: active

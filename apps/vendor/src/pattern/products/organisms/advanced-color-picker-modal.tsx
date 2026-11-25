@@ -328,7 +328,7 @@ function ColorGridPicker({
         <button
           key={idx}
           onClick={() => handleColorClick(colorValue)}
-          className="w-full h-8 rounded border border-border/50 hover:scale-110 transition-transform"
+          className="w-full h-8 rounded border border-border/50 hover:ring-2 hover:ring-border transition-shadow"
           style={{ backgroundColor: colorValue }}
         />
       ))}

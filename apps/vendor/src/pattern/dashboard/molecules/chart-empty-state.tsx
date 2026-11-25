@@ -40,7 +40,7 @@ export const ChartEmptyState = ({
       style={{ minHeight: height }}
     >
       <Icon size={32} className="text-muted-foreground" strokeWidth={1.5} />
-      <p className="mt-2.5 text-sm font-semibold text-foreground">{message}</p>
+      <p className="mt-2.5 text-sm font-medium text-foreground">{message}</p>
       {description && (
         <p className="mt-1.5 max-w-60 text-xs leading-relaxed text-muted-foreground">
           {description}

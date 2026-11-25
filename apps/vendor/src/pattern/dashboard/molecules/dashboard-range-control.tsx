@@ -48,7 +48,7 @@ export const DashboardRangeControl = () => {
         </PopoverTrigger>
       </div>
       <PopoverContent align="end" sideOffset={8} className="w-56 p-1.5">
-        <p className="px-2.5 pb-1.5 pt-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+        <p className="px-2.5 pb-1.5 pt-1 text-xs text-muted-foreground">
           Show the last
         </p>
         <ul role="menu" className="space-y-0.5">

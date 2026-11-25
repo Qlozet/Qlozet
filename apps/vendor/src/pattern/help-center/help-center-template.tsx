@@ -126,7 +126,7 @@ export const HelpCenterTemplate = () => {
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-xl font-bold text-grey-black dark:text-white">
-          Help Center
+          Help center
         </h1>
         <p className="text-sm text-grey3 dark:text-gray-400">
           Guides on payouts, product approval, bespoke quotes and penalties.

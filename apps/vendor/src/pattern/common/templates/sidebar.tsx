@@ -77,7 +77,7 @@ export const Sidebar = () => {
         },
         {
           icon: ProductsSizeGuidesNavIcon,
-          label: 'Size Guides',
+          label: 'Size guides',
           href: APP_ROUTES.productsSizeGuides,
         },
         // Videos hidden for now; the page still exists at its route.
@@ -94,7 +94,7 @@ export const Sidebar = () => {
     { icon: CustomersNavIcon, label: 'Customers', href: APP_ROUTES.customers },
     { icon: SettingsNavIcon, label: 'Settings', href: APP_ROUTES.settings },
     { icon: SupportNavIcon, label: 'Support', href: APP_ROUTES.support },
-    { icon: SupportNavIcon, label: 'Help Center', href: APP_ROUTES.helpCenter },
+    { icon: SupportNavIcon, label: 'Help center', href: APP_ROUTES.helpCenter },
   ];
 
   const pathname = usePathname();
@@ -117,12 +117,12 @@ export const Sidebar = () => {
   const screenSize = useScreenSize();
 
   return (
-    <div className="invisible hidden lg:block lg:visible lg:w-fit 2xl:w-[260px] lg:h-screen lg:pl-6 lg:py-6 lg:pr-1 transition-all duration-300">
+    <div className="invisible hidden lg:block lg:visible lg:w-fit 2xl:w-[260px] lg:h-screen lg:pl-6 lg:py-6 lg:pr-1">
       {/* The rail is a fixed-height column: logo pinned at the top, theme and
           log out pinned at the bottom, and only the menu between them scrolls.
           The whole card used to scroll, so on a short window the logo rolled
           away and Log out sat below the fold. */}
-      <div className="lg:w-[78px] xl:w-full h-full bg-sidebar rounded-xl border custom-card-shadow flex flex-col gap-y-10 py-6 pl-[14px] pr-3 transition-all duration-300">
+      <div className="lg:w-[78px] xl:w-full h-full bg-sidebar rounded-xl border custom-card-shadow flex flex-col gap-y-10 py-6 px-3">
         {/* Logo */}
         <div className="2xl:pl-4 shrink-0">
           <BrandLogo />
@@ -151,7 +151,7 @@ export const Sidebar = () => {
                       value={`item-${idx}`}
                       className="border-none"
                     >
-                      <AccordionTrigger className="flex items-center justify-center 2xl:justify-start gap-x-0 2xl:gap-x-3 px-2 2xl:px-4 py-2 2xl:py-3 text-grey4 dark:text-gray-400 [&_svg]:text-[#ACB5BD] hover:text-secondary dark:hover:text-white hover:[&_svg]:text-secondary dark:hover:[&_svg]:text-white transition-colors text-sm font-normal data-[state=open]:text-primary dark:data-[state=open]:text-white data-[state=open]:[&_svg]:text-primary dark:data-[state=open]:[&_svg]:text-white hover:no-underline cursor-pointer border-none outline-none shadow-none duration-300">
+                      <AccordionTrigger className="flex items-center justify-center 2xl:justify-start gap-x-0 2xl:gap-x-3 px-2 2xl:px-3 h-9 2xl:h-10 py-0 rounded-[8px] text-muted-foreground [&_svg]:text-muted-foreground hover:bg-muted/60 hover:text-foreground hover:[&_svg]:text-foreground transition-colors duration-150 text-sm font-normal data-[state=open]:text-foreground data-[state=open]:[&_svg]:text-foreground hover:no-underline cursor-pointer border-none outline-none shadow-none">
                         <span>
                           {' '}
                           <item.icon className="w-6 h-6 transition-colors duration-75" />
@@ -162,10 +162,10 @@ export const Sidebar = () => {
                       </AccordionTrigger>
                       <AccordionContent className="pb-0 pr-[4px] 2xl:pr-0 2xl:pl-[30px] flex flex-col items-center 2xl:items-start 2xl:block">
                         {/* Vertical dashed line for collapsed view */}
-                        <div className="w-[1px] h-[10px] border-l border-dashed border-[#D3D8DB] dark:border-gray-600 2xl:hidden my-0.5"></div>
+                        <div className="w-[1px] h-[10px] border-l border-dashed border-border 2xl:hidden my-0.5"></div>
 
                         {/* Sub-items container with dashed border in collapsed view */}
-                        <div className="flex flex-col items-center 2xl:items-start 2xl:block w-[42px] 2xl:w-full border border-dashed border-[#D3D8DB] dark:border-gray-600 rounded-xl p-1 gap-y-1 2xl:border-none 2xl:rounded-none 2xl:p-0 2xl:gap-y-0">
+                        <div className="flex flex-col items-center 2xl:items-start 2xl:block w-[42px] 2xl:w-full border border-dashed border-border rounded-xl p-1 gap-y-1 2xl:border-none 2xl:rounded-none 2xl:p-0 2xl:gap-y-0">
                           {item.subItems?.map((subItem) => {
                             const isActive =
                               pathname === subItem.href ||

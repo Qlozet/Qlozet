@@ -358,19 +358,6 @@ export const getNotificationPriorityColor = (priority: string): string => {
   return colors[priority as keyof typeof colors] || colors.medium;
 };
 
-export const getNotificationTypeIcon = (type: string): string => {
-  const icons = {
-    order: '📦',
-    customer: '👤',
-    product: '📋',
-    system: '⚙️',
-    payment: '💳',
-    shipping: '🚚',
-    promotion: '🎁',
-  };
-  return icons[type as keyof typeof icons] || '📬';
-};
-
 // Schedule validation
 export const validateNotificationSchedule = (
   scheduleFor: string,

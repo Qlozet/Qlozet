@@ -17,7 +17,8 @@ import { CustomXAxisTick } from '../molecules/custom-x-axis-tick';
 import { ChartEmptyState } from '../molecules/chart-empty-state';
 import { useDashboardRange } from '../lib/use-dashboard-range';
 
-export const OrderCountChart = () => {
+/** height: the plot height; shorter when it sits under the earnings chart. */
+export const OrderCountChart = ({ height = 350 }: { height?: number }) => {
   const [range] = useDashboardRange();
   const { data: chartResponse, isLoading } = useGetOrdersChartQuery({ range });
 
@@ -40,8 +41,8 @@ export const OrderCountChart = () => {
   return (
     <Card className="w-full max-h-fit rounded-[12px] custom-card-shadow">
       <CardHeader>
-        <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
-          Order Count
+        <CardTitle className="text-sm font-medium text-foreground">
+          Orders per day
         </CardTitle>
       </CardHeader>
       <CardContent className="w-full">
@@ -49,9 +50,9 @@ export const OrderCountChart = () => {
           isEmpty={!hasData}
           variant="bar"
           description="Order count trends will show here as orders come in"
-          height={350}
+          height={height}
         >
-          <ResponsiveContainer width="100%" height={350}>
+          <ResponsiveContainer width="100%" height={height}>
             <BarChart
               data={chartData}
               barGap={2}
@@ -60,7 +61,7 @@ export const OrderCountChart = () => {
               <CartesianGrid
                 strokeDasharray="0"
                 vertical={false}
-                stroke="#e5e7eb"
+                stroke="var(--border)"
               />
               <XAxis
                 dataKey="day"

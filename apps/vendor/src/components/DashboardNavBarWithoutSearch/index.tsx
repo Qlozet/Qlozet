@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Typography from '../Typography';
 import Profile from '../Profile';
 import { UserDetails } from '@/types';
-import { Search, Bell, Menu, User, Sparkles } from 'lucide-react';
+import { Search, Bell, Menu, User, MessagesSquare } from 'lucide-react';
 import { useGetUnreadCountQuery } from '@/redux/services/notifications/notifications.api-slice';
 import { useGetLatestDigestQuery } from '@/redux/services/assistant/assistant.api-slice';
 import { AssistantChatSheet } from '@/pattern/assistant/organisms/assistant-chat-sheet';
@@ -131,20 +131,20 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
 
               <div className="flex items-center gap-2 sm:gap-3">
                 <div
-                  className="rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors"
+                  className="rounded-[10px] size-10 flex items-center justify-center bg-muted cursor-pointer hover:bg-muted/70 transition-colors"
                   onClick={() => setShowAsk(true)}
                   aria-label="Ask assistant"
                 >
-                  <Sparkles className="size-5 text-primary" />
+                  <MessagesSquare className="size-5 text-foreground" />
                 </div>
                 <div
-                  className="rounded-[10px] size-10 flex items-center justify-center bg-[#F8F9FA] dark:bg-muted cursor-pointer hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors"
+                  className="rounded-[10px] size-10 flex items-center justify-center bg-muted cursor-pointer hover:bg-muted/70 transition-colors"
                   onClick={handleNotificationClick}
                 >
                   <div className="relative">
-                    <Bell className="size-5 text-gray-800 dark:text-white" />
+                    <Bell className="size-5 text-foreground" />
                     {unreadCount > 0 && (
-                      <span className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
+                      <span className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-white tabular-nums">
                         {unreadCount > 9 ? '9+' : unreadCount}
                       </span>
                     )}
@@ -180,13 +180,13 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
             <div className="flex flex-1 justify-center">
               <div className="relative w-full max-w-xl">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                  <Search className="text-gray-400 dark:text-muted-foreground size-5" />
+                  <Search className="text-muted-foreground size-4" />
                 </div>
                 <input
                   value={value}
                   onChange={handleInputChange}
                   placeholder="Search"
-                  className="py-2 pl-12 w-full border-solid border-[1.5px] placeholder-gray-4 dark:placeholder-muted-foreground text-dark dark:text-foreground focus:outline-none focus:border-none border-gray-2 dark:border-border rounded-[12px] overflow-hidden text-sm font-light placeholder:font-light bg-[#F8F9FA] dark:bg-muted"
+                  className="py-2 pl-12 w-full border-solid border-[1.5px] placeholder-gray-4 dark:placeholder-muted-foreground text-dark dark:text-foreground focus:outline-none focus:border-none border-gray-2 dark:border-border rounded-[12px] overflow-hidden text-sm font-light placeholder:font-light bg-muted"
                 />
               </div>
             </div>
@@ -194,20 +194,20 @@ const DashboardNavWithOutSearch: React.FC<DashboardNavWithOutSearchProps> = ({
           <div className="flex items-center justify-end gap-6 ml-auto">
             <div className="flex items-center justify-between gap-4">
               <div
-                className="rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer flex items-center justify-center hover:bg-gray-100 dark:hover:bg-muted/80 transition-colors"
+                className="rounded-[12px] p-2 bg-muted cursor-pointer flex items-center justify-center hover:bg-muted/70 transition-colors"
                 onClick={() => setShowAsk(true)}
                 aria-label="Ask assistant"
               >
-                <Sparkles className="size-5 text-primary" />
+                <MessagesSquare className="size-5 text-foreground" />
               </div>
               <div
-                className="rounded-[12px] p-2 bg-[#F8F9FA] dark:bg-muted cursor-pointer flex items-center justify-center"
+                className="rounded-[12px] p-2 bg-muted cursor-pointer flex items-center justify-center"
                 onClick={handleNotificationClick}
               >
                 <div className="relative">
-                  <Bell className="size-5 text-gray-800 dark:text-white" />
+                  <Bell className="size-5 text-foreground" />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
+                    <span className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-white tabular-nums">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}

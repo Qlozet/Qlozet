@@ -34,7 +34,7 @@ export const OrdersByLocation = () => {
 
   // One bar per state = total orders (clean, always populated when there are orders).
   const chartData = ordersSeries.data.map((item: any) => ({
-    label: item.label?.toUpperCase() ?? 'UNKNOWN',
+    label: item.label ?? 'Unknown',
     orders: item.value ?? 0,
   }));
 
@@ -42,7 +42,7 @@ export const OrdersByLocation = () => {
     <>
       <Card className="w-full max-h-fit rounded-[12px] custom-card-shadow">
         <CardHeader className="px-6 pb-4">
-          <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
+          <CardTitle className="text-sm font-medium text-foreground">
             Sales by top location
           </CardTitle>
         </CardHeader>

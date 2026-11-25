@@ -187,7 +187,7 @@ export const HotspotEditorModal = NiceModal.create(
                   <div
                     key={i}
                     className={cn(
-                      'hotspot-pin absolute flex items-center justify-center rounded-full size-6 -translate-x-1/2 -translate-y-1/2 cursor-move transition-shadow hover:scale-110',
+                      'hotspot-pin absolute flex items-center justify-center rounded-full size-6 -translate-x-1/2 -translate-y-1/2 cursor-move transition-shadow',
                       activeHotspotIndex === i
                         ? 'bg-primary text-primary-foreground shadow-[0_0_0_4px_rgba(var(--primary),0.3)] z-20'
                         : 'bg-white text-black border-2 border-primary shadow-sm z-10'

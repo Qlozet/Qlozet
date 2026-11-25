@@ -80,7 +80,7 @@ export const OrdersByProduct = () => {
   return (
     <Card className="w-full max-h-fit rounded-[12px] custom-card-shadow">
       <CardHeader className="px-6 pb-4">
-        <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
+        <CardTitle className="text-sm font-medium text-foreground">
           Sales by product kind
         </CardTitle>
       </CardHeader>

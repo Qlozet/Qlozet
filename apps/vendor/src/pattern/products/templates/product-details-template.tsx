@@ -740,7 +740,7 @@ export const ProductDetailsTemplate = ({
                             'size-6 rounded-full border transition-all',
                             selectedColorIndex === c.index
                               ? 'ring-2 ring-primary ring-offset-1 border-transparent'
-                              : 'border-border hover:scale-110'
+                              : 'border-border hover:border-foreground/40'
                           )}
                         />
                       ))}

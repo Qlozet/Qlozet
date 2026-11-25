@@ -49,7 +49,7 @@ export const EarningsChart = () => {
   return (
     <Card className="w-full max-h-fit rounded-[12px] custom-card-shadow">
       <CardHeader>
-        <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground">
+        <CardTitle className="text-sm font-medium text-foreground">
           Earnings
         </CardTitle>
       </CardHeader>
@@ -69,7 +69,7 @@ export const EarningsChart = () => {
               <CartesianGrid
                 strokeDasharray="0"
                 vertical={false}
-                stroke="#e5e7eb"
+                stroke="var(--border)"
               />
               <XAxis
                 dataKey="day"

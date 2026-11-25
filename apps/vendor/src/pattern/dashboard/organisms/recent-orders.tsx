@@ -85,20 +85,20 @@ export const RecentOrders = () => {
       <CardHeader className="flex flex-row items-center justify-between pb-3 shrink-0">
         <div className="flex items-center gap-2">
           <ShoppingBag className="size-4 text-muted-foreground" />
-          <CardTitle className="text-sm font-medium text-[hsla(210,9%,31%,1)] dark:text-foreground m-0">
+          <CardTitle className="text-sm font-medium text-foreground m-0">
             Recent orders
           </CardTitle>
           {!isEmpty && (
-            <span className="rounded-full bg-primary/10 text-primary px-2 py-0.5 text-[10px] font-semibold">
+            <span className="text-xs text-muted-foreground tabular-nums">
               {orders.length}
             </span>
           )}
         </div>
         <Link
           href={APP_ROUTES.orders}
-          className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
-          View all <ChevronRight size={14} />
+          View orders <ChevronRight size={14} />
         </Link>
       </CardHeader>
       <CardContent className="flex-1 min-h-0 overflow-y-auto space-y-2 pb-4">
@@ -136,7 +136,7 @@ export const RecentOrders = () => {
                 type="button"
                 key={order._id || idx}
                 onClick={() => handleOrderClick(order)}
-                className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 dark:bg-muted dark:hover:bg-muted/80 rounded-xl transition group text-left cursor-pointer"
+                className="w-full flex items-center justify-between p-3 bg-muted/50 hover:bg-muted rounded-[8px] transition-colors group text-left cursor-pointer"
               >
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   {/* Product thumbnail stack (overlapping for multi-item orders) */}
@@ -146,9 +146,9 @@ export const RecentOrders = () => {
                         <div
                           key={i}
                           className={cn(
-                            'relative size-11 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700 ring-2 ring-gray-50 dark:ring-muted transition-all duration-200 ease-out',
-                            // Tight by default (just reads as a stack); fan out on card hover.
-                            i !== 0 && '-ml-8 group-hover:-ml-4'
+                            'relative size-11 rounded-lg overflow-hidden bg-muted ring-2 ring-card',
+                            // Overlapping, so several items read as one stack.
+                            i !== 0 && '-ml-8'
                           )}
                           style={{ zIndex: images.length - i }}
                         >
@@ -181,13 +181,11 @@ export const RecentOrders = () => {
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <p className="text-xs text-gray-500 dark:text-muted-foreground truncate">
+                      <p className="text-xs text-muted-foreground truncate">
                         {customerName}
                       </p>
-                      <span className="text-gray-300 dark:text-gray-600">
-                        &middot;
-                      </span>
-                      <span className="text-[11px] text-muted-foreground font-mono shrink-0">
+                      <span className="text-muted-foreground/50">&middot;</span>
+                      <span className="text-xs text-muted-foreground font-mono shrink-0">
                         #{orderId.slice(-6).toUpperCase()}
                       </span>
                     </div>
@@ -197,12 +195,12 @@ export const RecentOrders = () => {
                 {/* Right side */}
                 <div className="flex items-center gap-3 shrink-0 ml-3">
                   <div className="flex flex-col items-end gap-1">
-                    <p className="text-sm font-semibold text-gray-900 dark:text-foreground">
+                    <p className="text-sm font-medium text-foreground tabular-nums">
                       {formatNaira(total)}
                     </p>
                     <span
                       className={cn(
-                        'inline-flex h-[20px] items-center justify-center whitespace-nowrap rounded-md px-2 text-[10px] font-medium',
+                        'inline-flex h-5 items-center justify-center whitespace-nowrap rounded-md px-2 text-[11px] font-medium',
                         badge.className
                       )}
                     >
@@ -210,12 +208,12 @@ export const RecentOrders = () => {
                     </span>
                   </div>
                   <div className="flex flex-col items-end gap-1">
-                    <span className="text-[10px] text-muted-foreground">
+                    <span className="text-[11px] text-muted-foreground tabular-nums">
                       {timeAgo(order.createdAt)}
                     </span>
                     <ChevronRight
                       size={14}
-                      className="text-gray-400 dark:text-muted-foreground group-hover:text-primary transition-colors"
+                      className="text-muted-foreground group-hover:text-foreground transition-colors"
                     />
                   </div>
                 </div>

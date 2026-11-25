@@ -11,7 +11,7 @@ import React, {
   useMemo,
 } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { X } from 'lucide-react';
+import { AlertTriangle, X } from 'lucide-react';
 import Image from 'next/image';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 
@@ -262,18 +262,21 @@ const UserLayoutInner: React.FC<UserLayoutProps> = ({ children }) => {
 
   if (loadingState.error) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <div className="text-red-500 text-xl mb-4">⚠️</div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Something went wrong
+          <AlertTriangle
+            className="size-6 text-destructive mx-auto mb-4"
+            aria-hidden
+          />
+          <h2 className="text-xl font-medium text-foreground mb-2">
+            We couldn&apos;t load your store
           </h2>
-          <p className="text-gray-600 mb-4">{loadingState.error}</p>
+          <p className="text-muted-foreground mb-4">{loadingState.error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="px-4 h-10 bg-primary text-primary-foreground rounded-[8px] hover:bg-primary/90 transition-colors"
           >
-            Retry
+            Try again
           </button>
         </div>
       </div>

@@ -1805,7 +1805,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                     );
                     const sBadge = shipmentStatusBadge(transfer.status);
                     return (
-                      <Card key={transfer._id} title="📦 Fabric Transfer">
+                      <Card key={transfer._id} title="Fabric transfer">
                         <DetailRow
                           label="Ship to"
                           value={
@@ -1940,8 +1940,8 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                   {incomingFabricTransfers.map((transfer) => {
                     const heading =
                       pendingIncomingFabric.length > 0
-                        ? '🧵 Incoming Fabric'
-                        : '🧵 Fabric Received ✓';
+                        ? 'Incoming fabric'
+                        : 'Fabric received';
                     const sourceName = extractBizName(transfer.business);
                     const fabricName = extractFabricName(
                       transfer.fabric_product
@@ -1983,8 +1983,7 @@ export const OrderDetailsDrawer = create<OrderDetailsDrawerProps>(
                         {isDelivered && (
                           <div className="px-5 py-3 bg-emerald-50 dark:bg-emerald-900/20 border-t border-emerald-200 dark:border-emerald-800/50">
                             <p className="text-xs text-emerald-700 dark:text-emerald-300">
-                              ✓ Fabric received — you can now start working on
-                              this order!
+                              Fabric received. You can start work on this order.
                             </p>
                           </div>
                         )}

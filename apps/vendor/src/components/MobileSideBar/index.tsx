@@ -97,7 +97,7 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
         { name: 'Fabrics', link: APP_ROUTES.productsFabrics },
         { name: 'Collections', link: APP_ROUTES.productsCollections },
         { name: 'Discounts', link: APP_ROUTES.productsDiscounts },
-        { name: 'Size Guides', link: APP_ROUTES.productsSizeGuides },
+        { name: 'Size guides', link: APP_ROUTES.productsSizeGuides },
         // Videos hidden for now.
         // { name: 'Videos', link: APP_ROUTES.productsVideos },
       ],
@@ -243,7 +243,7 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
                           <Image
                             src={item.activeIcon}
                             alt={`${item.name} active icon`}
-                            className="size-5 dark:brightness-0 dark:invert transition-all"
+                            className="size-5 dark:brightness-0 dark:invert"
                           />
                         ) : (
                           <Image
@@ -308,7 +308,7 @@ const MobileSideBar: React.FC<MobileSideBarProps> = ({
                   <Image
                     src={item.activeIcon}
                     alt={`${item.name} active icon`}
-                    className="size-5 dark:brightness-0 dark:invert transition-all"
+                    className="size-5 dark:brightness-0 dark:invert"
                   />
                 ) : (
                   <Image
